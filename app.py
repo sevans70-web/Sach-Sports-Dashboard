@@ -41,7 +41,6 @@ st.divider()
 # HR WATCHLIST
 
 st.header("💣 HR Opportunities")
-
 hr_data = pd.DataFrame({
     "Player": [
         "Aaron Judge",
@@ -50,6 +49,15 @@ hr_data = pd.DataFrame({
         "Pete Alonso",
         "Juan Soto"
     ],
+
+    "HRR Rating": [
+        96,
+        93,
+        89,
+        87,
+        85
+    ],
+
     "Confidence": [
         "High",
         "High",
@@ -57,6 +65,7 @@ hr_data = pd.DataFrame({
         "Medium",
         "Medium"
     ],
+
     "Reason": [
         "Elite power",
         "Hot streak",
