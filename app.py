@@ -155,13 +155,22 @@ st.divider()
 st.header("📝 Research Notes")
 
 st.info("""
-Version 2 introduces betting research watchlists.
+st.info("""
+📊 TODAY'S RESEARCH SUMMARY
 
-Future upgrades:
-- Daily projections
-- Odds integration
-- Trending players
-- Injury tracking
-- HRR Research Ratings
-- What Changed button
+• Aaron Judge leads today's HR board (HRR 96)
+• Luis Arraez remains the strongest contact hitter
+• Shohei Ohtani projects best for Total Bases
+• HR market grades stronger than Hits today
+• Two High Confidence HR opportunities identified
+
+COMING SOON
+
+• Daily projections
+• Odds integration
+• Trending players
+• Injury tracking
+• HRR Research Ratings
+• What Changed Today
+""")
 """)
