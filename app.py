@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 2 - Betting Research Dashboard")
+st.subheader("Version 3 - What Changed Dashboard")
 
 st.caption("Last Updated: June 19, 2026")
 
