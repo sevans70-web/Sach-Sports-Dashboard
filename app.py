@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 5 – Trending Players Added")
+st.subheader("Version 6 — Confidence Rankings")
 
 st.write("Last Updated: June 20, 2026")
 
@@ -56,6 +56,35 @@ trend_data = pd.DataFrame({
 st.dataframe(trend_data, use_container_width=True)
 
 st.divider()
+st.divider()
+
+st.header("🎯 Confidence Rankings")
+
+confidence_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Shohei Ohtani",
+        "Luis Arraez",
+        "Juan Soto",
+        "Kyle Schwarber"
+    ],
+    "Tier": [
+        "A+",
+        "A",
+        "A",
+        "B+",
+        "B"
+    ],
+    "Confidence Score": [
+        96,
+        93,
+        94,
+        85,
+        89
+    ]
+})
+
+st.dataframe(confidence_data, use_container_width=True)
 st.divider()
 
 # TODAY'S TOP OPPORTUNITIES
