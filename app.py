@@ -183,6 +183,7 @@ changes_data = pd.DataFrame({
         "↑",
         "+3",
         "+3"
+]
 })
 
 st.dataframe(changes_data, use_container_width=True)
