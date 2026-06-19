@@ -42,13 +42,13 @@ st.header("🚨 Best Bets Today")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.success("💣 HR Play\n\nAaron Judge")
+    st.success("💣 HR Play\n\nAaron Judge\n\nHRR Rating: 96")
 
 with col2:
-    st.success("🔥 Hits Play\n\nLuis Arraez")
+    st.success("🔥 Hits Play\n\nLuis Arraez\n\nHits Rating: 94")
 
 with col3:
-    st.success("⚾ TB Play\n\nShohei Ohtani")
+    st.success("⚾ TB Play\n\nShohei Ohtani\n\nTB Rating: 93")
 
 st.divider()
 # HR WATCHLIST
