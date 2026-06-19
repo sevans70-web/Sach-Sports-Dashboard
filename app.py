@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 4 - Best Overall Play")
+st.subheader("Version 5 – Trending Players Added")
 
 st.write("Last Updated: June 20, 2026")
 
@@ -25,7 +25,37 @@ Reason:
 """)
 
 st.divider()
+st.header("📈 Trending Players")
 
+trend_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Shohei Ohtani",
+        "Luis Arraez",
+        "Juan Soto",
+        "Kyle Schwarber"
+    ],
+
+    "Trend": [
+        "🔥 Hot",
+        "🔥 Hot",
+        "📈 Rising",
+        "📈 Rising",
+        "➡️ Stable"
+    ],
+
+    "Notes": [
+        "HR surge",
+        "Multi-category production",
+        "Contact streak",
+        "Improving plate discipline",
+        "Consistent power"
+    ]
+})
+
+st.dataframe(trend_data, use_container_width=True)
+
+st.divider()
 st.divider()
 
 # TODAY'S TOP OPPORTUNITIES
