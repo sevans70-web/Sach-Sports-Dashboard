@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 6 — Confidence Rankings")
+st.subheader("Version 7 — Injury Watch")
 
 st.write("Last Updated: June 20, 2026")
 
@@ -127,6 +127,42 @@ with col3:
     st.success("⚾ TB Play\n\nShohei Ohtani\n\nTB Rating: 93")
 
 st.divider()
+st.divider()
+
+st.header("🩺 Injury Watch")
+
+injury_data = pd.DataFrame({
+    "Player": [
+        "Mike Trout",
+        "Yordan Alvarez",
+        "Bryce Harper",
+        "Fernando Tatis Jr.",
+        "Corey Seager"
+    ],
+    "Status": [
+        "Day-to-Day",
+        "Questionable",
+        "Healthy",
+        "Healthy",
+        "Day-to-Day"
+    ],
+    "Impact": [
+        "High",
+        "Medium",
+        "None",
+        "None",
+        "High"
+    ],
+    "Research Note": [
+        "Monitor lineup status",
+        "Check pre-game update",
+        "No injury concern",
+        "Full go",
+        "Could affect TB confidence"
+    ]
+})
+
+st.dataframe(injury_data, use_container_width=True)
 # HR WATCHLIST
 
 st.header("💣 HR Opportunities")
