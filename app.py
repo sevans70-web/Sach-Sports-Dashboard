@@ -9,7 +9,17 @@ st.set_page_config(
 
 st.title("⚾ Sach Sports Dashboard")
 st.subheader("Version 1 - Demo Dashboard")
+st.caption("Last Updated: June 19, 2026")
+metric1, metric2, metric3 = st.columns(3)
 
+with metric1:
+    st.metric("Top HR Player", "Aaron Judge", "29 HR")
+
+with metric2:
+    st.metric("Top Hits Player", "Luis Arraez", "108 Hits")
+
+with metric3:
+    st.metric("Top TB Player", "Aaron Judge", "210 TB")
 st.markdown("---")
 
 # Sample Home Run Leaders
