@@ -151,7 +151,41 @@ tb_data = pd.DataFrame({
 st.dataframe(tb_data, use_container_width=True)
 
 st.divider()
+st.divider()
 
+st.header("🔄 What Changed Today")
+
+changes_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Luis Arraez",
+        "Shohei Ohtani",
+        "Kyle Schwarber",
+        "Juan Soto"
+    ],
+    "Yesterday": [
+        "HRR 94",
+        "Hits Rank #2",
+        "TB Rank #2",
+        "HRR 86",
+        "HRR 82"
+    ],
+    "Today": [
+        "HRR 96",
+        "Hits Rank #1",
+        "TB Rank #1",
+        "HRR 89",
+        "HRR 85"
+    ],
+    "Change": [
+        "+2",
+        "↑",
+        "↑",
+        "+3",
+        "+3"
+})
+
+st.dataframe(changes_data, use_container_width=True)
 st.header("📝 Research Notes")
 
 st.info("""
