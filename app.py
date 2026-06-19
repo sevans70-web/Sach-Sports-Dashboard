@@ -155,7 +155,6 @@ st.divider()
 st.header("📝 Research Notes")
 
 st.info("""
-st.info("""
 📊 TODAY'S RESEARCH SUMMARY
 
 • Aaron Judge leads today's HR board (HRR 96)
@@ -172,5 +171,4 @@ COMING SOON
 • Injury tracking
 • HRR Research Ratings
 • What Changed Today
-""")
 """)
