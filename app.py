@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 7 — Injury Watch")
+st.subheader("Version 8 - Daily Movers")
 
 st.write("Last Updated: June 20, 2026")
 
@@ -164,7 +164,42 @@ injury_data = pd.DataFrame({
 
 st.dataframe(injury_data, use_container_width=True)
 # HR WATCHLIST
+st.divider()
 
+st.header("📈 Daily Movers")
+
+movers_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Kyle Schwarber",
+        "Juan Soto",
+        "Shohei Ohtani",
+        "Luis Arraez"
+    ],
+    "Market": [
+        "HR",
+        "HR",
+        "HR",
+        "Total Bases",
+        "Hits"
+    ],
+    "Movement": [
+        "+4 HRR",
+        "+3 HRR",
+        "+3 HRR",
+        "+2 TB Rating",
+        "+1 Hits Rank"
+    ],
+    "Reason": [
+        "Power profile improving",
+        "Better matchup",
+        "Recent form trending up",
+        "Extra-base production rising",
+        "Moved to top contact spot"
+    ]
+})
+
+st.dataframe(movers_data, use_container_width=True)
 st.header("💣 HR Opportunities")
 hr_data = pd.DataFrame({
     "Player": [
