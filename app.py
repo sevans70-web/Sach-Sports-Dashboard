@@ -1,64 +1,145 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(
-    page_title="Sach Sports Dashboard",
-    page_icon="⚾",
-    layout="wide"
-)
+st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 1 - Demo Dashboard")
+
+st.subheader("Version 2 - Betting Research Dashboard")
+
 st.caption("Last Updated: June 19, 2026")
-metric1, metric2, metric3 = st.columns(3)
 
-with metric1:
-    st.metric("Top HR Player", "Aaron Judge", "29 HR")
+st.divider()
 
-with metric2:
-    st.metric("Top Hits Player", "Luis Arraez", "108 Hits")
-
-with metric3:
-    st.metric("Top TB Player", "Aaron Judge", "210 TB")
-st.markdown("---")
-
-# Sample Home Run Leaders
-hr_data = pd.DataFrame({
-    "Player": ["Aaron Judge", "Shohei Ohtani", "Kyle Schwarber", "Pete Alonso", "Juan Soto"],
-    "HR": [29, 27, 24, 22, 21]
-})
-
-# Sample Hits Leaders
-hits_data = pd.DataFrame({
-    "Player": ["Luis Arraez", "Bobby Witt Jr.", "Freddie Freeman", "Mookie Betts", "Jose Altuve"],
-    "Hits": [108, 104, 101, 99, 96]
-})
-
-# Sample Total Bases Leaders
-tb_data = pd.DataFrame({
-    "Player": ["Aaron Judge", "Shohei Ohtani", "Bobby Witt Jr.", "Juan Soto", "Freddie Freeman"],
-    "Total Bases": [210, 202, 194, 188, 181]
-})
+# TODAY'S TOP OPPORTUNITIES
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.header("💣 HR Leaders")
-    st.dataframe(hr_data, hide_index=True)
+    st.metric(
+        label="💣 Best HR Opportunity",
+        value="Aaron Judge",
+        delta="29 HR"
+    )
 
 with col2:
-    st.header("🔥 Hits Leaders")
-    st.dataframe(hits_data, hide_index=True)
+    st.metric(
+        label="🔥 Best Hits Opportunity",
+        value="Luis Arraez",
+        delta="108 Hits"
+    )
 
 with col3:
-    st.header("⚾ Total Bases")
-    st.dataframe(tb_data, hide_index=True)
+    st.metric(
+        label="⚾ Best TB Opportunity",
+        value="Shohei Ohtani",
+        delta="202 TB"
+    )
 
-st.markdown("---")
+st.divider()
 
-st.header("📊 Research Notes")
+# HR WATCHLIST
 
-st.info(
-    "This is Version 1 of the Sach Sports Dashboard. "
-    "Live MLB data, player research, watchlists, and daily updates will be added next."
-)
+st.header("💣 HR Opportunities")
+
+hr_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Shohei Ohtani",
+        "Kyle Schwarber",
+        "Pete Alonso",
+        "Juan Soto"
+    ],
+    "Confidence": [
+        "High",
+        "High",
+        "Medium",
+        "Medium",
+        "Medium"
+    ],
+    "Reason": [
+        "Elite power",
+        "Hot streak",
+        "Fly-ball profile",
+        "Power matchup",
+        "Strong recent form"
+    ]
+})
+
+st.dataframe(hr_data, use_container_width=True)
+
+# HITS WATCHLIST
+
+st.header("🔥 Hits Opportunities")
+
+hits_data = pd.DataFrame({
+    "Player": [
+        "Luis Arraez",
+        "Bobby Witt Jr.",
+        "Freddie Freeman",
+        "Mookie Betts",
+        "Jose Altuve"
+    ],
+    "Confidence": [
+        "High",
+        "High",
+        "Medium",
+        "Medium",
+        "Medium"
+    ],
+    "Reason": [
+        "Elite contact",
+        "Consistent form",
+        "Strong matchup",
+        "High OBP",
+        "Reliable hitter"
+    ]
+})
+
+st.dataframe(hits_data, use_container_width=True)
+
+# TOTAL BASES WATCHLIST
+
+st.header("⚾ Total Bases Opportunities")
+
+tb_data = pd.DataFrame({
+    "Player": [
+        "Shohei Ohtani",
+        "Aaron Judge",
+        "Bobby Witt Jr.",
+        "Juan Soto",
+        "Freddie Freeman"
+    ],
+    "Confidence": [
+        "High",
+        "High",
+        "Medium",
+        "Medium",
+        "Medium"
+    ],
+    "Reason": [
+        "Power + speed",
+        "Extra-base potential",
+        "Hot bat",
+        "Gap power",
+        "Consistent production"
+    ]
+})
+
+st.dataframe(tb_data, use_container_width=True)
+
+st.divider()
+
+st.header("📝 Research Notes")
+
+st.info("""
+Version 2 introduces betting research watchlists.
+
+Future upgrades:
+- Daily projections
+- Odds integration
+- Trending players
+- Injury tracking
+- HRR Research Ratings
+- What Changed button
+""")
