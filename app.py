@@ -5,9 +5,26 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 3 - What Changed Dashboard")
+st.subheader("Version 4 - Best Overall Play")
 
-st.caption("Last Updated: June 19, 2026")
+st.write("Last Updated: June 20, 2026")
+
+st.header("⭐ Best Overall Play")
+
+st.success("""
+🏆 Aaron Judge
+
+HRR Rating: 96
+
+Confidence: HIGH
+
+Reason:
+• Elite power profile
+• Top HR projection today
+• Strong matchup
+""")
+
+st.divider()
 
 st.divider()
 
