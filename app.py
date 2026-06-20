@@ -1,6 +1,35 @@
 import streamlit as st
 import pandas as pd
 import requests
+# LIVE MLB SCHEDULE DATA
+
+@st.cache_data(ttl=3600)
+def get_mlb_schedule():
+    url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1"
+    
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        games = []
+
+        for date in data.get("dates", []):
+            for game in date.get("games", []):
+                away_team = game["teams"]["away"]["team"]["name"]
+                home_team = game["teams"]["home"]["team"]["name"]
+
+                games.append({
+                    "Away Team": away_team,
+                    "Home Team": home_team
+                })
+
+        return pd.DataFrame(games)
+
+    except Exception:
+        return pd.DataFrame({
+            "Away Team": ["Data Unavailable"],
+            "Home Team": ["Please Try Again"]
+        })
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
