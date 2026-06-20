@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("st.subheader("Version 9 - Contract Incentive Watch")
+st.subheader("Version 9 - Contract Incentive Watch")
 
 st.write("Last Updated: June 20, 2026")
 
