@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 9 - Contract Incentive Watch")
+st.subheader("Version 10 - Sports News Watch")
 
 st.write("Last Updated: June 20, 2026")
 
@@ -165,7 +165,49 @@ injury_data = pd.DataFrame({
 st.dataframe(injury_data, use_container_width=True)
 # HR WATCHLIST
 st.divider()
+st.divider()
 
+st.header("📰 Sports News Watch")
+
+news_data = pd.DataFrame({
+    "Time": [
+        "Today",
+        "Today",
+        "Today",
+        "Yesterday",
+        "This Week"
+    ],
+    "Type": [
+        "Lineup",
+        "Injury",
+        "Contract",
+        "Performance",
+        "Market"
+    ],
+    "Player": [
+        "Aaron Judge",
+        "Mike Trout",
+        "Shohei Ohtani",
+        "Luis Arraez",
+        "Juan Soto"
+    ],
+    "News": [
+        "Monitor batting order before lock",
+        "Day-to-day status needs update",
+        "Reached 200 TB milestone",
+        "Moved into top hits target",
+        "HR rating trending upward"
+    ],
+    "Impact": [
+        "High",
+        "High",
+        "Medium",
+        "Medium",
+        "Medium"
+    ]
+})
+
+st.dataframe(news_data, use_container_width=True)
 st.header("📈 Daily Movers")
 
 movers_data = pd.DataFrame({
