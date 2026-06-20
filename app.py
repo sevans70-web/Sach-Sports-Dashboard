@@ -5,7 +5,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 
-st.subheader("Version 8 - Daily Movers")
+st.subheader("st.subheader("Version 9 - Contract Incentive Watch")
 
 st.write("Last Updated: June 20, 2026")
 
@@ -198,7 +198,45 @@ movers_data = pd.DataFrame({
         "Moved to top contact spot"
     ]
 })
+st.divider()
 
+st.header("💰 Contract Incentive Watch")
+
+contract_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Shohei Ohtani",
+        "Juan Soto",
+        "Kyle Schwarber",
+        "Luis Arraez"
+    ],
+
+    "Bonus Target": [
+        "30 HR Milestone",
+        "200 TB Milestone",
+        "100 RBI Milestone",
+        "35 HR Milestone",
+        "200 Hits Milestone"
+    ],
+
+    "Current Progress": [
+        "29 HR",
+        "202 TB",
+        "87 RBI",
+        "28 HR",
+        "108 Hits"
+    ],
+
+    "Status": [
+        "🔥 Close",
+        "✅ Reached",
+        "📈 Tracking",
+        "📈 Tracking",
+        "📈 Tracking"
+    ]
+})
+
+st.dataframe(contract_data, use_container_width=True)
 st.dataframe(movers_data, use_container_width=True)
 st.header("💣 HR Opportunities")
 hr_data = pd.DataFrame({
