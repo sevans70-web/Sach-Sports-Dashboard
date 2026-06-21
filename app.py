@@ -90,7 +90,7 @@ def get_mlb_hitting_stats():
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 12 - Add live player stats function")
+st.subheader("Version 12 - Display live player stats")
 st.write("Last Updated: June 20, 2026")
 st.header("⚾ Today's MLB Schedule")
 
@@ -100,6 +100,16 @@ if not mlb_schedule.empty:
     st.dataframe(mlb_schedule, use_container_width=True)
 else:
     st.warning("No MLB games found today.")
+
+st.divider()
+st.header("📊 Live MLB Player Stats")
+
+live_stats = get_mlb_hitting_stats()
+
+if not live_stats.empty:
+    st.dataframe(live_stats, use_container_width=True)
+else:
+    st.warning("No player stats found.")
 
 st.divider()
 st.header("⭐ Best Overall Play")
