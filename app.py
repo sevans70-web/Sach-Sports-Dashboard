@@ -32,7 +32,36 @@ def get_mlb_schedule():
             "Home Team": ["Please Try Again"]
         })
 @st.cache_data(ttl=3600)
-def get_mlb_schedule():
+def get_mlb_hitting_stats():
+    url = "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&playerPool=ALL&sportIds=1&limit=10"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        players = []
+
+        for player in data["stats"][0]["splits"]:
+            players.append({
+                "Player": player["player"]["fullName"],
+                "Team": player["team"]["name"],
+                "HR": player["stat"].get("homeRuns", 0),
+                "Hits": player["stat"].get("hits", 0),
+                "RBI": player["stat"].get("rbi", 0),
+                "AVG": player["stat"].get("avg", "N/A")
+            })
+
+        return pd.DataFrame(players)
+
+    except Exception:
+        return pd.DataFrame({
+            "Player": ["Data Unavailable"],
+            "Team": ["Try Again"],
+            "HR": [0],
+            "Hits": [0],
+            "RBI": [0],
+            "AVG": ["N/A"]
+        })
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1"
     
     try:
