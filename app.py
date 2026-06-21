@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 # LIVE MLB SCHEDULE DATA
-# LIVE MLB SCHEDULE DATA
+#
 
 @st.cache_data(ttl=3600)
 def get_mlb_schedule():
@@ -63,7 +63,16 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 st.title("⚾ Sach Sports Dashboard")
 st.subheader("Version 11 - Live Data Integration")
 st.write("Last Updated: June 20, 2026")
+st.header("⚾ Today's MLB Schedule")
 
+mlb_schedule = get_mlb_schedule()
+
+if not mlb_schedule.empty:
+    st.dataframe(mlb_schedule, use_container_width=True)
+else:
+    st.warning("No MLB games found today.")
+
+st.divider()
 st.header("⭐ Best Overall Play")
 
 st.success("""
