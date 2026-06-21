@@ -61,9 +61,7 @@ def get_mlb_schedule():
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-
-st.subheader("Version 10 - Sports News Watch")
-
+st.subheader("Version 11 - Live Data Integration")
 st.write("Last Updated: June 20, 2026")
 
 st.header("⭐ Best Overall Play")
