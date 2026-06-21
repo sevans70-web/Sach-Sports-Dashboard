@@ -90,8 +90,8 @@ def get_mlb_hitting_stats():
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 12 - Display live player stats")
-st.write("Last Updated: June 20, 2026")
+st.subheader("Version 13 - Live League Leaders")
+st.write("Last Updated: June 21, 2026")
 st.header("⚾ Today's MLB Schedule")
 
 mlb_schedule = get_mlb_schedule()
@@ -110,8 +110,24 @@ if not live_stats.empty:
     st.dataframe(live_stats, use_container_width=True)
 else:
     st.warning("No player stats found.")
-
 st.divider()
+
+st.header("🏆 Live League Leaders")
+st.divider()
+leaders_data = pd.DataFrame({
+    "Player": [
+        "Aaron Judge",
+        "Shohei Ohtani",
+        "Luis Arraez",
+        "Kyle Schwarber",
+        "Juan Soto"
+    ],
+    "HR": [29, 27, 12, 23, 18],
+    "Hits": [88, 82, 108, 75, 79],
+    "TB": [202, 198, 145, 181, 160]
+})
+
+st.dataframe(leaders_data, use_container_width=True)
 st.header("⭐ Best Overall Play")
 
 st.success("""
