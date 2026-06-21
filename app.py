@@ -90,7 +90,7 @@ def get_mlb_hitting_stats():
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 11 - Live Data Integration")
+st.subheader("Version 12 - Add live player stats function")
 st.write("Last Updated: June 20, 2026")
 st.header("⚾ Today's MLB Schedule")
 
