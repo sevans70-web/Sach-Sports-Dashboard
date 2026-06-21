@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 # LIVE MLB SCHEDULE DATA
-#
+
 
 @st.cache_data(ttl=3600)
 def get_mlb_schedule():
