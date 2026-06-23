@@ -86,12 +86,38 @@ def get_mlb_hitting_stats():
         return pd.DataFrame({
             "Away Team": ["Data Unavailable"],
             "Home Team": ["Please Try Again"]
+        }) 
+@st.cache_data(ttl=3600)
+def get_live_hr_leaders():
+    url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=homeRuns&statGroup=hitting&season=2026&limit=10&sportId=1"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        leaders = []
+
+        for leader in data["leagueLeaders"][0]["leaders"]:
+            leaders.append({
+                "Rank": leader["rank"],
+                "Player": leader["person"]["fullName"],
+                "HR": leader["value"]
+            })
+
+        return pd.DataFrame(leaders)
+
+    except Exception:
+        return pd.DataFrame({
+            "Rank": ["N/A"],
+            "Player": ["Data Unavailable"],
+            "HR": ["N/A"]
         })
+        
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 13 - Live League Leaders")
-st.write("Last Updated: June 21, 2026")
+st.subheader("Version 14 - Live HR Leaders")
+st.write("Last Updated: June 22, 2026")
 st.header("⚾ Today's MLB Schedule")
 
 mlb_schedule = get_mlb_schedule()
