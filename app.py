@@ -117,7 +117,7 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
 st.subheader("Version 14 - Live HR Leaders")
-st.write("Last Updated: June 22, 2026")
+st.write("Last Updated: June 23, 2026")
 st.header("⚾ Today's MLB Schedule")
 
 mlb_schedule = get_mlb_schedule()
@@ -140,6 +140,13 @@ st.divider()
 
 st.header("🏆 Live League Leaders")
 st.divider()
+hr_leaders = get_live_hr_leaders()
+
+st.header("💣 Live HR Leaders")
+
+st.dataframe(hr_leaders, use_container_width=True)
+st.divider()
+
 leaders_data = pd.DataFrame({
     "Player": [
         "Aaron Judge",
