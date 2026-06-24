@@ -116,7 +116,7 @@ def get_live_hr_leaders():
 st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 14 - Live HR Leaders")
+st.subheader("Version 14 - Display live HR leaders)
 st.write("Last Updated: June 23, 2026")
 st.header("⚾ Today's MLB Schedule")
 
