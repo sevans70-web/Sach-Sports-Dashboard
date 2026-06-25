@@ -118,6 +118,32 @@ st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
 
 def get_live_hits_leaders():
 
+ @st.cache_data(ttl=3600)
+def get_live_tb_leaders():
+    url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=totalBases&statGroup=hitting&season=2026&limit=10&sportId=1"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        leaders = []
+
+        for leader in data["leagueLeaders"][0]["leaders"]:
+            leaders.append({
+                "Rank": leader["rank"],
+                "Player": leader["person"]["fullName"],
+                "Total Bases": leader["value"]
+            })
+
+        return pd.DataFrame(leaders)
+
+    except Exception:
+        return pd.DataFrame({
+            "Rank": ["N/A"],
+            "Player": ["Data Unavailable"],
+            "Total Bases": ["N/A"]
+        })   
+
     url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=hits&statGroup=hitting&season=2026&limit=10&sportId=1"
 
     try:
@@ -155,7 +181,7 @@ def get_live_hits_leaders():
         })
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 15 - Display Live Hits Leaders")
+st.subheader("Version 16 - Added live total bases leaders function")
 st.write("Last Updated: June 24, 2026")
 st.header("⚾ Today's MLB Schedule")
 
