@@ -155,7 +155,7 @@ def get_live_hits_leaders():
         })
 
 st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 15 - ADDED LIVE LEADERS FUNCTION")
+st.subheader("Version 15 - Display Live Hits Leaders")
 st.write("Last Updated: June 24, 2026")
 st.header("⚾ Today's MLB Schedule")
 
@@ -184,6 +184,17 @@ hr_leaders = get_live_hr_leaders()
 st.header("💣 Live HR Leaders")
 
 st.dataframe(hr_leaders, use_container_width=True)
+st.divider()
+
+st.header("🔥 Live Hits Leaders")
+
+hits_leaders = get_live_hits_leaders()
+
+if not hits_leaders.empty:
+    st.dataframe(hits_leaders, use_container_width=True)
+else:
+    st.warning("No hits leaders found.")
+
 st.divider()
 
 leaders_data = pd.DataFrame({
