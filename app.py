@@ -137,7 +137,7 @@ def get_live_hits_leaders():
             "Player": ["Data Unavailable"],
             "Hits": ["N/A"]
         })   
- @st.cache_data(ttl=3600)
+@st.cache_data(ttl=3600)
 def get_live_tb_leaders():
     url = "https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=totalBases&statGroup=hitting&season=2026&limit=10&sportId=1"
 
