@@ -215,20 +215,6 @@ else:
     st.warning("No total bases leaders found.")
 
 st.divider()
-leaders_data = pd.DataFrame({
-    "Player": [
-        "Aaron Judge",
-        "Shohei Ohtani",
-        "Luis Arraez",
-        "Kyle Schwarber",
-        "Juan Soto"
-    ],
-    "HR": [29, 27, 12, 23, 18],
-    "Hits": [88, 82, 108, 75, 79],
-    "TB": [202, 198, 145, 181, 160]
-})
-
-st.dataframe(leaders_data, use_container_width=True)
 st.header("⭐ Best Overall Play")
 
 st.success("""
@@ -278,33 +264,7 @@ st.dataframe(trend_data, use_container_width=True)
 st.divider()
 st.divider()
 
-st.header("🎯 Confidence Rankings")
 
-confidence_data = pd.DataFrame({
-    "Player": [
-        "Aaron Judge",
-        "Shohei Ohtani",
-        "Luis Arraez",
-        "Juan Soto",
-        "Kyle Schwarber"
-    ],
-    "Tier": [
-        "A+",
-        "A",
-        "A",
-        "B+",
-        "B"
-    ],
-    "Confidence Score": [
-        96,
-        93,
-        94,
-        85,
-        89
-    ]
-})
-
-st.dataframe(confidence_data, use_container_width=True)
 st.divider()
 
 # TODAY'S TOP OPPORTUNITIES
@@ -346,44 +306,6 @@ with col2:
 with col3:
     st.success("⚾ TB Play\n\nShohei Ohtani\n\nTB Rating: 93")
 
-st.divider()
-st.divider()
-
-st.header("🩺 Injury Watch")
-
-injury_data = pd.DataFrame({
-    "Player": [
-        "Mike Trout",
-        "Yordan Alvarez",
-        "Bryce Harper",
-        "Fernando Tatis Jr.",
-        "Corey Seager"
-    ],
-    "Status": [
-        "Day-to-Day",
-        "Questionable",
-        "Healthy",
-        "Healthy",
-        "Day-to-Day"
-    ],
-    "Impact": [
-        "High",
-        "Medium",
-        "None",
-        "None",
-        "High"
-    ],
-    "Research Note": [
-        "Monitor lineup status",
-        "Check pre-game update",
-        "No injury concern",
-        "Full go",
-        "Could affect TB confidence"
-    ]
-})
-
-st.dataframe(injury_data, use_container_width=True)
-# HR WATCHLIST
 st.divider()
 st.divider()
 
