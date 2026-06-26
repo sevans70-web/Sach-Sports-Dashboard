@@ -205,7 +205,16 @@ else:
     st.warning("No hits leaders found.")
 
 st.divider()
+st.header("⚾ Live Total Bases Leaders")
 
+tb_leaders = get_live_tb_leaders()
+
+if not tb_leaders.empty:
+    st.dataframe(tb_leaders, use_container_width=True)
+else:
+    st.warning("No total bases leaders found.")
+
+st.divider()
 leaders_data = pd.DataFrame({
     "Player": [
         "Aaron Judge",
