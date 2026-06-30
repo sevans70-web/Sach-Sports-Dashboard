@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 # LIVE MLB SCHEDULE DATA
-
+st.set_page_config(page_title="Game Intelligence", layout="wide")
 
 @st.cache_data(ttl=3600)
 def get_mlb_schedule():
@@ -162,11 +162,39 @@ def get_live_tb_leaders():
             "Player": ["Data Unavailable"],
             "Total Bases": ["N/A"]
         })     
-st.set_page_config(page_title="Sach Sports Dashboard", layout="wide")
-st.title("⚾ Sach Sports Dashboard")
-st.subheader("Version 16 - Added live total bases leaders function")
-st.write("Last Updated: June 24, 2026")
-st.header("⚾ Today's MLB Schedule")
+
+st.title("🧠 Game Intelligence")
+st.caption("Trusted Sports Intelligence. Smarter Decisions.")
+
+st.subheader("Milestone 2 — Intelligence Home")
+st.write("Last Updated: June 30, 2026")
+
+st.divider()
+
+st.header("🧠 Morning Intelligence Brief")
+
+st.info(
+   Today's slate has been analyzed across player form, pitcher matchups,
+weather conditions, market movement, and live opportunity signals.
+
+Our goal is simple:
+
+Help you understand today's games before making today's decisions.
+
+
+st.markdown("""
+### Today's Intelligence
+
+- 🌤️ **Weather Intelligence:** Monitoring wind, rain risk, heat, and ballpark conditions.
+- ⚾ **Matchup Intelligence:** Reviewing hitter-vs-pitcher advantages.
+- 🔥 **Trend Intelligence:** Watching hot hitters, cold pitchers, and rising opportunity spots.
+- 💎 **Hidden Gem Watch:** Looking for overlooked players the market may be slow to price.
+- 📡 **Live Intelligence:** Near home runs, hard contact, bullpen changes, and in-game shifts will activate during games.
+""")
+
+st.divider()
+
+st.header("🗓 Today's MLB Schedule")
 
 mlb_schedule = get_mlb_schedule()
 
