@@ -203,6 +203,58 @@ with col2:
 
 st.divider()
 
+st.divider()
+
+st.subheader("Today's Intelligence")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    with st.container(border=True):
+        st.markdown("### ☀️ Weather Intelligence")
+        st.success("🟢 Favorable Today")
+        st.write("🌬️ Wind conditions are being analyzed.")
+        st.write("🌧️ Rain risk is being monitored.")
+        st.caption("Learn why today's weather matters →")
+
+    with st.container(border=True):
+        st.markdown("### 💎 Hidden Gem Intelligence")
+        st.info("💎 Hidden Gems Found")
+        st.write("Searching for overlooked players.")
+        st.write("Low-owned opportunities.")
+        st.caption("See today's hidden gems →")
+
+    with st.container(border=True):
+        st.markdown("### 📈 Market Intelligence")
+        st.warning("📊 Odds Movement")
+        st.write("Monitoring sportsbook movement.")
+        st.write("Looking for value opportunities.")
+        st.caption("View market changes →")
+
+with col2:
+    with st.container(border=True):
+        st.markdown("### ⚾ Matchup Intelligence")
+        st.success("🔥 Elite Matchups")
+        st.write("Top hitter vs. pitcher matchups.")
+        st.write("Historical performance and pitch mix.")
+        st.caption("Explore matchup intelligence →")
+
+    with st.container(border=True):
+        st.markdown("### 👶 Rookie Radar")
+        st.info("⭐ Rising Talent")
+        st.write("Tracking rookies and breakout candidates.")
+        st.write("Looking beyond the biggest names.")
+        st.caption("See rookie projections →")
+
+    with st.container(border=True):
+        st.markdown("### 🚨 Live Intelligence")
+        st.error("🔴 Waiting for First Pitch")
+        st.write("Near home runs.")
+        st.write("Bullpen changes and live opportunities.")
+        st.caption("Live alerts will appear here →")
+
+st.divider()
+
 st.header("🗓 Today's MLB Schedule")
 
 mlb_schedule = get_mlb_schedule()
