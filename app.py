@@ -162,7 +162,7 @@ def get_live_tb_leaders():
             "Player": ["Data Unavailable"],
             "Total Bases": ["N/A"]
         })     
-
+        
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
@@ -173,13 +173,14 @@ st.divider()
 
 st.header("🧠 Morning Intelligence Brief")
 
-st.info(
-   Today's slate has been analyzed across player form, pitcher matchups,
+st.info("""
+Today's slate has been analyzed across player form, pitcher matchups,
 weather conditions, market movement, and live opportunity signals.
 
 Our goal is simple:
 
 Help you understand today's games before making today's decisions.
+""")
 
 
 st.markdown("""
