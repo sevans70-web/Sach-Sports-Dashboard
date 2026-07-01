@@ -166,7 +166,7 @@ def get_live_tb_leaders():
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
-st.subheader("Milestone 2 — Intelligence Home")
+st.subheader("Today's ntelligence")
 st.write("Last Updated: June 30, 2026")
 
 st.divider()
@@ -183,15 +183,23 @@ Help you understand today's games before making today's decisions.
 """)
 
 
-st.markdown("""
-### Today's Intelligence
+st.subheader("Today's Intelligence")
 
-- 🌤️ **Weather Intelligence:** Monitoring wind, rain risk, heat, and ballpark conditions.
-- ⚾ **Matchup Intelligence:** Reviewing hitter-vs-pitcher advantages.
-- 🔥 **Trend Intelligence:** Watching hot hitters, cold pitchers, and rising opportunity spots.
-- 💎 **Hidden Gem Watch:** Looking for overlooked players the market may be slow to price.
-- 📡 **Live Intelligence:** Near home runs, hard contact, bullpen changes, and in-game shifts will activate during games.
-""")
+col1, col2 = st.columns(2)
+
+with col1:
+    with st.container(border=True):
+        st.markdown("### ☀️ Weather Intelligence")
+        st.write("🌬️ Wind conditions are being analyzed.")
+        st.write("🌧️ Rain risk is being monitored.")
+        st.caption("Tap here in future versions for a detailed breakdown.")
+
+with col2:
+    with st.container(border=True):
+        st.markdown("### ⚾ Matchup Intelligence")
+        st.write("Top hitter vs. pitcher matchups.")
+        st.write("Historical performance and pitch mix.")
+        st.caption("Detailed matchup intelligence coming soon.")
 
 st.divider()
 
