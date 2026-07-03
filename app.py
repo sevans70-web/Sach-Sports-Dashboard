@@ -227,21 +227,21 @@ st.subheader("Today's Intelligence")
 col1, col2 = st.columns(2)
 
 with col1:
-with st.container(border=True):
+    with st.container(border=True):
         st.markdown("### ☀️ Weather Intelligence")
         st.success("🟢 Favorable Today")
         st.write("🌬️ Wind conditions are being analyzed.")
         st.write("🌧️ Rain risk is being monitored.")
         st.caption("Learn why today's weather matters →")
 
-with st.container(border=True):
+    with st.container(border=True):
         st.markdown("### 💎 Hidden Gem Intelligence")
         st.info("💎 Hidden Gems Found")
         st.write("Searching for overlooked players.")
         st.write("Low-owned opportunities.")
         st.caption("See today's hidden gems →")
 
-with st.container(border=True):
+    with st.container(border=True):
         st.markdown("### 📈 Market Intelligence")
         st.warning("📊 Odds Movement")
         st.write("Monitoring sportsbook movement.")
@@ -249,7 +249,7 @@ with st.container(border=True):
         st.caption("View market changes →")
 
 with col2:
-with st.container(border=True):
+    with st.container(border=True):
         st.markdown("### ⚾ Matchup Intelligence")
         st.success("🔥 Elite Matchups")
         st.write("Top hitter vs. pitcher matchups.")
