@@ -166,8 +166,8 @@ def get_live_tb_leaders():
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
-st.subheader("Today's ntelligence")
-st.write("Last Updated: June 30, 2026")
+st.subheader("📰 Today's Intelligence Brief")
+st.caption("🕒 Last Updated • July 2, 2026")
 
 st.divider()
 
