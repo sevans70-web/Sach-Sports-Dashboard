@@ -166,7 +166,27 @@ def get_live_tb_leaders():
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
+
+
 st.subheader("📰 Today's Intelligence Brief")
+st.subheader("📊 Today's Snapshot")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("⚾ Games Today", "15")
+    st.metric("🌤 Weather Edge™", "6 Parks")
+
+with col2:
+    st.metric("💎 Hidden Gems™", "4")
+    st.metric("👶 Rookie Radar™", "2")
+
+with col3:
+    st.metric("🚨 Rain Alerts™", "2 Games")
+    st.metric("🕒 Updated", "Live")
+
+st.divider()
+
 st.caption("🕒 Last Updated • July 2, 2026")
 
 st.divider()
