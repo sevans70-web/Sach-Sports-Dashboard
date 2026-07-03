@@ -224,14 +224,14 @@ st.subheader("Today's Intelligence")
 col1, col2 = st.columns(2)
 
 with col1:
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### ☀️ Weather Intelligence")
         st.write("🌬️ Wind conditions are being analyzed.")
         st.write("🌧️ Rain risk is being monitored.")
         st.caption("Tap here in future versions for a detailed breakdown.")
 
 with col2:
-    with st.container(border=True):
+ with st.container(border=True):
         st.markdown("### ⚾ Matchup Intelligence")
         st.write("Top hitter vs. pitcher matchups.")
         st.write("Historical performance and pitch mix.")
@@ -246,21 +246,21 @@ st.subheader("Today's Intelligence")
 col1, col2 = st.columns(2)
 
 with col1:
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### ☀️ Weather Intelligence")
         st.success("🟢 Favorable Today")
         st.write("🌬️ Wind conditions are being analyzed.")
         st.write("🌧️ Rain risk is being monitored.")
         st.caption("Learn why today's weather matters →")
 
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### 💎 Hidden Gem Intelligence")
         st.info("💎 Hidden Gems Found")
         st.write("Searching for overlooked players.")
         st.write("Low-owned opportunities.")
         st.caption("See today's hidden gems →")
 
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### 📈 Market Intelligence")
         st.warning("📊 Odds Movement")
         st.write("Monitoring sportsbook movement.")
@@ -268,21 +268,21 @@ with col1:
         st.caption("View market changes →")
 
 with col2:
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### ⚾ Matchup Intelligence")
         st.success("🔥 Elite Matchups")
         st.write("Top hitter vs. pitcher matchups.")
         st.write("Historical performance and pitch mix.")
         st.caption("Explore matchup intelligence →")
 
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### 👶 Rookie Radar")
         st.info("⭐ Rising Talent")
         st.write("Tracking rookies and breakout candidates.")
         st.write("Looking beyond the biggest names.")
         st.caption("See rookie projections →")
 
-    with st.container(border=True):
+with st.container(border=True):
         st.markdown("### 🚨 Live Intelligence")
         st.error("🔴 Waiting for First Pitch")
         st.write("Near home runs.")
