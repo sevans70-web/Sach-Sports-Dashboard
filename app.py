@@ -219,25 +219,6 @@ Help you understand today's games before making today's decisions.
 """)
 
 
-st.subheader("Today's Intelligence")
-
-col1, col2 = st.columns(2)
-
-with col1:
-with st.container(border=True):
-        st.markdown("### ☀️ Weather Intelligence")
-        st.write("🌬️ Wind conditions are being analyzed.")
-        st.write("🌧️ Rain risk is being monitored.")
-        st.caption("Tap here in future versions for a detailed breakdown.")
-
-with col2:
- with st.container(border=True):
-        st.markdown("### ⚾ Matchup Intelligence")
-        st.write("Top hitter vs. pitcher matchups.")
-        st.write("Historical performance and pitch mix.")
-        st.caption("Detailed matchup intelligence coming soon.")
-
-st.divider()
 
 st.divider()
 
