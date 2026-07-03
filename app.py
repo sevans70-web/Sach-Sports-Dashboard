@@ -169,7 +169,6 @@ st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
 
 st.subheader("📰 Today's Intelligence Brief")
-st.markdown("### 📰 Today's Story")
 
 st.info(
     """
@@ -199,9 +198,6 @@ with col3:
     st.metric("🚨 Rain Alerts™", "2 Games")
     st.metric("🕒 Updated", "Live")
 
-st.divider()
-
-st.caption("🕒 Last Updated • July 2, 2026")
 
 st.divider()
 
