@@ -169,6 +169,20 @@ st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
 
 st.subheader("📰 Today's Intelligence Brief")
+st.markdown("### 📰 Today's Story")
+
+st.info(
+    """
+Today's MLB slate features strong power-hitting conditions, several favorable
+weather environments, and multiple overlooked matchup opportunities.
+
+Early indicators suggest today's edge will come from understanding the
+combination of weather, matchups, and recent player form—not just season
+statistics.
+"""
+)
+
+st.caption("📡 This briefing will be generated automatically by the Intelligence Engine in a future release.")
 st.subheader("📊 Today's Snapshot")
 
 col1, col2, col3 = st.columns(3)
