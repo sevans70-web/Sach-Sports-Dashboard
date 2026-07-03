@@ -191,6 +191,22 @@ st.caption("🕒 Last Updated • July 2, 2026")
 
 st.divider()
 
+st.subheader("🤔 Question of the Day")
+
+with st.container(border=True):
+    st.markdown("### Why does weather affect home run probability?")
+    st.write(
+        "Think about the relationship between temperature, wind direction, air density, and how far a baseball can travel."
+    )
+
+    with st.expander("💡 Reveal Answer"):
+        st.success("""
+Warmer temperatures reduce air density, allowing the ball to travel farther.
+
+Wind blowing out toward the outfield can increase home run potential, while wind blowing in can reduce it.
+
+Understanding weather is one of the many ways Game Intelligence helps members understand today's games—not just the statistics.
+""")
 st.header("🧠 Morning Intelligence Brief")
 
 st.info("""
