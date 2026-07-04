@@ -281,11 +281,8 @@ with st.container(border=True):
         st.caption("Live alerts will appear here →")
 
 st.divider()
-Version 16
 
-Add a new section directly below the "Morning Intelligence Brief" called:
-
-🏆 Today's Top Opportunities
+st.subheader("🏆 Today's Top Opportunities")
 
 Create five responsive cards laid out in a row on desktop and stacked on mobile.
 
