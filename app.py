@@ -281,7 +281,42 @@ with st.container(border=True):
         st.caption("Live alerts will appear here →")
 
 st.divider()
+# ==========================================
+# Sprint 2.4 - Ticket #005
+# Today's Top Opportunities
+# ==========================================
 
+st.subheader("🏆 Today's Top Opportunities")
+
+opportunity_cards = [
+    ("🟢 Best Overall", "Aaron Judge", "NYY vs BOS", "94", "☀️ Weather Edge™", "⚾ Matchup DNA™", "📈 Recent Form"),
+    ("🔴 Best Home Run", "Kyle Schwarber", "PHI vs MIA", "92", "💪 Power Profile", "☀️ Weather Edge™", "⚾ Pitcher Matchup"),
+    ("🔵 Best Hits", "Mookie Betts", "LAD vs COL", "89", "📈 Recent Form", "⚾ Contact Profile", "🧠 Matchup DNA™"),
+    ("🟠 Best Total Bases", "Juan Soto", "NYM vs CIN", "91", "⚾ Matchup DNA™", "📈 Recent Form", "🌤 Weather Edge™"),
+    ("🟣 Best Value", "Brenton Doyle", "COL vs LAD", "87", "💎 Hidden Gem™", "📈 Market Pulse™", "⚾ Matchup DNA™"),
+]
+
+cols = st.columns(5)
+
+for col, card in zip(cols, opportunity_cards):
+    category, player, matchup, score, signal1, signal2, signal3 = card
+
+    with col:
+        with st.container(border=True):
+            st.markdown(f"### {category}")
+            st.markdown(f"**{player}**")
+            st.caption(matchup)
+
+            st.metric("GI Score", score)
+
+            st.markdown("**🧠 Intelligence Signals**")
+            st.write(signal1)
+            st.write(signal2)
+            st.write(signal3)
+
+            st.caption("📘 View Intelligence →")
+
+st.divider()
 
 st.header("🗓 Today's MLB Schedule")
 
