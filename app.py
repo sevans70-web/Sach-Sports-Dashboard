@@ -288,11 +288,11 @@ Create five responsive cards laid out in a row on desktop and stacked on mobile.
 
 The cards should be:
 
-🟢 Best Overall
-🔴 Best Home Run
-🔵 Best Hits
-🟠 Best Total Bases
-🟣 Best Value
+# 🟢 Best Overall
+# 🔴 Best Home Run
+# 🔵 Best Hits
+# 🟠 Best Total Bases
+# 🟣 Best Value
 
 Each card should display:
 
