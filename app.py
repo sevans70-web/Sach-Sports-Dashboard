@@ -282,38 +282,7 @@ with st.container(border=True):
 
 st.divider()
 
-st.subheader("🏆 Today's Top Opportunities")
 
-Create five responsive cards laid out in a row on desktop and stacked on mobile.
-
-The cards should be:
-
-# 🟢 Best Overall
-# 🔴 Best Home Run
-# 🔵 Best Hits
-# 🟠 Best Total Bases
-# 🟣 Best Value
-
-Each card should display:
-
-- Category title
-- Player Name (placeholder)
-- Team Matchup (placeholder)
-- GI Score (large number)
-- Section titled "🧠 Intelligence Signals"
-- Three placeholder signals such as:
-  - ☀️ Weather Edge™
-  - ⚾ Matchup DNA™
-  - 📈 Recent Form
-- A footer link:
-  📘 View Intelligence →
-
-Use the existing dark theme styling.
-
-Make the cards mobile-friendly.
-
-Do not remove or modify any existing functionality.
-Only add this new section below the Morning Intelligence Brief.
 st.header("🗓 Today's MLB Schedule")
 
 mlb_schedule = get_mlb_schedule()
