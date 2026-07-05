@@ -334,17 +334,12 @@ else:
 st.divider()
 with st.expander("📊 Live MLB Player Stats", expanded=False):
 
-    st.header("📊 Live MLB Player Stats")
+    live_stats = get_mlb_hitting_stats()
 
-    # existing code
-    ...
-
-live_stats = get_mlb_hitting_stats()
-
-if not live_stats.empty:
-    st.dataframe(live_stats, use_container_width=True)
-else:
-    st.warning("No player stats found.")
+    if not live_stats.empty:
+        st.dataframe(live_stats, use_container_width=True)
+    else:
+        st.warning("No player stats found.")
 st.divider()
 
 st.header("🏆 Live League Leaders")
