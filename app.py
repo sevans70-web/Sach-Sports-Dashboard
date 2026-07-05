@@ -332,7 +332,12 @@ else:
     st.warning("No MLB games found today.")
 
 st.divider()
-st.header("📊 Live MLB Player Stats")
+with st.expander("📊 Live MLB Player Stats", expanded=False):
+
+    st.header("📊 Live MLB Player Stats")
+
+    # existing code
+    ...
 
 live_stats = get_mlb_hitting_stats()
 
