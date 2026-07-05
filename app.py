@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime
+from zoneinfo import ZoneInfo
 # LIVE MLB SCHEDULE DATA
 st.set_page_config(page_title="Game Intelligence", layout="wide")
 
@@ -167,7 +168,7 @@ def get_live_tb_leaders():
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
-last_updated = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+last_updated = datetime.now(ZoneInfo("America/Toronto")).strftime("%B %d, %Y at %I:%M %p ET")
 st.caption(f"🕒 Last Updated: {last_updated}")
 
 
