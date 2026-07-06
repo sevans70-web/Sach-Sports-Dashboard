@@ -203,7 +203,7 @@ st.markdown(
     </div>
     """,
     unsafe_allow_html=True
-))
+)
 
 st.divider()
     st.subheader("Today's Mission")
