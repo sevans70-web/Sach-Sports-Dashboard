@@ -208,7 +208,7 @@ st.markdown(
 st.divider()
 st.subheader("Today's Mission")
 
-    m1, m2, m3, m4 = st.columns(4)
+m1, m2, m3, m4 = st.columns(4)
 
     with m1:
         st.metric("⚾ MLB Games", "15")
