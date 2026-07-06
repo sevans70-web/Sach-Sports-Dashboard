@@ -203,9 +203,9 @@ st.markdown(
     </div>
     """,
     unsafe_allow_html=True
-)
-    st.divider()
+))
 
+st.divider()
     st.subheader("Today's Mission")
 
     m1, m2, m3, m4 = st.columns(4)
