@@ -184,7 +184,26 @@ if page == "🏠 Home":
 
     st.header("Good Morning, Sach 👋")
     st.write("Your daily sports intelligence briefing is ready.")
-
+st.markdown(
+    """
+    <div style="
+        margin-top: 20px;
+        padding: 28px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #071A2F 0%, #0B2A4A 55%, #111827 100%);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.15);
+    ">
+        <h2 style="color: white; margin-bottom: 8px;">
+            We don’t predict the future.
+        </h2>
+        <h2 style="color: #38BDF8; margin-top: 0;">
+            We explain the present so people can make better decisions about the future.
+        </h2>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
     st.divider()
 
     st.subheader("Today's Mission")
