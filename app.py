@@ -206,7 +206,7 @@ st.markdown(
 )
 
 st.divider()
-    st.subheader("Today's Mission")
+st.subheader("Today's Mission")
 
     m1, m2, m3, m4 = st.columns(4)
 
