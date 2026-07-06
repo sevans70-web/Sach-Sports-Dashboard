@@ -184,7 +184,7 @@ if page == "🏠 Home":
 
     st.header("Good Morning, Sach 👋")
     st.write("Your daily sports intelligence briefing is ready.")
-st.markdown(
+    st.markdown(
     """
     <div style="
         margin-top: 20px;
@@ -205,10 +205,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.divider()
-st.subheader("Today's Mission")
+    st.divider()
+    st.subheader("Today's Mission")
 
-m1, m2, m3, m4 = st.columns(4)
+    m1, m2, m3, m4 = st.columns(4)
 
     with m1:
         st.metric("⚾ MLB Games", "15")
