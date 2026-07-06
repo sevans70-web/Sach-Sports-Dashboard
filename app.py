@@ -164,7 +164,92 @@ def get_live_tb_leaders():
             "Player": ["Data Unavailable"],
             "Total Bases": ["N/A"]
         })     
-        
+# ==========================================
+# Sprint 2.5 - Ticket #008
+# Home Page Framework
+# ==========================================
+
+page = st.sidebar.selectbox(
+    "Navigation",
+    ["🏠 Home", "⚾ MLB Hub"]
+)
+
+if page == "🏠 Home":
+    st.title("🧠 Game Intelligence")
+    st.caption("Trusted Sports Intelligence. Smarter Decisions.")
+    st.caption("🇨🇦 Designed & Built in Canada")
+
+    last_updated = datetime.now(ZoneInfo("America/Toronto")).strftime("%B %d, %Y at %I:%M %p ET")
+    st.caption(f"🟢 Last Updated: {last_updated}")
+
+    st.header("Good Morning, Sach 👋")
+    st.write("Your daily sports intelligence briefing is ready.")
+
+    st.divider()
+
+    st.subheader("Today's Mission")
+
+    m1, m2, m3, m4 = st.columns(4)
+
+    with m1:
+        st.metric("⚾ MLB Games", "15")
+
+    with m2:
+        st.metric("🎯 High Confidence", "4")
+
+    with m3:
+        st.metric("🚨 Intelligence Alerts", "3")
+
+    with m4:
+        st.metric("☀️ Weather Impact Parks", "2")
+
+    st.divider()
+
+    st.subheader("Today's Sports")
+
+    s1, s2, s3, s4, s5 = st.columns(5)
+
+    with s1:
+        with st.container(border=True):
+            st.markdown("### ⚾ MLB")
+            st.metric("Games Today", "15")
+
+    with s2:
+        with st.container(border=True):
+            st.markdown("### 🏈 NFL")
+            st.metric("Days Until Kickoff", "61")
+
+    with s3:
+        with st.container(border=True):
+            st.markdown("### 🏀 NBA")
+            st.metric("Days Until Opening Night", "98")
+
+    with s4:
+        with st.container(border=True):
+            st.markdown("### 🏒 NHL")
+            st.metric("Days Until Season", "72")
+
+    with s5:
+        with st.container(border=True):
+            st.markdown("### ⚽ Soccer")
+            st.metric("Matches Today", "8")
+
+    st.divider()
+
+    st.subheader("Intelligence Level")
+
+    level = st.radio(
+        "Select your experience level",
+        ["Beginner", "Intermediate", "Advanced"],
+        horizontal=True,
+        index=2
+    )
+
+    st.info(f"You are viewing the platform in **{level}** mode.")
+
+    st.caption("We don't predict the future. We explain the present so people can make better decisions about the future.")
+
+    st.stop()      
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
