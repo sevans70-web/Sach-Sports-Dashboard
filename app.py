@@ -5,7 +5,85 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 # LIVE MLB SCHEDULE DATA
 st.set_page_config(page_title="Game Intelligence", layout="wide")
+# ==========================================
+# Sprint 2.5 - Ticket #009
+# Game Intelligence Theme Engine
+# ==========================================
 
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background: linear-gradient(180deg, #020617 0%, #0F172A 55%, #111827 100%);
+        color: #F8FAFC;
+    }
+
+    section[data-testid="stSidebar"] {
+        background-color: #020617;
+        border-right: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    h1, h2, h3 {
+        color: #F8FAFC;
+        letter-spacing: -0.02em;
+    }
+
+    p, span, div {
+        color: #CBD5E1;
+    }
+
+    div[data-testid="stMetric"] {
+        background: rgba(30, 41, 59, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 0 22px rgba(14, 165, 233, 0.08);
+    }
+
+    div[data-testid="stMetricLabel"] {
+        color: #94A3B8;
+    }
+
+    div[data-testid="stMetricValue"] {
+        color: #38BDF8;
+        font-weight: 800;
+    }
+
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(30, 41, 59, 0.78);
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        border-radius: 18px;
+        box-shadow: 0 0 24px rgba(14, 165, 233, 0.08);
+    }
+
+    hr {
+        border-color: rgba(148, 163, 184, 0.18);
+        margin-top: 28px;
+        margin-bottom: 28px;
+    }
+
+    .gi-brand-card {
+        padding: 28px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #071A2F 0%, #0B2A4A 55%, #111827 100%);
+        border: 1px solid rgba(56, 189, 248, 0.38);
+        box-shadow: 0 0 28px rgba(14, 165, 233, 0.16);
+        margin-top: 18px;
+        margin-bottom: 22px;
+    }
+
+    .gi-blue {
+        color: #38BDF8;
+        font-weight: 800;
+    }
+
+    .gi-muted {
+        color: #94A3B8;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 @st.cache_data(ttl=3600)
 def get_mlb_schedule():
     url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1"
