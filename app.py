@@ -414,8 +414,21 @@ Our goal is simple:
 Help you understand today's games before making today's decisions.
 """)
 
+st.divider()
 
+st.subheader("🚨 Intelligence Alerts")
 
+with st.container(border=True):
+
+    st.success("🟢 Aaron Judge confirmed in today's lineup")
+
+    st.warning("🟡 Wind expected to increase at Wrigley Field")
+
+    st.error("🔴 Starting pitcher changed for NYY vs BOS")
+
+    st.info("🔵 Rookie expected to make MLB debut tonight")
+
+st.caption("These alerts will be powered automatically by our Intelligence Engine.")
 st.divider()
 
 st.subheader("Today's Intelligence")
