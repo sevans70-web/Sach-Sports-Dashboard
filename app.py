@@ -13,10 +13,16 @@ st.set_page_config(page_title="Game Intelligence", layout="wide")
 st.markdown(
     """
     <style>
-    .stApp {
-        background: linear-gradient(180deg, #020617 0%, #0F172A 55%, #111827 100%);
-        color: #F8FAFC;
-    }
+  .stApp {
+    background: linear-gradient(
+        180deg,
+        #0B1E35 0%,
+        #102B46 35%,
+        #173C5E 70%,
+        #1B4A73 100%
+    );
+    color: #F8FAFC;
+}
 
     section[data-testid="stSidebar"] {
         background-color: #020617;
