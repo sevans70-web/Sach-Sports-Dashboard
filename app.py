@@ -340,7 +340,37 @@ if page == "🏠 Home":
     s5.write("🌍 Multiple Leagues")
     s5.write("📅 Live Schedule")
 
-    st.divider()
+st.divider()
+
+st.subheader("🏆 Today's Best Opportunities")
+
+op1, op2, op3, op4 = st.columns(4)
+
+with op1:
+    st.metric("⚾ MLB", "Aaron Judge")
+    st.caption("Best Prop")
+    st.write("Over 1.5 Total Bases")
+    st.write("Confidence: 94%")
+
+with op2:
+    st.metric("🏈 NFL", "Coming Soon")
+    st.caption("Best Prop")
+    st.write("Season Preview")
+    st.write("Confidence: --")
+
+with op3:
+    st.metric("🏀 NBA", "Coming Soon")
+    st.caption("Best Prop")
+    st.write("Opening Night")
+    st.write("Confidence: --")
+
+with op4:
+    st.metric("⚽ Soccer", "Manchester City")
+    st.caption("Best Prop")
+    st.write("Win")
+    st.write("Confidence: 87%")    
+    
+st.divider()
     
     st.subheader("Intelligence Level")
 
