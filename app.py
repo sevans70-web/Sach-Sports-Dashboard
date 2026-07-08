@@ -316,29 +316,39 @@ if page == "🏠 Home":
     s1, s2, s3, s4, s5 = st.columns(5)
 
     with s1:
-        with st.container(border=True):
-            st.markdown("### ⚾ MLB")
-            st.metric("Games Today", "15")
+    with st.container(border=True):
+        st.markdown("### ⚾ MLB")
+        st.caption("🟢 Active Today")
+        st.write("🕒 First Pitch: 7:05 PM")
+        st.write("📅 15 Games")
 
-    with s2:
-        with st.container(border=True):
-            st.markdown("### 🏈 NFL")
-            st.metric("Days Until Kickoff", "61")
+with s2:
+    with st.container(border=True):
+        st.markdown("### 🏈 NFL")
+        st.caption("⏳ Offseason")
+        st.write("🏟️ Hall of Fame Game")
+        st.write("📅 Coming Soon")
 
-    with s3:
-        with st.container(border=True):
-            st.markdown("### 🏀 NBA")
-            st.metric("Days Until Opening Night", "98")
+with s3:
+    with st.container(border=True):
+        st.markdown("### 🏀 NBA")
+        st.caption("⏳ Offseason")
+        st.write("🏀 Opening Night")
+        st.write("📅 Coming Soon")
 
-    with s4:
-        with st.container(border=True):
-            st.markdown("### 🏒 NHL")
-            st.metric("Days Until Season", "72")
+with s4:
+    with st.container(border=True):
+        st.markdown("### 🏒 NHL")
+        st.caption("⏳ Offseason")
+        st.write("🥅 Training Camp")
+        st.write("📅 Coming Soon")
 
-    with s5:
-        with st.container(border=True):
-            st.markdown("### ⚽ Soccer")
-            st.metric("Matches Today", "8")
+with s5:
+    with st.container(border=True):
+        st.markdown("### ⚽ Soccer")
+        st.caption("🟢 Matches Today")
+        st.write("🌍 Multiple Leagues")
+        st.write("📅 Live Schedule")
             
     st.divider()
 
