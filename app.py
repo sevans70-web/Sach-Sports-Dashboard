@@ -368,7 +368,7 @@ if page == "🏠 Home":
     
 st.divider()
     
-st.subheader("Intelligence Level")
+    st.subheader("Intelligence Level")
 
     level = st.radio(
         "Select your experience level",
@@ -377,8 +377,7 @@ st.subheader("Intelligence Level")
         index=2
     )
 
-    st.info(f"You are viewing the platform in **{level}** mode.")
-
+    st.info(f"You are viewing the platform in {level} mode.")
     st.caption("We don't predict the future. We explain the present so people can make better decisions about the future.")
 
     st.stop()      
