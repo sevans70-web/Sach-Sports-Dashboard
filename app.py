@@ -315,7 +315,7 @@ st.subheader("Today's Sports")
 
 s1, s2, s3, s4, s5 = st.columns(5)
 
-    with s1:
+    with s1: 
         with st.container(border=True):
             st.markdown("### ⚾ MLB")
             st.metric("Games Today", "15")
