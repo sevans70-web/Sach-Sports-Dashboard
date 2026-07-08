@@ -342,33 +342,31 @@ if page == "🏠 Home":
 
 st.divider()
 
-st.subheader("🏆 Today's Best Opportunities")
+    st.divider()
 
-op1, op2, op3, op4 = st.columns(4)
+    st.subheader("🏆 Today's Best Opportunities")
 
-with op1:
-    st.metric("⚾ MLB", "Aaron Judge")
-    st.caption("Best Prop")
-    st.write("Over 1.5 Total Bases")
-    st.write("Confidence: 94%")
+    op1, op2, op3, op4 = st.columns(4)
 
-with op2:
-    st.metric("🏈 NFL", "Coming Soon")
-    st.caption("Best Prop")
-    st.write("Season Preview")
-    st.write("Confidence: --")
+    op1.metric("⚾ MLB", "Aaron Judge")
+    op1.caption("Best Prop")
+    op1.write("Over 1.5 Total Bases")
+    op1.write("Confidence: 94%")
 
-with op3:
-    st.metric("🏀 NBA", "Coming Soon")
-    st.caption("Best Prop")
-    st.write("Opening Night")
-    st.write("Confidence: --")
+    op2.metric("🏈 NFL", "Coming Soon")
+    op2.caption("Best Prop")
+    op2.write("Season Preview")
+    op2.write("Confidence: --")
 
-with op4:
-    st.metric("⚽ Soccer", "Manchester City")
-    st.caption("Best Prop")
-    st.write("Win")
-    st.write("Confidence: 87%")    
+    op3.metric("🏀 NBA", "Coming Soon")
+    op3.caption("Best Prop")
+    op3.write("Opening Night")
+    op3.write("Confidence: --")
+
+    op4.metric("⚽ Soccer", "Manchester City")
+    op4.caption("Best Prop")
+    op4.write("Win")
+    op4.write("Confidence: 87%")
     
 st.divider()
     
