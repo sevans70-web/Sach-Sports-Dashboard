@@ -290,23 +290,26 @@ if page == "🏠 Home":
 )
 
     st.divider()
-    st.subheader("Today's Mission")
 
-    m1, m2, m3, m4 = st.columns(4)
+st.subheader("🧠 Executive Intelligence Summary")
 
-    with m1:
-        st.metric("⚾ MLB Games", "15")
+c1, c2 = st.columns(2)
 
-    with m2:
-        st.metric("🎯 High Confidence", "4")
+with c1:
+    with st.container(border=True):
+        st.markdown("### 🎯 Today's Focus")
+        st.success("⚾ Primary Sport: MLB")
+        st.write("🕒 First Pitch: **7:05 PM ET**")
+        st.write("🔥 Best Opportunity: **Aaron Judge HR**")
 
-    with m3:
-        st.metric("🚨 Intelligence Alerts", "3")
+with c2:
+    with st.container(border=True):
+        st.markdown("### ⚠️ Risk Assessment")
+        st.warning("🌦 Weather Watch: 2 Games")
+        st.write("📈 Confidence Level: **High**")
+        st.write("🚨 Monitor Lineups Before Lock")
 
-    with m4:
-        st.metric("☀️ Weather Impact Parks", "2")
-
-    st.divider()
+st.divider()
 
     st.subheader("Today's Sports")
 
