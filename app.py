@@ -291,31 +291,31 @@ if page == "🏠 Home":
 
     st.divider()
 
-st.subheader("🧠 Executive Intelligence Summary")
+    st.subheader("🧠 Executive Intelligence Summary")
 
-c1, c2 = st.columns(2)
+    c1, c2 = st.columns(2)
 
-with c1:
-    with st.container(border=True):
-        st.markdown("### 🎯 Today's Focus")
-        st.success("⚾ Primary Sport: MLB")
-        st.write("🕒 First Pitch: **7:05 PM ET**")
-        st.write("🔥 Best Opportunity: **Aaron Judge HR**")
+    with c1:
+        with st.container(border=True):
+            st.markdown("### 🎯 Today's Focus")
+            st.success("⚾ Primary Sport: MLB")
+            st.write("🕒 First Pitch: **7:05 PM ET**")
+            st.write("🔥 Best Opportunity: **Aaron Judge HR**")
 
-with c2:
-    with st.container(border=True):
-        st.markdown("### ⚠️ Risk Assessment")
-        st.warning("🌦 Weather Watch: 2 Games")
-        st.write("📈 Confidence Level: **High**")
-        st.write("🚨 Monitor Lineups Before Lock")
+    with c2:
+        with st.container(border=True):
+            st.markdown("### ⚠️ Risk Assessment")
+            st.warning("🌦 Weather Watch: 2 Games")
+            st.write("📈 Confidence Level: **High**")
+            st.write("🚨 Monitor Lineups Before Lock")
 
-st.divider()
+    st.divider()
 
-st.subheader("Today's Sports")
+    st.subheader("Today's Sports")
 
-s1, s2, s3, s4, s5 = st.columns(5)
+    s1, s2, s3, s4, s5 = st.columns(5)
 
-    with s1: 
+    with s1:
         with st.container(border=True):
             st.markdown("### ⚾ MLB")
             st.metric("Games Today", "15")
@@ -339,7 +339,7 @@ s1, s2, s3, s4, s5 = st.columns(5)
         with st.container(border=True):
             st.markdown("### ⚽ Soccer")
             st.metric("Matches Today", "8")
-
+            
     st.divider()
 
     st.subheader("Intelligence Level")
