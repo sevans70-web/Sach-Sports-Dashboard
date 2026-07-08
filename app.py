@@ -313,7 +313,7 @@ st.divider()
 
 st.subheader("Today's Sports")
 
-    s1, s2, s3, s4, s5 = st.columns(5)
+s1, s2, s3, s4, s5 = st.columns(5)
 
     with s1:
         with st.container(border=True):
