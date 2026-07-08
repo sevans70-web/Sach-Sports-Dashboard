@@ -315,43 +315,33 @@ if page == "🏠 Home":
 
     s1, s2, s3, s4, s5 = st.columns(5)
 
-    with s1:
-    with st.container(border=True):
-        st.markdown("### ⚾ MLB")
-        st.caption("🟢 Active Today")
-        st.write("🕒 First Pitch: 7:05 PM")
-        st.write("📅 15 Games")
+    s1.markdown("### ⚾ MLB")
+    s1.caption("🟢 Active Today")
+    s1.write("🕒 First Pitch: 7:05 PM")
+    s1.write("📅 15 Games")
 
-with s2:
-    with st.container(border=True):
-        st.markdown("### 🏈 NFL")
-        st.caption("⏳ Offseason")
-        st.write("🏟️ Hall of Fame Game")
-        st.write("📅 Coming Soon")
+    s2.markdown("### 🏈 NFL")
+    s2.caption("⏳ Offseason")
+    s2.write("🏟️ Hall of Fame Game")
+    s2.write("📅 Coming Soon")
 
-with s3:
-    with st.container(border=True):
-        st.markdown("### 🏀 NBA")
-        st.caption("⏳ Offseason")
-        st.write("🏀 Opening Night")
-        st.write("📅 Coming Soon")
+    s3.markdown("### 🏀 NBA")
+    s3.caption("⏳ Offseason")
+    s3.write("🏀 Opening Night")
+    s3.write("📅 Coming Soon")
 
-with s4:
-    with st.container(border=True):
-        st.markdown("### 🏒 NHL")
-        st.caption("⏳ Offseason")
-        st.write("🥅 Training Camp")
-        st.write("📅 Coming Soon")
+    s4.markdown("### 🏒 NHL")
+    s4.caption("⏳ Offseason")
+    s4.write("🥅 Training Camp")
+    s4.write("📅 Coming Soon")
 
-with s5:
-    with st.container(border=True):
-        st.markdown("### ⚽ Soccer")
-        st.caption("🟢 Matches Today")
-        st.write("🌍 Multiple Leagues")
-        st.write("📅 Live Schedule")
-            
+    s5.markdown("### ⚽ Soccer")
+    s5.caption("🟢 Matches Today")
+    s5.write("🌍 Multiple Leagues")
+    s5.write("📅 Live Schedule")
+
     st.divider()
-
+    
     st.subheader("Intelligence Level")
 
     level = st.radio(
