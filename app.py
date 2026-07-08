@@ -340,7 +340,7 @@ if page == "🏠 Home":
     s5.write("🌍 Multiple Leagues")
     s5.write("📅 Live Schedule")
 
-st.divider()
+    st.divider()
 
     st.subheader("🏆 Today's Best Opportunities")
 
@@ -368,7 +368,7 @@ st.divider()
     
 st.divider()
     
-    st.subheader("Intelligence Level")
+st.subheader("Intelligence Level")
 
     level = st.radio(
         "Select your experience level",
