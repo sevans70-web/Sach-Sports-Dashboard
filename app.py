@@ -311,7 +311,7 @@ with c2:
 
 st.divider()
 
-    st.subheader("Today's Sports")
+st.subheader("Today's Sports")
 
     s1, s2, s3, s4, s5 = st.columns(5)
 
