@@ -342,7 +342,6 @@ if page == "🏠 Home":
 
 st.divider()
 
-    st.divider()
 
     st.subheader("🏆 Today's Best Opportunities")
 
