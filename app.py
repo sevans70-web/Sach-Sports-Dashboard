@@ -342,8 +342,7 @@ if page == "🏠 Home":
 
 st.divider()
 
-
-st.subheader("🏆 Today's Best Opportunities")
+    st.subheader("🏆 Today's Best Opportunities")
 
     op1, op2, op3, op4 = st.columns(4)
 
