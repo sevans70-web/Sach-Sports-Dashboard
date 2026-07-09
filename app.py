@@ -368,6 +368,18 @@ if page == "🏠 Home":
 
     st.divider()
 
+    st.subheader("📡 Live Intelligence")
+
+    st.info("🟢 Yankees lineup confirmed")
+
+    st.warning("🌦 Weather watch: Rain risk increasing in Chicago")
+
+    st.success("⚾ Aaron Judge recorded a 108.4 MPH exit velocity (Near Miss Candidate)")
+
+    st.info("📈 Dodgers odds moved from +135 to +120")
+
+    st.divider()
+
     st.subheader("Intelligence Level")
 
     level = st.radio(
