@@ -365,9 +365,9 @@ if page == "🏠 Home":
     op4.caption("Best Prop")
     op4.write("Win")
     op4.write("Confidence: 87%")
-    
-st.divider()
-    
+
+    st.divider()
+
     st.subheader("Intelligence Level")
 
     level = st.radio(
@@ -378,9 +378,9 @@ st.divider()
     )
 
     st.info(f"You are viewing the platform in {level} mode.")
-    st.caption("We don't predict the future. We explain the present so people can make better decisions about the future.")
 
-    st.stop()      
+    st.stop()
+    
 st.title("🧠 Game Intelligence")
 st.caption("Trusted Sports Intelligence. Smarter Decisions.")
 
