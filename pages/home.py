@@ -15,23 +15,20 @@ def get_greeting() -> str:
 
 
 def render_sport_card(
-    icon: str,
-    sport: str,
-    status: str,
-    description: str,
-    page_path: str,
+    icon: str,
+    sport: str,
+    status: str,
+    description: str,
+    page_path: str,
 ) -> None:
-    """Render one clickable sport card."""
-    with st.container(border=True):
-        st.markdown(f"### {icon} {sport}")
-        st.caption(status)
-        st.write(description)
-        st.page_link(
-            page_path,
-            label=f"Open {sport}",
-            icon="➡️",
-            use_container_width=True,
-        )
+    """Render one sport card with a clickable sport heading."""
+    with st.container(border=True):
+        st.page_link(
+            page_path,
+            label=f"{icon} {sport}",
+        )
+        st.caption(status)
+        st.write(description)
 
 
 # --------------------------------------------------
