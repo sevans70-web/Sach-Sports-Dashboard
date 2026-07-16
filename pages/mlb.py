@@ -1,14 +1,14 @@
 """
-Game Intelligence - MLB Page v1
---------------------------------
+Game Intelligence - MLB Page v1.1
+----------------------------------
 File location: pages/mlb.py
 
-Purpose:
-- Show a clean MLB command centre.
-- Display Top 5 previews for Home Runs, Hits, and Total Bases.
-- Let the user expand each category to view a full Top 25.
-- Reserve a photo area on every player card.
-- Use placeholder information until live MLB data is connected.
+Fixes in this version:
+- Prevents player-card HTML from appearing as raw code.
+- Removes dependency on temporary internet avatar images.
+- Uses built-in initials placeholders until official MLB headshots are connected.
+- Keeps the existing tablet/app-first visual design.
+- Adds responsive desktop behaviour without changing the mobile identity.
 
 Important:
 The rankings and player identities below are placeholders for layout testing.
@@ -17,7 +17,7 @@ They are not current recommendations.
 
 from datetime import datetime
 from html import escape
-from urllib.parse import quote
+from textwrap import dedent
 from zoneinfo import ZoneInfo
 
 import streamlit as st
@@ -46,23 +46,27 @@ def confidence_class(confidence: str) -> str:
     return "gi-confidence-low"
 
 
-def player_image_url(player_name: str) -> str:
-    """
-    Return a temporary avatar URL.
+def player_initials(player_name: str) -> str:
+    """Return two initials for a temporary player-photo placeholder."""
+    words = [word for word in player_name.split() if word]
 
-    This creates a visual player-photo space now. Later, replace this helper
-    with a real MLB headshot URL built from the player's MLB player ID.
+    if not words:
+        return "MLB"
+
+    if len(words) == 1:
+        return words[0][:2].upper()
+
+    return f"{words[0][0]}{words[-1][0]}".upper()
+
+
+def render_html(html: str) -> None:
     """
-    safe_name = quote(player_name)
-    return (
-        "https://ui-avatars.com/api/"
-        f"?name={safe_name}"
-        "&size=256"
-        "&background=102b46"
-        "&color=ffffff"
-        "&bold=true"
-        "&format=png"
-    )
+    Render HTML safely in Streamlit.
+
+    dedent() removes leading indentation so Markdown does not mistake the
+    HTML for a code block.
+    """
+    st.markdown(dedent(html).strip(), unsafe_allow_html=True)
 
 
 def build_placeholder_rankings(category: str) -> list[dict]:
@@ -157,18 +161,19 @@ for state_key in ("show_hr_25", "show_hits_25", "show_tb_25"):
 
 def render_featured_player(player: dict) -> None:
     """Render the #1 player as a large featured card."""
-    image_url = player_image_url(player["player"])
     badge_class = confidence_class(player["confidence"])
+    initials = player_initials(player["player"])
 
-    st.markdown(
+    render_html(
         f"""
         <div class="gi-featured-player">
             <div class="gi-featured-photo-wrap">
-                <img
-                    class="gi-featured-photo"
-                    src="{escape(image_url)}"
-                    alt="Temporary image placeholder for {escape(player['player'])}"
-                />
+                <div
+                    class="gi-featured-photo-placeholder"
+                    aria-label="Temporary image placeholder for {escape(player['player'])}"
+                >
+                    {escape(initials)}
+                </div>
                 <div class="gi-photo-note">Photo placeholder</div>
             </div>
 
@@ -181,10 +186,14 @@ def render_featured_player(player: dict) -> None:
                 </div>
 
                 <div class="gi-featured-name">{escape(player['player'])}</div>
+
                 <div class="gi-featured-matchup">
                     {escape(player['team'])} vs. {escape(player['opponent'])}
                 </div>
-                <div class="gi-featured-market">{escape(player['category'])}</div>
+
+                <div class="gi-featured-market">
+                    {escape(player['category'])}
+                </div>
 
                 <div class="gi-featured-reason">
                     {escape(player['reason'])}
@@ -196,30 +205,33 @@ def render_featured_player(player: dict) -> None:
                 </div>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
 
 def render_compact_player(player: dict) -> None:
     """Render players #2 through #5 in a compact card."""
-    image_url = player_image_url(player["player"])
     badge_class = confidence_class(player["confidence"])
+    initials = player_initials(player["player"])
 
-    st.markdown(
+    render_html(
         f"""
         <div class="gi-compact-player">
-            <img
-                class="gi-compact-photo"
-                src="{escape(image_url)}"
-                alt="Temporary image placeholder for {escape(player['player'])}"
-            />
+            <div
+                class="gi-compact-photo-placeholder"
+                aria-label="Temporary image placeholder for {escape(player['player'])}"
+            >
+                {escape(initials)}
+            </div>
 
             <div class="gi-compact-rank">#{player['rank']}</div>
 
             <div class="gi-compact-main">
                 <div class="gi-compact-topline">
-                    <span class="gi-compact-name">{escape(player['player'])}</span>
+                    <span class="gi-compact-name">
+                        {escape(player['player'])}
+                    </span>
+
                     <span class="gi-confidence {badge_class}">
                         {escape(player['confidence'])}
                     </span>
@@ -235,26 +247,26 @@ def render_compact_player(player: dict) -> None:
                 </div>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
 
 def render_full_ranking_row(player: dict) -> None:
-    """Render one compact row in the full Top 25 view."""
-    image_url = player_image_url(player["player"])
+    """Render one row in the full Top 25 view."""
     badge_class = confidence_class(player["confidence"])
+    initials = player_initials(player["player"])
 
-    st.markdown(
+    render_html(
         f"""
         <div class="gi-full-row">
             <div class="gi-full-rank">#{player['rank']}</div>
 
-            <img
-                class="gi-full-photo"
-                src="{escape(image_url)}"
-                alt="Temporary image placeholder for {escape(player['player'])}"
-            />
+            <div
+                class="gi-full-photo-placeholder"
+                aria-label="Temporary image placeholder for {escape(player['player'])}"
+            >
+                {escape(initials)}
+            </div>
 
             <div class="gi-full-player">
                 <div class="gi-full-name">{escape(player['player'])}</div>
@@ -272,8 +284,7 @@ def render_full_ranking_row(player: dict) -> None:
                 {escape(player['confidence'])}
             </span>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
 
@@ -285,19 +296,22 @@ def render_ranking_category(
     button_key: str,
 ) -> None:
     """Render a Top 5 preview and optional full Top 25 ranking."""
-    st.markdown(
+    render_html(
         f"""
         <div class="gi-section-heading">
             <div>
-                <div class="gi-section-title">{icon} {escape(title)}</div>
+                <div class="gi-section-title">
+                    {icon} {escape(title)} Rankings
+                </div>
+
                 <div class="gi-section-subtitle">
                     Top 5 shown first. Open the full ranking when you want deeper research.
                 </div>
             </div>
+
             <div class="gi-section-count">25 ranked</div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     render_featured_player(rankings[0])
@@ -320,20 +334,19 @@ def render_ranking_category(
         st.rerun()
 
     if st.session_state[state_key]:
-        st.markdown(
+        render_html(
             """
             <div class="gi-full-list-heading">
                 Full Ranking
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
         for player in rankings:
             render_full_ranking_row(player)
 
         st.caption(
-            "In a later build, tapping a player will open that player's "
+            "In a later build, selecting a player will open that player's "
             "full Intelligence page."
         )
 
@@ -413,10 +426,10 @@ st.markdown(
                 linear-gradient(
                     135deg,
                     rgba(7, 26, 47, 0.99),
-                    rgba(11, 42, 74, 0.97)
+                    rgba(11, 42, 74, 0.96)
                 );
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 20px 55px rgba(2, 8, 23, 0.32);
+            border: 1px solid rgba(56, 189, 248, 0.36);
+            box-shadow: 0 18px 48px rgba(2, 8, 23, 0.32);
         }
 
         .gi-eyebrow {
@@ -425,22 +438,23 @@ st.markdown(
             font-weight: 850;
             letter-spacing: 0.15em;
             text-transform: uppercase;
+            margin-bottom: 10px;
         }
 
-        .gi-title {
+        .gi-hero-title {
             color: #ffffff;
-            margin: 8px 0 0;
-            font-size: clamp(2.25rem, 5vw, 4.2rem);
-            line-height: 1.02;
+            font-size: clamp(2rem, 4vw, 3.5rem);
             font-weight: 900;
+            line-height: 1.04;
+            margin: 0;
         }
 
-        .gi-subtitle {
-            max-width: 830px;
-            margin: 16px 0 0;
+        .gi-hero-subtitle {
             color: var(--gi-blue-light);
-            font-size: 1.03rem;
+            max-width: 820px;
+            font-size: 1.02rem;
             line-height: 1.62;
+            margin: 16px 0 0;
         }
 
         .gi-status-strip {
@@ -449,10 +463,10 @@ st.markdown(
             justify-content: space-between;
             gap: 10px;
             padding: 14px 18px;
-            margin-bottom: 22px;
+            margin: 10px 0 25px;
             border-radius: 15px;
             background: rgba(15, 23, 42, 0.72);
-            border: 1px solid rgba(148, 163, 184, 0.18);
+            border: 1px solid rgba(148, 163, 184, 0.16);
         }
 
         .gi-status-primary {
@@ -465,116 +479,131 @@ st.markdown(
         }
 
         div[data-testid="stMetric"] {
-            min-height: 125px;
-            padding: 18px;
-            border-radius: 18px;
-            background: var(--gi-panel);
+            min-height: 120px;
+            padding: 16px;
+            border-radius: 17px;
+            background: var(--gi-panel-soft);
             border: 1px solid var(--gi-border);
         }
 
         div[data-testid="stMetricLabel"] {
-            color: var(--gi-muted);
+            color: #cbd5e1;
         }
 
         div[data-testid="stMetricValue"] {
-            color: var(--gi-blue);
+            color: #ffffff;
             font-weight: 850;
         }
 
-        .gi-alert-panel {
-            padding: 18px 20px;
-            margin: 5px 0 24px;
-            border-radius: 18px;
-            background: rgba(15, 23, 42, 0.74);
-            border: 1px solid rgba(251, 191, 36, 0.26);
+        .gi-before-ranking {
+            padding: 17px 19px;
+            margin: 20px 0 28px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(251, 191, 36, 0.30);
         }
 
-        .gi-alert-title {
+        .gi-before-title {
             color: #ffffff;
             font-weight: 800;
             margin-bottom: 5px;
         }
 
-        .gi-alert-copy {
+        .gi-before-text {
             color: #cbd5e1;
             line-height: 1.55;
         }
 
-        .gi-ranking-shell {
-            padding: 18px;
-            border-radius: 22px;
-            background: rgba(8, 22, 39, 0.68);
-            border: 1px solid rgba(56, 189, 248, 0.18);
+        .gi-tabs-note {
+            color: var(--gi-muted);
+            font-size: 0.91rem;
+            margin-bottom: 10px;
         }
 
         .gi-section-heading {
             display: flex;
-            align-items: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
             justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 14px;
+            gap: 12px;
+            margin: 18px 0 13px;
         }
 
         .gi-section-title {
             color: #ffffff;
-            font-size: 1.42rem;
+            font-size: 1.08rem;
             font-weight: 850;
-            letter-spacing: -0.02em;
         }
 
         .gi-section-subtitle {
             color: var(--gi-muted);
-            margin-top: 4px;
-            font-size: 0.88rem;
+            font-size: 0.87rem;
+            margin-top: 3px;
         }
 
         .gi-section-count {
-            white-space: nowrap;
+            color: #d8f3ff;
             padding: 6px 10px;
             border-radius: 999px;
-            color: var(--gi-blue-light);
-            background: rgba(56, 189, 248, 0.10);
-            border: 1px solid rgba(56, 189, 248, 0.22);
+            background: rgba(56, 189, 248, 0.13);
+            border: 1px solid rgba(56, 189, 248, 0.28);
             font-size: 0.76rem;
             font-weight: 800;
         }
 
         .gi-featured-player {
             display: grid;
-            grid-template-columns: 150px 1fr;
+            grid-template-columns: 145px minmax(0, 1fr);
             gap: 22px;
-            padding: 22px;
-            margin-bottom: 12px;
+            padding: 21px;
+            margin-bottom: 13px;
             border-radius: 20px;
             background:
                 linear-gradient(
                     135deg,
-                    rgba(14, 116, 144, 0.18),
-                    rgba(15, 23, 42, 0.92)
+                    rgba(14, 116, 144, 0.15),
+                    rgba(15, 23, 42, 0.88)
                 );
-            border: 1px solid rgba(52, 211, 153, 0.32);
+            border: 1px solid rgba(56, 189, 248, 0.30);
+            box-shadow: 0 14px 34px rgba(2, 8, 23, 0.22);
         }
 
         .gi-featured-photo-wrap {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
         }
 
-        .gi-featured-photo {
-            width: 140px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 20px;
-            border: 1px solid rgba(56, 189, 248, 0.34);
-            background: #102b46;
+        .gi-featured-photo-placeholder {
+            width: 128px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background:
+                radial-gradient(
+                    circle at 50% 30%,
+                    rgba(56, 189, 248, 0.24),
+                    transparent 45%
+                ),
+                linear-gradient(
+                    160deg,
+                    #123e66,
+                    #0a1c31
+                );
+            border: 1px solid rgba(56, 189, 248, 0.36);
+            color: #ffffff;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 0.04em;
         }
 
         .gi-photo-note {
             color: var(--gi-muted);
+            font-size: 0.72rem;
             margin-top: 7px;
-            font-size: 0.68rem;
-            text-align: center;
         }
 
         .gi-featured-content {
@@ -583,16 +612,17 @@ st.markdown(
 
         .gi-featured-topline {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 10px;
         }
 
         .gi-rank-badge {
-            padding: 6px 10px;
-            border-radius: 999px;
             color: #ffffff;
-            background: rgba(56, 189, 248, 0.16);
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(56, 189, 248, 0.13);
             border: 1px solid rgba(56, 189, 248, 0.28);
             font-weight: 850;
         }
@@ -600,28 +630,29 @@ st.markdown(
         .gi-confidence {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             padding: 5px 9px;
             border-radius: 999px;
-            font-size: 0.70rem;
+            font-size: 0.72rem;
             font-weight: 850;
             text-transform: uppercase;
         }
 
         .gi-confidence-high {
             color: #bbf7d0;
-            background: rgba(34, 197, 94, 0.14);
+            background: rgba(34, 197, 94, 0.15);
             border: 1px solid rgba(34, 197, 94, 0.30);
         }
 
         .gi-confidence-medium {
             color: #fef08a;
-            background: rgba(234, 179, 8, 0.14);
+            background: rgba(234, 179, 8, 0.15);
             border: 1px solid rgba(234, 179, 8, 0.30);
         }
 
         .gi-confidence-low {
             color: #fed7aa;
-            background: rgba(249, 115, 22, 0.14);
+            background: rgba(249, 115, 22, 0.15);
             border: 1px solid rgba(249, 115, 22, 0.30);
         }
 
@@ -629,6 +660,7 @@ st.markdown(
             color: #ffffff;
             font-size: 1.62rem;
             font-weight: 900;
+            margin-top: 13px;
         }
 
         .gi-featured-matchup {
@@ -638,51 +670,66 @@ st.markdown(
 
         .gi-featured-market {
             color: var(--gi-blue-light);
-            margin-top: 9px;
-            font-size: 1.03rem;
+            font-size: 1rem;
             font-weight: 800;
+            margin-top: 11px;
         }
 
         .gi-featured-reason {
             color: #cbd5e1;
-            margin-top: 9px;
             line-height: 1.58;
+            margin-top: 8px;
         }
 
         .gi-featured-footer {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 16px;
+            justify-content: space-between;
+            gap: 8px;
             color: var(--gi-green);
-            font-size: 0.81rem;
+            font-size: 0.82rem;
             font-weight: 750;
+            margin-top: 16px;
         }
 
         .gi-compact-player {
             display: grid;
-            grid-template-columns: 62px 42px 1fr;
+            grid-template-columns: 58px 42px minmax(0, 1fr);
             align-items: center;
-            gap: 12px;
-            padding: 14px;
+            gap: 13px;
+            padding: 14px 16px;
             margin-bottom: 10px;
             border-radius: 17px;
-            background: var(--gi-panel);
+            background: var(--gi-panel-soft);
             border: 1px solid var(--gi-border);
         }
 
-        .gi-compact-photo {
-            width: 58px;
-            height: 58px;
-            object-fit: cover;
-            border-radius: 15px;
-            border: 1px solid rgba(56, 189, 248, 0.28);
-            background: #102b46;
+        .gi-compact-photo-placeholder,
+        .gi-full-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 850;
+            background:
+                linear-gradient(
+                    145deg,
+                    #123e66,
+                    #0a1c31
+                );
+            border: 1px solid rgba(56, 189, 248, 0.32);
+        }
+
+        .gi-compact-photo-placeholder {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            font-size: 0.92rem;
         }
 
         .gi-compact-rank {
-            color: var(--gi-blue);
-            font-weight: 900;
+            color: var(--gi-blue-light);
+            font-weight: 850;
             text-align: center;
         }
 
@@ -693,61 +740,59 @@ st.markdown(
         .gi-compact-topline {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
             justify-content: space-between;
-            gap: 7px;
+            align-items: center;
+            gap: 8px;
         }
 
         .gi-compact-name {
             color: #ffffff;
-            font-size: 1rem;
             font-weight: 850;
         }
 
         .gi-compact-matchup {
             color: var(--gi-muted);
-            margin-top: 3px;
-            font-size: 0.78rem;
+            font-size: 0.82rem;
+            margin-top: 2px;
         }
 
         .gi-compact-reason {
             color: #cbd5e1;
-            margin-top: 6px;
-            font-size: 0.86rem;
+            font-size: 0.88rem;
             line-height: 1.45;
+            margin-top: 6px;
         }
 
         .gi-full-list-heading {
             color: #ffffff;
-            margin: 22px 0 10px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 850;
+            margin: 20px 0 10px;
         }
 
         .gi-full-row {
             display: grid;
-            grid-template-columns: 42px 48px minmax(130px, 1fr) 70px auto;
+            grid-template-columns: 48px 46px minmax(0, 1fr) 80px auto;
             align-items: center;
-            gap: 10px;
-            padding: 11px 12px;
-            margin-bottom: 7px;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
             border-radius: 14px;
-            background: rgba(15, 23, 42, 0.78);
-            border: 1px solid rgba(56, 189, 248, 0.15);
+            background: rgba(15, 23, 42, 0.66);
+            border: 1px solid rgba(56, 189, 248, 0.17);
         }
 
         .gi-full-rank {
-            color: var(--gi-blue);
+            color: var(--gi-blue-light);
             font-weight: 850;
             text-align: center;
         }
 
-        .gi-full-photo {
-            width: 44px;
-            height: 44px;
-            object-fit: cover;
+        .gi-full-photo-placeholder {
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
-            background: #102b46;
+            font-size: 0.72rem;
         }
 
         .gi-full-player {
@@ -761,8 +806,8 @@ st.markdown(
 
         .gi-full-matchup {
             color: var(--gi-muted);
+            font-size: 0.78rem;
             margin-top: 2px;
-            font-size: 0.74rem;
         }
 
         .gi-full-score {
@@ -773,44 +818,62 @@ st.markdown(
 
         .gi-score-label {
             color: var(--gi-muted);
-            font-size: 0.62rem;
+            font-size: 0.66rem;
             text-transform: uppercase;
         }
 
         .gi-score-number {
-            color: var(--gi-blue-light);
-            font-weight: 900;
+            color: #ffffff;
+            font-weight: 850;
         }
 
         div[data-testid="stButton"] > button {
+            min-height: 44px;
             border-radius: 13px;
-            border: 1px solid rgba(56, 189, 248, 0.34);
-            font-weight: 750;
+            font-weight: 800;
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            background: rgba(15, 23, 42, 0.66);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            border-radius: 18px;
         }
 
         hr {
             border-color: rgba(148, 163, 184, 0.16);
-            margin: 28px 0;
+            margin: 30px 0;
+        }
+
+        @media (min-width: 1100px) {
+            .block-container {
+                max-width: 1440px;
+            }
+
+            .gi-featured-player {
+                grid-template-columns: 165px minmax(0, 1fr);
+                padding: 25px;
+            }
+
+            .gi-featured-photo-placeholder {
+                width: 145px;
+                height: 170px;
+            }
         }
 
         @media (max-width: 760px) {
             .block-container {
-                padding-top: 0.75rem;
-                padding-left: 0.9rem;
-                padding-right: 0.9rem;
+                padding-top: 0.8rem;
+                padding-left: 0.85rem;
+                padding-right: 0.85rem;
             }
 
             .gi-hero {
-                padding: 25px 19px;
+                padding: 25px 20px;
                 border-radius: 20px;
             }
 
-            .gi-title {
-                font-size: 2.35rem;
-            }
-
-            .gi-subtitle {
-                font-size: 0.95rem;
+            .gi-hero-title {
+                font-size: 2.25rem;
             }
 
             .gi-status-strip {
@@ -821,59 +884,48 @@ st.markdown(
                 margin-top: 5px;
             }
 
-            .gi-section-heading {
-                display: block;
-            }
-
-            .gi-section-count {
-                display: inline-flex;
-                margin-top: 9px;
-            }
-
             .gi-featured-player {
-                grid-template-columns: 88px 1fr;
+                grid-template-columns: 96px minmax(0, 1fr);
                 gap: 14px;
                 padding: 16px;
             }
 
-            .gi-featured-photo {
-                width: 84px;
-                height: 96px;
+            .gi-featured-photo-placeholder {
+                width: 88px;
+                height: 110px;
                 border-radius: 15px;
-            }
-
-            .gi-photo-note {
-                display: none;
+                font-size: 1.6rem;
             }
 
             .gi-featured-name {
                 font-size: 1.25rem;
             }
 
-            .gi-featured-reason {
-                font-size: 0.88rem;
+            .gi-featured-footer {
+                display: block;
+            }
+
+            .gi-featured-footer span {
+                display: block;
+                margin-top: 4px;
             }
 
             .gi-compact-player {
-                grid-template-columns: 52px 34px 1fr;
+                grid-template-columns: 48px 34px minmax(0, 1fr);
                 gap: 9px;
                 padding: 12px;
             }
 
-            .gi-compact-photo {
-                width: 49px;
-                height: 49px;
-                border-radius: 13px;
-            }
-
-            .gi-compact-reason {
-                display: none;
+            .gi-compact-photo-placeholder {
+                width: 46px;
+                height: 46px;
+                border-radius: 12px;
+                font-size: 0.78rem;
             }
 
             .gi-full-row {
-                grid-template-columns: 34px 42px minmax(95px, 1fr) auto;
-                gap: 7px;
-                padding: 9px;
+                grid-template-columns: 36px 40px minmax(0, 1fr) auto;
+                gap: 8px;
             }
 
             .gi-full-score {
@@ -881,8 +933,40 @@ st.markdown(
             }
 
             .gi-full-row .gi-confidence {
-                font-size: 0.62rem;
-                padding: 4px 6px;
+                font-size: 0.64rem;
+                padding: 4px 7px;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .gi-featured-player {
+                display: block;
+            }
+
+            .gi-featured-photo-wrap {
+                align-items: flex-start;
+                margin-bottom: 14px;
+            }
+
+            .gi-featured-photo-placeholder {
+                width: 82px;
+                height: 82px;
+            }
+
+            .gi-photo-note {
+                display: none;
+            }
+
+            .gi-compact-reason {
+                display: none;
+            }
+
+            .gi-full-row {
+                grid-template-columns: 32px 36px minmax(0, 1fr);
+            }
+
+            .gi-full-row .gi-confidence {
+                display: none;
             }
         }
     </style>
@@ -892,76 +976,75 @@ st.markdown(
 
 
 # ============================================================
-# HERO AND PAGE STATUS
+# PAGE CONTENT
 # ============================================================
 
 toronto_now = get_toronto_now()
 refreshed_time = toronto_now.strftime("%B %d, %Y at %I:%M %p ET")
 
-st.markdown(
+render_html(
     """
     <section class="gi-hero">
         <div class="gi-eyebrow">⚾ Game Intelligence</div>
-        <h1 class="gi-title">MLB Intelligence Center</h1>
-        <p class="gi-subtitle">
+
+        <h1 class="gi-hero-title">
+            MLB Intelligence Center
+        </h1>
+
+        <p class="gi-hero-subtitle">
             Start with the strongest players in each market, review the reason
             behind every ranking, and open the full Top 25 only when you need
             more depth.
         </p>
     </section>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
-st.markdown(
+render_html(
     f"""
     <div class="gi-status-strip">
-        <div class="gi-status-primary">MLB Page v1 is ready for visual review.</div>
-        <div class="gi-status-secondary">Refreshed {refreshed_time}</div>
+        <div class="gi-status-primary">
+            MLB Page v1.1 is ready for visual review.
+        </div>
+
+        <div class="gi-status-secondary">
+            Refreshed {escape(refreshed_time)}
+        </div>
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
-
-
-# ============================================================
-# DAILY SNAPSHOT
-# ============================================================
 
 st.subheader("Today's MLB Snapshot")
 
-metric_1, metric_2, metric_3, metric_4 = st.columns(4)
+snapshot_1, snapshot_2, snapshot_3, snapshot_4 = st.columns(4)
 
-with metric_1:
+with snapshot_1:
     st.metric("Games", "—", "Schedule feed pending")
 
-with metric_2:
+with snapshot_2:
     st.metric("Ranked Markets", "3", "HR · Hits · Total Bases")
 
-with metric_3:
+with snapshot_3:
     st.metric("Lineups", "—", "Confirmation feed pending")
 
-with metric_4:
+with snapshot_4:
     st.metric("Weather Alerts", "—", "Weather feed pending")
 
-st.markdown(
+render_html(
     """
-    <div class="gi-alert-panel">
-        <div class="gi-alert-title">Before using a ranking</div>
-        <div class="gi-alert-copy">
+    <div class="gi-before-ranking">
+        <div class="gi-before-title">
+            Before using a ranking
+        </div>
+
+        <div class="gi-before-text">
             Confirm the player is in the starting lineup, review weather and park
             conditions, and check whether the available market value still supports
             the recommendation.
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
-
-
-# ============================================================
-# RANKING TABS
-# ============================================================
 
 st.subheader("Player Rankings")
 st.caption(
@@ -975,7 +1058,7 @@ home_run_tab, hits_tab, total_bases_tab = st.tabs(
 
 with home_run_tab:
     render_ranking_category(
-        title="Home Run Rankings",
+        title="Home Run",
         icon="🔥",
         rankings=HOME_RUN_RANKINGS,
         state_key="show_hr_25",
@@ -984,7 +1067,7 @@ with home_run_tab:
 
 with hits_tab:
     render_ranking_category(
-        title="Hit Rankings",
+        title="Hit",
         icon="⚾",
         rankings=HIT_RANKINGS,
         state_key="show_hits_25",
@@ -993,7 +1076,7 @@ with hits_tab:
 
 with total_bases_tab:
     render_ranking_category(
-        title="Total Base Rankings",
+        title="Total Base",
         icon="💥",
         rankings=TOTAL_BASE_RANKINGS,
         state_key="show_tb_25",
@@ -1002,57 +1085,51 @@ with total_bases_tab:
 
 st.divider()
 
-
-# ============================================================
-# PLAYER CARD AND ENGINE ROADMAP
-# ============================================================
-
-player_page_column, engine_column = st.columns(2)
+player_page_column, interpretation_column = st.columns(2)
 
 with player_page_column:
     st.subheader("Player Intelligence Page")
+    st.write(
+        "In the next stage, selecting a player card will open a dedicated "
+        "player page containing:"
+    )
 
-    with st.container(border=True):
-        st.write(
-            "In the next stage, selecting a player card will open a dedicated "
-            "player page containing:"
-        )
+    st.markdown(
+        """
+        - Official player photo and team information
+        - Last 5 and last 10 game performance
+        - Home and away splits
+        - Right- and left-handed pitcher splits
+        - Pitch-type and barrel indicators
+        - Batting-order and lineup confirmation
+        - Park, weather, and matchup context
+        - Why Engine explanation and Confidence score
+        """
+    )
 
-        st.markdown(
-            """
-            - Official player photo and team information
-            - Last 5 and last 10 game performance
-            - Home and away splits
-            - Right- and left-handed pitcher splits
-            - Pitch-type and barrel indicators
-            - Batting-order and lineup confirmation
-            - Park, weather, and matchup context
-            - Why Engine explanation and Confidence score
-            """
-        )
-
-with engine_column:
+with interpretation_column:
     st.subheader("Ranking Interpretation")
 
-    with st.container(border=True):
-        st.success(
-            "High confidence: several strong and independent indicators agree."
-        )
-        st.warning(
-            "Medium confidence: the opportunity is promising but still has "
-            "meaningful uncertainty."
-        )
-        st.error(
-            "Low confidence: upside exists, but important evidence is weak, "
-            "conflicting, or incomplete."
-        )
+    st.success(
+        "High confidence: several strong and independent indicators agree."
+    )
 
-        st.caption(
-            "Confidence measures evidence strength. It does not guarantee an outcome."
-        )
+    st.warning(
+        "Medium confidence: the opportunity is promising but still has "
+        "meaningful uncertainty."
+    )
+
+    st.error(
+        "Low confidence: upside exists, but important evidence is weak, "
+        "conflicting, or incomplete."
+    )
+
+    st.caption(
+        "Confidence measures evidence strength. It does not guarantee an outcome."
+    )
 
 st.caption(
-    "MLB Page v1 uses sample players and temporary avatar images. Real rankings, "
-    "official player headshots, schedule data, lineups, weather, and clickable "
-    "player pages will be connected in later builds."
+    "MLB Page v1.1 uses sample players and built-in temporary photo placeholders. "
+    "Real rankings, official player headshots, schedule data, lineups, weather, "
+    "and clickable player pages will be connected in later builds."
 )
