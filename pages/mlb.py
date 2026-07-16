@@ -60,14 +60,13 @@ def player_initials(player_name: str) -> str:
 
 
 def render_html(html: str) -> None:
-    """
-    Render HTML safely in Streamlit.
-
-    dedent() removes leading indentation so Markdown does not mistake the
-    HTML for a code block.
-    """
-    st.markdown(dedent(html).strip(), unsafe_allow_html=True)
-
+    """Render HTML as one continuous line so Streamlit cannot split it."""
+    clean_html = " ".join(
+        line.strip()
+        for line in html.splitlines()
+        if line.strip()
+    )
+    st.markdown(clean_html, unsafe_allow_html=True)
 
 def build_placeholder_rankings(category: str) -> list[dict]:
     """Create 25 placeholder ranking records for one category."""
