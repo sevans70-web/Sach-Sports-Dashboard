@@ -259,12 +259,24 @@ page = st.sidebar.selectbox(
 )
 
 if page == "🏠 Home":
-    st.title("🧠 Game Intelligence")
-    st.caption("Trusted Sports Intelligence. Smarter Decisions.")
-    st.caption("🇨🇦 Designed & Built in Canada")
+# ==========================================
+# MLB HEADER
+# ==========================================
 
-    last_updated = datetime.now(ZoneInfo("America/Toronto")).strftime("%B %d, %Y at %I:%M %p ET")
-    st.caption(f"🟢 Last Updated: {last_updated}")
+header_left, header_right = st.columns([5, 1])
+
+with header_left:
+    st.title("⚾ MLB")
+
+with header_right:
+    st.caption("Updated")
+    st.caption(
+        datetime.now(
+            ZoneInfo("America/Toronto")
+        ).strftime("%I:%M %p")
+    )
+
+st.divider()
 
     st.header("Good Morning, Sach 👋")
     st.write("Your daily sports intelligence briefing is ready.")
@@ -400,12 +412,17 @@ last_updated = datetime.now(ZoneInfo("America/Toronto")).strftime("%B %d, %Y at 
 st.caption(f"🕒 Last Updated: {last_updated}")
 
 
-st.subheader("📰 Today's Intelligence Brief")
+st.subheader("📰 Today's Story")
 
-st.info(
-    """
-Today's MLB slate features strong power-hitting conditions, several favorable
-weather environments, and multiple overlooked matchup opportunities.
+st.info("""
+• Strong weather conditions favor power hitters in multiple parks.
+
+• Two elite pitcher matchups create high-confidence strikeout opportunities.
+
+• Several players enter today with significant momentum.
+
+• Monitor evening weather before finalizing late-game decisions.
+""")
 
 Early indicators suggest today's edge will come from understanding the
 combination of weather, matchups, and recent player form—not just season
