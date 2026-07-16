@@ -424,12 +424,6 @@ st.info("""
 • Monitor evening weather before finalizing late-game decisions.
 """)
 
-Early indicators suggest today's edge will come from understanding the
-combination of weather, matchups, and recent player form—not just season
-statistics.
-"""
-)
-
 st.caption("📡 This briefing will be generated automatically by the Intelligence Engine in a future release.")
 st.subheader("📊 Today's Snapshot")
 
