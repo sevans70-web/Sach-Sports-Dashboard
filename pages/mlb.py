@@ -21,7 +21,10 @@ from textwrap import dedent
 from zoneinfo import ZoneInfo
 
 import streamlit as st
-from components.mlb_schedule import render_live_mlb_schedule
+from components.mlb_schedule import (
+    render_live_mlb_schedule,
+    schedule_summary,
+)
 
 # ============================================================
 # TIME AND BASIC HELPERS
@@ -1013,12 +1016,23 @@ render_html(
     """
 )
 
+live_schedule = render_live_mlb_schedule()
+live_summary = schedule_summary(live_schedule)
+
 st.subheader("Today's MLB Snapshot")
 
 snapshot_1, snapshot_2, snapshot_3, snapshot_4 = st.columns(4)
 
 with snapshot_1:
-    st.metric("Games", "—", "Schedule feed pending")
+    games_status = (
+        f"{live_summary['live']} live · {live_summary['final']} final"
+    )
+
+    st.metric(
+        "Games",
+        live_summary["games"],
+        games_status,
+    )
 
 with snapshot_2:
     st.metric("Ranked Markets", "3", "HR · Hits · Total Bases")
@@ -1028,10 +1042,6 @@ with snapshot_3:
 
 with snapshot_4:
     st.metric("Weather Alerts", "—", "Weather feed pending")
-
-render_live_mlb_schedule()
-
-st.divider()
 
 render_html(
     """
