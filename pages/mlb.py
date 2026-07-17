@@ -21,7 +21,7 @@ from textwrap import dedent
 from zoneinfo import ZoneInfo
 
 import streamlit as st
-
+from components.mlb_schedule import render_live_mlb_schedule
 
 # ============================================================
 # TIME AND BASIC HELPERS
@@ -1028,6 +1028,10 @@ with snapshot_3:
 
 with snapshot_4:
     st.metric("Weather Alerts", "—", "Weather feed pending")
+
+render_live_mlb_schedule()
+
+st.divider()
 
 render_html(
     """
