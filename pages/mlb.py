@@ -145,73 +145,74 @@ def build_placeholder_rankings(category: str) -> list[dict]:
 
 
 def convert_live_rankings(
-    engine_result: dict,
-    category_label: str,
+    engine_result: dict,
+    category_label: str,
 ) -> list[dict]:
-    """Convert live engine results into the format used by the player cards."""
+    """Convert live engine results into the format used by the player cards."""
 
-    converted = []
+    converted = []
 
-    for player in engine_result.get("rankings", []):
-        reasons = player.get("why", [])
-        risk_flags = player.get("risk_flags", [])
+    for player in engine_result.get("rankings", []):
+        reasons = player.get("why", [])
+        risk_flags = player.get("risk_flags", [])
 
-        converted.append(
-            {
-                "rank": player.get("rank", 0),
-                "player": player.get(
-                    "player_name",
-                    "Player unavailable",
-                ),
-                "team": player.get("team_abbreviation", "TBD"),
-                "opponent": player.get(
-                    "opponent_abbreviation",
-                    "TBD",
-                ),
-                "category": category_label,
-                "confidence": player.get("confidence", "Low"),
-                "score": player.get("gi_score", 0),
-                "reason": (
-                    reasons[0]
-                    if reasons
-                    else "Live statistical profile is being evaluated."
-                ),
-                "status": (
-                    risk_flags[0]
-                    if risk_flags
-                    else "Live data available"
-                ),
-            }
-        )
+        converted.append(
+            {
+                "rank": player.get("rank", 0),
+                "player": player.get(
+                    "player_name",
+                    "Player unavailable",
+                ),
+                "team": player.get("team_abbreviation", "TBD"),
+                "opponent": player.get(
+                    "opponent_abbreviation",
+                    "TBD",
+                ),
+                "category": category_label,
+                "confidence": player.get("confidence", "Low"),
+                "score": player.get("gi_score", 0),
+                "reason": (
+                    reasons[0]
+                    if reasons
+                    else "Live statistical profile is being evaluated."
+                ),
+                "status": (
+                    risk_flags[0]
+                    if risk_flags
+                    else "Live data available"
+                ),
+            }
+        )
 
-    return converted
+    return converted
 
 
 @st.cache_data(ttl=900, show_spinner=False)
 def load_live_rankings() -> dict:
-    """Load live MLB player rankings for today's games."""
-    return get_all_rankings(
-        recent_days=14,
-        limit=25,
-    )
+    """Load live MLB player rankings for today's games."""
+    return get_all_rankings(
+        recent_days=14,
+        limit=25,
+    )
 
 
 live_rankings = load_live_rankings()
 
 HOME_RUN_RANKINGS = convert_live_rankings(
-    live_rankings.get("home_runs", {}),
-    "Home Runs",
+    live_rankings.get("home_runs", {}),
+    "Home Runs",
 )
 
 HIT_RANKINGS = convert_live_rankings(
-    live_rankings.get("hits", {}),
-    "Hits",
+    live_rankings.get("hits", {}),
+    "Hits",
 )
 
 TOTAL_BASE_RANKINGS = convert_live_rankings(
-    live_rankings.get("total_bases", {}),
-    "Total Bases",
+    live_rankings.get("total_bases", {}),
+    "Total Bases",
 )
+
 
 # ============================================================
 # SESSION STATE
