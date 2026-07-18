@@ -23,7 +23,7 @@ from zoneinfo import ZoneInfo
 import requests
 
 from data.mlb_players import get_today_player_pool
-
+from data.mlb_lineups import get_mlb_lineups
 
 MLB_STATS_URL = "https://statsapi.mlb.com/api/v1/stats"
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
@@ -413,6 +413,132 @@ def get_today_hitters_with_stats(
         "recent_days": recent_days,
         "season_stats_loaded": season_stats.get("success", False),
         "recent_stats_loaded": recent_stats.get("success", False),
+        "errors": errors,
+        "fetched_at": datetime.now(
+            TORONTO_TIMEZONE
+        ).isoformat(),
+    }
+def get_confirmed_hitters_with_stats(
+    schedule_date: date | str | None = None,
+    recent_days: int = 14,
+) -> dict[str, Any]:
+    """
+    Match confirmed MLB lineup hitters to season and recent statistics.
+
+    Only players included in MLB's published batting orders are returned.
+    """
+    lineup_data = get_mlb_lineups(
+        schedule_date=schedule_date,
+    )
+
+    confirmed_hitters = lineup_data.get(
+        "confirmed_hitters",
+        [],
+    )
+
+    if not lineup_data.get("success") or not confirmed_hitters:
+        return {
+            "success": False,
+            "date": lineup_data.get("date"),
+            "hitters": [],
+            "hitter_count": 0,
+            "confirmed_game_count": lineup_data.get(
+                "confirmed_game_count",
+                0,
+            ),
+            "game_count": lineup_data.get("game_count", 0),
+            "errors": lineup_data.get("errors", []),
+            "fetched_at": datetime.now(
+                TORONTO_TIMEZONE
+            ).isoformat(),
+        }
+
+    requested_date = date.fromisoformat(
+        str(lineup_data.get("date"))
+    )
+
+    season_stats = get_bulk_hitting_stats(
+        season=requested_date.year,
+    )
+    recent_stats = get_recent_hitting_stats(
+        days=recent_days,
+        end_date=requested_date,
+    )
+
+    errors: list[str] = list(
+        lineup_data.get("errors", [])
+    )
+
+    if not season_stats.get("success"):
+        errors.append(
+            season_stats.get("error")
+            or "Season statistics were unavailable."
+        )
+
+    if not recent_stats.get("success"):
+        errors.append(
+            recent_stats.get("error")
+            or "Recent statistics were unavailable."
+        )
+
+    season_lookup = season_stats.get("by_player_id", {})
+    recent_lookup = recent_stats.get("by_player_id", {})
+
+    enriched_hitters: list[dict[str, Any]] = []
+
+    for hitter in confirmed_hitters:
+        player_id = hitter.get("player_id")
+
+        season_record = season_lookup.get(
+            player_id,
+            _empty_stats(),
+        )
+        recent_record = recent_lookup.get(
+            player_id,
+            _empty_stats(),
+        )
+
+        enriched_hitters.append(
+            {
+                **hitter,
+                "season_stats": season_record,
+                "recent_stats": recent_record,
+                "recent_days": recent_days,
+                "has_season_stats": player_id in season_lookup,
+                "has_recent_stats": player_id in recent_lookup,
+            }
+        )
+
+    enriched_hitters.sort(
+        key=lambda item: (
+            int(item.get("batting_order") or 99),
+            -item["season_stats"].get(
+                "plate_appearances",
+                0,
+            ),
+            str(item.get("player_name") or ""),
+        )
+    )
+
+    return {
+        "success": bool(enriched_hitters),
+        "date": lineup_data.get("date"),
+        "hitters": enriched_hitters,
+        "hitter_count": len(enriched_hitters),
+        "confirmed_game_count": lineup_data.get(
+            "confirmed_game_count",
+            0,
+        ),
+        "game_count": lineup_data.get("game_count", 0),
+        "recent_days": recent_days,
+        "season_stats_loaded": season_stats.get(
+            "success",
+            False,
+        ),
+        "recent_stats_loaded": recent_stats.get(
+            "success",
+            False,
+        ),
         "errors": errors,
         "fetched_at": datetime.now(
             TORONTO_TIMEZONE
