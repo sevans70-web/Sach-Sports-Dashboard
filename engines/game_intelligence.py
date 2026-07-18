@@ -86,7 +86,32 @@ def _weighted_score(
     )
 
     return round(weighted_total / total_weight, 1)
+    
+def _lineup_position_bonus(
+    batting_order: int,
+) -> float:
+    """
+    Return a lineup-position bonus.
 
+    Higher lineup spots generally receive more plate appearances.
+    """
+
+    bonuses = {
+        1: 8.0,
+        2: 7.0,
+        3: 6.0,
+        4: 5.0,
+        5: 3.5,
+        6: 2.0,
+        7: 1.0,
+        8: 0.5,
+        9: 0.0,
+    }
+
+    return bonuses.get(
+        batting_order,
+        0.0,
+    )
 
 def _confidence(
     score: float,
@@ -525,7 +550,19 @@ def rank_players(
             populations,
         )
 
-        score = _category_score(category, percentiles)
+base_score = _category_score(
+    category,
+    percentiles,
+)
+
+lineup_bonus = _lineup_position_bonus(
+    int(hitter.get("batting_order", 9))
+)
+
+score = min(
+    round(base_score + lineup_bonus, 1),
+    100.0,
+)
 
         confidence = _confidence(
             score=score,
@@ -546,9 +583,11 @@ def rank_players(
         scored_players.append(
             {
                 **hitter,
-                "category": category,
-                "gi_score": score,
-                "confidence": confidence,
+"category": category,
+"base_score": base_score,
+"lineup_bonus": lineup_bonus,
+"gi_score": score,
+"confidence": confidence,
                 "why": _category_reasons(
                     category,
                     season,
