@@ -113,6 +113,35 @@ def _lineup_position_bonus(
         0.0,
     )
 
+def _handedness_matchup_adjustment(
+    bat_side: str,
+    pitcher_hand: str,
+) -> float:
+    """
+    Return a small platoon-matchup adjustment.
+
+    Opposite-handed matchups receive a modest bonus.
+    Same-handed matchups receive a modest penalty.
+    Switch hitters receive a bonus when the pitcher hand is known.
+    """
+
+    batter = str(bat_side or "").upper()
+    pitcher = str(pitcher_hand or "").upper()
+
+    if pitcher not in {"L", "R"}:
+        return 0.0
+
+    if batter == "S":
+        return 2.5
+
+    if batter in {"L", "R"} and batter != pitcher:
+        return 2.0
+
+    if batter in {"L", "R"} and batter == pitcher:
+        return -1.5
+
+    return 0.0
+    
 def _confidence(
     score: float,
     has_season_stats: bool,
@@ -555,12 +584,25 @@ base_score = _category_score(
     percentiles,
 )
 
+handedness_adjustment = _handedness_matchup_adjustment(
+    hitter.get("bat_side", ""),
+    hitter.get("opposing_pitcher_hand", ""),
+)
+
 lineup_bonus = _lineup_position_bonus(
     int(hitter.get("batting_order", 9))
 )
 
 score = min(
-    round(base_score + lineup_bonus, 1),
+    max(
+        round(
+            base_score
+            + lineup_bonus
+            + handedness_adjustment,
+            1,
+        ),
+        0.0,
+    ),
     100.0,
 )
 
@@ -586,6 +628,7 @@ score = min(
 "category": category,
 "base_score": base_score,
 "lineup_bonus": lineup_bonus,
+"handedness_adjustment": handedness_adjustment,               
 "gi_score": score,
 "confidence": confidence,
                 "why": _category_reasons(
