@@ -583,14 +583,14 @@ pitcher_lookup = pitcher_dataset.get(
         recent = hitter.get("recent_stats", {})
 
         pitcher = pitcher_lookup.get(
-    hitter.get("opposing_probable_pitcher_id"),
-    {},
-)
+            hitter.get("opposing_probable_pitcher_id"),
+            {},
+        )
 
-pitcher_stats = pitcher.get(
-    "season_stats",
-    {},
-)
+        pitcher_stats = pitcher.get(
+            "season_stats",
+            {},
+        )
         percentiles = _player_percentiles(
             hitter,
             populations,
