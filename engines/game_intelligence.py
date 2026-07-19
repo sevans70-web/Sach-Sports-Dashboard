@@ -25,7 +25,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from data.mlb_stats import get_confirmed_hitters_with_stats
-
+from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
@@ -45,7 +45,7 @@ def _safe_float(value: Any) -> float:
     try:
         return float(value)
     except (TypeError, ValueError):
-        return 0.0
+        return 0.0 
 
 
 def _percentile_rank(
@@ -555,7 +555,14 @@ def rank_players(
 )
 
     hitters = dataset.get("hitters", [])
+pitcher_dataset = get_today_probable_pitchers_with_stats(
+    schedule_date=schedule_date,
+)
 
+pitcher_lookup = pitcher_dataset.get(
+    "by_pitcher_id",
+    {},
+)
     if not dataset.get("success") or not hitters:
         return {
             "success": False,
