@@ -596,21 +596,32 @@ pitcher_lookup = pitcher_dataset.get(
             populations,
         )
 
-base_score = _category_score(
-    category,
-    percentiles,
-)
+        base_score = _category_score(
+            category,
+            percentiles,
+        )
 
-handedness_adjustment = _handedness_matchup_adjustment(
-    hitter.get("bat_side", ""),
-    hitter.get("opposing_pitcher_hand", ""),
-)
+        handedness_adjustment = _handedness_matchup_adjustment(
+            hitter.get("bat_side", ""),
+            hitter.get("opposing_pitcher_hand", ""),
+        )
 
-lineup_bonus = _lineup_position_bonus(
-    int(hitter.get("batting_order", 9))
-)
+        lineup_bonus = _lineup_position_bonus(
+            int(hitter.get("batting_order", 9))
+        )
 
-score = min(
+        score = min(
+            max(
+                round(
+                    base_score
+                    + lineup_bonus
+                    + handedness_adjustment,
+                    1,
+                ),
+                0.0,
+            ),
+            100.0,
+        )
     max(
         round(
             base_score
