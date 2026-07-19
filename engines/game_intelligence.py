@@ -141,6 +141,45 @@ def _handedness_matchup_adjustment(
         return -1.5
 
     return 0.0
+
+def _pitcher_quality_adjustment(
+    pitcher_stats: dict[str, Any],
+) -> float:
+    """
+    Return a small hitter adjustment based on the opposing pitcher's quality.
+
+    Better pitchers reduce hitter scores.
+    Weaker pitchers increase hitter scores.
+    """
+
+    era = _safe_float(pitcher_stats.get("era"))
+    whip = _safe_float(pitcher_stats.get("whip"))
+    k_rate = _safe_float(pitcher_stats.get("strikeout_rate"))
+    hr9 = _safe_float(pitcher_stats.get("home_runs_per_9"))
+
+    adjustment = 0.0
+
+    if era >= 4.75:
+        adjustment += 2.0
+    elif era <= 3.25:
+        adjustment -= 2.0
+
+    if whip >= 1.35:
+        adjustment += 1.5
+    elif whip <= 1.10:
+        adjustment -= 1.5
+
+    if k_rate >= 0.28:
+        adjustment -= 1.5
+    elif k_rate <= 0.18:
+        adjustment += 1.0
+
+    if hr9 >= 1.3:
+        adjustment += 1.0
+    elif hr9 <= 0.8:
+        adjustment -= 1.0
+
+    return adjustment
     
 def _confidence(
     score: float,
