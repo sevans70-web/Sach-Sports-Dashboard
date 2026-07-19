@@ -693,6 +693,7 @@ def rank_players(
                 "base_score": base_score,
                 "lineup_bonus": lineup_bonus,
                 "handedness_adjustment": handedness_adjustment,
+                "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
                 "confidence": confidence,
                 "why": _category_reasons(
