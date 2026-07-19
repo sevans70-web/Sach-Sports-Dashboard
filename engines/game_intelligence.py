@@ -550,19 +550,21 @@ def rank_players(
         )
 
     dataset = get_confirmed_hitters_with_stats(
-    schedule_date=schedule_date,
-    recent_days=recent_days,
-)
+        schedule_date=schedule_date,
+        recent_days=recent_days,
+    )
 
     hitters = dataset.get("hitters", [])
-pitcher_dataset = get_today_probable_pitchers_with_stats(
-    schedule_date=schedule_date,
-)
 
-pitcher_lookup = pitcher_dataset.get(
-    "by_pitcher_id",
-    {},
-)
+    pitcher_dataset = get_today_probable_pitchers_with_stats(
+        schedule_date=schedule_date,
+    )
+
+    pitcher_lookup = pitcher_dataset.get(
+        "by_pitcher_id",
+        {},
+    )
+
     if not dataset.get("success") or not hitters:
         return {
             "success": False,
