@@ -651,12 +651,17 @@ def rank_players(
             int(hitter.get("batting_order", 9))
         )
 
+        pitcher_adjustment = _pitcher_quality_adjustment(
+            pitcher_stats,
+        )
+        
         score = min(
             max(
                 round(
                     base_score
                     + lineup_bonus
-                    + handedness_adjustment,
+                    + handedness_adjustment
+                    + pitcher_adjustment,
                     1,
                 ),
                 0.0,
