@@ -622,17 +622,7 @@ pitcher_lookup = pitcher_dataset.get(
             ),
             100.0,
         )
-    max(
-        round(
-            base_score
-            + lineup_bonus
-            + handedness_adjustment,
-            1,
-        ),
-        0.0,
-    ),
-    100.0,
-)
+    
 
         confidence = _confidence(
             score=score,
@@ -653,12 +643,12 @@ pitcher_lookup = pitcher_dataset.get(
         scored_players.append(
             {
                 **hitter,
-"category": category,
-"base_score": base_score,
-"lineup_bonus": lineup_bonus,
-"handedness_adjustment": handedness_adjustment,               
-"gi_score": score,
-"confidence": confidence,
+                "category": category,
+                "base_score": base_score,
+                "lineup_bonus": lineup_bonus,
+                "handedness_adjustment": handedness_adjustment,
+                "gi_score": score,
+                "confidence": confidence,
                 "why": _category_reasons(
                     category,
                     season,
