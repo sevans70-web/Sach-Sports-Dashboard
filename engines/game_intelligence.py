@@ -658,8 +658,8 @@ def rank_players(
         score = min(
             max(
                 round(
-                    base_score
-                    + lineup_bonus
+                    (base_score * 0.85)
+                    + (lineup_bonus * 0.75)
                     + handedness_adjustment
                     + pitcher_adjustment,
                     1,
