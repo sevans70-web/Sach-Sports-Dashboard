@@ -696,12 +696,23 @@ def rank_players(
                 "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
                 "confidence": confidence,
-                "why": _category_reasons(
-                    category,
-                    season,
-                    recent,
-                    percentiles,
-                ),
+                "why": (
+    _category_reasons(
+        category,
+        season,
+        recent,
+        percentiles,
+    )
+    + (
+        ["Opposing pitcher quality improves this matchup"]
+        if pitcher_adjustment >= 2.0
+        else (
+            ["Opposing pitcher quality makes this matchup more difficult"]
+            if pitcher_adjustment <= -2.0
+            else []
+        )
+    )
+)[:4],
                 "risk_flags": _risk_flags(hitter),
                 "percentiles": percentiles,
             }
