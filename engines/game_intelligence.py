@@ -696,7 +696,7 @@ def rank_players(
                 "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
                 "confidence": confidence,
-""why": (
+"why": (
     (
         ["Opposing pitcher quality improves this matchup"]
         if pitcher_adjustment >= 2.0
