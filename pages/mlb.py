@@ -26,7 +26,10 @@ from components.mlb_schedule import (
     schedule_summary,
 )
 
-from engines.game_intelligence import get_all_rankings
+from engines.game_intelligence import (
+    get_all_rankings,
+    get_daily_ranking_snapshot,
+)
 # ============================================================
 # TIME AND BASIC HELPERS
 # ============================================================
