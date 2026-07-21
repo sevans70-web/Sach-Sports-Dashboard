@@ -1089,7 +1089,9 @@ render_html(
     """
 )
 
-live_schedule = render_live_mlb_schedule()
+with st.expander("⚾ View today's MLB games", expanded=False):
+    live_schedule = render_live_mlb_schedule()
+
 live_summary = schedule_summary(live_schedule)
 
 st.subheader("Today's MLB Snapshot")
