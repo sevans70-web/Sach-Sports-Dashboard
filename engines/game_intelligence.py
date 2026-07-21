@@ -26,6 +26,7 @@ from zoneinfo import ZoneInfo
 
 from data.mlb_stats import get_confirmed_hitters_with_stats
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
+from data.ranking_history import build_daily_ranking_snapshot
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
@@ -788,3 +789,21 @@ def get_all_rankings(
     }
 
     return rankings
+    
+def get_daily_ranking_snapshot(
+    schedule_date: date | str | None = None,
+    recent_days: int = 14,
+    limit: int = 25,
+) -> dict[str, Any]:
+    """Return a dated snapshot of all three MLB ranking categories."""
+
+    rankings = get_all_rankings(
+        schedule_date=schedule_date,
+        recent_days=recent_days,
+        limit=limit,
+    )
+
+    return build_daily_ranking_snapshot(
+        rankings=rankings,
+        schedule_date=schedule_date,
+    )
