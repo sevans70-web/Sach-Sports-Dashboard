@@ -31,7 +31,18 @@ def build_daily_ranking_snapshot(
         snapshot_date = schedule_date.isoformat()
     else:
         snapshot_date = str(schedule_date)
+    has_rankings = any(
+        category_rankings
+        for category_rankings in rankings.values()
+    )
 
+    if not has_rankings:
+    return {
+        "schedule_date": snapshot_date,
+        "saved_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
+        "rankings": rankings,
+        "status": "ready",
+    }
     return {
         "schedule_date": snapshot_date,
         "saved_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
