@@ -805,11 +805,11 @@ def get_daily_ranking_snapshot(
         limit=limit,
     )
 
-snapshot = build_daily_ranking_snapshot(
-    rankings=rankings,
-    schedule_date=schedule_date,
-)
+    snapshot = build_daily_ranking_snapshot(
+        rankings=rankings,
+        schedule_date=schedule_date,
+    )
 
-save_ranking_snapshot(snapshot)
+    save_ranking_snapshot(snapshot)
 
-return snapshot
+    return snapshot
