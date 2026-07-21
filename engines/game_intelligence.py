@@ -26,8 +26,10 @@ from zoneinfo import ZoneInfo
 
 from data.mlb_stats import get_confirmed_hitters_with_stats
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
-from data.ranking_history import build_daily_ranking_snapshot
-
+from data.ranking_history import (
+    build_daily_ranking_snapshot,
+    save_ranking_snapshot,
+)
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
 CATEGORY_HOME_RUNS = "home_runs"
@@ -803,7 +805,11 @@ def get_daily_ranking_snapshot(
         limit=limit,
     )
 
-    return build_daily_ranking_snapshot(
-        rankings=rankings,
-        schedule_date=schedule_date,
-    )
+snapshot = build_daily_ranking_snapshot(
+    rankings=rankings,
+    schedule_date=schedule_date,
+)
+
+save_ranking_snapshot(snapshot)
+
+return snapshot
