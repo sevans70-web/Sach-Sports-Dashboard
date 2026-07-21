@@ -11,7 +11,9 @@ Purpose:
 
 from __future__ import annotations
 
+import json
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -49,3 +51,45 @@ def build_daily_ranking_snapshot(
         "rankings": rankings,
         "status": "ready",
     }      
+    
+def save_ranking_snapshot(
+    snapshot: dict[str, Any],
+    history_directory: str | Path = "data/ranking_history",
+) -> dict[str, Any]:
+    """Save a ready MLB ranking snapshot as a dated JSON file."""
+
+    if snapshot.get("status") != "ready":
+        return {
+            "status": "skipped",
+            "reason": "Snapshot contains no rankings.",
+            "path": None,
+        }
+
+    schedule_date = str(snapshot.get("schedule_date", "")).strip()
+
+    if not schedule_date:
+        return {
+            "status": "skipped",
+            "reason": "Snapshot has no schedule date.",
+            "path": None,
+        }
+
+    directory = Path(history_directory)
+    directory.mkdir(parents=True, exist_ok=True)
+
+    file_path = directory / f"{schedule_date}.json"
+
+    with file_path.open("w", encoding="utf-8") as history_file:
+        json.dump(
+            snapshot,
+            history_file,
+            indent=2,
+            ensure_ascii=False,
+            default=str,
+        )
+
+    return {
+        "status": "saved",
+        "reason": None,
+        "path": str(file_path),
+    }
