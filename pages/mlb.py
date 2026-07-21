@@ -193,11 +193,10 @@ def convert_live_rankings(
 @st.cache_data(ttl=900, show_spinner=False)
 def load_live_rankings() -> dict:
     """Load live MLB player rankings for today's games."""
-    return get_all_rankings(
+    return get_daily_ranking_snapshot(
         recent_days=14,
         limit=25,
     )
-
 
 live_rankings = load_live_rankings()
 
