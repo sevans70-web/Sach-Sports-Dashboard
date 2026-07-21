@@ -37,14 +37,15 @@ def build_daily_ranking_snapshot(
     )
 
     if not has_rankings:
+        return {
+            "schedule_date": snapshot_date,
+            "saved_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
+            "rankings": {},
+            "status": "empty",
+        }
     return {
         "schedule_date": snapshot_date,
         "saved_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
         "rankings": rankings,
         "status": "ready",
-    }
-    return {
-        "schedule_date": snapshot_date,
-        "saved_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
-        "rankings": rankings,
-    }
+    }      
