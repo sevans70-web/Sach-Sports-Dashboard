@@ -787,4 +787,4 @@ def get_all_rankings(
         ),
     }
 
-    return rankings}
+    return rankings
