@@ -766,7 +766,7 @@ def get_all_rankings(
     limit: int = 25,
 ) -> dict[str, Any]:
     """Return all three MLB ranking categories."""
-    return {
+    rankings = {
         CATEGORY_HOME_RUNS: rank_players(
             CATEGORY_HOME_RUNS,
             schedule_date=schedule_date,
@@ -786,3 +786,5 @@ def get_all_rankings(
             limit=limit,
         ),
     }
+
+    return rankings}
