@@ -30,6 +30,11 @@ from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
 )
+from data.ranking_history import (
+    compare_player_rank,
+    load_ranking_snapshot,
+)
+
 # ============================================================
 # TIME AND BASIC HELPERS
 # ============================================================
