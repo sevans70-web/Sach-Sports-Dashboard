@@ -1,3 +1,4 @@
+from data.mlb_players import get_player
 """
 Player Intelligence Engine
 
@@ -13,6 +14,4 @@ def get_player_profile(player_id: int) -> dict:
     Placeholder for future development.
     """
 
-    return {
-        "player_id": player_id,
-    }
+    return get_player(player_id)
