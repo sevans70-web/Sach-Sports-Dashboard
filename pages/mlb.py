@@ -359,7 +359,7 @@ def render_full_ranking_row(player: dict) -> None:
 
         <div class="gi-full-name">
             {escape(player['player'])}
-            {escape(player.get("movement", ""))}
+            {escape(str(player.get("movement", "")))}
         </div>
                 <div class="gi-full-name">{escape(player['player'])}</div>
                 <div class="gi-full-matchup">
