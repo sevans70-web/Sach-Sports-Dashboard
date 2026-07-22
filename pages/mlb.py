@@ -352,7 +352,10 @@ def render_full_ranking_row(player: dict) -> None:
                 {escape(initials)}
             </div>
 
-            <div class="gi-full-player">
+        <div class="gi-full-name">
+            {escape(player['player'])}
+            {escape(player.get("movement", ""))}
+        </div>
                 <div class="gi-full-name">{escape(player['player'])}</div>
                 <div class="gi-full-matchup">
                     {escape(player['team'])} vs. {escape(player['opponent'])}
