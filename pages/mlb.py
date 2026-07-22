@@ -316,7 +316,20 @@ TOTAL_BASE_RANKINGS = convert_live_rankings(
     live_rankings.get("total_bases", {}),
     "Total Bases",
 )
+HOME_RUN_RANKINGS = apply_intraday_movement(
+    HOME_RUN_RANKINGS,
+    "previous_home_run_rankings",
+)
 
+HIT_RANKINGS = apply_intraday_movement(
+    HIT_RANKINGS,
+    "previous_hit_rankings",
+)
+
+TOTAL_BASE_RANKINGS = apply_intraday_movement(
+    TOTAL_BASE_RANKINGS,
+    "previous_total_base_rankings",
+)
 
 # ============================================================
 # SESSION STATE
