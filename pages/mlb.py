@@ -356,7 +356,10 @@ def render_featured_player(player: dict) -> None:
                     </span>
                 </div>
 
-                <div class="gi-featured-name">{escape(player['player'])}</div>
+                <div class="gi-featured-name">
+                    {escape(player['player'])}
+                    {escape(player.get("movement", ""))}
+                </div>
 
                 <div class="gi-featured-matchup">
                     {escape(player['team'])} vs. {escape(player['opponent'])}
@@ -397,12 +400,12 @@ def render_compact_player(player: dict) -> None:
 
             <div class="gi-compact-rank">#{player['rank']}</div>
 
-            <div class="gi-compact-main">
+                <div class="gi-compact-main">
                 <div class="gi-compact-topline">
                     <span class="gi-compact-name">
                         {escape(player['player'])}
+                        {escape(player.get("movement", ""))}
                     </span>
-
                     <span class="gi-confidence {badge_class}">
                         {escape(player['confidence'])}
                     </span>
