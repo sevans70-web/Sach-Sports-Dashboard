@@ -218,7 +218,12 @@ HOME_RUN_RANKINGS = convert_live_rankings(
     live_rankings.get("home_runs", {}),
     "Home Runs",
 )
-
+for player in HOME_RUN_RANKINGS:
+    player["movement"] = compare_player_rank(
+        player["player"],
+        player["rank"],
+        previous_rankings.get("home_runs", []),
+    )
 HIT_RANKINGS = convert_live_rankings(
     live_rankings.get("hits", {}),
     "Hits",
