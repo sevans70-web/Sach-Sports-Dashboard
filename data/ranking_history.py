@@ -131,3 +131,47 @@ def load_ranking_snapshot(
         }
 
     return snapshot
+def compare_player_rank(
+    current_rankings: list[dict[str, Any]],
+    previous_rankings: list[dict[str, Any]],
+    player_name: str,
+) -> dict[str, Any]:
+    """Compare a player's ranking position between two snapshots."""
+
+    current_position = next(
+        (
+            index + 1
+            for index, player in enumerate(current_rankings)
+            if player.get("player_name") == player_name
+        ),
+        None,
+    )
+
+    previous_position = next(
+        (
+            index + 1
+            for index, player in enumerate(previous_rankings)
+            if player.get("player_name") == player_name
+        ),
+        None,
+    )
+
+    if current_position is None:
+        return {"status": "not_found"}
+
+    if previous_position is None:
+        return {
+            "status": "new",
+            "current": current_position,
+            "previous": None,
+            "movement": None,
+        }
+
+    movement = previous_position - current_position
+
+    return {
+        "status": "tracked",
+        "current": current_position,
+        "previous": previous_position,
+        "movement": movement,
+    }
