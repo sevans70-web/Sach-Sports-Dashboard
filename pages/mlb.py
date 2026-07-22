@@ -262,8 +262,88 @@ def apply_intraday_movement(
         "movement": movement_lookup,
     }
 
+
+def apply_intraday_movement(
+    rankings: list[dict],
+    session_key: str,
+) -> list[dict]:
+    """Track players entering and leaving the visible Top 5."""
+
+    current_signature = tuple(
+        (
+            player.get("player_id") or player.get("player"),
+            player.get("rank"),
+            player.get("score"),
+        )
+        for player in rankings
+    )
+
+    previous_state = st.session_state.get(session_key)
+    changes_key = f"{session_key}_recent_changes"
+
+    if previous_state is None:
+        st.session_state[session_key] = {
+            "signature": current_signature,
+            "rankings": [dict(player) for player in rankings],
+        }
+        st.session_state[changes_key] = []
+        return rankings
+
+    if previous_state.get("signature") == current_signature:
+        return rankings
+
+    previous_top_five = previous_state.get("rankings", [])[:5]
+    current_top_five = rankings[:5]
+
+    previous_lookup = {
+        player.get("player_id") or player.get("player"): player
+        for player in previous_top_five
+    }
+
+    current_lookup = {
+        player.get("player_id") or player.get("player"): player
+        for player in current_top_five
+    }
+
+    recent_changes = []
+
+    for player_key, player in current_lookup.items():
+        if player_key not in previous_lookup:
+            recent_changes.append(
+                f"🆕 {player.get('player')} — new at #{player.get('rank')}"
+            )
+
+    for player_key, player in previous_lookup.items():
+        if player_key not in current_lookup:
+            recent_changes.append(
+                f"⬇️ {player.get('player')} — out, previously #{player.get('rank')}"
+            )
+
+    st.session_state[changes_key] = recent_changes
+
+    st.session_state[session_key] = {
+        "signature": current_signature,
+        "rankings": [dict(player) for player in rankings],
+    }
+
     return rankings
 
+
+def render_recent_movement(session_key: str) -> None:
+    """Display the latest players entering or leaving the Top 5."""
+
+    changes = st.session_state.get(
+        f"{session_key}_recent_changes",
+        [],
+    )
+
+    if not changes:
+        return
+
+    st.markdown("**Recent Top 5 Movement**")
+
+    for change in changes:
+        st.write(change)
 @st.cache_data(ttl=900, show_spinner=False)
 def load_live_rankings() -> dict:
     """Load live MLB player rankings for today's games."""
@@ -471,6 +551,7 @@ def render_ranking_category(
     rankings: list[dict],
     state_key: str,
     button_key: str,
+    movement_key: str,
 ) -> None:
     """Render a Top 5 preview and optional full Top 25 ranking."""
     render_html(
@@ -491,10 +572,12 @@ def render_ranking_category(
         """
     )
     if not rankings:
-        st.info(f"No {title.lower()} rankings are available right now.")
-        return
-        
-    render_featured_player(rankings[0])
+    st.info(f"No {title.lower()} rankings are available right now.")
+    return
+
+render_recent_movement(movement_key)
+
+render_featured_player(rankings[0])
 
     for player in rankings[1:5]:
         render_compact_player(player)
@@ -1251,31 +1334,31 @@ home_run_tab, hits_tab, total_bases_tab = st.tabs(
 
 with home_run_tab:
     render_ranking_category(
-        title="Home Run",
-        icon="🔥",
-        rankings=HOME_RUN_RANKINGS,
-        state_key="show_hr_25",
-        button_key="toggle_hr_25",
-    )
-
+    title="Hit",
+    icon="⚾",
+    rankings=HIT_RANKINGS,
+    state_key="show_hits_25",
+    button_key="toggle_hits_25",
+    movement_key="previous_hit_rankings",
+)
 with hits_tab:
     render_ranking_category(
-        title="Hit",
-        icon="⚾",
-        rankings=HIT_RANKINGS,
-        state_key="show_hits_25",
-        button_key="toggle_hits_25",
-    )
-
+    title="Hit",
+    icon="⚾",
+    rankings=HIT_RANKINGS,
+    state_key="show_hits_25",
+    button_key="toggle_hits_25",
+    movement_key="previous_hit_rankings",
+)
 with total_bases_tab:
     render_ranking_category(
-        title="Total Base",
-        icon="💥",
-        rankings=TOTAL_BASE_RANKINGS,
-        state_key="show_tb_25",
-        button_key="toggle_tb_25",
-    )
-
+    title="Total Base",
+    icon="💥",
+    rankings=TOTAL_BASE_RANKINGS,
+    state_key="show_tb_25",
+    button_key="toggle_tb_25",
+    movement_key="previous_total_base_rankings",
+)
 st.divider()
 
 player_page_column, interpretation_column = st.columns(2)
