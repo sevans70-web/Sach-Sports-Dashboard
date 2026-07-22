@@ -93,3 +93,41 @@ def save_ranking_snapshot(
         "reason": None,
         "path": str(file_path),
     }
+def load_ranking_snapshot(
+    schedule_date: date | str,
+    history_directory: str | Path = "data/ranking_history",
+) -> dict[str, Any]:
+    """Load a saved MLB ranking snapshot for a specific date."""
+
+    if isinstance(schedule_date, date):
+        snapshot_date = schedule_date.isoformat()
+    else:
+        snapshot_date = str(schedule_date).strip()
+
+    if not snapshot_date:
+        return {
+            "schedule_date": None,
+            "rankings": {},
+            "status": "missing",
+        }
+
+    file_path = Path(history_directory) / f"{snapshot_date}.json"
+
+    if not file_path.exists():
+        return {
+            "schedule_date": snapshot_date,
+            "rankings": {},
+            "status": "missing",
+        }
+
+    try:
+        with file_path.open("r", encoding="utf-8") as history_file:
+            snapshot = json.load(history_file)
+    except (OSError, json.JSONDecodeError):
+        return {
+            "schedule_date": snapshot_date,
+            "rankings": {},
+            "status": "error",
+        }
+
+    return snapshot
