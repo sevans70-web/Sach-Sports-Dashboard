@@ -142,7 +142,7 @@ def compare_player_rank(
         (
             index + 1
             for index, player in enumerate(current_rankings)
-            if player.get("player_name") == player_name
+            if player.get("player") == player_name
         ),
         None,
     )
