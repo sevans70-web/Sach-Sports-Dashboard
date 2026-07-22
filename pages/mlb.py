@@ -571,7 +571,7 @@ def render_ranking_category(
         </div>
         """
     )
-    if not rankings:
+if not rankings:
     st.info(f"No {title.lower()} rankings are available right now.")
     return
 
