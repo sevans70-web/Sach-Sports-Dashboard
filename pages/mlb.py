@@ -194,6 +194,89 @@ def convert_live_rankings(
 
     return converted
 
+def apply_intraday_movement(
+    rankings: list[dict],
+    session_key: str,
+) -> list[dict]:
+    """Compare rankings with the previous update during this session."""
+
+    signature = tuple(
+        (
+            player.get("player_id") or player.get("player"),
+            player.get("rank"),
+            player.get("score"),
+        )
+        for player in rankings
+    )
+
+    previous_state = st.session_state.get(session_key)
+
+    if previous_state is None:
+        for player in rankings:
+            player["movement"] = ""
+
+        st.session_state[session_key] = {
+            "signature": signature,
+            "rankings": rankings,
+            "movement": {},
+        }
+
+        return rankings
+
+    if previous_state["signature"] == signature:
+        movement_lookup = previous_state.get("movement", {})
+
+        for player in rankings:
+            player_key = player.get("player_id") or player.get("player")
+            player["movement"] = movement_lookup.get(player_key, "")
+
+        return rankings
+
+    previous_positions = {
+        player.get("player_id") or player.get("player"): player.get("rank")
+        for player in previous_state.get("rankings", [])
+    }
+
+    movement_lookup = {}
+
+    for player in rankings:
+        player_key = player.get("player_id") or player.get("player")
+        current_rank = player.get("rank")
+        previous_rank = previous_positions.get(player_key)
+
+        if previous_rank is None:
+            movement = "NEW"
+        elif current_rank < previous_rank:
+            movement = f"↑ {previous_rank - current_rank}"
+        elif current_rank > previous_rank:
+            movement = f"↓ {current_rank - previous_rank}"
+        else:
+            movement = ""
+
+        player["movement"] = movement
+        movement_lookup[player_key] = movement
+
+    st.session_state[session_key] = {
+        "signature": signature,
+        "rankings": rankings,
+        "movement": movement_lookup,
+    }
+
+    return rankings
+HOME_RUN_RANKINGS = apply_intraday_movement(
+    HOME_RUN_RANKINGS,
+    "previous_home_run_rankings",
+)
+
+HIT_RANKINGS = apply_intraday_movement(
+    HIT_RANKINGS,
+    "previous_hit_rankings",
+)
+
+TOTAL_BASE_RANKINGS = apply_intraday_movement(
+    TOTAL_BASE_RANKINGS,
+    "previous_total_base_rankings",
+)
 
 @st.cache_data(ttl=900, show_spinner=False)
 def load_live_rankings() -> dict:
