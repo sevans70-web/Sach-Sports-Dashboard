@@ -571,13 +571,14 @@ def render_ranking_category(
         </div>
         """
     )
-if not rankings:
-    st.info(f"No {title.lower()} rankings are available right now.")
-    return
 
-render_recent_movement(movement_key)
+    if not rankings:
+        st.info(f"No {title.lower()} rankings are available right now.")
+        return
 
-render_featured_player(rankings[0])
+    render_recent_movement(movement_key)
+
+    render_featured_player(rankings[0])
 
     for player in rankings[1:5]:
         render_compact_player(player)
