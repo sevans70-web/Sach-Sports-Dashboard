@@ -263,20 +263,6 @@ def apply_intraday_movement(
     }
 
     return rankings
-HOME_RUN_RANKINGS = apply_intraday_movement(
-    HOME_RUN_RANKINGS,
-    "previous_home_run_rankings",
-)
-
-HIT_RANKINGS = apply_intraday_movement(
-    HIT_RANKINGS,
-    "previous_hit_rankings",
-)
-
-TOTAL_BASE_RANKINGS = apply_intraday_movement(
-    TOTAL_BASE_RANKINGS,
-    "previous_total_base_rankings",
-)
 
 @st.cache_data(ttl=900, show_spinner=False)
 def load_live_rankings() -> dict:
