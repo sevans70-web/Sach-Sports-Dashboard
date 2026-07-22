@@ -15,7 +15,7 @@ The rankings and player identities below are placeholders for layout testing.
 They are not current recommendations.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from html import escape
 from textwrap import dedent
 from zoneinfo import ZoneInfo
@@ -206,6 +206,13 @@ def load_live_rankings() -> dict:
     return snapshot.get("rankings", {})
     
 live_rankings = load_live_rankings()
+
+yesterday_date = (
+    datetime.now(TORONTO_TIMEZONE).date() - timedelta(days=1)
+)
+
+previous_snapshot = load_ranking_snapshot(yesterday_date)
+previous_rankings = previous_snapshot.get("rankings", {})
 
 HOME_RUN_RANKINGS = convert_live_rankings(
     live_rankings.get("home_runs", {}),
