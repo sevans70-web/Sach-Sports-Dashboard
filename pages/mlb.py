@@ -1335,12 +1335,12 @@ home_run_tab, hits_tab, total_bases_tab = st.tabs(
 
 with home_run_tab:
     render_ranking_category(
-    title="Hit",
-    icon="⚾",
-    rankings=HIT_RANKINGS,
-    state_key="show_hits_25",
-    button_key="toggle_hits_25",
-    movement_key="previous_hit_rankings",
+        title="Home Run",
+        icon="🔥",
+        rankings=HOME_RUN_RANKINGS,
+        state_key="show_hr_25",
+        button_key="toggle_hr_25",
+        movement_key="previous_home_run_rankings",
 )
 with hits_tab:
     render_ranking_category(
