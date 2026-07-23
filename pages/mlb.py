@@ -30,7 +30,7 @@ from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
 )
-from utils.intraday_rankings import (
+from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
     load_compare_and_save,
