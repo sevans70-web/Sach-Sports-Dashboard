@@ -1,0 +1,540 @@
+{
+  "captured_at": "2026-07-22T23:01:26.484566-04:00",
+  "categories": {
+    "hits": [
+      {
+        "player": "Tommy White",
+        "player_id": 695720,
+        "player_key": "695720",
+        "rank": 1,
+        "score": 85.7,
+        "team": "Athletics"
+      },
+      {
+        "player": "Christian Encarnacion-Strand",
+        "player_id": 687952,
+        "player_key": "687952",
+        "rank": 2,
+        "score": 85.6,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Tommy Edman",
+        "player_id": 669242,
+        "player_key": "669242",
+        "rank": 3,
+        "score": 84.0,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 4,
+        "score": 83.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Luis Arraez",
+        "player_id": 650333,
+        "player_key": "650333",
+        "rank": 5,
+        "score": 82.5,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 6,
+        "score": 82.1,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
+        "rank": 7,
+        "score": 81.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Nick Gonzales",
+        "player_id": 693304,
+        "player_key": "693304",
+        "rank": 8,
+        "score": 80.6,
+        "team": "Pittsburgh Pirates"
+      },
+      {
+        "player": "Nolan Schanuel",
+        "player_id": 694384,
+        "player_key": "694384",
+        "rank": 9,
+        "score": 80.6,
+        "team": "Los Angeles Angels"
+      },
+      {
+        "player": "Jake McCarthy",
+        "player_id": 664983,
+        "player_key": "664983",
+        "rank": 10,
+        "score": 80.6,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Drake Baldwin",
+        "player_id": 686948,
+        "player_key": "686948",
+        "rank": 11,
+        "score": 80.3,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 12,
+        "score": 79.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jeremy Peña",
+        "player_id": 665161,
+        "player_key": "665161",
+        "rank": 13,
+        "score": 79.9,
+        "team": "Houston Astros"
+      },
+      {
+        "player": "Fernando Tatis Jr.",
+        "player_id": 665487,
+        "player_key": "665487",
+        "rank": 14,
+        "score": 78.0,
+        "team": "San Diego Padres"
+      },
+      {
+        "player": "Willson Contreras",
+        "player_id": 575929,
+        "player_key": "575929",
+        "rank": 15,
+        "score": 78.0,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "CJ Abrams",
+        "player_id": 682928,
+        "player_key": "682928",
+        "rank": 16,
+        "score": 77.6,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Wyatt Langford",
+        "player_id": 694671,
+        "player_key": "694671",
+        "rank": 17,
+        "score": 76.7,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Jake Mangum",
+        "player_id": 663968,
+        "player_key": "663968",
+        "rank": 19,
+        "score": 76.2,
+        "team": "Pittsburgh Pirates"
+      },
+      {
+        "player": "TJ Rumfield",
+        "player_id": 681198,
+        "player_key": "681198",
+        "rank": 20,
+        "score": 76.1,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Ernie Clement",
+        "player_id": 676391,
+        "player_key": "676391",
+        "rank": 22,
+        "score": 75.7,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Ben Rice",
+        "player_id": 700250,
+        "player_key": "700250",
+        "rank": 23,
+        "score": 75.4,
+        "team": "New York Yankees"
+      },
+      {
+        "player": "Jonathan Aranda",
+        "player_id": 666018,
+        "player_key": "666018",
+        "rank": 24,
+        "score": 75.3,
+        "team": "Tampa Bay Rays"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Christian Encarnacion-Strand",
+        "player_id": 687952,
+        "player_key": "687952",
+        "rank": 1,
+        "score": 91.2,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Ben Rice",
+        "player_id": 700250,
+        "player_key": "700250",
+        "rank": 2,
+        "score": 90.7,
+        "team": "New York Yankees"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 3,
+        "score": 87.9,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Max Muncy",
+        "player_id": 571970,
+        "player_key": "571970",
+        "rank": 4,
+        "score": 85.9,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Esmerlyn Valdez",
+        "player_id": 699013,
+        "player_key": "699013",
+        "rank": 5,
+        "score": 85.8,
+        "team": "Pittsburgh Pirates"
+      },
+      {
+        "player": "CJ Abrams",
+        "player_id": 682928,
+        "player_key": "682928",
+        "rank": 6,
+        "score": 85.0,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
+        "rank": 7,
+        "score": 85.0,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Willson Contreras",
+        "player_id": 575929,
+        "player_key": "575929",
+        "rank": 8,
+        "score": 84.7,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Wyatt Langford",
+        "player_id": 694671,
+        "player_key": "694671",
+        "rank": 9,
+        "score": 84.7,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Shohei Ohtani",
+        "player_id": 660271,
+        "player_key": "660271",
+        "rank": 10,
+        "score": 83.6,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Ty France",
+        "player_id": 664034,
+        "player_key": "664034",
+        "rank": 11,
+        "score": 83.6,
+        "team": "San Diego Padres"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 14,
+        "score": 81.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Elly De La Cruz",
+        "player_id": 682829,
+        "player_key": "682829",
+        "rank": 15,
+        "score": 80.4,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Drake Baldwin",
+        "player_id": 686948,
+        "player_key": "686948",
+        "rank": 16,
+        "score": 78.4,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 17,
+        "score": 78.3,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Bryce Eldridge",
+        "player_id": 805811,
+        "player_key": "805811",
+        "rank": 18,
+        "score": 78.0,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Matt Olson",
+        "player_id": 621566,
+        "player_key": "621566",
+        "rank": 19,
+        "score": 77.6,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 20,
+        "score": 77.2,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Manny Machado",
+        "player_id": 592518,
+        "player_key": "592518",
+        "rank": 22,
+        "score": 75.9,
+        "team": "San Diego Padres"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 23,
+        "score": 75.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "JJ Bleday",
+        "player_id": 668709,
+        "player_key": "668709",
+        "rank": 24,
+        "score": 75.4,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Mickey Moniak",
+        "player_id": 666160,
+        "player_key": "666160",
+        "rank": 25,
+        "score": 75.4,
+        "team": "Colorado Rockies"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "Christian Encarnacion-Strand",
+        "player_id": 687952,
+        "player_key": "687952",
+        "rank": 1,
+        "score": 91.1,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Ben Rice",
+        "player_id": 700250,
+        "player_key": "700250",
+        "rank": 2,
+        "score": 88.9,
+        "team": "New York Yankees"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 3,
+        "score": 86.6,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Wyatt Langford",
+        "player_id": 694671,
+        "player_key": "694671",
+        "rank": 4,
+        "score": 85.4,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "CJ Abrams",
+        "player_id": 682928,
+        "player_key": "682928",
+        "rank": 5,
+        "score": 85.1,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Willson Contreras",
+        "player_id": 575929,
+        "player_key": "575929",
+        "rank": 6,
+        "score": 84.3,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 7,
+        "score": 83.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Drake Baldwin",
+        "player_id": 686948,
+        "player_key": "686948",
+        "rank": 8,
+        "score": 82.9,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
+        "rank": 9,
+        "score": 82.3,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Elly De La Cruz",
+        "player_id": 682829,
+        "player_key": "682829",
+        "rank": 11,
+        "score": 82.2,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Esmerlyn Valdez",
+        "player_id": 699013,
+        "player_key": "699013",
+        "rank": 13,
+        "score": 81.8,
+        "team": "Pittsburgh Pirates"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 14,
+        "score": 81.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 15,
+        "score": 80.2,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Jake McCarthy",
+        "player_id": 664983,
+        "player_key": "664983",
+        "rank": 16,
+        "score": 80.1,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Ty France",
+        "player_id": 664034,
+        "player_key": "664034",
+        "rank": 17,
+        "score": 80.0,
+        "team": "San Diego Padres"
+      },
+      {
+        "player": "Jeremy Peña",
+        "player_id": 665161,
+        "player_key": "665161",
+        "rank": 18,
+        "score": 79.7,
+        "team": "Houston Astros"
+      },
+      {
+        "player": "Shohei Ohtani",
+        "player_id": 660271,
+        "player_key": "660271",
+        "rank": 19,
+        "score": 78.7,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Tommy Edman",
+        "player_id": 669242,
+        "player_key": "669242",
+        "rank": 20,
+        "score": 78.5,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Max Muncy",
+        "player_id": 571970,
+        "player_key": "571970",
+        "rank": 22,
+        "score": 76.4,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Seiya Suzuki",
+        "player_id": 673548,
+        "player_key": "673548",
+        "rank": 23,
+        "score": 76.3,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Brewer Hicklen",
+        "player_id": 676551,
+        "player_key": "676551",
+        "rank": 24,
+        "score": 75.4,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Trea Turner",
+        "player_id": 607208,
+        "player_key": "607208",
+        "rank": 25,
+        "score": 75.0,
+        "team": "Philadelphia Phillies"
+      }
+    ]
+  },
+  "version": 1
+}
