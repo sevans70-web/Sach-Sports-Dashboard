@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-23T18:02:58.734830-04:00",
+  "captured_at": "2026-07-23T18:35:17.766353-04:00",
   "categories": {
     "hits": [
       {
@@ -31,7 +31,7 @@
         "player_id": 672515,
         "player_key": "672515",
         "rank": 4,
-        "score": 77.5,
+        "score": 77.4,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -39,14 +39,22 @@
         "player_id": 800050,
         "player_key": "800050",
         "rank": 5,
-        "score": 76.7,
+        "score": 76.6,
         "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 6,
+        "score": 74.3,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Ernie Clement",
         "player_id": 676391,
         "player_key": "676391",
-        "rank": 6,
+        "rank": 7,
         "score": 74.1,
         "team": "Toronto Blue Jays"
       },
@@ -54,24 +62,16 @@
         "player": "Steven Kwan",
         "player_id": 680757,
         "player_key": "680757",
-        "rank": 7,
-        "score": 73.3,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Alec Burleson",
-        "player_id": 676475,
-        "player_key": "676475",
         "rank": 8,
-        "score": 72.5,
-        "team": "St. Louis Cardinals"
+        "score": 73.5,
+        "team": "Cleveland Guardians"
       },
       {
         "player": "Trevor Larnach",
         "player_id": 663616,
         "player_key": "663616",
         "rank": 9,
-        "score": 72.5,
+        "score": 72.1,
         "team": "Minnesota Twins"
       },
       {
@@ -103,7 +103,7 @@
         "player_id": 623205,
         "player_key": "623205",
         "rank": 13,
-        "score": 68.0,
+        "score": 67.9,
         "team": "Kansas City Royals"
       },
       {
@@ -119,7 +119,7 @@
         "player_id": 677587,
         "player_key": "677587",
         "rank": 15,
-        "score": 66.2,
+        "score": 66.0,
         "team": "Cleveland Guardians"
       },
       {
@@ -143,7 +143,7 @@
         "player_id": 805808,
         "player_key": "805808",
         "rank": 18,
-        "score": 65.1,
+        "score": 65.0,
         "team": "Detroit Tigers"
       },
       {
@@ -159,7 +159,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 20,
-        "score": 63.7,
+        "score": 63.5,
         "team": "San Diego Padres"
       },
       {
@@ -167,7 +167,7 @@
         "player_id": 545121,
         "player_key": "545121",
         "rank": 21,
-        "score": 63.2,
+        "score": 62.6,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -175,32 +175,32 @@
         "player_id": 691023,
         "player_key": "691023",
         "rank": 22,
-        "score": 60.0,
+        "score": 61.5,
         "team": "St. Louis Cardinals"
-      },
-      {
-        "player": "Jim Jarvis",
-        "player_id": 805347,
-        "player_key": "805347",
-        "rank": 23,
-        "score": 57.6,
-        "team": "Atlanta Braves"
       },
       {
         "player": "Riley Greene",
         "player_id": 682985,
         "player_key": "682985",
-        "rank": 24,
+        "rank": 23,
         "score": 57.5,
         "team": "Detroit Tigers"
       },
       {
-        "player": "Nathan Lukes",
-        "player_id": 664770,
-        "player_key": "664770",
+        "player": "Jim Jarvis",
+        "player_id": 805347,
+        "player_key": "805347",
+        "rank": 24,
+        "score": 57.5,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Tyler Locklear",
+        "player_id": 682988,
+        "player_key": "682988",
         "rank": 25,
-        "score": 57.1,
-        "team": "Toronto Blue Jays"
+        "score": 57.3,
+        "team": "Arizona Diamondbacks"
       }
     ],
     "home_runs": [
@@ -209,31 +209,31 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 1,
-        "score": 83.0,
+        "score": 82.5,
         "team": "Atlanta Braves"
-      },
-      {
-        "player": "Dillon Dingler",
-        "player_id": 693307,
-        "player_key": "693307",
-        "rank": 2,
-        "score": 81.6,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Junior Caminero",
         "player_id": 691406,
         "player_key": "691406",
-        "rank": 3,
-        "score": 81.5,
+        "rank": 2,
+        "score": 81.2,
         "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 3,
+        "score": 81.1,
+        "team": "Detroit Tigers"
       },
       {
         "player": "Ty France",
         "player_id": 664034,
         "player_key": "664034",
         "rank": 4,
-        "score": 81.1,
+        "score": 80.5,
         "team": "San Diego Padres"
       },
       {
@@ -241,7 +241,7 @@
         "player_id": 683748,
         "player_key": "683748",
         "rank": 5,
-        "score": 80.5,
+        "score": 79.8,
         "team": "Tampa Bay Rays"
       },
       {
@@ -249,7 +249,7 @@
         "player_id": 671739,
         "player_key": "671739",
         "rank": 6,
-        "score": 77.1,
+        "score": 76.4,
         "team": "Atlanta Braves"
       },
       {
@@ -257,7 +257,7 @@
         "player_id": 682985,
         "player_key": "682985",
         "rank": 7,
-        "score": 76.0,
+        "score": 75.5,
         "team": "Detroit Tigers"
       },
       {
@@ -265,7 +265,7 @@
         "player_id": 682998,
         "player_key": "682998",
         "rank": 8,
-        "score": 75.4,
+        "score": 75.0,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -273,7 +273,7 @@
         "player_id": 680777,
         "player_key": "680777",
         "rank": 9,
-        "score": 74.8,
+        "score": 74.2,
         "team": "Minnesota Twins"
       },
       {
@@ -281,7 +281,7 @@
         "player_id": 592518,
         "player_key": "592518",
         "rank": 10,
-        "score": 70.7,
+        "score": 70.4,
         "team": "San Diego Padres"
       },
       {
@@ -289,31 +289,31 @@
         "player_id": 645277,
         "player_key": "645277",
         "rank": 11,
-        "score": 70.0,
+        "score": 69.7,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Matt Olson",
+        "player_id": 621566,
+        "player_key": "621566",
+        "rank": 12,
+        "score": 68.6,
         "team": "Atlanta Braves"
       },
       {
         "player": "Chase DeLauter",
         "player_id": 800050,
         "player_key": "800050",
-        "rank": 12,
-        "score": 69.0,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Matt Olson",
-        "player_id": 621566,
-        "player_key": "621566",
         "rank": 13,
-        "score": 68.8,
-        "team": "Atlanta Braves"
+        "score": 68.5,
+        "team": "Cleveland Guardians"
       },
       {
         "player": "Spencer Torkelson",
         "player_id": 679529,
         "player_key": "679529",
         "rank": 14,
-        "score": 67.9,
+        "score": 67.5,
         "team": "Detroit Tigers"
       },
       {
@@ -321,46 +321,54 @@
         "player_id": 665019,
         "player_key": "665019",
         "rank": 15,
-        "score": 65.6,
+        "score": 65.1,
         "team": "Minnesota Twins"
-      },
-      {
-        "player": "Byron Buxton",
-        "player_id": 621439,
-        "player_key": "621439",
-        "rank": 16,
-        "score": 65.0,
-        "team": "Minnesota Twins"
-      },
-      {
-        "player": "Kevin McGonigle",
-        "player_id": 805808,
-        "player_key": "805808",
-        "rank": 17,
-        "score": 64.0,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
-        "rank": 18,
-        "score": 64.0,
+        "rank": 16,
+        "score": 65.0,
         "team": "St. Louis Cardinals"
       },
       {
-        "player": "Brooks Lee",
-        "player_id": 686797,
-        "player_key": "686797",
-        "rank": 19,
-        "score": 63.8,
+        "player": "Byron Buxton",
+        "player_id": 621439,
+        "player_key": "621439",
+        "rank": 17,
+        "score": 64.9,
         "team": "Minnesota Twins"
       },
       {
         "player": "JJ Wetherholt",
         "player_id": 802139,
         "player_key": "802139",
+        "rank": 18,
+        "score": 64.0,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 19,
+        "score": 63.7,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Brooks Lee",
+        "player_id": 686797,
+        "player_key": "686797",
         "rank": 20,
+        "score": 63.5,
+        "team": "Minnesota Twins"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 21,
         "score": 63.2,
         "team": "St. Louis Cardinals"
       },
@@ -368,24 +376,16 @@
         "player": "Trevor Larnach",
         "player_id": 663616,
         "player_key": "663616",
-        "rank": 21,
-        "score": 62.9,
-        "team": "Minnesota Twins"
-      },
-      {
-        "player": "Alec Burleson",
-        "player_id": 676475,
-        "player_key": "676475",
         "rank": 22,
-        "score": 61.7,
-        "team": "St. Louis Cardinals"
+        "score": 62.4,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Jonathan Aranda",
         "player_id": 666018,
         "player_key": "666018",
         "rank": 23,
-        "score": 61.3,
+        "score": 60.9,
         "team": "Tampa Bay Rays"
       },
       {
@@ -393,7 +393,7 @@
         "player_id": 695600,
         "player_key": "695600",
         "rank": 24,
-        "score": 61.1,
+        "score": 60.8,
         "team": "Kansas City Royals"
       },
       {
@@ -401,7 +401,7 @@
         "player_id": 683953,
         "player_key": "683953",
         "rank": 25,
-        "score": 60.5,
+        "score": 60.1,
         "team": "Cleveland Guardians"
       }
     ],
@@ -411,7 +411,7 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 1,
-        "score": 85.6,
+        "score": 85.2,
         "team": "Atlanta Braves"
       },
       {
@@ -419,7 +419,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 2,
-        "score": 84.6,
+        "score": 84.4,
         "team": "Tampa Bay Rays"
       },
       {
@@ -427,7 +427,7 @@
         "player_id": 693307,
         "player_key": "693307",
         "rank": 3,
-        "score": 79.7,
+        "score": 79.3,
         "team": "Detroit Tigers"
       },
       {
@@ -435,7 +435,7 @@
         "player_id": 671739,
         "player_key": "671739",
         "rank": 4,
-        "score": 78.4,
+        "score": 78.0,
         "team": "Atlanta Braves"
       },
       {
@@ -443,7 +443,7 @@
         "player_id": 800050,
         "player_key": "800050",
         "rank": 5,
-        "score": 77.4,
+        "score": 76.9,
         "team": "Cleveland Guardians"
       },
       {
@@ -451,7 +451,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 6,
-        "score": 76.9,
+        "score": 76.4,
         "team": "San Diego Padres"
       },
       {
@@ -459,7 +459,7 @@
         "player_id": 665487,
         "player_key": "665487",
         "rank": 7,
-        "score": 72.5,
+        "score": 72.3,
         "team": "San Diego Padres"
       },
       {
@@ -467,7 +467,7 @@
         "player_id": 682985,
         "player_key": "682985",
         "rank": 8,
-        "score": 71.3,
+        "score": 71.0,
         "team": "Detroit Tigers"
       },
       {
@@ -475,7 +475,7 @@
         "player_id": 680777,
         "player_key": "680777",
         "rank": 9,
-        "score": 69.5,
+        "score": 68.9,
         "team": "Minnesota Twins"
       },
       {
@@ -483,31 +483,31 @@
         "player_id": 805808,
         "player_key": "805808",
         "rank": 10,
-        "score": 68.4,
+        "score": 68.2,
         "team": "Detroit Tigers"
-      },
-      {
-        "player": "Trevor Larnach",
-        "player_id": 663616,
-        "player_key": "663616",
-        "rank": 11,
-        "score": 68.4,
-        "team": "Minnesota Twins"
       },
       {
         "player": "Jonathan Aranda",
         "player_id": 666018,
         "player_key": "666018",
-        "rank": 12,
-        "score": 68.2,
+        "rank": 11,
+        "score": 67.9,
         "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Trevor Larnach",
+        "player_id": 663616,
+        "player_key": "663616",
+        "rank": 12,
+        "score": 67.9,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Corbin Carroll",
         "player_id": 682998,
         "player_key": "682998",
         "rank": 13,
-        "score": 67.0,
+        "score": 67.1,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -515,7 +515,7 @@
         "player_id": 683748,
         "player_key": "683748",
         "rank": 14,
-        "score": 66.7,
+        "score": 66.2,
         "team": "Tampa Bay Rays"
       },
       {
@@ -523,7 +523,7 @@
         "player_id": 686797,
         "player_key": "686797",
         "rank": 15,
-        "score": 66.1,
+        "score": 65.7,
         "team": "Minnesota Twins"
       },
       {
@@ -531,7 +531,7 @@
         "player_id": 672515,
         "player_key": "672515",
         "rank": 16,
-        "score": 65.7,
+        "score": 65.4,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -539,7 +539,7 @@
         "player_id": 645277,
         "player_key": "645277",
         "rank": 17,
-        "score": 64.9,
+        "score": 64.8,
         "team": "Atlanta Braves"
       },
       {
@@ -547,7 +547,7 @@
         "player_id": 621439,
         "player_key": "621439",
         "rank": 18,
-        "score": 64.5,
+        "score": 64.3,
         "team": "Minnesota Twins"
       },
       {
@@ -555,7 +555,7 @@
         "player_id": 592518,
         "player_key": "592518",
         "rank": 19,
-        "score": 64.3,
+        "score": 64.0,
         "team": "San Diego Padres"
       },
       {
@@ -563,31 +563,31 @@
         "player_id": 676475,
         "player_key": "676475",
         "rank": 20,
-        "score": 62.3,
+        "score": 63.8,
         "team": "St. Louis Cardinals"
-      },
-      {
-        "player": "Ernie Clement",
-        "player_id": 676391,
-        "player_key": "676391",
-        "rank": 21,
-        "score": 62.2,
-        "team": "Toronto Blue Jays"
       },
       {
         "player": "Matt Olson",
         "player_id": 621566,
         "player_key": "621566",
-        "rank": 22,
-        "score": 62.1,
+        "rank": 21,
+        "score": 62.0,
         "team": "Atlanta Braves"
+      },
+      {
+        "player": "Ernie Clement",
+        "player_id": 676391,
+        "player_key": "676391",
+        "rank": 22,
+        "score": 62.0,
+        "team": "Toronto Blue Jays"
       },
       {
         "player": "Brayan Rocchio",
         "player_id": 677587,
         "player_key": "677587",
         "rank": 23,
-        "score": 61.0,
+        "score": 60.8,
         "team": "Cleveland Guardians"
       },
       {
@@ -595,7 +595,7 @@
         "player_id": 676356,
         "player_key": "676356",
         "rank": 24,
-        "score": 61.0,
+        "score": 60.7,
         "team": "Tampa Bay Rays"
       },
       {
@@ -603,7 +603,7 @@
         "player_id": 691023,
         "player_key": "691023",
         "rank": 25,
-        "score": 59.1,
+        "score": 60.2,
         "team": "St. Louis Cardinals"
       }
     ]
