@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-23T13:28:19.582823-04:00",
+  "captured_at": "2026-07-23T14:42:03.202968-04:00",
   "categories": {
     "hits": [
       {
@@ -7,7 +7,7 @@
         "player_id": 802415,
         "player_key": "802415",
         "rank": 1,
-        "score": 84.1,
+        "score": 84.7,
         "team": "Tampa Bay Rays"
       },
       {
@@ -15,7 +15,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 2,
-        "score": 81.6,
+        "score": 82.2,
         "team": "Tampa Bay Rays"
       },
       {
@@ -23,7 +23,7 @@
         "player_id": 800050,
         "player_key": "800050",
         "rank": 3,
-        "score": 77.8,
+        "score": 78.7,
         "team": "Cleveland Guardians"
       },
       {
@@ -31,176 +31,176 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 4,
-        "score": 77.3,
+        "score": 78.6,
         "team": "Atlanta Braves"
-      },
-      {
-        "player": "Steven Kwan",
-        "player_id": 680757,
-        "player_key": "680757",
-        "rank": 5,
-        "score": 73.1,
-        "team": "Cleveland Guardians"
       },
       {
         "player": "Ernie Clement",
         "player_id": 676391,
         "player_key": "676391",
-        "rank": 6,
-        "score": 72.4,
+        "rank": 5,
+        "score": 73.3,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 6,
+        "score": 73.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Steven Kwan",
+        "player_id": 680757,
+        "player_key": "680757",
+        "rank": 7,
+        "score": 72.4,
+        "team": "Cleveland Guardians"
       },
       {
         "player": "Byron Buxton",
         "player_id": 621439,
         "player_key": "621439",
-        "rank": 7,
-        "score": 72.1,
+        "rank": 8,
+        "score": 72.2,
         "team": "Minnesota Twins"
       },
       {
         "player": "Jonathan Aranda",
         "player_id": 666018,
         "player_key": "666018",
-        "rank": 8,
-        "score": 70.4,
+        "rank": 9,
+        "score": 71.6,
         "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 10,
+        "score": 70.3,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "José Ramírez",
         "player_id": 608070,
         "player_key": "608070",
-        "rank": 9,
-        "score": 70.3,
+        "rank": 11,
+        "score": 70.1,
         "team": "Cleveland Guardians"
       },
       {
         "player": "Fernando Tatis Jr.",
         "player_id": 665487,
         "player_key": "665487",
-        "rank": 10,
-        "score": 69.2,
+        "rank": 12,
+        "score": 69.5,
         "team": "San Diego Padres"
       },
       {
         "player": "Brayan Rocchio",
         "player_id": 677587,
         "player_key": "677587",
-        "rank": 11,
-        "score": 68.3,
+        "rank": 13,
+        "score": 68.5,
         "team": "Cleveland Guardians"
       },
       {
         "player": "Yandy Díaz",
         "player_id": 650490,
         "player_key": "650490",
-        "rank": 12,
-        "score": 67.0,
+        "rank": 14,
+        "score": 67.2,
         "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Yohendrick Piñango",
-        "player_id": 682818,
-        "player_key": "682818",
-        "rank": 13,
-        "score": 64.3,
-        "team": "Toronto Blue Jays"
       },
       {
         "player": "Michael Harris II",
         "player_id": 671739,
         "player_key": "671739",
-        "rank": 14,
-        "score": 63.3,
-        "team": "Atlanta Braves"
-      },
-      {
-        "player": "Jim Jarvis",
-        "player_id": 805347,
-        "player_key": "805347",
         "rank": 15,
-        "score": 62.9,
+        "score": 64.5,
         "team": "Atlanta Braves"
       },
       {
-        "player": "Ben Williamson",
-        "player_id": 810938,
-        "player_key": "810938",
+        "player": "Yohendrick Piñango",
+        "player_id": 682818,
+        "player_key": "682818",
         "rank": 16,
-        "score": 62.2,
-        "team": "Tampa Bay Rays"
+        "score": 64.2,
+        "team": "Toronto Blue Jays"
       },
       {
         "player": "Ty France",
         "player_id": 664034,
         "player_key": "664034",
         "rank": 17,
-        "score": 61.8,
+        "score": 63.1,
         "team": "San Diego Padres"
       },
       {
-        "player": "Brooks Lee",
-        "player_id": 686797,
-        "player_key": "686797",
+        "player": "Ben Williamson",
+        "player_id": 810938,
+        "player_key": "810938",
         "rank": 18,
-        "score": 59.0,
-        "team": "Minnesota Twins"
+        "score": 62.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jim Jarvis",
+        "player_id": 805347,
+        "player_key": "805347",
+        "rank": 19,
+        "score": 61.4,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 20,
+        "score": 60.6,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Ildemaro Vargas",
+        "player_id": 545121,
+        "player_key": "545121",
+        "rank": 21,
+        "score": 59.9,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Matt Olson",
         "player_id": 621566,
         "player_key": "621566",
-        "rank": 19,
-        "score": 58.0,
+        "rank": 22,
+        "score": 59.2,
         "team": "Atlanta Braves"
+      },
+      {
+        "player": "Brooks Lee",
+        "player_id": 686797,
+        "player_key": "686797",
+        "rank": 23,
+        "score": 59.2,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Ryan Jeffers",
         "player_id": 680777,
         "player_key": "680777",
-        "rank": 20,
-        "score": 55.2,
-        "team": "Minnesota Twins"
-      },
-      {
-        "player": "Luis Rengifo",
-        "player_id": 650859,
-        "player_key": "650859",
-        "rank": 21,
-        "score": 52.9,
-        "team": "San Diego Padres"
-      },
-      {
-        "player": "Luke Keaschall",
-        "player_id": 807712,
-        "player_key": "807712",
-        "rank": 22,
-        "score": 52.6,
-        "team": "Minnesota Twins"
-      },
-      {
-        "player": "Mauricio Dubón",
-        "player_id": 643289,
-        "player_key": "643289",
-        "rank": 23,
-        "score": 52.3,
-        "team": "Atlanta Braves"
-      },
-      {
-        "player": "Josh Bell",
-        "player_id": 605137,
-        "player_key": "605137",
         "rank": 24,
-        "score": 52.2,
+        "score": 55.6,
         "team": "Minnesota Twins"
       },
       {
-        "player": "Ozzie Albies",
-        "player_id": 645277,
-        "player_key": "645277",
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
         "rank": 25,
-        "score": 51.5,
-        "team": "Atlanta Braves"
+        "score": 54.0,
+        "team": "Arizona Diamondbacks"
       }
     ],
     "home_runs": [
@@ -209,7 +209,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 1,
-        "score": 84.7,
+        "score": 85.0,
         "team": "Tampa Bay Rays"
       },
       {
@@ -217,7 +217,7 @@
         "player_id": 683748,
         "player_key": "683748",
         "rank": 2,
-        "score": 82.5,
+        "score": 83.0,
         "team": "Tampa Bay Rays"
       },
       {
@@ -225,24 +225,24 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 3,
-        "score": 79.8,
+        "score": 81.4,
         "team": "Atlanta Braves"
-      },
-      {
-        "player": "Ryan Jeffers",
-        "player_id": 680777,
-        "player_key": "680777",
-        "rank": 4,
-        "score": 79.0,
-        "team": "Minnesota Twins"
       },
       {
         "player": "Ty France",
         "player_id": 664034,
         "player_key": "664034",
-        "rank": 5,
-        "score": 78.1,
+        "rank": 4,
+        "score": 80.2,
         "team": "San Diego Padres"
+      },
+      {
+        "player": "Ryan Jeffers",
+        "player_id": 680777,
+        "player_key": "680777",
+        "rank": 5,
+        "score": 78.9,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Michael Harris II",
@@ -253,156 +253,156 @@
         "team": "Atlanta Braves"
       },
       {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 7,
+        "score": 72.7,
+        "team": "Arizona Diamondbacks"
+      },
+      {
         "player": "Chase DeLauter",
         "player_id": 800050,
         "player_key": "800050",
-        "rank": 7,
-        "score": 70.6,
+        "rank": 8,
+        "score": 71.1,
         "team": "Cleveland Guardians"
       },
       {
         "player": "Matt Olson",
         "player_id": 621566,
         "player_key": "621566",
-        "rank": 8,
-        "score": 69.7,
+        "rank": 9,
+        "score": 70.5,
         "team": "Atlanta Braves"
       },
       {
         "player": "Manny Machado",
         "player_id": 592518,
         "player_key": "592518",
-        "rank": 9,
-        "score": 69.7,
-        "team": "San Diego Padres"
-      },
-      {
-        "player": "Byron Buxton",
-        "player_id": 621439,
-        "player_key": "621439",
         "rank": 10,
-        "score": 67.6,
-        "team": "Minnesota Twins"
+        "score": 70.4,
+        "team": "San Diego Padres"
       },
       {
         "player": "Kody Clemens",
         "player_id": 665019,
         "player_key": "665019",
         "rank": 11,
-        "score": 67.2,
+        "score": 68.0,
+        "team": "Minnesota Twins"
+      },
+      {
+        "player": "Byron Buxton",
+        "player_id": 621439,
+        "player_key": "621439",
+        "rank": 12,
+        "score": 67.5,
         "team": "Minnesota Twins"
       },
       {
         "player": "Brooks Lee",
         "player_id": 686797,
         "player_key": "686797",
-        "rank": 12,
-        "score": 66.0,
+        "rank": 13,
+        "score": 66.4,
         "team": "Minnesota Twins"
       },
       {
         "player": "Jonathan Aranda",
         "player_id": 666018,
         "player_key": "666018",
-        "rank": 13,
-        "score": 63.2,
+        "rank": 14,
+        "score": 63.4,
         "team": "Tampa Bay Rays"
       },
       {
         "player": "Travis Bazzana",
         "player_id": 683953,
         "player_key": "683953",
-        "rank": 14,
-        "score": 62.6,
+        "rank": 15,
+        "score": 63.0,
         "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 16,
+        "score": 62.9,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Ozzie Albies",
         "player_id": 645277,
         "player_key": "645277",
-        "rank": 15,
-        "score": 62.2,
+        "rank": 17,
+        "score": 62.3,
         "team": "Atlanta Braves"
+      },
+      {
+        "player": "JJ Wetherholt",
+        "player_id": 802139,
+        "player_key": "802139",
+        "rank": 18,
+        "score": 62.3,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
+        "rank": 19,
+        "score": 62.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 20,
+        "score": 59.9,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Yandy Díaz",
         "player_id": 650490,
         "player_key": "650490",
-        "rank": 16,
-        "score": 58.6,
+        "rank": 21,
+        "score": 59.0,
         "team": "Tampa Bay Rays"
       },
       {
         "player": "Jonny DeLuca",
         "player_id": 676356,
         "player_key": "676356",
-        "rank": 17,
-        "score": 57.3,
+        "rank": 22,
+        "score": 58.3,
         "team": "Tampa Bay Rays"
       },
       {
         "player": "Fernando Tatis Jr.",
         "player_id": 665487,
         "player_key": "665487",
-        "rank": 18,
-        "score": 57.2,
+        "rank": 23,
+        "score": 58.0,
         "team": "San Diego Padres"
       },
       {
         "player": "Austin Riley",
         "player_id": 663586,
         "player_key": "663586",
-        "rank": 19,
-        "score": 56.2,
+        "rank": 24,
+        "score": 56.9,
         "team": "Atlanta Braves"
       },
       {
         "player": "José Ramírez",
         "player_id": 608070,
         "player_key": "608070",
-        "rank": 20,
-        "score": 56.2,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Rhys Hoskins",
-        "player_id": 656555,
-        "player_key": "656555",
-        "rank": 21,
-        "score": 55.4,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Brayan Rocchio",
-        "player_id": 677587,
-        "player_key": "677587",
-        "rank": 22,
-        "score": 55.1,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Kazuma Okamoto",
-        "player_id": 672960,
-        "player_key": "672960",
-        "rank": 23,
-        "score": 54.6,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Luis Urías",
-        "player_id": 649966,
-        "player_key": "649966",
-        "rank": 24,
-        "score": 54.4,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Josh Bell",
-        "player_id": 605137,
-        "player_key": "605137",
         "rank": 25,
-        "score": 52.7,
-        "team": "Minnesota Twins"
+        "score": 56.8,
+        "team": "Cleveland Guardians"
       }
     ],
     "total_bases": [
@@ -411,7 +411,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 1,
-        "score": 87.4,
+        "score": 87.2,
         "team": "Tampa Bay Rays"
       },
       {
@@ -419,7 +419,7 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 2,
-        "score": 83.6,
+        "score": 83.9,
         "team": "Atlanta Braves"
       },
       {
@@ -427,7 +427,7 @@
         "player_id": 800050,
         "player_key": "800050",
         "rank": 3,
-        "score": 77.8,
+        "score": 77.6,
         "team": "Cleveland Guardians"
       },
       {
@@ -435,7 +435,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 4,
-        "score": 75.4,
+        "score": 76.0,
         "team": "San Diego Padres"
       },
       {
@@ -443,7 +443,7 @@
         "player_id": 671739,
         "player_key": "671739",
         "rank": 5,
-        "score": 72.4,
+        "score": 73.0,
         "team": "Atlanta Braves"
       },
       {
@@ -451,31 +451,31 @@
         "player_id": 683748,
         "player_key": "683748",
         "rank": 6,
-        "score": 71.3,
+        "score": 71.6,
         "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Ryan Jeffers",
-        "player_id": 680777,
-        "player_key": "680777",
-        "rank": 7,
-        "score": 71.1,
-        "team": "Minnesota Twins"
       },
       {
         "player": "Fernando Tatis Jr.",
         "player_id": 665487,
         "player_key": "665487",
-        "rank": 8,
-        "score": 70.5,
+        "rank": 7,
+        "score": 70.8,
         "team": "San Diego Padres"
+      },
+      {
+        "player": "Ryan Jeffers",
+        "player_id": 680777,
+        "player_key": "680777",
+        "rank": 8,
+        "score": 70.8,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Jonathan Aranda",
         "player_id": 666018,
         "player_key": "666018",
         "rank": 9,
-        "score": 70.0,
+        "score": 70.4,
         "team": "Tampa Bay Rays"
       },
       {
@@ -483,7 +483,7 @@
         "player_id": 686797,
         "player_key": "686797",
         "rank": 10,
-        "score": 69.3,
+        "score": 70.3,
         "team": "Minnesota Twins"
       },
       {
@@ -491,7 +491,7 @@
         "player_id": 621439,
         "player_key": "621439",
         "rank": 11,
-        "score": 68.2,
+        "score": 69.1,
         "team": "Minnesota Twins"
       },
       {
@@ -499,7 +499,7 @@
         "player_id": 608070,
         "player_key": "608070",
         "rank": 12,
-        "score": 64.6,
+        "score": 65.9,
         "team": "Cleveland Guardians"
       },
       {
@@ -507,104 +507,104 @@
         "player_id": 677587,
         "player_key": "677587",
         "rank": 13,
-        "score": 63.0,
+        "score": 64.2,
         "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 14,
+        "score": 64.1,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Matt Olson",
         "player_id": 621566,
         "player_key": "621566",
-        "rank": 14,
-        "score": 62.6,
+        "rank": 15,
+        "score": 64.0,
         "team": "Atlanta Braves"
       },
       {
         "player": "Manny Machado",
         "player_id": 592518,
         "player_key": "592518",
-        "rank": 15,
-        "score": 60.6,
+        "rank": 16,
+        "score": 61.4,
         "team": "San Diego Padres"
       },
       {
         "player": "Chandler Simpson",
         "player_id": 802415,
         "player_key": "802415",
-        "rank": 16,
-        "score": 59.9,
+        "rank": 17,
+        "score": 60.7,
         "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 18,
+        "score": 60.6,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Ernie Clement",
         "player_id": 676391,
         "player_key": "676391",
-        "rank": 17,
-        "score": 58.9,
+        "rank": 19,
+        "score": 59.9,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 20,
+        "score": 59.8,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Jonny DeLuca",
         "player_id": 676356,
         "player_key": "676356",
-        "rank": 18,
-        "score": 58.9,
-        "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Yandy Díaz",
-        "player_id": 650490,
-        "player_key": "650490",
-        "rank": 19,
-        "score": 58.7,
+        "rank": 21,
+        "score": 59.4,
         "team": "Tampa Bay Rays"
       },
       {
         "player": "Travis Bazzana",
         "player_id": 683953,
         "player_key": "683953",
-        "rank": 20,
-        "score": 57.2,
+        "rank": 22,
+        "score": 58.8,
         "team": "Cleveland Guardians"
       },
       {
-        "player": "Austin Riley",
-        "player_id": 663586,
-        "player_key": "663586",
-        "rank": 21,
-        "score": 56.8,
-        "team": "Atlanta Braves"
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 23,
+        "score": 58.3,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Josh Bell",
         "player_id": 605137,
         "player_key": "605137",
-        "rank": 22,
-        "score": 56.4,
+        "rank": 24,
+        "score": 57.9,
         "team": "Minnesota Twins"
       },
       {
-        "player": "Jim Jarvis",
-        "player_id": 805347,
-        "player_key": "805347",
-        "rank": 23,
-        "score": 54.8,
-        "team": "Atlanta Braves"
-      },
-      {
-        "player": "Steven Kwan",
-        "player_id": 680757,
-        "player_key": "680757",
-        "rank": 24,
-        "score": 54.6,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Ozzie Albies",
-        "player_id": 645277,
-        "player_key": "645277",
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
         "rank": 25,
-        "score": 54.4,
-        "team": "Atlanta Braves"
+        "score": 57.8,
+        "team": "Arizona Diamondbacks"
       }
     ]
   },
