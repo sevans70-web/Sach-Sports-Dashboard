@@ -591,20 +591,10 @@ st.markdown(
 # ============================================================
 
 try:
-    database_sports = get_all_sports()
+    database_sports = get_all_sports()
 except Exception as error:
-    database_sports = []
-    st.error(f"Supabase connection failed: {error}")
-else:
-    if database_sports:
-        sport_names = ", ".join(
-            sport.get("name", "Unnamed sport") for sport in database_sports
-        )
-        st.success(f"Supabase connected. Sports loaded: {sport_names}")
-    else:
-        st.warning(
-            "Supabase connected, but the sports table returned no records."
-        )
+    st.error(f"Database connection failed: {error}")
+    database_sports = []
 
 
 # ============================================================
