@@ -13,6 +13,8 @@ from zoneinfo import ZoneInfo
 
 import streamlit as st
 
+from database.sports_repository import get_all_sports
+
 
 # ============================================================
 # PAGE HELPERS
@@ -582,6 +584,27 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# ============================================================
+# DATABASE CONNECTION CHECK
+# ============================================================
+
+try:
+    database_sports = get_all_sports()
+except Exception as error:
+    database_sports = []
+    st.error(f"Supabase connection failed: {error}")
+else:
+    if database_sports:
+        sport_names = ", ".join(
+            sport.get("name", "Unnamed sport") for sport in database_sports
+        )
+        st.success(f"Supabase connected. Sports loaded: {sport_names}")
+    else:
+        st.warning(
+            "Supabase connected, but the sports table returned no records."
+        )
 
 
 # ============================================================
