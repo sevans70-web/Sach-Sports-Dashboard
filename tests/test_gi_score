@@ -1,0 +1,30 @@
+"""
+Basic test for the GI Score calculation engine.
+"""
+
+from intelligence.gi_score import calculate_gi_score
+
+
+def test_gi_score():
+    metrics = {
+        "recent_form": 80,
+        "matchup": 90,
+        "power": 95,
+        "contact": 75,
+        "ballpark": 85,
+        "weather": 100,
+        "lineup": 80,
+        "team_context": 90,
+        "availability": 100,
+    }
+
+    score = calculate_gi_score(metrics)
+
+    print(f"GI Score: {score}")
+
+    assert isinstance(score, float)
+    assert 0 <= score <= 100
+
+
+if __name__ == "__main__":
+    test_gi_score()
