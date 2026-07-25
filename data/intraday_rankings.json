@@ -1,442 +1,610 @@
 {
-  "captured_at": "2026-07-25T11:31:38.973305-04:00",
+  "captured_at": "2026-07-25T12:42:26.999229-04:00",
   "categories": {
     "hits": [
       {
-        "player": "Gleyber Torres",
-        "player_id": 650402,
-        "player_key": "650402",
+        "player": "CJ Abrams",
+        "player_id": 682928,
+        "player_key": "682928",
         "rank": 1,
-        "score": 78.5,
-        "team": "Detroit Tigers"
+        "score": 81.8,
+        "team": "Washington Nationals"
       },
       {
-        "player": "Kevin McGonigle",
-        "player_id": 805808,
-        "player_key": "805808",
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
         "rank": 2,
-        "score": 73.5,
-        "team": "Detroit Tigers"
+        "score": 81.2,
+        "team": "Arizona Diamondbacks"
       },
       {
-        "player": "Michael Massey",
-        "player_id": 686681,
-        "player_key": "686681",
+        "player": "Luis Arraez",
+        "player_id": 650333,
+        "player_key": "650333",
         "rank": 3,
-        "score": 69.9,
-        "team": "Kansas City Royals"
+        "score": 74.3,
+        "team": "San Francisco Giants"
       },
       {
-        "player": "Riley Greene",
-        "player_id": 682985,
-        "player_key": "682985",
+        "player": "Curtis Mead",
+        "player_id": 678554,
+        "player_key": "678554",
         "rank": 4,
-        "score": 62.2,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Hao-Yu Lee",
-        "player_id": 701678,
-        "player_key": "701678",
-        "rank": 5,
-        "score": 60.1,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Vinnie Pasquantino",
-        "player_id": 686469,
-        "player_key": "686469",
-        "rank": 6,
-        "score": 57.3,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Isaac Collins",
-        "player_id": 686555,
-        "player_key": "686555",
-        "rank": 7,
-        "score": 56.7,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Colt Keith",
-        "player_id": 690993,
-        "player_key": "690993",
-        "rank": 8,
-        "score": 50.6,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Lane Thomas",
-        "player_id": 657041,
-        "player_key": "657041",
-        "rank": 9,
-        "score": 50.4,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Nick Loftin",
-        "player_id": 679845,
-        "player_key": "679845",
-        "rank": 10,
-        "score": 49.3,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Jac Caglianone",
-        "player_id": 695506,
-        "player_key": "695506",
-        "rank": 11,
-        "score": 48.2,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Carter Jensen",
-        "player_id": 695600,
-        "player_key": "695600",
-        "rank": 12,
-        "score": 46.2,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Salvador Perez",
-        "player_id": 521692,
-        "player_key": "521692",
-        "rank": 13,
-        "score": 35.7,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Zach McKinstry",
-        "player_id": 656716,
-        "player_key": "656716",
-        "rank": 14,
-        "score": 31.8,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Matt Vierling",
-        "player_id": 663837,
-        "player_key": "663837",
-        "rank": 15,
-        "score": 19.6,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Kerry Carpenter",
-        "player_id": 681481,
-        "player_key": "681481",
-        "rank": 16,
-        "score": 19.4,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Andrew Velazquez",
-        "player_id": 623205,
-        "player_key": "623205",
-        "rank": 17,
-        "score": 14.2,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Jake Rogers",
-        "player_id": 668670,
-        "player_key": "668670",
-        "rank": 18,
-        "score": 4.8,
-        "team": "Detroit Tigers"
-      }
-    ],
-    "home_runs": [
-      {
-        "player": "Riley Greene",
-        "player_id": 682985,
-        "player_key": "682985",
-        "rank": 1,
-        "score": 81.1,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Jac Caglianone",
-        "player_id": 695506,
-        "player_key": "695506",
-        "rank": 2,
-        "score": 76.8,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Carter Jensen",
-        "player_id": 695600,
-        "player_key": "695600",
-        "rank": 3,
-        "score": 69.1,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Kevin McGonigle",
-        "player_id": 805808,
-        "player_key": "805808",
-        "rank": 4,
-        "score": 67.7,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Lane Thomas",
-        "player_id": 657041,
-        "player_key": "657041",
-        "rank": 5,
-        "score": 61.9,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Salvador Perez",
-        "player_id": 521692,
-        "player_key": "521692",
-        "rank": 6,
-        "score": 60.1,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Kerry Carpenter",
-        "player_id": 681481,
-        "player_key": "681481",
-        "rank": 7,
-        "score": 55.1,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Michael Massey",
-        "player_id": 686681,
-        "player_key": "686681",
-        "rank": 8,
-        "score": 53.8,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Hao-Yu Lee",
-        "player_id": 701678,
-        "player_key": "701678",
-        "rank": 9,
-        "score": 53.7,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Colt Keith",
-        "player_id": 690993,
-        "player_key": "690993",
-        "rank": 10,
-        "score": 48.6,
-        "team": "Detroit Tigers"
+        "score": 71.2,
+        "team": "Washington Nationals"
       },
       {
         "player": "Gleyber Torres",
         "player_id": 650402,
         "player_key": "650402",
-        "rank": 11,
-        "score": 44.7,
+        "rank": 5,
+        "score": 71.2,
         "team": "Detroit Tigers"
       },
       {
-        "player": "Isaac Collins",
-        "player_id": 686555,
-        "player_key": "686555",
-        "rank": 12,
-        "score": 44.0,
-        "team": "Kansas City Royals"
+        "player": "Jung Hoo Lee",
+        "player_id": 808982,
+        "player_key": "808982",
+        "rank": 6,
+        "score": 71.1,
+        "team": "San Francisco Giants"
       },
       {
-        "player": "Nick Loftin",
-        "player_id": 679845,
-        "player_key": "679845",
-        "rank": 13,
-        "score": 37.5,
-        "team": "Kansas City Royals"
+        "player": "Willson Contreras",
+        "player_id": 575929,
+        "player_key": "575929",
+        "rank": 7,
+        "score": 70.4,
+        "team": "Boston Red Sox"
       },
       {
-        "player": "Vinnie Pasquantino",
-        "player_id": 686469,
-        "player_key": "686469",
-        "rank": 14,
-        "score": 34.4,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Jake Rogers",
-        "player_id": 668670,
-        "player_key": "668670",
-        "rank": 15,
-        "score": 26.3,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Zach McKinstry",
-        "player_id": 656716,
-        "player_key": "656716",
-        "rank": 16,
-        "score": 23.8,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Matt Vierling",
-        "player_id": 663837,
-        "player_key": "663837",
-        "rank": 17,
-        "score": 22.6,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Andrew Velazquez",
-        "player_id": 623205,
-        "player_key": "623205",
-        "rank": 18,
-        "score": 13.6,
-        "team": "Kansas City Royals"
-      }
-    ],
-    "total_bases": [
-      {
-        "player": "Riley Greene",
-        "player_id": 682985,
-        "player_key": "682985",
-        "rank": 1,
-        "score": 74.8,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Carter Jensen",
-        "player_id": 695600,
-        "player_key": "695600",
-        "rank": 2,
-        "score": 69.0,
-        "team": "Kansas City Royals"
+        "player": "Ildemaro Vargas",
+        "player_id": 545121,
+        "player_key": "545121",
+        "rank": 8,
+        "score": 68.7,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Kevin McGonigle",
         "player_id": 805808,
         "player_key": "805808",
-        "rank": 3,
+        "rank": 9,
         "score": 68.6,
         "team": "Detroit Tigers"
       },
       {
-        "player": "Jac Caglianone",
-        "player_id": 695506,
-        "player_key": "695506",
-        "rank": 4,
-        "score": 64.9,
-        "team": "Kansas City Royals"
+        "player": "Anthony Seigler",
+        "player_id": 678011,
+        "player_key": "678011",
+        "rank": 10,
+        "score": 67.3,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Ceddanne Rafaela",
+        "player_id": 678882,
+        "player_key": "678882",
+        "rank": 11,
+        "score": 67.2,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Otto Lopez",
+        "player_id": 672640,
+        "player_key": "672640",
+        "rank": 12,
+        "score": 66.3,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Xavier Edwards",
+        "player_id": 669364,
+        "player_key": "669364",
+        "rank": 13,
+        "score": 63.4,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Bryce Eldridge",
+        "player_id": 805811,
+        "player_key": "805811",
+        "rank": 14,
+        "score": 61.9,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Liam Hicks",
+        "player_id": 689414,
+        "player_key": "689414",
+        "rank": 15,
+        "score": 60.9,
+        "team": "Miami Marlins"
       },
       {
         "player": "Michael Massey",
         "player_id": 686681,
         "player_key": "686681",
-        "rank": 5,
-        "score": 61.5,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Salvador Perez",
-        "player_id": 521692,
-        "player_key": "521692",
-        "rank": 6,
-        "score": 59.7,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Hao-Yu Lee",
-        "player_id": 701678,
-        "player_key": "701678",
-        "rank": 7,
-        "score": 58.4,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Lane Thomas",
-        "player_id": 657041,
-        "player_key": "657041",
-        "rank": 8,
-        "score": 56.9,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Isaac Collins",
-        "player_id": 686555,
-        "player_key": "686555",
-        "rank": 9,
-        "score": 53.6,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Gleyber Torres",
-        "player_id": 650402,
-        "player_key": "650402",
-        "rank": 10,
-        "score": 53.3,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Vinnie Pasquantino",
-        "player_id": 686469,
-        "player_key": "686469",
-        "rank": 11,
-        "score": 46.3,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Colt Keith",
-        "player_id": 690993,
-        "player_key": "690993",
-        "rank": 12,
-        "score": 38.1,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Nick Loftin",
-        "player_id": 679845,
-        "player_key": "679845",
-        "rank": 13,
-        "score": 37.8,
-        "team": "Kansas City Royals"
-      },
-      {
-        "player": "Kerry Carpenter",
-        "player_id": 681481,
-        "player_key": "681481",
-        "rank": 14,
-        "score": 32.0,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Zach McKinstry",
-        "player_id": 656716,
-        "player_key": "656716",
-        "rank": 15,
-        "score": 23.9,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Matt Vierling",
-        "player_id": 663837,
-        "player_key": "663837",
         "rank": 16,
-        "score": 15.1,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Andrew Velazquez",
-        "player_id": 623205,
-        "player_key": "623205",
-        "rank": 17,
-        "score": 9.6,
+        "score": 60.9,
         "team": "Kansas City Royals"
       },
       {
-        "player": "Jake Rogers",
-        "player_id": 668670,
-        "player_key": "668670",
+        "player": "Javier Sanoja",
+        "player_id": 691594,
+        "player_key": "691594",
+        "rank": 17,
+        "score": 59.1,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
         "rank": 18,
-        "score": 4.9,
+        "score": 59.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Nasim Nuñez",
+        "player_id": 683083,
+        "player_key": "683083",
+        "rank": 19,
+        "score": 58.1,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Heriberto Hernández",
+        "player_id": 681715,
+        "player_key": "681715",
+        "rank": 20,
+        "score": 57.3,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Riley Greene",
+        "player_id": 682985,
+        "player_key": "682985",
+        "rank": 21,
+        "score": 56.4,
         "team": "Detroit Tigers"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 22,
+        "score": 53.0,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "James Wood",
+        "player_id": 695578,
+        "player_key": "695578",
+        "rank": 23,
+        "score": 52.8,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Casey Schmitt",
+        "player_id": 669477,
+        "player_key": "669477",
+        "rank": 24,
+        "score": 52.2,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 25,
+        "score": 51.8,
+        "team": "Arizona Diamondbacks"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "CJ Abrams",
+        "player_id": 682928,
+        "player_key": "682928",
+        "rank": 1,
+        "score": 88.8,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Curtis Mead",
+        "player_id": 678554,
+        "player_key": "678554",
+        "rank": 2,
+        "score": 83.8,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 3,
+        "score": 80.2,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Rafael Devers",
+        "player_id": 646240,
+        "player_key": "646240",
+        "rank": 4,
+        "score": 79.0,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Bryce Eldridge",
+        "player_id": 805811,
+        "player_key": "805811",
+        "rank": 5,
+        "score": 78.6,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Willson Contreras",
+        "player_id": 575929,
+        "player_key": "575929",
+        "rank": 6,
+        "score": 78.5,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "James Wood",
+        "player_id": 695578,
+        "player_key": "695578",
+        "rank": 7,
+        "score": 77.0,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Casey Schmitt",
+        "player_id": 669477,
+        "player_key": "669477",
+        "rank": 8,
+        "score": 73.4,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Andrés Chaparro",
+        "player_id": 665953,
+        "player_key": "665953",
+        "rank": 9,
+        "score": 72.5,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 10,
+        "score": 72.4,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Heriberto Hernández",
+        "player_id": 681715,
+        "player_key": "681715",
+        "rank": 11,
+        "score": 71.6,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Willy Adames",
+        "player_id": 642715,
+        "player_key": "642715",
+        "rank": 12,
+        "score": 69.9,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 13,
+        "score": 68.3,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Riley Greene",
+        "player_id": 682985,
+        "player_key": "682985",
+        "rank": 14,
+        "score": 66.7,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 15,
+        "score": 63.5,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Anthony Seigler",
+        "player_id": 678011,
+        "player_key": "678011",
+        "rank": 16,
+        "score": 63.2,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
+        "rank": 17,
+        "score": 61.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Dylan Crews",
+        "player_id": 686611,
+        "player_key": "686611",
+        "rank": 18,
+        "score": 59.0,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Nolan Arenado",
+        "player_id": 571448,
+        "player_key": "571448",
+        "rank": 19,
+        "score": 58.8,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Liam Hicks",
+        "player_id": 689414,
+        "player_key": "689414",
+        "rank": 20,
+        "score": 58.0,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Heliot Ramos",
+        "player_id": 671218,
+        "player_key": "671218",
+        "rank": 21,
+        "score": 56.7,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Ceddanne Rafaela",
+        "player_id": 678882,
+        "player_key": "678882",
+        "rank": 22,
+        "score": 55.9,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Otto Lopez",
+        "player_id": 672640,
+        "player_key": "672640",
+        "rank": 23,
+        "score": 54.6,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 24,
+        "score": 54.2,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Kyle Stowers",
+        "player_id": 669065,
+        "player_key": "669065",
+        "rank": 25,
+        "score": 53.7,
+        "team": "Miami Marlins"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "CJ Abrams",
+        "player_id": 682928,
+        "player_key": "682928",
+        "rank": 1,
+        "score": 88.8,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Curtis Mead",
+        "player_id": 678554,
+        "player_key": "678554",
+        "rank": 2,
+        "score": 82.6,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Willson Contreras",
+        "player_id": 575929,
+        "player_key": "575929",
+        "rank": 3,
+        "score": 77.6,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 4,
+        "score": 72.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Heriberto Hernández",
+        "player_id": 681715,
+        "player_key": "681715",
+        "rank": 5,
+        "score": 70.3,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Bryce Eldridge",
+        "player_id": 805811,
+        "player_key": "805811",
+        "rank": 6,
+        "score": 70.2,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 7,
+        "score": 67.9,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Ceddanne Rafaela",
+        "player_id": 678882,
+        "player_key": "678882",
+        "rank": 8,
+        "score": 67.8,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Anthony Seigler",
+        "player_id": 678011,
+        "player_key": "678011",
+        "rank": 9,
+        "score": 67.4,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "James Wood",
+        "player_id": 695578,
+        "player_key": "695578",
+        "rank": 10,
+        "score": 67.0,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Willy Adames",
+        "player_id": 642715,
+        "player_key": "642715",
+        "rank": 11,
+        "score": 66.4,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 12,
+        "score": 66.0,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Casey Schmitt",
+        "player_id": 669477,
+        "player_key": "669477",
+        "rank": 13,
+        "score": 65.0,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Rafael Devers",
+        "player_id": 646240,
+        "player_key": "646240",
+        "rank": 14,
+        "score": 64.9,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 15,
+        "score": 64.0,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Riley Greene",
+        "player_id": 682985,
+        "player_key": "682985",
+        "rank": 16,
+        "score": 62.4,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
+        "rank": 17,
+        "score": 62.3,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Andrés Chaparro",
+        "player_id": 665953,
+        "player_key": "665953",
+        "rank": 18,
+        "score": 61.1,
+        "team": "Washington Nationals"
+      },
+      {
+        "player": "Luis Arraez",
+        "player_id": 650333,
+        "player_key": "650333",
+        "rank": 19,
+        "score": 60.2,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Otto Lopez",
+        "player_id": 672640,
+        "player_key": "672640",
+        "rank": 20,
+        "score": 59.3,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 21,
+        "score": 59.2,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Nolan Arenado",
+        "player_id": 571448,
+        "player_key": "571448",
+        "rank": 22,
+        "score": 58.4,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Heliot Ramos",
+        "player_id": 671218,
+        "player_key": "671218",
+        "rank": 23,
+        "score": 57.6,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Ildemaro Vargas",
+        "player_id": 545121,
+        "player_key": "545121",
+        "rank": 24,
+        "score": 56.2,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 25,
+        "score": 55.2,
+        "team": "Arizona Diamondbacks"
       }
     ]
   },
