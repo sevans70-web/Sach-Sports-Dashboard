@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-24T23:04:40.818494-04:00",
+  "captured_at": "2026-07-24T23:24:27.613534-04:00",
   "categories": {
     "hits": [
       {
@@ -51,20 +51,20 @@
         "team": "Tampa Bay Rays"
       },
       {
-        "player": "Alec Burleson",
-        "player_id": 676475,
-        "player_key": "676475",
-        "rank": 7,
-        "score": 81.5,
-        "team": "St. Louis Cardinals"
-      },
-      {
         "player": "Tommy Edman",
         "player_id": 669242,
         "player_key": "669242",
-        "rank": 8,
+        "rank": 7,
         "score": 81.5,
         "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 8,
+        "score": 81.4,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Christian Encarnacion-Strand",
@@ -75,20 +75,20 @@
         "team": "Baltimore Orioles"
       },
       {
-        "player": "Nolan Schanuel",
-        "player_id": 694384,
-        "player_key": "694384",
-        "rank": 10,
-        "score": 80.8,
-        "team": "Los Angeles Angels"
-      },
-      {
         "player": "Jacob Wilson",
         "player_id": 805779,
         "player_key": "805779",
-        "rank": 11,
+        "rank": 10,
         "score": 80.7,
         "team": "Athletics"
+      },
+      {
+        "player": "Nolan Schanuel",
+        "player_id": 694384,
+        "player_key": "694384",
+        "rank": 11,
+        "score": 79.3,
+        "team": "Los Angeles Angels"
       },
       {
         "player": "Drake Baldwin",
@@ -111,7 +111,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 14,
-        "score": 76.6,
+        "score": 76.5,
         "team": "Washington Nationals"
       },
       {
@@ -167,7 +167,7 @@
         "player_id": 621439,
         "player_key": "621439",
         "rank": 21,
-        "score": 73.1,
+        "score": 73.0,
         "team": "Minnesota Twins"
       },
       {
@@ -297,22 +297,30 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 12,
-        "score": 80.5,
+        "score": 80.4,
         "team": "Atlanta Braves"
+      },
+      {
+        "player": "Bryce Eldridge",
+        "player_id": 805811,
+        "player_key": "805811",
+        "rank": 13,
+        "score": 79.0,
+        "team": "San Francisco Giants"
       },
       {
         "player": "Tyler Soderstrom",
         "player_id": 691016,
         "player_key": "691016",
-        "rank": 13,
-        "score": 79.0,
+        "rank": 14,
+        "score": 78.9,
         "team": "Athletics"
       },
       {
         "player": "James Wood",
         "player_id": 695578,
         "player_key": "695578",
-        "rank": 14,
+        "rank": 15,
         "score": 78.5,
         "team": "Washington Nationals"
       },
@@ -320,24 +328,16 @@
         "player": "Wyatt Langford",
         "player_id": 694671,
         "player_key": "694671",
-        "rank": 15,
+        "rank": 16,
         "score": 78.0,
         "team": "Texas Rangers"
-      },
-      {
-        "player": "Bryce Eldridge",
-        "player_id": 805811,
-        "player_key": "805811",
-        "rank": 16,
-        "score": 77.9,
-        "team": "San Francisco Giants"
       },
       {
         "player": "Paul Goldschmidt",
         "player_id": 502671,
         "player_key": "502671",
         "rank": 17,
-        "score": 77.0,
+        "score": 76.9,
         "team": "New York Yankees"
       },
       {
@@ -353,7 +353,7 @@
         "player_id": 682998,
         "player_key": "682998",
         "rank": 19,
-        "score": 76.3,
+        "score": 76.2,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -361,7 +361,7 @@
         "player_id": 671739,
         "player_key": "671739",
         "rank": 20,
-        "score": 76.3,
+        "score": 76.2,
         "team": "Atlanta Braves"
       },
       {
@@ -385,7 +385,7 @@
         "player_id": 663993,
         "player_key": "663993",
         "rank": 23,
-        "score": 74.8,
+        "score": 74.7,
         "team": "Cincinnati Reds"
       },
       {
@@ -451,7 +451,7 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 6,
-        "score": 83.3,
+        "score": 83.2,
         "team": "Atlanta Braves"
       },
       {
@@ -507,7 +507,7 @@
         "player_id": 671739,
         "player_key": "671739",
         "rank": 13,
-        "score": 80.0,
+        "score": 79.9,
         "team": "Atlanta Braves"
       },
       {
@@ -563,7 +563,7 @@
         "player_id": 672515,
         "player_key": "672515",
         "rank": 20,
-        "score": 76.5,
+        "score": 76.4,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -583,27 +583,27 @@
         "team": "Washington Nationals"
       },
       {
-        "player": "Corbin Carroll",
-        "player_id": 682998,
-        "player_key": "682998",
-        "rank": 23,
-        "score": 74.5,
-        "team": "Arizona Diamondbacks"
-      },
-      {
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 24,
+        "rank": 23,
         "score": 74.4,
         "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 24,
+        "score": 74.4,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Tyler Soderstrom",
         "player_id": 691016,
         "player_key": "691016",
         "rank": 25,
-        "score": 74.3,
+        "score": 74.2,
         "team": "Athletics"
       }
     ]
