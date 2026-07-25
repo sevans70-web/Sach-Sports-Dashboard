@@ -1,9 +1,444 @@
 {
-  "captured_at": "2026-07-25T00:20:05.780230-04:00",
+  "captured_at": "2026-07-25T11:31:38.973305-04:00",
   "categories": {
-    "hits": [],
-    "home_runs": [],
-    "total_bases": []
+    "hits": [
+      {
+        "player": "Gleyber Torres",
+        "player_id": 650402,
+        "player_key": "650402",
+        "rank": 1,
+        "score": 78.5,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 2,
+        "score": 73.5,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Michael Massey",
+        "player_id": 686681,
+        "player_key": "686681",
+        "rank": 3,
+        "score": 69.9,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Riley Greene",
+        "player_id": 682985,
+        "player_key": "682985",
+        "rank": 4,
+        "score": 62.2,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Hao-Yu Lee",
+        "player_id": 701678,
+        "player_key": "701678",
+        "rank": 5,
+        "score": 60.1,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Vinnie Pasquantino",
+        "player_id": 686469,
+        "player_key": "686469",
+        "rank": 6,
+        "score": 57.3,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Isaac Collins",
+        "player_id": 686555,
+        "player_key": "686555",
+        "rank": 7,
+        "score": 56.7,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Colt Keith",
+        "player_id": 690993,
+        "player_key": "690993",
+        "rank": 8,
+        "score": 50.6,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Lane Thomas",
+        "player_id": 657041,
+        "player_key": "657041",
+        "rank": 9,
+        "score": 50.4,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Nick Loftin",
+        "player_id": 679845,
+        "player_key": "679845",
+        "rank": 10,
+        "score": 49.3,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 11,
+        "score": 48.2,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Carter Jensen",
+        "player_id": 695600,
+        "player_key": "695600",
+        "rank": 12,
+        "score": 46.2,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Salvador Perez",
+        "player_id": 521692,
+        "player_key": "521692",
+        "rank": 13,
+        "score": 35.7,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Zach McKinstry",
+        "player_id": 656716,
+        "player_key": "656716",
+        "rank": 14,
+        "score": 31.8,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Matt Vierling",
+        "player_id": 663837,
+        "player_key": "663837",
+        "rank": 15,
+        "score": 19.6,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Kerry Carpenter",
+        "player_id": 681481,
+        "player_key": "681481",
+        "rank": 16,
+        "score": 19.4,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Andrew Velazquez",
+        "player_id": 623205,
+        "player_key": "623205",
+        "rank": 17,
+        "score": 14.2,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Jake Rogers",
+        "player_id": 668670,
+        "player_key": "668670",
+        "rank": 18,
+        "score": 4.8,
+        "team": "Detroit Tigers"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Riley Greene",
+        "player_id": 682985,
+        "player_key": "682985",
+        "rank": 1,
+        "score": 81.1,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 2,
+        "score": 76.8,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Carter Jensen",
+        "player_id": 695600,
+        "player_key": "695600",
+        "rank": 3,
+        "score": 69.1,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 4,
+        "score": 67.7,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Lane Thomas",
+        "player_id": 657041,
+        "player_key": "657041",
+        "rank": 5,
+        "score": 61.9,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Salvador Perez",
+        "player_id": 521692,
+        "player_key": "521692",
+        "rank": 6,
+        "score": 60.1,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Kerry Carpenter",
+        "player_id": 681481,
+        "player_key": "681481",
+        "rank": 7,
+        "score": 55.1,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Michael Massey",
+        "player_id": 686681,
+        "player_key": "686681",
+        "rank": 8,
+        "score": 53.8,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Hao-Yu Lee",
+        "player_id": 701678,
+        "player_key": "701678",
+        "rank": 9,
+        "score": 53.7,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Colt Keith",
+        "player_id": 690993,
+        "player_key": "690993",
+        "rank": 10,
+        "score": 48.6,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Gleyber Torres",
+        "player_id": 650402,
+        "player_key": "650402",
+        "rank": 11,
+        "score": 44.7,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Isaac Collins",
+        "player_id": 686555,
+        "player_key": "686555",
+        "rank": 12,
+        "score": 44.0,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Nick Loftin",
+        "player_id": 679845,
+        "player_key": "679845",
+        "rank": 13,
+        "score": 37.5,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Vinnie Pasquantino",
+        "player_id": 686469,
+        "player_key": "686469",
+        "rank": 14,
+        "score": 34.4,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Jake Rogers",
+        "player_id": 668670,
+        "player_key": "668670",
+        "rank": 15,
+        "score": 26.3,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Zach McKinstry",
+        "player_id": 656716,
+        "player_key": "656716",
+        "rank": 16,
+        "score": 23.8,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Matt Vierling",
+        "player_id": 663837,
+        "player_key": "663837",
+        "rank": 17,
+        "score": 22.6,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Andrew Velazquez",
+        "player_id": 623205,
+        "player_key": "623205",
+        "rank": 18,
+        "score": 13.6,
+        "team": "Kansas City Royals"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "Riley Greene",
+        "player_id": 682985,
+        "player_key": "682985",
+        "rank": 1,
+        "score": 74.8,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Carter Jensen",
+        "player_id": 695600,
+        "player_key": "695600",
+        "rank": 2,
+        "score": 69.0,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 3,
+        "score": 68.6,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 4,
+        "score": 64.9,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Michael Massey",
+        "player_id": 686681,
+        "player_key": "686681",
+        "rank": 5,
+        "score": 61.5,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Salvador Perez",
+        "player_id": 521692,
+        "player_key": "521692",
+        "rank": 6,
+        "score": 59.7,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Hao-Yu Lee",
+        "player_id": 701678,
+        "player_key": "701678",
+        "rank": 7,
+        "score": 58.4,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Lane Thomas",
+        "player_id": 657041,
+        "player_key": "657041",
+        "rank": 8,
+        "score": 56.9,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Isaac Collins",
+        "player_id": 686555,
+        "player_key": "686555",
+        "rank": 9,
+        "score": 53.6,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Gleyber Torres",
+        "player_id": 650402,
+        "player_key": "650402",
+        "rank": 10,
+        "score": 53.3,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Vinnie Pasquantino",
+        "player_id": 686469,
+        "player_key": "686469",
+        "rank": 11,
+        "score": 46.3,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Colt Keith",
+        "player_id": 690993,
+        "player_key": "690993",
+        "rank": 12,
+        "score": 38.1,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Nick Loftin",
+        "player_id": 679845,
+        "player_key": "679845",
+        "rank": 13,
+        "score": 37.8,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Kerry Carpenter",
+        "player_id": 681481,
+        "player_key": "681481",
+        "rank": 14,
+        "score": 32.0,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Zach McKinstry",
+        "player_id": 656716,
+        "player_key": "656716",
+        "rank": 15,
+        "score": 23.9,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Matt Vierling",
+        "player_id": 663837,
+        "player_key": "663837",
+        "rank": 16,
+        "score": 15.1,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Andrew Velazquez",
+        "player_id": 623205,
+        "player_key": "623205",
+        "rank": 17,
+        "score": 9.6,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Jake Rogers",
+        "player_id": 668670,
+        "player_key": "668670",
+        "rank": 18,
+        "score": 4.9,
+        "team": "Detroit Tigers"
+      }
+    ]
   },
   "version": 1
 }
