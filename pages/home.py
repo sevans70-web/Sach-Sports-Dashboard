@@ -593,7 +593,7 @@ st.markdown(
 try:
     database_sports = get_alls_sports()
 except Exception as error:
-    st.error (f"Database connection failled: {error}")
+    st.error(f"Database connection failled: {error}")
     basesports = []
 
 # ============================================================
