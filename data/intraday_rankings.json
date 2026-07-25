@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-24T23:24:27.613534-04:00",
+  "captured_at": "2026-07-24T23:55:53.157768-04:00",
   "categories": {
     "hits": [
       {
@@ -43,10 +43,18 @@
         "team": "Athletics"
       },
       {
+        "player": "Nolan Schanuel",
+        "player_id": 694384,
+        "player_key": "694384",
+        "rank": 6,
+        "score": 81.7,
+        "team": "Los Angeles Angels"
+      },
+      {
         "player": "Junior Caminero",
         "player_id": 691406,
         "player_key": "691406",
-        "rank": 6,
+        "rank": 7,
         "score": 81.6,
         "team": "Tampa Bay Rays"
       },
@@ -54,7 +62,7 @@
         "player": "Tommy Edman",
         "player_id": 669242,
         "player_key": "669242",
-        "rank": 7,
+        "rank": 8,
         "score": 81.5,
         "team": "Los Angeles Dodgers"
       },
@@ -62,7 +70,7 @@
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 8,
+        "rank": 9,
         "score": 81.4,
         "team": "St. Louis Cardinals"
       },
@@ -70,7 +78,7 @@
         "player": "Christian Encarnacion-Strand",
         "player_id": 687952,
         "player_key": "687952",
-        "rank": 9,
+        "rank": 10,
         "score": 81.4,
         "team": "Baltimore Orioles"
       },
@@ -78,17 +86,9 @@
         "player": "Jacob Wilson",
         "player_id": 805779,
         "player_key": "805779",
-        "rank": 10,
+        "rank": 11,
         "score": 80.7,
         "team": "Athletics"
-      },
-      {
-        "player": "Nolan Schanuel",
-        "player_id": 694384,
-        "player_key": "694384",
-        "rank": 11,
-        "score": 79.3,
-        "team": "Los Angeles Angels"
       },
       {
         "player": "Drake Baldwin",
@@ -103,7 +103,7 @@
         "player_id": 664983,
         "player_key": "664983",
         "rank": 13,
-        "score": 76.9,
+        "score": 76.8,
         "team": "Colorado Rockies"
       },
       {
@@ -171,18 +171,26 @@
         "team": "Minnesota Twins"
       },
       {
+        "player": "Jake Mangum",
+        "player_id": 663968,
+        "player_key": "663968",
+        "rank": 22,
+        "score": 72.7,
+        "team": "Pittsburgh Pirates"
+      },
+      {
         "player": "Gleyber Torres",
         "player_id": 650402,
         "player_key": "650402",
-        "rank": 22,
-        "score": 72.8,
+        "rank": 23,
+        "score": 72.7,
         "team": "Detroit Tigers"
       },
       {
         "player": "Michael Harris II",
         "player_id": 671739,
         "player_key": "671739",
-        "rank": 23,
+        "rank": 24,
         "score": 72.6,
         "team": "Atlanta Braves"
       },
@@ -190,17 +198,9 @@
         "player": "Ildemaro Vargas",
         "player_id": 545121,
         "player_key": "545121",
-        "rank": 24,
-        "score": 72.6,
-        "team": "Arizona Diamondbacks"
-      },
-      {
-        "player": "Jake Mangum",
-        "player_id": 663968,
-        "player_key": "663968",
         "rank": 25,
         "score": 72.6,
-        "team": "Pittsburgh Pirates"
+        "team": "Arizona Diamondbacks"
       }
     ],
     "home_runs": [
@@ -301,20 +301,20 @@
         "team": "Atlanta Braves"
       },
       {
-        "player": "Bryce Eldridge",
-        "player_id": 805811,
-        "player_key": "805811",
-        "rank": 13,
-        "score": 79.0,
-        "team": "San Francisco Giants"
-      },
-      {
         "player": "Tyler Soderstrom",
         "player_id": 691016,
         "player_key": "691016",
-        "rank": 14,
+        "rank": 13,
         "score": 78.9,
         "team": "Athletics"
+      },
+      {
+        "player": "Bryce Eldridge",
+        "player_id": 805811,
+        "player_key": "805811",
+        "rank": 14,
+        "score": 78.9,
+        "team": "San Francisco Giants"
       },
       {
         "player": "James Wood",
@@ -527,20 +527,20 @@
         "team": "Texas Rangers"
       },
       {
-        "player": "Jake McCarthy",
-        "player_id": 664983,
-        "player_key": "664983",
-        "rank": 16,
-        "score": 77.9,
-        "team": "Colorado Rockies"
-      },
-      {
         "player": "Curtis Mead",
         "player_id": 678554,
         "player_key": "678554",
-        "rank": 17,
+        "rank": 16,
         "score": 77.8,
         "team": "Washington Nationals"
+      },
+      {
+        "player": "Jake McCarthy",
+        "player_id": 664983,
+        "player_key": "664983",
+        "rank": 17,
+        "score": 77.7,
+        "team": "Colorado Rockies"
       },
       {
         "player": "Jacob Wilson",
@@ -563,7 +563,7 @@
         "player_id": 672515,
         "player_key": "672515",
         "rank": 20,
-        "score": 76.4,
+        "score": 76.5,
         "team": "Arizona Diamondbacks"
       },
       {
