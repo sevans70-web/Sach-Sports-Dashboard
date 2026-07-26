@@ -659,18 +659,18 @@ def rank_players(
         )
         
         score = min(
-            max(
-                round(
-                    (base_score * 0.85)
-                    + (lineup_bonus * 0.75)
-                    + handedness_adjustment
-                    + pitcher_adjustment,
-                    1,
-                ),
-                0.0,
-            ),
-            100.0,
-        )
+    max(
+        round(
+            (base_score * 0.75)
+            + lineup_bonus
+            + (handedness_adjustment * 1.5)
+            + (pitcher_adjustment * 1.5),
+            1,
+        ),
+        0.0,
+    ),
+    100.0,
+)
     
 
         confidence = _confidence(
