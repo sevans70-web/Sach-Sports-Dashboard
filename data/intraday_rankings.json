@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-26T19:02:05.438293-04:00",
+  "captured_at": "2026-07-26T20:22:38.680720-04:00",
   "categories": {
     "hits": [
       {
@@ -47,7 +47,7 @@
         "player_id": 680777,
         "player_key": "680777",
         "rank": 6,
-        "score": 75.4,
+        "score": 75.5,
         "team": "Minnesota Twins"
       },
       {
@@ -167,7 +167,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 21,
-        "score": 66.9,
+        "score": 67.0,
         "team": "San Diego Padres"
       },
       {
@@ -187,20 +187,20 @@
         "team": "Milwaukee Brewers"
       },
       {
-        "player": "Isaac Paredes",
-        "player_id": 670623,
-        "player_key": "670623",
-        "rank": 24,
-        "score": 65.7,
-        "team": "Houston Astros"
-      },
-      {
         "player": "Tyler Locklear",
         "player_id": 682988,
         "player_key": "682988",
+        "rank": 24,
+        "score": 65.8,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Isaac Paredes",
+        "player_id": 670623,
+        "player_key": "670623",
         "rank": 25,
         "score": 65.7,
-        "team": "Arizona Diamondbacks"
+        "team": "Houston Astros"
       }
     ],
     "home_runs": [
@@ -225,7 +225,7 @@
         "player_id": 686948,
         "player_key": "686948",
         "rank": 3,
-        "score": 79.9,
+        "score": 79.8,
         "team": "Atlanta Braves"
       },
       {
@@ -257,7 +257,7 @@
         "player_id": 691718,
         "player_key": "691718",
         "rank": 7,
-        "score": 78.4,
+        "score": 78.5,
         "team": "Chicago Cubs"
       },
       {
@@ -297,7 +297,7 @@
         "player_id": 676566,
         "player_key": "676566",
         "rank": 12,
-        "score": 76.4,
+        "score": 76.5,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -451,7 +451,7 @@
         "player_id": 682998,
         "player_key": "682998",
         "rank": 6,
-        "score": 78.1,
+        "score": 78.2,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -491,7 +491,7 @@
         "player_id": 694671,
         "player_key": "694671",
         "rank": 11,
-        "score": 73.2,
+        "score": 73.3,
         "team": "Texas Rangers"
       },
       {
@@ -507,7 +507,7 @@
         "player_id": 621566,
         "player_key": "621566",
         "rank": 13,
-        "score": 72.5,
+        "score": 72.6,
         "team": "Atlanta Braves"
       },
       {
@@ -571,7 +571,7 @@
         "player_id": 701538,
         "player_key": "701538",
         "rank": 21,
-        "score": 68.4,
+        "score": 68.3,
         "team": "San Diego Padres"
       },
       {
@@ -599,12 +599,12 @@
         "team": "San Diego Padres"
       },
       {
-        "player": "Kyle Schwarber",
-        "player_id": 656941,
-        "player_key": "656941",
+        "player": "Jacob Wilson",
+        "player_id": 805779,
+        "player_key": "805779",
         "rank": 25,
         "score": 67.4,
-        "team": "Philadelphia Phillies"
+        "team": "Athletics"
       }
     ]
   },
