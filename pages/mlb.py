@@ -549,7 +549,7 @@ def render_ranking_category(
         use_container_width=True,
     ):
         st.session_state[state_key] = not st.session_state[state_key]
-        st.rerun()
+        
 
     if st.session_state[state_key]:
         render_html(
