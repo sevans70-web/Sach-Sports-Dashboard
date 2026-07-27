@@ -1,9 +1,444 @@
 {
-  "captured_at": "2026-07-27T10:55:29.602647-04:00",
+  "captured_at": "2026-07-27T12:45:24.929920-04:00",
   "categories": {
-    "hits": [],
-    "home_runs": [],
-    "total_bases": []
+    "hits": [
+      {
+        "player": "Wyatt Langford",
+        "player_id": 694671,
+        "player_key": "694671",
+        "rank": 1,
+        "score": 70.9,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 2,
+        "score": 68.0,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 3,
+        "score": 66.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Nicky Lopez",
+        "player_id": 670032,
+        "player_key": "670032",
+        "rank": 4,
+        "score": 62.3,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Joc Pederson",
+        "player_id": 592626,
+        "player_key": "592626",
+        "rank": 5,
+        "score": 61.8,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 6,
+        "score": 61.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Randy Arozarena",
+        "player_id": 668227,
+        "player_key": "668227",
+        "rank": 7,
+        "score": 60.3,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Ezequiel Duran",
+        "player_id": 677649,
+        "player_key": "677649",
+        "rank": 8,
+        "score": 54.3,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Dominic Canzone",
+        "player_id": 686527,
+        "player_key": "686527",
+        "rank": 9,
+        "score": 49.4,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Julio Rodríguez",
+        "player_id": 677594,
+        "player_key": "677594",
+        "rank": 10,
+        "score": 43.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Jake Burger",
+        "player_id": 669394,
+        "player_key": "669394",
+        "rank": 11,
+        "score": 31.5,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "J.P. Crawford",
+        "player_id": 641487,
+        "player_key": "641487",
+        "rank": 12,
+        "score": 28.5,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Evan Carter",
+        "player_id": 694497,
+        "player_key": "694497",
+        "rank": 13,
+        "score": 25.9,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Luke Raley",
+        "player_id": 670042,
+        "player_key": "670042",
+        "rank": 14,
+        "score": 25.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Elias Díaz",
+        "player_id": 553869,
+        "player_key": "553869",
+        "rank": 15,
+        "score": 21.5,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Colt Emerson",
+        "player_id": 806068,
+        "player_key": "806068",
+        "rank": 16,
+        "score": 21.1,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Josh Smith",
+        "player_id": 669701,
+        "player_key": "669701",
+        "rank": 17,
+        "score": 19.7,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Mitch Garver",
+        "player_id": 641598,
+        "player_key": "641598",
+        "rank": 18,
+        "score": 5.5,
+        "team": "Seattle Mariners"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Joc Pederson",
+        "player_id": 592626,
+        "player_key": "592626",
+        "rank": 1,
+        "score": 77.8,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Wyatt Langford",
+        "player_id": 694671,
+        "player_key": "694671",
+        "rank": 2,
+        "score": 77.6,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Dominic Canzone",
+        "player_id": 686527,
+        "player_key": "686527",
+        "rank": 3,
+        "score": 69.1,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 4,
+        "score": 57.7,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Jake Burger",
+        "player_id": 669394,
+        "player_key": "669394",
+        "rank": 5,
+        "score": 55.0,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 6,
+        "score": 54.7,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Luke Raley",
+        "player_id": 670042,
+        "player_key": "670042",
+        "rank": 7,
+        "score": 53.4,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Ezequiel Duran",
+        "player_id": 677649,
+        "player_key": "677649",
+        "rank": 8,
+        "score": 53.2,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Randy Arozarena",
+        "player_id": 668227,
+        "player_key": "668227",
+        "rank": 9,
+        "score": 51.1,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Julio Rodríguez",
+        "player_id": 677594,
+        "player_key": "677594",
+        "rank": 10,
+        "score": 50.5,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Evan Carter",
+        "player_id": 694497,
+        "player_key": "694497",
+        "rank": 11,
+        "score": 38.1,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Colt Emerson",
+        "player_id": 806068,
+        "player_key": "806068",
+        "rank": 12,
+        "score": 32.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "J.P. Crawford",
+        "player_id": 641487,
+        "player_key": "641487",
+        "rank": 13,
+        "score": 29.6,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 14,
+        "score": 29.1,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Elias Díaz",
+        "player_id": 553869,
+        "player_key": "553869",
+        "rank": 15,
+        "score": 23.3,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Nicky Lopez",
+        "player_id": 670032,
+        "player_key": "670032",
+        "rank": 16,
+        "score": 21.5,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Josh Smith",
+        "player_id": 669701,
+        "player_key": "669701",
+        "rank": 17,
+        "score": 13.2,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Mitch Garver",
+        "player_id": 641598,
+        "player_key": "641598",
+        "rank": 18,
+        "score": 12.7,
+        "team": "Seattle Mariners"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "Wyatt Langford",
+        "player_id": 694671,
+        "player_key": "694671",
+        "rank": 1,
+        "score": 76.2,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Joc Pederson",
+        "player_id": 592626,
+        "player_key": "592626",
+        "rank": 2,
+        "score": 70.6,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 3,
+        "score": 68.2,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 4,
+        "score": 63.7,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Ezequiel Duran",
+        "player_id": 677649,
+        "player_key": "677649",
+        "rank": 5,
+        "score": 62.1,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Randy Arozarena",
+        "player_id": 668227,
+        "player_key": "668227",
+        "rank": 6,
+        "score": 56.8,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Dominic Canzone",
+        "player_id": 686527,
+        "player_key": "686527",
+        "rank": 7,
+        "score": 56.7,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Jake Burger",
+        "player_id": 669394,
+        "player_key": "669394",
+        "rank": 8,
+        "score": 49.3,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 9,
+        "score": 47.9,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Julio Rodríguez",
+        "player_id": 677594,
+        "player_key": "677594",
+        "rank": 10,
+        "score": 47.0,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Luke Raley",
+        "player_id": 670042,
+        "player_key": "670042",
+        "rank": 11,
+        "score": 36.8,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Nicky Lopez",
+        "player_id": 670032,
+        "player_key": "670032",
+        "rank": 12,
+        "score": 31.1,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Evan Carter",
+        "player_id": 694497,
+        "player_key": "694497",
+        "rank": 13,
+        "score": 29.6,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "J.P. Crawford",
+        "player_id": 641487,
+        "player_key": "641487",
+        "rank": 14,
+        "score": 24.4,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Colt Emerson",
+        "player_id": 806068,
+        "player_key": "806068",
+        "rank": 15,
+        "score": 22.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Elias Díaz",
+        "player_id": 553869,
+        "player_key": "553869",
+        "rank": 16,
+        "score": 19.7,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Josh Smith",
+        "player_id": 669701,
+        "player_key": "669701",
+        "rank": 17,
+        "score": 9.3,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Mitch Garver",
+        "player_id": 641598,
+        "player_key": "641598",
+        "rank": 18,
+        "score": 4.1,
+        "team": "Seattle Mariners"
+      }
+    ]
   },
   "version": 1
 }
