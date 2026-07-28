@@ -1,9 +1,444 @@
 {
-  "captured_at": "2026-07-28T10:39:31.192427-04:00",
+  "captured_at": "2026-07-28T13:29:01.522530-04:00",
   "categories": {
-    "hits": [],
-    "home_runs": [],
-    "total_bases": []
+    "hits": [
+      {
+        "player": "Elly De La Cruz",
+        "player_id": 682829,
+        "player_key": "682829",
+        "rank": 1,
+        "score": 75.9,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 2,
+        "score": 72.5,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Steven Kwan",
+        "player_id": 680757,
+        "player_key": "680757",
+        "rank": 3,
+        "score": 66.9,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Nathaniel Lowe",
+        "player_id": 663993,
+        "player_key": "663993",
+        "rank": 4,
+        "score": 60.9,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Sal Stewart",
+        "player_id": 701398,
+        "player_key": "701398",
+        "rank": 5,
+        "score": 53.7,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Brayan Rocchio",
+        "player_id": 677587,
+        "player_key": "677587",
+        "rank": 6,
+        "score": 52.1,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Travis Bazzana",
+        "player_id": 683953,
+        "player_key": "683953",
+        "rank": 7,
+        "score": 48.3,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Tyler Stephenson",
+        "player_id": 663886,
+        "player_key": "663886",
+        "rank": 8,
+        "score": 46.3,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "José Ramírez",
+        "player_id": 608070,
+        "player_key": "608070",
+        "rank": 9,
+        "score": 44.3,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "JJ Bleday",
+        "player_id": 668709,
+        "player_key": "668709",
+        "rank": 10,
+        "score": 43.8,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Edwin Arroyo",
+        "player_id": 695490,
+        "player_key": "695490",
+        "rank": 11,
+        "score": 42.7,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Dane Myers",
+        "player_id": 667472,
+        "player_key": "667472",
+        "rank": 12,
+        "score": 40.8,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Patrick Bailey",
+        "player_id": 672275,
+        "player_key": "672275",
+        "rank": 13,
+        "score": 32.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Eugenio Suárez",
+        "player_id": 553993,
+        "player_key": "553993",
+        "rank": 14,
+        "score": 28.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Angel Martínez",
+        "player_id": 682657,
+        "player_key": "682657",
+        "rank": 15,
+        "score": 20.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Petey Halpin",
+        "player_id": 690984,
+        "player_key": "690984",
+        "rank": 16,
+        "score": 15.5,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Kyle Manzardo",
+        "player_id": 700932,
+        "player_key": "700932",
+        "rank": 17,
+        "score": 15.3,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "TJ Friedl",
+        "player_id": 670770,
+        "player_key": "670770",
+        "rank": 18,
+        "score": 14.3,
+        "team": "Cincinnati Reds"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Elly De La Cruz",
+        "player_id": 682829,
+        "player_key": "682829",
+        "rank": 1,
+        "score": 84.9,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Nathaniel Lowe",
+        "player_id": 663993,
+        "player_key": "663993",
+        "rank": 2,
+        "score": 68.9,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "JJ Bleday",
+        "player_id": 668709,
+        "player_key": "668709",
+        "rank": 3,
+        "score": 65.2,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Sal Stewart",
+        "player_id": 701398,
+        "player_key": "701398",
+        "rank": 4,
+        "score": 64.9,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Eugenio Suárez",
+        "player_id": 553993,
+        "player_key": "553993",
+        "rank": 5,
+        "score": 60.7,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 6,
+        "score": 48.8,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Tyler Stephenson",
+        "player_id": 663886,
+        "player_key": "663886",
+        "rank": 7,
+        "score": 47.8,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Travis Bazzana",
+        "player_id": 683953,
+        "player_key": "683953",
+        "rank": 8,
+        "score": 46.7,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "José Ramírez",
+        "player_id": 608070,
+        "player_key": "608070",
+        "rank": 9,
+        "score": 45.2,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Angel Martínez",
+        "player_id": 682657,
+        "player_key": "682657",
+        "rank": 10,
+        "score": 38.7,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Patrick Bailey",
+        "player_id": 672275,
+        "player_key": "672275",
+        "rank": 11,
+        "score": 34.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Brayan Rocchio",
+        "player_id": 677587,
+        "player_key": "677587",
+        "rank": 12,
+        "score": 33.6,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Kyle Manzardo",
+        "player_id": 700932,
+        "player_key": "700932",
+        "rank": 13,
+        "score": 31.4,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Steven Kwan",
+        "player_id": 680757,
+        "player_key": "680757",
+        "rank": 14,
+        "score": 29.2,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Petey Halpin",
+        "player_id": 690984,
+        "player_key": "690984",
+        "rank": 15,
+        "score": 27.1,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Dane Myers",
+        "player_id": 667472,
+        "player_key": "667472",
+        "rank": 16,
+        "score": 22.8,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "TJ Friedl",
+        "player_id": 670770,
+        "player_key": "670770",
+        "rank": 17,
+        "score": 19.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Edwin Arroyo",
+        "player_id": 695490,
+        "player_key": "695490",
+        "rank": 18,
+        "score": 18.4,
+        "team": "Cincinnati Reds"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "Elly De La Cruz",
+        "player_id": 682829,
+        "player_key": "682829",
+        "rank": 1,
+        "score": 86.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Nathaniel Lowe",
+        "player_id": 663993,
+        "player_key": "663993",
+        "rank": 2,
+        "score": 66.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Sal Stewart",
+        "player_id": 701398,
+        "player_key": "701398",
+        "rank": 3,
+        "score": 60.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 4,
+        "score": 58.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "JJ Bleday",
+        "player_id": 668709,
+        "player_key": "668709",
+        "rank": 5,
+        "score": 53.5,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Eugenio Suárez",
+        "player_id": 553993,
+        "player_key": "553993",
+        "rank": 6,
+        "score": 53.2,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Tyler Stephenson",
+        "player_id": 663886,
+        "player_key": "663886",
+        "rank": 7,
+        "score": 51.4,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Travis Bazzana",
+        "player_id": 683953,
+        "player_key": "683953",
+        "rank": 8,
+        "score": 51.1,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Steven Kwan",
+        "player_id": 680757,
+        "player_key": "680757",
+        "rank": 9,
+        "score": 48.7,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "José Ramírez",
+        "player_id": 608070,
+        "player_key": "608070",
+        "rank": 10,
+        "score": 41.2,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Brayan Rocchio",
+        "player_id": 677587,
+        "player_key": "677587",
+        "rank": 11,
+        "score": 39.4,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Patrick Bailey",
+        "player_id": 672275,
+        "player_key": "672275",
+        "rank": 12,
+        "score": 36.3,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Angel Martínez",
+        "player_id": 682657,
+        "player_key": "682657",
+        "rank": 13,
+        "score": 26.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Kyle Manzardo",
+        "player_id": 700932,
+        "player_key": "700932",
+        "rank": 14,
+        "score": 25.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Petey Halpin",
+        "player_id": 690984,
+        "player_key": "690984",
+        "rank": 15,
+        "score": 21.5,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Edwin Arroyo",
+        "player_id": 695490,
+        "player_key": "695490",
+        "rank": 16,
+        "score": 21.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Dane Myers",
+        "player_id": 667472,
+        "player_key": "667472",
+        "rank": 17,
+        "score": 19.8,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "TJ Friedl",
+        "player_id": 670770,
+        "player_key": "670770",
+        "rank": 18,
+        "score": 12.8,
+        "team": "Cincinnati Reds"
+      }
+    ]
   },
   "version": 1
 }
