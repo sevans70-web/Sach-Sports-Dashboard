@@ -1,149 +1,205 @@
 {
-  "captured_at": "2026-07-28T14:26:28.634471-04:00",
+  "captured_at": "2026-07-28T14:46:40.311165-04:00",
   "categories": {
     "hits": [
+      {
+        "player": "Otto Lopez",
+        "player_id": 672640,
+        "player_key": "672640",
+        "rank": 1,
+        "score": 75.7,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 2,
+        "score": 73.9,
+        "team": "Arizona Diamondbacks"
+      },
       {
         "player": "Elly De La Cruz",
         "player_id": 682829,
         "player_key": "682829",
-        "rank": 1,
-        "score": 77.4,
+        "rank": 3,
+        "score": 73.8,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
+        "rank": 4,
+        "score": 67.9,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Chase DeLauter",
         "player_id": 800050,
         "player_key": "800050",
-        "rank": 2,
-        "score": 72.2,
+        "rank": 5,
+        "score": 66.2,
         "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 6,
+        "score": 65.1,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Steven Kwan",
         "player_id": 680757,
         "player_key": "680757",
-        "rank": 3,
-        "score": 68.1,
+        "rank": 7,
+        "score": 64.7,
         "team": "Cleveland Guardians"
       },
       {
         "player": "Nathaniel Lowe",
         "player_id": 663993,
         "player_key": "663993",
-        "rank": 4,
-        "score": 62.4,
+        "rank": 8,
+        "score": 59.4,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Xavier Edwards",
+        "player_id": 669364,
+        "player_key": "669364",
+        "rank": 9,
+        "score": 59.3,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
+        "rank": 10,
+        "score": 58.8,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 11,
+        "score": 56.2,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Liam Hicks",
+        "player_id": 689414,
+        "player_key": "689414",
+        "rank": 12,
+        "score": 56.1,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 13,
+        "score": 51.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Heriberto Hernández",
+        "player_id": 681715,
+        "player_key": "681715",
+        "rank": 14,
+        "score": 51.8,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Ryan Waldschmidt",
+        "player_id": 814439,
+        "player_key": "814439",
+        "rank": 15,
+        "score": 51.4,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 16,
+        "score": 50.6,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 17,
+        "score": 50.2,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Sal Stewart",
         "player_id": 701398,
         "player_key": "701398",
-        "rank": 5,
-        "score": 55.2,
+        "rank": 18,
+        "score": 50.0,
         "team": "Cincinnati Reds"
       },
       {
         "player": "Brayan Rocchio",
         "player_id": 677587,
         "player_key": "677587",
-        "rank": 6,
-        "score": 52.1,
+        "rank": 19,
+        "score": 47.2,
         "team": "Cleveland Guardians"
       },
       {
         "player": "Tyler Stephenson",
         "player_id": 663886,
         "player_key": "663886",
-        "rank": 7,
-        "score": 47.8,
+        "rank": 20,
+        "score": 46.9,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Kyle Stowers",
+        "player_id": 669065,
+        "player_key": "669065",
+        "rank": 21,
+        "score": 46.1,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Max Kepler",
+        "player_id": 596146,
+        "player_key": "596146",
+        "rank": 22,
+        "score": 46.1,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Travis Bazzana",
         "player_id": 683953,
         "player_key": "683953",
-        "rank": 8,
-        "score": 47.5,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "José Ramírez",
-        "player_id": 608070,
-        "player_key": "608070",
-        "rank": 9,
-        "score": 44.7,
+        "rank": 23,
+        "score": 45.1,
         "team": "Cleveland Guardians"
       },
       {
         "player": "JJ Bleday",
         "player_id": 668709,
         "player_key": "668709",
-        "rank": 10,
-        "score": 44.5,
+        "rank": 24,
+        "score": 41.8,
         "team": "Cincinnati Reds"
       },
       {
-        "player": "Edwin Arroyo",
-        "player_id": 695490,
-        "player_key": "695490",
-        "rank": 11,
-        "score": 43.3,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Dane Myers",
-        "player_id": 667472,
-        "player_key": "667472",
-        "rank": 12,
-        "score": 42.2,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Patrick Bailey",
-        "player_id": 672275,
-        "player_key": "672275",
-        "rank": 13,
-        "score": 31.1,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Eugenio Suárez",
-        "player_id": 553993,
-        "player_key": "553993",
-        "rank": 14,
-        "score": 29.5,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Angel Martínez",
-        "player_id": 682657,
-        "player_key": "682657",
-        "rank": 15,
-        "score": 20.0,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Petey Halpin",
-        "player_id": 690984,
-        "player_key": "690984",
-        "rank": 16,
-        "score": 16.4,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "TJ Friedl",
-        "player_id": 670770,
-        "player_key": "670770",
-        "rank": 17,
-        "score": 15.8,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Kyle Manzardo",
-        "player_id": 700932,
-        "player_key": "700932",
-        "rank": 18,
-        "score": 15.3,
+        "player": "José Ramírez",
+        "player_id": 608070,
+        "player_key": "608070",
+        "rank": 25,
+        "score": 41.3,
         "team": "Cleveland Guardians"
       }
     ],
@@ -153,144 +209,200 @@
         "player_id": 682829,
         "player_key": "682829",
         "rank": 1,
-        "score": 86.4,
+        "score": 85.0,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 2,
+        "score": 75.1,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 3,
+        "score": 71.9,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Nathaniel Lowe",
         "player_id": 663993,
         "player_key": "663993",
-        "rank": 2,
-        "score": 70.4,
+        "rank": 4,
+        "score": 69.3,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Heriberto Hernández",
+        "player_id": 681715,
+        "player_key": "681715",
+        "rank": 5,
+        "score": 68.3,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Sal Stewart",
+        "player_id": 701398,
+        "player_key": "701398",
+        "rank": 6,
+        "score": 68.1,
         "team": "Cincinnati Reds"
       },
       {
         "player": "JJ Bleday",
         "player_id": 668709,
         "player_key": "668709",
-        "rank": 3,
-        "score": 66.7,
+        "rank": 7,
+        "score": 64.6,
         "team": "Cincinnati Reds"
       },
       {
-        "player": "Sal Stewart",
-        "player_id": 701398,
-        "player_key": "701398",
-        "rank": 4,
-        "score": 66.4,
-        "team": "Cincinnati Reds"
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
+        "rank": 8,
+        "score": 64.4,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Kyle Stowers",
+        "player_id": 669065,
+        "player_key": "669065",
+        "rank": 9,
+        "score": 61.7,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Joe Mack",
+        "player_id": 691788,
+        "player_key": "691788",
+        "rank": 10,
+        "score": 60.7,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 11,
+        "score": 60.4,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 12,
+        "score": 60.1,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Eugenio Suárez",
         "player_id": 553993,
         "player_key": "553993",
-        "rank": 5,
-        "score": 62.2,
+        "rank": 13,
+        "score": 60.0,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Otto Lopez",
+        "player_id": 672640,
+        "player_key": "672640",
+        "rank": 14,
+        "score": 53.6,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Liam Hicks",
+        "player_id": 689414,
+        "player_key": "689414",
+        "rank": 15,
+        "score": 51.8,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Nolan Arenado",
+        "player_id": 571448,
+        "player_key": "571448",
+        "rank": 16,
+        "score": 48.9,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 17,
+        "score": 48.8,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Tyler Stephenson",
         "player_id": 663886,
         "player_key": "663886",
-        "rank": 6,
-        "score": 49.2,
+        "rank": 18,
+        "score": 48.4,
         "team": "Cincinnati Reds"
       },
       {
-        "player": "Chase DeLauter",
-        "player_id": 800050,
-        "player_key": "800050",
-        "rank": 7,
-        "score": 47.5,
-        "team": "Cleveland Guardians"
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 19,
+        "score": 48.1,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Travis Bazzana",
         "player_id": 683953,
         "player_key": "683953",
-        "rank": 8,
-        "score": 45.7,
+        "rank": 20,
+        "score": 47.1,
         "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 21,
+        "score": 45.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 22,
+        "score": 44.3,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Max Kepler",
+        "player_id": 596146,
+        "player_key": "596146",
+        "rank": 23,
+        "score": 43.5,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Geraldo Perdomo",
+        "player_id": 672695,
+        "player_key": "672695",
+        "rank": 24,
+        "score": 41.9,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "José Ramírez",
         "player_id": 608070,
         "player_key": "608070",
-        "rank": 9,
-        "score": 45.2,
+        "rank": 25,
+        "score": 39.2,
         "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Angel Martínez",
-        "player_id": 682657,
-        "player_key": "682657",
-        "rank": 10,
-        "score": 37.7,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Kyle Manzardo",
-        "player_id": 700932,
-        "player_key": "700932",
-        "rank": 11,
-        "score": 33.7,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Brayan Rocchio",
-        "player_id": 677587,
-        "player_key": "677587",
-        "rank": 12,
-        "score": 33.6,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Patrick Bailey",
-        "player_id": 672275,
-        "player_key": "672275",
-        "rank": 13,
-        "score": 33.2,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Steven Kwan",
-        "player_id": 680757,
-        "player_key": "680757",
-        "rank": 14,
-        "score": 29.7,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Petey Halpin",
-        "player_id": 690984,
-        "player_key": "690984",
-        "rank": 15,
-        "score": 27.1,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Dane Myers",
-        "player_id": 667472,
-        "player_key": "667472",
-        "rank": 16,
-        "score": 24.3,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "TJ Friedl",
-        "player_id": 670770,
-        "player_key": "670770",
-        "rank": 17,
-        "score": 20.5,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Edwin Arroyo",
-        "player_id": 695490,
-        "player_key": "695490",
-        "rank": 18,
-        "score": 19.9,
-        "team": "Cincinnati Reds"
       }
     ],
     "total_bases": [
@@ -299,144 +411,200 @@
         "player_id": 682829,
         "player_key": "682829",
         "rank": 1,
-        "score": 87.5,
+        "score": 85.6,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 2,
+        "score": 74.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Heriberto Hernández",
+        "player_id": 681715,
+        "player_key": "681715",
+        "rank": 3,
+        "score": 66.2,
+        "team": "Miami Marlins"
       },
       {
         "player": "Nathaniel Lowe",
         "player_id": 663993,
         "player_key": "663993",
-        "rank": 2,
-        "score": 67.5,
+        "rank": 4,
+        "score": 65.8,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Otto Lopez",
+        "player_id": 672640,
+        "player_key": "672640",
+        "rank": 5,
+        "score": 65.7,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 6,
+        "score": 65.1,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Ketel Marte",
+        "player_id": 606466,
+        "player_key": "606466",
+        "rank": 7,
+        "score": 64.4,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 8,
+        "score": 63.4,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 9,
+        "score": 61.8,
+        "team": "Miami Marlins"
       },
       {
         "player": "Sal Stewart",
         "player_id": 701398,
         "player_key": "701398",
-        "rank": 3,
-        "score": 61.5,
+        "rank": 10,
+        "score": 59.7,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Kyle Stowers",
+        "player_id": 669065,
+        "player_key": "669065",
+        "rank": 11,
+        "score": 57.5,
+        "team": "Miami Marlins"
       },
       {
         "player": "Chase DeLauter",
         "player_id": 800050,
         "player_key": "800050",
-        "rank": 4,
-        "score": 58.0,
+        "rank": 12,
+        "score": 55.3,
         "team": "Cleveland Guardians"
       },
       {
-        "player": "JJ Bleday",
-        "player_id": 668709,
-        "player_key": "668709",
-        "rank": 5,
-        "score": 54.7,
-        "team": "Cincinnati Reds"
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 13,
+        "score": 52.1,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Eugenio Suárez",
         "player_id": 553993,
         "player_key": "553993",
-        "rank": 6,
-        "score": 54.7,
+        "rank": 14,
+        "score": 52.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "JJ Bleday",
+        "player_id": 668709,
+        "player_key": "668709",
+        "rank": 15,
+        "score": 51.1,
         "team": "Cincinnati Reds"
       },
       {
         "player": "Tyler Stephenson",
         "player_id": 663886,
         "player_key": "663886",
-        "rank": 7,
-        "score": 52.9,
+        "rank": 16,
+        "score": 50.4,
         "team": "Cincinnati Reds"
       },
       {
-        "player": "Travis Bazzana",
-        "player_id": 683953,
-        "player_key": "683953",
-        "rank": 8,
-        "score": 50.7,
-        "team": "Cleveland Guardians"
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
+        "rank": 17,
+        "score": 48.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 18,
+        "score": 48.1,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Steven Kwan",
         "player_id": 680757,
         "player_key": "680757",
-        "rank": 9,
-        "score": 49.8,
+        "rank": 19,
+        "score": 48.0,
         "team": "Cleveland Guardians"
       },
       {
-        "player": "José Ramírez",
-        "player_id": 608070,
-        "player_key": "608070",
-        "rank": 10,
-        "score": 41.6,
+        "player": "Travis Bazzana",
+        "player_id": 683953,
+        "player_key": "683953",
+        "rank": 20,
+        "score": 48.0,
         "team": "Cleveland Guardians"
       },
       {
-        "player": "Brayan Rocchio",
-        "player_id": 677587,
-        "player_key": "677587",
-        "rank": 11,
-        "score": 39.4,
-        "team": "Cleveland Guardians"
+        "player": "Liam Hicks",
+        "player_id": 689414,
+        "player_key": "689414",
+        "rank": 21,
+        "score": 47.9,
+        "team": "Miami Marlins"
       },
       {
-        "player": "Patrick Bailey",
-        "player_id": 672275,
-        "player_key": "672275",
-        "rank": 12,
-        "score": 35.7,
-        "team": "Cleveland Guardians"
+        "player": "Ryan Waldschmidt",
+        "player_id": 814439,
+        "player_key": "814439",
+        "rank": 22,
+        "score": 46.9,
+        "team": "Arizona Diamondbacks"
       },
       {
-        "player": "Angel Martínez",
-        "player_id": 682657,
-        "player_key": "682657",
-        "rank": 13,
-        "score": 26.0,
-        "team": "Cleveland Guardians"
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 23,
+        "score": 45.7,
+        "team": "Tampa Bay Rays"
       },
       {
-        "player": "Kyle Manzardo",
-        "player_id": 700932,
-        "player_key": "700932",
-        "rank": 14,
-        "score": 25.0,
-        "team": "Cleveland Guardians"
+        "player": "Xavier Edwards",
+        "player_id": 669364,
+        "player_key": "669364",
+        "rank": 24,
+        "score": 44.2,
+        "team": "Miami Marlins"
       },
       {
-        "player": "Edwin Arroyo",
-        "player_id": 695490,
-        "player_key": "695490",
-        "rank": 15,
-        "score": 22.5,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Petey Halpin",
-        "player_id": 690984,
-        "player_key": "690984",
-        "rank": 16,
-        "score": 21.5,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "Dane Myers",
-        "player_id": 667472,
-        "player_key": "667472",
-        "rank": 17,
-        "score": 21.2,
-        "team": "Cincinnati Reds"
-      },
-      {
-        "player": "TJ Friedl",
-        "player_id": 670770,
-        "player_key": "670770",
-        "rank": 18,
-        "score": 14.3,
-        "team": "Cincinnati Reds"
+        "player": "Joe Mack",
+        "player_id": 691788,
+        "player_key": "691788",
+        "rank": 25,
+        "score": 44.1,
+        "team": "Miami Marlins"
       }
     ]
   },
