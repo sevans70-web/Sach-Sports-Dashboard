@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-27T19:25:27.823934-04:00",
+  "captured_at": "2026-07-27T20:08:52.757448-04:00",
   "categories": {
     "hits": [
       {
@@ -7,7 +7,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 1,
-        "score": 83.0,
+        "score": 82.8,
         "team": "Washington Nationals"
       },
       {
@@ -23,7 +23,7 @@
         "player_id": 672515,
         "player_key": "672515",
         "rank": 3,
-        "score": 77.8,
+        "score": 77.6,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -31,7 +31,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 4,
-        "score": 76.4,
+        "score": 76.3,
         "team": "Houston Astros"
       },
       {
@@ -39,7 +39,7 @@
         "player_id": 676475,
         "player_key": "676475",
         "rank": 5,
-        "score": 76.1,
+        "score": 76.2,
         "team": "St. Louis Cardinals"
       },
       {
@@ -47,7 +47,7 @@
         "player_id": 694384,
         "player_key": "694384",
         "rank": 6,
-        "score": 75.9,
+        "score": 75.8,
         "team": "Los Angeles Angels"
       },
       {
@@ -55,7 +55,7 @@
         "player_id": 693304,
         "player_key": "693304",
         "rank": 7,
-        "score": 75.0,
+        "score": 74.8,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -63,7 +63,7 @@
         "player_id": 663968,
         "player_key": "663968",
         "rank": 8,
-        "score": 74.9,
+        "score": 74.8,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -75,34 +75,26 @@
         "team": "Houston Astros"
       },
       {
-        "player": "Elly De La Cruz",
-        "player_id": 682829,
-        "player_key": "682829",
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
         "rank": 10,
-        "score": 72.7,
-        "team": "Cincinnati Reds"
+        "score": 72.2,
+        "team": "Detroit Tigers"
       },
       {
         "player": "Tommy White",
         "player_id": 695720,
         "player_key": "695720",
         "rank": 11,
-        "score": 72.4,
+        "score": 72.2,
         "team": "Athletics"
-      },
-      {
-        "player": "Kevin McGonigle",
-        "player_id": 805808,
-        "player_key": "805808",
-        "rank": 12,
-        "score": 69.9,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 13,
+        "rank": 12,
         "score": 69.8,
         "team": "Chicago Cubs"
       },
@@ -110,16 +102,24 @@
         "player": "Brandon Nimmo",
         "player_id": 607043,
         "player_key": "607043",
-        "rank": 14,
-        "score": 68.0,
+        "rank": 13,
+        "score": 67.8,
         "team": "Texas Rangers"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 14,
+        "score": 67.6,
+        "team": "Detroit Tigers"
       },
       {
         "player": "Nico Hoerner",
         "player_id": 663538,
         "player_key": "663538",
         "rank": 15,
-        "score": 67.6,
+        "score": 67.4,
         "team": "Chicago Cubs"
       },
       {
@@ -127,7 +127,7 @@
         "player_id": 668930,
         "player_key": "668930",
         "rank": 16,
-        "score": 67.5,
+        "score": 67.3,
         "team": "Milwaukee Brewers"
       },
       {
@@ -135,72 +135,72 @@
         "player_id": 575929,
         "player_key": "575929",
         "rank": 17,
-        "score": 67.4,
+        "score": 67.1,
         "team": "Boston Red Sox"
       },
       {
-        "player": "Chase DeLauter",
-        "player_id": 800050,
-        "player_key": "800050",
+        "player": "Ildemaro Vargas",
+        "player_id": 545121,
+        "player_key": "545121",
         "rank": 18,
-        "score": 67.4,
-        "team": "Cleveland Guardians"
+        "score": 66.9,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Wyatt Langford",
         "player_id": 694671,
         "player_key": "694671",
         "rank": 19,
-        "score": 67.2,
+        "score": 66.8,
         "team": "Texas Rangers"
-      },
-      {
-        "player": "Ildemaro Vargas",
-        "player_id": 545121,
-        "player_key": "545121",
-        "rank": 20,
-        "score": 67.1,
-        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Cooper Pratt",
         "player_id": 806198,
         "player_key": "806198",
-        "rank": 21,
-        "score": 65.8,
+        "rank": 20,
+        "score": 65.7,
         "team": "Milwaukee Brewers"
+      },
+      {
+        "player": "Jacob Wilson",
+        "player_id": 805779,
+        "player_key": "805779",
+        "rank": 21,
+        "score": 65.6,
+        "team": "Athletics"
       },
       {
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
         "rank": 22,
-        "score": 65.7,
-        "team": "St. Louis Cardinals"
-      },
-      {
-        "player": "Jacob Wilson",
-        "player_id": 805779,
-        "player_key": "805779",
-        "rank": 23,
-        "score": 65.6,
-        "team": "Athletics"
-      },
-      {
-        "player": "Dillon Dingler",
-        "player_id": 693307,
-        "player_key": "693307",
-        "rank": 24,
         "score": 65.5,
-        "team": "Detroit Tigers"
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Drake Baldwin",
         "player_id": 686948,
         "player_key": "686948",
-        "rank": 25,
-        "score": 65.4,
+        "rank": 23,
+        "score": 65.3,
         "team": "Atlanta Braves"
+      },
+      {
+        "player": "Ernie Clement",
+        "player_id": 676391,
+        "player_key": "676391",
+        "rank": 24,
+        "score": 65.2,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "James Wood",
+        "player_id": 695578,
+        "player_key": "695578",
+        "rank": 25,
+        "score": 64.7,
+        "team": "Washington Nationals"
       }
     ],
     "home_runs": [
@@ -209,7 +209,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 1,
-        "score": 87.2,
+        "score": 87.3,
         "team": "Washington Nationals"
       },
       {
@@ -217,126 +217,110 @@
         "player_id": 695578,
         "player_key": "695578",
         "rank": 2,
-        "score": 82.2,
+        "score": 82.8,
         "team": "Washington Nationals"
-      },
-      {
-        "player": "Esmerlyn Valdez",
-        "player_id": 699013,
-        "player_key": "699013",
-        "rank": 3,
-        "score": 81.9,
-        "team": "Pittsburgh Pirates"
-      },
-      {
-        "player": "Elly De La Cruz",
-        "player_id": 682829,
-        "player_key": "682829",
-        "rank": 4,
-        "score": 81.5,
-        "team": "Cincinnati Reds"
       },
       {
         "player": "Yordan Alvarez",
         "player_id": 670541,
         "player_key": "670541",
-        "rank": 5,
-        "score": 78.8,
+        "rank": 3,
+        "score": 79.1,
         "team": "Houston Astros"
       },
       {
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 6,
-        "score": 78.7,
+        "rank": 4,
+        "score": 79.0,
         "team": "Chicago Cubs"
       },
       {
         "player": "Seiya Suzuki",
         "player_id": 673548,
         "player_key": "673548",
-        "rank": 7,
-        "score": 78.7,
+        "rank": 5,
+        "score": 78.8,
         "team": "Chicago Cubs"
       },
       {
         "player": "Rafael Devers",
         "player_id": 646240,
         "player_key": "646240",
-        "rank": 8,
-        "score": 78.2,
+        "rank": 6,
+        "score": 78.7,
         "team": "San Francisco Giants"
-      },
-      {
-        "player": "Joc Pederson",
-        "player_id": 592626,
-        "player_key": "592626",
-        "rank": 9,
-        "score": 77.4,
-        "team": "Texas Rangers"
       },
       {
         "player": "Luis García Jr.",
         "player_id": 671277,
         "player_key": "671277",
-        "rank": 10,
-        "score": 77.1,
+        "rank": 7,
+        "score": 77.7,
         "team": "Washington Nationals"
+      },
+      {
+        "player": "Joc Pederson",
+        "player_id": 592626,
+        "player_key": "592626",
+        "rank": 8,
+        "score": 77.5,
+        "team": "Texas Rangers"
       },
       {
         "player": "Willson Contreras",
         "player_id": 575929,
         "player_key": "575929",
-        "rank": 11,
-        "score": 76.2,
+        "rank": 9,
+        "score": 76.7,
         "team": "Boston Red Sox"
       },
       {
         "player": "Ben Rice",
         "player_id": 700250,
         "player_key": "700250",
-        "rank": 12,
-        "score": 75.9,
+        "rank": 10,
+        "score": 76.5,
         "team": "New York Yankees"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 11,
+        "score": 76.3,
+        "team": "Detroit Tigers"
       },
       {
         "player": "Corbin Carroll",
         "player_id": 682998,
         "player_key": "682998",
-        "rank": 13,
-        "score": 75.5,
+        "rank": 12,
+        "score": 76.2,
         "team": "Arizona Diamondbacks"
       },
       {
         "player": "Kyle Schwarber",
         "player_id": 656941,
         "player_key": "656941",
-        "rank": 14,
-        "score": 74.7,
+        "rank": 13,
+        "score": 75.1,
         "team": "Philadelphia Phillies"
-      },
-      {
-        "player": "Dillon Dingler",
-        "player_id": 693307,
-        "player_key": "693307",
-        "rank": 15,
-        "score": 73.9,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Wyatt Langford",
         "player_id": 694671,
         "player_key": "694671",
-        "rank": 16,
-        "score": 72.5,
+        "rank": 14,
+        "score": 72.8,
         "team": "Texas Rangers"
       },
       {
         "player": "Wilyer Abreu",
         "player_id": 677800,
         "player_key": "677800",
-        "rank": 17,
+        "rank": 15,
         "score": 70.8,
         "team": "Boston Red Sox"
       },
@@ -344,65 +328,81 @@
         "player": "Ketel Marte",
         "player_id": 606466,
         "player_key": "606466",
-        "rank": 18,
-        "score": 69.4,
+        "rank": 16,
+        "score": 70.2,
         "team": "Arizona Diamondbacks"
       },
       {
         "player": "Paul Goldschmidt",
         "player_id": 502671,
         "player_key": "502671",
-        "rank": 19,
-        "score": 69.3,
+        "rank": 17,
+        "score": 70.1,
         "team": "New York Yankees"
       },
       {
         "player": "Bryce Eldridge",
         "player_id": 805811,
         "player_key": "805811",
-        "rank": 20,
-        "score": 69.0,
+        "rank": 18,
+        "score": 69.5,
         "team": "San Francisco Giants"
       },
       {
         "player": "Jeremy Peña",
         "player_id": 665161,
         "player_key": "665161",
-        "rank": 21,
-        "score": 68.5,
+        "rank": 19,
+        "score": 68.8,
         "team": "Houston Astros"
-      },
-      {
-        "player": "Jordan Walker",
-        "player_id": 691023,
-        "player_key": "691023",
-        "rank": 22,
-        "score": 68.1,
-        "team": "St. Louis Cardinals"
       },
       {
         "player": "Brice Turang",
         "player_id": 668930,
         "player_key": "668930",
-        "rank": 23,
-        "score": 67.9,
+        "rank": 20,
+        "score": 68.3,
         "team": "Milwaukee Brewers"
       },
       {
-        "player": "Nathaniel Lowe",
-        "player_id": 663993,
-        "player_key": "663993",
-        "rank": 24,
-        "score": 67.8,
-        "team": "Cincinnati Reds"
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 21,
+        "score": 68.3,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Bryce Harper",
         "player_id": 547180,
         "player_key": "547180",
-        "rank": 25,
-        "score": 67.4,
+        "rank": 22,
+        "score": 67.8,
         "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Munetaka Murakami",
+        "player_id": 808959,
+        "player_key": "808959",
+        "rank": 23,
+        "score": 66.8,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Brandon Lowe",
+        "player_id": 664040,
+        "player_key": "664040",
+        "rank": 24,
+        "score": 66.7,
+        "team": "Pittsburgh Pirates"
+      },
+      {
+        "player": "Curtis Mead",
+        "player_id": 678554,
+        "player_key": "678554",
+        "rank": 25,
+        "score": 65.4,
+        "team": "Boston Red Sox"
       }
     ],
     "total_bases": [
@@ -415,18 +415,10 @@
         "team": "Washington Nationals"
       },
       {
-        "player": "Elly De La Cruz",
-        "player_id": 682829,
-        "player_key": "682829",
-        "rank": 2,
-        "score": 82.2,
-        "team": "Cincinnati Reds"
-      },
-      {
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 3,
+        "rank": 2,
         "score": 80.4,
         "team": "Chicago Cubs"
       },
@@ -434,7 +426,7 @@
         "player": "Yordan Alvarez",
         "player_id": 670541,
         "player_key": "670541",
-        "rank": 4,
+        "rank": 3,
         "score": 78.8,
         "team": "Houston Astros"
       },
@@ -442,39 +434,39 @@
         "player": "James Wood",
         "player_id": 695578,
         "player_key": "695578",
-        "rank": 5,
-        "score": 76.8,
+        "rank": 4,
+        "score": 77.3,
         "team": "Washington Nationals"
       },
       {
         "player": "Corbin Carroll",
         "player_id": 682998,
         "player_key": "682998",
-        "rank": 6,
-        "score": 76.4,
+        "rank": 5,
+        "score": 77.1,
         "team": "Arizona Diamondbacks"
       },
       {
         "player": "Seiya Suzuki",
         "player_id": 673548,
         "player_key": "673548",
-        "rank": 7,
-        "score": 75.6,
+        "rank": 6,
+        "score": 75.8,
         "team": "Chicago Cubs"
       },
       {
-        "player": "Esmerlyn Valdez",
-        "player_id": 699013,
-        "player_key": "699013",
-        "rank": 8,
-        "score": 74.6,
-        "team": "Pittsburgh Pirates"
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 7,
+        "score": 75.4,
+        "team": "Detroit Tigers"
       },
       {
         "player": "Wyatt Langford",
         "player_id": 694671,
         "player_key": "694671",
-        "rank": 9,
+        "rank": 8,
         "score": 74.3,
         "team": "Texas Rangers"
       },
@@ -482,129 +474,137 @@
         "player": "Rafael Devers",
         "player_id": 646240,
         "player_key": "646240",
-        "rank": 10,
-        "score": 73.8,
+        "rank": 9,
+        "score": 74.1,
         "team": "San Francisco Giants"
       },
       {
         "player": "Jeremy Peña",
         "player_id": 665161,
         "player_key": "665161",
-        "rank": 11,
-        "score": 73.6,
+        "rank": 10,
+        "score": 73.7,
         "team": "Houston Astros"
-      },
-      {
-        "player": "Dillon Dingler",
-        "player_id": 693307,
-        "player_key": "693307",
-        "rank": 12,
-        "score": 73.2,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Willson Contreras",
         "player_id": 575929,
         "player_key": "575929",
-        "rank": 13,
-        "score": 72.4,
+        "rank": 11,
+        "score": 72.8,
         "team": "Boston Red Sox"
-      },
-      {
-        "player": "Joc Pederson",
-        "player_id": 592626,
-        "player_key": "592626",
-        "rank": 14,
-        "score": 71.4,
-        "team": "Texas Rangers"
       },
       {
         "player": "Ben Rice",
         "player_id": 700250,
         "player_key": "700250",
-        "rank": 15,
-        "score": 71.2,
+        "rank": 12,
+        "score": 71.5,
         "team": "New York Yankees"
       },
       {
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 16,
-        "score": 70.8,
+        "rank": 13,
+        "score": 71.2,
         "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Joc Pederson",
+        "player_id": 592626,
+        "player_key": "592626",
+        "rank": 14,
+        "score": 71.2,
+        "team": "Texas Rangers"
       },
       {
         "player": "Luis García Jr.",
         "player_id": 671277,
         "player_key": "671277",
-        "rank": 17,
-        "score": 70.5,
+        "rank": 15,
+        "score": 71.1,
         "team": "Washington Nationals"
+      },
+      {
+        "player": "Luis Arraez",
+        "player_id": 650333,
+        "player_key": "650333",
+        "rank": 16,
+        "score": 70.4,
+        "team": "San Francisco Giants"
+      },
+      {
+        "player": "Brice Turang",
+        "player_id": 668930,
+        "player_key": "668930",
+        "rank": 17,
+        "score": 70.3,
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "Christian Yelich",
         "player_id": 592885,
         "player_key": "592885",
         "rank": 18,
-        "score": 70.3,
+        "score": 70.2,
         "team": "Milwaukee Brewers"
-      },
-      {
-        "player": "Brice Turang",
-        "player_id": 668930,
-        "player_key": "668930",
-        "rank": 19,
-        "score": 70.0,
-        "team": "Milwaukee Brewers"
-      },
-      {
-        "player": "Luis Arraez",
-        "player_id": 650333,
-        "player_key": "650333",
-        "rank": 20,
-        "score": 70.0,
-        "team": "San Francisco Giants"
       },
       {
         "player": "Ketel Marte",
         "player_id": 606466,
         "player_key": "606466",
-        "rank": 21,
-        "score": 69.3,
+        "rank": 19,
+        "score": 69.8,
         "team": "Arizona Diamondbacks"
       },
       {
         "player": "Gabriel Moreno",
         "player_id": 672515,
         "player_key": "672515",
-        "rank": 22,
-        "score": 68.9,
+        "rank": 20,
+        "score": 69.0,
         "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 21,
+        "score": 68.4,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Kyle Schwarber",
+        "player_id": 656941,
+        "player_key": "656941",
+        "rank": 22,
+        "score": 68.3,
+        "team": "Philadelphia Phillies"
       },
       {
         "player": "Drake Baldwin",
         "player_id": 686948,
         "player_key": "686948",
         "rank": 23,
-        "score": 68.5,
-        "team": "Atlanta Braves"
-      },
-      {
-        "player": "Wilyer Abreu",
-        "player_id": 677800,
-        "player_key": "677800",
-        "rank": 24,
         "score": 68.3,
-        "team": "Boston Red Sox"
+        "team": "Atlanta Braves"
       },
       {
         "player": "Trea Turner",
         "player_id": 607208,
         "player_key": "607208",
-        "rank": 25,
-        "score": 68.1,
+        "rank": 24,
+        "score": 67.8,
         "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 25,
+        "score": 67.1,
+        "team": "St. Louis Cardinals"
       }
     ]
   },
