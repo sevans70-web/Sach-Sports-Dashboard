@@ -1183,9 +1183,6 @@ st.markdown(
                 grid-template-columns: 32px 36px minmax(0, 1fr);
             }
 
-            .gi-full-row .gi-confidence {
-                display: none;
-            }
         }
     </style>
     """,
