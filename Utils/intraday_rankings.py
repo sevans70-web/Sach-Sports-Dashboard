@@ -459,7 +459,7 @@ def load_compare_and_save(
         comparisons[category] = comparison
         summaries[category] = build_movement_summary(comparison)
 
-    should_save = categories_changed(current_snapshot, previous_snapshot)
+    should_save = False
     if should_save:
         save_github_snapshot(
             config=config,
