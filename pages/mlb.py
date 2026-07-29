@@ -1180,7 +1180,7 @@ st.markdown(
             }
 
             .gi-full-row {
-                grid-template-columns: 32px 36px minmax(0, 1fr);
+                grid-template-columns: 32px 36px minmax(0, 1fr) auto;
             }
 
         }
