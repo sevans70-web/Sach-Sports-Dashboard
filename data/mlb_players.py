@@ -20,7 +20,9 @@ will analyze later.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
+from time import sleep
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -36,6 +38,10 @@ MLB_PERSON_URL = "https://statsapi.mlb.com/api/v1/people/{player_id}"
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 REQUEST_TIMEOUT_SECONDS = 15
+REQUEST_TIMEOUT_SECONDS = 15
+ROSTER_FETCH_WORKERS = 8
+ROSTER_FETCH_ATTEMPTS = 3
+ROSTER_RETRY_DELAY_SECONDS = 0.75
 
 # MLB position abbreviations that are treated as pitchers.
 PITCHER_POSITIONS = {
@@ -228,6 +234,34 @@ def get_team_active_roster(
 
 
 def get_today_player_pool(
+
+    
+def _get_team_active_roster_with_retries(
+    team_id: int,
+    roster_date: date | str | None,
+) -> dict[str, Any]:
+    """Retrieve one roster, retrying temporary MLB API failures."""
+    result: dict[str, Any] = {
+        "success": False,
+        "team_id": team_id,
+        "date": str(roster_date or ""),
+        "roster": [],
+        "error": "Roster could not be loaded.",
+    }
+
+    for attempt in range(1, ROSTER_FETCH_ATTEMPTS + 1):
+        result = get_team_active_roster(
+            team_id=team_id,
+            roster_date=roster_date,
+        )
+
+        if result.get("success"):
+            return result
+
+        if attempt < ROSTER_FETCH_ATTEMPTS:
+            sleep(ROSTER_RETRY_DELAY_SECONDS * attempt)
+
+    return result
     schedule_date: date | str | None = None,
     hitters_only: bool = False,
 ) -> dict[str, Any]:
@@ -269,13 +303,50 @@ def get_today_player_pool(
     games = schedule.get("games", [])
     context_by_team = _team_game_context(games)
 
-    all_players: list[dict[str, Any]] = []
+        all_players: list[dict[str, Any]] = []
     errors: list[str] = []
+    loaded_team_ids: set[int] = set()
+    roster_results: dict[int, dict[str, Any]] = {}
+
+    worker_count = min(
+        ROSTER_FETCH_WORKERS,
+        max(len(context_by_team), 1),
+    )
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = {
+            executor.submit(
+                _get_team_active_roster_with_retries,
+                team_id,
+                schedule.get("date"),
+            ): team_id
+            for team_id in context_by_team
+        }
+
+        for future in as_completed(futures):
+            team_id = futures[future]
+
+            try:
+                roster_results[team_id] = future.result()
+            except Exception as exc:
+                roster_results[team_id] = {
+                    "success": False,
+                    "team_id": team_id,
+                    "date": schedule.get("date"),
+                    "roster": [],
+                    "error": f"Unexpected roster error: {exc}",
+                }
 
     for team_id, context in context_by_team.items():
-        roster_result = get_team_active_roster(
-            team_id=team_id,
-            roster_date=schedule.get("date"),
+        roster_result = roster_results.get(
+            team_id,
+            {
+                "success": False,
+                "team_id": team_id,
+                "date": schedule.get("date"),
+                "roster": [],
+                "error": "Roster result was not returned.",
+            },
         )
 
         if not roster_result.get("success"):
@@ -284,6 +355,8 @@ def get_today_player_pool(
                 f"{roster_result.get('error')}"
             )
             continue
+
+        loaded_team_ids.add(team_id)
 
         for roster_entry in roster_result.get("roster", []):
             player = _parse_roster_player(
@@ -294,6 +367,24 @@ def get_today_player_pool(
             if player is not None:
                 all_players.append(player)
 
+    missing_team_ids = sorted(
+        set(context_by_team) - loaded_team_ids
+    )
+
+    missing_teams = [
+        str(
+            context_by_team[team_id].get("team_name")
+            or team_id
+        )
+        for team_id in missing_team_ids
+    ]
+
+    if missing_teams:
+        errors.insert(
+            0,
+            "Incomplete slate: missing rosters for "
+            + ", ".join(missing_teams),
+        )
     # Remove duplicate player IDs defensively.
     unique_players: dict[int, dict[str, Any]] = {}
 
@@ -322,15 +413,22 @@ def get_today_player_pool(
 
     selected_players = hitters if hitters_only else players
 
+    complete_slate = (
+        bool(context_by_team)
+        and len(loaded_team_ids) == len(context_by_team)
+    )
+
     return {
-        "success": bool(players) or not errors,
-        "date": schedule.get("date"),
+        "success": complete_slate and bool(players),    "date": schedule.get("date"),
+        
         "players": selected_players,
         "hitters": hitters,
         "pitchers": pitchers,
         "teams": list(context_by_team.values()),
         "game_count": len(games),
         "team_count": len(context_by_team),
+        "loaded_team_count": len(loaded_team_ids),
+        "missing_teams": missing_teams,
         "player_count": len(players),
         "hitter_count": len(hitters),
         "pitcher_count": len(pitchers),
