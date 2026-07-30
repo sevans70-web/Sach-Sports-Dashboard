@@ -402,7 +402,11 @@ def get_today_hitters_with_stats(
             str(item.get("player_name") or ""),
         )
     )
-
+    print("=" * 60)
+    print(f"Games: {player_pool.get('game_count')}")
+    print(f"Teams: {player_pool.get('team_count')}")
+    print(f"Hitters loaded: {len(enriched_hitters)}")
+    print("=" * 60)
     return {
         "success": bool(enriched_hitters),
         "date": player_pool.get("date"),
