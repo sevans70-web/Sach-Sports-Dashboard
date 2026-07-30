@@ -1,9 +1,228 @@
 {
-  "captured_at": "2026-07-30T04:02:06.336262-04:00",
+  "captured_at": "2026-07-30T09:44:11.002531-04:00",
   "categories": {
-    "hits": [],
-    "home_runs": [],
-    "total_bases": []
+    "hits": [
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 1,
+        "score": 75.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jonathan Aranda",
+        "player_id": 666018,
+        "player_key": "666018",
+        "rank": 2,
+        "score": 64.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 3,
+        "score": 61.5,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jonny DeLuca",
+        "player_id": 676356,
+        "player_key": "676356",
+        "rank": 4,
+        "score": 59.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Ben Williamson",
+        "player_id": 810938,
+        "player_key": "810938",
+        "rank": 5,
+        "score": 47.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 6,
+        "score": 40.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Cedric Mullins",
+        "player_id": 656775,
+        "player_key": "656775",
+        "rank": 7,
+        "score": 40.0,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Taylor Walls",
+        "player_id": 670764,
+        "player_key": "670764",
+        "rank": 8,
+        "score": 35.0,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Hunter Feduccia",
+        "player_id": 676439,
+        "player_key": "676439",
+        "rank": 9,
+        "score": 25.6,
+        "team": "Tampa Bay Rays"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 1,
+        "score": 73.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 2,
+        "score": 72.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 3,
+        "score": 67.5,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jonathan Aranda",
+        "player_id": 666018,
+        "player_key": "666018",
+        "rank": 4,
+        "score": 54.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Cedric Mullins",
+        "player_id": 656775,
+        "player_key": "656775",
+        "rank": 5,
+        "score": 53.5,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jonny DeLuca",
+        "player_id": 676356,
+        "player_key": "676356",
+        "rank": 6,
+        "score": 53.0,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Hunter Feduccia",
+        "player_id": 676439,
+        "player_key": "676439",
+        "rank": 7,
+        "score": 32.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Taylor Walls",
+        "player_id": 670764,
+        "player_key": "670764",
+        "rank": 8,
+        "score": 29.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Ben Williamson",
+        "player_id": 810938,
+        "player_key": "810938",
+        "rank": 9,
+        "score": 24.2,
+        "team": "Tampa Bay Rays"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 1,
+        "score": 80.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 2,
+        "score": 61.0,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 3,
+        "score": 60.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jonny DeLuca",
+        "player_id": 676356,
+        "player_key": "676356",
+        "rank": 4,
+        "score": 58.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jonathan Aranda",
+        "player_id": 666018,
+        "player_key": "666018",
+        "rank": 5,
+        "score": 54.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Cedric Mullins",
+        "player_id": 656775,
+        "player_key": "656775",
+        "rank": 6,
+        "score": 53.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Taylor Walls",
+        "player_id": 670764,
+        "player_key": "670764",
+        "rank": 7,
+        "score": 32.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Hunter Feduccia",
+        "player_id": 676439,
+        "player_key": "676439",
+        "rank": 8,
+        "score": 25.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Ben Williamson",
+        "player_id": 810938,
+        "player_key": "810938",
+        "rank": 9,
+        "score": 25.0,
+        "team": "Tampa Bay Rays"
+      }
+    ]
   },
   "version": 1
 }
