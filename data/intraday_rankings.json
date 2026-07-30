@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-29T21:07:32.592084-04:00",
+  "captured_at": "2026-07-29T21:30:48.083726-04:00",
   "categories": {
     "hits": [
       {
@@ -39,7 +39,7 @@
         "player_id": 694249,
         "player_key": "694249",
         "rank": 5,
-        "score": 77.4,
+        "score": 77.3,
         "team": "Colorado Rockies"
       },
       {
@@ -47,7 +47,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 6,
-        "score": 74.7,
+        "score": 74.6,
         "team": "Tampa Bay Rays"
       },
       {
@@ -110,8 +110,8 @@
         "player": "Chase DeLauter",
         "player_id": 800050,
         "player_key": "800050",
-        "rank": 14,
-        "score": 70.9,
+        "rank": 15,
+        "score": 70.8,
         "team": "Cleveland Guardians"
       },
       {
@@ -135,7 +135,7 @@
         "player_id": 805808,
         "player_key": "805808",
         "rank": 18,
-        "score": 69.3,
+        "score": 69.2,
         "team": "Detroit Tigers"
       },
       {
@@ -147,10 +147,18 @@
         "team": "Los Angeles Dodgers"
       },
       {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 20,
+        "score": 69.1,
+        "team": "St. Louis Cardinals"
+      },
+      {
         "player": "Gabriel Moreno",
         "player_id": 672515,
         "player_key": "672515",
-        "rank": 20,
+        "rank": 21,
         "score": 68.9,
         "team": "Arizona Diamondbacks"
       },
@@ -158,17 +166,9 @@
         "player": "Brice Turang",
         "player_id": 668930,
         "player_key": "668930",
-        "rank": 21,
-        "score": 68.8,
-        "team": "Milwaukee Brewers"
-      },
-      {
-        "player": "Alec Burleson",
-        "player_id": 676475,
-        "player_key": "676475",
         "rank": 22,
         "score": 68.8,
-        "team": "St. Louis Cardinals"
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "Chandler Simpson",
@@ -191,7 +191,7 @@
         "player_id": 680757,
         "player_key": "680757",
         "rank": 25,
-        "score": 67.6,
+        "score": 67.7,
         "team": "Cleveland Guardians"
       }
     ],
@@ -233,7 +233,7 @@
         "player_id": 682829,
         "player_key": "682829",
         "rank": 5,
-        "score": 78.5,
+        "score": 78.7,
         "team": "Cincinnati Reds"
       },
       {
@@ -273,7 +273,7 @@
         "player_id": 701398,
         "player_key": "701398",
         "rank": 10,
-        "score": 74.2,
+        "score": 74.3,
         "team": "Cincinnati Reds"
       },
       {
@@ -395,7 +395,7 @@
         "player_id": 665161,
         "player_key": "665161",
         "rank": 2,
-        "score": 83.2,
+        "score": 83.1,
         "team": "Houston Astros"
       },
       {
@@ -411,7 +411,7 @@
         "player_id": 682829,
         "player_key": "682829",
         "rank": 4,
-        "score": 79.6,
+        "score": 79.7,
         "team": "Cincinnati Reds"
       },
       {
@@ -419,7 +419,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 5,
-        "score": 76.5,
+        "score": 76.4,
         "team": "Tampa Bay Rays"
       },
       {
@@ -467,7 +467,7 @@
         "player_id": 694249,
         "player_key": "694249",
         "rank": 11,
-        "score": 74.8,
+        "score": 74.7,
         "team": "Colorado Rockies"
       },
       {
@@ -531,7 +531,7 @@
         "player_id": 607208,
         "player_key": "607208",
         "rank": 20,
-        "score": 69.3,
+        "score": 69.4,
         "team": "Philadelphia Phillies"
       },
       {
@@ -563,7 +563,7 @@
         "player_id": 665019,
         "player_key": "665019",
         "rank": 25,
-        "score": 68.6,
+        "score": 68.5,
         "team": "Minnesota Twins"
       }
     ]
