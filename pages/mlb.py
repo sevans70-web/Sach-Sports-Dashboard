@@ -343,8 +343,7 @@ ALL_TOP_25_COMPLETE = all(
 HOME_RUN_RANKINGS = convert_live_rankings(
     live_rankings.get("home_runs", {}),
     "Home Runs",
-)
-HIT_RANKINGS = convert_live_rankings(
+)HIT_RANKINGS = convert_live_rankings(
     live_rankings.get("hits", {}),
     "Hits",
 )
