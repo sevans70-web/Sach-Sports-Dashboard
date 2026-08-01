@@ -232,11 +232,6 @@ def get_team_active_roster(
         "error": None,
     }
 
-
-def get_today_player_pool(
-
-def _get_team_active_roster_with_retries(
-    
 def _get_team_active_roster_with_retries(
     team_id: int,
     roster_date: date | str | None,
@@ -263,6 +258,8 @@ def _get_team_active_roster_with_retries(
             sleep(ROSTER_RETRY_DELAY_SECONDS * attempt)
 
     return result
+    
+    def get_today_player_pool(
     schedule_date: date | str | None = None,
     hitters_only: bool = False,
 ) -> dict[str, Any]:
@@ -306,7 +303,6 @@ def _get_team_active_roster_with_retries(
 
     all_players: list[dict[str, Any]] = []
 
-        all_players: list[dict[str, Any]] = []
     errors: list[str] = []
     loaded_team_ids: set[int] = set()
     roster_results: dict[int, dict[str, Any]] = {}
