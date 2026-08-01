@@ -1338,7 +1338,11 @@ with home_run_tab:
         button_key="toggle_hr_25",
         movement_summary=MOVEMENT_SUMMARIES.get("home_runs", []),
     )
-
+    render_prediction_results(
+        title="Home Run",
+        rankings=HOME_RUN_RANKINGS,
+        category="home_runs",
+    )
 with hits_tab:
     render_ranking_category(
         title="Hit",
@@ -1348,7 +1352,11 @@ with hits_tab:
         button_key="toggle_hits_25",
         movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
     )
-
+    render_prediction_results(
+        title="Hit",
+        rankings=HIT_RANKINGS,
+        category="hits",
+    )
 with total_bases_tab:
     render_ranking_category(
         title="Total Base",
