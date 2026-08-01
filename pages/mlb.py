@@ -318,6 +318,28 @@ def load_live_rankings() -> dict:
 live_rankings = load_live_rankings()
 
 HOME_RUN_RANKINGS = convert_live_rankings(
+home_run_status = live_rankings.get("home_runs", {})
+
+RANKING_GAME_COUNT = home_run_status.get("game_count", 0)
+RANKING_TEAM_COUNT = home_run_status.get("team_count", 0)
+RANKING_HITTER_COUNT = home_run_status.get("hitter_count", 0)
+
+HAS_FULL_TEAM_SLATE = home_run_status.get(
+    "has_full_team_slate",
+    False,
+)
+
+ALL_TOP_25_COMPLETE = all(
+    live_rankings.get(category, {}).get(
+        "complete_top_25",
+        False,
+    )
+    for category in (
+        "home_runs",
+        "hits",
+        "total_bases",
+    )
+)
     live_rankings.get("home_runs", {}),
     "Home Runs",
 )
@@ -1302,7 +1324,22 @@ with snapshot_3:
 
 with snapshot_4:
     st.metric("Weather Alerts", "—", "Weather feed pending")
-
+if HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE:
+    st.success(
+        "Full ranking pool loaded: "
+        f"{RANKING_GAME_COUNT} games, "
+        f"{RANKING_TEAM_COUNT} teams, "
+        f"{RANKING_HITTER_COUNT} hitters. "
+        "All three Top 25 lists are complete."
+    )
+else:
+    st.warning(
+        "Ranking data is incomplete: "
+        f"{RANKING_GAME_COUNT} games, "
+        f"{RANKING_TEAM_COUNT} teams, "
+        f"{RANKING_HITTER_COUNT} hitters loaded. "
+        "Use the rankings cautiously while the remaining data loads."
+    )
 render_html(
     """
     <div class="gi-before-ranking">
