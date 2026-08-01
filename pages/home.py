@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from database.sports_repository import get_all_sports
-
+from engines.game_intelligence import get_daily_ranking_snapshot
 
 # ============================================================
 # PAGE HELPERS
@@ -91,11 +91,16 @@ def render_sport_link(
     page_path: str,
 ) -> None:
     """Render a sport navigation card."""
-    with st.container(border=True):
-        st.page_link(page_path, label=f"{icon} {sport}", use_container_width=True)
-        st.caption(status)
-        st.write(
-            
+with st.container(border=True):
+    st.page_link(
+        page_path,
+        label=f"{icon} {sport}",
+        use_container_width=True,
+    )
+    st.caption(status)
+    st.write(description)
+
+
 @st.cache_data(ttl=900, show_spinner=False)
 def load_homepage_home_run_opportunities() -> list[dict]:
     """Return the current top five MLB home-run rankings."""
