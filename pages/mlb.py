@@ -259,6 +259,49 @@ def render_recent_movement(changes: list[str]) -> None:
 
     for change in changes:
         st.write(change)
+def render_prediction_results(
+    title: str,
+    rankings: list[dict],
+    category: str,
+) -> None:
+    """Display completed results for the currently loaded Top 25."""
+    if not rankings:
+        return
+
+    result = grade_top_25(
+        rankings=rankings,
+        category=category,
+    )
+
+    completed_count = result.get("completed_count", 0)
+
+    if completed_count == 0:
+        return
+
+    correct_count = result.get("correct_count", 0)
+    accuracy = result.get("accuracy", 0.0)
+
+    st.markdown(f"### {title} Results")
+    st.caption(
+        f"{correct_count} correct from "
+        f"{completed_count} completed player results "
+        f"({accuracy}% accuracy)"
+    )
+
+    for player in result.get("graded", []):
+        if not player.get("game_finished"):
+            continue
+
+        rank = player.get("rank", "—")
+        player_name = player.get("player", "Unknown player")
+        result_label = player.get(
+            "result_label",
+            "Result unavailable",
+        )
+
+        st.write(
+            f"#{rank} {player_name} — {result_label}"
+        )
 
 
 @st.cache_data(ttl=900, show_spinner=False)
