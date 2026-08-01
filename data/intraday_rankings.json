@@ -1,9 +1,228 @@
 {
-  "captured_at": "2026-08-01T10:03:32.849304-04:00",
+  "captured_at": "2026-08-01T11:50:39.390013-04:00",
   "categories": {
-    "hits": [],
-    "home_runs": [],
-    "total_bases": []
+    "hits": [
+      {
+        "player": "George Springer",
+        "player_id": 543807,
+        "player_key": "543807",
+        "rank": 1,
+        "score": 64.9,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Ernie Clement",
+        "player_id": 676391,
+        "player_key": "676391",
+        "rank": 2,
+        "score": 63.6,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Vladimir Guerrero Jr.",
+        "player_id": 665489,
+        "player_key": "665489",
+        "rank": 3,
+        "score": 63.2,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Alejandro Kirk",
+        "player_id": 672386,
+        "player_key": "672386",
+        "rank": 4,
+        "score": 50.6,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Daulton Varsho",
+        "player_id": 662139,
+        "player_key": "662139",
+        "rank": 5,
+        "score": 43.2,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Kazuma Okamoto",
+        "player_id": 672960,
+        "player_key": "672960",
+        "rank": 6,
+        "score": 39.1,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Luis Urías",
+        "player_id": 649966,
+        "player_key": "649966",
+        "rank": 7,
+        "score": 34.2,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Myles Straw",
+        "player_id": 664702,
+        "player_key": "664702",
+        "rank": 8,
+        "score": 21.0,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Davis Schneider",
+        "player_id": 676914,
+        "player_key": "676914",
+        "rank": 9,
+        "score": 6.8,
+        "team": "Toronto Blue Jays"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Kazuma Okamoto",
+        "player_id": 672960,
+        "player_key": "672960",
+        "rank": 1,
+        "score": 72.1,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "George Springer",
+        "player_id": 543807,
+        "player_key": "543807",
+        "rank": 2,
+        "score": 67.2,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Luis Urías",
+        "player_id": 649966,
+        "player_key": "649966",
+        "rank": 3,
+        "score": 58.6,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Ernie Clement",
+        "player_id": 676391,
+        "player_key": "676391",
+        "rank": 4,
+        "score": 49.1,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Alejandro Kirk",
+        "player_id": 672386,
+        "player_key": "672386",
+        "rank": 5,
+        "score": 47.2,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Vladimir Guerrero Jr.",
+        "player_id": 665489,
+        "player_key": "665489",
+        "rank": 6,
+        "score": 39.5,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Daulton Varsho",
+        "player_id": 662139,
+        "player_key": "662139",
+        "rank": 7,
+        "score": 34.5,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Myles Straw",
+        "player_id": 664702,
+        "player_key": "664702",
+        "rank": 8,
+        "score": 17.5,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Davis Schneider",
+        "player_id": 676914,
+        "player_key": "676914",
+        "rank": 9,
+        "score": 16.4,
+        "team": "Toronto Blue Jays"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "George Springer",
+        "player_id": 543807,
+        "player_key": "543807",
+        "rank": 1,
+        "score": 68.1,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Kazuma Okamoto",
+        "player_id": 672960,
+        "player_key": "672960",
+        "rank": 2,
+        "score": 66.1,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Ernie Clement",
+        "player_id": 676391,
+        "player_key": "676391",
+        "rank": 3,
+        "score": 57.4,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Alejandro Kirk",
+        "player_id": 672386,
+        "player_key": "672386",
+        "rank": 4,
+        "score": 49.9,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Vladimir Guerrero Jr.",
+        "player_id": 665489,
+        "player_key": "665489",
+        "rank": 5,
+        "score": 49.1,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Luis Urías",
+        "player_id": 649966,
+        "player_key": "649966",
+        "rank": 6,
+        "score": 39.3,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Daulton Varsho",
+        "player_id": 662139,
+        "player_key": "662139",
+        "rank": 7,
+        "score": 35.0,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Myles Straw",
+        "player_id": 664702,
+        "player_key": "664702",
+        "rank": 8,
+        "score": 13.8,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Davis Schneider",
+        "player_id": 676914,
+        "player_key": "676914",
+        "rank": 9,
+        "score": 8.1,
+        "team": "Toronto Blue Jays"
+      }
+    ]
   },
   "version": 1
 }
