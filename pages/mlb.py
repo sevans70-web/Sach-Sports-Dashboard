@@ -317,7 +317,6 @@ def load_live_rankings() -> dict:
 
 live_rankings = load_live_rankings()
 
-HOME_RUN_RANKINGS = convert_live_rankings(
 home_run_status = live_rankings.get("home_runs", {})
 
 RANKING_GAME_COUNT = home_run_status.get("game_count", 0)
@@ -340,6 +339,8 @@ ALL_TOP_25_COMPLETE = all(
         "total_bases",
     )
 )
+
+HOME_RUN_RANKINGS = convert_live_rankings(
     live_rankings.get("home_runs", {}),
     "Home Runs",
 )
