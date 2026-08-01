@@ -94,78 +94,62 @@ def render_sport_link(
     with st.container(border=True):
         st.page_link(page_path, label=f"{icon} {sport}", use_container_width=True)
         st.caption(status)
-        st.write(description)
+        st.write(
+            
+@st.cache_data(ttl=900, show_spinner=False)
+def load_homepage_home_run_opportunities() -> list[dict]:
+    """Return the current top five MLB home-run rankings."""
+    snapshot = get_daily_ranking_snapshot(
+        recent_days=14,
+        limit=25,
+    )
+
+    home_run_result = (
+        snapshot.get("rankings", {})
+        .get("home_runs", {})
+    )
+
+    opportunities: list[dict] = []
+
+    for player in home_run_result.get("rankings", [])[:5]:
+        reasons = player.get("why", [])
+        risk_flags = player.get("risk_flags", [])
+
+        opportunities.append(
+            {
+                "player": player.get(
+                    "player_name",
+                    "Player unavailable",
+                ),
+                "team": player.get("team_name", "TBD"),
+                "opponent": player.get(
+                    "opponent_name",
+                    "TBD",
+                ),
+                "market": "Home Run",
+                "confidence": player.get(
+                    "confidence",
+                    "Low",
+                ),
+                "reason": (
+                    reasons[0]
+                    if reasons
+                    else "Live statistical profile is being evaluated."
+                ),
+                "trend": (
+                    risk_flags[0]
+                    if risk_flags
+                    else f"GI Score: {player.get('gi_score', 0)}"
+                ),
+            }
+        )
+
+    return opportunities
 
 
-# ============================================================
-# PLACEHOLDER DATA
-# Replace these lists with engine output when the data pipeline
-# is connected.
-# ============================================================
-
-TOP_HR_OPPORTUNITIES = [
-    {
-        "player": "Sample Player A",
-        "team": "NYY",
-        "opponent": "BOS",
-        "market": "Home Run",
-        "confidence": "High",
-        "reason": (
-            "Strong recent power profile, favourable handedness split, "
-            "and supportive park conditions."
-        ),
-        "trend": "Three independent power signals agree",
-    },
-    {
-        "player": "Sample Player B",
-        "team": "LAD",
-        "opponent": "SF",
-        "market": "Home Run",
-        "confidence": "High",
-        "reason": (
-            "Elite barrel quality meets a pitcher allowing damaging contact "
-            "in the player's strongest zone."
-        ),
-        "trend": "Matchup and contact quality are aligned",
-    },
-    {
-        "player": "Sample Player C",
-        "team": "ATL",
-        "opponent": "NYM",
-        "market": "Home Run",
-        "confidence": "Medium",
-        "reason": (
-            "Positive recent form and platoon advantage, with lineup position "
-            "still awaiting confirmation."
-        ),
-        "trend": "Upgrade possible after lineup confirmation",
-    },
-    {
-        "player": "Sample Player D",
-        "team": "HOU",
-        "opponent": "SEA",
-        "market": "Home Run",
-        "confidence": "Medium",
-        "reason": (
-            "Hard-contact indicators are improving, but the opposing bullpen "
-            "reduces the full-game edge."
-        ),
-        "trend": "Best value may be early in the game",
-    },
-    {
-        "player": "Sample Player E",
-        "team": "PHI",
-        "opponent": "MIA",
-        "market": "Home Run",
-        "confidence": "Low",
-        "reason": (
-            "Power upside is present, although weather and recent swing decisions "
-            "create additional uncertainty."
-        ),
-        "trend": "Monitor weather before promoting",
-    },
-]
-
+TOP_HR_OPPORTUNITIES = (
+    load_homepage_home_run_opportunities()
+)
 
 # ============================================================
 # HOME PAGE THEME
