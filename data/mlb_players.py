@@ -235,6 +235,7 @@ def get_team_active_roster(
 
 def get_today_player_pool(
 
+def _get_team_active_roster_with_retries(
     
 def _get_team_active_roster_with_retries(
     team_id: int,
@@ -302,6 +303,8 @@ def _get_team_active_roster_with_retries(
 
     games = schedule.get("games", [])
     context_by_team = _team_game_context(games)
+
+    all_players: list[dict[str, Any]] = []
 
         all_players: list[dict[str, Any]] = []
     errors: list[str] = []
