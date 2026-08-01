@@ -259,7 +259,7 @@ def _get_team_active_roster_with_retries(
 
     return result
     
-    def get_today_player_pool(
+def get_today_player_pool(
     schedule_date: date | str | None = None,
     hitters_only: bool = False,
 ) -> dict[str, Any]:
