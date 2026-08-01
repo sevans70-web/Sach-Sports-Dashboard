@@ -1,21 +1,21 @@
 {
-  "captured_at": "2026-07-31T21:38:29.062737-04:00",
+  "captured_at": "2026-07-31T22:08:02.729306-04:00",
   "categories": {
     "hits": [
       {
-        "player": "Brice Turang",
-        "player_id": 668930,
-        "player_key": "668930",
+        "player": "Fernando Tatis Jr.",
+        "player_id": 665487,
+        "player_key": "665487",
         "rank": 1,
-        "score": 77.8,
-        "team": "Milwaukee Brewers"
+        "score": 79.6,
+        "team": "San Diego Padres"
       },
       {
         "player": "Kevin McGonigle",
         "player_id": 805808,
         "player_key": "805808",
         "rank": 2,
-        "score": 77.5,
+        "score": 77.4,
         "team": "Detroit Tigers"
       },
       {
@@ -23,47 +23,47 @@
         "player_id": 650333,
         "player_key": "650333",
         "rank": 3,
-        "score": 77.3,
+        "score": 77.4,
         "team": "San Francisco Giants"
-      },
-      {
-        "player": "Chandler Simpson",
-        "player_id": 802415,
-        "player_key": "802415",
-        "rank": 4,
-        "score": 76.8,
-        "team": "Tampa Bay Rays"
       },
       {
         "player": "Yordan Alvarez",
         "player_id": 670541,
         "player_key": "670541",
-        "rank": 5,
-        "score": 76.4,
+        "rank": 4,
+        "score": 76.8,
         "team": "Houston Astros"
+      },
+      {
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
+        "rank": 5,
+        "score": 76.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Brice Turang",
+        "player_id": 668930,
+        "player_key": "668930",
+        "rank": 6,
+        "score": 76.4,
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "Jake Mangum",
         "player_id": 663968,
         "player_key": "663968",
-        "rank": 6,
-        "score": 76.2,
-        "team": "Pittsburgh Pirates"
-      },
-      {
-        "player": "Fernando Tatis Jr.",
-        "player_id": 665487,
-        "player_key": "665487",
         "rank": 7,
-        "score": 75.9,
-        "team": "San Diego Padres"
+        "score": 76.4,
+        "team": "Pittsburgh Pirates"
       },
       {
         "player": "Pedro Ramírez",
         "player_id": 699393,
         "player_key": "699393",
         "rank": 8,
-        "score": 75.2,
+        "score": 75.3,
         "team": "Chicago Cubs"
       },
       {
@@ -71,7 +71,7 @@
         "player_id": 665161,
         "player_key": "665161",
         "rank": 9,
-        "score": 75.0,
+        "score": 74.9,
         "team": "Houston Astros"
       },
       {
@@ -91,116 +91,116 @@
         "team": "Washington Nationals"
       },
       {
-        "player": "Javier Báez",
-        "player_id": 595879,
-        "player_key": "595879",
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
         "rank": 12,
-        "score": 70.9,
-        "team": "Detroit Tigers"
+        "score": 70.3,
+        "team": "Seattle Mariners"
       },
       {
         "player": "Gabriel Moreno",
         "player_id": 672515,
         "player_key": "672515",
         "rank": 13,
-        "score": 70.4,
+        "score": 70.1,
         "team": "Arizona Diamondbacks"
-      },
-      {
-        "player": "Cole Young",
-        "player_id": 702284,
-        "player_key": "702284",
-        "rank": 14,
-        "score": 70.2,
-        "team": "Seattle Mariners"
-      },
-      {
-        "player": "Josh Naylor",
-        "player_id": 647304,
-        "player_key": "647304",
-        "rank": 15,
-        "score": 69.7,
-        "team": "Seattle Mariners"
-      },
-      {
-        "player": "Freddie Freeman",
-        "player_id": 518692,
-        "player_key": "518692",
-        "rank": 16,
-        "score": 69.5,
-        "team": "Los Angeles Dodgers"
-      },
-      {
-        "player": "Dillon Dingler",
-        "player_id": 693307,
-        "player_key": "693307",
-        "rank": 17,
-        "score": 69.5,
-        "team": "Detroit Tigers"
-      },
-      {
-        "player": "Brandon Lowe",
-        "player_id": 664040,
-        "player_key": "664040",
-        "rank": 18,
-        "score": 69.4,
-        "team": "Pittsburgh Pirates"
-      },
-      {
-        "player": "Chase DeLauter",
-        "player_id": 800050,
-        "player_key": "800050",
-        "rank": 19,
-        "score": 68.9,
-        "team": "Cleveland Guardians"
-      },
-      {
-        "player": "TJ Rumfield",
-        "player_id": 681198,
-        "player_key": "681198",
-        "rank": 20,
-        "score": 68.1,
-        "team": "Colorado Rockies"
-      },
-      {
-        "player": "Christian Encarnacion-Strand",
-        "player_id": 687952,
-        "player_key": "687952",
-        "rank": 21,
-        "score": 67.6,
-        "team": "Baltimore Orioles"
       },
       {
         "player": "Ty France",
         "player_id": 664034,
         "player_key": "664034",
-        "rank": 22,
-        "score": 66.7,
+        "rank": 14,
+        "score": 70.1,
         "team": "San Diego Padres"
       },
       {
-        "player": "Liam Hicks",
-        "player_id": 689414,
-        "player_key": "689414",
+        "player": "Freddie Freeman",
+        "player_id": 518692,
+        "player_key": "518692",
+        "rank": 15,
+        "score": 69.7,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 16,
+        "score": 69.7,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Brandon Lowe",
+        "player_id": 664040,
+        "player_key": "664040",
+        "rank": 17,
+        "score": 69.6,
+        "team": "Pittsburgh Pirates"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 18,
+        "score": 69.4,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Javier Báez",
+        "player_id": 595879,
+        "player_key": "595879",
+        "rank": 19,
+        "score": 69.4,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Christian Encarnacion-Strand",
+        "player_id": 687952,
+        "player_key": "687952",
+        "rank": 20,
+        "score": 68.6,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "TJ Rumfield",
+        "player_id": 681198,
+        "player_key": "681198",
+        "rank": 21,
+        "score": 68.5,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 22,
+        "score": 67.1,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
         "rank": 23,
-        "score": 66.6,
-        "team": "Miami Marlins"
+        "score": 66.7,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
         "rank": 24,
-        "score": 66.3,
+        "score": 66.6,
         "team": "St. Louis Cardinals"
       },
       {
-        "player": "Junior Caminero",
-        "player_id": 691406,
-        "player_key": "691406",
+        "player": "Xavier Edwards",
+        "player_id": 669364,
+        "player_key": "669364",
         "rank": 25,
-        "score": 66.2,
-        "team": "Tampa Bay Rays"
+        "score": 66.4,
+        "team": "Miami Marlins"
       }
     ],
     "home_runs": [
@@ -209,7 +209,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 1,
-        "score": 82.0,
+        "score": 81.9,
         "team": "Houston Astros"
       },
       {
@@ -217,7 +217,7 @@
         "player_id": 693307,
         "player_key": "693307",
         "rank": 2,
-        "score": 81.2,
+        "score": 80.8,
         "team": "Detroit Tigers"
       },
       {
@@ -225,14 +225,22 @@
         "player_id": 691718,
         "player_key": "691718",
         "rank": 3,
-        "score": 80.2,
+        "score": 80.5,
         "team": "Chicago Cubs"
+      },
+      {
+        "player": "Ty France",
+        "player_id": 664034,
+        "player_key": "664034",
+        "rank": 4,
+        "score": 80.0,
+        "team": "San Diego Padres"
       },
       {
         "player": "CJ Abrams",
         "player_id": 682928,
         "player_key": "682928",
-        "rank": 4,
+        "rank": 5,
         "score": 79.8,
         "team": "Washington Nationals"
       },
@@ -240,15 +248,15 @@
         "player": "Brandon Lowe",
         "player_id": 664040,
         "player_key": "664040",
-        "rank": 5,
-        "score": 79.2,
+        "rank": 6,
+        "score": 79.3,
         "team": "Pittsburgh Pirates"
       },
       {
         "player": "Esmerlyn Valdez",
         "player_id": 699013,
         "player_key": "699013",
-        "rank": 6,
+        "rank": 7,
         "score": 77.8,
         "team": "Pittsburgh Pirates"
       },
@@ -256,81 +264,73 @@
         "player": "Mickey Moniak",
         "player_id": 666160,
         "player_key": "666160",
-        "rank": 7,
+        "rank": 8,
         "score": 77.6,
         "team": "Colorado Rockies"
       },
       {
-        "player": "Ty France",
-        "player_id": 664034,
-        "player_key": "664034",
-        "rank": 8,
-        "score": 77.2,
-        "team": "San Diego Padres"
+        "player": "Kyle Stowers",
+        "player_id": 669065,
+        "player_key": "669065",
+        "rank": 9,
+        "score": 76.8,
+        "team": "Miami Marlins"
       },
       {
         "player": "Munetaka Murakami",
         "player_id": 808959,
         "player_key": "808959",
-        "rank": 9,
-        "score": 76.6,
+        "rank": 10,
+        "score": 76.5,
         "team": "Chicago White Sox"
       },
       {
         "player": "Dominic Canzone",
         "player_id": 686527,
         "player_key": "686527",
-        "rank": 10,
-        "score": 76.2,
+        "rank": 11,
+        "score": 76.0,
         "team": "Seattle Mariners"
       },
       {
-        "player": "Hunter Goodman",
-        "player_id": 696100,
-        "player_key": "696100",
-        "rank": 11,
-        "score": 75.1,
-        "team": "Colorado Rockies"
+        "player": "Manny Machado",
+        "player_id": 592518,
+        "player_key": "592518",
+        "rank": 12,
+        "score": 75.9,
+        "team": "San Diego Padres"
       },
       {
         "player": "Christian Encarnacion-Strand",
         "player_id": 687952,
         "player_key": "687952",
-        "rank": 12,
-        "score": 74.8,
+        "rank": 13,
+        "score": 75.1,
         "team": "Baltimore Orioles"
       },
       {
-        "player": "Kyle Stowers",
-        "player_id": 669065,
-        "player_key": "669065",
-        "rank": 13,
-        "score": 74.5,
-        "team": "Miami Marlins"
-      },
-      {
-        "player": "James Wood",
-        "player_id": 695578,
-        "player_key": "695578",
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
         "rank": 14,
-        "score": 73.8,
-        "team": "Washington Nationals"
+        "score": 74.8,
+        "team": "Colorado Rockies"
       },
       {
         "player": "Joc Pederson",
         "player_id": 592626,
         "player_key": "592626",
         "rank": 15,
-        "score": 73.3,
+        "score": 74.5,
         "team": "Texas Rangers"
       },
       {
-        "player": "Manny Machado",
-        "player_id": 592518,
-        "player_key": "592518",
+        "player": "James Wood",
+        "player_id": 695578,
+        "player_key": "695578",
         "rank": 16,
-        "score": 72.9,
-        "team": "San Diego Padres"
+        "score": 72.3,
+        "team": "Washington Nationals"
       },
       {
         "player": "Jeremy Peña",
@@ -341,68 +341,68 @@
         "team": "Houston Astros"
       },
       {
-        "player": "Brice Turang",
-        "player_id": 668930,
-        "player_key": "668930",
-        "rank": 18,
-        "score": 71.4,
-        "team": "Milwaukee Brewers"
-      },
-      {
         "player": "Elly De La Cruz",
         "player_id": 682829,
         "player_key": "682829",
-        "rank": 19,
-        "score": 71.2,
+        "rank": 18,
+        "score": 71.5,
         "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Brice Turang",
+        "player_id": 668930,
+        "player_key": "668930",
+        "rank": 19,
+        "score": 70.2,
+        "team": "Milwaukee Brewers"
+      },
+      {
+        "player": "Pete Alonso",
+        "player_id": 624413,
+        "player_key": "624413",
+        "rank": 20,
+        "score": 70.1,
+        "team": "Baltimore Orioles"
       },
       {
         "player": "Kody Clemens",
         "player_id": 665019,
         "player_key": "665019",
-        "rank": 20,
-        "score": 69.7,
+        "rank": 21,
+        "score": 69.3,
         "team": "Minnesota Twins"
+      },
+      {
+        "player": "Francisco Lindor",
+        "player_id": 596019,
+        "player_key": "596019",
+        "rank": 22,
+        "score": 68.7,
+        "team": "New York Mets"
       },
       {
         "player": "Kyle Schwarber",
         "player_id": 656941,
         "player_key": "656941",
-        "rank": 21,
-        "score": 69.6,
-        "team": "Philadelphia Phillies"
-      },
-      {
-        "player": "Bryce Harper",
-        "player_id": 547180,
-        "player_key": "547180",
-        "rank": 22,
-        "score": 69.4,
+        "rank": 23,
+        "score": 68.3,
         "team": "Philadelphia Phillies"
       },
       {
         "player": "Rafael Devers",
         "player_id": 646240,
         "player_key": "646240",
-        "rank": 23,
-        "score": 68.4,
+        "rank": 24,
+        "score": 68.2,
         "team": "San Francisco Giants"
       },
       {
-        "player": "Wyatt Langford",
-        "player_id": 694671,
-        "player_key": "694671",
-        "rank": 24,
-        "score": 68.1,
-        "team": "Texas Rangers"
-      },
-      {
-        "player": "Spencer Torkelson",
-        "player_id": 679529,
-        "player_key": "679529",
+        "player": "Bryce Harper",
+        "player_id": 547180,
+        "player_key": "547180",
         "rank": 25,
-        "score": 67.4,
-        "team": "Detroit Tigers"
+        "score": 68.2,
+        "team": "Philadelphia Phillies"
       }
     ],
     "total_bases": [
@@ -411,7 +411,7 @@
         "player_id": 664040,
         "player_key": "664040",
         "rank": 1,
-        "score": 81.5,
+        "score": 81.3,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -419,7 +419,7 @@
         "player_id": 691718,
         "player_key": "691718",
         "rank": 2,
-        "score": 80.8,
+        "score": 81.0,
         "team": "Chicago Cubs"
       },
       {
@@ -427,7 +427,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 3,
-        "score": 80.7,
+        "score": 80.8,
         "team": "Houston Astros"
       },
       {
@@ -435,7 +435,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 4,
-        "score": 80.0,
+        "score": 79.9,
         "team": "Washington Nationals"
       },
       {
@@ -443,46 +443,54 @@
         "player_id": 693307,
         "player_key": "693307",
         "rank": 5,
-        "score": 79.8,
+        "score": 79.6,
         "team": "Detroit Tigers"
+      },
+      {
+        "player": "Ty France",
+        "player_id": 664034,
+        "player_key": "664034",
+        "rank": 6,
+        "score": 77.1,
+        "team": "San Diego Padres"
       },
       {
         "player": "Brice Turang",
         "player_id": 668930,
         "player_key": "668930",
-        "rank": 6,
-        "score": 77.9,
+        "rank": 7,
+        "score": 76.6,
         "team": "Milwaukee Brewers"
       },
       {
         "player": "Jeremy Peña",
         "player_id": 665161,
         "player_key": "665161",
-        "rank": 7,
-        "score": 76.7,
+        "rank": 8,
+        "score": 76.6,
         "team": "Houston Astros"
       },
       {
         "player": "Mickey Moniak",
         "player_id": 666160,
         "player_key": "666160",
-        "rank": 8,
-        "score": 75.4,
+        "rank": 9,
+        "score": 75.3,
         "team": "Colorado Rockies"
       },
       {
-        "player": "Ty France",
-        "player_id": 664034,
-        "player_key": "664034",
-        "rank": 9,
-        "score": 74.8,
+        "player": "Fernando Tatis Jr.",
+        "player_id": 665487,
+        "player_key": "665487",
+        "rank": 10,
+        "score": 75.1,
         "team": "San Diego Padres"
       },
       {
         "player": "Elly De La Cruz",
         "player_id": 682829,
         "player_key": "682829",
-        "rank": 10,
+        "rank": 11,
         "score": 74.3,
         "team": "Cincinnati Reds"
       },
@@ -490,23 +498,31 @@
         "player": "Christian Encarnacion-Strand",
         "player_id": 687952,
         "player_key": "687952",
-        "rank": 11,
+        "rank": 12,
         "score": 73.7,
         "team": "Baltimore Orioles"
       },
       {
-        "player": "Fernando Tatis Jr.",
-        "player_id": 665487,
-        "player_key": "665487",
-        "rank": 12,
-        "score": 71.4,
+        "player": "Kyle Stowers",
+        "player_id": 669065,
+        "player_key": "669065",
+        "rank": 13,
+        "score": 72.8,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Manny Machado",
+        "player_id": 592518,
+        "player_key": "592518",
+        "rank": 14,
+        "score": 71.6,
         "team": "San Diego Padres"
       },
       {
         "player": "Munetaka Murakami",
         "player_id": 808959,
         "player_key": "808959",
-        "rank": 13,
+        "rank": 15,
         "score": 71.0,
         "team": "Chicago White Sox"
       },
@@ -514,97 +530,81 @@
         "player": "Hunter Goodman",
         "player_id": 696100,
         "player_key": "696100",
-        "rank": 14,
-        "score": 70.9,
+        "rank": 16,
+        "score": 70.8,
         "team": "Colorado Rockies"
       },
       {
         "player": "Wyatt Langford",
         "player_id": 694671,
         "player_key": "694671",
-        "rank": 15,
-        "score": 70.1,
+        "rank": 17,
+        "score": 70.2,
         "team": "Texas Rangers"
       },
       {
         "player": "Junior Caminero",
         "player_id": 691406,
         "player_key": "691406",
-        "rank": 16,
-        "score": 69.8,
-        "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Cole Young",
-        "player_id": 702284,
-        "player_key": "702284",
-        "rank": 17,
-        "score": 68.8,
-        "team": "Seattle Mariners"
-      },
-      {
-        "player": "Kyle Stowers",
-        "player_id": 669065,
-        "player_key": "669065",
         "rank": 18,
-        "score": 68.8,
-        "team": "Miami Marlins"
-      },
-      {
-        "player": "Manny Machado",
-        "player_id": 592518,
-        "player_key": "592518",
-        "rank": 19,
-        "score": 68.6,
-        "team": "San Diego Padres"
-      },
-      {
-        "player": "James Wood",
-        "player_id": 695578,
-        "player_key": "695578",
-        "rank": 20,
-        "score": 68.1,
-        "team": "Washington Nationals"
-      },
-      {
-        "player": "Kody Clemens",
-        "player_id": 665019,
-        "player_key": "665019",
-        "rank": 21,
-        "score": 67.8,
-        "team": "Minnesota Twins"
+        "score": 69.9,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Francisco Lindor",
         "player_id": 596019,
         "player_key": "596019",
-        "rank": 22,
-        "score": 67.8,
+        "rank": 19,
+        "score": 69.4,
         "team": "New York Mets"
+      },
+      {
+        "player": "Pete Alonso",
+        "player_id": 624413,
+        "player_key": "624413",
+        "rank": 20,
+        "score": 68.9,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 21,
+        "score": 68.8,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Kody Clemens",
+        "player_id": 665019,
+        "player_key": "665019",
+        "rank": 22,
+        "score": 68.0,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Shohei Ohtani",
         "player_id": 660271,
         "player_key": "660271",
         "rank": 23,
-        "score": 67.5,
+        "score": 67.6,
         "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Joc Pederson",
+        "player_id": 592626,
+        "player_key": "592626",
+        "rank": 24,
+        "score": 67.4,
+        "team": "Texas Rangers"
       },
       {
         "player": "Dominic Canzone",
         "player_id": 686527,
         "player_key": "686527",
-        "rank": 24,
-        "score": 67.5,
-        "team": "Seattle Mariners"
-      },
-      {
-        "player": "Corbin Carroll",
-        "player_id": 682998,
-        "player_key": "682998",
         "rank": 25,
         "score": 67.4,
-        "team": "Arizona Diamondbacks"
+        "team": "Seattle Mariners"
       }
     ]
   },
