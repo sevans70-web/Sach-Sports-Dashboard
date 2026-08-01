@@ -747,15 +747,26 @@ def rank_players(
             }
         )
 
-    return {
-        "success": True,
-        "category": category,
-        "date": dataset.get("date"),
-        "rankings": ranked,
-        "player_count": len(scored_players),
-        "ranked_count": len(ranked),
-        "recent_days": recent_days,
-        "errors": dataset.get("errors", []),
+complete_top_25 = len(ranked) == min(limit, 25)
+has_full_team_slate = (
+    dataset.get("team_count", 0)
+    == dataset.get("game_count", 0) * 2
+)
+
+return {
+    "success": bool(ranked),
+    "complete_top_25": complete_top_25,
+    "has_full_team_slate": has_full_team_slate,
+    "category": category,
+    "date": dataset.get("date"),
+    "rankings": ranked,
+    "player_count": len(scored_players),
+    "ranked_count": len(ranked),
+    "game_count": dataset.get("game_count", 0),
+    "team_count": dataset.get("team_count", 0),
+    "hitter_count": dataset.get("hitter_count", 0),
+    "recent_days": recent_days,
+    "errors": dataset.get("errors", []),
         "fetched_at": datetime.now(
             TORONTO_TIMEZONE
         ).isoformat(),
