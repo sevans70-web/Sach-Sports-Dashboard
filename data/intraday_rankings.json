@@ -1,226 +1,610 @@
 {
-  "captured_at": "2026-08-01T11:50:39.390013-04:00",
+  "captured_at": "2026-08-01T13:27:44.266219-04:00",
   "categories": {
     "hits": [
       {
-        "player": "George Springer",
-        "player_id": 543807,
-        "player_key": "543807",
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
         "rank": 1,
-        "score": 64.9,
-        "team": "Toronto Blue Jays"
+        "score": 77.9,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 2,
+        "score": 75.8,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Randy Arozarena",
+        "player_id": 668227,
+        "player_key": "668227",
+        "rank": 3,
+        "score": 68.0,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 4,
+        "score": 64.5,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Ernie Clement",
         "player_id": 676391,
         "player_key": "676391",
-        "rank": 2,
-        "score": 63.6,
+        "rank": 5,
+        "score": 62.8,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 6,
+        "score": 62.3,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 7,
+        "score": 62.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 8,
+        "score": 62.0,
+        "team": "Seattle Mariners"
       },
       {
         "player": "Vladimir Guerrero Jr.",
         "player_id": 665489,
         "player_key": "665489",
-        "rank": 3,
-        "score": 63.2,
+        "rank": 9,
+        "score": 60.6,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Sam Antonacci",
+        "player_id": 803011,
+        "player_key": "803011",
+        "rank": 10,
+        "score": 59.2,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Nick Fortes",
+        "player_id": 663743,
+        "player_key": "663743",
+        "rank": 11,
+        "score": 57.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "George Springer",
+        "player_id": 543807,
+        "player_key": "543807",
+        "rank": 12,
+        "score": 56.4,
+        "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Munetaka Murakami",
+        "player_id": 808959,
+        "player_key": "808959",
+        "rank": 13,
+        "score": 53.4,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Iván Herrera",
+        "player_id": 671056,
+        "player_key": "671056",
+        "rank": 14,
+        "score": 51.2,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 15,
+        "score": 50.0,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Julio Rodríguez",
+        "player_id": 677594,
+        "player_key": "677594",
+        "rank": 16,
+        "score": 49.8,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "JJ Wetherholt",
+        "player_id": 802139,
+        "player_key": "802139",
+        "rank": 17,
+        "score": 48.8,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Alejandro Kirk",
         "player_id": 672386,
         "player_key": "672386",
-        "rank": 4,
-        "score": 50.6,
+        "rank": 18,
+        "score": 48.4,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Dominic Canzone",
+        "player_id": 686527,
+        "player_key": "686527",
+        "rank": 19,
+        "score": 47.8,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Jonny DeLuca",
+        "player_id": 676356,
+        "player_key": "676356",
+        "rank": 20,
+        "score": 45.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Chase Meidroth",
+        "player_id": 805367,
+        "player_key": "805367",
+        "rank": 21,
+        "score": 44.0,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Andrew Benintendi",
+        "player_id": 643217,
+        "player_key": "643217",
+        "rank": 22,
+        "score": 41.1,
+        "team": "Chicago White Sox"
       },
       {
         "player": "Daulton Varsho",
         "player_id": 662139,
         "player_key": "662139",
-        "rank": 5,
-        "score": 43.2,
+        "rank": 23,
+        "score": 40.7,
         "team": "Toronto Blue Jays"
       },
       {
-        "player": "Kazuma Okamoto",
-        "player_id": 672960,
-        "player_key": "672960",
-        "rank": 6,
-        "score": 39.1,
-        "team": "Toronto Blue Jays"
+        "player": "Ben Williamson",
+        "player_id": 810938,
+        "player_key": "810938",
+        "rank": 24,
+        "score": 40.5,
+        "team": "Tampa Bay Rays"
       },
       {
-        "player": "Luis Urías",
-        "player_id": 649966,
-        "player_key": "649966",
-        "rank": 7,
-        "score": 34.2,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Myles Straw",
-        "player_id": 664702,
-        "player_key": "664702",
-        "rank": 8,
-        "score": 21.0,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Davis Schneider",
-        "player_id": 676914,
-        "player_key": "676914",
-        "rank": 9,
-        "score": 6.8,
-        "team": "Toronto Blue Jays"
+        "player": "Braden Montgomery",
+        "player_id": 695731,
+        "player_key": "695731",
+        "rank": 25,
+        "score": 39.3,
+        "team": "Chicago White Sox"
       }
     ],
     "home_runs": [
       {
+        "player": "Munetaka Murakami",
+        "player_id": 808959,
+        "player_key": "808959",
+        "rank": 1,
+        "score": 77.0,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Dominic Canzone",
+        "player_id": 686527,
+        "player_key": "686527",
+        "rank": 2,
+        "score": 70.9,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 3,
+        "score": 66.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Randy Arozarena",
+        "player_id": 668227,
+        "player_key": "668227",
+        "rank": 4,
+        "score": 64.6,
+        "team": "Seattle Mariners"
+      },
+      {
         "player": "Kazuma Okamoto",
         "player_id": 672960,
         "player_key": "672960",
-        "rank": 1,
-        "score": 72.1,
+        "rank": 5,
+        "score": 64.3,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Ryan Vilade",
+        "player_id": 668723,
+        "player_key": "668723",
+        "rank": 6,
+        "score": 62.0,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 7,
+        "score": 61.5,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Colson Montgomery",
+        "player_id": 695657,
+        "player_key": "695657",
+        "rank": 8,
+        "score": 61.3,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Miguel Vargas",
+        "player_id": 678246,
+        "player_key": "678246",
+        "rank": 9,
+        "score": 60.7,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 10,
+        "score": 60.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 11,
+        "score": 60.0,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "George Springer",
         "player_id": 543807,
         "player_key": "543807",
-        "rank": 2,
-        "score": 67.2,
+        "rank": 12,
+        "score": 59.0,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Julio Rodríguez",
+        "player_id": 677594,
+        "player_key": "677594",
+        "rank": 13,
+        "score": 58.0,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 14,
+        "score": 56.7,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 15,
+        "score": 55.8,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "JJ Wetherholt",
+        "player_id": 802139,
+        "player_key": "802139",
+        "rank": 16,
+        "score": 53.9,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Luis Urías",
         "player_id": 649966,
         "player_key": "649966",
-        "rank": 3,
-        "score": 58.6,
+        "rank": 17,
+        "score": 50.8,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Jonny DeLuca",
+        "player_id": 676356,
+        "player_key": "676356",
+        "rank": 18,
+        "score": 49.0,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Andrew Benintendi",
+        "player_id": 643217,
+        "player_key": "643217",
+        "rank": 19,
+        "score": 48.3,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Sam Antonacci",
+        "player_id": 803011,
+        "player_key": "803011",
+        "rank": 20,
+        "score": 47.4,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Cal Raleigh",
+        "player_id": 663728,
+        "player_key": "663728",
+        "rank": 21,
+        "score": 44.5,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Iván Herrera",
+        "player_id": 671056,
+        "player_key": "671056",
+        "rank": 22,
+        "score": 42.0,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Chase Meidroth",
+        "player_id": 805367,
+        "player_key": "805367",
+        "rank": 23,
+        "score": 39.8,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Nick Fortes",
+        "player_id": 663743,
+        "player_key": "663743",
+        "rank": 24,
+        "score": 38.8,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Ernie Clement",
         "player_id": 676391,
         "player_key": "676391",
-        "rank": 4,
-        "score": 49.1,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Alejandro Kirk",
-        "player_id": 672386,
-        "player_key": "672386",
-        "rank": 5,
-        "score": 47.2,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Vladimir Guerrero Jr.",
-        "player_id": 665489,
-        "player_key": "665489",
-        "rank": 6,
-        "score": 39.5,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Daulton Varsho",
-        "player_id": 662139,
-        "player_key": "662139",
-        "rank": 7,
-        "score": 34.5,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Myles Straw",
-        "player_id": 664702,
-        "player_key": "664702",
-        "rank": 8,
-        "score": 17.5,
-        "team": "Toronto Blue Jays"
-      },
-      {
-        "player": "Davis Schneider",
-        "player_id": 676914,
-        "player_key": "676914",
-        "rank": 9,
-        "score": 16.4,
+        "rank": 25,
+        "score": 38.6,
         "team": "Toronto Blue Jays"
       }
     ],
     "total_bases": [
       {
+        "player": "Munetaka Murakami",
+        "player_id": 808959,
+        "player_key": "808959",
+        "rank": 1,
+        "score": 72.8,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 2,
+        "score": 70.3,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 3,
+        "score": 69.8,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Randy Arozarena",
+        "player_id": 668227,
+        "player_key": "668227",
+        "rank": 4,
+        "score": 68.5,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Cole Young",
+        "player_id": 702284,
+        "player_key": "702284",
+        "rank": 5,
+        "score": 63.3,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 6,
+        "score": 63.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Dominic Canzone",
+        "player_id": 686527,
+        "player_key": "686527",
+        "rank": 7,
+        "score": 63.1,
+        "team": "Seattle Mariners"
+      },
+      {
         "player": "George Springer",
         "player_id": 543807,
         "player_key": "543807",
-        "rank": 1,
-        "score": 68.1,
+        "rank": 8,
+        "score": 62.4,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Miguel Vargas",
+        "player_id": 678246,
+        "player_key": "678246",
+        "rank": 9,
+        "score": 55.6,
+        "team": "Chicago White Sox"
       },
       {
         "player": "Kazuma Okamoto",
         "player_id": 672960,
         "player_key": "672960",
-        "rank": 2,
-        "score": 66.1,
+        "rank": 10,
+        "score": 55.2,
         "team": "Toronto Blue Jays"
+      },
+      {
+        "player": "Julio Rodríguez",
+        "player_id": 677594,
+        "player_key": "677594",
+        "rank": 11,
+        "score": 55.2,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
+        "rank": 12,
+        "score": 55.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 13,
+        "score": 51.9,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Ernie Clement",
         "player_id": 676391,
         "player_key": "676391",
-        "rank": 3,
-        "score": 57.4,
+        "rank": 14,
+        "score": 51.1,
         "team": "Toronto Blue Jays"
       },
       {
-        "player": "Alejandro Kirk",
-        "player_id": 672386,
-        "player_key": "672386",
-        "rank": 4,
-        "score": 49.9,
-        "team": "Toronto Blue Jays"
+        "player": "Iván Herrera",
+        "player_id": 671056,
+        "player_key": "671056",
+        "rank": 15,
+        "score": 49.4,
+        "team": "St. Louis Cardinals"
       },
       {
-        "player": "Vladimir Guerrero Jr.",
-        "player_id": 665489,
-        "player_key": "665489",
-        "rank": 5,
-        "score": 49.1,
-        "team": "Toronto Blue Jays"
+        "player": "Jonny DeLuca",
+        "player_id": 676356,
+        "player_key": "676356",
+        "rank": 16,
+        "score": 48.8,
+        "team": "Tampa Bay Rays"
       },
       {
-        "player": "Luis Urías",
-        "player_id": 649966,
-        "player_key": "649966",
-        "rank": 6,
-        "score": 39.3,
-        "team": "Toronto Blue Jays"
+        "player": "Sam Antonacci",
+        "player_id": 803011,
+        "player_key": "803011",
+        "rank": 17,
+        "score": 48.7,
+        "team": "Chicago White Sox"
       },
       {
-        "player": "Daulton Varsho",
-        "player_id": 662139,
-        "player_key": "662139",
-        "rank": 7,
-        "score": 35.0,
-        "team": "Toronto Blue Jays"
+        "player": "Ryan Vilade",
+        "player_id": 668723,
+        "player_key": "668723",
+        "rank": 18,
+        "score": 48.5,
+        "team": "Tampa Bay Rays"
       },
       {
-        "player": "Myles Straw",
-        "player_id": 664702,
-        "player_key": "664702",
-        "rank": 8,
-        "score": 13.8,
-        "team": "Toronto Blue Jays"
+        "player": "Nick Fortes",
+        "player_id": 663743,
+        "player_key": "663743",
+        "rank": 19,
+        "score": 47.6,
+        "team": "Tampa Bay Rays"
       },
       {
-        "player": "Davis Schneider",
-        "player_id": 676914,
-        "player_key": "676914",
-        "rank": 9,
-        "score": 8.1,
-        "team": "Toronto Blue Jays"
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 20,
+        "score": 47.4,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "JJ Wetherholt",
+        "player_id": 802139,
+        "player_key": "802139",
+        "rank": 21,
+        "score": 47.2,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Colson Montgomery",
+        "player_id": 695657,
+        "player_key": "695657",
+        "rank": 22,
+        "score": 47.2,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Chase Meidroth",
+        "player_id": 805367,
+        "player_key": "805367",
+        "rank": 23,
+        "score": 45.5,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Victor Mesa Jr.",
+        "player_id": 683748,
+        "player_key": "683748",
+        "rank": 24,
+        "score": 45.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Andrew Benintendi",
+        "player_id": 643217,
+        "player_key": "643217",
+        "rank": 25,
+        "score": 44.5,
+        "team": "Chicago White Sox"
       }
     ]
   },
