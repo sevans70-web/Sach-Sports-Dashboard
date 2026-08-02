@@ -1,4 +1,4 @@
-"""
+G"""
 Game Intelligence - MLB Page v1.1
 ----------------------------------
 File location: pages/mlb.py
@@ -628,8 +628,9 @@ def render_full_ranking_row(player: dict) -> None:
     """Render one row in the full Top 25 view."""
     badge_class = confidence_class(player["confidence"])
     initials = player_initials(player["player"])
-
-    render_html(
+    projection_label, projection_value = projection_display(player)
+    
+render_html(
         f"""
         <div class="gi-full-row">
             <div class="gi-full-rank">
@@ -651,6 +652,10 @@ def render_full_ranking_row(player: dict) -> None:
                 <div class="gi-full-matchup">
                     {escape(player['team'])} vs. {escape(player['opponent'])}
                 </div>
+            <div class="gi-full-projection">
+                    <strong>{escape(projection_label)}:</strong>
+                    {escape(projection_value)}
+            </div>
             <div class="gi-full-reason">
                     {escape(player['reason'])}
             </div>
