@@ -221,8 +221,8 @@ def convert_live_rankings(
                 ),
             }
         )
-    return converted
 
+    return converted
 def attach_persistent_movement(
     rankings: list[dict],
     comparison: dict,
