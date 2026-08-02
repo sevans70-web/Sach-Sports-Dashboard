@@ -1,4 +1,4 @@
-G"""
+"""
 Game Intelligence - MLB Page v1.1
 ----------------------------------
 File location: pages/mlb.py
