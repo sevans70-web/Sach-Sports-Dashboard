@@ -202,22 +202,26 @@ def grade_top_25(
     result_date: date | str | None = None,
 ) -> dict[str, Any]:
     """
-    Grade saved Top 25 Home Run or Hit predictions.
+    Grade saved Top 25 Home Run, Hit, or Total Base predictions.
 
     Home Runs:
         Correct when the player recorded at least one home run.
 
     Hits:
         Correct when the player recorded at least one hit.
+
+    Total Bases:
+        Correct when the player recorded at least one total base.
     """
     normalized_category = str(category).strip().lower()
 
     if normalized_category not in {
         "home_runs",
         "hits",
+        "total_bases",
     }:
         raise ValueError(
-            "category must be 'home_runs' or 'hits'"
+            "category must be 'home_runs', 'hits', or 'total_bases'"
         )
 
     results = get_final_batter_results(result_date)
@@ -243,9 +247,16 @@ def grade_top_25(
             else 0
         )
 
+        actual_total_bases = (
+            int(actual.get("total_bases", 0))
+            if actual
+            else 0
+        )
+
         if not game_finished:
             correct = None
             result_label = "Game not final"
+
         elif normalized_category == "home_runs":
             correct = actual_home_runs >= 1
             result_label = (
@@ -253,7 +264,8 @@ def grade_top_25(
                 if correct
                 else "❌ 0 HR"
             )
-        else:
+
+        elif normalized_category == "hits":
             correct = actual_hits >= 1
             result_label = (
                 f"✅ {actual_hits} hit"
@@ -265,11 +277,24 @@ def grade_top_25(
                 )
             )
 
+        else:
+            correct = actual_total_bases >= 1
+            result_label = (
+                f"✅ {actual_total_bases} total base"
+                if actual_total_bases == 1
+                else (
+                    f"✅ {actual_total_bases} total bases"
+                    if correct
+                    else "❌ 0 total bases"
+                )
+            )
+
         graded.append(
             {
                 **prediction,
                 "actual_hits": actual_hits,
                 "actual_home_runs": actual_home_runs,
+                "actual_total_bases": actual_total_bases,
                 "game_finished": game_finished,
                 "correct": correct,
                 "result_label": result_label,
