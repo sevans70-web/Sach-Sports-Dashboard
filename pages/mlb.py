@@ -168,7 +168,7 @@ def convert_live_rankings(
         reasons = player.get("why", [])
         risk_flags = player.get("risk_flags", [])
 
-                converted.append(
+        converted.append(
             {
                 "rank": player.get("rank", 0),
                 "player": player.get(
