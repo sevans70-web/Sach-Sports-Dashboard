@@ -630,7 +630,7 @@ def render_full_ranking_row(player: dict) -> None:
     initials = player_initials(player["player"])
     projection_label, projection_value = projection_display(player)
     
-render_html(
+    render_html(
         f"""
         <div class="gi-full-row">
             <div class="gi-full-rank">
