@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-02T11:30:10.541031-04:00",
+  "captured_at": "2026-08-02T13:11:41.051812-04:00",
   "categories": {
     "hits": [
       {
@@ -135,7 +135,7 @@
         "player_id": 678882,
         "player_key": "678882",
         "rank": 17,
-        "score": 60.0,
+        "score": 60.1,
         "team": "Boston Red Sox"
       },
       {
@@ -195,12 +195,12 @@
         "team": "Milwaukee Brewers"
       },
       {
-        "player": "Ildemaro Vargas",
-        "player_id": 545121,
-        "player_key": "545121",
+        "player": "TJ Rumfield",
+        "player_id": 681198,
+        "player_key": "681198",
         "rank": 25,
         "score": 58.3,
-        "team": "Arizona Diamondbacks"
+        "team": "Colorado Rockies"
       }
     ],
     "home_runs": [
@@ -329,7 +329,7 @@
         "player_id": 592626,
         "player_key": "592626",
         "rank": 16,
-        "score": 63.4,
+        "score": 63.5,
         "team": "Texas Rangers"
       },
       {
@@ -393,7 +393,7 @@
         "player_id": 695578,
         "player_key": "695578",
         "rank": 24,
-        "score": 60.0,
+        "score": 60.1,
         "team": "Washington Nationals"
       },
       {
@@ -475,7 +475,7 @@
         "player_id": 518692,
         "player_key": "518692",
         "rank": 9,
-        "score": 64.9,
+        "score": 65.0,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -515,7 +515,7 @@
         "player_id": 808959,
         "player_key": "808959",
         "rank": 14,
-        "score": 63.0,
+        "score": 63.1,
         "team": "Chicago White Sox"
       },
       {
@@ -559,20 +559,20 @@
         "team": "San Diego Padres"
       },
       {
-        "player": "Ryan Jeffers",
-        "player_id": 680777,
-        "player_key": "680777",
-        "rank": 20,
-        "score": 61.3,
-        "team": "Minnesota Twins"
-      },
-      {
         "player": "Jake Bauers",
         "player_id": 641343,
         "player_key": "641343",
-        "rank": 21,
-        "score": 61.2,
+        "rank": 20,
+        "score": 61.3,
         "team": "Milwaukee Brewers"
+      },
+      {
+        "player": "Ryan Jeffers",
+        "player_id": 680777,
+        "player_key": "680777",
+        "rank": 21,
+        "score": 61.3,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Bryan De La Cruz",
@@ -583,10 +583,18 @@
         "team": "Philadelphia Phillies"
       },
       {
+        "player": "Matt Olson",
+        "player_id": 621566,
+        "player_key": "621566",
+        "rank": 23,
+        "score": 60.1,
+        "team": "Atlanta Braves"
+      },
+      {
         "player": "Kyle Stowers",
         "player_id": 669065,
         "player_key": "669065",
-        "rank": 23,
+        "rank": 24,
         "score": 60.1,
         "team": "Miami Marlins"
       },
@@ -594,17 +602,9 @@
         "player": "Luke Maile",
         "player_id": 571912,
         "player_key": "571912",
-        "rank": 24,
+        "rank": 25,
         "score": 60.1,
         "team": "Kansas City Royals"
-      },
-      {
-        "player": "Matt Olson",
-        "player_id": 621566,
-        "player_key": "621566",
-        "rank": 25,
-        "score": 60.0,
-        "team": "Atlanta Braves"
       }
     ]
   },
