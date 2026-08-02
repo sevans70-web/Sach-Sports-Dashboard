@@ -152,9 +152,15 @@ def get_final_batter_results(
                     continue
 
                 hits = int(batting.get("hits") or 0)
+
                 home_runs = int(
                     batting.get("homeRuns") or 0
                 )
+
+                total_bases = int(
+                    batting.get("totalBases") or 0
+                )
+
                 at_bats = int(
                     batting.get("atBats") or 0
                 )
@@ -169,12 +175,14 @@ def get_final_batter_results(
                         ),
                         "hits": 0,
                         "home_runs": 0,
+                        "total_bases": 0,
                         "at_bats": 0,
                     },
                 )
-
+                
                 existing["hits"] += hits
                 existing["home_runs"] += home_runs
+                existing["total_bases"] += total_bases
                 existing["at_bats"] += at_bats
 
                 by_player_id[player_id] = existing
