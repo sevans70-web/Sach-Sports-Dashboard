@@ -862,23 +862,64 @@ def rank_players(
                 "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
                 "confidence": confidence,
-"why": (
-    (
-        ["Opposing pitcher quality improves this matchup"]
-        if pitcher_adjustment >= 2.0
-        else (
-            ["Opposing pitcher quality makes this matchup more difficult"]
-            if pitcher_adjustment <= -2.0
-            else []
+        confidence = _confidence(
+            score=score,
+            has_season_stats=bool(
+                hitter.get("has_season_stats")
+            ),
+            has_recent_stats=bool(
+                hitter.get("has_recent_stats")
+            ),
+            season_plate_appearances=int(
+                season.get("plate_appearances", 0)
+            ),
+            recent_plate_appearances=int(
+                recent.get("plate_appearances", 0)
+            ),
         )
-    )
-    + _category_reasons(
-        category,
-        season,
-        recent,
-        percentiles,
-    )
-)[:4],
+
+        projections = _build_projections(
+            season=season,
+            recent=recent,
+            lineup_bonus=lineup_bonus,
+            handedness_adjustment=handedness_adjustment,
+            pitcher_adjustment=pitcher_adjustment,
+        )
+
+        scored_players.append(
+            {
+                **hitter,
+                **projections,
+                "category": category,
+                "base_score": base_score,
+                "lineup_bonus": lineup_bonus,
+                "handedness_adjustment": handedness_adjustment,
+                "pitcher_adjustment": pitcher_adjustment,
+                "gi_score": score,
+                "confidence": confidence,
+                "why": (
+                    (
+                        [
+                            "Opposing pitcher quality "
+                            "improves this matchup"
+                        ]
+                        if pitcher_adjustment >= 2.0
+                        else (
+                            [
+                                "Opposing pitcher quality "
+                                "makes this matchup more difficult"
+                            ]
+                            if pitcher_adjustment <= -2.0
+                            else []
+                        )
+                    )
+                    + _category_reasons(
+                        category,
+                        season,
+                        recent,
+                        percentiles,
+                    )
+                )[:4],
                 "risk_flags": _risk_flags(hitter),
                 "percentiles": percentiles,
             }
