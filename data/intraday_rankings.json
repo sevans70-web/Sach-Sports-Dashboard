@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-02T01:47:17.550983-04:00",
+  "captured_at": "2026-08-02T11:30:10.541031-04:00",
   "categories": {
     "hits": [
       {
@@ -51,20 +51,20 @@
         "team": "Houston Astros"
       },
       {
-        "player": "Nick Gonzales",
-        "player_id": 693304,
-        "player_key": "693304",
-        "rank": 7,
-        "score": 64.8,
-        "team": "Pittsburgh Pirates"
-      },
-      {
         "player": "Kevin McGonigle",
         "player_id": 805808,
         "player_key": "805808",
-        "rank": 8,
+        "rank": 7,
         "score": 64.7,
         "team": "Detroit Tigers"
+      },
+      {
+        "player": "Nick Gonzales",
+        "player_id": 693304,
+        "player_key": "693304",
+        "rank": 8,
+        "score": 64.7,
+        "team": "Pittsburgh Pirates"
       },
       {
         "player": "CJ Abrams",
@@ -135,7 +135,7 @@
         "player_id": 678882,
         "player_key": "678882",
         "rank": 17,
-        "score": 60.1,
+        "score": 60.0,
         "team": "Boston Red Sox"
       },
       {
@@ -159,7 +159,7 @@
         "player_id": 543510,
         "player_key": "543510",
         "rank": 20,
-        "score": 59.8,
+        "score": 59.7,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -175,7 +175,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 22,
-        "score": 59.0,
+        "score": 58.9,
         "team": "San Diego Padres"
       },
       {
@@ -191,16 +191,16 @@
         "player_id": 668930,
         "player_key": "668930",
         "rank": 24,
-        "score": 58.6,
+        "score": 58.5,
         "team": "Milwaukee Brewers"
       },
       {
-        "player": "TJ Rumfield",
-        "player_id": 681198,
-        "player_key": "681198",
+        "player": "Ildemaro Vargas",
+        "player_id": 545121,
+        "player_key": "545121",
         "rank": 25,
         "score": 58.3,
-        "team": "Colorado Rockies"
+        "team": "Arizona Diamondbacks"
       }
     ],
     "home_runs": [
@@ -515,7 +515,7 @@
         "player_id": 808959,
         "player_key": "808959",
         "rank": 14,
-        "score": 63.1,
+        "score": 63.0,
         "team": "Chicago White Sox"
       },
       {
@@ -559,20 +559,20 @@
         "team": "San Diego Padres"
       },
       {
-        "player": "Jake Bauers",
-        "player_id": 641343,
-        "player_key": "641343",
-        "rank": 20,
-        "score": 61.3,
-        "team": "Milwaukee Brewers"
-      },
-      {
         "player": "Ryan Jeffers",
         "player_id": 680777,
         "player_key": "680777",
-        "rank": 21,
+        "rank": 20,
         "score": 61.3,
         "team": "Minnesota Twins"
+      },
+      {
+        "player": "Jake Bauers",
+        "player_id": 641343,
+        "player_key": "641343",
+        "rank": 21,
+        "score": 61.2,
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "Bryan De La Cruz",
