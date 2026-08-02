@@ -440,14 +440,56 @@ def load_compare_and_save(
     category_rankings: dict[str, Iterable[dict[str, Any]]],
     captured_at: datetime,
 ) -> dict[str, Any]:
-    """Run the complete persistent intraday movement workflow."""
-    previous_snapshot, existing_sha = load_github_snapshot(config)
+    """
+    Run the persistent intraday movement workflow.
+
+    A stored snapshot is used for movement only when it belongs to the
+    same Toronto calendar day as the current rankings. The first valid
+    rankings of a new day therefore treat every player as NEW.
+    """
+    stored_snapshot, existing_sha = load_github_snapshot(config)
+
     current_snapshot = create_snapshot(
         category_rankings=category_rankings,
         captured_at=captured_at,
     )
 
-    comparisons: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    previous_snapshot = stored_snapshot
+    is_new_day = True
+
+    if stored_snapshot:
+        stored_captured_at = stored_snapshot.get("captured_at")
+
+        if stored_captured_at:
+            try:
+                stored_datetime = datetime.fromisoformat(
+                    str(stored_captured_at)
+                )
+
+                if stored_datetime.tzinfo is None:
+                    stored_datetime = stored_datetime.replace(
+                        tzinfo=captured_at.tzinfo
+                    )
+
+                stored_date = stored_datetime.astimezone(
+                    captured_at.tzinfo
+                ).date()
+
+                current_date = captured_at.date()
+
+                is_new_day = stored_date != current_date
+
+            except (TypeError, ValueError):
+                is_new_day = True
+
+    if is_new_day:
+        previous_snapshot = None
+
+    comparisons: dict[
+        str,
+        dict[str, list[dict[str, Any]]],
+    ] = {}
+
     summaries: dict[str, list[str]] = {}
 
     for category in current_snapshot.get("categories", {}):
@@ -456,10 +498,20 @@ def load_compare_and_save(
             previous_snapshot=previous_snapshot,
             category=category,
         )
-        comparisons[category] = comparison
-        summaries[category] = build_movement_summary(comparison)
 
-    should_save = False
+        comparisons[category] = comparison
+        summaries[category] = build_movement_summary(
+            comparison
+        )
+
+    should_save = (
+        is_new_day
+        or categories_changed(
+            current_snapshot=current_snapshot,
+            previous_snapshot=stored_snapshot,
+        )
+    )
+
     if should_save:
         save_github_snapshot(
             config=config,
@@ -473,4 +525,5 @@ def load_compare_and_save(
         "comparisons": comparisons,
         "summaries": summaries,
         "snapshot_saved": should_save,
+        "is_new_day": is_new_day,
     }
