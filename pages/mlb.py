@@ -1393,11 +1393,6 @@ with hits_tab:
         movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
     )
     render_prediction_results(
-        title="Total Base",
-        rankings=TOTAL_BASE_RANKINGS,
-        category="total_bases",
-    )
-    render_prediction_results(
         title="Hit",
         rankings=HIT_RANKINGS,
         category="hits",
@@ -1411,7 +1406,11 @@ with total_bases_tab:
         button_key="toggle_tb_25",
         movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
     )
-
+        render_prediction_results(
+        title="Total Base",
+        rankings=TOTAL_BASE_RANKINGS,
+        category="total_bases",
+    )
 st.divider()
 
 player_page_column, interpretation_column = st.columns(2)
