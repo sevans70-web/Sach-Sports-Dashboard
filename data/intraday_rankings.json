@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-02T14:48:19.147182-04:00",
+  "captured_at": "2026-08-02T15:04:40.579892-04:00",
   "categories": {
     "hits": [
       {
@@ -15,7 +15,7 @@
         "player_id": 518692,
         "player_key": "518692",
         "rank": 2,
-        "score": 67.2,
+        "score": 67.1,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -47,7 +47,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 6,
-        "score": 65.2,
+        "score": 65.3,
         "team": "Houston Astros"
       },
       {
@@ -67,27 +67,27 @@
         "team": "Pittsburgh Pirates"
       },
       {
-        "player": "Bryan De La Cruz",
-        "player_id": 650559,
-        "player_key": "650559",
-        "rank": 9,
-        "score": 62.9,
-        "team": "Philadelphia Phillies"
-      },
-      {
         "player": "Chandler Simpson",
         "player_id": 802415,
         "player_key": "802415",
-        "rank": 10,
+        "rank": 9,
         "score": 62.8,
         "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Bryan De La Cruz",
+        "player_id": 650559,
+        "player_key": "650559",
+        "rank": 10,
+        "score": 62.8,
+        "team": "Philadelphia Phillies"
       },
       {
         "player": "CJ Abrams",
         "player_id": 682928,
         "player_key": "682928",
         "rank": 11,
-        "score": 62.3,
+        "score": 62.2,
         "team": "Washington Nationals"
       },
       {
@@ -123,10 +123,18 @@
         "team": "Arizona Diamondbacks"
       },
       {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 16,
+        "score": 60.1,
+        "team": "St. Louis Cardinals"
+      },
+      {
         "player": "Jake Mangum",
         "player_id": 663968,
         "player_key": "663968",
-        "rank": 16,
+        "rank": 17,
         "score": 60.1,
         "team": "Pittsburgh Pirates"
       },
@@ -134,17 +142,9 @@
         "player": "Javier Báez",
         "player_id": 595879,
         "player_key": "595879",
-        "rank": 17,
+        "rank": 18,
         "score": 60.0,
         "team": "Detroit Tigers"
-      },
-      {
-        "player": "Alec Burleson",
-        "player_id": 676475,
-        "player_key": "676475",
-        "rank": 18,
-        "score": 59.8,
-        "team": "St. Louis Cardinals"
       },
       {
         "player": "Cooper Pratt",
@@ -171,20 +171,20 @@
         "team": "San Diego Padres"
       },
       {
-        "player": "Brice Turang",
-        "player_id": 668930,
-        "player_key": "668930",
-        "rank": 22,
-        "score": 58.7,
-        "team": "Milwaukee Brewers"
-      },
-      {
         "player": "Christian Encarnacion-Strand",
         "player_id": 687952,
         "player_key": "687952",
+        "rank": 22,
+        "score": 58.8,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Brice Turang",
+        "player_id": 668930,
+        "player_key": "668930",
         "rank": 23,
         "score": 58.7,
-        "team": "Baltimore Orioles"
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "TJ Rumfield",
@@ -257,7 +257,7 @@
         "player_id": 808959,
         "player_key": "808959",
         "rank": 7,
-        "score": 66.7,
+        "score": 66.6,
         "team": "Chicago White Sox"
       },
       {
@@ -427,7 +427,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 3,
-        "score": 68.1,
+        "score": 68.0,
         "team": "Washington Nationals"
       },
       {
@@ -443,7 +443,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 5,
-        "score": 67.5,
+        "score": 67.6,
         "team": "Houston Astros"
       },
       {
@@ -527,17 +527,17 @@
         "team": "Philadelphia Phillies"
       },
       {
-        "player": "Hunter Goodman",
-        "player_id": 696100,
-        "player_key": "696100",
-        "rank": 16,
-        "score": 62.4,
-        "team": "Colorado Rockies"
-      },
-      {
         "player": "Mickey Moniak",
         "player_id": 666160,
         "player_key": "666160",
+        "rank": 16,
+        "score": 62.5,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
         "rank": 17,
         "score": 62.4,
         "team": "Colorado Rockies"
