@@ -453,11 +453,52 @@ for state_key in ("show_hr_25", "show_hits_25", "show_tb_25"):
 # CARD RENDERING
 # ============================================================
 
+def projection_display(player: dict) -> tuple[str, str]:
+    """Return the most useful projection label and value for the market."""
+    category = str(player.get("category", "")).strip().lower()
+
+    if category in {"home run", "home runs"}:
+        probability = float(
+            player.get("home_run_probability", 0.0) or 0.0
+        )
+        return "HR Probability", f"{probability:.0f}%"
+
+    if category in {"hit", "hits"}:
+        projected_hits = float(
+            player.get("projected_hits", 0.0) or 0.0
+        )
+        hit_probability = float(
+            player.get("one_plus_hit_probability", 0.0) or 0.0
+        )
+        return (
+            "Projected Hits",
+            f"{projected_hits:.1f} · {hit_probability:.0f}% for 1+",
+        )
+
+    if category in {"total base", "total bases"}:
+        projected_bases = float(
+            player.get("projected_total_bases", 0.0) or 0.0
+        )
+        over_probability = float(
+            player.get(
+                "over_1_5_total_bases_probability",
+                0.0,
+            )
+            or 0.0
+        )
+        return (
+            "Projected Total Bases",
+            f"{projected_bases:.1f} · {over_probability:.0f}% over 1.5",
+        )
+
+    return "Projection", "Unavailable"
+
 def render_featured_player(player: dict) -> None:
     """Render the #1 player as a large featured card."""
     badge_class = confidence_class(player["confidence"])
     initials = player_initials(player["player"])
-
+    projection_label, projection_value = projection_display(player)
+    
     render_html(
         f"""
         <div class="gi-featured-player">
@@ -492,11 +533,43 @@ def render_featured_player(player: dict) -> None:
                 <div class="gi-featured-market">
                     {escape(player['category'])}
                 </div>
-
+                
+                <div
+                    class="gi-featured-projection"
+                    style="
+                        margin: 12px 0;
+                        padding: 10px 12px;
+                        border: 1px solid rgba(56, 189, 248, 0.35);
+                        border-radius: 10px;
+                        background: rgba(14, 116, 144, 0.14);
+                    "
+                >
+                    <div
+                        style="
+                            font-size: 0.72rem;
+                            text-transform: uppercase;
+                            letter-spacing: 0.08em;
+                            opacity: 0.72;
+                        "
+                    >
+                        {escape(projection_label)}
+                    </div>
+                
+                    <div
+                        style="
+                            margin-top: 3px;
+                            font-size: 1.05rem;
+                            font-weight: 700;
+                        "
+                    >
+                        {escape(projection_value)}
+                    </div>
+                </div>
+                
                 <div class="gi-featured-reason">
                     {escape(player['reason'])}
                 </div>
-
+                
                 <div class="gi-featured-footer">
                     <span>GI Score: {player['score']}</span>
                     <span>{escape(player['status'])}</span>
