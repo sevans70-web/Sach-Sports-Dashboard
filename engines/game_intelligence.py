@@ -852,16 +852,6 @@ def rank_players(
             ),
         )
 
-        scored_players.append(
-            {
-                **hitter,
-                "category": category,
-                "base_score": base_score,
-                "lineup_bonus": lineup_bonus,
-                "handedness_adjustment": handedness_adjustment,
-                "pitcher_adjustment": pitcher_adjustment,
-                "gi_score": score,
-                "confidence": confidence,
         confidence = _confidence(
             score=score,
             has_season_stats=bool(
