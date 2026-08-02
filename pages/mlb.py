@@ -1393,6 +1393,11 @@ with hits_tab:
         movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
     )
     render_prediction_results(
+        title="Total Base",
+        rankings=TOTAL_BASE_RANKINGS,
+        category="total_bases",
+    )
+    render_prediction_results(
         title="Hit",
         rankings=HIT_RANKINGS,
         category="hits",
