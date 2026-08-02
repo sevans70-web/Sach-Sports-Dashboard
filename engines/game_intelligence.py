@@ -572,6 +572,169 @@ def _category_reasons(
 
     return _total_base_reasons(season, recent, percentiles)
 
+def _clamp(
+    value: float,
+    minimum: float,
+    maximum: float,
+) -> float:
+    """Keep a numeric value inside a defined range."""
+    return max(minimum, min(value, maximum))
+
+
+def _projection_inputs(
+    season: dict[str, Any],
+    recent: dict[str, Any],
+) -> dict[str, float]:
+    """Return blended season and recent production rates."""
+    season_hits = _safe_float(
+        season.get("hits_per_game")
+    )
+    recent_hits = _safe_float(
+        recent.get("hits_per_game")
+    )
+
+    season_total_bases = _safe_float(
+        season.get("total_bases_per_game")
+    )
+    recent_total_bases = _safe_float(
+        recent.get("total_bases_per_game")
+    )
+
+    season_games = max(
+        int(season.get("games_played", 0)),
+        1,
+    )
+    recent_games = max(
+        int(recent.get("games_played", 0)),
+        1,
+    )
+
+    season_home_run_rate = (
+        _safe_float(season.get("home_runs"))
+        / season_games
+    )
+
+    recent_home_run_rate = (
+        _safe_float(recent.get("home_runs"))
+        / recent_games
+    )
+
+    return {
+        "hits": (
+            (season_hits * 0.60)
+            + (recent_hits * 0.40)
+        ),
+        "total_bases": (
+            (season_total_bases * 0.55)
+            + (recent_total_bases * 0.45)
+        ),
+        "home_run_rate": (
+            (season_home_run_rate * 0.60)
+            + (recent_home_run_rate * 0.40)
+        ),
+    }
+
+
+def _projection_adjustment(
+    lineup_bonus: float,
+    handedness_adjustment: float,
+    pitcher_adjustment: float,
+) -> float:
+    """Return a modest matchup and opportunity multiplier."""
+    adjustment = (
+        1.0
+        + (lineup_bonus * 0.012)
+        + (handedness_adjustment * 0.018)
+        + (pitcher_adjustment * 0.025)
+    )
+
+    return _clamp(
+        adjustment,
+        0.75,
+        1.30,
+    )
+
+def _build_projections(
+    season: dict[str, Any],
+    recent: dict[str, Any],
+    lineup_bonus: float,
+    handedness_adjustment: float,
+    pitcher_adjustment: float,
+) -> dict[str, float]:
+    """Build baseline player projections and probabilities."""
+    inputs = _projection_inputs(
+        season,
+        recent,
+    )
+
+    adjustment = _projection_adjustment(
+        lineup_bonus=lineup_bonus,
+        handedness_adjustment=handedness_adjustment,
+        pitcher_adjustment=pitcher_adjustment,
+    )
+
+    projected_hits = _clamp(
+        inputs["hits"] * adjustment,
+        0.0,
+        4.0,
+    )
+
+    projected_total_bases = _clamp(
+        inputs["total_bases"] * adjustment,
+        0.0,
+        8.0,
+    )
+
+    projected_home_run_rate = _clamp(
+        inputs["home_run_rate"] * adjustment,
+        0.0,
+        0.75,
+    )
+
+    home_run_probability = _clamp(
+        projected_home_run_rate * 100,
+        0.0,
+        75.0,
+    )
+
+    one_plus_hit_probability = _clamp(
+        (1.0 - (2.71828 ** (-projected_hits))) * 100,
+        0.0,
+        95.0,
+    )
+
+    over_1_5_total_bases_probability = _clamp(
+        (
+            1.0
+            - (
+                2.71828 ** (-projected_total_bases)
+                * (1.0 + projected_total_bases)
+            )
+        )
+        * 100,
+        0.0,
+        95.0,
+    )
+
+    return {
+        "projected_hits": round(projected_hits, 2),
+        "projected_total_bases": round(
+            projected_total_bases,
+            2,
+        ),
+        "home_run_probability": round(
+            home_run_probability,
+            1,
+        ),
+        "one_plus_hit_probability": round(
+            one_plus_hit_probability,
+            1,
+        ),
+        "over_1_5_total_bases_probability": round(
+            over_1_5_total_bases_probability,
+            1,
+        ),
+    }
 
 def rank_players(
     category: str,
