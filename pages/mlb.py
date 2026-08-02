@@ -168,7 +168,7 @@ def convert_live_rankings(
         reasons = player.get("why", [])
         risk_flags = player.get("risk_flags", [])
 
-        converted.append(
+                converted.append(
             {
                 "rank": player.get("rank", 0),
                 "player": player.get(
@@ -179,10 +179,36 @@ def convert_live_rankings(
                 "opponent": player.get("opponent_name", "TBD"),
                 "headshot_url": player.get("headshot_url"),
                 "player_id": player.get("player_id"),
-                "position": player.get("position_abbreviation", ""),
+                "position": player.get(
+                    "position_abbreviation",
+                    "",
+                ),
                 "category": category_label,
-                "confidence": player.get("confidence", "Low"),
+                "confidence": player.get(
+                    "confidence",
+                    "Low",
+                ),
                 "score": player.get("gi_score", 0),
+                "projected_hits": player.get(
+                    "projected_hits",
+                    0.0,
+                ),
+                "projected_total_bases": player.get(
+                    "projected_total_bases",
+                    0.0,
+                ),
+                "home_run_probability": player.get(
+                    "home_run_probability",
+                    0.0,
+                ),
+                "one_plus_hit_probability": player.get(
+                    "one_plus_hit_probability",
+                    0.0,
+                ),
+                "over_1_5_total_bases_probability": player.get(
+                    "over_1_5_total_bases_probability",
+                    0.0,
+                ),
                 "reason": (
                     reasons[0]
                     if reasons
@@ -195,7 +221,6 @@ def convert_live_rankings(
                 ),
             }
         )
-
     return converted
 
 def attach_persistent_movement(
