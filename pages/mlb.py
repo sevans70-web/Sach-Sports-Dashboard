@@ -665,6 +665,9 @@ def render_full_ranking_row(player: dict) -> None:
             <div class="gi-full-reason">
                     {escape(player['reason'])}
             </div>
+
+                {card_result_html(player)}
+
             <div class="gi-full-score">
                 <span class="gi-score-label">GI score</span>
                 <span class="gi-score-number">{player['score']}</span>
