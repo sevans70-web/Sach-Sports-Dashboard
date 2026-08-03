@@ -1481,11 +1481,7 @@ with home_run_tab:
         button_key="toggle_hr_25",
         movement_summary=MOVEMENT_SUMMARIES.get("home_runs", []),
     )
-        title="Home Run",
-        rankings=HOME_RUN_RANKINGS,
-        category="home_runs",
-    )
-
+     
 with hits_tab:
     render_ranking_category(
         title="Hit",
@@ -1494,10 +1490,6 @@ with hits_tab:
         state_key="show_hits_25",
         button_key="toggle_hits_25",
         movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
-    )
-            title="Hit",
-        rankings=HIT_RANKINGS,
-        category="hits",
     )
 
 with total_bases_tab:
@@ -1510,10 +1502,6 @@ with total_bases_tab:
         movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
     )
 
-        title="Total Base",
-        rankings=TOTAL_BASE_RANKINGS,
-        category="total_bases",
-    )
 st.divider()
 
 player_page_column, interpretation_column = st.columns(2)
