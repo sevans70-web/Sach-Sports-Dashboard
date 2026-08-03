@@ -572,7 +572,9 @@ def render_featured_player(player: dict) -> None:
                 <div class="gi-featured-reason">
                     {escape(player['reason'])}
                 </div>
-                
+
+                {card_result_html(player)}
+
                 <div class="gi-featured-footer">
                     <span>GI Score: {player['score']}</span>
                     <span>{escape(player['status'])}</span>
@@ -621,6 +623,7 @@ def render_compact_player(player: dict) -> None:
                 <div class="gi-compact-reason">
                     {escape(player['reason'])}
                 </div>
+                {card_result_html(player)}
             </div>
         </div>
         """
