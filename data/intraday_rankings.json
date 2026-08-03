@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-03T19:01:01.706835-04:00",
+  "captured_at": "2026-08-03T19:04:18.953209-04:00",
   "categories": {
     "hits": [
       {
@@ -7,7 +7,7 @@
         "player_id": 518692,
         "player_key": "518692",
         "rank": 1,
-        "score": 67.2,
+        "score": 67.3,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -23,7 +23,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 3,
-        "score": 65.9,
+        "score": 66.1,
         "team": "Houston Astros"
       },
       {
@@ -31,7 +31,7 @@
         "player_id": 693304,
         "player_key": "693304",
         "rank": 4,
-        "score": 63.9,
+        "score": 64.1,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -39,7 +39,7 @@
         "player_id": 802415,
         "player_key": "802415",
         "rank": 5,
-        "score": 63.9,
+        "score": 64.0,
         "team": "Tampa Bay Rays"
       },
       {
@@ -55,7 +55,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 7,
-        "score": 60.7,
+        "score": 60.8,
         "team": "Washington Nationals"
       },
       {
@@ -63,7 +63,7 @@
         "player_id": 676475,
         "player_key": "676475",
         "rank": 8,
-        "score": 60.6,
+        "score": 60.7,
         "team": "St. Louis Cardinals"
       },
       {
@@ -71,7 +71,7 @@
         "player_id": 694249,
         "player_key": "694249",
         "rank": 9,
-        "score": 60.6,
+        "score": 60.7,
         "team": "Colorado Rockies"
       },
       {
@@ -79,7 +79,7 @@
         "player_id": 663968,
         "player_key": "663968",
         "rank": 10,
-        "score": 59.3,
+        "score": 59.6,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -87,7 +87,7 @@
         "player_id": 543510,
         "player_key": "543510",
         "rank": 11,
-        "score": 58.9,
+        "score": 59.1,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -95,7 +95,7 @@
         "player_id": 681198,
         "player_key": "681198",
         "rank": 12,
-        "score": 58.7,
+        "score": 58.9,
         "team": "Colorado Rockies"
       },
       {
@@ -103,7 +103,7 @@
         "player_id": 808982,
         "player_key": "808982",
         "rank": 13,
-        "score": 58.3,
+        "score": 58.4,
         "team": "San Francisco Giants"
       },
       {
@@ -111,7 +111,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 14,
-        "score": 58.1,
+        "score": 58.2,
         "team": "San Diego Padres"
       },
       {
@@ -127,23 +127,23 @@
         "player_id": 665487,
         "player_key": "665487",
         "rank": 16,
-        "score": 57.0,
+        "score": 57.2,
         "team": "San Diego Padres"
-      },
-      {
-        "player": "Ryan Waldschmidt",
-        "player_id": 814439,
-        "player_key": "814439",
-        "rank": 17,
-        "score": 56.8,
-        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Gabriel Moreno",
         "player_id": 672515,
         "player_key": "672515",
+        "rank": 17,
+        "score": 56.9,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Ryan Waldschmidt",
+        "player_id": 814439,
+        "player_key": "814439",
         "rank": 18,
-        "score": 56.7,
+        "score": 56.8,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -159,7 +159,7 @@
         "player_id": 663538,
         "player_key": "663538",
         "rank": 20,
-        "score": 55.9,
+        "score": 56.0,
         "team": "Chicago Cubs"
       },
       {
@@ -167,7 +167,7 @@
         "player_id": 607043,
         "player_key": "607043",
         "rank": 21,
-        "score": 55.6,
+        "score": 55.7,
         "team": "Texas Rangers"
       },
       {
@@ -175,7 +175,7 @@
         "player_id": 663743,
         "player_key": "663743",
         "rank": 22,
-        "score": 55.4,
+        "score": 55.6,
         "team": "Tampa Bay Rays"
       },
       {
@@ -183,7 +183,7 @@
         "player_id": 699393,
         "player_key": "699393",
         "rank": 23,
-        "score": 55.4,
+        "score": 55.6,
         "team": "Chicago Cubs"
       },
       {
@@ -191,7 +191,7 @@
         "player_id": 681624,
         "player_key": "681624",
         "rank": 24,
-        "score": 54.8,
+        "score": 55.0,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -199,7 +199,7 @@
         "player_id": 671277,
         "player_key": "671277",
         "rank": 25,
-        "score": 54.8,
+        "score": 54.9,
         "team": "New York Yankees"
       }
     ],
@@ -225,7 +225,7 @@
         "player_id": 696100,
         "player_key": "696100",
         "rank": 3,
-        "score": 66.7,
+        "score": 66.8,
         "team": "Colorado Rockies"
       },
       {
@@ -241,7 +241,7 @@
         "player_id": 671277,
         "player_key": "671277",
         "rank": 5,
-        "score": 65.4,
+        "score": 65.5,
         "team": "New York Yankees"
       },
       {
@@ -249,7 +249,7 @@
         "player_id": 691718,
         "player_key": "691718",
         "rank": 6,
-        "score": 65.2,
+        "score": 65.3,
         "team": "Chicago Cubs"
       },
       {
@@ -257,7 +257,7 @@
         "player_id": 665161,
         "player_key": "665161",
         "rank": 7,
-        "score": 65.0,
+        "score": 65.2,
         "team": "Houston Astros"
       },
       {
@@ -273,7 +273,7 @@
         "player_id": 666160,
         "player_key": "666160",
         "rank": 9,
-        "score": 62.4,
+        "score": 62.6,
         "team": "Colorado Rockies"
       },
       {
@@ -281,7 +281,7 @@
         "player_id": 694671,
         "player_key": "694671",
         "rank": 10,
-        "score": 62.1,
+        "score": 62.2,
         "team": "Texas Rangers"
       },
       {
@@ -289,7 +289,7 @@
         "player_id": 646240,
         "player_key": "646240",
         "rank": 11,
-        "score": 61.7,
+        "score": 61.9,
         "team": "San Francisco Giants"
       },
       {
@@ -297,7 +297,7 @@
         "player_id": 592626,
         "player_key": "592626",
         "rank": 12,
-        "score": 61.7,
+        "score": 61.8,
         "team": "Texas Rangers"
       },
       {
@@ -305,7 +305,7 @@
         "player_id": 664040,
         "player_key": "664040",
         "rank": 13,
-        "score": 61.6,
+        "score": 61.7,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -313,7 +313,7 @@
         "player_id": 641343,
         "player_key": "641343",
         "rank": 14,
-        "score": 61.6,
+        "score": 61.7,
         "team": "Milwaukee Brewers"
       },
       {
@@ -329,7 +329,7 @@
         "player_id": 695578,
         "player_key": "695578",
         "rank": 16,
-        "score": 60.1,
+        "score": 60.2,
         "team": "Washington Nationals"
       },
       {
@@ -337,7 +337,7 @@
         "player_id": 571970,
         "player_key": "571970",
         "rank": 17,
-        "score": 59.4,
+        "score": 59.5,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -345,7 +345,7 @@
         "player_id": 572233,
         "player_key": "572233",
         "rank": 18,
-        "score": 58.6,
+        "score": 58.7,
         "team": "Houston Astros"
       },
       {
@@ -353,7 +353,7 @@
         "player_id": 700250,
         "player_key": "700250",
         "rank": 19,
-        "score": 58.2,
+        "score": 58.3,
         "team": "New York Yankees"
       },
       {
@@ -361,7 +361,7 @@
         "player_id": 673548,
         "player_key": "673548",
         "rank": 20,
-        "score": 57.8,
+        "score": 57.9,
         "team": "Chicago Cubs"
       },
       {
@@ -385,7 +385,7 @@
         "player_id": 592518,
         "player_key": "592518",
         "rank": 23,
-        "score": 56.0,
+        "score": 56.1,
         "team": "San Diego Padres"
       },
       {
@@ -393,7 +393,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 24,
-        "score": 55.9,
+        "score": 56.0,
         "team": "Tampa Bay Rays"
       },
       {
@@ -401,7 +401,7 @@
         "player_id": 682998,
         "player_key": "682998",
         "rank": 25,
-        "score": 55.7,
+        "score": 55.9,
         "team": "Arizona Diamondbacks"
       }
     ],
