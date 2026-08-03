@@ -284,52 +284,42 @@ def render_recent_movement(changes: list[str]) -> None:
 
     for change in changes:
         st.write(change)
-def render_prediction_results(
-    title: str,
+def attach_results_to_rankings(
     rankings: list[dict],
     category: str,
-) -> None:
-    """Display completed results for the currently loaded Top 25."""
+) -> list[dict]:
+    """Attach completed game results to the player records."""
     if not rankings:
-        return
+        return rankings
 
     result = grade_top_25(
         rankings=rankings,
         category=category,
     )
 
-    completed_count = result.get("completed_count", 0)
+    return result.get("graded", rankings)
 
-    if completed_count == 0:
-        return
 
-    correct_count = result.get("correct_count", 0)
-    accuracy = result.get("accuracy", 0.0)
+def card_result_html(player: dict) -> str:
+    """Return final-result HTML when the player's game is complete."""
+    if not player.get("game_finished"):
+        return ""
 
-    st.markdown(f"### {title} Results")
-    st.caption(
-        f"{correct_count} correct from "
-        f"{completed_count} completed player results "
-        f"({accuracy}% accuracy)"
+    result_label = escape(
+        str(player.get("result_label", "Result unavailable"))
     )
 
-    for player in result.get("graded", []):
-        if not player.get("game_finished"):
-            continue
-
-        rank = player.get("rank", "—")
-        player_name = player.get("player", "Unknown player")
-        result_label = player.get(
-            "result_label",
-            "Result unavailable",
-        )
-
-        st.write(
-            f"#{rank} {player_name} — {result_label}"
-        )
-
-
-@st.cache_data(ttl=900, show_spinner=False)
+    return f"""
+        <div
+            style="
+                margin-top: 10px;
+                font-weight: 700;
+                font-size: 0.92rem;
+            "
+        >
+            Result: {result_label}
+        </div>
+    """
 def load_live_rankings() -> dict:
     """Load live MLB player rankings for today's games."""
     snapshot = get_daily_ranking_snapshot(
@@ -379,7 +369,20 @@ TOTAL_BASE_RANKINGS = convert_live_rankings(
     live_rankings.get("total_bases", {}),
     "Total Bases",
 )
+HOME_RUN_RANKINGS = attach_results_to_rankings(
+    HOME_RUN_RANKINGS,
+    "home_runs",
+)
 
+HIT_RANKINGS = attach_results_to_rankings(
+    HIT_RANKINGS,
+    "hits",
+)
+
+TOTAL_BASE_RANKINGS = attach_results_to_rankings(
+    TOTAL_BASE_RANKINGS,
+    "total_bases",
+)
 MOVEMENT_SUMMARIES = {
     "home_runs": [],
     "hits": [],
