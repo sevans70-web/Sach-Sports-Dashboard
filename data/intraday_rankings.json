@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-02T22:18:40.553447-04:00",
+  "captured_at": "2026-08-02T23:26:18.865590-04:00",
   "categories": {
     "hits": [
       {
@@ -15,7 +15,7 @@
         "player_id": 703601,
         "player_key": "703601",
         "rank": 2,
-        "score": 67.3,
+        "score": 67.4,
         "team": "Detroit Tigers"
       },
       {
@@ -47,24 +47,24 @@
         "player_id": 802415,
         "player_key": "802415",
         "rank": 6,
-        "score": 64.5,
+        "score": 64.4,
         "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Bryan De La Cruz",
-        "player_id": 650559,
-        "player_key": "650559",
-        "rank": 7,
-        "score": 64.1,
-        "team": "Philadelphia Phillies"
       },
       {
         "player": "Luis Arraez",
         "player_id": 650333,
         "player_key": "650333",
-        "rank": 8,
-        "score": 64.0,
+        "rank": 7,
+        "score": 64.1,
         "team": "San Francisco Giants"
+      },
+      {
+        "player": "Bryan De La Cruz",
+        "player_id": 650559,
+        "player_key": "650559",
+        "rank": 8,
+        "score": 64.1,
+        "team": "Philadelphia Phillies"
       },
       {
         "player": "Nick Gonzales",
@@ -79,7 +79,7 @@
         "player_id": 805808,
         "player_key": "805808",
         "rank": 10,
-        "score": 63.3,
+        "score": 63.4,
         "team": "Detroit Tigers"
       },
       {
@@ -103,7 +103,7 @@
         "player_id": 678882,
         "player_key": "678882",
         "rank": 13,
-        "score": 61.0,
+        "score": 61.1,
         "team": "Boston Red Sox"
       },
       {
@@ -119,31 +119,31 @@
         "player_id": 595879,
         "player_key": "595879",
         "rank": 15,
-        "score": 60.4,
+        "score": 60.5,
         "team": "Detroit Tigers"
-      },
-      {
-        "player": "Cooper Pratt",
-        "player_id": 806198,
-        "player_key": "806198",
-        "rank": 16,
-        "score": 60.2,
-        "team": "Milwaukee Brewers"
       },
       {
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 17,
-        "score": 60.1,
+        "rank": 16,
+        "score": 60.2,
         "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Cooper Pratt",
+        "player_id": 806198,
+        "player_key": "806198",
+        "rank": 17,
+        "score": 60.2,
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "Jung Hoo Lee",
         "player_id": 808982,
         "player_key": "808982",
         "rank": 18,
-        "score": 60.0,
+        "score": 60.1,
         "team": "San Francisco Giants"
       },
       {
@@ -167,7 +167,7 @@
         "player_id": 663968,
         "player_key": "663968",
         "rank": 21,
-        "score": 59.3,
+        "score": 59.4,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -183,7 +183,7 @@
         "player_id": 681198,
         "player_key": "681198",
         "rank": 23,
-        "score": 58.5,
+        "score": 58.6,
         "team": "Colorado Rockies"
       },
       {
@@ -199,7 +199,7 @@
         "player_id": 672515,
         "player_key": "672515",
         "rank": 25,
-        "score": 58.2,
+        "score": 58.3,
         "team": "Arizona Diamondbacks"
       }
     ],
@@ -353,7 +353,7 @@
         "player_id": 646240,
         "player_key": "646240",
         "rank": 19,
-        "score": 61.6,
+        "score": 61.7,
         "team": "San Francisco Giants"
       },
       {
@@ -361,7 +361,7 @@
         "player_id": 641343,
         "player_key": "641343",
         "rank": 20,
-        "score": 61.2,
+        "score": 61.3,
         "team": "Milwaukee Brewers"
       },
       {
@@ -369,7 +369,7 @@
         "player_id": 694671,
         "player_key": "694671",
         "rank": 21,
-        "score": 61.1,
+        "score": 61.2,
         "team": "Texas Rangers"
       },
       {
@@ -385,7 +385,7 @@
         "player_id": 669065,
         "player_key": "669065",
         "rank": 23,
-        "score": 60.8,
+        "score": 60.9,
         "team": "Miami Marlins"
       },
       {
@@ -393,7 +393,7 @@
         "player_id": 678882,
         "player_key": "678882",
         "rank": 24,
-        "score": 60.6,
+        "score": 60.7,
         "team": "Boston Red Sox"
       },
       {
@@ -443,7 +443,7 @@
         "player_id": 682928,
         "player_key": "682928",
         "rank": 5,
-        "score": 67.9,
+        "score": 67.8,
         "team": "Washington Nationals"
       },
       {
@@ -455,27 +455,27 @@
         "team": "Philadelphia Phillies"
       },
       {
-        "player": "Pete Crow-Armstrong",
-        "player_id": 691718,
-        "player_key": "691718",
-        "rank": 7,
-        "score": 65.6,
-        "team": "Chicago Cubs"
-      },
-      {
         "player": "Ceddanne Rafaela",
         "player_id": 678882,
         "player_key": "678882",
+        "rank": 7,
+        "score": 65.7,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Pete Crow-Armstrong",
+        "player_id": 691718,
+        "player_key": "691718",
         "rank": 8,
         "score": 65.6,
-        "team": "Boston Red Sox"
+        "team": "Chicago Cubs"
       },
       {
         "player": "Freddie Freeman",
         "player_id": 518692,
         "player_key": "518692",
         "rank": 9,
-        "score": 65.4,
+        "score": 65.2,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -499,7 +499,7 @@
         "player_id": 621566,
         "player_key": "621566",
         "rank": 12,
-        "score": 63.7,
+        "score": 63.8,
         "team": "Atlanta Braves"
       },
       {
@@ -515,7 +515,7 @@
         "player_id": 696100,
         "player_key": "696100",
         "rank": 14,
-        "score": 63.0,
+        "score": 63.1,
         "team": "Colorado Rockies"
       },
       {
@@ -579,7 +579,7 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 22,
-        "score": 60.8,
+        "score": 60.9,
         "team": "Tampa Bay Rays"
       },
       {
@@ -587,7 +587,7 @@
         "player_id": 694671,
         "player_key": "694671",
         "rank": 23,
-        "score": 60.7,
+        "score": 60.8,
         "team": "Texas Rangers"
       },
       {
@@ -599,12 +599,12 @@
         "team": "San Francisco Giants"
       },
       {
-        "player": "Ryan Jeffers",
-        "player_id": 680777,
-        "player_key": "680777",
+        "player": "Mickey Moniak",
+        "player_id": 666160,
+        "player_key": "666160",
         "rank": 25,
         "score": 59.8,
-        "team": "Minnesota Twins"
+        "team": "Colorado Rockies"
       }
     ]
   },
