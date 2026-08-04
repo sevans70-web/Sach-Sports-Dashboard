@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-04T16:35:08.210932-04:00",
+  "captured_at": "2026-08-04T16:45:11.948670-04:00",
   "categories": {
     "hits": [
       {
@@ -71,7 +71,7 @@
         "player_id": 802415,
         "player_key": "802415",
         "rank": 9,
-        "score": 63.7,
+        "score": 63.8,
         "team": "Tampa Bay Rays"
       },
       {
@@ -123,20 +123,20 @@
         "team": "Minnesota Twins"
       },
       {
-        "player": "James McCann",
-        "player_id": 543510,
-        "player_key": "543510",
-        "rank": 16,
-        "score": 60.6,
-        "team": "Arizona Diamondbacks"
-      },
-      {
         "player": "Cole Carrigg",
         "player_id": 694249,
         "player_key": "694249",
-        "rank": 17,
-        "score": 60.5,
+        "rank": 16,
+        "score": 60.6,
         "team": "Colorado Rockies"
+      },
+      {
+        "player": "James McCann",
+        "player_id": 543510,
+        "player_key": "543510",
+        "rank": 17,
+        "score": 60.6,
+        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Javier Báez",
@@ -167,7 +167,7 @@
         "player_id": 702284,
         "player_key": "702284",
         "rank": 21,
-        "score": 59.1,
+        "score": 59.0,
         "team": "Seattle Mariners"
       },
       {
@@ -401,7 +401,7 @@
         "player_id": 669065,
         "player_key": "669065",
         "rank": 25,
-        "score": 61.5,
+        "score": 61.4,
         "team": "Miami Marlins"
       }
     ],
