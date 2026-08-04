@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-03T22:03:57.282783-04:00",
+  "captured_at": "2026-08-03T22:09:29.110237-04:00",
   "categories": {
     "hits": [
       {
@@ -47,7 +47,7 @@
         "player_id": 650559,
         "player_key": "650559",
         "rank": 6,
-        "score": 61.6,
+        "score": 61.7,
         "team": "Philadelphia Phillies"
       },
       {
@@ -55,7 +55,7 @@
         "player_id": 694673,
         "player_key": "694673",
         "rank": 7,
-        "score": 61.4,
+        "score": 61.5,
         "team": "Washington Nationals"
       },
       {
@@ -63,7 +63,7 @@
         "player_id": 676475,
         "player_key": "676475",
         "rank": 8,
-        "score": 61.1,
+        "score": 61.2,
         "team": "St. Louis Cardinals"
       },
       {
@@ -71,7 +71,7 @@
         "player_id": 694249,
         "player_key": "694249",
         "rank": 9,
-        "score": 60.6,
+        "score": 60.5,
         "team": "Colorado Rockies"
       },
       {
@@ -79,7 +79,7 @@
         "player_id": 663968,
         "player_key": "663968",
         "rank": 10,
-        "score": 59.4,
+        "score": 59.3,
         "team": "Pittsburgh Pirates"
       },
       {
@@ -119,7 +119,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 15,
-        "score": 58.1,
+        "score": 57.8,
         "team": "San Diego Padres"
       },
       {
@@ -159,40 +159,40 @@
         "player_id": 699393,
         "player_key": "699393",
         "rank": 20,
-        "score": 56.2,
-        "team": "Chicago Cubs"
-      },
-      {
-        "player": "Nico Hoerner",
-        "player_id": 663538,
-        "player_key": "663538",
-        "rank": 21,
-        "score": 55.9,
+        "score": 56.3,
         "team": "Chicago Cubs"
       },
       {
         "player": "Luis García Jr.",
         "player_id": 671277,
         "player_key": "671277",
-        "rank": 22,
+        "rank": 21,
         "score": 55.9,
         "team": "New York Yankees"
-      },
-      {
-        "player": "Nick Fortes",
-        "player_id": 663743,
-        "player_key": "663743",
-        "rank": 23,
-        "score": 55.8,
-        "team": "Tampa Bay Rays"
       },
       {
         "player": "Cooper Pratt",
         "player_id": 806198,
         "player_key": "806198",
-        "rank": 24,
-        "score": 55.8,
+        "rank": 22,
+        "score": 55.9,
         "team": "Milwaukee Brewers"
+      },
+      {
+        "player": "Nico Hoerner",
+        "player_id": 663538,
+        "player_key": "663538",
+        "rank": 23,
+        "score": 55.7,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Nick Fortes",
+        "player_id": 663743,
+        "player_key": "663743",
+        "rank": 24,
+        "score": 55.7,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Brandon Nimmo",
@@ -265,7 +265,7 @@
         "player_id": 665161,
         "player_key": "665161",
         "rank": 8,
-        "score": 64.7,
+        "score": 64.8,
         "team": "Houston Astros"
       },
       {
@@ -297,7 +297,7 @@
         "player_id": 694671,
         "player_key": "694671",
         "rank": 12,
-        "score": 61.8,
+        "score": 61.9,
         "team": "Texas Rangers"
       },
       {
@@ -439,20 +439,20 @@
         "team": "Washington Nationals"
       },
       {
-        "player": "Luis García Jr.",
-        "player_id": 671277,
-        "player_key": "671277",
-        "rank": 5,
-        "score": 65.2,
-        "team": "New York Yankees"
-      },
-      {
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 6,
-        "score": 65.1,
+        "rank": 5,
+        "score": 65.2,
         "team": "Chicago Cubs"
+      },
+      {
+        "player": "Luis García Jr.",
+        "player_id": 671277,
+        "player_key": "671277",
+        "rank": 6,
+        "score": 65.2,
+        "team": "New York Yankees"
       },
       {
         "player": "Freddie Freeman",
@@ -483,7 +483,7 @@
         "player_id": 678545,
         "player_key": "678545",
         "rank": 10,
-        "score": 61.9,
+        "score": 61.8,
         "team": "San Francisco Giants"
       },
       {
@@ -491,7 +491,7 @@
         "player_id": 641343,
         "player_key": "641343",
         "rank": 11,
-        "score": 61.3,
+        "score": 61.2,
         "team": "Milwaukee Brewers"
       },
       {
@@ -543,20 +543,20 @@
         "team": "Chicago Cubs"
       },
       {
-        "player": "Jung Hoo Lee",
-        "player_id": 808982,
-        "player_key": "808982",
-        "rank": 18,
-        "score": 58.4,
-        "team": "San Francisco Giants"
-      },
-      {
         "player": "Mickey Moniak",
         "player_id": 666160,
         "player_key": "666160",
-        "rank": 19,
+        "rank": 18,
         "score": 58.4,
         "team": "Colorado Rockies"
+      },
+      {
+        "player": "Jung Hoo Lee",
+        "player_id": 808982,
+        "player_key": "808982",
+        "rank": 19,
+        "score": 58.3,
+        "team": "San Francisco Giants"
       },
       {
         "player": "Cole Carrigg",
