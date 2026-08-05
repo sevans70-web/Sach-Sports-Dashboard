@@ -975,41 +975,23 @@ def rank_players(
         "engine_version": "1.0-statistical",
     }
 
-def get_all_rankings(
-    schedule_date: date | str | None = None,
-    recent_days: int = 14,
-    limit: int = 25,
-) -> dict[str, Any]:
-    """Return all three MLB ranking categories."""
-    rankings = {
-        CATEGORY_HOME_RUNS: rank_players(
-            CATEGORY_HOME_RUNS,
-            schedule_date=schedule_date,
-            recent_days=recent_days,
-            limit=limit,
-        ),
-        CATEGORY_HITS: rank_players(
-            CATEGORY_HITS,
-            schedule_date=schedule_date,
-            recent_days=recent_days,
-            limit=limit,
-        ),
-        CATEGORY_TOTAL_BASES: rank_players(
-            CATEGORY_TOTAL_BASES,
-            schedule_date=schedule_date,
-            recent_days=recent_days,
-            limit=limit,
-        ),
-    }
-
-    return rankings
-    
 def get_daily_ranking_snapshot(
     schedule_date: date | str | None = None,
     recent_days: int = 14,
     limit: int = 25,
 ) -> dict[str, Any]:
-    """Return a dated snapshot of all three MLB ranking categories."""
+    """Return the first saved ranking snapshot for the requested date."""
+
+    snapshot_date = (
+        schedule_date
+        if schedule_date is not None
+        else datetime.now(TORONTO_TIMEZONE).date()
+    )
+
+    existing_snapshot = load_ranking_snapshot(snapshot_date)
+
+    if existing_snapshot.get("status") == "ready":
+        return existing_snapshot
 
     rankings = get_all_rankings(
         schedule_date=schedule_date,
@@ -1025,3 +1007,4 @@ def get_daily_ranking_snapshot(
     save_ranking_snapshot(snapshot)
 
     return snapshot
+    
