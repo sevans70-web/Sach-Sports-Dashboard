@@ -28,6 +28,7 @@ from data.mlb_stats import get_today_hitters_with_stats
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 from data.ranking_history import (
     build_daily_ranking_snapshot,
+    load_ranking_snapshot,
     save_ranking_snapshot,
 )
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
