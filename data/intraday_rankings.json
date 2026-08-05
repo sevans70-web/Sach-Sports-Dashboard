@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-05T00:15:26.644802-04:00",
+  "captured_at": "2026-08-05T10:21:09.545394-04:00",
   "categories": {
     "hits": [
       {
@@ -63,7 +63,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 8,
-        "score": 63.9,
+        "score": 63.8,
         "team": "Houston Astros"
       },
       {
@@ -71,31 +71,31 @@
         "player_id": 808982,
         "player_key": "808982",
         "rank": 9,
-        "score": 63.2,
+        "score": 63.1,
         "team": "San Francisco Giants"
-      },
-      {
-        "player": "Alec Burleson",
-        "player_id": 676475,
-        "player_key": "676475",
-        "rank": 10,
-        "score": 62.7,
-        "team": "St. Louis Cardinals"
       },
       {
         "player": "Max Clark",
         "player_id": 703601,
         "player_key": "703601",
-        "rank": 11,
+        "rank": 10,
         "score": 62.7,
         "team": "Detroit Tigers"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 11,
+        "score": 62.6,
+        "team": "St. Louis Cardinals"
       },
       {
         "player": "Bryan De La Cruz",
         "player_id": 650559,
         "player_key": "650559",
         "rank": 12,
-        "score": 62.3,
+        "score": 62.2,
         "team": "Philadelphia Phillies"
       },
       {
@@ -119,7 +119,7 @@
         "player_id": 678882,
         "player_key": "678882",
         "rank": 15,
-        "score": 61.4,
+        "score": 61.3,
         "team": "Boston Red Sox"
       },
       {
@@ -163,44 +163,44 @@
         "team": "Seattle Mariners"
       },
       {
-        "player": "TJ Rumfield",
-        "player_id": 681198,
-        "player_key": "681198",
-        "rank": 21,
-        "score": 58.3,
-        "team": "Colorado Rockies"
-      },
-      {
-        "player": "Ty France",
-        "player_id": 664034,
-        "player_key": "664034",
-        "rank": 22,
-        "score": 58.3,
-        "team": "San Diego Padres"
-      },
-      {
         "player": "Nico Hoerner",
         "player_id": 663538,
         "player_key": "663538",
-        "rank": 23,
+        "rank": 21,
         "score": 58.1,
         "team": "Chicago Cubs"
+      },
+      {
+        "player": "TJ Rumfield",
+        "player_id": 681198,
+        "player_key": "681198",
+        "rank": 22,
+        "score": 58.1,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Steven Kwan",
+        "player_id": 680757,
+        "player_key": "680757",
+        "rank": 23,
+        "score": 57.9,
+        "team": "Cleveland Guardians"
       },
       {
         "player": "Otto Lopez",
         "player_id": 672640,
         "player_key": "672640",
         "rank": 24,
-        "score": 57.8,
+        "score": 57.7,
         "team": "Miami Marlins"
       },
       {
-        "player": "Steven Kwan",
-        "player_id": 680757,
-        "player_key": "680757",
+        "player": "Luis García Jr.",
+        "player_id": 671277,
+        "player_key": "671277",
         "rank": 25,
-        "score": 57.8,
-        "team": "Cleveland Guardians"
+        "score": 57.7,
+        "team": "New York Yankees"
       }
     ],
     "home_runs": [
@@ -297,7 +297,7 @@
         "player_id": 665161,
         "player_key": "665161",
         "rank": 12,
-        "score": 64.8,
+        "score": 64.7,
         "team": "Houston Astros"
       },
       {
@@ -357,36 +357,36 @@
         "team": "Miami Marlins"
       },
       {
-        "player": "Hunter Goodman",
-        "player_id": 696100,
-        "player_key": "696100",
-        "rank": 20,
-        "score": 61.6,
-        "team": "Colorado Rockies"
-      },
-      {
         "player": "Dominic Canzone",
         "player_id": 686527,
         "player_key": "686527",
-        "rank": 21,
-        "score": 61.5,
+        "rank": 20,
+        "score": 61.6,
         "team": "Seattle Mariners"
       },
       {
-        "player": "Brandon Lowe",
-        "player_id": 664040,
-        "player_key": "664040",
-        "rank": 22,
-        "score": 61.3,
-        "team": "Pittsburgh Pirates"
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
+        "rank": 21,
+        "score": 61.5,
+        "team": "Colorado Rockies"
       },
       {
         "player": "Bryan De La Cruz",
         "player_id": 650559,
         "player_key": "650559",
-        "rank": 23,
+        "rank": 22,
         "score": 61.3,
         "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Brandon Lowe",
+        "player_id": 664040,
+        "player_key": "664040",
+        "rank": 23,
+        "score": 61.2,
+        "team": "Pittsburgh Pirates"
       },
       {
         "player": "Ceddanne Rafaela",
@@ -439,20 +439,20 @@
         "team": "New York Yankees"
       },
       {
-        "player": "Pete Crow-Armstrong",
-        "player_id": 691718,
-        "player_key": "691718",
-        "rank": 5,
-        "score": 66.2,
-        "team": "Chicago Cubs"
-      },
-      {
         "player": "Ceddanne Rafaela",
         "player_id": 678882,
         "player_key": "678882",
-        "rank": 6,
+        "rank": 5,
         "score": 66.2,
         "team": "Boston Red Sox"
+      },
+      {
+        "player": "Pete Crow-Armstrong",
+        "player_id": 691718,
+        "player_key": "691718",
+        "rank": 6,
+        "score": 66.1,
+        "team": "Chicago Cubs"
       },
       {
         "player": "Matt Olson",
@@ -523,7 +523,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 15,
-        "score": 63.5,
+        "score": 63.4,
         "team": "Houston Astros"
       },
       {
@@ -531,7 +531,7 @@
         "player_id": 518692,
         "player_key": "518692",
         "rank": 16,
-        "score": 63.4,
+        "score": 63.3,
         "team": "Los Angeles Dodgers"
       },
       {
@@ -559,20 +559,20 @@
         "team": "Milwaukee Brewers"
       },
       {
-        "player": "Junior Caminero",
-        "player_id": 691406,
-        "player_key": "691406",
-        "rank": 20,
-        "score": 62.2,
-        "team": "Tampa Bay Rays"
-      },
-      {
         "player": "James McCann",
         "player_id": 543510,
         "player_key": "543510",
-        "rank": 21,
-        "score": 61.9,
+        "rank": 20,
+        "score": 62.2,
         "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 21,
+        "score": 62.1,
+        "team": "Tampa Bay Rays"
       },
       {
         "player": "Seiya Suzuki",
