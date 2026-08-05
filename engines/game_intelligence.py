@@ -26,6 +26,7 @@ from zoneinfo import ZoneInfo
 
 from data.mlb_stats import get_today_hitters_with_stats
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
+from data.mlb_weather import get_game_weather
 from data.ranking_history import (
     build_daily_ranking_snapshot,
     load_ranking_snapshot,
@@ -789,7 +790,12 @@ def rank_players(
     for hitter in hitters:
         season = hitter.get("season_stats", {})
         recent = hitter.get("recent_stats", {})
-
+weather = get_game_weather(
+    latitude=hitter.get("venue_latitude"),
+    longitude=hitter.get("venue_longitude"),
+    game_time=hitter.get("game_datetime"),
+    timezone_name=hitter.get("venue_timezone", "America/New_York"),
+)
         pitcher = pitcher_lookup.get(
             hitter.get("opposing_probable_pitcher_id"),
             {},
@@ -821,10 +827,22 @@ def rank_players(
         pitcher_adjustment = _pitcher_quality_adjustment(
             pitcher_stats,
         )
+        weather_adjustment = 0.0
+
+        if weather.get("success"):
+            temperature = weather.get("temperature_f", 70)
+            wind_speed = weather.get("wind_speed_mph", 0)
         
+            if temperature >= 85:
+                weather_adjustment += 1.0
+            elif temperature <= 50:
+                weather_adjustment -= 1.0
+
+            if wind_speed >= 15:
+                weather_adjustment -= 0.5
         score = min(
-    max(
-        round(
+            max(
+                round(
             (base_score * 0.75)
             + lineup_bonus
             + (handedness_adjustment * 1.5)
@@ -887,6 +905,7 @@ def rank_players(
                 "handedness_adjustment": handedness_adjustment,
                 "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
+                "weather": weather,
                 "confidence": confidence,
                 "why": (
                     (
