@@ -1,4 +1,4 @@
-"""
+bzx"""
 MLB Game Intelligence Engine v1.
 
 File location:
@@ -848,16 +848,17 @@ def rank_players(
         score = min(
             max(
                 round(
-            (base_score * 0.75)
-            + lineup_bonus
-            + (handedness_adjustment * 1.5)
-            + (pitcher_adjustment * 1.5),
-            1,
-        ),
-        0.0,
-    ),
-    100.0,
-)
+                    (base_score * 0.75)
+                    + lineup_bonus
+                    + (handedness_adjustment * 1.5)
+                    + (pitcher_adjustment * 1.5)
+                    + weather_adjustment,
+                    1,
+                ),
+                0.0,
+            ),
+            100.0,
+        )
     
 
         confidence = _confidence(
