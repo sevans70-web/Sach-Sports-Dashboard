@@ -790,12 +790,17 @@ def rank_players(
     for hitter in hitters:
         season = hitter.get("season_stats", {})
         recent = hitter.get("recent_stats", {})
-weather = get_game_weather(
-    latitude=hitter.get("venue_latitude"),
-    longitude=hitter.get("venue_longitude"),
-    game_time=hitter.get("game_datetime"),
-    timezone_name=hitter.get("venue_timezone", "America/New_York"),
-)
+      
+        weather = get_game_weather(
+            latitude=hitter.get("venue_latitude"),
+            longitude=hitter.get("venue_longitude"),
+            game_time=hitter.get("game_datetime"),
+            timezone_name=hitter.get(
+                "venue_timezone"
+                "America/New_York",
+            ),
+        )
+        
         pitcher = pitcher_lookup.get(
             hitter.get("opposing_probable_pitcher_id"),
             {},
