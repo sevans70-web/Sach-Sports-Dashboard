@@ -22,16 +22,16 @@ from zoneinfo import ZoneInfo
 
 import streamlit as st
 from components.mlb_schedule import (
+    load_today_schedule,
     render_live_mlb_schedule,
-    schedule_summary,
+    schedule_summary, 
 )
-
 from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
 )
 from data.mlb_prediction_results import grade_top_25
-
+from data.ranking_history import load_previous_day_snapshot
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
@@ -329,8 +329,19 @@ def load_live_rankings() -> dict:
 
     return snapshot.get("rankings", {})
 
+def load_previous_rankings() -> dict:
+    """Load yesterday's saved MLB rankings when available."""
+    snapshot = load_previous_day_snapshot()
 
+    if snapshot.get("status") != "ready":
+        return {}
+
+    return snapshot.get("rankings", {})
+    
 live_rankings = load_live_rankings()
+previous_rankings = load_previous_rankings()
+use_previous_rankings = False
+today_schedule = load_today_schedule()
 
 home_run_status = live_rankings.get("home_runs", {})
 
