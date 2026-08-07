@@ -860,23 +860,6 @@ def rank_players(
             100.0,
         )
     
-
-        confidence = _confidence(
-            score=score,
-            has_season_stats=bool(
-                hitter.get("has_season_stats")
-            ),
-            has_recent_stats=bool(
-                hitter.get("has_recent_stats")
-            ),
-            season_plate_appearances=int(
-                season.get("plate_appearances", 0)
-            ),
-            recent_plate_appearances=int(
-                recent.get("plate_appearances", 0)
-            ),
-        )
-
         confidence = _confidence(
             score=score,
             has_season_stats=bool(
