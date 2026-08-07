@@ -26,6 +26,12 @@ def get_game_weather(
 ) -> dict[str, Any]:
     """Return the hourly weather closest to the scheduled game time."""
 
+    if latitude is None or longitude is None or game_time is None:
+        return {
+            "success": False,
+            "error": "Weather data unavailable for this game.",
+        }
+        
     params = {
         "latitude": latitude,
         "longitude": longitude,
