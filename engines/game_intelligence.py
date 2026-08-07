@@ -796,7 +796,7 @@ def rank_players(
             longitude=hitter.get("venue_longitude"),
             game_time=hitter.get("game_datetime"),
             timezone_name=hitter.get(
-                "venue_timezone"
+                "venue_timezone",
                 "America/New_York",
             ),
         )
