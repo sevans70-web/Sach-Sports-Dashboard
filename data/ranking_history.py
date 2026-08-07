@@ -175,3 +175,19 @@ def compare_player_rank(
         "previous": previous_position,
         "movement": movement,
     }
+
+def load_previous_day_snapshot(
+    reference_date: date | None = None,
+    history_directory: str | Path = "data/ranking_history",
+) -> dict[str, Any]:
+    """Load the saved MLB ranking snapshot from the previous day."""
+
+    current_date = reference_date or datetime.now(TORONTO_TIMEZONE).date()
+    previous_date = current_date.fromordinal(
+        current_date.toordinal() - 1
+    )
+
+    return load_ranking_snapshot(
+        previous_date,
+        history_directory=history_directory,
+    )
