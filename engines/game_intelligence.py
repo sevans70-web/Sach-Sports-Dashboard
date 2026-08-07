@@ -1,4 +1,4 @@
-bzx"""
+"""
 MLB Game Intelligence Engine v1.
 
 File location:
