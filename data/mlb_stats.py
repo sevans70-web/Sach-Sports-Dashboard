@@ -346,7 +346,7 @@ def get_today_hitters_with_stats(
         str(player_pool.get("date"))
     )
 
-        stats_end_date = requested_date - timedelta(days=1)
+    stats_end_date = requested_date - timedelta(days=1)
     season_start_date = date(requested_date.year, 1, 1)
 
     season_stats = get_bulk_hitting_stats(
