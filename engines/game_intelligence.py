@@ -982,6 +982,33 @@ def rank_players(
         ).isoformat(),
         "engine_version": "1.0-statistical",
     }
+def get_all_rankings(
+    schedule_date: date | str | None = None,
+    recent_days: int = 14,
+    limit: int = 25,
+) -> dict[str, Any]:
+    """Return rankings for all supported MLB categories."""
+
+    return {
+        "home_runs": rank_players(
+            CATEGORY_HOME_RUNS,
+            schedule_date=schedule_date,
+            recent_days=recent_days,
+            limit=limit,
+        ),
+        "hits": rank_players(
+            CATEGORY_HITS,
+            schedule_date=schedule_date,
+            recent_days=recent_days,
+            limit=limit,
+        ),
+        "total_bases": rank_players(
+            CATEGORY_TOTAL_BASES,
+            schedule_date=schedule_date,
+            recent_days=recent_days,
+            limit=limit,
+        ),
+    }
 
 def get_daily_ranking_snapshot(
     schedule_date: date | str | None = None,
