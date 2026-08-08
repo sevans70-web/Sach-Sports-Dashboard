@@ -924,11 +924,11 @@ def rank_players(
             }
         )
 
-probability_field = {
-    CATEGORY_HOME_RUNS: "home_run_probability",
-    CATEGORY_HITS: "one_plus_hit_probability",
-    CATEGORY_TOTAL_BASES: "over_1_5_total_bases_probability",
-}[category]
+    probability_field = {
+        CATEGORY_HOME_RUNS: "home_run_probability",
+        CATEGORY_HITS: "one_plus_hit_probability",
+        CATEGORY_TOTAL_BASES: "over_1_5_total_bases_probability",
+    }[category]
 
     scored_players.sort(
         key=lambda item: (
