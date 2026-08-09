@@ -521,13 +521,21 @@ def load_compare_and_save(
         )
     )
 
-    if should_save:
-        save_github_snapshot(
-            config=config,
-            snapshot=current_snapshot,
-            existing_sha=existing_sha,
+    iif should_save:
+    snapshot_to_save = dict(current_snapshot)
+
+    if stored_snapshot and not is_new_day:
+        snapshot_to_save["previous_categories"] = stored_snapshot.get(
+            "categories",
+            {},
         )
 
+    save_github_snapshot(
+        config=config,
+        snapshot=snapshot_to_save,
+        existing_sha=existing_sha,
+    )
+    
     return {
         "previous_snapshot": previous_snapshot,
         "current_snapshot": current_snapshot,
