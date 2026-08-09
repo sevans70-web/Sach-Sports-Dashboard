@@ -517,7 +517,7 @@ def load_compare_and_save(
         is_new_day
         or categories_changed(
             current_snapshot=current_snapshot,
-            previous_snapshot=stored_snapshot,
+            previous_snapshot=previous_snapshot,
         )
     )
 
