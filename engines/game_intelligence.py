@@ -757,10 +757,10 @@ def rank_players(
             f"category must be one of: {sorted(VALID_CATEGORIES)}"
         )
 
-dataset = get_confirmed_hitters_with_stats(
-    schedule_date=schedule_date,
-    recent_days=recent_days,
-)
+    dataset = get_confirmed_hitters_with_stats(
+        schedule_date=schedule_date,
+        recent_days=recent_days,
+    )
 
     hitters = dataset.get("hitters", [])
 
