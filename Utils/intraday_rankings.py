@@ -521,7 +521,7 @@ def load_compare_and_save(
         )
     )
 
-    iif should_save:
+if should_save:
     snapshot_to_save = dict(current_snapshot)
 
     if stored_snapshot and not is_new_day:
