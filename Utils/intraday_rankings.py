@@ -457,6 +457,15 @@ def load_compare_and_save(
     previous_snapshot = stored_snapshot
     is_new_day = True
 
+    if stored_snapshot and stored_snapshot.get("previous_categories"):
+        previous_snapshot = {
+            "version": stored_snapshot.get("version", 1),
+            "captured_at": stored_snapshot.get("captured_at"),
+            "categories": stored_snapshot.get(
+                "previous_categories",
+                {},
+            ),
+        }
     if stored_snapshot:
         stored_captured_at = stored_snapshot.get("captured_at")
 
