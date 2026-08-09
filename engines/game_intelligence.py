@@ -24,7 +24,11 @@ from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from data.mlb_stats import get_today_hitters_with_stats
+from data.mlb_stats import (
+    get_today_hitters_with_stats,
+    get_confirmed_hitters_with_stats,
+)
+
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 from data.mlb_weather import get_game_weather
 from data.ranking_history import (
