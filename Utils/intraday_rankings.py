@@ -536,11 +536,11 @@ def load_compare_and_save(
             existing_sha=existing_sha,
         )
         
-        return {
-            "previous_snapshot": previous_snapshot,
-            "current_snapshot": current_snapshot,
-            "comparisons": comparisons,
-            "summaries": summaries,
-            "snapshot_saved": should_save,
-            "is_new_day": is_new_day,
-        }
+    return {
+        "previous_snapshot": previous_snapshot,
+        "current_snapshot": current_snapshot,
+        "comparisons": comparisons,
+        "summaries": summaries,
+        "snapshot_saved": should_save,
+        "is_new_day": is_new_day,
+     }
