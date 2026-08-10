@@ -800,6 +800,14 @@ def rank_players(
     scored_players: list[dict[str, Any]] = []
 
     for hitter in hitters:
+        player_id = hitter.get("player_id")
+        confirmed_lineup = confirmed_lineup_lookup.get(
+            int(player_id) if player_id else 0,
+            {},
+        )
+
+        if confirmed_lineup:
+            hitter.update(confirmed_lineup)
         season = hitter.get("season_stats", {})
         recent = hitter.get("recent_stats", {})
       
