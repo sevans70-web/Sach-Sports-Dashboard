@@ -945,8 +945,15 @@ def rank_players(
         )
 
         if hitter.get("lineup_confirmed"):
-            lineup_bonus = _lineup_position_bonus(
-                int(hitter.get("batting_order", 9))
+            batting_order = hitter.get("batting_order")
+
+            try:
+                batting_order = int(batting_order)
+            except (TypeError, ValueError):
+                batting_order = 9
+
+            lineup_bonus = float(
+                _lineup_position_bonus(batting_order)
             )
         else:
             lineup_bonus = 0.0
