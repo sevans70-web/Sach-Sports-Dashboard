@@ -19,9 +19,10 @@ from datetime import datetime
 from html import escape
 from textwrap import dedent
 from zoneinfo import ZoneInfo
-
 import streamlit as st
+
 from components.mlb_schedule import (
+from components.player_card import render_player_card
     load_today_schedule,
     render_live_mlb_schedule,
     schedule_summary, 
@@ -205,11 +206,30 @@ def convert_live_rankings(
                     "one_plus_hit_probability",
                     0.0,
                 ),
-                "over_1_5_total_bases_probability": player.get(
-                    "over_1_5_total_bases_probability",
-                    0.0,
+                "gi_score": player.get("gi_score", 0),
+                "player_name": player.get(
+                    "player_name",
+                    "Player unavailable",
                 ),
-                "reason": (
+                "team_abbreviation": player.get(
+                    "team_abbreviation",
+                    "",
+                ),
+                "opponent_abbreviation": player.get(
+                    "opponent_abbreviation",
+                    "",
+                ),
+                "batting_order": player.get("batting_order"),
+                "lineup_confirmed": player.get(
+                    "lineup_confirmed",
+                    False,
+                ),
+                "opposing_probable_pitcher": player.get(
+                    "opposing_probable_pitcher",
+                    "Not announced",
+                ),
+                "why": reasons,
+                "risk_flags": risk_flags,
                     reasons[0]
                     if reasons
                     else "Live statistical profile is being evaluated."
@@ -756,6 +776,11 @@ def render_ranking_category(
         for player in rankings:
             render_full_ranking_row(player)
 
+            with st.expander(
+                f"Player Intelligence — {player['player']}"
+            ):
+                render_player_card(player)
+                
         st.caption(
             "In a later build, selecting a player will open that player's "
             "full Intelligence page."
