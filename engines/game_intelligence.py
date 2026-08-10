@@ -885,9 +885,12 @@ def rank_players(
             hitter.get("opposing_pitcher_hand", ""),
         )
 
-        lineup_bonus = _lineup_position_bonus(
-            int(hitter.get("batting_order", 9))
-        )
+        if hitter.get("lineup_confirmed"):
+            lineup_bonus = _lineup_position_bonus(
+                int(hitter.get("batting_order", 9))
+            )
+        else:
+            lineup_bonus = 0.0
 
         pitcher_adjustment = _pitcher_quality_adjustment(
             pitcher_stats,
