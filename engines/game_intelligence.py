@@ -589,64 +589,51 @@ def _projection_inputs(
     season: dict[str, Any],
     recent: dict[str, Any],
 ) -> dict[str, float]:
-    """Return blended season and recent production rates."""
-    season_hits = _safe_float(
-        season.get("hits_per_game")
-    )
-    recent_hits = _safe_float(
-        recent.get("hits_per_game")
-    )
-
-    season_total_bases = _safe_float(
-        season.get("total_bases_per_game")
-    )
-    recent_total_bases = _safe_float(
-        recent.get("total_bases_per_game")
-    )
-
-    season_games = max(
-        int(season.get("games_played", 0)),
-        1,
-    )
-    recent_games = max(
-        int(recent.get("games_played", 0)),
-        1,
-    )
-
-    season_plate_appearances = max(
+    """Return blended season and recent production rates per plate appearance."""
+    season_pa = max(
         int(season.get("plate_appearances", 0)),
         1,
     )
-    recent_plate_appearances = max(
+    recent_pa = max(
         int(recent.get("plate_appearances", 0)),
         1,
     )
 
-    season_home_run_rate = (
-        _safe_float(season.get("home_runs"))
-        / season_plate_appearances
+    season_hit_rate = (
+        _safe_float(season.get("hits")) / season_pa
+    )
+    recent_hit_rate = (
+        _safe_float(recent.get("hits")) / recent_pa
     )
 
+    season_total_base_rate = (
+        _safe_float(season.get("total_bases")) / season_pa
+    )
+    recent_total_base_rate = (
+        _safe_float(recent.get("total_bases")) / recent_pa
+    )
+
+    season_home_run_rate = (
+        _safe_float(season.get("home_runs")) / season_pa
+    )
     recent_home_run_rate = (
-        _safe_float(recent.get("home_runs"))
-        / recent_plate_appearances
+        _safe_float(recent.get("home_runs")) / recent_pa
     )
 
     return {
-        "hits": (
-            (season_hits * 0.60)
-            + (recent_hits * 0.40)
+        "hit_rate": (
+            (season_hit_rate * 0.65)
+            + (recent_hit_rate * 0.35)
         ),
-        "total_bases": (
-            (season_total_bases * 0.55)
-            + (recent_total_bases * 0.45)
+        "total_base_rate": (
+            (season_total_base_rate * 0.65)
+            + (recent_total_base_rate * 0.35)
         ),
         "home_run_rate": (
             (season_home_run_rate * 0.70)
             + (recent_home_run_rate * 0.30)
         ),
     }
-
 
 def _projection_adjustment(
     lineup_bonus: float,
