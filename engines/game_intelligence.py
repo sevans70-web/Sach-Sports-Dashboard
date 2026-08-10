@@ -29,6 +29,8 @@ from data.mlb_lineups import get_mlb_lineups
 
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 from data.mlb_weather import get_game_weather
+from data.mlb_park_factors import get_park_factor
+
 from data.ranking_history import (
     build_daily_ranking_snapshot,
     load_ranking_snapshot,
@@ -1000,16 +1002,29 @@ def rank_players(
                 elif temperature <= 50:
                     weather_adjustment -= 0.75
 
-                if wind_speed >= 15:
+                 if wind_speed >= 15:
                     weather_adjustment -= 0.25
-        score = min(
+
+        park_factor = get_park_factor(
+            hitter.get("venue", ""),
+            category,
+        )
+
+        park_adjustment = _clamp(
+            (park_factor - 1.0) * 25.0,
+            -3.0,
+            3.0,
+        )
+
+        score = min( 
             max(
                 round(
                     (base_score * 0.75)
                     + lineup_bonus
-                    + (handedness_adjustment * 1.5)
+                    + (handedness_adjustment * 1.5)                 
                     + (pitcher_adjustment * 1.5)
-                    + weather_adjustment,
+                    + weather_adjustment
+                    + park_adjustment,
                     1,
                 ),
                 0.0,
@@ -1052,6 +1067,8 @@ def rank_players(
                 "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
                 "weather": weather,
+                "park_factor": park_factor,
+                "park_adjustment": park_adjustment,
                 "confidence": confidence,
                 "why": (
                     (
