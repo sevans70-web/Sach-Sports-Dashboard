@@ -965,16 +965,43 @@ def rank_players(
         weather_adjustment = 0.0
 
         if weather.get("success"):
-            temperature = weather.get("temperature_f", 70)
-            wind_speed = weather.get("wind_speed_mph", 0)
-        
-            if temperature >= 85:
-                weather_adjustment += 1.0
-            elif temperature <= 50:
-                weather_adjustment -= 1.0
+            temperature = _safe_float(
+                weather.get("temperature_f", 70)
+            )
+            wind_speed = _safe_float(
+                weather.get("wind_speed_mph", 0)
+            )
 
-            if wind_speed >= 15:
-                weather_adjustment -= 0.5
+            if category == CATEGORY_HOME_RUNS:
+                if temperature >= 85:
+                    weather_adjustment += 2.0
+                elif temperature >= 78:
+                    weather_adjustment += 1.0
+                elif temperature <= 50:
+                    weather_adjustment -= 2.0
+
+                if wind_speed >= 15:
+                    weather_adjustment -= 1.0
+
+            elif category == CATEGORY_TOTAL_BASES:
+                if temperature >= 85:
+                    weather_adjustment += 1.5
+                elif temperature >= 78:
+                    weather_adjustment += 0.75
+                elif temperature <= 50:
+                    weather_adjustment -= 1.5
+
+                if wind_speed >= 15:
+                    weather_adjustment -= 0.5
+
+            else:
+                if temperature >= 85:
+                    weather_adjustment += 0.75
+                elif temperature <= 50:
+                    weather_adjustment -= 0.75
+
+                if wind_speed >= 15:
+                    weather_adjustment -= 0.25
         score = min(
             max(
                 round(
