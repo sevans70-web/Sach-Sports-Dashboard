@@ -766,7 +766,7 @@ def _build_projections(
         )
         * 100,
         0.0,
-        65.0,
+        100.0,
     )
 
     one_plus_hit_probability = _clamp(
@@ -1030,50 +1030,79 @@ def rank_players(
             3.0,
         )
 
-        score = min( 
-            max(
-                round(
-                    (base_score * 0.75)
-                    + lineup_bonus
-                    + (handedness_adjustment * 1.5)                 
-                    + (pitcher_adjustment * 1.5)
-                    + weather_adjustment
-                    + park_adjustment,
-                    1,
-                ),
-                0.0,
-            ),
-            100.0,
-        )
-    
-        confidence = _confidence(
-            score=score,
-            has_season_stats=bool(
-                hitter.get("has_season_stats")
-            ),
-            has_recent_stats=bool(
-                hitter.get("has_recent_stats")
-            ),
-            season_plate_appearances=int(
-                season.get("plate_appearances", 0)
-            ),
-            recent_plate_appearances=int(
-                recent.get("plate_appearances", 0)
-            ),
-            lineup_confirmed=bool(
-                hitter.get("lineup_confirmed")
-            ),
-            pitcher_known=bool(pitcher_stats), 
-        )
+projections = _build_projections(
+    season=season,
+    recent=recent,
+    lineup_bonus=lineup_bonus,
+    handedness_adjustment=handedness_adjustment,
+    pitcher_adjustment=pitcher_adjustment,
+)
 
-        projections = _build_projections(
-            season=season,
-            recent=recent,
-            lineup_bonus=lineup_bonus,
-            handedness_adjustment=handedness_adjustment,
-            pitcher_adjustment=pitcher_adjustment,
-        )
+if category == CATEGORY_HOME_RUNS:
+    hr_probability = _safe_float(
+        projections.get("home_run_probability")
+    )
 
+    matchup_score = _clamp(
+        50.0
+        + (lineup_bonus * 4.0)
+        + (handedness_adjustment * 4.0)
+        + (pitcher_adjustment * 4.0)
+        + (weather_adjustment * 3.0)
+        + (park_adjustment * 3.0),
+        0.0,
+        100.0,
+    )
+
+    score = round(
+        (hr_probability * 0.55)
+        + (base_score * 0.30)
+        + (matchup_score * 0.15),
+        1,
+    )
+
+else:
+    score = min(
+        max(
+            round(
+                (base_score * 0.75)
+                + lineup_bonus
+                + (handedness_adjustment * 1.5)
+                + (pitcher_adjustment * 1.5)
+                + weather_adjustment
+                + park_adjustment,
+                1,
+            ),
+            0.0,
+        ),
+        100.0,
+    )
+
+score = _clamp(
+    score,
+    0.0,
+    100.0,
+)
+
+confidence = _confidence(
+    score=score,
+    has_season_stats=bool(
+        hitter.get("has_season_stats")
+    ),
+    has_recent_stats=bool(
+        hitter.get("has_recent_stats")
+    ),
+    season_plate_appearances=int(
+        season.get("plate_appearances", 0)
+    ),
+    recent_plate_appearances=int(
+        recent.get("plate_appearances", 0)
+    ),
+    lineup_confirmed=bool(
+        hitter.get("lineup_confirmed")
+    ),
+    pitcher_known=bool(pitcher_stats),
+)
         scored_players.append(
             {
                 **hitter,
