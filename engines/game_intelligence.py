@@ -613,14 +613,23 @@ def _projection_inputs(
         1,
     )
 
+    season_plate_appearances = max(
+        int(season.get("plate_appearances", 0)),
+        1,
+    )
+    recent_plate_appearances = max(
+        int(recent.get("plate_appearances", 0)),
+        1,
+    )
+
     season_home_run_rate = (
         _safe_float(season.get("home_runs"))
-        / season_games
+        / season_plate_appearances
     )
 
     recent_home_run_rate = (
         _safe_float(recent.get("home_runs"))
-        / recent_games
+        / recent_plate_appearances
     )
 
     return {
@@ -633,8 +642,8 @@ def _projection_inputs(
             + (recent_total_bases * 0.45)
         ),
         "home_run_rate": (
-            (season_home_run_rate * 0.60)
-            + (recent_home_run_rate * 0.40)
+            (season_home_run_rate * 0.70)
+            + (recent_home_run_rate * 0.30)
         ),
     }
 
