@@ -765,6 +765,16 @@ def rank_players(
 
     hitters = dataset.get("hitters", [])
 
+    lineup_dataset = get_mlb_lineups(
+        schedule_date=schedule_date,
+    )
+
+    confirmed_lineup_lookup = {
+        int(player["player_id"]): player
+        for player in lineup_dataset.get("confirmed_hitters", [])
+        if player.get("player_id")
+    }
+
     pitcher_dataset = get_today_probable_pitchers_with_stats(
         schedule_date=schedule_date,
     )
