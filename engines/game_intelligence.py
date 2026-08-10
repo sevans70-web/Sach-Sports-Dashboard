@@ -673,16 +673,22 @@ def _build_projections(
         pitcher_adjustment=pitcher_adjustment,
     )
 
-    projected_hits = _clamp(
-        inputs["hits"] * adjustment,
-        0.0,
-        4.0,
+    expected_plate_appearances = _clamp(
+        4.3 + (lineup_bonus * 0.08),
+        3.5,
+        5.2,
     )
 
-    projected_total_bases = _clamp(
-        inputs["total_bases"] * adjustment,
+    projected_hit_rate = _clamp(
+        inputs["hit_rate"] * adjustment,
         0.0,
-        8.0,
+        0.60,
+    )
+
+    projected_total_base_rate = _clamp(
+        inputs["total_base_rate"] * adjustment,
+        0.0,
+        1.50,
     )
 
     projected_home_run_rate = _clamp(
@@ -691,10 +697,16 @@ def _build_projections(
         0.25,
     )
 
-    expected_plate_appearances = _clamp(
-        4.3 + (lineup_bonus * 0.08),
-        3.5,
-        5.2,
+    projected_hits = _clamp(
+        projected_hit_rate * expected_plate_appearances,
+        0.0,
+        4.0,
+    )
+
+    projected_total_bases = _clamp(
+        projected_total_base_rate * expected_plate_appearances,
+        0.0,
+        8.0,
     )
 
     home_run_probability = _clamp(
@@ -711,7 +723,14 @@ def _build_projections(
     )
 
     one_plus_hit_probability = _clamp(
-        (1.0 - (2.71828 ** (-projected_hits))) * 100,
+        (
+            1.0
+            - (
+                (1.0 - projected_hit_rate)
+                ** expected_plate_appearances
+            )
+        )
+        * 100,
         0.0,
         95.0,
     )
@@ -728,7 +747,7 @@ def _build_projections(
         0.0,
         95.0,
     )
-
+    
     return {
         "projected_hits": round(projected_hits, 2),
         "projected_total_bases": round(
