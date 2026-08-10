@@ -775,6 +775,46 @@ def rank_players(
         if player.get("player_id")
     }
 
+    confirmed_team_keys: set[tuple[Any, str]] = set()
+
+    for game in lineup_dataset.get("games", []):
+        game_pk = game.get("game_pk")
+
+        if game.get("away_lineup_confirmed"):
+            confirmed_team_keys.add(
+                (
+                    game_pk,
+                    str(game.get("away_team") or ""),
+                )
+            )
+
+        if game.get("home_lineup_confirmed"):
+            confirmed_team_keys.add(
+                (
+                    game_pk,
+                    str(game.get("home_team") or ""),
+                )
+            )
+
+    filtered_hitters: list[dict[str, Any]] = []
+
+    for hitter in hitters:
+        player_id = hitter.get("player_id")
+        team_key = (
+            hitter.get("game_pk"),
+            str(hitter.get("team_name") or ""),
+        )
+
+        if (
+            team_key in confirmed_team_keys
+            and int(player_id or 0) not in confirmed_lineup_lookup
+        ):
+            continue
+
+        filtered_hitters.append(hitter)
+
+    hitters = filtered_hitters
+    
     pitcher_dataset = get_today_probable_pitchers_with_stats(
         schedule_date=schedule_date,
     )
