@@ -701,13 +701,26 @@ def _build_projections(
     projected_home_run_rate = _clamp(
         inputs["home_run_rate"] * adjustment,
         0.0,
-        0.75,
+        0.25,
+    )
+
+    expected_plate_appearances = _clamp(
+        4.3 + (lineup_bonus * 0.08),
+        3.5,
+        5.2,
     )
 
     home_run_probability = _clamp(
-        projected_home_run_rate * 100,
+        (
+            1.0
+            - (
+                (1.0 - projected_home_run_rate)
+                ** expected_plate_appearances
+            )
+        )
+        * 100,
         0.0,
-        75.0,
+        65.0,
     )
 
     one_plus_hit_probability = _clamp(
