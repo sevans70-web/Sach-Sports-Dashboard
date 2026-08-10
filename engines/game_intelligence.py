@@ -227,23 +227,34 @@ def _confidence(
     has_recent_stats: bool,
     season_plate_appearances: int,
     recent_plate_appearances: int,
+    lineup_confirmed: bool = False,
+    pitcher_known: bool = False,
 ) -> str:
-    """Assign evidence confidence from score and data completeness."""
-    completeness_points = 0
+    """Assign confidence from score strength and evidence quality."""
+    evidence_points = 0
 
     if has_season_stats:
-        completeness_points += 1
-    if has_recent_stats:
-        completeness_points += 1
-    if season_plate_appearances >= 75:
-        completeness_points += 1
-    if recent_plate_appearances >= 15:
-        completeness_points += 1
+        evidence_points += 1
 
-    if score >= 75 and completeness_points >= 4:
+    if has_recent_stats:
+        evidence_points += 1
+
+    if season_plate_appearances >= 75:
+        evidence_points += 1
+
+    if recent_plate_appearances >= 15:
+        evidence_points += 1
+
+    if lineup_confirmed:
+        evidence_points += 1
+
+    if pitcher_known:
+        evidence_points += 1
+
+    if score >= 72 and evidence_points >= 5:
         return "High"
 
-    if score >= 55 and completeness_points >= 2:
+    if score >= 52 and evidence_points >= 3:
         return "Medium"
 
     return "Low"
@@ -272,7 +283,10 @@ def _risk_flags(
 
     if str(player.get("game_status", "")).lower() == "final":
         flags.append("Game already completed")
-
+        
+    if not player.get("lineup_confirmed"):
+        flags.append("Starting lineup not yet confirmed")
+    
     if (
         str(player.get("opposing_probable_pitcher", "")).strip()
         in {"", "Not announced"}
@@ -1046,6 +1060,10 @@ def rank_players(
             recent_plate_appearances=int(
                 recent.get("plate_appearances", 0)
             ),
+            lineup_confirmed=bool(
+                hitter.get("lineup_confirmed")
+            ),
+            pitcher_known=bool(pitcher_stats), 
         )
 
         projections = _build_projections(
@@ -1073,16 +1091,47 @@ def rank_players(
                 "why": (
                     (
                         [
-                            "Opposing pitcher quality "
-                            "improves this matchup"
+                            "Opposing pitcher profile improves this matchup"
                         ]
                         if pitcher_adjustment >= 2.0
                         else (
                             [
-                                "Opposing pitcher quality "
-                                "makes this matchup more difficult"
+                                "Opposing pitcher profile creates a tougher matchup"
                             ]
                             if pitcher_adjustment <= -2.0
+                            else []
+                        )
+                    )
+                    + (
+                        [
+                            "Confirmed batting-order position improves expected opportunities"
+                        ]
+                        if lineup_bonus >= 2.0
+                        else []
+                    )
+                    + (
+                        [
+                            "Ballpark conditions provide a favorable environment"
+                        ]
+                        if park_adjustment >= 1.0
+                        else (
+                            [
+                                "Ballpark conditions slightly reduce the offensive outlook"
+                            ]
+                            if park_adjustment <= -1.0
+                            else []
+                        )
+                    )
+                    + (
+                        [
+                            "Game temperature provides a favorable hitting environment"
+                        ]
+                        if weather_adjustment >= 1.0
+                        else (
+                            [
+                                "Weather conditions reduce the offensive outlook"
+                            ]
+                            if weather_adjustment <= -1.0
                             else []
                         )
                     )
