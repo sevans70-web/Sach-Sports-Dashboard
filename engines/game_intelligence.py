@@ -150,43 +150,74 @@ def _handedness_matchup_adjustment(
     return 0.0
 
 def _pitcher_quality_adjustment(
+    category: str,
     pitcher_stats: dict[str, Any],
 ) -> float:
-    """
-    Return a small hitter adjustment based on the opposing pitcher's quality.
-
-    Better pitchers reduce hitter scores.
-    Weaker pitchers increase hitter scores.
-    """
-
+    """Return a market-specific hitter adjustment for the opposing pitcher."""
     era = _safe_float(pitcher_stats.get("era"))
     whip = _safe_float(pitcher_stats.get("whip"))
     k_rate = _safe_float(pitcher_stats.get("strikeout_rate"))
-    hr9 = _safe_float(pitcher_stats.get("home_runs_per_9"))
+    hr9 = _safe_float(pitcher_stats.get("home_runs_per_nine"))
+    h9 = _safe_float(pitcher_stats.get("hits_per_nine"))
 
     adjustment = 0.0
 
-    if era >= 4.75:
-        adjustment += 2.0
-    elif era <= 3.25:
-        adjustment -= 2.0
+    if category == CATEGORY_HOME_RUNS:
+        if hr9 >= 1.50:
+            adjustment += 3.0
+        elif hr9 >= 1.20:
+            adjustment += 1.5
+        elif 0 < hr9 <= 0.75:
+            adjustment -= 2.5
 
-    if whip >= 1.35:
-        adjustment += 1.5
-    elif whip <= 1.10:
-        adjustment -= 1.5
+        if k_rate >= 0.28:
+            adjustment -= 1.5
+        elif 0 < k_rate <= 0.18:
+            adjustment += 1.0
 
-    if k_rate >= 0.28:
-        adjustment -= 1.5
-    elif k_rate <= 0.18:
-        adjustment += 1.0
+        if era >= 4.75:
+            adjustment += 1.0
+        elif 0 < era <= 3.25:
+            adjustment -= 1.0
 
-    if hr9 >= 1.3:
-        adjustment += 1.0
-    elif hr9 <= 0.8:
-        adjustment -= 1.0
+    elif category == CATEGORY_HITS:
+        if h9 >= 9.5:
+            adjustment += 2.5
+        elif 0 < h9 <= 7.0:
+            adjustment -= 2.5
 
-    return adjustment
+        if whip >= 1.35:
+            adjustment += 2.0
+        elif 0 < whip <= 1.10:
+            adjustment -= 2.0
+
+        if k_rate >= 0.28:
+            adjustment -= 2.0
+        elif 0 < k_rate <= 0.18:
+            adjustment += 1.5
+
+    else:
+        if h9 >= 9.5:
+            adjustment += 1.5
+        elif 0 < h9 <= 7.0:
+            adjustment -= 1.5
+
+        if hr9 >= 1.50:
+            adjustment += 2.0
+        elif 0 < hr9 <= 0.75:
+            adjustment -= 1.5
+
+        if whip >= 1.35:
+            adjustment += 1.5
+        elif 0 < whip <= 1.10:
+            adjustment -= 1.5
+
+        if era >= 4.75:
+            adjustment += 1.0
+        elif 0 < era <= 3.25:
+            adjustment -= 1.0
+
+    return _clamp(adjustment, -6.0, 6.0)
     
 def _confidence(
     score: float,
@@ -921,6 +952,7 @@ def rank_players(
             lineup_bonus = 0.0
 
         pitcher_adjustment = _pitcher_quality_adjustment(
+            category,
             pitcher_stats,
         )
         weather_adjustment = 0.0
