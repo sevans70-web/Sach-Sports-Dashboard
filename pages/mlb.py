@@ -206,6 +206,10 @@ def convert_live_rankings(
                     "one_plus_hit_probability",
                     0.0,
                 ),
+                "over_1_5_total_bases_probability": player.get(
+                    "over_1_5_total_bases_probability",
+                    0.0,
+                ),
                 "gi_score": player.get("gi_score", 0),
                 "player_name": player.get(
                     "player_name",
@@ -230,6 +234,7 @@ def convert_live_rankings(
                 ),
                 "why": reasons,
                 "risk_flags": risk_flags,
+                "reason": (
                     reasons[0]
                     if reasons
                     else "Live statistical profile is being evaluated."
