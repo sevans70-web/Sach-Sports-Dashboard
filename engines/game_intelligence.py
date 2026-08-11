@@ -1182,18 +1182,8 @@ def rank_players(
         CATEGORY_TOTAL_BASES: "over_1_5_total_bases_probability",
     }[category]
 
-    confidence_priority = {
-        "High": 0,
-        "Medium": 1,
-        "Low": 2,
-    }
-
     scored_players.sort(
         key=lambda item: (
-            confidence_priority.get(
-                str(item.get("confidence", "Low")),
-                2,
-            ),
             -_safe_float(item.get("gi_score")),
             -_safe_float(item.get(probability_field)),
             -int(
