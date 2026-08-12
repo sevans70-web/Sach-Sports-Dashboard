@@ -219,13 +219,9 @@ def _pitcher_quality_adjustment(
         elif 0 < era <= 3.25:
             adjustment -= 1.0
 
-     return _clamp(adjustment, -6.0, 6.0)
+    return _clamp(adjustment, -6.0, 6.0)
 
-
-def _risk_flags(
-    player: dict[str, Any],
-) -> list[str]:
-    
+  
 def _risk_flags(
     player: dict[str, Any],
 ) -> list[str]:
