@@ -51,18 +51,6 @@ def get_toronto_now() -> datetime:
     """Return the current date and time in Toronto."""
     return datetime.now(TORONTO_TIMEZONE)
 
-
-def confidence_class(confidence: str) -> str:
-    """Return the CSS class for a confidence badge."""
-    value = confidence.strip().lower()
-
-    if value == "high":
-        return "gi-confidence-high"
-    if value == "medium":
-        return "gi-confidence-medium"
-    return "gi-confidence-low"
-
-
 def player_initials(player_name: str) -> str:
     """Return two initials for a temporary player-photo placeholder."""
     words = [word for word in player_name.split() if word]
@@ -129,13 +117,6 @@ def build_placeholder_rankings(category: str) -> list[dict]:
     for index in range(1, 26):
         team, opponent = team_pairs[(index - 1) % len(team_pairs)]
 
-        if index <= 7:
-            confidence = "High"
-        elif index <= 17:
-            confidence = "Medium"
-        else:
-            confidence = "Low"
-
         records.append(
             {
                 "rank": index,
@@ -143,7 +124,6 @@ def build_placeholder_rankings(category: str) -> list[dict]:
                 "team": team,
                 "opponent": opponent,
                 "category": category,
-                "confidence": confidence,
                 "score": max(54, 96 - (index * 2)),
                 "reason": reasons[category][(index - 1) % len(reasons[category])],
                 "status": (
