@@ -8,7 +8,7 @@ Purpose:
 - Load today's eligible MLB hitters and their live statistics.
 - Calculate separate Home Run, Hit, and Total Base scores.
 - Rank the player pool automatically.
-- Assign confidence based on score strength and data completeness.
+- Generate transparent data-quality warnings for each ranking.
 - Generate transparent reasons explaining each ranking.
 
 Important:
@@ -219,47 +219,13 @@ def _pitcher_quality_adjustment(
         elif 0 < era <= 3.25:
             adjustment -= 1.0
 
-    return _clamp(adjustment, -6.0, 6.0)
+     return _clamp(adjustment, -6.0, 6.0)
+
+
+def _risk_flags(
+    player: dict[str, Any],
+) -> list[str]:
     
-def _confidence(
-    score: float,
-    has_season_stats: bool,
-    has_recent_stats: bool,
-    season_plate_appearances: int,
-    recent_plate_appearances: int,
-    lineup_confirmed: bool = False,
-    pitcher_known: bool = False,
-) -> str:
-    """Assign confidence from score strength and evidence quality."""
-    evidence_points = 0
-
-    if has_season_stats:
-        evidence_points += 1
-
-    if has_recent_stats:
-        evidence_points += 1
-
-    if season_plate_appearances >= 75:
-        evidence_points += 1
-
-    if recent_plate_appearances >= 15:
-        evidence_points += 1
-
-    if lineup_confirmed:
-        evidence_points += 1
-
-    if pitcher_known:
-        evidence_points += 1
-
-    if score >= 72 and evidence_points >= 5:
-        return "High"
-
-    if score >= 52 and evidence_points >= 3:
-        return "Medium"
-
-    return "Low"
-
-
 def _risk_flags(
     player: dict[str, Any],
 ) -> list[str]:
@@ -1084,25 +1050,6 @@ def rank_players(
             100.0,
         )
 
-        confidence = _confidence(
-            score=score,
-            has_season_stats=bool(
-                hitter.get("has_season_stats")
-            ),
-            has_recent_stats=bool(
-                hitter.get("has_recent_stats")
-            ),
-            season_plate_appearances=int(
-                season.get("plate_appearances", 0)
-            ),
-            recent_plate_appearances=int(
-                recent.get("plate_appearances", 0)
-            ),
-            lineup_confirmed=bool(
-                hitter.get("lineup_confirmed")
-            ),
-            pitcher_known=bool(pitcher_stats),
-        )
         scored_players.append(
             {
                 **hitter,
@@ -1116,7 +1063,6 @@ def rank_players(
                 "weather": weather,
                 "park_factor": park_factor,
                 "park_adjustment": park_adjustment,
-                "confidence": confidence,
                 "why": (
                     (
                         [
