@@ -323,7 +323,7 @@ def card_result_html(player: dict) -> str:
     """
 def load_live_rankings() -> dict:
     """Load live MLB player rankings for today's games."""
-    return get_all_rankings(
+    snapshot = get_daily_ranking_snapshot(
         recent_days=14,
         limit=25,
     )
