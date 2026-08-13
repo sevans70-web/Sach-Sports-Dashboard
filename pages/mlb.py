@@ -165,9 +165,7 @@ def convert_live_rankings(
                     "",
                 ),
                 "category": category_label,
-                "confidence": player.get(
-                    "confidence",
-                    "Low",
+                "score": player.get("gi_score", 0),
                 ),
                 "score": player.get("gi_score", 0),
                 "projected_hits": player.get(
@@ -514,10 +512,9 @@ def projection_display(player: dict) -> tuple[str, str]:
 
 def render_featured_player(player: dict) -> None:
     """Render the #1 player as a large featured card."""
-    badge_class = confidence_class(player["confidence"])
     initials = player_initials(player["player"])
     projection_label, projection_value = projection_display(player)
-    
+
     render_html(
         f"""
         <div class="gi-featured-player">
@@ -536,9 +533,6 @@ def render_featured_player(player: dict) -> None:
                     <span class="gi-rank-badge">
                         #{player['rank']} · {escape(movement_label(player))}
                     </span>
-                    <span class="gi-confidence {badge_class}">
-                        {escape(player['confidence'])}
-                    </span>
                 </div>
 
                 <div class="gi-featured-name">
@@ -552,7 +546,7 @@ def render_featured_player(player: dict) -> None:
                 <div class="gi-featured-market">
                     {escape(player['category'])}
                 </div>
-                
+
                 <div
                     class="gi-featured-projection"
                     style="
@@ -573,7 +567,7 @@ def render_featured_player(player: dict) -> None:
                     >
                         {escape(projection_label)}
                     </div>
-                
+
                     <div
                         style="
                             margin-top: 3px;
@@ -584,7 +578,7 @@ def render_featured_player(player: dict) -> None:
                         {escape(projection_value)}
                     </div>
                 </div>
-                
+
                 <div class="gi-featured-reason">
                     {escape(player['reason'])}
                 </div>
@@ -603,7 +597,6 @@ def render_featured_player(player: dict) -> None:
 
 def render_compact_player(player: dict) -> None:
     """Render players #2 through #5 in a compact card."""
-    badge_class = confidence_class(player["confidence"])
     initials = player_initials(player["player"])
 
     render_html(
@@ -626,9 +619,6 @@ def render_compact_player(player: dict) -> None:
                     <span class="gi-compact-name">
                         {escape(player['player'])}
                     </span>
-                    <span class="gi-confidence {badge_class}">
-                        {escape(player['confidence'])}
-                    </span>
                 </div>
 
                 <div class="gi-compact-matchup">
@@ -639,6 +629,7 @@ def render_compact_player(player: dict) -> None:
                 <div class="gi-compact-reason">
                     {escape(player['reason'])}
                 </div>
+
                 {card_result_html(player)}
             </div>
         </div>
@@ -648,10 +639,9 @@ def render_compact_player(player: dict) -> None:
 
 def render_full_ranking_row(player: dict) -> None:
     """Render one row in the full Top 25 view."""
-    badge_class = confidence_class(player["confidence"])
     initials = player_initials(player["player"])
     projection_label, projection_value = projection_display(player)
-    
+
     render_html(
         f"""
         <div class="gi-full-row">
@@ -671,27 +661,27 @@ def render_full_ranking_row(player: dict) -> None:
                 <div class="gi-full-name">
                     {escape(player['player'])}
                 </div>
+
                 <div class="gi-full-matchup">
                     {escape(player['team'])} vs. {escape(player['opponent'])}
                 </div>
-            <div class="gi-full-projection">
+
+                <div class="gi-full-projection">
                     <strong>{escape(projection_label)}:</strong>
                     {escape(projection_value)}
-            </div>
-            <div class="gi-full-reason">
+                </div>
+
+                <div class="gi-full-reason">
                     {escape(player['reason'])}
-            </div>
+                </div>
 
                 {card_result_html(player)}
+            </div>
 
             <div class="gi-full-score">
                 <span class="gi-score-label">GI score</span>
                 <span class="gi-score-number">{player['score']}</span>
             </div>
-
-            <span class="gi-confidence {badge_class}">
-                {escape(player['confidence'])}
-            </span>
         </div>
         """
     )
@@ -1047,36 +1037,7 @@ st.markdown(
             border: 1px solid rgba(56, 189, 248, 0.28);
             font-weight: 850;
         }
-
-        .gi-confidence {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 5px 9px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-            font-weight: 850;
-            text-transform: uppercase;
-        }
-
-        .gi-confidence-high {
-            color: #bbf7d0;
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.30);
-        }
-
-        .gi-confidence-medium {
-            color: #fef08a;
-            background: rgba(234, 179, 8, 0.15);
-            border: 1px solid rgba(234, 179, 8, 0.30);
-        }
-
-        .gi-confidence-low {
-            color: #fed7aa;
-            background: rgba(249, 115, 22, 0.15);
-            border: 1px solid rgba(249, 115, 22, 0.30);
-        }
-
+        
         .gi-featured-name {
             color: #ffffff;
             font-size: 1.62rem;
@@ -1193,7 +1154,7 @@ st.markdown(
 
         .gi-full-row {
             display: grid;
-            grid-template-columns: 48px 46px minmax(0, 1fr) 80px auto;
+            grid-template-columns: 48px 46px minmax(0, 1fr) 80px auto
             align-items: center;
             gap: 12px;
             padding: 12px 14px;
@@ -1345,17 +1306,17 @@ st.markdown(
             }
 
             .gi-full-row {
-                grid-template-columns: 36px 40px minmax(0, 1fr) auto;
+                grid-template-columns: 36px 40px minmax(0, 1fr) 48px;
                 gap: 8px;
             }
 
             .gi-full-score {
-                display: none;
+                display: flex;
+                font-size: 0.74rem;
             }
 
-            .gi-full-row .gi-confidence {
-                font-size: 0.64rem;
-                padding: 4px 7px;
+            .gi-score-label {
+                font-size: 0.58rem;
             }
         }
 
@@ -1552,7 +1513,7 @@ with player_page_column:
         - Pitch-type and barrel indicators
         - Batting-order and lineup confirmation
         - Park, weather, and matchup context
-        - Why Engine explanation and Confidence score
+        - Why Engine explanation and GI score
         """
     )
 
