@@ -213,6 +213,7 @@ def grade_top_25(
     Total Bases:
         Correct when the player recorded at least two total bases
         (the displayed recommendation is over 1.5 total bases).
+    """
     normalized_category = str(category).strip().lower()
 
     if normalized_category not in {
@@ -265,7 +266,7 @@ def grade_top_25(
                 else "❌ 0 HR"
             )
 
-        elif normalized_category == "hits":
+         elif normalized_category == "hits":
             correct = actual_hits >= 1
             result_label = (
                 f"✅ {actual_hits} hit"
@@ -277,17 +278,19 @@ def grade_top_25(
                 )
             )
 
-     else:
-        correct = actual_total_bases >= 2
-        result_label = (
-            f"❌ {actual_total_bases} total base"
-            if actual_total_bases == 1
-            else (
-                f"✅ {actual_total_bases} total bases"
-                if correct
-                else "❌ 0 total bases"
+        else:
+            correct = actual_total_bases >= 2
+            result_label = (
+                f"❌ {actual_total_bases} total base"
+                if actual_total_bases == 1
+                else (
+                    f"✅ {actual_total_bases} total bases"
+                    if correct
+                    else "❌ 0 total bases"
+                )
             )
-        )           
+
+        graded.append(        
 
         graded.append(
             {
