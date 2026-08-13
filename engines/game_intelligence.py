@@ -1262,18 +1262,13 @@ def get_daily_ranking_snapshot(
     recent_days: int = 14,
     limit: int = 25,
 ) -> dict[str, Any]:
-    """Return the first saved ranking snapshot for the requested date."""
+    """Return current rankings while preserving the day's first snapshot."""
 
     snapshot_date = (
         schedule_date
         if schedule_date is not None
         else datetime.now(TORONTO_TIMEZONE).date()
     )
-
-    existing_snapshot = load_ranking_snapshot(snapshot_date)
-
-    if existing_snapshot.get("status") == "ready":
-        return existing_snapshot
 
     rankings = get_all_rankings(
         schedule_date=schedule_date,
@@ -1286,7 +1281,19 @@ def get_daily_ranking_snapshot(
         schedule_date=schedule_date,
     )
 
-    save_ranking_snapshot(snapshot)
+    existing_snapshot = load_ranking_snapshot(snapshot_date)
+
+    if (
+        snapshot.get("status") == "ready"
+        and existing_snapshot.get("status") != "ready"
+    ):
+        save_ranking_snapshot(snapshot)
+
+    if snapshot.get("status") == "ready":
+        return snapshot
+
+    if existing_snapshot.get("status") == "ready":
+        return existing_snapshot
 
     return snapshot
     
