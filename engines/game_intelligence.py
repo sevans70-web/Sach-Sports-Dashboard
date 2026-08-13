@@ -594,74 +594,109 @@ def _clamp(
     return max(minimum, min(value, maximum))
 
 
+def _projection_opportunities(
+    stats: dict[str, Any],
+) -> int:
+    """Return a valid plate-appearance denominator for projection rates."""
+    reported = int(stats.get("plate_appearances", 0) or 0)
+
+    if reported > 0:
+        return reported
+
+    return max(
+        int(stats.get("at_bats", 0) or 0)
+        + int(stats.get("walks", 0) or 0)
+        + int(stats.get("hit_by_pitch", 0) or 0)
+        + int(stats.get("sac_flies", 0) or 0),
+        0,
+    )
+
+
+def _blended_projection_rate(
+    season: dict[str, Any],
+    recent: dict[str, Any],
+    stat_name: str,
+    recent_weight_cap: float,
+) -> float:
+    """Blend a stable season rate with recent form when its sample is valid."""
+    season_opportunities = _projection_opportunities(season)
+    recent_opportunities = _projection_opportunities(recent)
+
+    season_rate = (
+        _safe_float(season.get(stat_name))
+        / season_opportunities
+        if season_opportunities > 0
+        else 0.0
+    )
+
+    if recent_opportunities <= 0:
+        return season_rate
+
+    recent_rate = (
+        _safe_float(recent.get(stat_name))
+        / recent_opportunities
+    )
+
+    if season_opportunities <= 0:
+        return recent_rate
+
+    recent_weight = min(
+        recent_weight_cap,
+        recent_opportunities / 100.0,
+    )
+
+    return (
+        season_rate * (1.0 - recent_weight)
+        + recent_rate * recent_weight
+    )
+
+
 def _projection_inputs(
     season: dict[str, Any],
     recent: dict[str, Any],
 ) -> dict[str, float]:
-    """Return blended season and recent production rates per plate appearance."""
-    season_pa = max(
-        int(season.get("plate_appearances", 0)),
-        1,
-    )
-    recent_pa = max(
-        int(recent.get("plate_appearances", 0)),
-        1,
-    )
-
-    season_hit_rate = (
-        _safe_float(season.get("hits")) / season_pa
-    )
-    recent_hit_rate = (
-        _safe_float(recent.get("hits")) / recent_pa
-    )
-
-    season_total_base_rate = (
-        _safe_float(season.get("total_bases")) / season_pa
-    )
-    recent_total_base_rate = (
-        _safe_float(recent.get("total_bases")) / recent_pa
-    )
-
-    season_home_run_rate = (
-        _safe_float(season.get("home_runs")) / season_pa
-    )
-    recent_home_run_rate = (
-        _safe_float(recent.get("home_runs")) / recent_pa
-    )
-
+    """Return sample-aware season and recent production rates."""
     return {
-        "hit_rate": (
-            (season_hit_rate * 0.65)
-            + (recent_hit_rate * 0.35)
+        "hit_rate": _blended_projection_rate(
+            season,
+            recent,
+            "hits",
+            0.30,
         ),
-        "total_base_rate": (
-            (season_total_base_rate * 0.65)
-            + (recent_total_base_rate * 0.35)
+        "total_base_rate": _blended_projection_rate(
+            season,
+            recent,
+            "total_bases",
+            0.30,
         ),
-        "home_run_rate": (
-            (season_home_run_rate * 0.70)
-            + (recent_home_run_rate * 0.30)
+        "home_run_rate": _blended_projection_rate(
+            season,
+            recent,
+            "home_runs",
+            0.25,
         ),
     }
+
 
 def _projection_adjustment(
     lineup_bonus: float,
     handedness_adjustment: float,
     pitcher_adjustment: float,
 ) -> float:
-    """Return a modest matchup and opportunity multiplier."""
+    """Return a conservative matchup and opportunity multiplier."""
     adjustment = (
         1.0
-        + (lineup_bonus * 0.012)
-        + (handedness_adjustment * 0.018)
-        + (pitcher_adjustment * 0.025)
+        + (lineup_bonus * 0.010)
+        + (handedness_adjustment * 0.012)
+        + (pitcher_adjustment * 0.018)
     )
 
     return _clamp(
         adjustment,
-        0.75,
-        1.30,
+        0.85,
+        1.15,
     )
+
 
 def _build_projections(
     season: dict[str, Any],
@@ -670,7 +705,7 @@ def _build_projections(
     handedness_adjustment: float,
     pitcher_adjustment: float,
 ) -> dict[str, float]:
-    """Build baseline player projections and probabilities."""
+    """Build sample-aware player projections and probabilities."""
     inputs = _projection_inputs(
         season,
         recent,
@@ -683,39 +718,39 @@ def _build_projections(
     )
 
     expected_plate_appearances = _clamp(
-        4.3 + (lineup_bonus * 0.08),
-        3.5,
-        5.2,
+        4.1 + (lineup_bonus * 0.06),
+        3.6,
+        4.8,
     )
 
     projected_hit_rate = _clamp(
         inputs["hit_rate"] * adjustment,
         0.0,
-        0.60,
+        0.40,
     )
 
     projected_total_base_rate = _clamp(
         inputs["total_base_rate"] * adjustment,
         0.0,
-        1.50,
+        0.85,
     )
 
     projected_home_run_rate = _clamp(
         inputs["home_run_rate"] * adjustment,
         0.0,
-        0.25,
+        0.12,
     )
 
     projected_hits = _clamp(
         projected_hit_rate * expected_plate_appearances,
         0.0,
-        4.0,
+        2.0,
     )
 
     projected_total_bases = _clamp(
         projected_total_base_rate * expected_plate_appearances,
         0.0,
-        8.0,
+        4.0,
     )
 
     home_run_probability = _clamp(
@@ -741,7 +776,7 @@ def _build_projections(
         )
         * 100,
         0.0,
-        95.0,
+        100.0,
     )
 
     over_1_5_total_bases_probability = _clamp(
@@ -754,9 +789,9 @@ def _build_projections(
         )
         * 100,
         0.0,
-        95.0,
+        100.0,
     )
-    
+
     return {
         "projected_hits": round(projected_hits, 2),
         "projected_total_bases": round(
