@@ -258,7 +258,7 @@ def grade_top_25(
             correct = None
             result_label = "Game not final"
 
-        elif normalized_category == "home_runs":
+          elif normalized_category == "home_runs":
             correct = actual_home_runs >= 1
             result_label = (
                 f"✅ {actual_home_runs} HR"
@@ -266,7 +266,7 @@ def grade_top_25(
                 else "❌ 0 HR"
             )
 
-         elif normalized_category == "hits":
+        elif normalized_category == "hits":
             correct = actual_hits >= 1
             result_label = (
                 f"✅ {actual_hits} hit"
@@ -289,8 +289,6 @@ def grade_top_25(
                     else "❌ 0 total bases"
                 )
             )
-
-        graded.append(        
 
         graded.append(
             {
