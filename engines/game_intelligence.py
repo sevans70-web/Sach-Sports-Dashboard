@@ -978,7 +978,7 @@ def rank_players(
                 elif temperature <= 50:
                     weather_adjustment -= 0.75
 
-                 if wind_speed >= 15:
+                if wind_speed >= 15:
                     weather_adjustment -= 0.25
 
         park_factor = get_park_factor(
