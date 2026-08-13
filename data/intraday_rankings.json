@@ -1,6 +1,11 @@
 {
-  "captured_at": "2026-08-13T09:20:50.611270-04:00",
+  "captured_at": "2026-08-13T15:11:29.910296-04:00",
   "categories": {
+    "hits": [],
+    "home_runs": [],
+    "total_bases": []
+  },
+  "previous_categories": {
     "hits": [
       {
         "player": "Angel Genao",
