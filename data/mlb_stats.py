@@ -96,6 +96,24 @@ def _normalize_hitting_split(
     doubles = _integer(stat.get("doubles"))
     triples = _integer(stat.get("triples"))
     home_runs = _integer(stat.get("homeRuns"))
+    walks = _integer(stat.get("baseOnBalls"))
+    hit_by_pitch = _integer(stat.get("hitByPitch"))
+    sac_flies = _integer(stat.get("sacFlies"))
+
+    reported_plate_appearances = _integer(
+        stat.get("plateAppearances")
+    )
+    derived_plate_appearances = (
+        at_bats
+        + walks
+        + hit_by_pitch
+        + sac_flies
+    )
+    plate_appearances = (
+        reported_plate_appearances
+        if reported_plate_appearances > 0
+        else derived_plate_appearances
+    )
 
     calculated_total_bases = (
         hits
@@ -115,7 +133,7 @@ def _normalize_hitting_split(
         "stat_team_id": team.get("id"),
         "stat_team_name": team.get("name"),
         "games_played": _integer(stat.get("gamesPlayed")),
-        "plate_appearances": _integer(stat.get("plateAppearances")),
+        "plate_appearances": plate_appearances,
         "at_bats": at_bats,
         "runs": _integer(stat.get("runs")),
         "hits": hits,
@@ -124,7 +142,7 @@ def _normalize_hitting_split(
         "home_runs": home_runs,
         "total_bases": total_bases,
         "rbi": _integer(stat.get("rbi")),
-        "walks": _integer(stat.get("baseOnBalls")),
+        "walks": walks,
         "strikeouts": _integer(stat.get("strikeOuts")),
         "stolen_bases": _integer(stat.get("stolenBases")),
         "caught_stealing": _integer(stat.get("caughtStealing")),
@@ -133,8 +151,8 @@ def _normalize_hitting_split(
         "slg": _number(stat.get("slg")),
         "ops": _number(stat.get("ops")),
         "babip": _number(stat.get("babip")),
-        "hit_by_pitch": _integer(stat.get("hitByPitch")),
-        "sac_flies": _integer(stat.get("sacFlies")),
+        "hit_by_pitch": hit_by_pitch,
+        "sac_flies": sac_flies,
         "extra_base_hits": doubles + triples + home_runs,
         "hits_per_game": (
             round(hits / _integer(stat.get("gamesPlayed")), 3)
@@ -160,23 +178,21 @@ def _normalize_hitting_split(
         "strikeout_rate": (
             round(
                 _integer(stat.get("strikeOuts"))
-                / _integer(stat.get("plateAppearances")),
+                / plate_appearances,
                 4,
             )
-            if _integer(stat.get("plateAppearances")) > 0
+            if plate_appearances > 0
             else 0.0
         ),
         "walk_rate": (
             round(
-                _integer(stat.get("baseOnBalls"))
-                / _integer(stat.get("plateAppearances")),
+                walks / plate_appearances,
                 4,
             )
-            if _integer(stat.get("plateAppearances")) > 0
+            if plate_appearances > 0
             else 0.0
         ),
     }
-
 
 def get_bulk_hitting_stats(
     season: int | None = None,
