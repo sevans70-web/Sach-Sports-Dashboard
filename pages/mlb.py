@@ -164,6 +164,7 @@ def convert_live_rankings(
                     "position_abbreviation",
                     "",
                 ),
+                "category": category_label,
                 "score": player.get("gi_score", 0),
                 "projected_hits": player.get(
                     "projected_hits",
