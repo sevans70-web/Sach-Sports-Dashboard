@@ -11,9 +11,6 @@ def render_player_card(player_data: dict) -> None:
     opponent = str(
         player_data.get("opponent_abbreviation", "")
     )
-    confidence = str(
-        player_data.get("confidence", "Low")
-    )
 
     gi_score = float(
         player_data.get("gi_score", 0.0) or 0.0
@@ -38,8 +35,7 @@ def render_player_card(player_data: dict) -> None:
 
     st.caption(
         f"{team} vs {opponent} • "
-        f"GI Score {gi_score:.1f} • "
-        f"{confidence} Confidence"
+        f"GI Score {gi_score:.1f}"
     )
 
     if lineup_confirmed and batting_order:
