@@ -397,14 +397,38 @@ def get_today_hitters_with_stats(
 
     for hitter in player_pool.get("hitters", []):
         player_id = hitter.get("player_id")
+        hitter_team_id = hitter.get("team_id")
 
-        season_record = season_lookup.get(
-            player_id,
-            _empty_stats(),
+        raw_season_record = season_lookup.get(player_id)
+        raw_recent_record = recent_lookup.get(player_id)
+
+        season_team_id = (
+            raw_season_record or {}
+        ).get("stat_team_id")
+        recent_team_id = (
+            raw_recent_record or {}
+        ).get("stat_team_id")
+
+        season_matches_team = (
+            raw_season_record is not None
+            and hitter_team_id is not None
+            and season_team_id == hitter_team_id
         )
-        recent_record = recent_lookup.get(
-            player_id,
-            _empty_stats(),
+
+        if not season_matches_team:
+            continue
+
+        recent_matches_team = (
+            raw_recent_record is not None
+            and hitter_team_id is not None
+            and recent_team_id == hitter_team_id
+        )
+
+        season_record = raw_season_record
+        recent_record = (
+            raw_recent_record
+            if recent_matches_team
+            else _empty_stats()
         )
 
         enriched_hitters.append(
@@ -413,8 +437,8 @@ def get_today_hitters_with_stats(
                 "season_stats": season_record,
                 "recent_stats": recent_record,
                 "recent_days": recent_days,
-                "has_season_stats": player_id in season_lookup,
-                "has_recent_stats": player_id in recent_lookup,
+                "has_season_stats": True,
+                "has_recent_stats": recent_matches_team,
             }
         )
 
