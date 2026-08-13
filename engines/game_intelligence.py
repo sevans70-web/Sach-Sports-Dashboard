@@ -617,28 +617,29 @@ def _blended_projection_rate(
     recent: dict[str, Any],
     stat_name: str,
     recent_weight_cap: float,
+    baseline_rate: float,
+    prior_opportunities: int,
 ) -> float:
-    """Blend a stable season rate with recent form when its sample is valid."""
+    """Blend player production with a stable baseline and recent form."""
     season_opportunities = _projection_opportunities(season)
     recent_opportunities = _projection_opportunities(recent)
 
-    season_rate = (
+    stabilized_season_rate = (
         _safe_float(season.get(stat_name))
-        / season_opportunities
-        if season_opportunities > 0
-        else 0.0
+        + (baseline_rate * prior_opportunities)
+    ) / (
+        season_opportunities + prior_opportunities
     )
 
     if recent_opportunities <= 0:
-        return season_rate
+        return stabilized_season_rate
 
-    recent_rate = (
+    stabilized_recent_rate = (
         _safe_float(recent.get(stat_name))
-        / recent_opportunities
+        + (baseline_rate * prior_opportunities)
+    ) / (
+        recent_opportunities + prior_opportunities
     )
-
-    if season_opportunities <= 0:
-        return recent_rate
 
     recent_weight = min(
         recent_weight_cap,
@@ -646,8 +647,8 @@ def _blended_projection_rate(
     )
 
     return (
-        season_rate * (1.0 - recent_weight)
-        + recent_rate * recent_weight
+        stabilized_season_rate * (1.0 - recent_weight)
+        + stabilized_recent_rate * recent_weight
     )
 
 
@@ -662,18 +663,24 @@ def _projection_inputs(
             recent,
             "hits",
             0.30,
+            0.240,
+            120,
         ),
         "total_base_rate": _blended_projection_rate(
             season,
             recent,
             "total_bases",
             0.30,
+            0.390,
+            120,
         ),
         "home_run_rate": _blended_projection_rate(
             season,
             recent,
             "home_runs",
             0.25,
+            0.032,
+            200,
         ),
     }
 
@@ -950,6 +957,17 @@ def rank_players(
         base_score = _category_score(
             category,
             percentiles,
+        )
+
+        season_opportunities = _projection_opportunities(season)
+        sample_reliability = _clamp(
+            season_opportunities / 200.0,
+            0.0,
+            1.0,
+        )
+        base_score = (
+            50.0
+            + ((base_score - 50.0) * sample_reliability)
         )
 
         handedness_adjustment = _handedness_matchup_adjustment(
