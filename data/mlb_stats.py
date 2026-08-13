@@ -208,7 +208,7 @@ def get_bulk_hitting_stats(
     today = datetime.now(TORONTO_TIMEZONE).date()
     requested_season = season or today.year
 
-     params: dict[str, Any] = {
+    params: dict[str, Any] = {
         "stats": "season",
         "group": "hitting",
         "season": requested_season,
