@@ -213,7 +213,7 @@ def get_bulk_hitting_stats(
         "group": "hitting",
         "season": requested_season,
         "sportIds": 1,
-        "leagueId": "103,104",
+        "leagueIds": "103,104",
         "gameType": "R",
         "playerPool": "ALL",
         "limit": 2500,
