@@ -33,9 +33,14 @@ def build_daily_ranking_snapshot(
         snapshot_date = schedule_date.isoformat()
     else:
         snapshot_date = str(schedule_date)
+    # A category result is a status dictionary even when its actual ranking
+    # list is empty.  Only persist a snapshot when at least one category
+    # contains real player rows; otherwise a temporary provider failure would
+    # be cached as a successful, permanently empty day.
     has_rankings = any(
-        category_rankings
-        for category_rankings in rankings.values()
+        bool(category_result.get("rankings"))
+        for category_result in rankings.values()
+        if isinstance(category_result, dict)
     )
 
     if not has_rankings:
