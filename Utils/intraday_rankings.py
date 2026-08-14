@@ -447,12 +447,24 @@ def load_compare_and_save(
     same Toronto calendar day as the current rankings. The first valid
     rankings of a new day therefore treat every player as NEW.
     """
-    stored_snapshot, existing_sha = load_github_snapshot(config)
-
     current_snapshot = create_snapshot(
         category_rankings=category_rankings,
         captured_at=captured_at,
     )
+
+    # Never replace a valid GitHub movement snapshot with a temporary empty
+    # result from an upstream data outage.
+    if not any(current_snapshot.get("categories", {}).values()):
+        return {
+            "previous_snapshot": None,
+            "current_snapshot": current_snapshot,
+            "comparisons": {},
+            "summaries": {},
+            "snapshot_saved": False,
+            "is_new_day": True,
+        }
+
+    stored_snapshot, existing_sha = load_github_snapshot(config)
 
     previous_snapshot = stored_snapshot
     is_new_day = True
