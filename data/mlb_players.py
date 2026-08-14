@@ -418,7 +418,12 @@ def get_today_player_pool(
     )
 
     return {
-        "success": complete_slate and bool(players),    "date": schedule.get("date"),
+        # A single unavailable roster must not discard every successfully
+        # loaded team.  The completeness fields below still let the UI warn
+        # users when the slate is partial.
+        "success": bool(players),
+        "complete_slate": complete_slate,
+        "date": schedule.get("date"),
         
         "players": selected_players,
         "hitters": hitters,
