@@ -210,6 +210,8 @@ def convert_live_rankings(
                 ),
                 "why": reasons,
                 "risk_flags": risk_flags,
+                "season_stats": player.get("season_stats", {}),
+                "recent_stats": player.get("recent_stats", {}),
                 "reason": (
                     reasons[0]
                     if reasons
@@ -706,7 +708,7 @@ def render_ranking_category(
                     Ranked by GI Score. Probability is one component of the score,
                     alongside player performance, matchup, lineup position, ballpark,
                     weather, and sample reliability. Top 5 shown first.
-                </div>>
+                </div>
             </div>
 
             <div class="gi-section-count">25 ranked</div>
@@ -749,12 +751,16 @@ def render_ranking_category(
         )
 
         for player in rankings:
-            render_full_ranking_row(player)
-
-            with st.expander(
-                f"Player Intelligence — {player['player']}"
+            with st.container(
+                border=True,
+                key=f"{state_key}_player_{player['rank']}",
             ):
-                render_player_card(player)
+                render_full_ranking_row(player)
+
+                with st.expander(
+                    f"ⓘ View Intelligence — {player['player']}"
+                ):
+                    render_player_card(player)
                 
         st.caption(
             "In a later build, selecting a player will open that player's "
