@@ -1320,7 +1320,19 @@ def get_daily_ranking_snapshot(
 
     existing_snapshot = load_ranking_snapshot(snapshot_date)
 
-    if existing_snapshot.get("status") == "ready":
+    existing_rankings = existing_snapshot.get("rankings", {})
+    existing_snapshot_has_players = any(
+        bool(category_result.get("rankings"))
+        for category_result in existing_rankings.values()
+        if isinstance(category_result, dict)
+    )
+
+    # Older code could label an empty provider response as "ready".  Do not
+    # let that stale file suppress a healthy live-data retry forever.
+    if (
+        existing_snapshot.get("status") == "ready"
+        and existing_snapshot_has_players
+    ):
         return existing_snapshot
 
     rankings = get_all_rankings(
