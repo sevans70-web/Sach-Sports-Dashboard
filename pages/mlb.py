@@ -703,8 +703,10 @@ def render_ranking_category(
                 </div>
 
                 <div class="gi-section-subtitle">
-                    Top 5 shown first. Open the full ranking when you want deeper research.
-                </div>
+                    Ranked by GI Score. Probability is one component of the score,
+                    alongside player performance, matchup, lineup position, ballpark,
+                    weather, and sample reliability. Top 5 shown first.
+                </div>>
             </div>
 
             <div class="gi-section-count">25 ranked</div>
