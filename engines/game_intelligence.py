@@ -819,11 +819,91 @@ def _build_projections(
         ),
     }
 
+def _load_ranking_context(
+    schedule_date: date | str | None,
+    recent_days: int,
+) -> dict[str, Any]:
+    """Load shared ranking inputs once for all three categories."""
+    try:
+        dataset = get_today_hitters_with_stats(
+            schedule_date=schedule_date,
+            recent_days=recent_days,
+        )
+    except Exception as exc:
+        dataset = {
+            "success": False,
+            "hitters": [],
+            "errors": [f"Player data unavailable: {exc}"],
+        }
+
+    try:
+        lineup_dataset = get_mlb_lineups(
+            schedule_date=schedule_date,
+        )
+    except Exception as exc:
+        lineup_dataset = {
+            "success": False,
+            "confirmed_hitters": [],
+            "games": [],
+            "errors": [f"Lineup data unavailable: {exc}"],
+        }
+
+    confirmed_lineup_lookup = {
+        int(player["player_id"]): player
+        for player in lineup_dataset.get("confirmed_hitters", [])
+        if player.get("player_id")
+    }
+    confirmed_team_keys: set[tuple[Any, str]] = set()
+
+    for game in lineup_dataset.get("games", []):
+        game_pk = game.get("game_pk")
+        if game.get("away_lineup_confirmed"):
+            confirmed_team_keys.add(
+                (game_pk, str(game.get("away_team") or ""))
+            )
+        if game.get("home_lineup_confirmed"):
+            confirmed_team_keys.add(
+                (game_pk, str(game.get("home_team") or ""))
+            )
+
+    hitters = []
+    for hitter in dataset.get("hitters", []):
+        team_key = (
+            hitter.get("game_pk"),
+            str(hitter.get("team_name") or ""),
+        )
+        player_id = int(hitter.get("player_id") or 0)
+        if (
+            team_key in confirmed_team_keys
+            and player_id not in confirmed_lineup_lookup
+        ):
+            continue
+        hitters.append(hitter)
+
+    try:
+        pitcher_dataset = get_today_probable_pitchers_with_stats(
+            schedule_date=schedule_date,
+        )
+    except Exception:
+        pitcher_dataset = {"by_pitcher_id": {}}
+
+    return {
+        "dataset": dataset,
+        "hitters": hitters,
+        "lineup_dataset": lineup_dataset,
+        "confirmed_lineup_lookup": confirmed_lineup_lookup,
+        "pitcher_lookup": pitcher_dataset.get("by_pitcher_id", {}),
+        "populations": _build_populations(hitters),
+        "weather_cache": {},
+    }
+
+
 def rank_players(
     category: str,
     schedule_date: date | str | None = None,
     recent_days: int = 14,
     limit: int = 25,
+    _shared_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Rank today's eligible hitters for one category.
@@ -837,71 +917,17 @@ def rank_players(
             f"category must be one of: {sorted(VALID_CATEGORIES)}"
         )
 
-    dataset = get_today_hitters_with_stats(
+    context = _shared_context or _load_ranking_context(
         schedule_date=schedule_date,
         recent_days=recent_days,
     )
+    dataset = context["dataset"]
+    hitters = context["hitters"]
+    lineup_dataset = context["lineup_dataset"]
 
-    hitters = dataset.get("hitters", [])
+    confirmed_lineup_lookup = context["confirmed_lineup_lookup"]
 
-    lineup_dataset = get_mlb_lineups(
-        schedule_date=schedule_date,
-    )
-
-    confirmed_lineup_lookup = {
-        int(player["player_id"]): player
-        for player in lineup_dataset.get("confirmed_hitters", [])
-        if player.get("player_id")
-    }
-
-    confirmed_team_keys: set[tuple[Any, str]] = set()
-
-    for game in lineup_dataset.get("games", []):
-        game_pk = game.get("game_pk")
-
-        if game.get("away_lineup_confirmed"):
-            confirmed_team_keys.add(
-                (
-                    game_pk,
-                    str(game.get("away_team") or ""),
-                )
-            )
-
-        if game.get("home_lineup_confirmed"):
-            confirmed_team_keys.add(
-                (
-                    game_pk,
-                    str(game.get("home_team") or ""),
-                )
-            )
-
-    filtered_hitters: list[dict[str, Any]] = []
-
-    for hitter in hitters:
-        player_id = hitter.get("player_id")
-        team_key = (
-            hitter.get("game_pk"),
-            str(hitter.get("team_name") or ""),
-        )
-
-        if (
-            team_key in confirmed_team_keys
-            and int(player_id or 0) not in confirmed_lineup_lookup
-        ):
-            continue
-
-        filtered_hitters.append(hitter)
-
-    hitters = filtered_hitters
-    
-    pitcher_dataset = get_today_probable_pitchers_with_stats(
-        schedule_date=schedule_date,
-    )
-
-    pitcher_lookup = pitcher_dataset.get(
-        "by_pitcher_id",
-        {},
-    )
+    pitcher_lookup = context["pitcher_lookup"]
 
     if not dataset.get("success") or not hitters:
         return {
@@ -915,7 +941,7 @@ def rank_players(
             ).isoformat(),
         }
 
-    populations = _build_populations(hitters)
+    populations = context["populations"]
     scored_players: list[dict[str, Any]] = []
 
     for hitter in hitters:
@@ -926,19 +952,33 @@ def rank_players(
         )
 
         if confirmed_lineup:
-            hitter.update(confirmed_lineup)
+            hitter = {**hitter, **confirmed_lineup}
         season = hitter.get("season_stats", {})
         recent = hitter.get("recent_stats", {})
       
-        weather = get_game_weather(
-            latitude=hitter.get("venue_latitude"),
-            longitude=hitter.get("venue_longitude"),
-            game_time=hitter.get("game_datetime"),
-            timezone_name=hitter.get(
-                "venue_timezone",
-                "America/New_York",
-            ),
+        weather_key = hitter.get("game_pk") or (
+            hitter.get("venue_latitude"),
+            hitter.get("venue_longitude"),
+            hitter.get("game_datetime"),
         )
+        weather_cache = context["weather_cache"]
+        if weather_key not in weather_cache:
+            try:
+                weather_cache[weather_key] = get_game_weather(
+                    latitude=hitter.get("venue_latitude"),
+                    longitude=hitter.get("venue_longitude"),
+                    game_time=hitter.get("game_datetime"),
+                    timezone_name=hitter.get(
+                        "venue_timezone",
+                        "America/New_York",
+                    ),
+                )
+            except Exception as exc:
+                weather_cache[weather_key] = {
+                    "success": False,
+                    "error": f"Weather unavailable: {exc}",
+                }
+        weather = weather_cache[weather_key]
         
         pitcher = pitcher_lookup.get(
             hitter.get("opposing_probable_pitcher_id"),
@@ -1236,24 +1276,32 @@ def get_all_rankings(
 ) -> dict[str, Any]:
     """Return rankings for all supported MLB categories."""
 
+    context = _load_ranking_context(
+        schedule_date=schedule_date,
+        recent_days=recent_days,
+    )
+
     return {
         "home_runs": rank_players(
             CATEGORY_HOME_RUNS,
             schedule_date=schedule_date,
             recent_days=recent_days,
             limit=limit,
+            _shared_context=context,
         ),
         "hits": rank_players(
             CATEGORY_HITS,
             schedule_date=schedule_date,
             recent_days=recent_days,
             limit=limit,
+            _shared_context=context,
         ),
         "total_bases": rank_players(
             CATEGORY_TOTAL_BASES,
             schedule_date=schedule_date,
             recent_days=recent_days,
             limit=limit,
+            _shared_context=context,
         ),
     }
 
