@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
+RANKING_SNAPSHOT_SCHEMA_VERSION = 2
 
 
 def build_daily_ranking_snapshot(
