@@ -687,6 +687,33 @@ def render_full_ranking_row(player: dict) -> None:
     )
 
 
+def render_expandable_ranking_header(player: dict) -> None:
+    """Render the ranking summary inside the interactive Streamlit card."""
+    initials = player_initials(player["player"])
+    projection_label, projection_value = projection_display(player)
+    render_html(
+        f"""
+        <div class="gi-card-header">
+            <div class="gi-card-rank">
+                #{player['rank']}
+                <small>{escape(movement_label(player))}</small>
+            </div>
+            <div class="gi-native-initials">{escape(initials)}</div>
+            <div class="gi-card-player">
+                <strong>{escape(player['player'])}</strong>
+                <span>{escape(player['team'])} vs. {escape(player['opponent'])}</span>
+                <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
+                <span class="gi-card-reason">{escape(player['reason'])}</span>
+            </div>
+            <div class="gi-card-score">
+                <small>GI SCORE</small>
+                <strong>{player['score']}</strong>
+            </div>
+        </div>
+        """
+    )
+
+
 def render_ranking_category(
     title: str,
     icon: str,
@@ -751,15 +778,35 @@ def render_ranking_category(
         )
 
         for player in rankings:
+            intelligence_key = (
+                f"{state_key}_intelligence_{player['rank']}"
+            )
+            if intelligence_key not in st.session_state:
+                st.session_state[intelligence_key] = False
+
             with st.container(
                 border=True,
                 key=f"{state_key}_player_{player['rank']}",
             ):
-                render_full_ranking_row(player)
+                render_expandable_ranking_header(player)
 
-                with st.expander(
-                    f"ⓘ View Intelligence — {player['player']}"
+                button_label = (
+                    f"ⓘ Hide Intelligence — {player['player']}"
+                    if st.session_state[intelligence_key]
+                    else f"ⓘ View Intelligence — {player['player']}"
+                )
+                if st.button(
+                    button_label,
+                    key=f"{intelligence_key}_button",
+                    use_container_width=True,
                 ):
+                    st.session_state[intelligence_key] = not (
+                        st.session_state[intelligence_key]
+                    )
+                    st.rerun()
+
+                if st.session_state[intelligence_key]:
+                    st.divider()
                     render_player_card(player)
                 
         st.caption(
@@ -1160,7 +1207,7 @@ st.markdown(
 
         .gi-full-row {
             display: grid;
-            grid-template-columns: 48px 46px minmax(0, 1fr) 80px auto
+            grid-template-columns: 48px 46px minmax(0, 1fr) 80px;
             align-items: center;
             gap: 12px;
             padding: 12px 14px;
@@ -1168,6 +1215,97 @@ st.markdown(
             border-radius: 14px;
             background: rgba(15, 23, 42, 0.66);
             border: 1px solid rgba(56, 189, 248, 0.17);
+        }
+
+        [class*="st-key-show_"][class*="_player_"] {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(56, 189, 248, 0.28) !important;
+            border-radius: 16px;
+            padding: 4px 10px 12px;
+            margin-bottom: 12px;
+        }
+
+        [class*="st-key-show_"][class*="_player_"] .gi-full-row {
+            background: transparent;
+            border: 0;
+            margin-bottom: 0;
+        }
+
+        [class*="st-key-show_"][class*="_player_"] .stButton > button {
+            background: rgba(14, 116, 144, 0.12);
+            border: 0;
+            border-top: 1px solid rgba(56, 189, 248, 0.18);
+            border-radius: 0 0 10px 10px;
+            color: #bae6fd;
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        .gi-native-initials {
+            align-items: center;
+            background: linear-gradient(145deg, #075985, #0f172a);
+            border: 1px solid rgba(56, 189, 248, 0.55);
+            border-radius: 12px;
+            color: #e0f2fe;
+            display: flex;
+            font-size: 0.78rem;
+            font-weight: 850;
+            height: 44px;
+            justify-content: center;
+            width: 44px;
+        }
+
+        .gi-card-header {
+            align-items: center;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 48px 48px minmax(0, 1fr) 72px;
+            padding: 10px 4px 6px;
+        }
+
+        .gi-card-rank,
+        .gi-card-score {
+            color: #bae6fd;
+            text-align: center;
+        }
+
+        .gi-card-rank {
+            font-size: 1rem;
+            font-weight: 850;
+        }
+
+        .gi-card-rank small,
+        .gi-card-score small {
+            display: block;
+            font-size: 0.58rem;
+            margin-top: 2px;
+        }
+
+        .gi-card-score strong {
+            color: #ffffff;
+            display: block;
+            font-size: 0.92rem;
+        }
+
+        .gi-card-player {
+            display: grid;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .gi-card-player strong {
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .gi-card-player span {
+            color: #cbd5e1;
+            font-size: 0.79rem;
+            line-height: 1.3;
+        }
+
+        .gi-card-reason {
+            margin-top: 3px;
         }
 
         .gi-full-rank {
@@ -1351,6 +1489,34 @@ st.markdown(
 
             .gi-full-row {
                 grid-template-columns: 32px 36px minmax(0, 1fr) auto;
+            }
+
+            .gi-card-header {
+                gap: 8px;
+                grid-template-columns: 32px 40px minmax(0, 1fr) 54px;
+                padding: 6px 0 3px;
+            }
+
+            .gi-native-initials {
+                border-radius: 10px;
+                font-size: 0.68rem;
+                height: 38px;
+                width: 38px;
+            }
+
+            .gi-card-player strong {
+                font-size: 0.9rem;
+            }
+
+            .gi-card-player span {
+                font-size: 0.7rem;
+            }
+
+            .gi-card-reason {
+                display: -webkit-box;
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
             }
 
         }
