@@ -33,6 +33,7 @@ from data.mlb_weather import get_game_weather
 from data.mlb_park_factors import get_park_factor
 
 from data.ranking_history import (
+    RANKING_SNAPSHOT_SCHEMA_VERSION,
     build_daily_ranking_snapshot,
     load_ranking_snapshot,
     save_ranking_snapshot,
@@ -1405,10 +1406,18 @@ def get_daily_ranking_snapshot(
         and existing_ranking_dates == {requested_date}
     )
 
+    today = datetime.now(TORONTO_TIMEZONE).date().isoformat()
+    snapshot_schema_is_current = (
+        requested_date != today
+        or existing_snapshot.get("schema_version")
+        == RANKING_SNAPSHOT_SCHEMA_VERSION
+    )
+
     if (
         existing_snapshot.get("status") == "ready"
         and existing_snapshot_has_players
         and existing_snapshot_matches_requested_date
+        and snapshot_schema_is_current
     ):
         return existing_snapshot
 
