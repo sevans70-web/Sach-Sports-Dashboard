@@ -1335,15 +1335,45 @@ def get_daily_ranking_snapshot(
     ):
         return existing_snapshot
 
+    # Resolve the calendar date once and pass that exact date through every
+    # provider call.  Passing None here allowed downstream MLB endpoints to
+    # independently decide what "today" meant around midnight, which could
+    # label the previous slate as the new day's Top 25.
     rankings = get_all_rankings(
-        schedule_date=schedule_date,
+        schedule_date=snapshot_date,
         recent_days=recent_days,
         limit=limit,
     )
 
+    requested_date = (
+        snapshot_date.isoformat()
+        if isinstance(snapshot_date, date)
+        else str(snapshot_date)
+    )
+
+    ranking_dates = {
+        str(category_result.get("date"))
+        for category_result in rankings.values()
+        if isinstance(category_result, dict)
+        and category_result.get("rankings")
+        and category_result.get("date")
+    }
+
+    # Never freeze yesterday's provider payload into today's permanent
+    # snapshot.  Returning an empty/transient result lets the next Streamlit
+    # refresh retry until MLB data is actually available for requested_date.
+    if ranking_dates and ranking_dates != {requested_date}:
+        return {
+            "schedule_date": requested_date,
+            "saved_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
+            "rankings": {},
+            "status": "waiting_for_current_slate",
+            "provider_dates": sorted(ranking_dates),
+        }
+
     snapshot = build_daily_ranking_snapshot(
         rankings=rankings,
-        schedule_date=schedule_date,
+        schedule_date=snapshot_date,
     )
 
     save_ranking_snapshot(snapshot)
