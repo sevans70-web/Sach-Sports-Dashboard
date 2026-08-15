@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-15T13:29:51.929715-04:00",
+  "captured_at": "2026-08-15T13:29:55.495556-04:00",
   "categories": {
     "hits": [
       {
@@ -635,10 +635,18 @@
         "team": "Tampa Bay Rays"
       },
       {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 4,
+        "score": 71.7,
+        "team": "Detroit Tigers"
+      },
+      {
         "player": "TJ Rumfield",
         "player_id": 681198,
         "player_key": "681198",
-        "rank": 4,
+        "rank": 5,
         "score": 70.8,
         "team": "Colorado Rockies"
       },
@@ -646,7 +654,7 @@
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
-        "rank": 5,
+        "rank": 6,
         "score": 70.7,
         "team": "St. Louis Cardinals"
       },
@@ -654,7 +662,7 @@
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 6,
+        "rank": 7,
         "score": 69.4,
         "team": "Chicago Cubs"
       },
@@ -662,17 +670,9 @@
         "player": "Yordan Alvarez",
         "player_id": 670541,
         "player_key": "670541",
-        "rank": 7,
+        "rank": 8,
         "score": 68.9,
         "team": "Houston Astros"
-      },
-      {
-        "player": "Kevin McGonigle",
-        "player_id": 805808,
-        "player_key": "805808",
-        "rank": 8,
-        "score": 68.7,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Yandy Díaz",
@@ -691,10 +691,18 @@
         "team": "Cleveland Guardians"
       },
       {
+        "player": "Gleyber Torres",
+        "player_id": 650402,
+        "player_key": "650402",
+        "rank": 11,
+        "score": 68.4,
+        "team": "Detroit Tigers"
+      },
+      {
         "player": "Bobby Witt Jr.",
         "player_id": 677951,
         "player_key": "677951",
-        "rank": 11,
+        "rank": 12,
         "score": 68.2,
         "team": "Kansas City Royals"
       },
@@ -702,7 +710,7 @@
         "player": "Seiya Suzuki",
         "player_id": 673548,
         "player_key": "673548",
-        "rank": 12,
+        "rank": 13,
         "score": 67.2,
         "team": "Chicago Cubs"
       },
@@ -710,7 +718,7 @@
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 13,
+        "rank": 14,
         "score": 67.2,
         "team": "St. Louis Cardinals"
       },
@@ -718,7 +726,7 @@
         "player": "Iván Herrera",
         "player_id": 671056,
         "player_key": "671056",
-        "rank": 14,
+        "rank": 15,
         "score": 67.2,
         "team": "St. Louis Cardinals"
       },
@@ -726,7 +734,7 @@
         "player": "Cole Carrigg",
         "player_id": 694249,
         "player_key": "694249",
-        "rank": 15,
+        "rank": 16,
         "score": 66.9,
         "team": "Colorado Rockies"
       },
@@ -734,17 +742,9 @@
         "player": "Liam Hicks",
         "player_id": 689414,
         "player_key": "689414",
-        "rank": 16,
+        "rank": 17,
         "score": 66.3,
         "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Gleyber Torres",
-        "player_id": 650402,
-        "player_key": "650402",
-        "rank": 17,
-        "score": 65.4,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Gabriel Moreno",
@@ -1039,10 +1039,18 @@
         "team": "Chicago Cubs"
       },
       {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 4,
+        "score": 71.7,
+        "team": "Detroit Tigers"
+      },
+      {
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 4,
+        "rank": 5,
         "score": 71.5,
         "team": "St. Louis Cardinals"
       },
@@ -1050,7 +1058,7 @@
         "player": "Jung Hoo Lee",
         "player_id": 808982,
         "player_key": "808982",
-        "rank": 5,
+        "rank": 6,
         "score": 70.9,
         "team": "San Francisco Giants"
       },
@@ -1058,7 +1066,7 @@
         "player": "Jac Caglianone",
         "player_id": 695506,
         "player_key": "695506",
-        "rank": 6,
+        "rank": 7,
         "score": 70.6,
         "team": "Kansas City Royals"
       },
@@ -1066,7 +1074,7 @@
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
-        "rank": 7,
+        "rank": 8,
         "score": 70.5,
         "team": "St. Louis Cardinals"
       },
@@ -1074,17 +1082,9 @@
         "player": "Matt Olson",
         "player_id": 621566,
         "player_key": "621566",
-        "rank": 8,
+        "rank": 9,
         "score": 70.2,
         "team": "Atlanta Braves"
-      },
-      {
-        "player": "Dillon Dingler",
-        "player_id": 693307,
-        "player_key": "693307",
-        "rank": 9,
-        "score": 69.4,
-        "team": "Detroit Tigers"
       },
       {
         "player": "Zack Gelof",
