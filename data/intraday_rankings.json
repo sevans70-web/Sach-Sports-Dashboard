@@ -1,6 +1,614 @@
 {
-  "captured_at": "2026-08-15T00:17:12.736937-04:00",
+  "captured_at": "2026-08-15T11:09:35.652655-04:00",
   "categories": {
+    "hits": [
+      {
+        "player": "Chandler Simpson",
+        "player_id": 802415,
+        "player_key": "802415",
+        "rank": 1,
+        "score": 72.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Yordan Alvarez",
+        "player_id": 670541,
+        "player_key": "670541",
+        "rank": 2,
+        "score": 69.1,
+        "team": "Houston Astros"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 3,
+        "score": 68.8,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 4,
+        "score": 68.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Bobby Witt Jr.",
+        "player_id": 677951,
+        "player_key": "677951",
+        "rank": 5,
+        "score": 68.4,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Jake McCarthy",
+        "player_id": 664983,
+        "player_key": "664983",
+        "rank": 6,
+        "score": 67.6,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Liam Hicks",
+        "player_id": 689414,
+        "player_key": "689414",
+        "rank": 7,
+        "score": 66.8,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Kevin McGonigle",
+        "player_id": 805808,
+        "player_key": "805808",
+        "rank": 8,
+        "score": 66.3,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 9,
+        "score": 65.8,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Chase Meidroth",
+        "player_id": 805367,
+        "player_key": "805367",
+        "rank": 10,
+        "score": 65.8,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Freddie Freeman",
+        "player_id": 518692,
+        "player_key": "518692",
+        "rank": 11,
+        "score": 65.6,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "TJ Rumfield",
+        "player_id": 681198,
+        "player_key": "681198",
+        "rank": 12,
+        "score": 65.2,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Ceddanne Rafaela",
+        "player_id": 678882,
+        "player_key": "678882",
+        "rank": 13,
+        "score": 65.1,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Ty France",
+        "player_id": 664034,
+        "player_key": "664034",
+        "rank": 14,
+        "score": 64.9,
+        "team": "San Diego Padres"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 15,
+        "score": 64.9,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Jonathan Aranda",
+        "player_id": 666018,
+        "player_key": "666018",
+        "rank": 16,
+        "score": 64.7,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Steven Kwan",
+        "player_id": 680757,
+        "player_key": "680757",
+        "rank": 17,
+        "score": 64.7,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Carson Benge",
+        "player_id": 701807,
+        "player_key": "701807",
+        "rank": 18,
+        "score": 64.1,
+        "team": "New York Mets"
+      },
+      {
+        "player": "Geraldo Perdomo",
+        "player_id": 672695,
+        "player_key": "672695",
+        "rank": 19,
+        "score": 63.0,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 20,
+        "score": 62.9,
+        "team": "Texas Rangers"
+      },
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 21,
+        "score": 62.6,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Nico Hoerner",
+        "player_id": 663538,
+        "player_key": "663538",
+        "rank": 22,
+        "score": 62.4,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Josh Naylor",
+        "player_id": 647304,
+        "player_key": "647304",
+        "rank": 23,
+        "score": 62.4,
+        "team": "Seattle Mariners"
+      },
+      {
+        "player": "Jordan Walker",
+        "player_id": 691023,
+        "player_key": "691023",
+        "rank": 24,
+        "score": 62.2,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Bryson Stott",
+        "player_id": 681082,
+        "player_key": "681082",
+        "rank": 25,
+        "score": 61.9,
+        "team": "Philadelphia Phillies"
+      }
+    ],
+    "home_runs": [
+      {
+        "player": "Matt Olson",
+        "player_id": 621566,
+        "player_key": "621566",
+        "rank": 1,
+        "score": 48.1,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Kyle Schwarber",
+        "player_id": 656941,
+        "player_key": "656941",
+        "rank": 2,
+        "score": 47.3,
+        "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 3,
+        "score": 47.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
+        "rank": 4,
+        "score": 46.4,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Munetaka Murakami",
+        "player_id": 808959,
+        "player_key": "808959",
+        "rank": 5,
+        "score": 45.8,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Griffin Conine",
+        "player_id": 665052,
+        "player_key": "665052",
+        "rank": 6,
+        "score": 45.7,
+        "team": "Miami Marlins"
+      },
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 7,
+        "score": 44.8,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Miguel Vargas",
+        "player_id": 678246,
+        "player_key": "678246",
+        "rank": 8,
+        "score": 44.7,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Sal Stewart",
+        "player_id": 701398,
+        "player_key": "701398",
+        "rank": 9,
+        "score": 44.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Zack Gelof",
+        "player_id": 680869,
+        "player_key": "680869",
+        "rank": 10,
+        "score": 44.0,
+        "team": "Athletics"
+      },
+      {
+        "player": "Pete Crow-Armstrong",
+        "player_id": 691718,
+        "player_key": "691718",
+        "rank": 11,
+        "score": 43.7,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Yordan Alvarez",
+        "player_id": 670541,
+        "player_key": "670541",
+        "rank": 12,
+        "score": 43.6,
+        "team": "Houston Astros"
+      },
+      {
+        "player": "Byron Buxton",
+        "player_id": 621439,
+        "player_key": "621439",
+        "rank": 13,
+        "score": 43.4,
+        "team": "Minnesota Twins"
+      },
+      {
+        "player": "Pete Alonso",
+        "player_id": 624413,
+        "player_key": "624413",
+        "rank": 14,
+        "score": 43.4,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Bryce Harper",
+        "player_id": 547180,
+        "player_key": "547180",
+        "rank": 15,
+        "score": 43.3,
+        "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Seiya Suzuki",
+        "player_id": 673548,
+        "player_key": "673548",
+        "rank": 16,
+        "score": 43.2,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Eugenio Suárez",
+        "player_id": 553993,
+        "player_key": "553993",
+        "rank": 17,
+        "score": 43.0,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 18,
+        "score": 43.0,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Dillon Dingler",
+        "player_id": 693307,
+        "player_key": "693307",
+        "rank": 19,
+        "score": 42.9,
+        "team": "Detroit Tigers"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 20,
+        "score": 42.2,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Jackson Chourio",
+        "player_id": 694192,
+        "player_key": "694192",
+        "rank": 21,
+        "score": 42.1,
+        "team": "Milwaukee Brewers"
+      },
+      {
+        "player": "Mickey Moniak",
+        "player_id": 666160,
+        "player_key": "666160",
+        "rank": 22,
+        "score": 42.0,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Max Muncy",
+        "player_id": 571970,
+        "player_key": "571970",
+        "rank": 23,
+        "score": 41.8,
+        "team": "Los Angeles Dodgers"
+      },
+      {
+        "player": "Luis García Jr.",
+        "player_id": 671277,
+        "player_key": "671277",
+        "rank": 24,
+        "score": 41.6,
+        "team": "New York Yankees"
+      },
+      {
+        "player": "Brandon Lowe",
+        "player_id": 664040,
+        "player_key": "664040",
+        "rank": 25,
+        "score": 41.6,
+        "team": "Pittsburgh Pirates"
+      }
+    ],
+    "total_bases": [
+      {
+        "player": "Jac Caglianone",
+        "player_id": 695506,
+        "player_key": "695506",
+        "rank": 1,
+        "score": 70.8,
+        "team": "Kansas City Royals"
+      },
+      {
+        "player": "Matt Olson",
+        "player_id": 621566,
+        "player_key": "621566",
+        "rank": 2,
+        "score": 70.3,
+        "team": "Atlanta Braves"
+      },
+      {
+        "player": "Zack Gelof",
+        "player_id": 680869,
+        "player_key": "680869",
+        "rank": 3,
+        "score": 69.4,
+        "team": "Athletics"
+      },
+      {
+        "player": "Alec Burleson",
+        "player_id": 676475,
+        "player_key": "676475",
+        "rank": 4,
+        "score": 69.0,
+        "team": "St. Louis Cardinals"
+      },
+      {
+        "player": "Jake McCarthy",
+        "player_id": 664983,
+        "player_key": "664983",
+        "rank": 5,
+        "score": 68.9,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Ceddanne Rafaela",
+        "player_id": 678882,
+        "player_key": "678882",
+        "rank": 6,
+        "score": 68.8,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Seiya Suzuki",
+        "player_id": 673548,
+        "player_key": "673548",
+        "rank": 7,
+        "score": 68.6,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Junior Caminero",
+        "player_id": 691406,
+        "player_key": "691406",
+        "rank": 8,
+        "score": 68.2,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Yordan Alvarez",
+        "player_id": 670541,
+        "player_key": "670541",
+        "rank": 9,
+        "score": 68.0,
+        "team": "Houston Astros"
+      },
+      {
+        "player": "Byron Buxton",
+        "player_id": 621439,
+        "player_key": "621439",
+        "rank": 10,
+        "score": 67.9,
+        "team": "Minnesota Twins"
+      },
+      {
+        "player": "Pete Crow-Armstrong",
+        "player_id": 691718,
+        "player_key": "691718",
+        "rank": 11,
+        "score": 67.8,
+        "team": "Chicago Cubs"
+      },
+      {
+        "player": "Wilyer Abreu",
+        "player_id": 677800,
+        "player_key": "677800",
+        "rank": 12,
+        "score": 67.6,
+        "team": "Boston Red Sox"
+      },
+      {
+        "player": "Pete Alonso",
+        "player_id": 624413,
+        "player_key": "624413",
+        "rank": 13,
+        "score": 67.0,
+        "team": "Baltimore Orioles"
+      },
+      {
+        "player": "Yandy Díaz",
+        "player_id": 650490,
+        "player_key": "650490",
+        "rank": 14,
+        "score": 66.1,
+        "team": "Tampa Bay Rays"
+      },
+      {
+        "player": "Jackson Chourio",
+        "player_id": 694192,
+        "player_key": "694192",
+        "rank": 15,
+        "score": 65.8,
+        "team": "Milwaukee Brewers"
+      },
+      {
+        "player": "Tyler Soderstrom",
+        "player_id": 691016,
+        "player_key": "691016",
+        "rank": 16,
+        "score": 65.4,
+        "team": "Athletics"
+      },
+      {
+        "player": "Sal Stewart",
+        "player_id": 701398,
+        "player_key": "701398",
+        "rank": 17,
+        "score": 65.1,
+        "team": "Cincinnati Reds"
+      },
+      {
+        "player": "Hunter Goodman",
+        "player_id": 696100,
+        "player_key": "696100",
+        "rank": 18,
+        "score": 65.0,
+        "team": "Colorado Rockies"
+      },
+      {
+        "player": "Kyle Schwarber",
+        "player_id": 656941,
+        "player_key": "656941",
+        "rank": 19,
+        "score": 64.9,
+        "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 20,
+        "score": 64.9,
+        "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Jackson Merrill",
+        "player_id": 701538,
+        "player_key": "701538",
+        "rank": 21,
+        "score": 64.5,
+        "team": "San Diego Padres"
+      },
+      {
+        "player": "Chase Meidroth",
+        "player_id": 805367,
+        "player_key": "805367",
+        "rank": 22,
+        "score": 64.5,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Miguel Vargas",
+        "player_id": 678246,
+        "player_key": "678246",
+        "rank": 23,
+        "score": 64.3,
+        "team": "Chicago White Sox"
+      },
+      {
+        "player": "Chase DeLauter",
+        "player_id": 800050,
+        "player_key": "800050",
+        "rank": 24,
+        "score": 64.0,
+        "team": "Cleveland Guardians"
+      },
+      {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 25,
+        "score": 63.8,
+        "team": "Texas Rangers"
+      }
+    ]
+  },
+  "previous_categories": {
     "hits": [
       {
         "player": "Chandler Simpson",
