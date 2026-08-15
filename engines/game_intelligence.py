@@ -1367,7 +1367,12 @@ def get_daily_ranking_snapshot(
         and existing_snapshot_has_players
         and existing_snapshot_matches_requested_date
     ):
-        return existing_snapshot
+        # Keep completed historical slates frozen, but refresh today's
+        # rankings so newly confirmed MLB lineups can update eligibility,
+        # batting order, and Player Intelligence after the midnight snapshot.
+        today = datetime.now(TORONTO_TIMEZONE).date().isoformat()
+        if requested_date != today:
+            return existing_snapshot
 
     # Resolve the calendar date once and pass that exact date through every
     # provider call.  Passing None here allowed downstream MLB endpoints to
