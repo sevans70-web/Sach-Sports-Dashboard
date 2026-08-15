@@ -200,6 +200,39 @@ def _confirmed_lineup(
     boxscore = _team_boxscore(feed, side)
     batting_order_ids = boxscore.get("battingOrder", []) or []
 
+    # MLB's pregame live feed can publish the official batting order on
+    # each boxscore player before the team-level battingOrder list is
+    # populated. Use those official battingOrder values as a fallback so
+    # a posted starting lineup is recognized before first pitch.
+    if len(batting_order_ids) < 9:
+        ordered_players: list[tuple[int, int]] = []
+        for raw_key, player in (boxscore.get("players", {}) or {}).items():
+            raw_order = player.get("battingOrder")
+            if raw_order in (None, "", 0, "0"):
+                continue
+
+            try:
+                order_value = int(raw_order)
+                player_id = int(
+                    (player.get("person", {}) or {}).get("id")
+                    or str(raw_key).removeprefix("ID")
+                )
+            except (TypeError, ValueError):
+                continue
+
+            # MLB represents lineup slots as 100, 200, ... 900.
+            if order_value % 100 != 0:
+                continue
+            lineup_slot = order_value // 100
+            if 1 <= lineup_slot <= 9:
+                ordered_players.append((lineup_slot, player_id))
+
+        if len(ordered_players) >= 9:
+            ordered_players.sort(key=lambda item: item[0])
+            batting_order_ids = [
+                player_id for _, player_id in ordered_players[:9]
+            ]
+
     if side == "away":
         team_name = str(game.get("away_team") or "Away team")
         opponent_name = str(game.get("home_team") or "Home team")
