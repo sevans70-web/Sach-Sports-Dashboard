@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-15T19:36:11.838027-04:00",
+  "captured_at": "2026-08-15T19:46:13.034252-04:00",
   "categories": {
     "hits": [
       {
@@ -205,10 +205,18 @@
     ],
     "home_runs": [
       {
+        "player": "Kyle Schwarber",
+        "player_id": 656941,
+        "player_key": "656941",
+        "rank": 1,
+        "score": 53.5,
+        "team": "Philadelphia Phillies"
+      },
+      {
         "player": "Griffin Conine",
         "player_id": 665052,
         "player_key": "665052",
-        "rank": 1,
+        "rank": 2,
         "score": 53.2,
         "team": "Miami Marlins"
       },
@@ -216,17 +224,9 @@
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 2,
+        "rank": 3,
         "score": 52.9,
         "team": "Chicago Cubs"
-      },
-      {
-        "player": "Kyle Schwarber",
-        "player_id": 656941,
-        "player_key": "656941",
-        "rank": 3,
-        "score": 52.6,
-        "team": "Philadelphia Phillies"
       },
       {
         "player": "Matt Olson",
@@ -365,10 +365,18 @@
         "team": "Cincinnati Reds"
       },
       {
+        "player": "Bryce Harper",
+        "player_id": 547180,
+        "player_key": "547180",
+        "rank": 21,
+        "score": 47.1,
+        "team": "Philadelphia Phillies"
+      },
+      {
         "player": "Brandon Lowe",
         "player_id": 664040,
         "player_key": "664040",
-        "rank": 21,
+        "rank": 22,
         "score": 47.0,
         "team": "Pittsburgh Pirates"
       },
@@ -376,7 +384,7 @@
         "player": "Jac Caglianone",
         "player_id": 695506,
         "player_key": "695506",
-        "rank": 22,
+        "rank": 23,
         "score": 46.9,
         "team": "Kansas City Royals"
       },
@@ -384,7 +392,7 @@
         "player": "Byron Buxton",
         "player_id": 621439,
         "player_key": "621439",
-        "rank": 23,
+        "rank": 24,
         "score": 46.7,
         "team": "Minnesota Twins"
       },
@@ -392,17 +400,9 @@
         "player": "Ronald Acuña Jr.",
         "player_id": 660670,
         "player_key": "660670",
-        "rank": 24,
-        "score": 46.4,
-        "team": "Atlanta Braves"
-      },
-      {
-        "player": "Ceddanne Rafaela",
-        "player_id": 678882,
-        "player_key": "678882",
         "rank": 25,
         "score": 46.4,
-        "team": "Boston Red Sox"
+        "team": "Atlanta Braves"
       }
     ],
     "total_bases": [
@@ -567,20 +567,20 @@
         "team": "New York Mets"
       },
       {
-        "player": "Brandon Nimmo",
-        "player_id": 607043,
-        "player_key": "607043",
-        "rank": 21,
-        "score": 68.8,
-        "team": "Texas Rangers"
-      },
-      {
         "player": "Kyle Schwarber",
         "player_id": 656941,
         "player_key": "656941",
-        "rank": 22,
-        "score": 68.0,
+        "rank": 21,
+        "score": 69.5,
         "team": "Philadelphia Phillies"
+      },
+      {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 22,
+        "score": 68.8,
+        "team": "Texas Rangers"
       },
       {
         "player": "Jordan Walker",
