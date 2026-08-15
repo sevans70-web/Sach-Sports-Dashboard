@@ -755,10 +755,19 @@ def render_ranking_category(
     for player in rankings[1:5]:
         render_compact_player(player)
 
-    st.toggle(
-        "Show Full Top 25",
-        key=state_key,
+    button_label = (
+        "Hide Full Top 25"
+        if st.session_state[state_key]
+        else "View Full Top 25"
     )
+
+    if st.button(
+        button_label,
+        key=button_key,
+        use_container_width=True,
+    ):
+        st.session_state[state_key] = not st.session_state[state_key]
+        
 
     if st.session_state[state_key]:
         render_html(
