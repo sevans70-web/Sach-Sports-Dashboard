@@ -715,6 +715,7 @@ def render_expandable_ranking_header(player: dict) -> None:
     )
 
 
+@st.fragment
 def render_ranking_category(
     title: str,
     icon: str,
@@ -804,7 +805,6 @@ def render_ranking_category(
                     st.session_state[intelligence_key] = not (
                         st.session_state[intelligence_key]
                     )
-                    st.rerun()
 
                 if st.session_state[intelligence_key]:
                     render_player_card(player)
