@@ -704,6 +704,7 @@ def render_expandable_ranking_header(player: dict) -> None:
                 <span>{escape(player['team'])} vs. {escape(player['opponent'])}</span>
                 <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
                 <span class="gi-card-reason">{escape(player['reason'])}</span>
+                {card_result_html(player)}
             </div>
             <div class="gi-card-score">
                 <small>GI SCORE</small>
@@ -806,7 +807,6 @@ def render_ranking_category(
                     st.rerun()
 
                 if st.session_state[intelligence_key]:
-                    st.divider()
                     render_player_card(player)
                 
         st.caption(
