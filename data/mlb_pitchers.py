@@ -306,9 +306,14 @@ def _probable_pitcher_record(
 
 def get_today_probable_pitchers_with_stats(
     schedule_date: date | str | None = None,
+    lineup_data: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Match today's probable pitchers to season pitching statistics."""
-    lineups = get_mlb_lineups(schedule_date=schedule_date)
+    lineups = (
+        lineup_data
+        if lineup_data is not None
+        else get_mlb_lineups(schedule_date=schedule_date)
+    )
     fetched_at = datetime.now(TORONTO_TIMEZONE).isoformat()
 
     if not lineups.get("success"):
