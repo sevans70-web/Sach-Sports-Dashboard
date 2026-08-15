@@ -1327,11 +1327,33 @@ def get_daily_ranking_snapshot(
         if isinstance(category_result, dict)
     )
 
-    # Older code could label an empty provider response as "ready".  Do not
-    # let that stale file suppress a healthy live-data retry forever.
+    requested_date = (
+        snapshot_date.isoformat()
+        if isinstance(snapshot_date, date)
+        else str(snapshot_date)
+    )
+
+    existing_ranking_dates = {
+        str(category_result.get("date"))
+        for category_result in existing_rankings.values()
+        if isinstance(category_result, dict)
+        and category_result.get("rankings")
+        and category_result.get("date")
+    }
+
+    # Reuse a saved snapshot only when its populated category payloads are
+    # explicitly stamped for the requested slate.  This also invalidates a
+    # bad snapshot that older rollover code may already have saved under
+    # today's filename while its rankings still belonged to yesterday.
+    existing_snapshot_matches_requested_date = (
+        existing_snapshot.get("schedule_date") == requested_date
+        and existing_ranking_dates == {requested_date}
+    )
+
     if (
         existing_snapshot.get("status") == "ready"
         and existing_snapshot_has_players
+        and existing_snapshot_matches_requested_date
     ):
         return existing_snapshot
 
@@ -1343,12 +1365,6 @@ def get_daily_ranking_snapshot(
         schedule_date=snapshot_date,
         recent_days=recent_days,
         limit=limit,
-    )
-
-    requested_date = (
-        snapshot_date.isoformat()
-        if isinstance(snapshot_date, date)
-        else str(snapshot_date)
     )
 
     ranking_dates = {
