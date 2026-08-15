@@ -853,28 +853,40 @@ def _load_ranking_context(
         for player in lineup_dataset.get("confirmed_hitters", [])
         if player.get("player_id")
     }
-    confirmed_team_keys: set[tuple[Any, str]] = set()
+    confirmed_team_ids: set[tuple[Any, int]] = set()
+    confirmed_team_names: set[tuple[Any, str]] = set()
 
     for game in lineup_dataset.get("games", []):
         game_pk = game.get("game_pk")
-        if game.get("away_lineup_confirmed"):
-            confirmed_team_keys.add(
-                (game_pk, str(game.get("away_team") or ""))
-            )
-        if game.get("home_lineup_confirmed"):
-            confirmed_team_keys.add(
-                (game_pk, str(game.get("home_team") or ""))
-            )
+        for side in ("away", "home"):
+            if not game.get(f"{side}_lineup_confirmed"):
+                continue
+
+            team_id = game.get(f"{side}_team_id")
+            if team_id:
+                confirmed_team_ids.add((game_pk, int(team_id)))
+
+            team_name = str(game.get(f"{side}_team") or "").strip()
+            if team_name:
+                confirmed_team_names.add((game_pk, team_name))
 
     hitters = []
     for hitter in dataset.get("hitters", []):
-        team_key = (
-            hitter.get("game_pk"),
-            str(hitter.get("team_name") or ""),
-        )
+        game_pk = hitter.get("game_pk")
+        team_id = int(hitter.get("team_id") or 0)
+        team_name = str(hitter.get("team_name") or "").strip()
         player_id = int(hitter.get("player_id") or 0)
+
+        team_lineup_confirmed = (
+            (team_id and (game_pk, team_id) in confirmed_team_ids)
+            or (
+                team_name
+                and (game_pk, team_name) in confirmed_team_names
+            )
+        )
+
         if (
-            team_key in confirmed_team_keys
+            team_lineup_confirmed
             and player_id not in confirmed_lineup_lookup
         ):
             continue
