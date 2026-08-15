@@ -20,6 +20,7 @@ Important:
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -900,6 +901,47 @@ def _load_ranking_context(
     except Exception:
         pitcher_dataset = {"by_pitcher_id": {}}
 
+    # Fetch one weather record per game in parallel. Previously these
+    # requests were made sequentially while scoring the first category,
+    # which could make a cold Streamlit deployment take minutes.
+    weather_cache: dict[Any, dict[str, Any]] = {}
+    weather_inputs: dict[Any, dict[str, Any]] = {}
+
+    for hitter in hitters:
+        weather_key = hitter.get("game_pk") or (
+            hitter.get("venue_latitude"),
+            hitter.get("venue_longitude"),
+            hitter.get("game_datetime"),
+        )
+        if weather_key not in weather_inputs:
+            weather_inputs[weather_key] = hitter
+
+    def _load_weather(item: tuple[Any, dict[str, Any]]) -> tuple[Any, dict[str, Any]]:
+        weather_key, hitter = item
+        try:
+            result = get_game_weather(
+                latitude=hitter.get("venue_latitude"),
+                longitude=hitter.get("venue_longitude"),
+                game_time=hitter.get("game_datetime"),
+                timezone_name=hitter.get("venue_timezone", "America/New_York"),
+            )
+        except Exception as exc:
+            result = {
+                "success": False,
+                "error": f"Weather unavailable: {exc}",
+            }
+        return weather_key, result
+
+    worker_count = min(8, max(len(weather_inputs), 1))
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = [
+            executor.submit(_load_weather, item)
+            for item in weather_inputs.items()
+        ]
+        for future in as_completed(futures):
+            weather_key, result = future.result()
+            weather_cache[weather_key] = result
+
     return {
         "dataset": dataset,
         "hitters": hitters,
@@ -907,7 +949,7 @@ def _load_ranking_context(
         "confirmed_lineup_lookup": confirmed_lineup_lookup,
         "pitcher_lookup": pitcher_dataset.get("by_pitcher_id", {}),
         "populations": _build_populations(hitters),
-        "weather_cache": {},
+        "weather_cache": weather_cache,
     }
 
 
