@@ -366,16 +366,15 @@ def get_today_hitters_with_stats(
     )
 
     stats_end_date = requested_date - timedelta(days=1)
-    season_start_date = date(requested_date.year, 1, 1)
-
-    # Season and recent-form requests are independent after the player pool
-    # is known, so fetch them together instead of waiting for each serially.
+    # Use MLB's official season aggregate for season totals. The previous
+    # Jan-1-to-yesterday byDateRange query was producing inflated season
+    # counting stats for players across all three ranking categories.
+    #
+    # Recent form still uses the requested 14-day date range below.
     with ThreadPoolExecutor(max_workers=2) as executor:
         season_future = executor.submit(
             get_bulk_hitting_stats,
             season=requested_date.year,
-            start_date=season_start_date,
-            end_date=stats_end_date,
         )
         recent_future = executor.submit(
             get_recent_hitting_stats,
