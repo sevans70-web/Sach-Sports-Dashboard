@@ -16,6 +16,7 @@ and does not contain hard-coded player names.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -367,16 +368,22 @@ def get_today_hitters_with_stats(
     stats_end_date = requested_date - timedelta(days=1)
     season_start_date = date(requested_date.year, 1, 1)
 
-    season_stats = get_bulk_hitting_stats(
-        season=requested_date.year,
-        start_date=season_start_date,
-        end_date=stats_end_date,
-    )
-
-    recent_stats = get_recent_hitting_stats(
-        days=recent_days,
-        end_date=stats_end_date,
-    )
+    # Season and recent-form requests are independent after the player pool
+    # is known, so fetch them together instead of waiting for each serially.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        season_future = executor.submit(
+            get_bulk_hitting_stats,
+            season=requested_date.year,
+            start_date=season_start_date,
+            end_date=stats_end_date,
+        )
+        recent_future = executor.submit(
+            get_recent_hitting_stats,
+            days=recent_days,
+            end_date=stats_end_date,
+        )
+        season_stats = season_future.result()
+        recent_stats = recent_future.result()
 
     errors: list[str] = list(player_pool.get("errors", []))
 
