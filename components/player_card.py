@@ -160,12 +160,12 @@ def render_player_card(player_data: dict) -> None:
         .gi-evidence-grid small {
             color: #94a3b8;
         }
-        @media (max-width: 600px) {
+        @media (max-width: 760px) {
             .gi-intel-grid {
                 gap: 7px;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
-            .gi-intel-summary .gi-intel-metric:first-child {
+            .gi-intel-summary .gi-intel-metric:last-child {
                 grid-column: span 2;
             }
             .gi-intel-metric {
@@ -228,10 +228,6 @@ def render_player_card(player_data: dict) -> None:
         snapshot = load_statcast_batter_metrics(minimum_pa=10)
         statcast = get_statcast_batter(player_id, snapshot)
 
-    st.markdown(f"### {player_name}")
-
-    st.caption(f"{team} vs {opponent}")
-
     hr_probability = float(
         player_data.get("home_run_probability", 0) or 0
     )
@@ -245,7 +241,13 @@ def render_player_card(player_data: dict) -> None:
         unsafe_allow_html=True,
     )
 
-    if lineup_confirmed and batting_order:
+    game_finished = bool(player_data.get("game_finished"))
+    if game_finished:
+        st.write(
+            f"**Game status:** Final — "
+            f"{player_data.get('result_label', 'result available')}"
+        )
+    elif lineup_confirmed and batting_order:
         st.write(
             f"**Lineup:** Confirmed — batting #{batting_order}"
         )
@@ -300,6 +302,14 @@ def render_player_card(player_data: dict) -> None:
         statcast,
     ):
         st.write(f"• {reason}")
+
+    if game_finished:
+        risk_flags = [
+            flag
+            for flag in risk_flags
+            if "lineup" not in str(flag).lower()
+            and "pitcher" not in str(flag).lower()
+        ]
 
     if risk_flags:
         st.markdown("**Things to watch**")
