@@ -148,6 +148,11 @@ def _lineup_player(
         "player_id": player_id,
         "player_name": player_name,
         "headshot_url": get_player_headshot_url(player_id),
+        "team_id": (
+            game.get("home_team_id")
+            if is_home
+            else game.get("away_team_id")
+        ),
         "team_name": team_name,
         "opponent_name": opponent_name,
         "is_home": is_home,
@@ -282,7 +287,9 @@ def get_game_lineups(
         "success": True,
         "game_pk": game_pk,
         "away_team": game.get("away_team"),
+        "away_team_id": game.get("away_team_id"),
         "home_team": game.get("home_team"),
+        "home_team_id": game.get("home_team_id"),
         "game_time": game.get("start_time"),
         "game_status": game.get("status"),
         "venue": game.get("venue"),
