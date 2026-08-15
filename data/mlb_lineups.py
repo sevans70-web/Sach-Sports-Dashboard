@@ -19,6 +19,7 @@ Before lineups are posted, the module returns the game with empty lineups.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -34,6 +35,7 @@ MLB_LIVE_FEED_URL = (
 )
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 REQUEST_TIMEOUT_SECONDS = 20
+LINEUP_FETCH_WORKERS = 8
 
 
 def _request_game_feed(
@@ -368,8 +370,43 @@ def get_mlb_lineups(
     confirmed_hitters: list[dict[str, Any]] = []
     errors: list[str] = []
 
-    for game in schedule.get("games", []):
-        result = get_game_lineups(game)
+    scheduled_games = list(schedule.get("games", []))
+    result_by_game_pk: dict[Any, dict[str, Any]] = {}
+
+    worker_count = min(
+        LINEUP_FETCH_WORKERS,
+        max(len(scheduled_games), 1),
+    )
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = {
+            executor.submit(get_game_lineups, game): game
+            for game in scheduled_games
+        }
+
+        for future in as_completed(futures):
+            game = futures[future]
+            try:
+                result = future.result()
+            except Exception as exc:
+                result = {
+                    "success": False,
+                    "game_pk": game.get("game_pk"),
+                    "away_team": game.get("away_team"),
+                    "away_team_id": game.get("away_team_id"),
+                    "home_team": game.get("home_team"),
+                    "home_team_id": game.get("home_team_id"),
+                    "away_lineup": [],
+                    "home_lineup": [],
+                    "away_lineup_confirmed": False,
+                    "home_lineup_confirmed": False,
+                    "lineups_confirmed": False,
+                    "error": f"Unexpected lineup error: {exc}",
+                }
+            result_by_game_pk[game.get("game_pk")] = result
+
+    for game in scheduled_games:
+        result = result_by_game_pk.get(game.get("game_pk"), {})
         games.append(result)
 
         confirmed_hitters.extend(result.get("away_lineup", []))
