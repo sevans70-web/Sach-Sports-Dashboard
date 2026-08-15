@@ -895,6 +895,7 @@ def _load_ranking_context(
     try:
         pitcher_dataset = get_today_probable_pitchers_with_stats(
             schedule_date=schedule_date,
+            lineup_data=lineup_dataset,
         )
     except Exception:
         pitcher_dataset = {"by_pitcher_id": {}}
