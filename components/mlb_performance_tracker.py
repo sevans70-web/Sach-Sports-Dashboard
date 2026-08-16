@@ -21,6 +21,10 @@ CATEGORY_CONFIG = {
     "home_runs": ("🔥 Home Runs", "HR"),
     "hits": ("⚾ Hits", "Hits"),
     "total_bases": ("💥 Total Bases", "TB"),
+    "runs": ("🏃 Runs", "Runs"),
+    "rbis": ("🎯 RBIs", "RBIs"),
+    "walks": ("👁️ Walks", "Walks"),
+    "stolen_bases": ("💨 Stolen Bases", "SB"),
 }
 
 
@@ -37,15 +41,25 @@ def _render_market(history: dict[str, Any], category: str, period: str) -> None:
     rows = records_for_period(history, category, period)
     summary = summarize(rows)
 
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.metric("Record", f"{summary['wins']}-{summary['losses']}")
-    with m2:
-        st.metric("Hit Rate", f"{summary['hit_rate']:.1f}%")
-    with m3:
-        st.metric("Graded", summary["graded"])
-    with m4:
-        st.metric("Pending", summary["pending"])
+    st.markdown(
+        f"""
+        <div class="perf-summary-row">
+            <div class="perf-summary-item">
+                <span class="perf-label">Record</span>
+                <strong>{summary['wins']}-{summary['losses']}</strong>
+            </div>
+            <div class="perf-summary-item">
+                <span class="perf-label">Hit Rate</span>
+                <strong>{summary['hit_rate']:.1f}%</strong>
+            </div>
+            <div class="perf-summary-item">
+                <span class="perf-label">Pending</span>
+                <strong>{summary['pending']}</strong>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         " · ".join(
@@ -70,6 +84,62 @@ def render_prediction_performance_tracker(
     rankings_by_category: dict[str, list[dict[str, Any]]],
 ) -> None:
     """Render persistent HR / Hits / TB testing performance."""
+    st.markdown(
+        """
+        <style>
+        .perf-summary-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 10px 0 14px 0;
+        }
+
+        .perf-summary-item {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 14px;
+            padding: 12px 14px;
+            min-width: 0;
+        }
+
+        .perf-summary-item .perf-label {
+            display: block;
+            font-size: 0.78rem;
+            opacity: 0.72;
+            margin-bottom: 4px;
+        }
+
+        .perf-summary-item strong {
+            display: block;
+            font-size: 1.55rem;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 700px) {
+            .perf-summary-row {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .perf-summary-item {
+                border-radius: 10px;
+                padding: 9px 8px;
+            }
+
+            .perf-summary-item .perf-label {
+                font-size: 0.68rem;
+            }
+
+            .perf-summary-item strong {
+                font-size: 1.15rem;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.subheader("📊 Prediction Performance")
     st.caption(
         "Frozen Top 25 predictions are graded against actual results. "
