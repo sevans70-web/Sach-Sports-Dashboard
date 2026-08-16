@@ -77,6 +77,26 @@ def _category_summary_metrics(player_data: dict) -> list[tuple[str, str]]:
             ("Over 1.5 TB", f"{probability:.0f}%"),
         ]
 
+    if category == "runs":
+        projected = float(player_data.get("projected_runs", 0.0) or 0.0)
+        probability = float(player_data.get("one_plus_run_probability", 0.0) or 0.0)
+        return [("GI Score", f"{gi_score:.1f}"), ("Projected Runs", f"{projected:.1f}"), ("1+ Run", f"{probability:.0f}%")]
+
+    if category in {"rbi", "rbis"}:
+        projected = float(player_data.get("projected_rbis", 0.0) or 0.0)
+        probability = float(player_data.get("one_plus_rbi_probability", 0.0) or 0.0)
+        return [("GI Score", f"{gi_score:.1f}"), ("Projected RBIs", f"{projected:.1f}"), ("1+ RBI", f"{probability:.0f}%")]
+
+    if category == "walks":
+        projected = float(player_data.get("projected_walks", 0.0) or 0.0)
+        probability = float(player_data.get("one_plus_walk_probability", 0.0) or 0.0)
+        return [("GI Score", f"{gi_score:.1f}"), ("Projected Walks", f"{projected:.1f}"), ("1+ Walk", f"{probability:.0f}%")]
+
+    if "stolen" in category:
+        projected = float(player_data.get("projected_stolen_bases", 0.0) or 0.0)
+        probability = float(player_data.get("one_plus_stolen_base_probability", 0.0) or 0.0)
+        return [("GI Score", f"{gi_score:.1f}"), ("Projected SB", f"{projected:.2f}"), ("1+ Stolen Base", f"{probability:.0f}%")]
+
     projected = float(player_data.get("projected_hits", 0.0) or 0.0)
     probability = float(
         player_data.get("one_plus_hit_probability", 0.0) or 0.0
@@ -114,6 +134,18 @@ def _performance_evidence_html(
             f"{float(recent.get('total_bases_per_game', 0) or 0):.2f} TB/G • "
             f"{_number(recent.get('slg'))} SLG"
         )
+    elif category == "runs":
+        season_line = f"{season.get('runs', 0)} R • {_number(season.get('obp'))} OBP"
+        recent_line = f"{recent.get('runs', 0)} R • {_number(recent.get('obp'))} OBP"
+    elif category in {"rbi", "rbis"}:
+        season_line = f"{season.get('rbi', 0)} RBI • {_number(season.get('slg'))} SLG"
+        recent_line = f"{recent.get('rbi', 0)} RBI • {_number(recent.get('slg'))} SLG"
+    elif category == "walks":
+        season_line = f"{season.get('walks', 0)} BB • {_number(season.get('obp'))} OBP"
+        recent_line = f"{recent.get('walks', 0)} BB • {_number(recent.get('obp'))} OBP"
+    elif "stolen" in category:
+        season_line = f"{season.get('stolen_bases', 0)} SB • {season.get('caught_stealing', 0)} CS"
+        recent_line = f"{recent.get('stolen_bases', 0)} SB • {recent.get('caught_stealing', 0)} CS"
     else:
         season_line = (
             f"{_number(season.get('avg'))} AVG • "
@@ -188,6 +220,27 @@ def _ranking_evidence(
             "Recent contact: "
             f"{_number(recent.get('avg'))} AVG and "
             f"{float(recent.get('hits_per_game', 0) or 0):.2f} hits per game."
+        )
+
+    if category == "runs":
+        evidence.append(
+            f"Run production: {season.get('runs', 0)} season runs and "
+            f"{recent.get('runs', 0)} in the recent pregame window."
+        )
+    elif category in {"rbi", "rbis"}:
+        evidence.append(
+            f"RBI production: {season.get('rbi', 0)} season RBIs and "
+            f"{recent.get('rbi', 0)} in the recent pregame window."
+        )
+    elif category == "walks":
+        evidence.append(
+            f"Plate discipline: {season.get('walks', 0)} season walks with a "
+            f"{_number(season.get('obp'))} OBP."
+        )
+    elif "stolen" in category:
+        evidence.append(
+            f"Running profile: {season.get('stolen_bases', 0)} SB and "
+            f"{season.get('caught_stealing', 0)} CS this season."
         )
 
     if statcast:
