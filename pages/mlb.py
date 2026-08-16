@@ -160,6 +160,8 @@ def convert_live_rankings(
                 "opponent": player.get("opponent_name", "TBD"),
                 "headshot_url": player.get("headshot_url"),
                 "player_id": player.get("player_id"),
+                "game_pk": player.get("game_pk"),
+                "weather": player.get("weather", {}),
                 "position": player.get(
                     "position_abbreviation",
                     "",
@@ -1579,6 +1581,56 @@ st.markdown(
 )
 
 
+
+ALL_RANKING_LISTS = (
+    HOME_RUN_RANKINGS, HIT_RANKINGS, TOTAL_BASE_RANKINGS, RUN_RANKINGS,
+    RBI_RANKINGS, WALK_RANKINGS, STOLEN_BASE_RANKINGS,
+)
+PLAYER_INTELLIGENCE_LOOKUP: dict[int, dict] = {}
+for ranking_list in ALL_RANKING_LISTS:
+    for ranked_player in ranking_list:
+        player_id = int(ranked_player.get("player_id") or 0)
+        if player_id and player_id not in PLAYER_INTELLIGENCE_LOOKUP:
+            PLAYER_INTELLIGENCE_LOOKUP[player_id] = ranked_player
+
+def weather_alert_summary(rankings: list[dict]) -> tuple[int, str]:
+    """Return unique meaningful weather alerts represented in ranked games."""
+    alerts: dict[object, str] = {}
+
+    for player in rankings:
+        weather = player.get("weather", {}) or {}
+        if not weather.get("success"):
+            continue
+
+        temperature = float(weather.get("temperature_f", 70) or 70)
+        wind = float(weather.get("wind_speed_mph", 0) or 0)
+        precipitation = float(
+            weather.get("precipitation_probability", 0)
+            or weather.get("precipitation_probability_percent", 0)
+            or 0
+        )
+
+        reasons = []
+        if precipitation >= 40:
+            reasons.append(f"{precipitation:.0f}% rain")
+        if wind >= 15:
+            reasons.append(f"{wind:.0f} mph wind")
+        if temperature >= 90:
+            reasons.append(f"{temperature:.0f}°F heat")
+        elif temperature <= 45:
+            reasons.append(f"{temperature:.0f}°F cold")
+
+        if reasons:
+            key = player.get("game_pk") or (player.get("team"), player.get("opponent"))
+            alerts[key] = " · ".join(reasons)
+
+    if not alerts:
+        return 0, "No meaningful alerts"
+
+    first = next(iter(alerts.values()))
+    return len(alerts), first
+
+
 # ============================================================
 # PAGE CONTENT
 # ============================================================
@@ -1619,33 +1671,40 @@ render_html(
 )
 
 with st.expander("⚾ View today's MLB games", expanded=False):
-    live_schedule = render_live_mlb_schedule()
+    live_schedule = render_live_mlb_schedule(
+        player_lookup=PLAYER_INTELLIGENCE_LOOKUP,
+        player_renderer=render_player_card,
+    )
 
 live_summary = schedule_summary(live_schedule)
 
 st.subheader("Today's MLB Snapshot")
 
-snapshot_1, snapshot_2, snapshot_3, snapshot_4 = st.columns(4)
+snapshot_1, snapshot_2, snapshot_3 = st.columns(3)
 
 with snapshot_1:
     games_status = (
         f"{live_summary['live']} live · {live_summary['final']} final"
     )
-
-    st.metric(
-        "Games",
-        live_summary["games"],
-        games_status,
-    )
+    st.metric("Games", live_summary["games"], games_status)
 
 with snapshot_2:
-    st.metric("Ranked Markets", "7", "HR · H · TB · R · RBI · BB · SB")
+    confirmed_teams = live_summary.get("confirmed_teams", 0)
+    total_teams = live_summary.get("total_teams", 0)
+    pending_teams = max(total_teams - confirmed_teams, 0)
+    st.metric(
+        "Lineups",
+        f"{confirmed_teams}/{total_teams}",
+        "All confirmed" if pending_teams == 0 and total_teams else f"{pending_teams} pending",
+    )
 
 with snapshot_3:
-    st.metric("Lineups", "—", "Confirmation feed pending")
-
-with snapshot_4:
-    st.metric("Weather Alerts", "—", "Weather feed pending")
+    weather_count, weather_note = weather_alert_summary(HOME_RUN_RANKINGS)
+    st.metric(
+        "Weather Alerts",
+        weather_count,
+        weather_note,
+    )
 if HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE:
     st.success(
         "Full ranking pool loaded: "
