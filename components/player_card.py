@@ -394,6 +394,14 @@ def render_player_card(player_data: dict) -> None:
     opponent = str(
         player_data.get("opponent_abbreviation", "")
     )
+    is_home = player_data.get("is_home")
+
+    if is_home is True:
+        matchup = f"{opponent} vs. {team}"
+    elif is_home is False:
+        matchup = f"{team} vs. {opponent}"
+    else:
+        matchup = f"{team} vs. {opponent}"
 
     player_id = int(player_data.get("player_id") or 0)
     headshot_url = str(player_data.get("headshot_url") or "").strip()
@@ -415,7 +423,7 @@ def render_player_card(player_data: dict) -> None:
                 <div>
                     <div class="gi-intel-player-name">{escape(player_name)}</div>
                     <div class="gi-intel-player-team">
-                        {escape(team)} vs. {escape(opponent)}
+                        {escape(matchup)}
                     </div>
                 </div>
             </div>
