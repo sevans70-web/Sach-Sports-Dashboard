@@ -186,6 +186,14 @@ def convert_live_rankings(
                     "over_1_5_total_bases_probability",
                     0.0,
                 ),
+                "projected_runs": player.get("projected_runs", 0.0),
+                "projected_rbis": player.get("projected_rbis", 0.0),
+                "projected_walks": player.get("projected_walks", 0.0),
+                "projected_stolen_bases": player.get("projected_stolen_bases", 0.0),
+                "one_plus_run_probability": player.get("one_plus_run_probability", 0.0),
+                "one_plus_rbi_probability": player.get("one_plus_rbi_probability", 0.0),
+                "one_plus_walk_probability": player.get("one_plus_walk_probability", 0.0),
+                "one_plus_stolen_base_probability": player.get("one_plus_stolen_base_probability", 0.0),
                 "gi_score": player.get("gi_score", 0),
                 "player_name": player.get(
                     "player_name",
@@ -366,9 +374,8 @@ ALL_TOP_25_COMPLETE = all(
         False,
     )
     for category in (
-        "home_runs",
-        "hits",
-        "total_bases",
+        "home_runs", "hits", "total_bases",
+        "runs", "rbis", "walks", "stolen_bases",
     )
 )
 
@@ -386,6 +393,12 @@ TOTAL_BASE_RANKINGS = convert_live_rankings(
     live_rankings.get("total_bases", {}),
     "Total Bases",
 )
+RUN_RANKINGS = convert_live_rankings(live_rankings.get("runs", {}), "Runs")
+RBI_RANKINGS = convert_live_rankings(live_rankings.get("rbis", {}), "RBIs")
+WALK_RANKINGS = convert_live_rankings(live_rankings.get("walks", {}), "Walks")
+STOLEN_BASE_RANKINGS = convert_live_rankings(
+    live_rankings.get("stolen_bases", {}), "Stolen Bases"
+)
 HOME_RUN_RANKINGS = attach_results_to_rankings(
     HOME_RUN_RANKINGS,
     "home_runs",
@@ -399,6 +412,12 @@ HIT_RANKINGS = attach_results_to_rankings(
 TOTAL_BASE_RANKINGS = attach_results_to_rankings(
     TOTAL_BASE_RANKINGS,
     "total_bases",
+)
+RUN_RANKINGS = attach_results_to_rankings(RUN_RANKINGS, "runs")
+RBI_RANKINGS = attach_results_to_rankings(RBI_RANKINGS, "rbis")
+WALK_RANKINGS = attach_results_to_rankings(WALK_RANKINGS, "walks")
+STOLEN_BASE_RANKINGS = attach_results_to_rankings(
+    STOLEN_BASE_RANKINGS, "stolen_bases"
 )
 MOVEMENT_SUMMARIES = {
     "home_runs": [],
@@ -464,7 +483,10 @@ except (KeyError, ValueError, RankingSnapshotError) as error:
 # SESSION STATE
 # ============================================================
 
-for state_key in ("show_hr_25", "show_hits_25", "show_tb_25"):
+for state_key in (
+    "show_hr_25", "show_hits_25", "show_tb_25",
+    "show_runs_25", "show_rbis_25", "show_walks_25", "show_sb_25",
+):
     if state_key not in st.session_state:
         st.session_state[state_key] = False
 
@@ -510,6 +532,26 @@ def projection_display(player: dict) -> tuple[str, str]:
             "Projected Total Bases",
             f"{projected_bases:.1f} · {over_probability:.0f}% over 1.5",
         )
+
+    if category == "runs":
+        projected = float(player.get("projected_runs", 0.0) or 0.0)
+        probability = float(player.get("one_plus_run_probability", 0.0) or 0.0)
+        return "Projected Runs", f"{projected:.1f} · {probability:.0f}% for 1+"
+
+    if category in {"rbi", "rbis"}:
+        projected = float(player.get("projected_rbis", 0.0) or 0.0)
+        probability = float(player.get("one_plus_rbi_probability", 0.0) or 0.0)
+        return "Projected RBIs", f"{projected:.1f} · {probability:.0f}% for 1+"
+
+    if category == "walks":
+        projected = float(player.get("projected_walks", 0.0) or 0.0)
+        probability = float(player.get("one_plus_walk_probability", 0.0) or 0.0)
+        return "Projected Walks", f"{projected:.1f} · {probability:.0f}% for 1+"
+
+    if "stolen" in category:
+        projected = float(player.get("projected_stolen_bases", 0.0) or 0.0)
+        probability = float(player.get("one_plus_stolen_base_probability", 0.0) or 0.0)
+        return "Projected Stolen Bases", f"{projected:.2f} · {probability:.0f}% for 1+"
 
     return "Projection", "Unavailable"
 
@@ -1597,7 +1639,7 @@ with snapshot_1:
     )
 
 with snapshot_2:
-    st.metric("Ranked Markets", "3", "HR · Hits · Total Bases")
+    st.metric("Ranked Markets", "7", "HR · H · TB · R · RBI · BB · SB")
 
 with snapshot_3:
     st.metric("Lineups", "—", "Confirmation feed pending")
@@ -1610,7 +1652,7 @@ if HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE:
         f"{RANKING_GAME_COUNT} games, "
         f"{RANKING_TEAM_COUNT} teams, "
         f"{RANKING_HITTER_COUNT} hitters. "
-        "All three Top 25 lists are complete."
+        "All seven Top 25 lists are complete."
     )
 else:
     st.warning(
@@ -1642,8 +1684,14 @@ st.caption(
     "connecting real players and official headshots."
 )
 
-home_run_tab, hits_tab, total_bases_tab = st.tabs(
-    ["🔥 Home Runs", "⚾ Hits", "💥 Total Bases"]
+(
+    home_run_tab, hits_tab, total_bases_tab, runs_tab,
+    rbis_tab, walks_tab, stolen_bases_tab,
+) = st.tabs(
+    [
+        "🔥 Home Runs", "⚾ Hits", "💥 Total Bases",
+        "🏃 Runs", "🎯 RBIs", "👁️ Walks", "💨 Stolen Bases",
+    ]
 )
 
 with home_run_tab:
@@ -1677,6 +1725,34 @@ with total_bases_tab:
         button_key="toggle_tb_25",
         movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
         category_key="total_bases",
+    )
+
+with runs_tab:
+    render_ranking_category(
+        title="Run", icon="🏃", rankings=RUN_RANKINGS,
+        state_key="show_runs_25", button_key="toggle_runs_25",
+        movement_summary=[], category_key="runs",
+    )
+
+with rbis_tab:
+    render_ranking_category(
+        title="RBI", icon="🎯", rankings=RBI_RANKINGS,
+        state_key="show_rbis_25", button_key="toggle_rbis_25",
+        movement_summary=[], category_key="rbis",
+    )
+
+with walks_tab:
+    render_ranking_category(
+        title="Walk", icon="👁️", rankings=WALK_RANKINGS,
+        state_key="show_walks_25", button_key="toggle_walks_25",
+        movement_summary=[], category_key="walks",
+    )
+
+with stolen_bases_tab:
+    render_ranking_category(
+        title="Stolen Base", icon="💨", rankings=STOLEN_BASE_RANKINGS,
+        state_key="show_sb_25", button_key="toggle_sb_25",
+        movement_summary=[], category_key="stolen_bases",
     )
 
 st.divider()
