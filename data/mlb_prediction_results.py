@@ -299,6 +299,19 @@ def get_final_batter_results(
     }
 
 
+
+def _normalized_player_name(value: Any) -> str:
+    """Normalize a player name for a safe live-result fallback match."""
+    return " ".join(
+        str(value or "")
+        .replace(".", "")
+        .replace("’", "'")
+        .strip()
+        .casefold()
+        .split()
+    )
+
+
 def grade_top_25(
     rankings: list[dict[str, Any]],
     category: str,
@@ -330,12 +343,36 @@ def grade_top_25(
 
     results = get_live_batter_results(result_date)
     result_lookup = results.get("by_player_id", {})
+    result_name_lookup = {
+        _normalized_player_name(row.get("player_name")): row
+        for row in result_lookup.values()
+        if _normalized_player_name(row.get("player_name"))
+    }
 
     graded: list[dict[str, Any]] = []
 
     for prediction in rankings[:25]:
         player_id = prediction.get("player_id")
         actual = result_lookup.get(player_id)
+
+        if actual is None:
+            try:
+                numeric_player_id = int(player_id)
+            except (TypeError, ValueError):
+                numeric_player_id = None
+
+            if numeric_player_id is not None:
+                actual = result_lookup.get(numeric_player_id)
+
+        if actual is None:
+            prediction_name = (
+                prediction.get("player")
+                or prediction.get("player_name")
+                or ""
+            )
+            actual = result_name_lookup.get(
+                _normalized_player_name(prediction_name)
+            )
 
         game_finished = bool(
             actual and actual.get("game_finished")
