@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-15T21:38:07.813869-04:00",
+  "captured_at": "2026-08-15T21:46:45.175569-04:00",
   "categories": {
     "hits": [
       {
@@ -75,10 +75,18 @@
         "team": "Kansas City Royals"
       },
       {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 10,
+        "score": 70.7,
+        "team": "Texas Rangers"
+      },
+      {
         "player": "Carson Benge",
         "player_id": 701807,
         "player_key": "701807",
-        "rank": 10,
+        "rank": 11,
         "score": 70.2,
         "team": "New York Mets"
       },
@@ -86,7 +94,7 @@
         "player": "Jung Hoo Lee",
         "player_id": 808982,
         "player_key": "808982",
-        "rank": 11,
+        "rank": 12,
         "score": 70.1,
         "team": "San Francisco Giants"
       },
@@ -94,7 +102,7 @@
         "player": "Wade Meckler",
         "player_id": 685133,
         "player_key": "685133",
-        "rank": 12,
+        "rank": 13,
         "score": 69.9,
         "team": "Los Angeles Angels"
       },
@@ -102,7 +110,7 @@
         "player": "Gabriel Moreno",
         "player_id": 672515,
         "player_key": "672515",
-        "rank": 13,
+        "rank": 14,
         "score": 69.6,
         "team": "Arizona Diamondbacks"
       },
@@ -110,7 +118,7 @@
         "player": "Zack Gelof",
         "player_id": 680869,
         "player_key": "680869",
-        "rank": 14,
+        "rank": 15,
         "score": 69.2,
         "team": "Athletics"
       },
@@ -118,7 +126,7 @@
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
-        "rank": 15,
+        "rank": 16,
         "score": 69.2,
         "team": "St. Louis Cardinals"
       },
@@ -126,7 +134,7 @@
         "player": "Ceddanne Rafaela",
         "player_id": 678882,
         "player_key": "678882",
-        "rank": 16,
+        "rank": 17,
         "score": 68.3,
         "team": "Boston Red Sox"
       },
@@ -134,7 +142,7 @@
         "player": "TJ Rumfield",
         "player_id": 681198,
         "player_key": "681198",
-        "rank": 17,
+        "rank": 18,
         "score": 68.2,
         "team": "Colorado Rockies"
       },
@@ -142,7 +150,7 @@
         "player": "Kevin McGonigle",
         "player_id": 805808,
         "player_key": "805808",
-        "rank": 18,
+        "rank": 19,
         "score": 67.2,
         "team": "Detroit Tigers"
       },
@@ -150,17 +158,9 @@
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 19,
-        "score": 66.9,
-        "team": "Chicago Cubs"
-      },
-      {
-        "player": "Brandon Nimmo",
-        "player_id": 607043,
-        "player_key": "607043",
         "rank": 20,
         "score": 66.9,
-        "team": "Texas Rangers"
+        "team": "Chicago Cubs"
       },
       {
         "player": "Josh Naylor",
@@ -535,10 +535,18 @@
         "team": "Atlanta Braves"
       },
       {
+        "player": "Brandon Nimmo",
+        "player_id": 607043,
+        "player_key": "607043",
+        "rank": 17,
+        "score": 71.4,
+        "team": "Texas Rangers"
+      },
+      {
         "player": "Jac Caglianone",
         "player_id": 695506,
         "player_key": "695506",
-        "rank": 17,
+        "rank": 18,
         "score": 71.2,
         "team": "Kansas City Royals"
       },
@@ -546,7 +554,7 @@
         "player": "Ty France",
         "player_id": 664034,
         "player_key": "664034",
-        "rank": 18,
+        "rank": 19,
         "score": 70.8,
         "team": "San Diego Padres"
       },
@@ -554,7 +562,7 @@
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 19,
+        "rank": 20,
         "score": 70.3,
         "team": "St. Louis Cardinals"
       },
@@ -562,7 +570,7 @@
         "player": "Francisco Lindor",
         "player_id": 596019,
         "player_key": "596019",
-        "rank": 20,
+        "rank": 21,
         "score": 70.2,
         "team": "New York Mets"
       },
@@ -570,17 +578,9 @@
         "player": "Sal Stewart",
         "player_id": 701398,
         "player_key": "701398",
-        "rank": 21,
+        "rank": 22,
         "score": 69.5,
         "team": "Cincinnati Reds"
-      },
-      {
-        "player": "Brandon Nimmo",
-        "player_id": 607043,
-        "player_key": "607043",
-        "rank": 22,
-        "score": 69.2,
-        "team": "Texas Rangers"
       },
       {
         "player": "Jung Hoo Lee",
