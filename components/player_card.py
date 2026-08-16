@@ -242,10 +242,16 @@ def render_player_card(player_data: dict) -> None:
     )
 
     game_finished = bool(player_data.get("game_finished"))
+    result_live = bool(player_data.get("result_live"))
     if game_finished:
         st.write(
             f"**Game status:** Final — "
             f"{player_data.get('result_label', 'result available')}"
+        )
+    elif result_live:
+        st.write(
+            f"**Game status:** LIVE — "
+            f"{player_data.get('result_label', 'live result available')}"
         )
     elif lineup_confirmed and batting_order:
         st.write(
