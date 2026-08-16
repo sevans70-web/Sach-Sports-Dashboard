@@ -125,9 +125,15 @@ def normalize_rankings(
 def rankings_signature(
     rankings: Iterable[dict[str, Any]],
 ) -> list[list[Any]]:
-    """Return a JSON-safe signature used to detect ranking changes."""
+    """
+    Return the movement signature used to detect a real ranking change.
+
+    Movement is based only on who is in the Top 25 and each player's rank.
+    GI-score fluctuations must not advance the movement baseline, otherwise
+    a refresh can erase NEW / up / down indicators even when ranks did not move.
+    """
     return [
-        [item["player_key"], item["rank"], item.get("score")]
+        [item["player_key"], item["rank"]]
         for item in normalize_rankings(rankings)
     ]
 
