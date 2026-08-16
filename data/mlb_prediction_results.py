@@ -184,6 +184,10 @@ def _read_game_batter_results(
                     "hits": int(batting.get("hits") or 0),
                     "home_runs": int(batting.get("homeRuns") or 0),
                     "total_bases": int(batting.get("totalBases") or 0),
+                    "runs": int(batting.get("runs") or 0),
+                    "rbis": int(batting.get("rbi") or 0),
+                    "walks": int(batting.get("baseOnBalls") or 0),
+                    "stolen_bases": int(batting.get("stolenBases") or 0),
                     "at_bats": int(batting.get("atBats") or 0),
                 }
             )
@@ -354,10 +358,12 @@ def grade_top_25(
         "home_runs",
         "hits",
         "total_bases",
+        "runs",
+        "rbis",
+        "walks",
+        "stolen_bases",
     }:
-        raise ValueError(
-            "category must be 'home_runs', 'hits', or 'total_bases'"
-        )
+        raise ValueError("Unsupported MLB prop category")
 
     results = get_live_batter_results(
         result_date,
@@ -419,6 +425,10 @@ def grade_top_25(
             if actual
             else 0
         )
+        actual_runs = int(actual.get("runs", 0)) if actual else 0
+        actual_rbis = int(actual.get("rbis", 0)) if actual else 0
+        actual_walks = int(actual.get("walks", 0)) if actual else 0
+        actual_stolen_bases = int(actual.get("stolen_bases", 0)) if actual else 0
 
         if normalized_category == "home_runs":
             threshold_met = actual_home_runs >= 1
@@ -434,7 +444,7 @@ def grade_top_25(
             )
             final_failure = "❌ 0 hits"
 
-        else:
+        elif normalized_category == "total_bases":
             threshold_met = actual_total_bases >= 2
             live_value = (
                 f"{actual_total_bases} total base"
@@ -446,6 +456,26 @@ def grade_top_25(
                 if actual_total_bases == 1
                 else "❌ 0 total bases"
             )
+        elif normalized_category == "runs":
+            threshold_met = actual_runs >= 1
+            live_value = f"{actual_runs} run" if actual_runs == 1 else f"{actual_runs} runs"
+            final_failure = "❌ 0 runs"
+        elif normalized_category == "rbis":
+            threshold_met = actual_rbis >= 1
+            live_value = f"{actual_rbis} RBI" if actual_rbis == 1 else f"{actual_rbis} RBIs"
+            final_failure = "❌ 0 RBIs"
+        elif normalized_category == "walks":
+            threshold_met = actual_walks >= 1
+            live_value = f"{actual_walks} walk" if actual_walks == 1 else f"{actual_walks} walks"
+            final_failure = "❌ 0 walks"
+        else:
+            threshold_met = actual_stolen_bases >= 1
+            live_value = (
+                f"{actual_stolen_bases} stolen base"
+                if actual_stolen_bases == 1
+                else f"{actual_stolen_bases} stolen bases"
+            )
+            final_failure = "❌ 0 stolen bases"
 
         if result_live:
             # Never grade a live miss as a loss. A player can still reach
@@ -475,6 +505,10 @@ def grade_top_25(
                 "actual_hits": actual_hits,
                 "actual_home_runs": actual_home_runs,
                 "actual_total_bases": actual_total_bases,
+                "actual_runs": actual_runs,
+                "actual_rbis": actual_rbis,
+                "actual_walks": actual_walks,
+                "actual_stolen_bases": actual_stolen_bases,
                 "game_finished": game_finished,
                 "result_live": result_live,
                 "game_status": (
