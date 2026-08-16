@@ -121,6 +121,87 @@ def get_scoring_game_states(
     }
 
 
+
+def _is_statcast_barrel(
+    exit_velocity: float | None,
+    launch_angle: float | None,
+) -> bool:
+    """Apply the MLB Statcast barrel launch-speed/angle window."""
+    if exit_velocity is None or launch_angle is None or exit_velocity < 98.0:
+        return False
+
+    mph_over_98 = min(exit_velocity - 98.0, 18.0)
+    minimum_angle = max(8.0, 26.0 - mph_over_98)
+    maximum_angle = min(50.0, 30.0 + (2.0 * mph_over_98))
+    return minimum_angle <= launch_angle <= maximum_angle
+
+
+def _live_contact_by_player(
+    payload: dict[str, Any],
+) -> dict[int, dict[str, Any]]:
+    """Return each batter's strongest tracked batted-ball contact."""
+    contact: dict[int, dict[str, Any]] = {}
+
+    all_plays = (
+        payload.get("liveData", {})
+        .get("plays", {})
+        .get("allPlays", [])
+        or []
+    )
+
+    for play in all_plays:
+        batter_id = (
+            play.get("matchup", {})
+            .get("batter", {})
+            .get("id")
+        )
+        if not isinstance(batter_id, int):
+            continue
+
+        for event in play.get("playEvents", []) or []:
+            hit_data = event.get("hitData") or {}
+            launch_speed = hit_data.get("launchSpeed")
+            launch_angle = hit_data.get("launchAngle")
+
+            try:
+                exit_velocity = float(launch_speed)
+            except (TypeError, ValueError):
+                continue
+
+            try:
+                angle = float(launch_angle) if launch_angle is not None else None
+            except (TypeError, ValueError):
+                angle = None
+
+            hard_hit = exit_velocity >= 95.0
+            barrel = _is_statcast_barrel(exit_velocity, angle)
+
+            if not hard_hit and not barrel:
+                continue
+
+            candidate = {
+                "exit_velocity": round(exit_velocity, 1),
+                "launch_angle": round(angle, 1) if angle is not None else None,
+                "hard_hit": hard_hit,
+                "barrel": barrel,
+                "event": str(
+                    event.get("details", {}).get("event") or "Ball in play"
+                ),
+            }
+
+            existing = contact.get(batter_id)
+            if (
+                existing is None
+                or (candidate["barrel"] and not existing.get("barrel"))
+                or (
+                    candidate["barrel"] == existing.get("barrel")
+                    and candidate["exit_velocity"] > existing.get("exit_velocity", 0)
+                )
+            ):
+                contact[batter_id] = candidate
+
+    return contact
+
 def _read_game_batter_results(
     game: dict[str, Any],
 ) -> tuple[int, list[dict[str, Any]], str | None]:
@@ -149,6 +230,11 @@ def _read_game_batter_results(
 
     players: list[dict[str, Any]] = []
     teams = teams or {}
+    live_contact = (
+        _live_contact_by_player(payload)
+        if game.get("is_live") and payload
+        else {}
+    )
 
     for side in ("away", "home"):
         side_players = (
@@ -189,6 +275,7 @@ def _read_game_batter_results(
                     "walks": int(batting.get("baseOnBalls") or 0),
                     "stolen_bases": int(batting.get("stolenBases") or 0),
                     "at_bats": int(batting.get("atBats") or 0),
+                    "live_contact": live_contact.get(player_id),
                 }
             )
 
@@ -429,6 +516,7 @@ def grade_top_25(
         actual_rbis = int(actual.get("rbis", 0)) if actual else 0
         actual_walks = int(actual.get("walks", 0)) if actual else 0
         actual_stolen_bases = int(actual.get("stolen_bases", 0)) if actual else 0
+        live_contact = actual.get("live_contact") if actual else None
 
         if normalized_category == "home_runs":
             threshold_met = actual_home_runs >= 1
@@ -499,6 +587,25 @@ def grade_top_25(
             correct = None
             result_label = "Game not started"
 
+        contact_label = ""
+        if (
+            normalized_category == "home_runs"
+            and result_live
+            and actual_home_runs == 0
+            and live_contact
+        ):
+            ev = live_contact.get("exit_velocity")
+            angle = live_contact.get("launch_angle")
+            angle_text = (
+                f" · {angle:.0f}°"
+                if isinstance(angle, (int, float))
+                else ""
+            )
+            if live_contact.get("barrel"):
+                contact_label = f"🔥 STILL ALIVE · BARREL {ev:.1f} mph{angle_text}"
+            elif live_contact.get("hard_hit"):
+                contact_label = f"💥 HARD HIT · {ev:.1f} mph{angle_text}"
+
         graded.append(
             {
                 **prediction,
@@ -518,6 +625,8 @@ def grade_top_25(
                 ),
                 "correct": correct,
                 "result_label": result_label,
+                "live_contact": live_contact,
+                "live_contact_label": contact_label,
             }
         )
 
