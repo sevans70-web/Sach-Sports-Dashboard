@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-15T21:18:08.778644-04:00",
+  "captured_at": "2026-08-15T21:18:35.081097-04:00",
   "categories": {
     "hits": [
       {
@@ -663,7 +663,7 @@
         "player_id": 680757,
         "player_key": "680757",
         "rank": 7,
-        "score": 73.9,
+        "score": 74.0,
         "team": "Cleveland Guardians"
       },
       {
@@ -687,7 +687,7 @@
         "player_id": 701807,
         "player_key": "701807",
         "rank": 10,
-        "score": 70.5,
+        "score": 70.6,
         "team": "New York Mets"
       },
       {
@@ -727,7 +727,7 @@
         "player_id": 680869,
         "player_key": "680869",
         "rank": 15,
-        "score": 69.4,
+        "score": 69.5,
         "team": "Athletics"
       },
       {
@@ -787,10 +787,18 @@
         "team": "St. Louis Cardinals"
       },
       {
+        "player": "Seiya Suzuki",
+        "player_id": 673548,
+        "player_key": "673548",
+        "rank": 23,
+        "score": 65.8,
+        "team": "Chicago Cubs"
+      },
+      {
         "player": "Fernando Tatis Jr.",
         "player_id": 665487,
         "player_key": "665487",
-        "rank": 23,
+        "rank": 24,
         "score": 65.7,
         "team": "San Diego Padres"
       },
@@ -798,17 +806,9 @@
         "player": "Xavier Edwards",
         "player_id": 669364,
         "player_key": "669364",
-        "rank": 24,
-        "score": 65.7,
-        "team": "Miami Marlins"
-      },
-      {
-        "player": "Seiya Suzuki",
-        "player_id": 673548,
-        "player_key": "673548",
         "rank": 25,
         "score": 65.7,
-        "team": "Chicago Cubs"
+        "team": "Miami Marlins"
       }
     ],
     "home_runs": [
