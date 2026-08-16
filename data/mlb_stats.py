@@ -439,12 +439,22 @@ def get_today_hitters_with_stats(
             else _empty_stats()
         )
 
+        recent_window_start = (
+            stats_end_date - timedelta(days=recent_days - 1)
+        )
+
         enriched_hitters.append(
             {
                 **hitter,
                 "season_stats": season_record,
                 "recent_stats": recent_record,
                 "recent_days": recent_days,
+                "recent_window_start": recent_window_start.isoformat(),
+                "recent_window_end": stats_end_date.isoformat(),
+                "recent_window_label": (
+                    f"Previous {recent_days} calendar days "
+                    f"through {stats_end_date.isoformat()}"
+                ),
                 "has_season_stats": True,
                 "has_recent_stats": recent_matches_team,
             }
