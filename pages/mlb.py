@@ -1727,6 +1727,10 @@ render_prediction_performance_tracker(
         "home_runs": HOME_RUN_RANKINGS,
         "hits": HIT_RANKINGS,
         "total_bases": TOTAL_BASE_RANKINGS,
+        "runs": RUN_RANKINGS,
+        "rbis": RBI_RANKINGS,
+        "walks": WALK_RANKINGS,
+        "stolen_bases": STOLEN_BASE_RANKINGS,
     }
 )
 
