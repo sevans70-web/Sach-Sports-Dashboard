@@ -31,6 +31,7 @@ from data.mlb_lineups import get_mlb_lineups
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 from data.mlb_weather import get_game_weather
 from data.mlb_park_factors import get_park_factor
+from data.mlb_statcast import load_statcast_batter_metrics
 
 from data.ranking_history import (
     build_daily_ranking_snapshot,
@@ -82,6 +83,61 @@ def _percentile_rank(
     below_or_equal = sum(1 for item in values if item <= value)
 
     return round((below_or_equal / len(values)) * 100, 2)
+
+
+def _statcast_percentile(
+    value: float | None,
+    population: list[float],
+) -> float:
+    """Return a neutral percentile when Statcast data is unavailable."""
+    if value is None or not population:
+        return 50.0
+    return _percentile_rank(value, population)
+
+
+def _hr_statcast_score(
+    metrics: dict[str, Any] | None,
+    populations: dict[str, list[float]],
+) -> tuple[float, float]:
+    """Return sample-weighted Statcast power score and reliability."""
+    if not metrics:
+        return 50.0, 0.0
+
+    reliability = _clamp(
+        _safe_float(metrics.get("sample_weight")),
+        0.0,
+        1.0,
+    )
+
+    barrel_pct = _statcast_percentile(
+        metrics.get("barrel_rate"),
+        populations.get("statcast_barrel_rate", []),
+    )
+    hard_hit_pct = _statcast_percentile(
+        metrics.get("hard_hit_rate"),
+        populations.get("statcast_hard_hit_rate", []),
+    )
+    xiso_pct = _statcast_percentile(
+        metrics.get("xiso"),
+        populations.get("statcast_xiso", []),
+    )
+    xslg_pct = _statcast_percentile(
+        metrics.get("xslg"),
+        populations.get("statcast_xslg", []),
+    )
+
+    raw_score = _weighted_score(
+        [
+            (barrel_pct, 40),
+            (hard_hit_pct, 25),
+            (xiso_pct, 20),
+            (xslg_pct, 15),
+        ]
+    )
+
+    # Pull small samples toward neutral instead of letting them dominate.
+    weighted_score = 50.0 + ((raw_score - 50.0) * reliability)
+    return round(weighted_score, 2), reliability
 
 
 def _weighted_score(
@@ -1193,6 +1249,33 @@ def _load_ranking_context(
             weather_key, result = future.result()
             weather_cache[weather_key] = result
 
+    statcast_snapshot = load_statcast_batter_metrics(
+        year=datetime.now(TORONTO_TIMEZONE).year,
+        minimum_pa=10,
+    )
+    statcast_players = (
+        statcast_snapshot.get("players", {})
+        if statcast_snapshot.get("available")
+        else {}
+    )
+
+    statcast_populations = {
+        "statcast_barrel_rate": [],
+        "statcast_hard_hit_rate": [],
+        "statcast_xiso": [],
+        "statcast_xslg": [],
+    }
+    for metrics in statcast_players.values():
+        for key, source_key in (
+            ("statcast_barrel_rate", "barrel_rate"),
+            ("statcast_hard_hit_rate", "hard_hit_rate"),
+            ("statcast_xiso", "xiso"),
+            ("statcast_xslg", "xslg"),
+        ):
+            value = metrics.get(source_key)
+            if value is not None:
+                statcast_populations[key].append(_safe_float(value))
+
     return {
         "dataset": dataset,
         "hitters": hitters,
@@ -1200,6 +1283,10 @@ def _load_ranking_context(
         "confirmed_lineup_lookup": confirmed_lineup_lookup,
         "pitcher_lookup": pitcher_dataset.get("by_pitcher_id", {}),
         "populations": _build_populations(hitters),
+        "statcast_players": statcast_players,
+        "statcast_populations": statcast_populations,
+        "statcast_available": bool(statcast_players),
+        "statcast_error": statcast_snapshot.get("error", ""),
         "weather_cache": weather_cache,
     }
 
@@ -1214,9 +1301,9 @@ def rank_players(
     """
     Rank today's eligible hitters for one category.
 
-    This first version scores statistical performance only.
-    Future versions will add matchup, lineup, weather, park, handedness,
-    barrel, and hard-hit factors.
+    Rankings combine statistical performance with matchup, lineup, weather,
+    park and handedness context. Home Run rankings also use sample-weighted
+    Statcast barrel, hard-hit, xISO and xSLG power quality when available.
     """
     if category not in VALID_CATEGORIES:
         raise ValueError(
@@ -1248,6 +1335,8 @@ def rank_players(
         }
 
     populations = context["populations"]
+    statcast_players = context.get("statcast_players", {})
+    statcast_populations = context.get("statcast_populations", {})
     scored_players: list[dict[str, Any]] = []
 
     for hitter in hitters:
@@ -1304,6 +1393,16 @@ def rank_players(
             category,
             percentiles,
         )
+
+        statcast_metrics = None
+        statcast_score = 50.0
+        statcast_reliability = 0.0
+        if category == CATEGORY_HOME_RUNS and player_id:
+            statcast_metrics = statcast_players.get(int(player_id))
+            statcast_score, statcast_reliability = _hr_statcast_score(
+                statcast_metrics,
+                statcast_populations,
+            )
 
         season_opportunities = _projection_opportunities(season)
         sample_reliability = _clamp(
@@ -1423,12 +1522,22 @@ def rank_players(
                 100.0,
             )
 
-            score = round(
-                (hr_probability * 0.55)
-                + (base_score * 0.30)
-                + (matchup_score * 0.15),
-                1,
-            )
+            if statcast_metrics:
+                score = round(
+                    (hr_probability * 0.45)
+                    + (base_score * 0.20)
+                    + (matchup_score * 0.15)
+                    + (statcast_score * 0.20),
+                    1,
+                )
+            else:
+                # Preserve the established HR model when Statcast is unavailable.
+                score = round(
+                    (hr_probability * 0.55)
+                    + (base_score * 0.30)
+                    + (matchup_score * 0.15),
+                    1,
+                )
 
         else:
             score = min(
@@ -1466,6 +1575,9 @@ def rank_players(
                 "weather": weather,
                 "park_factor": park_factor,
                 "park_adjustment": park_adjustment,
+                "statcast": statcast_metrics or {},
+                "statcast_power_score": statcast_score if statcast_metrics else None,
+                "statcast_sample_weight": statcast_reliability if statcast_metrics else 0.0,
                 "why": (
                     (
                         [
@@ -1510,6 +1622,27 @@ def rank_players(
                                 "Weather conditions reduce the offensive outlook"
                             ]
                             if weather_adjustment <= -1.0
+                            else []
+                        )
+                    )
+                    + (
+                        [
+                            "Statcast barrel and hard-hit quality strengthen the home-run profile"
+                        ]
+                        if (
+                            category == CATEGORY_HOME_RUNS
+                            and statcast_metrics
+                            and statcast_score >= 70.0
+                        )
+                        else (
+                            [
+                                "Statcast contact quality is below the strongest power profiles"
+                            ]
+                            if (
+                                category == CATEGORY_HOME_RUNS
+                                and statcast_metrics
+                                and statcast_score <= 35.0
+                            )
                             else []
                         )
                     )
