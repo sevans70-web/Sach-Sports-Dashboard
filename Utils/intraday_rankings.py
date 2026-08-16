@@ -223,39 +223,23 @@ def build_movement_summary(
     comparison: dict[str, list[dict[str, Any]]],
     maximum_items: int = 8,
 ) -> list[str]:
-    """Build concise summaries for the most meaningful Top 25 changes."""
-    messages: list[tuple[int, str]] = []
+    """
+    Build the outside-card movement summary.
 
-    for item in comparison.get("current", []):
-        movement = item.get("movement", {})
-        status = movement.get("status")
-        name = item.get("player", "Unknown player")
-        current_rank = movement.get("current")
-
-        if status == "new":
-            messages.append(
-                (10_000, f"🆕 {name} — entered the Top 25 at #{current_rank}")
-            )
-        elif status == "up":
-            change = int(movement.get("change", 0))
-            messages.append(
-                (abs(change), f"⬆️ {name} — up {change} spots to #{current_rank}")
-            )
-        elif status == "down":
-            change = abs(int(movement.get("change", 0)))
-            messages.append(
-                (change, f"⬇️ {name} — down {change} spots to #{current_rank}")
-            )
+    Current players show NEW / up / down movement on their cards.
+    This outside summary is reserved only for players who left the Top 25.
+    """
+    messages: list[str] = []
 
     for item in comparison.get("departed", []):
         name = item.get("player", "Unknown player")
         previous_rank = item.get("rank")
         messages.append(
-            (10_000, f"↩️ {name} — left the Top 25, previously #{previous_rank}")
+            f"↩️ {name} — left the Top 25, previously #{previous_rank}"
         )
 
-    messages.sort(key=lambda entry: entry[0], reverse=True)
-    return [message for _, message in messages[:maximum_items]]
+    return messages[:maximum_items]
+
 
 
 def categories_changed(
@@ -525,11 +509,15 @@ def load_compare_and_save(
             comparison
         )
 
+    # Save only when the current ranking itself changed from the last
+    # stored current ranking. Using previous_snapshot here caused a browser
+    # refresh to save the same ranking again and advance the baseline,
+    # which erased the movement indicators.
     should_save = (
         is_new_day
         or categories_changed(
             current_snapshot=current_snapshot,
-            previous_snapshot=previous_snapshot,
+            previous_snapshot=stored_snapshot,
         )
     )
 
