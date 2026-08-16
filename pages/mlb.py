@@ -365,6 +365,24 @@ def card_result_html(player: dict) -> str:
     result_label = escape(
         str(player.get("result_label", "Result unavailable"))
     )
+    contact_label = escape(
+        str(player.get("live_contact_label") or "")
+    )
+    contact_html = (
+        f"""
+        <div
+            style="
+                margin-top: 5px;
+                font-weight: 700;
+                font-size: 0.86rem;
+            "
+        >
+            {contact_label}
+        </div>
+        """
+        if contact_label
+        else ""
+    )
 
     return f"""
         <div
@@ -376,6 +394,7 @@ def card_result_html(player: dict) -> str:
         >
             Result: {result_label}
         </div>
+        {contact_html}
     """
 def load_live_rankings() -> dict:
     """Load live MLB player rankings for today's games."""
