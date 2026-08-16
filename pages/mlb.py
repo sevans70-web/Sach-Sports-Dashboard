@@ -278,6 +278,39 @@ def movement_label(player: dict) -> str:
     return str(movement.get("label") or "—")
 
 
+def build_movement_lookup(rankings: list[dict]) -> dict[str, dict]:
+    """Freeze the movement attached during the full-page calculation."""
+    lookup: dict[str, dict] = {}
+
+    for player in rankings:
+        try:
+            key = player_key(player)
+        except ValueError:
+            continue
+
+        movement = player.get("movement", {})
+        if isinstance(movement, dict):
+            lookup[key] = dict(movement)
+
+    return lookup
+
+
+def restore_movement(
+    rankings: list[dict],
+    movement_lookup: dict[str, dict],
+) -> None:
+    """Restore movement before a fragment-only Top 25 rerun."""
+    for player in rankings:
+        try:
+            key = player_key(player)
+        except ValueError:
+            continue
+
+        movement = movement_lookup.get(key)
+        if isinstance(movement, dict):
+            player["movement"] = dict(movement)
+
+
 def render_recent_movement(changes: list[str]) -> None:
     """Display the most meaningful movement across the full Top 25."""
     if not changes:
@@ -455,6 +488,13 @@ except (KeyError, ValueError, RankingSnapshotError) as error:
         "Intraday movement history is temporarily unavailable. "
         f"Current rankings are still displayed. Details: {error}"
     )
+
+
+MOVEMENT_LOOKUPS = {
+    "home_runs": build_movement_lookup(HOME_RUN_RANKINGS),
+    "hits": build_movement_lookup(HIT_RANKINGS),
+    "total_bases": build_movement_lookup(TOTAL_BASE_RANKINGS),
+}
 
 
 # ============================================================
@@ -725,6 +765,7 @@ def render_ranking_category(
     state_key: str,
     button_key: str,
     movement_summary: list[str],
+    movement_lookup: dict[str, dict],
 ) -> None:
     """Render a Top 5 preview and optional full Top 25 ranking."""
     render_html(
@@ -751,7 +792,9 @@ def render_ranking_category(
         st.info(f"No {title.lower()} rankings are available right now.")
         return
 
-    render_recent_movement(movement_summary)
+    # Fragment-only reruns must keep the movement calculated during the
+    # full page load instead of falling back to an unchanged dash.
+    restore_movement(rankings, movement_lookup)
 
     render_featured_player(rankings[0])
 
@@ -1667,6 +1710,7 @@ with home_run_tab:
         state_key="show_hr_25",
         button_key="toggle_hr_25",
         movement_summary=MOVEMENT_SUMMARIES.get("home_runs", []),
+        movement_lookup=MOVEMENT_LOOKUPS["home_runs"],
     )
      
 with hits_tab:
@@ -1677,6 +1721,7 @@ with hits_tab:
         state_key="show_hits_25",
         button_key="toggle_hits_25",
         movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
+        movement_lookup=MOVEMENT_LOOKUPS["hits"],
     )
 
 with total_bases_tab:
@@ -1687,6 +1732,7 @@ with total_bases_tab:
         state_key="show_tb_25",
         button_key="toggle_tb_25",
         movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
+        movement_lookup=MOVEMENT_LOOKUPS["total_bases"],
     )
 
 st.divider()
