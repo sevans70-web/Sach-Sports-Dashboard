@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
+from time import monotonic
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -14,6 +16,8 @@ MLB_BOXSCORE_URL = (
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 REQUEST_TIMEOUT_SECONDS = 20
+LIVE_RESULTS_CACHE_SECONDS = 30
+_LIVE_RESULTS_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
 
 
 def _requested_date(
@@ -50,10 +54,15 @@ def _request_json(
         return None, "MLB returned data that could not be read."
 
 
-def get_final_game_pks(
+
+def get_scoring_game_states(
     result_date: date | str | None = None,
 ) -> dict[str, Any]:
-    """Return completed MLB game IDs for one date."""
+    """
+    Return MLB games that can currently produce batter results.
+
+    Preview games are excluded. Live and completed games are included.
+    """
     requested_date = _requested_date(result_date)
 
     payload, error = _request_json(
@@ -68,31 +77,206 @@ def get_final_game_pks(
         return {
             "success": False,
             "date": requested_date,
-            "game_pks": [],
+            "games": [],
             "error": error,
         }
 
-    game_pks: list[int] = []
+    games: list[dict[str, Any]] = []
 
     for date_block in payload.get("dates", []):
         for game in date_block.get("games", []):
-            status = (
-                game.get("status", {})
-                .get("abstractGameState", "")
-            )
-
             game_pk = game.get("gamePk")
+            status = game.get("status", {}) or {}
+            abstract_state = str(
+                status.get("abstractGameState") or ""
+            ).strip().lower()
+            detailed_state = str(
+                status.get("detailedState") or ""
+            ).strip()
 
-            if (
-                str(status).lower() == "final"
-                and isinstance(game_pk, int)
-            ):
-                game_pks.append(game_pk)
+            if not isinstance(game_pk, int):
+                continue
+
+            if abstract_state not in {"live", "final"}:
+                continue
+
+            games.append(
+                {
+                    "game_pk": game_pk,
+                    "abstract_state": abstract_state,
+                    "detailed_state": detailed_state,
+                    "is_final": abstract_state == "final",
+                    "is_live": abstract_state == "live",
+                }
+            )
 
     return {
         "success": True,
         "date": requested_date,
-        "game_pks": game_pks,
+        "games": games,
+        "error": None,
+    }
+
+
+def _read_game_batter_results(
+    game: dict[str, Any],
+) -> tuple[int, list[dict[str, Any]], str | None]:
+    """Read current batter totals from one live or completed MLB box score."""
+    game_pk = int(game["game_pk"])
+    payload, error = _request_json(
+        MLB_BOXSCORE_URL.format(game_pk=game_pk)
+    )
+
+    if error or payload is None:
+        return game_pk, [], error or "Box score unavailable."
+
+    players: list[dict[str, Any]] = []
+    teams = payload.get("teams", {}) or {}
+
+    for side in ("away", "home"):
+        side_players = (
+            teams.get(side, {})
+            .get("players", {})
+            or {}
+        )
+
+        for player_record in side_players.values():
+            person = player_record.get("person", {}) or {}
+            player_id = person.get("id")
+            batting = (
+                player_record.get("stats", {})
+                .get("batting", {})
+                or {}
+            )
+
+            if not isinstance(player_id, int):
+                continue
+
+            players.append(
+                {
+                    "player_id": player_id,
+                    "player_name": person.get(
+                        "fullName",
+                        "Unknown player",
+                    ),
+                    "game_pk": game_pk,
+                    "game_state": game.get("abstract_state"),
+                    "game_status": game.get("detailed_state"),
+                    "game_finished": bool(game.get("is_final")),
+                    "result_live": bool(game.get("is_live")),
+                    "hits": int(batting.get("hits") or 0),
+                    "home_runs": int(batting.get("homeRuns") or 0),
+                    "total_bases": int(batting.get("totalBases") or 0),
+                    "at_bats": int(batting.get("atBats") or 0),
+                }
+            )
+
+    return game_pk, players, None
+
+
+def get_live_batter_results(
+    result_date: date | str | None = None,
+    force_refresh: bool = False,
+) -> dict[str, Any]:
+    """
+    Return current batting totals for live and completed games.
+
+    Results are cached briefly so Home Runs, Hits, and Total Bases do not
+    make three identical MLB API passes during one Streamlit render.
+    """
+    requested_date = _requested_date(result_date)
+    cached = _LIVE_RESULTS_CACHE.get(requested_date)
+
+    if (
+        not force_refresh
+        and cached is not None
+        and monotonic() - cached[0] < LIVE_RESULTS_CACHE_SECONDS
+    ):
+        return cached[1]
+
+    games_result = get_scoring_game_states(requested_date)
+
+    if not games_result.get("success"):
+        result = {
+            "success": False,
+            "date": requested_date,
+            "by_player_id": {},
+            "player_count": 0,
+            "live_game_count": 0,
+            "final_game_count": 0,
+            "errors": [games_result.get("error")],
+        }
+        _LIVE_RESULTS_CACHE[requested_date] = (monotonic(), result)
+        return result
+
+    games = games_result.get("games", [])
+    by_player_id: dict[int, dict[str, Any]] = {}
+    errors: list[str] = []
+
+    worker_count = min(8, max(len(games), 1))
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = {
+            executor.submit(_read_game_batter_results, game): game
+            for game in games
+        }
+
+        for future in as_completed(futures):
+            game = futures[future]
+            try:
+                game_pk, player_rows, error = future.result()
+            except Exception as exc:
+                game_pk = game.get("game_pk")
+                player_rows = []
+                error = f"Unexpected box-score error: {exc}"
+
+            if error:
+                errors.append(f"Game {game_pk}: {error}")
+                continue
+
+            for row in player_rows:
+                by_player_id[row["player_id"]] = row
+
+    result = {
+        "success": True,
+        "date": requested_date,
+        "by_player_id": by_player_id,
+        "player_count": len(by_player_id),
+        "live_game_count": sum(
+            1 for game in games if game.get("is_live")
+        ),
+        "final_game_count": sum(
+            1 for game in games if game.get("is_final")
+        ),
+        "errors": errors,
+    }
+
+    _LIVE_RESULTS_CACHE[requested_date] = (monotonic(), result)
+    return result
+
+
+def get_final_game_pks(
+    result_date: date | str | None = None,
+) -> dict[str, Any]:
+    """Backward-compatible helper returning completed game IDs only."""
+    games_result = get_scoring_game_states(result_date)
+
+    if not games_result.get("success"):
+        return {
+            "success": False,
+            "date": games_result.get("date"),
+            "game_pks": [],
+            "error": games_result.get("error"),
+        }
+
+    return {
+        "success": True,
+        "date": games_result.get("date"),
+        "game_pks": [
+            game["game_pk"]
+            for game in games_result.get("games", [])
+            if game.get("is_final")
+        ],
         "error": None,
     }
 
@@ -100,99 +284,18 @@ def get_final_game_pks(
 def get_final_batter_results(
     result_date: date | str | None = None,
 ) -> dict[str, Any]:
-    """
-    Return final hitting totals by MLB player ID.
-
-    Only completed games are included.
-    """
-    games_result = get_final_game_pks(result_date)
-
-    if not games_result.get("success"):
-        return {
-            "success": False,
-            "date": games_result.get("date"),
-            "by_player_id": {},
-            "player_count": 0,
-            "errors": [games_result.get("error")],
-        }
-
-    by_player_id: dict[int, dict[str, Any]] = {}
-    errors: list[str] = []
-
-    for game_pk in games_result.get("game_pks", []):
-        payload, error = _request_json(
-            MLB_BOXSCORE_URL.format(game_pk=game_pk)
-        )
-
-        if error or payload is None:
-            errors.append(
-                f"Game {game_pk}: "
-                f"{error or 'Box score unavailable.'}"
-            )
-            continue
-
-        teams = payload.get("teams", {})
-
-        for side in ("away", "home"):
-            players = (
-                teams.get(side, {})
-                .get("players", {})
-            )
-
-            for player_record in players.values():
-                person = player_record.get("person", {})
-                player_id = person.get("id")
-
-                batting = (
-                    player_record.get("stats", {})
-                    .get("batting", {})
-                )
-
-                if not isinstance(player_id, int):
-                    continue
-
-                hits = int(batting.get("hits") or 0)
-
-                home_runs = int(
-                    batting.get("homeRuns") or 0
-                )
-
-                total_bases = int(
-                    batting.get("totalBases") or 0
-                )
-
-                at_bats = int(
-                    batting.get("atBats") or 0
-                )
-
-                existing = by_player_id.get(
-                    player_id,
-                    {
-                        "player_id": player_id,
-                        "player_name": person.get(
-                            "fullName",
-                            "Unknown player",
-                        ),
-                        "hits": 0,
-                        "home_runs": 0,
-                        "total_bases": 0,
-                        "at_bats": 0,
-                    },
-                )
-                
-                existing["hits"] += hits
-                existing["home_runs"] += home_runs
-                existing["total_bases"] += total_bases
-                existing["at_bats"] += at_bats
-
-                by_player_id[player_id] = existing
+    """Backward-compatible final-only view of current batter results."""
+    live_results = get_live_batter_results(result_date)
+    by_player_id = {
+        player_id: row
+        for player_id, row in live_results.get("by_player_id", {}).items()
+        if row.get("game_finished")
+    }
 
     return {
-        "success": bool(by_player_id),
-        "date": games_result.get("date"),
+        **live_results,
         "by_player_id": by_player_id,
         "player_count": len(by_player_id),
-        "errors": errors,
     }
 
 
@@ -225,7 +328,7 @@ def grade_top_25(
             "category must be 'home_runs', 'hits', or 'total_bases'"
         )
 
-    results = get_final_batter_results(result_date)
+    results = get_live_batter_results(result_date)
     result_lookup = results.get("by_player_id", {})
 
     graded: list[dict[str, Any]] = []
@@ -234,7 +337,12 @@ def grade_top_25(
         player_id = prediction.get("player_id")
         actual = result_lookup.get(player_id)
 
-        game_finished = actual is not None
+        game_finished = bool(
+            actual and actual.get("game_finished")
+        )
+        result_live = bool(
+            actual and actual.get("result_live")
+        )
 
         actual_hits = (
             int(actual.get("hits", 0))
@@ -254,41 +362,54 @@ def grade_top_25(
             else 0
         )
 
-        if not game_finished:
-            correct = None
-            result_label = "Game not final"
-
-        elif normalized_category == "home_runs":
-            correct = actual_home_runs >= 1
-            result_label = (
-                f"✅ {actual_home_runs} HR"
-                if correct
-                else "❌ 0 HR"
-            )
+        if normalized_category == "home_runs":
+            threshold_met = actual_home_runs >= 1
+            live_value = f"{actual_home_runs} HR"
+            final_failure = "❌ 0 HR"
 
         elif normalized_category == "hits":
-            correct = actual_hits >= 1
-            result_label = (
-                f"✅ {actual_hits} hit"
+            threshold_met = actual_hits >= 1
+            live_value = (
+                f"{actual_hits} hit"
                 if actual_hits == 1
-                else (
-                    f"✅ {actual_hits} hits"
-                    if correct
-                    else "❌ 0 hits"
-                )
+                else f"{actual_hits} hits"
+            )
+            final_failure = "❌ 0 hits"
+
+        else:
+            threshold_met = actual_total_bases >= 2
+            live_value = (
+                f"{actual_total_bases} total base"
+                if actual_total_bases == 1
+                else f"{actual_total_bases} total bases"
+            )
+            final_failure = (
+                f"❌ {actual_total_bases} total base"
+                if actual_total_bases == 1
+                else "❌ 0 total bases"
+            )
+
+        if result_live:
+            # Never grade a live miss as a loss. A player can still reach
+            # the target later in the game.
+            correct = None
+            result_label = (
+                f"🟢 LIVE · ✅ {live_value}"
+                if threshold_met
+                else f"🟡 LIVE · {live_value}"
+            )
+
+        elif game_finished:
+            correct = threshold_met
+            result_label = (
+                f"✅ {live_value}"
+                if threshold_met
+                else final_failure
             )
 
         else:
-            correct = actual_total_bases >= 2
-            result_label = (
-                f"❌ {actual_total_bases} total base"
-                if actual_total_bases == 1
-                else (
-                    f"✅ {actual_total_bases} total bases"
-                    if correct
-                    else "❌ 0 total bases"
-                )
-            )
+            correct = None
+            result_label = "Game not started"
 
         graded.append(
             {
@@ -297,6 +418,12 @@ def grade_top_25(
                 "actual_home_runs": actual_home_runs,
                 "actual_total_bases": actual_total_bases,
                 "game_finished": game_finished,
+                "result_live": result_live,
+                "game_status": (
+                    actual.get("game_status")
+                    if actual
+                    else None
+                ),
                 "correct": correct,
                 "result_label": result_label,
             }
