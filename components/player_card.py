@@ -6,6 +6,7 @@ from data.mlb_statcast import (
     get_statcast_batter,
     load_statcast_batter_metrics,
 )
+from data.mlb_players import get_player_headshot_url
 
 
 def _number(value: object, digits: int = 3) -> str:
@@ -267,6 +268,38 @@ def render_player_card(player_data: dict) -> None:
     st.markdown(
         """
         <style>
+        .gi-intel-player-header {
+            align-items: center;
+            display: grid;
+            gap: 14px;
+            grid-template-columns: 82px minmax(0, 1fr);
+            margin: 4px 0 14px;
+        }
+        .gi-intel-player-photo {
+            background: linear-gradient(145deg, #075985, #0f172a);
+            border: 1px solid rgba(56, 189, 248, 0.42);
+            border-radius: 14px;
+            height: 78px;
+            overflow: hidden;
+            width: 78px;
+        }
+        .gi-intel-player-photo img {
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            width: 100%;
+        }
+        .gi-intel-player-name {
+            color: #f8fafc;
+            font-size: 1.18rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .gi-intel-player-team {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
         .gi-intel-grid {
             display: grid;
             gap: 10px;
@@ -311,6 +344,18 @@ def render_player_card(player_data: dict) -> None:
             color: #94a3b8;
         }
         @media (max-width: 760px) {
+            .gi-intel-player-header {
+                gap: 10px;
+                grid-template-columns: 62px minmax(0, 1fr);
+            }
+            .gi-intel-player-photo {
+                border-radius: 12px;
+                height: 58px;
+                width: 58px;
+            }
+            .gi-intel-player-name {
+                font-size: 1rem;
+            }
             .gi-intel-grid {
                 gap: 7px;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -350,6 +395,34 @@ def render_player_card(player_data: dict) -> None:
         player_data.get("opponent_abbreviation", "")
     )
 
+    player_id = int(player_data.get("player_id") or 0)
+    headshot_url = str(player_data.get("headshot_url") or "").strip()
+    if not headshot_url and player_id:
+        headshot_url = get_player_headshot_url(player_id)
+
+    if headshot_url:
+        st.markdown(
+            f"""
+            <div class="gi-intel-player-header">
+                <div class="gi-intel-player-photo">
+                    <img
+                        src="{escape(headshot_url)}"
+                        alt="{escape(player_name)} headshot"
+                        loading="lazy"
+                        referrerpolicy="no-referrer"
+                    >
+                </div>
+                <div>
+                    <div class="gi-intel-player-name">{escape(player_name)}</div>
+                    <div class="gi-intel-player-team">
+                        {escape(team)} vs. {escape(opponent)}
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     gi_score = float(
         player_data.get("gi_score", 0.0) or 0.0
     )
@@ -372,7 +445,6 @@ def render_player_card(player_data: dict) -> None:
     season = player_data.get("season_stats", {}) or {}
     recent = player_data.get("recent_stats", {}) or {}
 
-    player_id = int(player_data.get("player_id") or 0)
     statcast = None
     if player_id:
         snapshot = load_statcast_batter_metrics(minimum_pa=10)
