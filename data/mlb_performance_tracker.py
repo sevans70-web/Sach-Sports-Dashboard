@@ -17,7 +17,15 @@ REPOSITORY = "sevans70-web/Sach-Sports-Dashboard"
 BRANCH = "main"
 HISTORY_PATH = "data/mlb_performance_history.json"
 GITHUB_API = "https://api.github.com"
-CORE_CATEGORIES = ("home_runs", "hits", "total_bases")
+CORE_CATEGORIES = (
+    "home_runs",
+    "hits",
+    "total_bases",
+    "runs",
+    "rbis",
+    "walks",
+    "stolen_bases",
+)
 
 
 def _headers(token: str) -> dict[str, str]:
@@ -119,7 +127,13 @@ def _apply_final_results(
             row["result_label"] = actual.get("result_label", "Final")
             row["game_finished"] = True
             for field in (
-                "actual_hits", "actual_home_runs", "actual_total_bases"
+                "actual_hits",
+                "actual_home_runs",
+                "actual_total_bases",
+                "actual_runs",
+                "actual_rbis",
+                "actual_walks",
+                "actual_stolen_bases",
             ):
                 if field in actual:
                     row[field] = actual[field]
