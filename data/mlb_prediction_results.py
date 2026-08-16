@@ -13,6 +13,9 @@ MLB_SCHEDULE_URL = "https://statsapi.mlb.com/api/v1/schedule"
 MLB_BOXSCORE_URL = (
     "https://statsapi.mlb.com/api/v1/game/{game_pk}/boxscore"
 )
+MLB_LIVE_FEED_URL = (
+    "https://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live"
+)
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 REQUEST_TIMEOUT_SECONDS = 20
@@ -121,17 +124,31 @@ def get_scoring_game_states(
 def _read_game_batter_results(
     game: dict[str, Any],
 ) -> tuple[int, list[dict[str, Any]], str | None]:
-    """Read current batter totals from one live or completed MLB box score."""
+    """Read current batter totals from one live or completed MLB game."""
     game_pk = int(game["game_pk"])
-    payload, error = _request_json(
-        MLB_BOXSCORE_URL.format(game_pk=game_pk)
-    )
+
+    if game.get("is_live"):
+        payload, error = _request_json(
+            MLB_LIVE_FEED_URL.format(game_pk=game_pk)
+        )
+        teams = (
+            payload.get("liveData", {})
+            .get("boxscore", {})
+            .get("teams", {})
+            if payload
+            else {}
+        )
+    else:
+        payload, error = _request_json(
+            MLB_BOXSCORE_URL.format(game_pk=game_pk)
+        )
+        teams = payload.get("teams", {}) if payload else {}
 
     if error or payload is None:
-        return game_pk, [], error or "Box score unavailable."
+        return game_pk, [], error or "Game data unavailable."
 
     players: list[dict[str, Any]] = []
-    teams = payload.get("teams", {}) or {}
+    teams = teams or {}
 
     for side in ("away", "home"):
         side_players = (
@@ -316,6 +333,7 @@ def grade_top_25(
     rankings: list[dict[str, Any]],
     category: str,
     result_date: date | str | None = None,
+    force_refresh: bool = False,
 ) -> dict[str, Any]:
     """
     Grade saved Top 25 Home Run, Hit, or Total Base predictions.
@@ -341,7 +359,10 @@ def grade_top_25(
             "category must be 'home_runs', 'hits', or 'total_bases'"
         )
 
-    results = get_live_batter_results(result_date)
+    results = get_live_batter_results(
+        result_date,
+        force_refresh=force_refresh,
+    )
     result_lookup = results.get("by_player_id", {})
     result_name_lookup = {
         _normalized_player_name(row.get("player_name")): row
