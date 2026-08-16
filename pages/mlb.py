@@ -6,13 +6,12 @@ File location: pages/mlb.py
 Fixes in this version:
 - Prevents player-card HTML from appearing as raw code.
 - Removes dependency on temporary internet avatar images.
-- Uses built-in initials placeholders until official MLB headshots are connected.
+- Uses official MLB headshots with initials only as a fallback.
 - Keeps the existing tablet/app-first visual design.
 - Adds responsive desktop behaviour without changing the mobile identity.
 
 Important:
-The rankings and player identities below are placeholders for layout testing.
-They are not current recommendations.
+The page uses live ranking data and official MLB player headshots when available.
 """
 
 from datetime import datetime
@@ -586,86 +585,8 @@ def projection_display(player: dict) -> tuple[str, str]:
     return "Projection", "Unavailable"
 
 def render_featured_player(player: dict) -> None:
-    """Render the #1 player as a large featured card."""
-    projection_label, projection_value = projection_display(player)
-    photo_html = player_photo_html(
-        player,
-        "gi-featured-photo",
-        "gi-featured-photo-placeholder",
-    )
-
-    render_html(
-        f"""
-        <div class="gi-featured-player">
-            <div class="gi-featured-photo-wrap">
-                {photo_html}
-            </div>
-
-            <div class="gi-featured-content">
-                <div class="gi-featured-topline">
-                    <span class="gi-rank-badge">
-                        #{player['rank']} · {escape(movement_label(player))}
-                    </span>
-                </div>
-
-                <div class="gi-featured-name">
-                    {escape(player['player'])}
-                </div>
-
-                <div class="gi-featured-matchup">
-                    {escape(player['team'])} vs. {escape(player['opponent'])}
-                </div>
-
-                <div class="gi-featured-market">
-                    {escape(player['category'])}
-                </div>
-
-                <div
-                    class="gi-featured-projection"
-                    style="
-                        margin: 12px 0;
-                        padding: 10px 12px;
-                        border: 1px solid rgba(56, 189, 248, 0.35);
-                        border-radius: 10px;
-                        background: rgba(14, 116, 144, 0.14);
-                    "
-                >
-                    <div
-                        style="
-                            font-size: 0.72rem;
-                            text-transform: uppercase;
-                            letter-spacing: 0.08em;
-                            opacity: 0.72;
-                        "
-                    >
-                        {escape(projection_label)}
-                    </div>
-
-                    <div
-                        style="
-                            margin-top: 3px;
-                            font-size: 1.05rem;
-                            font-weight: 700;
-                        "
-                    >
-                        {escape(projection_value)}
-                    </div>
-                </div>
-
-                <div class="gi-featured-reason">
-                    {escape(player['reason'])}
-                </div>
-
-                {card_result_html(player)}
-
-                <div class="gi-featured-footer">
-                    <span>GI Score: {player['score']}</span>
-                    <span>{escape(player['status'])}</span>
-                </div>
-            </div>
-        </div>
-        """
-    )
+    """Render the #1 player using the same card design as the rest of the Top 5."""
+    render_compact_player(player)
 
 
 def render_compact_player(player: dict) -> None:
@@ -1212,7 +1133,7 @@ st.markdown(
 
         .gi-compact-player {
             display: grid;
-            grid-template-columns: 58px 42px minmax(0, 1fr);
+            grid-template-columns: 54px 42px minmax(0, 1fr);
             align-items: center;
             gap: 13px;
             padding: 14px 16px;
@@ -1344,8 +1265,8 @@ st.markdown(
 
         .gi-compact-photo {
             border-radius: 12px;
-            height: 58px;
-            width: 58px;
+            height: 54px;
+            width: 54px;
         }
 
         .gi-full-photo {
@@ -1365,8 +1286,8 @@ st.markdown(
         .gi-full-photo img,
         .gi-native-photo img {
             height: 100%;
-            object-fit: cover;
-            object-position: center top;
+            object-fit: contain;
+            object-position: center;
             width: 100%;
         }
 
@@ -1632,8 +1553,8 @@ st.markdown(
             }
 
             .gi-compact-photo {
-                height: 44px;
-                width: 44px;
+                height: 46px;
+                width: 46px;
             }
 
             .gi-full-photo {
@@ -1848,8 +1769,7 @@ render_html(
 
 st.subheader("Player Rankings")
 st.caption(
-    "The cards below use placeholders so we can judge the layout before "
-    "connecting real players and official headshots."
+    "Official MLB player headshots are shown with today's live rankings."
 )
 
 (
