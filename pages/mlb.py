@@ -53,8 +53,8 @@ def get_toronto_now() -> datetime:
     return datetime.now(TORONTO_TIMEZONE)
 
 def player_initials(player_name: str) -> str:
-    """Return two initials for a temporary player-photo placeholder."""
-    words = [word for word in player_name.split() if word]
+    """Return two initials only as a safe image fallback."""
+    words = [word for word in str(player_name).split() if word]
 
     if not words:
         return "MLB"
@@ -63,6 +63,33 @@ def player_initials(player_name: str) -> str:
         return words[0][:2].upper()
 
     return f"{words[0][0]}{words[-1][0]}".upper()
+
+
+def player_photo_html(
+    player: dict,
+    css_class: str,
+    fallback_class: str,
+) -> str:
+    """Return official MLB headshot HTML when available."""
+    name = str(player.get("player") or player.get("player_name") or "MLB Player")
+    headshot_url = str(player.get("headshot_url") or "").strip()
+    initials = player_initials(name)
+
+    if headshot_url:
+        return (
+            f'<div class="{escape(css_class)}">'
+            f'<img src="{escape(headshot_url)}" '
+            f'alt="{escape(name)} headshot" '
+            f'loading="lazy" referrerpolicy="no-referrer">'
+            "</div>"
+        )
+
+    return (
+        f'<div class="{escape(fallback_class)}" '
+        f'aria-label="Headshot unavailable for {escape(name)}">'
+        f'{escape(initials)}'
+        "</div>"
+    )
 
 
 def render_html(html: str) -> None:
@@ -560,20 +587,18 @@ def projection_display(player: dict) -> tuple[str, str]:
 
 def render_featured_player(player: dict) -> None:
     """Render the #1 player as a large featured card."""
-    initials = player_initials(player["player"])
     projection_label, projection_value = projection_display(player)
+    photo_html = player_photo_html(
+        player,
+        "gi-featured-photo",
+        "gi-featured-photo-placeholder",
+    )
 
     render_html(
         f"""
         <div class="gi-featured-player">
             <div class="gi-featured-photo-wrap">
-                <div
-                    class="gi-featured-photo-placeholder"
-                    aria-label="Temporary image placeholder for {escape(player['player'])}"
-                >
-                    {escape(initials)}
-                </div>
-                <div class="gi-photo-note">Photo placeholder</div>
+                {photo_html}
             </div>
 
             <div class="gi-featured-content">
@@ -645,17 +670,16 @@ def render_featured_player(player: dict) -> None:
 
 def render_compact_player(player: dict) -> None:
     """Render players #2 through #5 in a compact card."""
-    initials = player_initials(player["player"])
+    photo_html = player_photo_html(
+        player,
+        "gi-compact-photo",
+        "gi-compact-photo-placeholder",
+    )
 
     render_html(
         f"""
         <div class="gi-compact-player">
-            <div
-                class="gi-compact-photo-placeholder"
-                aria-label="Temporary image placeholder for {escape(player['player'])}"
-            >
-                {escape(initials)}
-            </div>
+            {photo_html}
 
             <div class="gi-compact-rank">
                 #{player['rank']}<br>
@@ -687,8 +711,12 @@ def render_compact_player(player: dict) -> None:
 
 def render_full_ranking_row(player: dict) -> None:
     """Render one row in the full Top 25 view."""
-    initials = player_initials(player["player"])
     projection_label, projection_value = projection_display(player)
+    photo_html = player_photo_html(
+        player,
+        "gi-full-photo",
+        "gi-full-photo-placeholder",
+    )
 
     render_html(
         f"""
@@ -698,12 +726,7 @@ def render_full_ranking_row(player: dict) -> None:
                 <small>{escape(movement_label(player))}</small>
             </div>
 
-            <div
-                class="gi-full-photo-placeholder"
-                aria-label="Temporary image placeholder for {escape(player['player'])}"
-            >
-                {escape(initials)}
-            </div>
+            {photo_html}
 
             <div class="gi-full-main">
                 <div class="gi-full-name">
@@ -737,8 +760,12 @@ def render_full_ranking_row(player: dict) -> None:
 
 def render_expandable_ranking_header(player: dict) -> None:
     """Render the ranking summary inside the interactive Streamlit card."""
-    initials = player_initials(player["player"])
     projection_label, projection_value = projection_display(player)
+    photo_html = player_photo_html(
+        player,
+        "gi-native-photo",
+        "gi-native-initials",
+    )
     render_html(
         f"""
         <div class="gi-card-header">
@@ -746,7 +773,7 @@ def render_expandable_ranking_header(player: dict) -> None:
                 #{player['rank']}
                 <small>{escape(movement_label(player))}</small>
             </div>
-            <div class="gi-native-initials">{escape(initials)}</div>
+            {photo_html}
             <div class="gi-card-player">
                 <strong>{escape(player['player'])}</strong>
                 <span>{escape(player['team'])} vs. {escape(player['opponent'])}</span>
@@ -1297,6 +1324,52 @@ st.markdown(
             text-align: left;
         }
 
+        .gi-featured-photo,
+        .gi-compact-photo,
+        .gi-full-photo,
+        .gi-native-photo {
+            align-items: center;
+            background: linear-gradient(145deg, #075985, #0f172a);
+            border: 1px solid rgba(56, 189, 248, 0.55);
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .gi-featured-photo {
+            border-radius: 18px;
+            height: 150px;
+            width: 150px;
+        }
+
+        .gi-compact-photo {
+            border-radius: 12px;
+            height: 58px;
+            width: 58px;
+        }
+
+        .gi-full-photo {
+            border-radius: 12px;
+            height: 50px;
+            width: 50px;
+        }
+
+        .gi-native-photo {
+            border-radius: 12px;
+            height: 44px;
+            width: 44px;
+        }
+
+        .gi-featured-photo img,
+        .gi-compact-photo img,
+        .gi-full-photo img,
+        .gi-native-photo img {
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            width: 100%;
+        }
+
         .gi-native-initials {
             align-items: center;
             background: linear-gradient(145deg, #075985, #0f172a);
@@ -1551,6 +1624,27 @@ st.markdown(
                 gap: 8px;
                 grid-template-columns: 32px 40px minmax(0, 1fr) 54px;
                 padding: 6px 0 3px;
+            }
+
+            .gi-featured-photo {
+                height: 112px;
+                width: 112px;
+            }
+
+            .gi-compact-photo {
+                height: 44px;
+                width: 44px;
+            }
+
+            .gi-full-photo {
+                height: 36px;
+                width: 36px;
+            }
+
+            .gi-native-photo {
+                border-radius: 10px;
+                height: 38px;
+                width: 38px;
             }
 
             .gi-native-initials {
@@ -1875,7 +1969,7 @@ with interpretation_column:
     )
 
 st.caption(
-    "MLB Page v1.1 uses sample players and built-in temporary photo placeholders. "
+    "MLB Page v1.1 uses live player data and official MLB headshots when available. "
     "Real rankings, official player headshots, schedule data, lineups, weather, "
     "and clickable player pages will be connected in later builds."
 )
