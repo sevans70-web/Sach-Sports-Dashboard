@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-15T20:52:37.879380-04:00",
+  "captured_at": "2026-08-15T21:15:03.957078-04:00",
   "categories": {
     "hits": [
       {
@@ -15,7 +15,7 @@
         "player_id": 670541,
         "player_key": "670541",
         "rank": 2,
-        "score": 78.3,
+        "score": 78.2,
         "team": "Houston Astros"
       },
       {
@@ -47,7 +47,7 @@
         "player_id": 664034,
         "player_key": "664034",
         "rank": 6,
-        "score": 74.5,
+        "score": 74.4,
         "team": "San Diego Padres"
       },
       {
@@ -63,7 +63,7 @@
         "player_id": 672695,
         "player_key": "672695",
         "rank": 8,
-        "score": 73.8,
+        "score": 73.9,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -83,27 +83,27 @@
         "team": "New York Mets"
       },
       {
-        "player": "Wade Meckler",
-        "player_id": 685133,
-        "player_key": "685133",
-        "rank": 11,
-        "score": 70.3,
-        "team": "Los Angeles Angels"
-      },
-      {
         "player": "Jung Hoo Lee",
         "player_id": 808982,
         "player_key": "808982",
-        "rank": 12,
+        "rank": 11,
         "score": 70.3,
         "team": "San Francisco Giants"
+      },
+      {
+        "player": "Wade Meckler",
+        "player_id": 685133,
+        "player_key": "685133",
+        "rank": 12,
+        "score": 70.2,
+        "team": "Los Angeles Angels"
       },
       {
         "player": "Gabriel Moreno",
         "player_id": 672515,
         "player_key": "672515",
         "rank": 13,
-        "score": 70.2,
+        "score": 70.1,
         "team": "Arizona Diamondbacks"
       },
       {
@@ -111,7 +111,7 @@
         "player_id": 691023,
         "player_key": "691023",
         "rank": 14,
-        "score": 69.8,
+        "score": 69.7,
         "team": "St. Louis Cardinals"
       },
       {
@@ -175,7 +175,7 @@
         "player_id": 676475,
         "player_key": "676475",
         "rank": 22,
-        "score": 66.3,
+        "score": 66.2,
         "team": "St. Louis Cardinals"
       },
       {
@@ -187,20 +187,20 @@
         "team": "San Diego Padres"
       },
       {
-        "player": "Seiya Suzuki",
-        "player_id": 673548,
-        "player_key": "673548",
-        "rank": 24,
-        "score": 65.8,
-        "team": "Chicago Cubs"
-      },
-      {
         "player": "Xavier Edwards",
         "player_id": 669364,
         "player_key": "669364",
-        "rank": 25,
-        "score": 65.5,
+        "rank": 24,
+        "score": 65.8,
         "team": "Miami Marlins"
+      },
+      {
+        "player": "Seiya Suzuki",
+        "player_id": 673548,
+        "player_key": "673548",
+        "rank": 25,
+        "score": 65.8,
+        "team": "Chicago Cubs"
       }
     ],
     "home_runs": [
@@ -249,24 +249,24 @@
         "player_id": 691406,
         "player_key": "691406",
         "rank": 6,
-        "score": 51.0,
+        "score": 50.9,
         "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Yordan Alvarez",
-        "player_id": 670541,
-        "player_key": "670541",
-        "rank": 7,
-        "score": 50.4,
-        "team": "Houston Astros"
       },
       {
         "player": "Zack Gelof",
         "player_id": 680869,
         "player_key": "680869",
-        "rank": 8,
+        "rank": 7,
         "score": 50.4,
         "team": "Athletics"
+      },
+      {
+        "player": "Yordan Alvarez",
+        "player_id": 670541,
+        "player_key": "670541",
+        "rank": 8,
+        "score": 50.3,
+        "team": "Houston Astros"
       },
       {
         "player": "Jackson Chourio",
@@ -321,7 +321,7 @@
         "player_id": 592626,
         "player_key": "592626",
         "rank": 15,
-        "score": 48.4,
+        "score": 48.3,
         "team": "Texas Rangers"
       },
       {
@@ -337,7 +337,7 @@
         "player_id": 646240,
         "player_key": "646240",
         "rank": 17,
-        "score": 47.8,
+        "score": 47.7,
         "team": "San Francisco Giants"
       },
       {
@@ -381,18 +381,10 @@
         "team": "Pittsburgh Pirates"
       },
       {
-        "player": "Byron Buxton",
-        "player_id": 621439,
-        "player_key": "621439",
-        "rank": 23,
-        "score": 46.9,
-        "team": "Minnesota Twins"
-      },
-      {
         "player": "Jac Caglianone",
         "player_id": 695506,
         "player_key": "695506",
-        "rank": 24,
+        "rank": 23,
         "score": 46.9,
         "team": "Kansas City Royals"
       },
@@ -400,9 +392,17 @@
         "player": "Ronald Acuña Jr.",
         "player_id": 660670,
         "player_key": "660670",
-        "rank": 25,
+        "rank": 24,
         "score": 46.6,
         "team": "Atlanta Braves"
+      },
+      {
+        "player": "Ceddanne Rafaela",
+        "player_id": 678882,
+        "player_key": "678882",
+        "rank": 25,
+        "score": 46.5,
+        "team": "Boston Red Sox"
       }
     ],
     "total_bases": [
@@ -411,7 +411,7 @@
         "player_id": 680869,
         "player_key": "680869",
         "rank": 1,
-        "score": 78.0,
+        "score": 77.9,
         "team": "Athletics"
       },
       {
@@ -419,7 +419,7 @@
         "player_id": 691718,
         "player_key": "691718",
         "rank": 2,
-        "score": 77.2,
+        "score": 77.1,
         "team": "Chicago Cubs"
       },
       {
@@ -427,7 +427,7 @@
         "player_id": 678882,
         "player_key": "678882",
         "rank": 3,
-        "score": 76.9,
+        "score": 76.8,
         "team": "Boston Red Sox"
       },
       {
@@ -435,7 +435,7 @@
         "player_id": 677800,
         "player_key": "677800",
         "rank": 4,
-        "score": 76.9,
+        "score": 76.8,
         "team": "Boston Red Sox"
       },
       {
@@ -451,7 +451,7 @@
         "player_id": 624413,
         "player_key": "624413",
         "rank": 6,
-        "score": 75.0,
+        "score": 74.9,
         "team": "Baltimore Orioles"
       },
       {
@@ -459,56 +459,56 @@
         "player_id": 682998,
         "player_key": "682998",
         "rank": 7,
-        "score": 74.8,
+        "score": 74.7,
         "team": "Arizona Diamondbacks"
-      },
-      {
-        "player": "Jake McCarthy",
-        "player_id": 664983,
-        "player_key": "664983",
-        "rank": 8,
-        "score": 74.3,
-        "team": "Colorado Rockies"
       },
       {
         "player": "Fernando Tatis Jr.",
         "player_id": 665487,
         "player_key": "665487",
-        "rank": 9,
+        "rank": 8,
         "score": 74.3,
         "team": "San Diego Padres"
+      },
+      {
+        "player": "Jake McCarthy",
+        "player_id": 664983,
+        "player_key": "664983",
+        "rank": 9,
+        "score": 74.2,
+        "team": "Colorado Rockies"
       },
       {
         "player": "Griffin Conine",
         "player_id": 665052,
         "player_key": "665052",
         "rank": 10,
-        "score": 74.2,
+        "score": 74.1,
         "team": "Miami Marlins"
       },
       {
-        "player": "Byron Buxton",
-        "player_id": 621439,
-        "player_key": "621439",
+        "player": "Jackson Chourio",
+        "player_id": 694192,
+        "player_key": "694192",
         "rank": 11,
-        "score": 74.1,
-        "team": "Minnesota Twins"
+        "score": 72.7,
+        "team": "Milwaukee Brewers"
       },
       {
         "player": "Junior Caminero",
         "player_id": 691406,
         "player_key": "691406",
         "rank": 12,
-        "score": 72.7,
+        "score": 72.6,
         "team": "Tampa Bay Rays"
       },
       {
-        "player": "Jackson Chourio",
-        "player_id": 694192,
-        "player_key": "694192",
+        "player": "Byron Buxton",
+        "player_id": 621439,
+        "player_key": "621439",
         "rank": 13,
-        "score": 72.7,
-        "team": "Milwaukee Brewers"
+        "score": 72.5,
+        "team": "Minnesota Twins"
       },
       {
         "player": "Kyle Schwarber",
@@ -531,7 +531,7 @@
         "player_id": 621566,
         "player_key": "621566",
         "rank": 16,
-        "score": 71.6,
+        "score": 71.5,
         "team": "Atlanta Braves"
       },
       {
@@ -539,7 +539,7 @@
         "player_id": 695506,
         "player_key": "695506",
         "rank": 17,
-        "score": 71.3,
+        "score": 71.2,
         "team": "Kansas City Royals"
       },
       {
@@ -555,7 +555,7 @@
         "player_id": 676475,
         "player_key": "676475",
         "rank": 19,
-        "score": 70.4,
+        "score": 70.3,
         "team": "St. Louis Cardinals"
       },
       {
@@ -587,7 +587,7 @@
         "player_id": 691023,
         "player_key": "691023",
         "rank": 23,
-        "score": 68.4,
+        "score": 68.5,
         "team": "St. Louis Cardinals"
       },
       {
@@ -595,7 +595,7 @@
         "player_id": 808982,
         "player_key": "808982",
         "rank": 24,
-        "score": 68.3,
+        "score": 68.4,
         "team": "San Francisco Giants"
       },
       {
@@ -603,7 +603,7 @@
         "player_id": 668227,
         "player_key": "668227",
         "rank": 25,
-        "score": 67.4,
+        "score": 67.3,
         "team": "Seattle Mariners"
       }
     ]
