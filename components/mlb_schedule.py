@@ -14,6 +14,27 @@ from data.mlb_lineups import get_mlb_lineups
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-roster_player_"] button,
+    div[class*="st-key-open_game_"] button {
+        background: rgba(15, 23, 42, 0.88) !important;
+        color: #e2e8f0 !important;
+        border: 1px solid rgba(56, 189, 248, 0.24) !important;
+        border-radius: 10px !important;
+        font-weight: 650 !important;
+    }
+    div[class*="st-key-roster_player_"] button:hover,
+    div[class*="st-key-open_game_"] button:hover {
+        border-color: rgba(56, 189, 248, 0.55) !important;
+        color: #ffffff !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 @st.cache_data(ttl=300, show_spinner=False)
 def load_today_schedule() -> dict[str, Any]:
@@ -55,37 +76,31 @@ def _game_lineup_status(game_pk: Any, lineup_data: dict[str, Any]) -> tuple[str,
 
 
 def _game_card(game: dict[str, Any], lineup_data: dict[str, Any]) -> bool:
-    """Render one compact game card and return True when opened."""
+    """Render one clean compact game card and return True when opened."""
     game_pk = game.get("game_pk")
     away = str(game.get("away_team") or "Away")
     home = str(game.get("home_team") or "Home")
     status_group = str(game.get("status_group") or "Preview")
     status = str(game.get("status") or "Status unavailable")
-    lineup_text, _ = _game_lineup_status(game_pk, lineup_data)
 
-    score_line = ""
     if str(status_group).lower() in {"live", "final"}:
-        score_line = (
-            f"{away} {_score_text(game.get('away_score'))} · "
-            f"{home} {_score_text(game.get('home_score'))}"
+        matchup = (
+            f"**{away} {_score_text(game.get('away_score'))} "
+            f"@ {home} {_score_text(game.get('home_score'))}**"
         )
+    else:
+        matchup = f"**{away} @ {home}**"
 
     with st.container(border=True):
-        st.markdown(f"**{away} @ {home}**")
+        st.markdown(matchup)
         st.caption(
             f"{_status_icon(status_group)} {status} · "
             f"{game.get('start_time', 'Time unavailable')}"
         )
-        if score_line:
-            st.markdown(f"### {score_line}")
-        else:
-            st.caption(str(game.get("venue") or "Venue unavailable"))
-
         st.caption(
             f"{game.get('away_probable_pitcher', 'Not announced')} vs. "
             f"{game.get('home_probable_pitcher', 'Not announced')}"
         )
-        st.caption(lineup_text)
 
         return st.button(
             "Open game",
@@ -109,6 +124,7 @@ def _render_roster_column(
     lineup: list[dict[str, Any]],
     player_lookup: dict[int, dict[str, Any]],
 ) -> None:
+    """Render one clean batting-order roster without ranking clutter."""
     st.markdown(f"#### {title}")
     if not lineup:
         st.info("Official batting order has not been posted yet.")
@@ -119,7 +135,6 @@ def _render_roster_column(
         order = player.get("batting_order") or "—"
         name = str(player.get("player_name") or "Player")
         position = str(player.get("position_abbreviation") or "")
-        ranked = player_lookup.get(player_id)
 
         label = f"{order}. {name}"
         if position:
@@ -127,16 +142,10 @@ def _render_roster_column(
 
         if st.button(
             label,
-            key=f"game_roster_player_{player_id}_{title}",
+            key=f"roster_player_{player_id}_{title}",
             use_container_width=True,
         ):
             st.session_state["selected_game_player_id"] = player_id
-
-        if ranked:
-            st.caption(
-                f"Ranked #{ranked.get('rank', '—')} · "
-                f"GI {ranked.get('score', 0)} · {ranked.get('category', '')}"
-            )
 
 
 def render_live_mlb_schedule(
