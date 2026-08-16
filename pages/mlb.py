@@ -756,6 +756,7 @@ def render_ranking_category(
     live_result = grade_top_25(
         rankings=rankings,
         category=category_key,
+        force_refresh=True,
     )
     rankings = live_result.get("graded", rankings)
 
