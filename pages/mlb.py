@@ -695,8 +695,10 @@ def render_expandable_ranking_header(player: dict) -> None:
         f"""
         <div class="gi-card-header">
             <div class="gi-card-rank">
-                #{player['rank']}
-                <small>{escape(movement_label(player))}</small>
+                <span>#{player['rank']}</span>
+                <span class="gi-card-movement">
+                    {escape(movement_label(player))}
+                </span>
             </div>
             <div class="gi-native-initials">{escape(initials)}</div>
             <div class="gi-card-player">
@@ -1274,7 +1276,29 @@ st.markdown(
             font-weight: 850;
         }
 
-        .gi-card-rank small,
+        .gi-card-rank {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .gi-card-movement {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 30px;
+            padding: 2px 5px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(56, 189, 248, 0.30);
+            color: #bae6fd;
+            font-size: 0.62rem;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
         .gi-card-score small {
             display: block;
             font-size: 0.58rem;
