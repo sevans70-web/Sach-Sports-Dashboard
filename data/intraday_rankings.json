@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-15T20:17:56.547055-04:00",
+  "captured_at": "2026-08-15T20:27:40.505932-04:00",
   "categories": {
     "hits": [
       {
@@ -67,20 +67,20 @@
         "team": "Cleveland Guardians"
       },
       {
-        "player": "Bobby Witt Jr.",
-        "player_id": 677951,
-        "player_key": "677951",
-        "rank": 9,
-        "score": 71.3,
-        "team": "Kansas City Royals"
-      },
-      {
         "player": "Geraldo Perdomo",
         "player_id": 672695,
         "player_key": "672695",
-        "rank": 10,
-        "score": 70.7,
+        "rank": 9,
+        "score": 73.7,
         "team": "Arizona Diamondbacks"
+      },
+      {
+        "player": "Bobby Witt Jr.",
+        "player_id": 677951,
+        "player_key": "677951",
+        "rank": 10,
+        "score": 71.3,
+        "team": "Kansas City Royals"
       },
       {
         "player": "Carson Benge",
@@ -107,10 +107,18 @@
         "team": "Los Angeles Angels"
       },
       {
+        "player": "Gabriel Moreno",
+        "player_id": 672515,
+        "player_key": "672515",
+        "rank": 14,
+        "score": 69.9,
+        "team": "Arizona Diamondbacks"
+      },
+      {
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
-        "rank": 14,
+        "rank": 15,
         "score": 69.4,
         "team": "St. Louis Cardinals"
       },
@@ -118,7 +126,7 @@
         "player": "Zack Gelof",
         "player_id": 680869,
         "player_key": "680869",
-        "rank": 15,
+        "rank": 16,
         "score": 69.3,
         "team": "Athletics"
       },
@@ -126,7 +134,7 @@
         "player": "TJ Rumfield",
         "player_id": 681198,
         "player_key": "681198",
-        "rank": 16,
+        "rank": 17,
         "score": 68.4,
         "team": "Colorado Rockies"
       },
@@ -134,7 +142,7 @@
         "player": "Ceddanne Rafaela",
         "player_id": 678882,
         "player_key": "678882",
-        "rank": 17,
+        "rank": 18,
         "score": 68.3,
         "team": "Boston Red Sox"
       },
@@ -142,7 +150,7 @@
         "player": "Kevin McGonigle",
         "player_id": 805808,
         "player_key": "805808",
-        "rank": 18,
+        "rank": 19,
         "score": 67.5,
         "team": "Detroit Tigers"
       },
@@ -150,7 +158,7 @@
         "player": "Brandon Nimmo",
         "player_id": 607043,
         "player_key": "607043",
-        "rank": 19,
+        "rank": 20,
         "score": 67.2,
         "team": "Texas Rangers"
       },
@@ -158,24 +166,16 @@
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 20,
+        "rank": 21,
         "score": 67.0,
         "team": "Chicago Cubs"
-      },
-      {
-        "player": "Gabriel Moreno",
-        "player_id": 672515,
-        "player_key": "672515",
-        "rank": 21,
-        "score": 66.9,
-        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Jackson Chourio",
         "player_id": 694192,
         "player_key": "694192",
         "rank": 22,
-        "score": 66.8,
+        "score": 66.9,
         "team": "Milwaukee Brewers"
       },
       {
@@ -205,10 +205,18 @@
     ],
     "home_runs": [
       {
+        "player": "Kyle Schwarber",
+        "player_id": 656941,
+        "player_key": "656941",
+        "rank": 1,
+        "score": 54.7,
+        "team": "Philadelphia Phillies"
+      },
+      {
         "player": "Griffin Conine",
         "player_id": 665052,
         "player_key": "665052",
-        "rank": 1,
+        "rank": 2,
         "score": 53.2,
         "team": "Miami Marlins"
       },
@@ -216,17 +224,9 @@
         "player": "Pete Crow-Armstrong",
         "player_id": 691718,
         "player_key": "691718",
-        "rank": 2,
-        "score": 52.9,
-        "team": "Chicago Cubs"
-      },
-      {
-        "player": "Kyle Schwarber",
-        "player_id": 656941,
-        "player_key": "656941",
         "rank": 3,
-        "score": 52.7,
-        "team": "Philadelphia Phillies"
+        "score": 53.0,
+        "team": "Chicago Cubs"
       },
       {
         "player": "Matt Olson",
@@ -313,7 +313,7 @@
         "player_id": 693307,
         "player_key": "693307",
         "rank": 14,
-        "score": 48.4,
+        "score": 48.5,
         "team": "Detroit Tigers"
       },
       {
@@ -321,14 +321,22 @@
         "player_id": 592626,
         "player_key": "592626",
         "rank": 15,
-        "score": 48.2,
+        "score": 48.3,
         "team": "Texas Rangers"
+      },
+      {
+        "player": "Bryce Harper",
+        "player_id": 547180,
+        "player_key": "547180",
+        "rank": 16,
+        "score": 48.3,
+        "team": "Philadelphia Phillies"
       },
       {
         "player": "Rafael Devers",
         "player_id": 646240,
         "player_key": "646240",
-        "rank": 16,
+        "rank": 17,
         "score": 47.6,
         "team": "San Francisco Giants"
       },
@@ -336,7 +344,7 @@
         "player": "Elly De La Cruz",
         "player_id": 682829,
         "player_key": "682829",
-        "rank": 17,
+        "rank": 18,
         "score": 47.6,
         "team": "Cincinnati Reds"
       },
@@ -344,7 +352,7 @@
         "player": "Trent Grisham",
         "player_id": 663757,
         "player_key": "663757",
-        "rank": 18,
+        "rank": 19,
         "score": 47.6,
         "team": "New York Yankees"
       },
@@ -352,7 +360,7 @@
         "player": "Corbin Carroll",
         "player_id": 682998,
         "player_key": "682998",
-        "rank": 19,
+        "rank": 20,
         "score": 47.4,
         "team": "Arizona Diamondbacks"
       },
@@ -360,7 +368,7 @@
         "player": "Miguel Vargas",
         "player_id": 678246,
         "player_key": "678246",
-        "rank": 20,
+        "rank": 21,
         "score": 47.2,
         "team": "Chicago White Sox"
       },
@@ -368,7 +376,7 @@
         "player": "Brandon Lowe",
         "player_id": 664040,
         "player_key": "664040",
-        "rank": 21,
+        "rank": 22,
         "score": 47.1,
         "team": "Pittsburgh Pirates"
       },
@@ -376,7 +384,7 @@
         "player": "Jac Caglianone",
         "player_id": 695506,
         "player_key": "695506",
-        "rank": 22,
+        "rank": 23,
         "score": 46.9,
         "team": "Kansas City Royals"
       },
@@ -384,7 +392,7 @@
         "player": "Ronald Acuña Jr.",
         "player_id": 660670,
         "player_key": "660670",
-        "rank": 23,
+        "rank": 24,
         "score": 46.5,
         "team": "Atlanta Braves"
       },
@@ -392,17 +400,9 @@
         "player": "Ceddanne Rafaela",
         "player_id": 678882,
         "player_key": "678882",
-        "rank": 24,
+        "rank": 25,
         "score": 46.5,
         "team": "Boston Red Sox"
-      },
-      {
-        "player": "Bryce Harper",
-        "player_id": 547180,
-        "player_key": "547180",
-        "rank": 25,
-        "score": 46.3,
-        "team": "Philadelphia Phillies"
       }
     ],
     "total_bases": [
@@ -419,7 +419,7 @@
         "player_id": 691718,
         "player_key": "691718",
         "rank": 2,
-        "score": 76.9,
+        "score": 77.0,
         "team": "Chicago Cubs"
       },
       {
@@ -463,10 +463,18 @@
         "team": "Baltimore Orioles"
       },
       {
+        "player": "Corbin Carroll",
+        "player_id": 682998,
+        "player_key": "682998",
+        "rank": 8,
+        "score": 74.7,
+        "team": "Arizona Diamondbacks"
+      },
+      {
         "player": "Jake McCarthy",
         "player_id": 664983,
         "player_key": "664983",
-        "rank": 8,
+        "rank": 9,
         "score": 74.2,
         "team": "Colorado Rockies"
       },
@@ -474,7 +482,7 @@
         "player": "Griffin Conine",
         "player_id": 665052,
         "player_key": "665052",
-        "rank": 9,
+        "rank": 10,
         "score": 74.0,
         "team": "Miami Marlins"
       },
@@ -482,7 +490,7 @@
         "player": "Fernando Tatis Jr.",
         "player_id": 665487,
         "player_key": "665487",
-        "rank": 10,
+        "rank": 11,
         "score": 74.0,
         "team": "San Diego Padres"
       },
@@ -490,24 +498,16 @@
         "player": "Junior Caminero",
         "player_id": 691406,
         "player_key": "691406",
-        "rank": 11,
+        "rank": 12,
         "score": 72.6,
         "team": "Tampa Bay Rays"
-      },
-      {
-        "player": "Corbin Carroll",
-        "player_id": 682998,
-        "player_key": "682998",
-        "rank": 12,
-        "score": 72.4,
-        "team": "Arizona Diamondbacks"
       },
       {
         "player": "Byron Buxton",
         "player_id": 621439,
         "player_key": "621439",
         "rank": 13,
-        "score": 72.3,
+        "score": 72.4,
         "team": "Minnesota Twins"
       },
       {
@@ -519,10 +519,18 @@
         "team": "Tampa Bay Rays"
       },
       {
+        "player": "Kyle Schwarber",
+        "player_id": 656941,
+        "player_key": "656941",
+        "rank": 15,
+        "score": 71.9,
+        "team": "Philadelphia Phillies"
+      },
+      {
         "player": "Seiya Suzuki",
         "player_id": 673548,
         "player_key": "673548",
-        "rank": 15,
+        "rank": 16,
         "score": 71.7,
         "team": "Chicago Cubs"
       },
@@ -530,7 +538,7 @@
         "player": "Matt Olson",
         "player_id": 621566,
         "player_key": "621566",
-        "rank": 16,
+        "rank": 17,
         "score": 71.5,
         "team": "Atlanta Braves"
       },
@@ -538,7 +546,7 @@
         "player": "Jac Caglianone",
         "player_id": 695506,
         "player_key": "695506",
-        "rank": 17,
+        "rank": 18,
         "score": 71.2,
         "team": "Kansas City Royals"
       },
@@ -546,7 +554,7 @@
         "player": "Ty France",
         "player_id": 664034,
         "player_key": "664034",
-        "rank": 18,
+        "rank": 19,
         "score": 70.6,
         "team": "San Diego Padres"
       },
@@ -554,7 +562,7 @@
         "player": "Alec Burleson",
         "player_id": 676475,
         "player_key": "676475",
-        "rank": 19,
+        "rank": 20,
         "score": 70.2,
         "team": "St. Louis Cardinals"
       },
@@ -562,7 +570,7 @@
         "player": "Francisco Lindor",
         "player_id": 596019,
         "player_key": "596019",
-        "rank": 20,
+        "rank": 21,
         "score": 69.8,
         "team": "New York Mets"
       },
@@ -570,7 +578,7 @@
         "player": "Sal Stewart",
         "player_id": 701398,
         "player_key": "701398",
-        "rank": 21,
+        "rank": 22,
         "score": 69.3,
         "team": "Cincinnati Reds"
       },
@@ -578,24 +586,16 @@
         "player": "Brandon Nimmo",
         "player_id": 607043,
         "player_key": "607043",
-        "rank": 22,
+        "rank": 23,
         "score": 68.9,
         "team": "Texas Rangers"
-      },
-      {
-        "player": "Kyle Schwarber",
-        "player_id": 656941,
-        "player_key": "656941",
-        "rank": 23,
-        "score": 68.2,
-        "team": "Philadelphia Phillies"
       },
       {
         "player": "Jordan Walker",
         "player_id": 691023,
         "player_key": "691023",
         "rank": 24,
-        "score": 68.1,
+        "score": 68.2,
         "team": "St. Louis Cardinals"
       },
       {
