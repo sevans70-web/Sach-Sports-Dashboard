@@ -27,6 +27,7 @@ from components.mlb_schedule import (
     schedule_summary,
 )
 from components.player_card import render_player_card
+from components.mlb_performance_tracker import render_prediction_performance_tracker
 from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
@@ -1721,6 +1722,16 @@ else:
         f"{RANKING_HITTER_COUNT} hitters loaded. "
         "Use the rankings cautiously while the remaining data loads."
     )
+render_prediction_performance_tracker(
+    {
+        "home_runs": HOME_RUN_RANKINGS,
+        "hits": HIT_RANKINGS,
+        "total_bases": TOTAL_BASE_RANKINGS,
+    }
+)
+
+st.divider()
+
 render_html(
     """
     <div class="gi-before-ranking">
