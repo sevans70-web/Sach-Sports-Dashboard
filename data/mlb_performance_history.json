@@ -291,9 +291,16 @@
             "team": "Los Angeles Angels"
           },
           {
+            "actual_hits": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 68.7,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 76.1,
@@ -302,7 +309,7 @@
             "player_id": 680869,
             "player_name": "Zack Gelof",
             "rank": 14,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 hits",
             "team": "Athletics"
           },
           {
@@ -438,9 +445,16 @@
             "team": "Detroit Tigers"
           },
           {
+            "actual_hits": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 67.0,
             "home_run_probability": 13.5,
             "one_plus_hit_probability": 74.4,
@@ -449,7 +463,7 @@
             "player_id": 607043,
             "player_name": "Brandon Nimmo",
             "rank": 21,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 hit",
             "team": "Texas Rangers"
           },
           {
@@ -741,9 +755,16 @@
             "team": "Boston Red Sox"
           },
           {
+            "actual_hits": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 50.2,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 76.1,
@@ -752,7 +773,7 @@
             "player_id": 680869,
             "player_name": "Zack Gelof",
             "rank": 10,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Athletics"
           },
           {
@@ -844,9 +865,16 @@
             "team": "Detroit Tigers"
           },
           {
+            "actual_hits": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 48.3,
             "home_run_probability": 21.3,
             "one_plus_hit_probability": 72.2,
@@ -855,7 +883,7 @@
             "player_id": 592626,
             "player_name": "Joc Pederson",
             "rank": 15,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Texas Rangers"
           },
           {
@@ -1103,9 +1131,16 @@
             "team": "Boston Red Sox"
           },
           {
+            "actual_hits": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 77.6,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 76.1,
@@ -1114,7 +1149,7 @@
             "player_id": 680869,
             "player_name": "Zack Gelof",
             "rank": 2,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 total bases",
             "team": "Athletics"
           },
           {
@@ -1514,9 +1549,16 @@
             "team": "Cincinnati Reds"
           },
           {
+            "actual_hits": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 69.1,
             "home_run_probability": 13.8,
             "one_plus_hit_probability": 75.1,
@@ -1525,7 +1567,7 @@
             "player_id": 607043,
             "player_name": "Brandon Nimmo",
             "rank": 21,
-            "result_label": "Pending",
+            "result_label": "\u2705 2 total bases",
             "team": "Texas Rangers"
           },
           {
