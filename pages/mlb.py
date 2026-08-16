@@ -365,24 +365,6 @@ def card_result_html(player: dict) -> str:
     result_label = escape(
         str(player.get("result_label", "Result unavailable"))
     )
-    contact_label = escape(
-        str(player.get("live_contact_label") or "")
-    )
-    contact_html = (
-        f"""
-        <div
-            style="
-                margin-top: 5px;
-                font-weight: 700;
-                font-size: 0.86rem;
-            "
-        >
-            {contact_label}
-        </div>
-        """
-        if contact_label
-        else ""
-    )
 
     return f"""
         <div
@@ -394,7 +376,6 @@ def card_result_html(player: dict) -> str:
         >
             Result: {result_label}
         </div>
-        {contact_html}
     """
 def load_live_rankings() -> dict:
     """Load live MLB player rankings for today's games."""
@@ -1642,6 +1623,60 @@ for ranking_list in ALL_RANKING_LISTS:
         if player_id and player_id not in PLAYER_INTELLIGENCE_LOOKUP:
             PLAYER_INTELLIGENCE_LOOKUP[player_id] = ranked_player
 
+def render_live_hr_intelligence(rankings: list[dict]) -> None:
+    """Show live hard-contact signals for ranked HR players in one prominent panel."""
+    qualifying = []
+
+    for player in rankings:
+        if not player.get("result_live"):
+            continue
+        if int(player.get("actual_home_runs") or 0) > 0:
+            continue
+
+        contact = player.get("live_contact") or {}
+        if not contact:
+            continue
+
+        if not (contact.get("barrel") or contact.get("hard_hit")):
+            continue
+
+        qualifying.append((player, contact))
+
+    st.markdown("### 🔥 Live HR Intelligence")
+    st.caption(
+        "Live hard-contact signals from today's HR Top 25. "
+        "These are context signals only — they do not change the prediction result."
+    )
+
+    if not qualifying:
+        st.info("No qualifying live hard-contact signals yet.")
+        return
+
+    # Barrels first, then hardest-hit contact, then ranking position.
+    qualifying.sort(
+        key=lambda item: (
+            0 if item[1].get("barrel") else 1,
+            -float(item[1].get("exit_velocity") or 0),
+            int(item[0].get("rank") or 99),
+        )
+    )
+
+    for player, contact in qualifying:
+        name = str(player.get("player") or player.get("player_name") or "Player")
+        rank = int(player.get("rank") or 0)
+        ev = float(contact.get("exit_velocity") or 0)
+        angle = contact.get("launch_angle")
+        angle_text = (
+            f" · {float(angle):.0f}°"
+            if isinstance(angle, (int, float))
+            else ""
+        )
+        signal = "🔥 BARREL" if contact.get("barrel") else "💥 HARD HIT"
+
+        with st.container(border=True):
+            st.markdown(f"**#{rank} {name}**")
+            st.markdown(f"{signal} · **{ev:.1f} mph**{angle_text} · 0 HR")
+
 def weather_alert_summary(rankings: list[dict]) -> tuple[int, str]:
     """Return unique meaningful weather alerts represented in ranked games."""
     alerts: dict[object, str] = {}
@@ -1770,6 +1805,10 @@ else:
         f"{RANKING_HITTER_COUNT} hitters loaded. "
         "Use the rankings cautiously while the remaining data loads."
     )
+render_live_hr_intelligence(HOME_RUN_RANKINGS)
+
+st.divider()
+
 render_prediction_performance_tracker(
     {
         "home_runs": HOME_RUN_RANKINGS,
