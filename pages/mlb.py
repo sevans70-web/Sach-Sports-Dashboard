@@ -718,7 +718,7 @@ def render_expandable_ranking_header(player: dict) -> None:
     )
 
 
-@st.fragment
+@st.fragment(run_every="30s")
 def render_ranking_category(
     title: str,
     icon: str,
@@ -726,6 +726,7 @@ def render_ranking_category(
     state_key: str,
     button_key: str,
     movement_summary: list[str],
+    category_key: str,
 ) -> None:
     """Render a Top 5 preview and optional full Top 25 ranking."""
     render_html(
@@ -751,6 +752,12 @@ def render_ranking_category(
     if not rankings:
         st.info(f"No {title.lower()} rankings are available right now.")
         return
+
+    live_result = grade_top_25(
+        rankings=rankings,
+        category=category_key,
+    )
+    rankings = live_result.get("graded", rankings)
 
     render_recent_movement(movement_summary)
 
@@ -1646,6 +1653,7 @@ with home_run_tab:
         state_key="show_hr_25",
         button_key="toggle_hr_25",
         movement_summary=MOVEMENT_SUMMARIES.get("home_runs", []),
+        category_key="home_runs",
     )
      
 with hits_tab:
@@ -1656,6 +1664,7 @@ with hits_tab:
         state_key="show_hits_25",
         button_key="toggle_hits_25",
         movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
+        category_key="hits",
     )
 
 with total_bases_tab:
@@ -1666,6 +1675,7 @@ with total_bases_tab:
         state_key="show_tb_25",
         button_key="toggle_tb_25",
         movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
+        category_key="total_bases",
     )
 
 st.divider()
