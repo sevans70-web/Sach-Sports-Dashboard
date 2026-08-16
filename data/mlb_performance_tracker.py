@@ -1,4 +1,4 @@
-"""Persistent MLB prediction performance history for core markets."""
+"""Persistent MLB prediction performance history for all tracked hitter markets."""
 
 from __future__ import annotations
 
@@ -92,6 +92,10 @@ def _freeze_prediction(row: dict[str, Any], category: str) -> dict[str, Any]:
         "home_run_probability": row.get("home_run_probability"),
         "one_plus_hit_probability": row.get("one_plus_hit_probability"),
         "over_1_5_total_bases_probability": row.get("over_1_5_total_bases_probability"),
+        "one_plus_run_probability": row.get("one_plus_run_probability"),
+        "one_plus_rbi_probability": row.get("one_plus_rbi_probability"),
+        "one_plus_walk_probability": row.get("one_plus_walk_probability"),
+        "one_plus_stolen_base_probability": row.get("one_plus_stolen_base_probability"),
         "correct": None,
         "result_label": "Pending",
         "game_finished": False,
@@ -147,7 +151,7 @@ def sync_history(
     snapshot_date: str | None = None,
 ) -> dict[str, Any]:
     """
-    Freeze today's core Top 25 once, then resolve old pending records.
+    Freeze each tracked Top 25 once, then resolve old pending records.
 
     Today's prediction fields are never replaced after the first save.
     """
@@ -160,14 +164,32 @@ def sync_history(
     if today not in days:
         days[today] = {
             "captured_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
-            "categories": {
-                category: [
-                    _freeze_prediction(row, category)
-                    for row in rankings_by_category.get(category, [])[:25]
-                ]
-                for category in CORE_CATEGORIES
-            },
+            "categories": {},
         }
+        changed = True
+
+    today_record = days[today]
+    today_categories = today_record.setdefault("categories", {})
+
+    # Important migration/backfill rule:
+    # Older tracker history may already contain this date with only the
+    # original three markets (HR, Hits, Total Bases). When new markets are
+    # added later, do not skip them just because the date already exists.
+    #
+    # Existing frozen categories are never overwritten. Only categories that
+    # are genuinely missing are captured from the current pregame rankings.
+    for category in CORE_CATEGORIES:
+        if category in today_categories:
+            continue
+
+        current_rankings = rankings_by_category.get(category, [])[:25]
+        if not current_rankings:
+            continue
+
+        today_categories[category] = [
+            _freeze_prediction(row, category)
+            for row in current_rankings
+        ]
         changed = True
 
     # Resolve prior dates in one batch on a later day. This avoids many
