@@ -45,6 +45,103 @@ def _compact_metric(label: str, value: str) -> str:
     )
 
 
+def _category_summary_metrics(player_data: dict) -> list[tuple[str, str]]:
+    """Return the three summary tiles that belong to the selected prop."""
+    category = str(player_data.get("category") or "").strip().lower()
+    gi_score = float(player_data.get("gi_score", 0.0) or 0.0)
+
+    if "home run" in category:
+        probability = float(
+            player_data.get("home_run_probability", 0.0) or 0.0
+        )
+        return [
+            ("GI Score", f"{gi_score:.1f}"),
+            ("HR Probability", f"{probability:.0f}%"),
+            ("Prop", "1+ Home Run"),
+        ]
+
+    if "total base" in category:
+        projected = float(
+            player_data.get("projected_total_bases", 0.0) or 0.0
+        )
+        probability = float(
+            player_data.get(
+                "over_1_5_total_bases_probability",
+                0.0,
+            )
+            or 0.0
+        )
+        return [
+            ("GI Score", f"{gi_score:.1f}"),
+            ("Projected TB", f"{projected:.1f}"),
+            ("Over 1.5 TB", f"{probability:.0f}%"),
+        ]
+
+    projected = float(player_data.get("projected_hits", 0.0) or 0.0)
+    probability = float(
+        player_data.get("one_plus_hit_probability", 0.0) or 0.0
+    )
+    return [
+        ("GI Score", f"{gi_score:.1f}"),
+        ("Projected Hits", f"{projected:.1f}"),
+        ("1+ Hit Probability", f"{probability:.0f}%"),
+    ]
+
+
+def _performance_evidence_html(
+    player_data: dict,
+    season: dict,
+    recent: dict,
+) -> str:
+    """Return category-specific season/recent evidence tiles."""
+    category = str(player_data.get("category") or "").strip().lower()
+
+    if "home run" in category:
+        season_line = (
+            f"{season.get('home_runs', 0)} HR • "
+            f"{_number(season.get('slg'))} SLG"
+        )
+        recent_line = (
+            f"{recent.get('home_runs', 0)} HR • "
+            f"{_number(recent.get('slg'))} SLG"
+        )
+    elif "total base" in category:
+        season_line = (
+            f"{float(season.get('total_bases_per_game', 0) or 0):.2f} TB/G • "
+            f"{_number(season.get('slg'))} SLG"
+        )
+        recent_line = (
+            f"{float(recent.get('total_bases_per_game', 0) or 0):.2f} TB/G • "
+            f"{_number(recent.get('slg'))} SLG"
+        )
+    else:
+        season_line = (
+            f"{_number(season.get('avg'))} AVG • "
+            f"{float(season.get('hits_per_game', 0) or 0):.2f} H/G"
+        )
+        recent_line = (
+            f"{_number(recent.get('avg'))} AVG • "
+            f"{float(recent.get('hits_per_game', 0) or 0):.2f} H/G"
+        )
+
+    recent_window = str(
+        player_data.get("recent_window_label")
+        or "Recent pregame window"
+    )
+
+    return (
+        "<div class='gi-evidence-grid'>"
+        "<div><b>Season</b><br>"
+        f"{escape(season_line)}<br>"
+        f"<small>{season.get('plate_appearances', 0)} plate appearances</small></div>"
+        "<div><b>Recent pregame</b><br>"
+        f"{escape(recent_line)}<br>"
+        f"<small>{recent.get('plate_appearances', 0)} plate appearances · "
+        f"{escape(recent_window)}</small></div>"
+        "</div>"
+    )
+
+
 def _ranking_evidence(
     player_data: dict,
     season: dict,
@@ -228,15 +325,13 @@ def render_player_card(player_data: dict) -> None:
         snapshot = load_statcast_batter_metrics(minimum_pa=10)
         statcast = get_statcast_batter(player_id, snapshot)
 
-    hr_probability = float(
-        player_data.get("home_run_probability", 0) or 0
-    )
-    projected_hits = float(player_data.get("projected_hits", 0) or 0)
+    summary_metrics = _category_summary_metrics(player_data)
     st.markdown(
         "<div class='gi-intel-grid gi-intel-summary'>"
-        + _compact_metric("GI Score", f"{gi_score:.1f}")
-        + _compact_metric("HR Probability", f"{hr_probability:.0f}%")
-        + _compact_metric("Projected Hits", f"{projected_hits:.1f}")
+        + "".join(
+            _compact_metric(label, value)
+            for label, value in summary_metrics
+        )
         + "</div>",
         unsafe_allow_html=True,
     )
@@ -264,16 +359,11 @@ def render_player_card(player_data: dict) -> None:
 
     st.markdown("**Performance evidence**")
     st.markdown(
-        "<div class='gi-evidence-grid'>"
-        "<div><b>Season</b><br>"
-        f"{season.get('home_runs', 0)} HR • {_number(season.get('avg'))} AVG • "
-        f"{_number(season.get('slg'))} SLG<br>"
-        f"<small>{season.get('plate_appearances', 0)} plate appearances</small></div>"
-        "<div><b>Recent</b><br>"
-        f"{recent.get('home_runs', 0)} HR • {_number(recent.get('avg'))} AVG • "
-        f"{_number(recent.get('slg'))} SLG<br>"
-        f"<small>{recent.get('plate_appearances', 0)} recent plate appearances</small></div>"
-        "</div>",
+        _performance_evidence_html(
+            player_data,
+            season,
+            recent,
+        ),
         unsafe_allow_html=True,
     )
 
