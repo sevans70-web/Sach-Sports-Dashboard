@@ -33,7 +33,6 @@ from data.mlb_weather import get_game_weather
 from data.mlb_park_factors import get_park_factor
 
 from data.ranking_history import (
-    RANKING_SNAPSHOT_SCHEMA_VERSION,
     build_daily_ranking_snapshot,
     load_ranking_snapshot,
     save_ranking_snapshot,
@@ -43,11 +42,19 @@ TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 CATEGORY_HOME_RUNS = "home_runs"
 CATEGORY_HITS = "hits"
 CATEGORY_TOTAL_BASES = "total_bases"
+CATEGORY_RUNS = "runs"
+CATEGORY_RBIS = "rbis"
+CATEGORY_WALKS = "walks"
+CATEGORY_STOLEN_BASES = "stolen_bases"
 
 VALID_CATEGORIES = {
     CATEGORY_HOME_RUNS,
     CATEGORY_HITS,
     CATEGORY_TOTAL_BASES,
+    CATEGORY_RUNS,
+    CATEGORY_RBIS,
+    CATEGORY_WALKS,
+    CATEGORY_STOLEN_BASES,
 }
 
 
@@ -199,6 +206,42 @@ def _pitcher_quality_adjustment(
             adjustment -= 2.0
         elif 0 < k_rate <= 0.18:
             adjustment += 1.5
+
+    elif category == CATEGORY_WALKS:
+        bb9 = _safe_float(pitcher_stats.get("walks_per_nine"))
+        if bb9 >= 4.0:
+            adjustment += 3.0
+        elif bb9 >= 3.2:
+            adjustment += 1.5
+        elif 0 < bb9 <= 2.0:
+            adjustment -= 2.5
+
+        if whip >= 1.35:
+            adjustment += 1.0
+        elif 0 < whip <= 1.05:
+            adjustment -= 1.0
+
+    elif category in {CATEGORY_RUNS, CATEGORY_RBIS}:
+        if h9 >= 9.5:
+            adjustment += 1.5
+        elif 0 < h9 <= 7.0:
+            adjustment -= 1.5
+        if whip >= 1.35:
+            adjustment += 1.5
+        elif 0 < whip <= 1.10:
+            adjustment -= 1.5
+        if era >= 4.75:
+            adjustment += 1.5
+        elif 0 < era <= 3.25:
+            adjustment -= 1.0
+
+    elif category == CATEGORY_STOLEN_BASES:
+        # Pitcher quality has only a small indirect effect on stolen-base
+        # opportunity until pitcher/catcher running-control data is added.
+        if whip >= 1.40:
+            adjustment += 0.75
+        elif 0 < whip <= 1.05:
+            adjustment -= 0.75
 
     else:
         if h9 >= 9.5:
@@ -388,6 +431,67 @@ def _total_base_reasons(
     return reasons[:4]
 
 
+
+def _extended_prop_reasons(
+    category: str,
+    percentiles: dict[str, float],
+) -> list[str]:
+    """Generate category-specific reasons for the expanded hitter props."""
+    reasons: list[str] = []
+
+    if category == CATEGORY_RUNS:
+        if percentiles["season_run_rate"] >= 75:
+            reasons.append("Season run-scoring rate is among the strongest in today's pool")
+        if percentiles["recent_run_rate"] >= 75:
+            reasons.append("Recent run production is trending strongly")
+        if percentiles["season_obp"] >= 75:
+            reasons.append("Strong on-base ability creates more scoring opportunities")
+        if percentiles["season_ops"] >= 75:
+            reasons.append("Overall offensive production supports run-scoring upside")
+
+    elif category == CATEGORY_RBIS:
+        if percentiles["season_rbi_rate"] >= 75:
+            reasons.append("Season RBI rate ranks highly among today's eligible hitters")
+        if percentiles["recent_rbi_rate"] >= 75:
+            reasons.append("Recent RBI production is stronger than most of today's pool")
+        if percentiles["season_slg"] >= 75:
+            reasons.append("Strong slugging supports run-producing contact")
+        if percentiles["season_hits_rate"] >= 75:
+            reasons.append("Reliable hit production creates a solid RBI foundation")
+
+    elif category == CATEGORY_WALKS:
+        if percentiles["season_walk_rate"] >= 75:
+            reasons.append("Season walk rate ranks near the top of today's player pool")
+        if percentiles["recent_walk_rate"] >= 75:
+            reasons.append("Recent plate discipline supports the walk outlook")
+        if percentiles["season_obp"] >= 75:
+            reasons.append("Strong on-base percentage supports patient plate appearances")
+        if percentiles["low_strikeout"] >= 75:
+            reasons.append("Lower strikeout rate supports deeper plate appearances")
+
+    elif category == CATEGORY_STOLEN_BASES:
+        if percentiles["season_sb_rate"] >= 75:
+            reasons.append("Season stolen-base rate is among the best in today's pool")
+        if percentiles["recent_sb_rate"] >= 75:
+            reasons.append("Recent stolen-base activity shows current running intent")
+        if percentiles["sb_success"] >= 75:
+            reasons.append("Strong stolen-base efficiency supports continued green-light usage")
+        if percentiles["season_obp"] >= 75:
+            reasons.append("On-base ability creates more opportunities to attempt a steal")
+
+    if not reasons:
+        labels = {
+            CATEGORY_RUNS: "run-scoring",
+            CATEGORY_RBIS: "run-production",
+            CATEGORY_WALKS: "plate-discipline",
+            CATEGORY_STOLEN_BASES: "stolen-base",
+        }
+        reasons.append(
+            f"The score combines season and recent {labels.get(category, 'offensive')} indicators"
+        )
+
+    return reasons[:4]
+
 def _build_populations(
     hitters: list[dict[str, Any]],
 ) -> dict[str, list[float]]:
@@ -410,6 +514,15 @@ def _build_populations(
         "season_xbh_rate": [],
         "recent_xbh_rate": [],
         "low_strikeout": [],
+        "season_run_rate": [],
+        "recent_run_rate": [],
+        "season_rbi_rate": [],
+        "recent_rbi_rate": [],
+        "season_walk_rate": [],
+        "recent_walk_rate": [],
+        "season_sb_rate": [],
+        "recent_sb_rate": [],
+        "sb_success": [],
     }
 
     for hitter in hitters:
@@ -470,6 +583,35 @@ def _build_populations(
         populations["low_strikeout"].append(
             1.0 - _safe_float(season.get("strikeout_rate"))
         )
+        populations["season_run_rate"].append(
+            _safe_float(season.get("runs")) / season_games
+        )
+        populations["recent_run_rate"].append(
+            _safe_float(recent.get("runs")) / recent_games
+        )
+        populations["season_rbi_rate"].append(
+            _safe_float(season.get("rbi")) / season_games
+        )
+        populations["recent_rbi_rate"].append(
+            _safe_float(recent.get("rbi")) / recent_games
+        )
+        populations["season_walk_rate"].append(
+            _safe_float(season.get("walk_rate"))
+        )
+        populations["recent_walk_rate"].append(
+            _safe_float(recent.get("walk_rate"))
+        )
+        populations["season_sb_rate"].append(
+            _safe_float(season.get("stolen_bases")) / season_games
+        )
+        populations["recent_sb_rate"].append(
+            _safe_float(recent.get("stolen_bases")) / recent_games
+        )
+        sb = _safe_float(season.get("stolen_bases"))
+        cs = _safe_float(season.get("caught_stealing"))
+        populations["sb_success"].append(
+            sb / (sb + cs) if (sb + cs) > 0 else 0.0
+        )
 
     return populations
 
@@ -523,6 +665,22 @@ def _player_percentiles(
         "low_strikeout": (
             1.0 - _safe_float(season.get("strikeout_rate"))
         ),
+        "season_run_rate": _safe_float(season.get("runs")) / season_games,
+        "recent_run_rate": _safe_float(recent.get("runs")) / recent_games,
+        "season_rbi_rate": _safe_float(season.get("rbi")) / season_games,
+        "recent_rbi_rate": _safe_float(recent.get("rbi")) / recent_games,
+        "season_walk_rate": _safe_float(season.get("walk_rate")),
+        "recent_walk_rate": _safe_float(recent.get("walk_rate")),
+        "season_sb_rate": _safe_float(season.get("stolen_bases")) / season_games,
+        "recent_sb_rate": _safe_float(recent.get("stolen_bases")) / recent_games,
+        "sb_success": (
+            _safe_float(season.get("stolen_bases"))
+            / max(
+                _safe_float(season.get("stolen_bases"))
+                + _safe_float(season.get("caught_stealing")),
+                1.0,
+            )
+        ),
     }
 
     return {
@@ -560,6 +718,50 @@ def _category_score(
             ]
         )
 
+    if category == CATEGORY_RUNS:
+        return _weighted_score(
+            [
+                (percentiles["season_run_rate"], 28),
+                (percentiles["recent_run_rate"], 26),
+                (percentiles["season_obp"], 20),
+                (percentiles["recent_obp"], 14),
+                (percentiles["season_ops"], 12),
+            ]
+        )
+
+    if category == CATEGORY_RBIS:
+        return _weighted_score(
+            [
+                (percentiles["season_rbi_rate"], 28),
+                (percentiles["recent_rbi_rate"], 26),
+                (percentiles["season_slg"], 18),
+                (percentiles["recent_slg"], 14),
+                (percentiles["season_hits_rate"], 14),
+            ]
+        )
+
+    if category == CATEGORY_WALKS:
+        return _weighted_score(
+            [
+                (percentiles["season_walk_rate"], 32),
+                (percentiles["recent_walk_rate"], 28),
+                (percentiles["season_obp"], 18),
+                (percentiles["recent_obp"], 12),
+                (percentiles["low_strikeout"], 10),
+            ]
+        )
+
+    if category == CATEGORY_STOLEN_BASES:
+        return _weighted_score(
+            [
+                (percentiles["season_sb_rate"], 36),
+                (percentiles["recent_sb_rate"], 30),
+                (percentiles["sb_success"], 18),
+                (percentiles["season_obp"], 10),
+                (percentiles["recent_obp"], 6),
+            ]
+        )
+
     return _weighted_score(
         [
             (percentiles["season_tb_rate"], 24),
@@ -584,6 +786,14 @@ def _category_reasons(
 
     if category == CATEGORY_HITS:
         return _hit_reasons(season, recent, percentiles)
+
+    if category in {
+        CATEGORY_RUNS,
+        CATEGORY_RBIS,
+        CATEGORY_WALKS,
+        CATEGORY_STOLEN_BASES,
+    }:
+        return _extended_prop_reasons(category, percentiles)
 
     return _total_base_reasons(season, recent, percentiles)
 
@@ -683,6 +893,18 @@ def _projection_inputs(
             0.25,
             0.032,
             200,
+        ),
+        "run_rate": _blended_projection_rate(
+            season, recent, "runs", 0.30, 0.120, 120
+        ),
+        "rbi_rate": _blended_projection_rate(
+            season, recent, "rbi", 0.30, 0.115, 120
+        ),
+        "walk_rate": _blended_projection_rate(
+            season, recent, "walks", 0.30, 0.085, 150
+        ),
+        "stolen_base_rate": _blended_projection_rate(
+            season, recent, "stolen_bases", 0.25, 0.015, 220
         ),
     }
 
@@ -801,6 +1023,26 @@ def _build_projections(
         100.0,
     )
 
+    projected_runs = _clamp(
+        inputs["run_rate"] * expected_plate_appearances * adjustment, 0.0, 2.0
+    )
+    projected_rbis = _clamp(
+        inputs["rbi_rate"] * expected_plate_appearances * adjustment, 0.0, 2.5
+    )
+    projected_walks = _clamp(
+        inputs["walk_rate"] * expected_plate_appearances * adjustment, 0.0, 2.0
+    )
+    projected_stolen_bases = _clamp(
+        inputs["stolen_base_rate"] * expected_plate_appearances, 0.0, 1.2
+    )
+
+    run_probability = _clamp((1.0 - 2.71828 ** (-projected_runs)) * 100, 0.0, 100.0)
+    rbi_probability = _clamp((1.0 - 2.71828 ** (-projected_rbis)) * 100, 0.0, 100.0)
+    walk_probability = _clamp((1.0 - 2.71828 ** (-projected_walks)) * 100, 0.0, 100.0)
+    stolen_base_probability = _clamp(
+        (1.0 - 2.71828 ** (-projected_stolen_bases)) * 100, 0.0, 100.0
+    )
+
     return {
         "projected_hits": round(projected_hits, 2),
         "projected_total_bases": round(
@@ -819,6 +1061,14 @@ def _build_projections(
             over_1_5_total_bases_probability,
             1,
         ),
+        "projected_runs": round(projected_runs, 2),
+        "projected_rbis": round(projected_rbis, 2),
+        "projected_walks": round(projected_walks, 2),
+        "projected_stolen_bases": round(projected_stolen_bases, 2),
+        "one_plus_run_probability": round(run_probability, 1),
+        "one_plus_rbi_probability": round(rbi_probability, 1),
+        "one_plus_walk_probability": round(walk_probability, 1),
+        "one_plus_stolen_base_probability": round(stolen_base_probability, 1),
     }
 
 def _load_ranking_context(
@@ -1130,9 +1380,17 @@ def rank_players(
                 if wind_speed >= 15:
                     weather_adjustment -= 0.25
 
+        park_category = category
+        if category in {CATEGORY_RUNS, CATEGORY_RBIS}:
+            park_category = CATEGORY_TOTAL_BASES
+        elif category == CATEGORY_WALKS:
+            park_category = CATEGORY_HITS
+        elif category == CATEGORY_STOLEN_BASES:
+            park_category = CATEGORY_HITS
+
         park_factor = get_park_factor(
             hitter.get("venue", ""),
-            category,
+            park_category,
         )
 
         park_adjustment = _clamp(
@@ -1271,6 +1529,10 @@ def rank_players(
         CATEGORY_HOME_RUNS: "home_run_probability",
         CATEGORY_HITS: "one_plus_hit_probability",
         CATEGORY_TOTAL_BASES: "over_1_5_total_bases_probability",
+        CATEGORY_RUNS: "one_plus_run_probability",
+        CATEGORY_RBIS: "one_plus_rbi_probability",
+        CATEGORY_WALKS: "one_plus_walk_probability",
+        CATEGORY_STOLEN_BASES: "one_plus_stolen_base_probability",
     }[category]
 
     scored_players.sort(
@@ -1359,6 +1621,22 @@ def get_all_rankings(
             limit=limit,
             _shared_context=context,
         ),
+        "runs": rank_players(
+            CATEGORY_RUNS, schedule_date=schedule_date, recent_days=recent_days,
+            limit=limit, _shared_context=context,
+        ),
+        "rbis": rank_players(
+            CATEGORY_RBIS, schedule_date=schedule_date, recent_days=recent_days,
+            limit=limit, _shared_context=context,
+        ),
+        "walks": rank_players(
+            CATEGORY_WALKS, schedule_date=schedule_date, recent_days=recent_days,
+            limit=limit, _shared_context=context,
+        ),
+        "stolen_bases": rank_players(
+            CATEGORY_STOLEN_BASES, schedule_date=schedule_date, recent_days=recent_days,
+            limit=limit, _shared_context=context,
+        ),
     }
 
 def get_daily_ranking_snapshot(
@@ -1406,18 +1684,10 @@ def get_daily_ranking_snapshot(
         and existing_ranking_dates == {requested_date}
     )
 
-    today = datetime.now(TORONTO_TIMEZONE).date().isoformat()
-    snapshot_schema_is_current = (
-        requested_date != today
-        or existing_snapshot.get("schema_version")
-        == RANKING_SNAPSHOT_SCHEMA_VERSION
-    )
-
     if (
         existing_snapshot.get("status") == "ready"
         and existing_snapshot_has_players
         and existing_snapshot_matches_requested_date
-        and snapshot_schema_is_current
     ):
         return existing_snapshot
 
