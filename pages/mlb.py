@@ -185,6 +185,7 @@ def convert_live_rankings(
                 ),
                 "team": player.get("team_name", "TBD"),
                 "opponent": player.get("opponent_name", "TBD"),
+                "is_home": player.get("is_home"),
                 "headshot_url": player.get("headshot_url"),
                 "player_id": player.get("player_id"),
                 "game_pk": player.get("game_pk"),
@@ -303,6 +304,22 @@ def attach_persistent_movement(
         player["movement"] = movement
 
     return rankings
+
+
+def matchup_display(player: dict) -> str:
+    """Return the scheduled matchup in consistent away-team vs. home-team order."""
+    team = str(player.get("team") or "TBD")
+    opponent = str(player.get("opponent") or "TBD")
+    is_home = player.get("is_home")
+
+    if is_home is True:
+        return f"{opponent} vs. {team}"
+
+    if is_home is False:
+        return f"{team} vs. {opponent}"
+
+    # Safe fallback for sample/legacy records that do not carry home/away state.
+    return f"{team} vs. {opponent}"
 
 
 def movement_label(player: dict) -> str:
@@ -615,7 +632,7 @@ def render_compact_player(player: dict) -> None:
                 </div>
 
                 <div class="gi-compact-matchup">
-                    {escape(player['team'])} vs. {escape(player['opponent'])}
+                    {escape(matchup_display(player))}
                     · GI {player['score']}
                 </div>
 
@@ -655,7 +672,7 @@ def render_full_ranking_row(player: dict) -> None:
                 </div>
 
                 <div class="gi-full-matchup">
-                    {escape(player['team'])} vs. {escape(player['opponent'])}
+                    {escape(matchup_display(player))}
                 </div>
 
                 <div class="gi-full-projection">
@@ -697,7 +714,7 @@ def render_expandable_ranking_header(player: dict) -> None:
             {photo_html}
             <div class="gi-card-player">
                 <strong>{escape(player['player'])}</strong>
-                <span>{escape(player['team'])} vs. {escape(player['opponent'])}</span>
+                <span>{escape(matchup_display(player))}</span>
                 <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
                 <span class="gi-card-reason">{escape(player['reason'])}</span>
                 {card_result_html(player)}
