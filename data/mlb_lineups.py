@@ -20,7 +20,7 @@ Before lineups are posted, the module returns the game with empty lineups.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -439,6 +439,145 @@ def get_mlb_lineups(
         "errors": errors,
         "fetched_at": fetched_at,
     }
+
+
+
+def _projection_allowed_for_status(status: Any) -> bool:
+    """Return True only while a game is still in a pregame state."""
+    value = str(status or "").strip().lower()
+
+    blocked_tokens = (
+        "live",
+        "in progress",
+        "final",
+        "game over",
+        "completed",
+        "postponed",
+        "cancelled",
+        "canceled",
+    )
+
+    return not any(token in value for token in blocked_tokens)
+
+
+def get_previous_day_lineup_projection(
+    schedule_date: date | str | None = None,
+    current_lineup_data: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """
+    Build a clearly labeled early-slate lineup projection from each team's
+    most recent confirmed batting order from the previous calendar day.
+
+    This never marks a projected player as confirmed. It is only used before
+    today's official lineup is posted, and it is disabled once a game is live.
+    """
+    if schedule_date is None:
+        requested_date = datetime.now(TORONTO_TIMEZONE).date()
+    elif isinstance(schedule_date, date):
+        requested_date = schedule_date
+    else:
+        requested_date = date.fromisoformat(str(schedule_date))
+
+    current = current_lineup_data or get_mlb_lineups(
+        schedule_date=requested_date,
+    )
+    previous_date = requested_date - timedelta(days=1)
+    previous = get_mlb_lineups(
+        schedule_date=previous_date,
+    )
+
+    if not current.get("success") or not previous.get("success"):
+        return {
+            "success": False,
+            "date": requested_date.isoformat(),
+            "source_date": previous_date.isoformat(),
+            "projected_hitters": [],
+            "projected_hitter_count": 0,
+            "error": "Previous-day lineup projection could not be built.",
+        }
+
+    previous_by_team: dict[int, list[dict[str, Any]]] = {}
+    for player in previous.get("confirmed_hitters", []):
+        try:
+            team_id = int(player.get("team_id") or 0)
+        except (TypeError, ValueError):
+            team_id = 0
+
+        if not team_id:
+            continue
+
+        previous_by_team.setdefault(team_id, []).append(player)
+
+    # If a team played twice yesterday, use the later confirmed batting order.
+    # confirmed_hitters are already sorted by game_time, so later entries replace
+    # earlier slot values naturally.
+    latest_slots_by_team: dict[int, dict[int, dict[str, Any]]] = {}
+    for team_id, players in previous_by_team.items():
+        slots: dict[int, dict[str, Any]] = {}
+        for player in players:
+            try:
+                slot = int(player.get("batting_order") or 0)
+            except (TypeError, ValueError):
+                slot = 0
+            if 1 <= slot <= 9:
+                slots[slot] = player
+        latest_slots_by_team[team_id] = slots
+
+    projected_hitters: list[dict[str, Any]] = []
+
+    for game in current.get("games", []):
+        if not _projection_allowed_for_status(
+            game.get("game_status")
+        ):
+            continue
+
+        game_pk = game.get("game_pk")
+
+        for side in ("away", "home"):
+            if game.get(f"{side}_lineup_confirmed"):
+                continue
+
+            try:
+                team_id = int(game.get(f"{side}_team_id") or 0)
+            except (TypeError, ValueError):
+                team_id = 0
+
+            if not team_id:
+                continue
+
+            slots = latest_slots_by_team.get(team_id, {})
+            if not slots:
+                continue
+
+            for slot in sorted(slots):
+                prior = slots[slot]
+                player_id = prior.get("player_id")
+                if not player_id:
+                    continue
+
+                projected_hitters.append(
+                    {
+                        "player_id": int(player_id),
+                        "team_id": team_id,
+                        "game_pk": game_pk,
+                        "projected_batting_order": slot,
+                        "lineup_projected": True,
+                        "lineup_confirmed": False,
+                        "lineup_projection_source": (
+                            f"Previous confirmed lineup ({previous_date.isoformat()})"
+                        ),
+                    }
+                )
+
+    return {
+        "success": bool(projected_hitters),
+        "date": requested_date.isoformat(),
+        "source_date": previous_date.isoformat(),
+        "projected_hitters": projected_hitters,
+        "projected_hitter_count": len(projected_hitters),
+        "error": None,
+    }
+
 
 
 def get_today_confirmed_hitters() -> list[dict[str, Any]]:
