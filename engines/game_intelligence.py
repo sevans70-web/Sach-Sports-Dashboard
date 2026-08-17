@@ -26,7 +26,10 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from data.mlb_stats import get_today_hitters_with_stats
-from data.mlb_lineups import get_mlb_lineups
+from data.mlb_lineups import (
+    get_mlb_lineups,
+    get_previous_day_lineup_projection,
+)
 
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 from data.mlb_weather import get_game_weather
@@ -1161,6 +1164,24 @@ def _load_ranking_context(
         for player in lineup_dataset.get("confirmed_hitters", [])
         if player.get("player_id")
     }
+
+    try:
+        projected_lineup_dataset = get_previous_day_lineup_projection(
+            schedule_date=schedule_date,
+            current_lineup_data=lineup_dataset,
+        )
+    except Exception as exc:
+        projected_lineup_dataset = {
+            "success": False,
+            "projected_hitters": [],
+            "error": f"Projected lineup unavailable: {exc}",
+        }
+
+    projected_lineup_lookup = {
+        int(player["player_id"]): player
+        for player in projected_lineup_dataset.get("projected_hitters", [])
+        if player.get("player_id")
+    }
     confirmed_team_ids: set[tuple[Any, int]] = set()
     confirmed_team_names: set[tuple[Any, str]] = set()
 
@@ -1281,6 +1302,8 @@ def _load_ranking_context(
         "hitters": hitters,
         "lineup_dataset": lineup_dataset,
         "confirmed_lineup_lookup": confirmed_lineup_lookup,
+        "projected_lineup_lookup": projected_lineup_lookup,
+        "projected_lineup_dataset": projected_lineup_dataset,
         "pitcher_lookup": pitcher_dataset.get("by_pitcher_id", {}),
         "populations": _build_populations(hitters),
         "statcast_players": statcast_players,
@@ -1319,6 +1342,7 @@ def rank_players(
     lineup_dataset = context["lineup_dataset"]
 
     confirmed_lineup_lookup = context["confirmed_lineup_lookup"]
+    projected_lineup_lookup = context.get("projected_lineup_lookup", {})
 
     pitcher_lookup = context["pitcher_lookup"]
 
@@ -1348,6 +1372,28 @@ def rank_players(
 
         if confirmed_lineup:
             hitter = {**hitter, **confirmed_lineup}
+        else:
+            projected_lineup = projected_lineup_lookup.get(
+                int(player_id) if player_id else 0,
+                {},
+            )
+            if (
+                projected_lineup
+                and int(projected_lineup.get("team_id") or 0)
+                == int(hitter.get("team_id") or 0)
+                and projected_lineup.get("game_pk") == hitter.get("game_pk")
+            ):
+                hitter = {
+                    **hitter,
+                    "projected_batting_order": projected_lineup.get(
+                        "projected_batting_order"
+                    ),
+                    "lineup_projected": True,
+                    "lineup_projection_source": projected_lineup.get(
+                        "lineup_projection_source"
+                    ),
+                }
+
         season = hitter.get("season_stats", {})
         recent = hitter.get("recent_stats", {})
       
@@ -1420,6 +1466,9 @@ def rank_players(
             hitter.get("opposing_pitcher_hand", ""),
         )
 
+        lineup_status = "unconfirmed"
+        projected_batting_order = None
+
         if hitter.get("lineup_confirmed"):
             batting_order = hitter.get("batting_order")
 
@@ -1431,6 +1480,27 @@ def rank_players(
             lineup_bonus = float(
                 _lineup_position_bonus(batting_order)
             )
+            lineup_status = "confirmed"
+
+        elif hitter.get("lineup_projected"):
+            projected_batting_order = hitter.get(
+                "projected_batting_order"
+            )
+
+            try:
+                projected_batting_order = int(
+                    projected_batting_order
+                )
+            except (TypeError, ValueError):
+                projected_batting_order = 9
+
+            # A projected lineup should help the early slate without carrying
+            # the same weight as an official batting order.
+            lineup_bonus = float(
+                _lineup_position_bonus(projected_batting_order)
+            ) * 0.50
+            lineup_status = "projected"
+
         else:
             lineup_bonus = 0.0
 
@@ -1569,6 +1639,8 @@ def rank_players(
                 "category": category,
                 "base_score": base_score,
                 "lineup_bonus": lineup_bonus,
+                "lineup_status": lineup_status,
+                "projected_batting_order": projected_batting_order,
                 "handedness_adjustment": handedness_adjustment,
                 "pitcher_adjustment": pitcher_adjustment,
                 "gi_score": score,
@@ -1596,8 +1668,20 @@ def rank_players(
                         [
                             "Confirmed batting-order position improves expected opportunities"
                         ]
-                        if lineup_bonus >= 2.0
-                        else []
+                        if (
+                            lineup_status == "confirmed"
+                            and lineup_bonus >= 2.0
+                        )
+                        else (
+                            [
+                                "Recent batting-order usage supports early expected opportunities"
+                            ]
+                            if (
+                                lineup_status == "projected"
+                                and lineup_bonus >= 1.0
+                            )
+                            else []
+                        )
                     )
                     + (
                         [
