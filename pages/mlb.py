@@ -1810,8 +1810,9 @@ def render_yesterday_power_watch(
 
     st.markdown("### 👀 Yesterday's Power Watch")
     st.caption(
-        "Working name. Players who made 95+ mph hard contact yesterday "
-        "but finished without a home run. This is context, not a 'due' signal."
+        "Working name. Yesterday's strongest HR-shaped contact that stayed "
+        "in the park: barrels or 100+ mph contact in a 15°–40° launch window, "
+        "with all players who homered excluded. Context only — not a 'due' signal."
     )
 
     if not signals:
@@ -1881,9 +1882,16 @@ def render_yesterday_power_watch(
         True,
     )
     st.markdown("")
+    outside_top_25.sort(
+        key=lambda item: (
+            -int(item.get("barrel_count") or 0),
+            -float(item.get("best_exit_velocity") or 0.0),
+        )
+    )
+
     render_group(
-        "👀 OUTSIDE TODAY'S HR TOP 25",
-        outside_top_25,
+        "👀 TOP 10 OUTSIDE TODAY'S HR TOP 25",
+        outside_top_25[:10],
         False,
     )
 
