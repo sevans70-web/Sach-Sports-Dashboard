@@ -83,7 +83,7 @@ def _render_market(history: dict[str, Any], category: str, period: str) -> None:
 def render_prediction_performance_tracker(
     rankings_by_category: dict[str, list[dict[str, Any]]],
 ) -> None:
-    """Render persistent HR / Hits / TB testing performance."""
+    """Render persistent MLB prediction testing performance."""
     st.markdown(
         """
         <style>
@@ -159,10 +159,10 @@ def render_prediction_performance_tracker(
 
     period = st.segmented_control(
         "Performance period",
-        options=["Week", "Month", "Season"],
-        default="Week",
+        options=["Today", "Week", "Month", "Season"],
+        default="Today",
         key="mlb_performance_period",
-    ) or "Week"
+    ) or "Today"
 
     tabs = st.tabs([CATEGORY_CONFIG[key][0] for key in CATEGORY_CONFIG])
     for tab, category in zip(tabs, CATEGORY_CONFIG):
