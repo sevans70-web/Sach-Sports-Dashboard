@@ -550,11 +550,35 @@ def get_yesterday_hr_near_misses(
                     continue
 
                 barrels = int(row.get("barrel_count") or 0)
-                hard_hits = int(row.get("hard_hit_count") or 0)
-                if barrels == 0 and hard_hits == 0:
+                best_ev = float(
+                    row.get("best_exit_velocity") or 0.0
+                )
+                best_angle = row.get("best_launch_angle")
+
+                try:
+                    best_angle_value = float(best_angle)
+                except (TypeError, ValueError):
+                    best_angle_value = None
+
+                hr_shaped_hard_contact = (
+                    best_ev >= 100.0
+                    and best_angle_value is not None
+                    and 15.0 <= best_angle_value <= 40.0
+                )
+
+                if barrels == 0 and not hr_shaped_hard_contact:
                     continue
 
-                signals.append(row)
+                signals.append(
+                    {
+                        **row,
+                        "near_miss_type": (
+                            "barrel"
+                            if barrels > 0
+                            else "hr_shaped_hard_contact"
+                        ),
+                    }
+                )
 
     signals.sort(
         key=lambda item: (
