@@ -613,6 +613,11 @@ def get_live_hr_contact_signals(
         if not row.get("result_live"):
             continue
 
+        # Live HR Intelligence is for hitters who are still searching for
+        # today's first home run. Once a player homers, remove the signal.
+        if int(row.get("home_runs") or 0) >= 1:
+            continue
+
         contact = row.get("live_contact") or {}
         barrels = int(contact.get("barrel_count") or 0)
         hard_hits = int(contact.get("hard_hit_count") or 0)
