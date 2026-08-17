@@ -33,6 +33,7 @@ from engines.game_intelligence import (
 )
 from data.mlb_prediction_results import (
     get_live_hr_contact_signals,
+    get_yesterday_hr_near_misses,
     grade_top_25,
 )
 from data.ranking_history import load_previous_day_snapshot
@@ -1773,6 +1774,121 @@ def render_live_hr_intelligence(rankings: list[dict]) -> None:
     st.markdown("")
     render_group("🆕 OUTSIDE HR TOP 25", outside, False)
 
+def render_yesterday_power_watch(
+    rankings: list[dict],
+) -> None:
+    """Show yesterday's strong-contact, no-HR hitters as follow-up context."""
+    watch = get_yesterday_hr_near_misses()
+    signals = watch.get("signals", [])
+
+    rank_lookup = {
+        int(player.get("player_id")): int(
+            player.get("rank") or 0
+        )
+        for player in rankings
+        if player.get("player_id") is not None
+    }
+
+    today_top_25 = []
+    outside_top_25 = []
+
+    for signal in signals:
+        try:
+            player_id = int(signal.get("player_id"))
+        except (TypeError, ValueError):
+            player_id = None
+
+        if player_id in rank_lookup:
+            today_top_25.append(
+                {
+                    **signal,
+                    "hr_rank": rank_lookup[player_id],
+                }
+            )
+        else:
+            outside_top_25.append(signal)
+
+    st.markdown("### 👀 Yesterday's Power Watch")
+    st.caption(
+        "Working name. Players who made 95+ mph hard contact yesterday "
+        "but finished without a home run. This is context, not a 'due' signal."
+    )
+
+    if not signals:
+        st.info(
+            "No qualifying no-HR hard-contact signals were found from yesterday."
+        )
+        return
+
+    def render_group(
+        title: str,
+        rows: list[dict],
+        show_rank: bool,
+    ) -> None:
+        st.markdown(f"**{title}**")
+
+        if not rows:
+            st.caption("None.")
+            return
+
+        rows.sort(
+            key=lambda item: (
+                -int(item.get("barrel_count") or 0),
+                -float(
+                    item.get("best_exit_velocity") or 0.0
+                ),
+            )
+        )
+
+        html_rows = []
+
+        for row in rows:
+            away = _short_team(
+                row.get("away_team_name")
+            )
+            home = _short_team(
+                row.get("home_team_name")
+            )
+            yesterday_game = f"{away} @ {home}"
+            rank_text = (
+                f" · Today's HR #{int(row.get('hr_rank') or 0)}"
+                if show_rank
+                else ""
+            )
+
+            html_rows.append(
+                f"""
+                <div style="
+                    padding: 6px 0;
+                    border-bottom: 1px solid rgba(148,163,184,0.18);
+                    font-size: 0.88rem;
+                    line-height: 1.35;
+                ">
+                    <strong>{escape(str(row.get('player_name') or 'Player'))}</strong>
+                    <span style="opacity:.72;">
+                        · Yesterday {escape(yesterday_game)}{rank_text}
+                    </span>
+                    <span> | {escape(_live_contact_text(row))}</span>
+                </div>
+                """
+            )
+
+        render_html("".join(html_rows))
+
+    render_group(
+        "⭐ ALSO IN TODAY'S HR TOP 25",
+        today_top_25,
+        True,
+    )
+    st.markdown("")
+    render_group(
+        "👀 OUTSIDE TODAY'S HR TOP 25",
+        outside_top_25,
+        False,
+    )
+
+
+
 def weather_alert_summary(rankings: list[dict]) -> tuple[int, str]:
     """Return unique meaningful weather alerts represented in ranked games."""
     alerts: dict[object, str] = {}
@@ -1902,6 +2018,10 @@ else:
         "Use the rankings cautiously while the remaining data loads."
     )
 render_live_hr_intelligence(HOME_RUN_RANKINGS)
+
+st.divider()
+
+render_yesterday_power_watch(HOME_RUN_RANKINGS)
 
 st.divider()
 
