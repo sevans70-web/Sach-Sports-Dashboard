@@ -242,6 +242,15 @@ def convert_live_rankings(
                     "",
                 ),
                 "batting_order": player.get("batting_order"),
+                "projected_batting_order": player.get(
+                    "projected_batting_order"
+                ),
+                "lineup_status": player.get(
+                    "lineup_status",
+                    "confirmed"
+                    if player.get("lineup_confirmed")
+                    else "unconfirmed",
+                ),
                 "lineup_confirmed": player.get(
                     "lineup_confirmed",
                     False,
@@ -321,6 +330,43 @@ def matchup_display(player: dict) -> str:
     if is_home is False:
         return f"{team} vs. {opponent}"
     return f"{team} vs. {opponent}"
+
+
+def lineup_status_html(player: dict) -> str:
+    """Return a compact lineup-status label for ranking cards."""
+    status = str(player.get("lineup_status") or "").strip().lower()
+
+    if status == "confirmed" or player.get("lineup_confirmed"):
+        batting_order = player.get("batting_order")
+        order_text = (
+            f" · batting #{int(batting_order)}"
+            if isinstance(batting_order, int)
+            else ""
+        )
+        return (
+            '<span class="gi-lineup-status gi-lineup-confirmed">'
+            f'✓ Confirmed lineup{escape(order_text)}'
+            '</span>'
+        )
+
+    if status == "projected":
+        batting_order = player.get("projected_batting_order")
+        order_text = (
+            f" · projected #{int(batting_order)}"
+            if isinstance(batting_order, int)
+            else ""
+        )
+        return (
+            '<span class="gi-lineup-status gi-lineup-projected">'
+            f'◌ Projected lineup{escape(order_text)}'
+            '</span>'
+        )
+
+    return (
+        '<span class="gi-lineup-status gi-lineup-unconfirmed">'
+        '○ Lineup not confirmed'
+        '</span>'
+    )
 
 
 def movement_label(player: dict) -> str:
@@ -641,6 +687,10 @@ def render_compact_player(player: dict) -> None:
                     {escape(player['reason'])}
                 </div>
 
+                <div class="gi-lineup-row">
+                    {lineup_status_html(player)}
+                </div>
+
                 {card_result_html(player)}
             </div>
         </div>
@@ -718,6 +768,7 @@ def render_expandable_ranking_header(player: dict) -> None:
                 <span>{escape(matchup_display(player))}</span>
                 <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
                 <span class="gi-card-reason">{escape(player['reason'])}</span>
+                <span>{lineup_status_html(player)}</span>
                 {card_result_html(player)}
             </div>
             <div class="gi-card-score">
@@ -1211,6 +1262,37 @@ st.markdown(
             color: var(--gi-muted);
             font-size: 0.82rem;
             margin-top: 2px;
+        }
+
+        .gi-lineup-row {
+            margin-top: 5px;
+        }
+
+        .gi-lineup-status {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            line-height: 1.2;
+            padding: 3px 7px;
+            border-radius: 999px;
+        }
+
+        .gi-lineup-confirmed {
+            color: #bbf7d0;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.26);
+        }
+
+        .gi-lineup-projected {
+            color: #fde68a;
+            background: rgba(245, 158, 11, 0.10);
+            border: 1px solid rgba(245, 158, 11, 0.24);
+        }
+
+        .gi-lineup-unconfirmed {
+            color: #cbd5e1;
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.18);
         }
 
         .gi-compact-reason {
