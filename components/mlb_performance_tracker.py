@@ -41,20 +41,22 @@ def _render_market(history: dict[str, Any], category: str, period: str) -> None:
     rows = records_for_period(history, category, period)
     summary = summarize(rows)
 
+    total_predictions = summary["graded"] + summary["pending"]
+
     st.markdown(
         f"""
         <div class="perf-summary-row">
             <div class="perf-summary-item">
-                <span class="perf-label">Record</span>
-                <strong>{summary['wins']}-{summary['losses']}</strong>
-            </div>
-            <div class="perf-summary-item">
-                <span class="perf-label">Hit Rate</span>
-                <strong>{summary['hit_rate']:.1f}%</strong>
+                <span class="perf-label">Hits / Predictions</span>
+                <strong>{summary['wins']} / {total_predictions}</strong>
+                <span class="perf-subtext">{summary['hit_rate']:.1f}% hit rate</span>
             </div>
             <div class="perf-summary-item">
                 <span class="perf-label">Pending</span>
                 <strong>{summary['pending']}</strong>
+                <span class="perf-subtext">
+                    {'Awaiting results' if summary['pending'] else 'All results graded'}
+                </span>
             </div>
         </div>
         """,
@@ -89,7 +91,7 @@ def render_prediction_performance_tracker(
         <style>
         .perf-summary-row {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 10px;
             margin: 10px 0 14px 0;
         }
@@ -116,9 +118,16 @@ def render_prediction_performance_tracker(
             white-space: nowrap;
         }
 
+        .perf-summary-item .perf-subtext {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.74rem;
+            opacity: 0.68;
+        }
+
         @media (max-width: 700px) {
             .perf-summary-row {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 6px;
             }
 
@@ -133,6 +142,10 @@ def render_prediction_performance_tracker(
 
             .perf-summary-item strong {
                 font-size: 1.15rem;
+            }
+
+            .perf-summary-item .perf-subtext {
+                font-size: 0.64rem;
             }
         }
         </style>
