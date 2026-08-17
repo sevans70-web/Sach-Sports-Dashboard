@@ -31,7 +31,10 @@ from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
 )
-from data.mlb_prediction_results import grade_top_25
+from data.mlb_prediction_results import (
+    get_live_hr_contact_signals,
+    grade_top_25,
+)
 from data.ranking_history import load_previous_day_snapshot
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
@@ -1623,59 +1626,152 @@ for ranking_list in ALL_RANKING_LISTS:
         if player_id and player_id not in PLAYER_INTELLIGENCE_LOOKUP:
             PLAYER_INTELLIGENCE_LOOKUP[player_id] = ranked_player
 
+def _short_team(value: str) -> str:
+    """Compact MLB team names for live intelligence rows."""
+    teams = {
+        "Arizona Diamondbacks": "ARI",
+        "Athletics": "ATH",
+        "Atlanta Braves": "ATL",
+        "Baltimore Orioles": "BAL",
+        "Boston Red Sox": "BOS",
+        "Chicago Cubs": "CHC",
+        "Chicago White Sox": "CWS",
+        "Cincinnati Reds": "CIN",
+        "Cleveland Guardians": "CLE",
+        "Colorado Rockies": "COL",
+        "Detroit Tigers": "DET",
+        "Houston Astros": "HOU",
+        "Kansas City Royals": "KC",
+        "Los Angeles Angels": "LAA",
+        "Los Angeles Dodgers": "LAD",
+        "Miami Marlins": "MIA",
+        "Milwaukee Brewers": "MIL",
+        "Minnesota Twins": "MIN",
+        "New York Mets": "NYM",
+        "New York Yankees": "NYY",
+        "Philadelphia Phillies": "PHI",
+        "Pittsburgh Pirates": "PIT",
+        "San Diego Padres": "SD",
+        "San Francisco Giants": "SF",
+        "Seattle Mariners": "SEA",
+        "St. Louis Cardinals": "STL",
+        "Tampa Bay Rays": "TB",
+        "Texas Rangers": "TEX",
+        "Toronto Blue Jays": "TOR",
+        "Washington Nationals": "WSH",
+    }
+    value = str(value or "").strip()
+    return teams.get(value, value)
+
+
+def _live_contact_text(signal: dict) -> str:
+    barrels = int(signal.get("barrel_count") or 0)
+    hard_hits = int(signal.get("hard_hit_count") or 0)
+    ev = float(signal.get("best_exit_velocity") or 0.0)
+    angle = signal.get("best_launch_angle")
+    angle_text = (
+        f" · {float(angle):.0f}°"
+        if isinstance(angle, (int, float))
+        else ""
+    )
+
+    if barrels:
+        label = "Barrel" if barrels == 1 else "Barrels"
+        return f"🔥 {barrels} {label} · Best {ev:.1f} mph{angle_text}"
+
+    label = "Hard Hit" if hard_hits == 1 else "Hard Hits"
+    return f"💥 {hard_hits} {label} · Best {ev:.1f} mph{angle_text}"
+
+
 def render_live_hr_intelligence(rankings: list[dict]) -> None:
-    """Show live hard-contact signals for ranked HR players in one prominent panel."""
-    qualifying = []
+    """Show hard-contact signals for every hitter in live MLB games."""
+    live_data = get_live_hr_contact_signals()
+    signals = live_data.get("signals", [])
 
-    for player in rankings:
-        if not player.get("result_live"):
-            continue
-        if int(player.get("actual_home_runs") or 0) > 0:
-            continue
+    rank_lookup = {
+        int(player.get("player_id")): int(player.get("rank") or 0)
+        for player in rankings
+        if player.get("player_id") is not None
+    }
 
-        contact = player.get("live_contact") or {}
-        if not contact:
-            continue
+    top_25 = []
+    outside = []
 
-        if not (contact.get("barrel") or contact.get("hard_hit")):
-            continue
+    for signal in signals:
+        try:
+            player_id = int(signal.get("player_id"))
+        except (TypeError, ValueError):
+            player_id = None
 
-        qualifying.append((player, contact))
+        if player_id in rank_lookup:
+            top_25.append(
+                {
+                    **signal,
+                    "hr_rank": rank_lookup[player_id],
+                }
+            )
+        else:
+            outside.append(signal)
 
     st.markdown("### 🔥 Live HR Intelligence")
     st.caption(
-        "Live hard-contact signals from today's HR Top 25. "
-        "These are context signals only — they do not change the prediction result."
+        "Live hard-contact signals from all hitters in games currently in progress. "
+        "Barrels and 95+ mph hard-hit balls are context signals, not guarantees."
     )
 
-    if not qualifying:
-        st.info("No qualifying live hard-contact signals yet.")
+    if not signals:
+        if int(live_data.get("live_game_count") or 0) > 0:
+            st.info("No qualifying live hard-contact signals yet.")
+        else:
+            st.info("No MLB games are currently live.")
         return
 
-    # Barrels first, then hardest-hit contact, then ranking position.
-    qualifying.sort(
-        key=lambda item: (
-            0 if item[1].get("barrel") else 1,
-            -float(item[1].get("exit_velocity") or 0),
-            int(item[0].get("rank") or 99),
-        )
-    )
+    def render_group(title: str, rows: list[dict], show_rank: bool) -> None:
+        st.markdown(f"**{title}**")
 
-    for player, contact in qualifying:
-        name = str(player.get("player") or player.get("player_name") or "Player")
-        rank = int(player.get("rank") or 0)
-        ev = float(contact.get("exit_velocity") or 0)
-        angle = contact.get("launch_angle")
-        angle_text = (
-            f" · {float(angle):.0f}°"
-            if isinstance(angle, (int, float))
-            else ""
-        )
-        signal = "🔥 BARREL" if contact.get("barrel") else "💥 HARD HIT"
+        if not rows:
+            st.caption("None right now.")
+            return
 
-        with st.container(border=True):
-            st.markdown(f"**#{rank} {name}**")
-            st.markdown(f"{signal} · **{ev:.1f} mph**{angle_text} · 0 HR")
+        rows.sort(
+            key=lambda item: (
+                -int(item.get("barrel_count") or 0),
+                -float(item.get("best_exit_velocity") or 0.0),
+            )
+        )
+
+        html_rows = []
+
+        for row in rows:
+            away = _short_team(row.get("away_team_name"))
+            home = _short_team(row.get("home_team_name"))
+            game = f"{away} @ {home}"
+            rank_text = (
+                f" · HR #{int(row.get('hr_rank') or 0)}"
+                if show_rank
+                else ""
+            )
+
+            html_rows.append(
+                f"""
+                <div style="
+                    padding: 6px 0;
+                    border-bottom: 1px solid rgba(148,163,184,0.18);
+                    font-size: 0.88rem;
+                    line-height: 1.35;
+                ">
+                    <strong>{escape(str(row.get('player_name') or 'Player'))}</strong>
+                    <span style="opacity:.72;"> · {escape(game)}{rank_text}</span>
+                    <span> | {escape(_live_contact_text(row))}</span>
+                </div>
+                """
+            )
+
+        render_html("".join(html_rows))
+
+    render_group("⭐ HR TOP 25", top_25, True)
+    st.markdown("")
+    render_group("🆕 OUTSIDE HR TOP 25", outside, False)
 
 def weather_alert_summary(rankings: list[dict]) -> tuple[int, str]:
     """Return unique meaningful weather alerts represented in ranked games."""
