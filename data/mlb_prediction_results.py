@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from time import monotonic
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -401,6 +401,176 @@ def get_live_batter_results(
 
     _LIVE_RESULTS_CACHE[requested_date] = (monotonic(), result)
     return result
+
+
+def _read_final_game_contact_results(
+    game: dict[str, Any],
+) -> tuple[int, list[dict[str, Any]], str | None]:
+    """Read final-game batter totals plus archived batted-ball contact."""
+    game_pk = int(game["game_pk"])
+    payload, error = _request_json(
+        MLB_LIVE_FEED_URL.format(game_pk=game_pk)
+    )
+
+    if error or payload is None:
+        return game_pk, [], error or "Game feed unavailable."
+
+    teams = (
+        payload.get("liveData", {})
+        .get("boxscore", {})
+        .get("teams", {})
+        or {}
+    )
+    contact = _live_contact_by_player(payload)
+    players: list[dict[str, Any]] = []
+
+    for side in ("away", "home"):
+        side_players = (
+            teams.get(side, {})
+            .get("players", {})
+            or {}
+        )
+
+        for player_record in side_players.values():
+            person = player_record.get("person", {}) or {}
+            player_id = person.get("id")
+            batting = (
+                player_record.get("stats", {})
+                .get("batting", {})
+                or {}
+            )
+
+            if not isinstance(player_id, int):
+                continue
+
+            live_contact = contact.get(player_id)
+            if not live_contact:
+                continue
+
+            players.append(
+                {
+                    "player_id": player_id,
+                    "player_name": person.get(
+                        "fullName",
+                        "Unknown player",
+                    ),
+                    "game_pk": game_pk,
+                    "away_team_name": game.get(
+                        "away_team_name",
+                        "Away",
+                    ),
+                    "home_team_name": game.get(
+                        "home_team_name",
+                        "Home",
+                    ),
+                    "home_runs": int(
+                        batting.get("homeRuns") or 0
+                    ),
+                    "hard_hit_count": int(
+                        live_contact.get("hard_hit_count") or 0
+                    ),
+                    "barrel_count": int(
+                        live_contact.get("barrel_count") or 0
+                    ),
+                    "best_exit_velocity": float(
+                        live_contact.get("best_exit_velocity") or 0.0
+                    ),
+                    "best_launch_angle": live_contact.get(
+                        "best_launch_angle"
+                    ),
+                }
+            )
+
+    return game_pk, players, None
+
+
+def get_yesterday_hr_near_misses(
+    reference_date: date | None = None,
+) -> dict[str, Any]:
+    """
+    Return yesterday's qualifying hard-contact hitters who finished with 0 HR.
+
+    This is descriptive follow-up intelligence only. It does not imply that a
+    player is due to homer today.
+    """
+    current = reference_date or datetime.now(
+        TORONTO_TIMEZONE
+    ).date()
+    yesterday = current - timedelta(days=1)
+    yesterday_key = yesterday.isoformat()
+
+    games_result = get_scoring_game_states(yesterday_key)
+    if not games_result.get("success"):
+        return {
+            "success": False,
+            "date": yesterday_key,
+            "signals": [],
+            "signal_count": 0,
+            "errors": [games_result.get("error")],
+        }
+
+    final_games = [
+        game
+        for game in games_result.get("games", [])
+        if game.get("is_final")
+    ]
+
+    signals: list[dict[str, Any]] = []
+    errors: list[str] = []
+    worker_count = min(8, max(len(final_games), 1))
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = {
+            executor.submit(
+                _read_final_game_contact_results,
+                game,
+            ): game
+            for game in final_games
+        }
+
+        for future in as_completed(futures):
+            game = futures[future]
+            try:
+                game_pk, rows, error = future.result()
+            except Exception as exc:
+                game_pk = game.get("game_pk")
+                rows = []
+                error = (
+                    "Unexpected archived contact error: "
+                    f"{exc}"
+                )
+
+            if error:
+                errors.append(f"Game {game_pk}: {error}")
+                continue
+
+            for row in rows:
+                # Part 2 is specifically strong contact WITHOUT a home run.
+                if int(row.get("home_runs") or 0) > 0:
+                    continue
+
+                barrels = int(row.get("barrel_count") or 0)
+                hard_hits = int(row.get("hard_hit_count") or 0)
+                if barrels == 0 and hard_hits == 0:
+                    continue
+
+                signals.append(row)
+
+    signals.sort(
+        key=lambda item: (
+            -int(item.get("barrel_count") or 0),
+            -float(item.get("best_exit_velocity") or 0.0),
+        )
+    )
+
+    return {
+        "success": True,
+        "date": yesterday_key,
+        "signals": signals,
+        "signal_count": len(signals),
+        "errors": errors,
+    }
+
 
 
 def get_live_hr_contact_signals(
