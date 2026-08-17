@@ -103,6 +103,19 @@ def get_scoring_game_states(
             if abstract_state not in {"live", "final"}:
                 continue
 
+            away_team = (
+                game.get("teams", {})
+                .get("away", {})
+                .get("team", {})
+                or {}
+            )
+            home_team = (
+                game.get("teams", {})
+                .get("home", {})
+                .get("team", {})
+                or {}
+            )
+
             games.append(
                 {
                     "game_pk": game_pk,
@@ -110,6 +123,12 @@ def get_scoring_game_states(
                     "detailed_state": detailed_state,
                     "is_final": abstract_state == "final",
                     "is_live": abstract_state == "live",
+                    "away_team_name": str(
+                        away_team.get("name") or "Away"
+                    ),
+                    "home_team_name": str(
+                        home_team.get("name") or "Home"
+                    ),
                 }
             )
 
@@ -139,7 +158,7 @@ def _is_statcast_barrel(
 def _live_contact_by_player(
     payload: dict[str, Any],
 ) -> dict[int, dict[str, Any]]:
-    """Return each batter's strongest tracked batted-ball contact."""
+    """Aggregate qualifying live batted-ball contact for every batter."""
     contact: dict[int, dict[str, Any]] = {}
 
     all_plays = (
@@ -160,45 +179,58 @@ def _live_contact_by_player(
 
         for event in play.get("playEvents", []) or []:
             hit_data = event.get("hitData") or {}
-            launch_speed = hit_data.get("launchSpeed")
-            launch_angle = hit_data.get("launchAngle")
 
             try:
-                exit_velocity = float(launch_speed)
+                exit_velocity = float(hit_data.get("launchSpeed"))
             except (TypeError, ValueError):
                 continue
 
             try:
-                angle = float(launch_angle) if launch_angle is not None else None
+                launch_angle = (
+                    float(hit_data.get("launchAngle"))
+                    if hit_data.get("launchAngle") is not None
+                    else None
+                )
             except (TypeError, ValueError):
-                angle = None
+                launch_angle = None
 
             hard_hit = exit_velocity >= 95.0
-            barrel = _is_statcast_barrel(exit_velocity, angle)
+            barrel = _is_statcast_barrel(
+                exit_velocity,
+                launch_angle,
+            )
 
             if not hard_hit and not barrel:
                 continue
 
-            candidate = {
-                "exit_velocity": round(exit_velocity, 1),
-                "launch_angle": round(angle, 1) if angle is not None else None,
-                "hard_hit": hard_hit,
-                "barrel": barrel,
-                "event": str(
-                    event.get("details", {}).get("event") or "Ball in play"
-                ),
-            }
+            row = contact.setdefault(
+                batter_id,
+                {
+                    "hard_hit_count": 0,
+                    "barrel_count": 0,
+                    "best_exit_velocity": 0.0,
+                    "best_launch_angle": None,
+                    "best_was_barrel": False,
+                },
+            )
 
-            existing = contact.get(batter_id)
-            if (
-                existing is None
-                or (candidate["barrel"] and not existing.get("barrel"))
-                or (
-                    candidate["barrel"] == existing.get("barrel")
-                    and candidate["exit_velocity"] > existing.get("exit_velocity", 0)
-                )
+            row["hard_hit_count"] += 1
+            if barrel:
+                row["barrel_count"] += 1
+
+            if exit_velocity > float(
+                row.get("best_exit_velocity") or 0.0
             ):
-                contact[batter_id] = candidate
+                row["best_exit_velocity"] = round(
+                    exit_velocity,
+                    1,
+                )
+                row["best_launch_angle"] = (
+                    round(launch_angle, 1)
+                    if launch_angle is not None
+                    else None
+                )
+                row["best_was_barrel"] = barrel
 
     return contact
 
@@ -263,6 +295,14 @@ def _read_game_batter_results(
                         "Unknown player",
                     ),
                     "game_pk": game_pk,
+                    "away_team_name": game.get(
+                        "away_team_name",
+                        "Away",
+                    ),
+                    "home_team_name": game.get(
+                        "home_team_name",
+                        "Home",
+                    ),
                     "game_state": game.get("abstract_state"),
                     "game_status": game.get("detailed_state"),
                     "game_finished": bool(game.get("is_final")),
@@ -361,6 +401,65 @@ def get_live_batter_results(
 
     _LIVE_RESULTS_CACHE[requested_date] = (monotonic(), result)
     return result
+
+
+def get_live_hr_contact_signals(
+    result_date: date | str | None = None,
+    force_refresh: bool = False,
+) -> dict[str, Any]:
+    """Return qualifying hard-contact signals from all hitters in live MLB games."""
+    live_results = get_live_batter_results(
+        result_date,
+        force_refresh=force_refresh,
+    )
+
+    signals: list[dict[str, Any]] = []
+
+    for row in live_results.get("by_player_id", {}).values():
+        if not row.get("result_live"):
+            continue
+
+        contact = row.get("live_contact") or {}
+        barrels = int(contact.get("barrel_count") or 0)
+        hard_hits = int(contact.get("hard_hit_count") or 0)
+
+        if barrels == 0 and hard_hits == 0:
+            continue
+
+        signals.append(
+            {
+                "player_id": row.get("player_id"),
+                "player_name": row.get("player_name"),
+                "away_team_name": row.get("away_team_name"),
+                "home_team_name": row.get("home_team_name"),
+                "home_runs": int(row.get("home_runs") or 0),
+                "hard_hit_count": hard_hits,
+                "barrel_count": barrels,
+                "best_exit_velocity": float(
+                    contact.get("best_exit_velocity") or 0.0
+                ),
+                "best_launch_angle": contact.get(
+                    "best_launch_angle"
+                ),
+            }
+        )
+
+    signals.sort(
+        key=lambda item: (
+            -int(item.get("barrel_count") or 0),
+            -float(item.get("best_exit_velocity") or 0.0),
+        )
+    )
+
+    return {
+        "success": bool(live_results.get("success")),
+        "signals": signals,
+        "signal_count": len(signals),
+        "live_game_count": int(
+            live_results.get("live_game_count") or 0
+        ),
+    }
+
 
 
 def get_final_game_pks(
@@ -594,16 +693,16 @@ def grade_top_25(
             and actual_home_runs == 0
             and live_contact
         ):
-            ev = live_contact.get("exit_velocity")
-            angle = live_contact.get("launch_angle")
+            ev = live_contact.get("best_exit_velocity")
+            angle = live_contact.get("best_launch_angle")
             angle_text = (
                 f" · {angle:.0f}°"
                 if isinstance(angle, (int, float))
                 else ""
             )
-            if live_contact.get("barrel"):
+            if int(live_contact.get("barrel_count") or 0) > 0:
                 contact_label = f"🔥 STILL ALIVE · BARREL {ev:.1f} mph{angle_text}"
-            elif live_contact.get("hard_hit"):
+            elif int(live_contact.get("hard_hit_count") or 0) > 0:
                 contact_label = f"💥 HARD HIT · {ev:.1f} mph{angle_text}"
 
         graded.append(
