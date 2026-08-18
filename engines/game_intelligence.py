@@ -219,6 +219,106 @@ def _handedness_matchup_adjustment(
 
     return 0.0
 
+
+def _hr_platoon_matchup_adjustment(
+    hitter: dict[str, Any],
+    pitcher: dict[str, Any],
+) -> tuple[float, dict[str, Any]]:
+    """
+    Return a sample-aware HR adjustment using the hitter's split vs today's
+    pitcher hand and the pitcher's split vs the hitter's batting side.
+    """
+    pitcher_hand = str(
+        hitter.get("opposing_pitcher_hand")
+        or pitcher.get("pitcher_hand")
+        or ""
+    ).upper()
+    bat_side = str(hitter.get("bat_side") or "").upper()
+
+    if pitcher_hand not in {"L", "R"}:
+        return 0.0, {"available": False, "reason": "Pitcher hand unavailable"}
+
+    hitter_split_key = "vs_lhp" if pitcher_hand == "L" else "vs_rhp"
+
+    effective_bat_side = bat_side
+    if bat_side == "S":
+        effective_bat_side = "R" if pitcher_hand == "L" else "L"
+
+    if effective_bat_side not in {"L", "R"}:
+        return 0.0, {"available": False, "reason": "Batter side unavailable"}
+
+    pitcher_split_key = "vs_lhb" if effective_bat_side == "L" else "vs_rhb"
+
+    hitter_split = (
+        (hitter.get("platoon_splits") or {}).get(hitter_split_key, {}) or {}
+    )
+    pitcher_split = (
+        (pitcher.get("platoon_splits") or {}).get(pitcher_split_key, {}) or {}
+    )
+
+    season = hitter.get("season_stats", {}) or {}
+    pitcher_season = pitcher.get("season_stats", {}) or {}
+
+    hitter_split_pa = int(hitter_split.get("plate_appearances") or 0)
+    pitcher_split_bf = int(pitcher_split.get("batters_faced") or 0)
+
+    season_pa = max(int(season.get("plate_appearances") or 0), 1)
+    season_hr_rate = _safe_float(season.get("home_runs")) / season_pa
+
+    split_hr_rate = _safe_float(hitter_split.get("home_run_rate"))
+    split_slg = _safe_float(hitter_split.get("slg"))
+    split_ops = _safe_float(hitter_split.get("ops"))
+    season_slg = _safe_float(season.get("slg"))
+    season_ops = _safe_float(season.get("ops"))
+
+    hitter_raw = 0.0
+    hitter_reliability = 0.0
+    if hitter_split_pa >= 15:
+        hitter_raw = (
+            ((split_hr_rate - season_hr_rate) * 80.0)
+            + ((split_slg - season_slg) * 5.0)
+            + ((split_ops - season_ops) * 2.5)
+        )
+        hitter_raw = _clamp(hitter_raw, -3.0, 3.0)
+        hitter_reliability = _clamp(hitter_split_pa / 120.0, 0.0, 1.0)
+
+    pitcher_raw = 0.0
+    pitcher_reliability = 0.0
+    if pitcher_split_bf >= 25:
+        overall_hr9 = _safe_float(pitcher_season.get("home_runs_per_nine"))
+        split_hr9 = _safe_float(pitcher_split.get("home_runs_per_nine"))
+        overall_whip = _safe_float(pitcher_season.get("whip"))
+        split_whip = _safe_float(pitcher_split.get("whip"))
+        overall_k = _safe_float(pitcher_season.get("strikeout_rate"))
+        split_k = _safe_float(pitcher_split.get("strikeout_rate"))
+
+        pitcher_raw = (
+            ((split_hr9 - overall_hr9) * 1.5)
+            + ((split_whip - overall_whip) * 2.0)
+            + ((overall_k - split_k) * 4.0)
+        )
+        pitcher_raw = _clamp(pitcher_raw, -3.0, 3.0)
+        pitcher_reliability = _clamp(pitcher_split_bf / 180.0, 0.0, 1.0)
+
+    hitter_component = hitter_raw * hitter_reliability
+    pitcher_component = pitcher_raw * pitcher_reliability
+    adjustment = _clamp(hitter_component + pitcher_component, -5.0, 5.0)
+
+    return round(adjustment, 2), {
+        "available": bool(hitter_split or pitcher_split),
+        "pitcher_hand": pitcher_hand,
+        "effective_bat_side": effective_bat_side,
+        "hitter_split_key": hitter_split_key,
+        "pitcher_split_key": pitcher_split_key,
+        "hitter_split": hitter_split,
+        "pitcher_split": pitcher_split,
+        "hitter_component": round(hitter_component, 2),
+        "pitcher_component": round(pitcher_component, 2),
+        "adjustment": round(adjustment, 2),
+    }
+
+
+
 def _pitcher_quality_adjustment(
     category: str,
     pitcher_stats: dict[str, Any],
@@ -972,6 +1072,7 @@ def _projection_adjustment(
     lineup_bonus: float,
     handedness_adjustment: float,
     pitcher_adjustment: float,
+    platoon_adjustment: float = 0.0,
 ) -> float:
     """Return a conservative matchup and opportunity multiplier."""
     adjustment = (
@@ -979,6 +1080,7 @@ def _projection_adjustment(
         + (lineup_bonus * 0.010)
         + (handedness_adjustment * 0.012)
         + (pitcher_adjustment * 0.018)
+        + (platoon_adjustment * 0.012)
     )
 
     return _clamp(
@@ -994,6 +1096,7 @@ def _build_projections(
     lineup_bonus: float,
     handedness_adjustment: float,
     pitcher_adjustment: float,
+    platoon_adjustment: float = 0.0,
 ) -> dict[str, float]:
     """Build sample-aware player projections and probabilities."""
     inputs = _projection_inputs(
@@ -1005,6 +1108,7 @@ def _build_projections(
         lineup_bonus=lineup_bonus,
         handedness_adjustment=handedness_adjustment,
         pitcher_adjustment=pitcher_adjustment,
+        platoon_adjustment=platoon_adjustment,
     )
 
     expected_plate_appearances = _clamp(
@@ -1508,6 +1612,18 @@ def rank_players(
             category,
             pitcher_stats,
         )
+
+        platoon_adjustment = 0.0
+        platoon_matchup = {"available": False}
+
+        if category == CATEGORY_HOME_RUNS:
+            platoon_adjustment, platoon_matchup = (
+                _hr_platoon_matchup_adjustment(
+                    hitter=hitter,
+                    pitcher=pitcher,
+                )
+            )
+
         weather_adjustment = 0.0
 
         if weather.get("success"):
@@ -1574,6 +1690,11 @@ def rank_players(
             lineup_bonus=lineup_bonus,
             handedness_adjustment=handedness_adjustment,
             pitcher_adjustment=pitcher_adjustment,
+            platoon_adjustment=(
+                platoon_adjustment
+                if category == CATEGORY_HOME_RUNS
+                else 0.0
+            ),
         )
 
         if category == CATEGORY_HOME_RUNS:
@@ -1586,6 +1707,7 @@ def rank_players(
                 + (lineup_bonus * 4.0)
                 + (handedness_adjustment * 4.0)
                 + (pitcher_adjustment * 4.0)
+                + (platoon_adjustment * 5.0)
                 + (weather_adjustment * 3.0)
                 + (park_adjustment * 3.0),
                 0.0,
@@ -1643,6 +1765,8 @@ def rank_players(
                 "projected_batting_order": projected_batting_order,
                 "handedness_adjustment": handedness_adjustment,
                 "pitcher_adjustment": pitcher_adjustment,
+                "platoon_adjustment": platoon_adjustment,
+                "platoon_matchup": platoon_matchup,
                 "gi_score": score,
                 "weather": weather,
                 "park_factor": park_factor,
