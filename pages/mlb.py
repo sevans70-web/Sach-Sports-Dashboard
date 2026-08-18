@@ -1766,6 +1766,29 @@ def _live_contact_text(signal: dict) -> str:
     return f"💥 {hard_hits} {label} · Best {ev:.1f} mph{angle_text}"
 
 
+def render_hr_signal_legend() -> None:
+    """Explain HR contact symbols and Statcast terms in plain language."""
+    with st.expander("ℹ️ What do the HR contact signals mean?", expanded=False):
+        st.markdown(
+            """
+            **🔥 Barrel** — a batted ball with a strong combination of exit velocity
+            and launch angle associated with extra-base damage and home-run potential.
+
+            **💥 Hard Hit** — a batted ball hit at **95 mph or harder** that does not
+            necessarily qualify as a barrel.
+
+            **mph / Exit Velocity** — how fast the ball leaves the bat. Higher is
+            generally stronger contact.
+
+            **° / Launch Angle** — the vertical angle at which the ball leaves the bat.
+            The angle helps distinguish a ground ball, line drive, or fly ball.
+
+            **Important:** a barrel or hard hit is a contact-quality signal, **not a
+            prediction or guarantee** that the player will hit a home run.
+            """
+        )
+
+
 def render_live_hr_intelligence(rankings: list[dict]) -> None:
     """Show hard-contact signals for every hitter in live MLB games."""
     live_data = get_live_hr_contact_signals()
@@ -1801,6 +1824,8 @@ def render_live_hr_intelligence(rankings: list[dict]) -> None:
         "Live hard-contact signals from all hitters in games currently in progress. "
         "Barrels and 95+ mph hard-hit balls are context signals, not guarantees."
     )
+
+    render_hr_signal_legend()
 
     if not signals:
         if int(live_data.get("live_game_count") or 0) > 0:
@@ -1896,6 +1921,8 @@ def render_yesterday_power_watch(
         "in the park: barrels or 100+ mph contact in a 15°–40° launch window, "
         "with all players who homered excluded. Context only — not a 'due' signal."
     )
+
+    render_hr_signal_legend()
 
     if not signals:
         st.info(
