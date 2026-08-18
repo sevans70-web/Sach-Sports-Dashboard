@@ -259,6 +259,19 @@ def convert_live_rankings(
                     "opposing_probable_pitcher",
                     "Not announced",
                 ),
+                "opposing_pitcher_hand": player.get(
+                    "opposing_pitcher_hand",
+                    "",
+                ),
+                "bat_side": player.get("bat_side", ""),
+                "platoon_adjustment": player.get(
+                    "platoon_adjustment",
+                    0.0,
+                ),
+                "platoon_matchup": player.get(
+                    "platoon_matchup",
+                    {},
+                ),
                 "why": reasons,
                 "risk_flags": risk_flags,
                 "season_stats": player.get("season_stats", {}),
