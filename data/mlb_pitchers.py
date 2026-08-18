@@ -304,6 +304,103 @@ def _probable_pitcher_record(
     }
 
 
+
+def get_pitching_platoon_splits(
+    season: int | None = None,
+) -> dict[str, Any]:
+    """
+    Retrieve season pitching splits vs left- and right-handed batters.
+
+    This is a data-only layer. It does not change hitter rankings.
+    """
+    today = datetime.now(TORONTO_TIMEZONE).date()
+    requested_season = season or today.year
+
+    base_params: dict[str, Any] = {
+        "stats": "statSplits",
+        "group": "pitching",
+        "season": requested_season,
+        "sportIds": 1,
+        "playerPool": "ALL",
+        "limit": 2500,
+        "hydrate": "team",
+    }
+
+    split_requests = {
+        "vs_lhb": "vl",
+        "vs_rhb": "vr",
+    }
+
+    def _load_one(
+        label: str,
+        sit_code: str,
+    ) -> tuple[str, list[dict[str, Any]], str | None]:
+        params = {
+            **base_params,
+            "sitCodes": sit_code,
+        }
+        payload, error = _request_json(params)
+
+        if error or payload is None:
+            return label, [], error or f"{label} split could not be loaded."
+
+        normalized: list[dict[str, Any]] = []
+
+        for split in _stat_splits(payload):
+            record = _normalize_pitching_split(split)
+            if record is None:
+                continue
+
+            normalized.append(
+                {
+                    **record,
+                    "split_label": label,
+                    "split_sit_code": sit_code,
+                }
+            )
+
+        return label, normalized, None
+
+    split_results: dict[str, list[dict[str, Any]]] = {
+        "vs_lhb": [],
+        "vs_rhb": [],
+    }
+    errors: list[str] = []
+
+    for label, sit_code in split_requests.items():
+        result_label, records, error = _load_one(label, sit_code)
+        split_results[result_label] = records
+        if error:
+            errors.append(error)
+
+    by_pitcher_id: dict[
+        int,
+        dict[str, dict[str, Any]],
+    ] = {}
+
+    for label, records in split_results.items():
+        for record in records:
+            pitcher_id = int(record.get("pitcher_id") or 0)
+            if not pitcher_id:
+                continue
+
+            by_pitcher_id.setdefault(
+                pitcher_id,
+                {},
+            )[label] = record
+
+    return {
+        "success": bool(by_pitcher_id),
+        "season": requested_season,
+        "by_pitcher_id": by_pitcher_id,
+        "pitcher_count": len(by_pitcher_id),
+        "vs_lhb_count": len(split_results["vs_lhb"]),
+        "vs_rhb_count": len(split_results["vs_rhb"]),
+        "errors": errors,
+    }
+
+
+
 def get_today_probable_pitchers_with_stats(
     schedule_date: date | str | None = None,
     lineup_data: dict[str, Any] | None = None,
@@ -329,6 +426,9 @@ def get_today_probable_pitchers_with_stats(
 
     requested_date = date.fromisoformat(str(lineups.get("date")))
     season_stats = get_bulk_pitching_stats(season=requested_date.year)
+    platoon_stats = get_pitching_platoon_splits(
+        season=requested_date.year,
+    )
 
     errors: list[str] = list(lineups.get("errors", []))
 
@@ -338,7 +438,14 @@ def get_today_probable_pitchers_with_stats(
             or "Season pitching statistics were unavailable."
         )
 
+    if not platoon_stats.get("success"):
+        errors.extend(
+            platoon_stats.get("errors", [])
+            or ["Pitcher platoon splits were unavailable."]
+        )
+
     stats_lookup = season_stats.get("by_pitcher_id", {})
+    platoon_lookup = platoon_stats.get("by_pitcher_id", {})
     probable_pitchers: list[dict[str, Any]] = []
     seen_pitcher_ids: set[int] = set()
 
@@ -357,6 +464,20 @@ def get_today_probable_pitchers_with_stats(
 
             if pitcher_id in seen_pitcher_ids:
                 continue
+
+            pitcher_splits = platoon_lookup.get(
+                int(pitcher_id),
+                {},
+            )
+
+            record = {
+                **record,
+                "platoon_splits": {
+                    "vs_lhb": pitcher_splits.get("vs_lhb", {}),
+                    "vs_rhb": pitcher_splits.get("vs_rhb", {}),
+                },
+                "has_platoon_splits": bool(pitcher_splits),
+            }
 
             seen_pitcher_ids.add(pitcher_id)
             probable_pitchers.append(record)
@@ -380,6 +501,14 @@ def get_today_probable_pitchers_with_stats(
         "pitchers": probable_pitchers,
         "by_pitcher_id": by_pitcher_id,
         "pitcher_count": len(probable_pitchers),
+        "platoon_splits_loaded": platoon_stats.get(
+            "success",
+            False,
+        ),
+        "platoon_pitcher_count": platoon_stats.get(
+            "pitcher_count",
+            0,
+        ),
         "errors": errors,
         "fetched_at": fetched_at,
     }
