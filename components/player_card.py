@@ -175,6 +175,103 @@ def _performance_evidence_html(
     )
 
 
+
+def _hr_matchup_evidence(
+    player_data: dict,
+) -> list[str]:
+    """Explain the player-specific hitter/pitcher platoon matchup."""
+    matchup = player_data.get("platoon_matchup", {}) or {}
+
+    if not matchup.get("available"):
+        return []
+
+    pitcher_name = str(
+        player_data.get("opposing_probable_pitcher")
+        or "the opposing pitcher"
+    )
+    pitcher_hand = str(matchup.get("pitcher_hand") or "").upper()
+    batter_side = str(matchup.get("effective_bat_side") or "").upper()
+
+    hitter_split = matchup.get("hitter_split", {}) or {}
+    pitcher_split = matchup.get("pitcher_split", {}) or {}
+
+    hand_word = {
+        "L": "left-handed",
+        "R": "right-handed",
+    }
+    pitcher_hand_text = hand_word.get(
+        pitcher_hand,
+        f"{pitcher_hand}-handed" if pitcher_hand else "unknown-handed",
+    )
+    batter_side_text = hand_word.get(
+        batter_side,
+        f"{batter_side}-handed" if batter_side else "unknown-handed",
+    )
+
+    evidence: list[str] = []
+
+    hitter_pa = int(hitter_split.get("plate_appearances") or 0)
+    if hitter_pa > 0:
+        hitter_hr = int(hitter_split.get("home_runs") or 0)
+        hitter_slg = _number(hitter_split.get("slg"))
+        hitter_ops = _number(hitter_split.get("ops"))
+
+        evidence.append(
+            f"Today's platoon: batting {batter_side_text} against "
+            f"{pitcher_hand_text} {pitcher_name}. In {hitter_pa} PA against "
+            f"{pitcher_hand_text} pitching this season, the hitter has "
+            f"{hitter_hr} HR with a {hitter_slg} SLG and {hitter_ops} OPS."
+        )
+
+    pitcher_bf = int(pitcher_split.get("batters_faced") or 0)
+    if pitcher_bf > 0:
+        pitcher_hr9 = float(
+            pitcher_split.get("home_runs_per_nine", 0.0) or 0.0
+        )
+        pitcher_whip = float(
+            pitcher_split.get("whip", 0.0) or 0.0
+        )
+        pitcher_k_rate = float(
+            pitcher_split.get("strikeout_rate", 0.0) or 0.0
+        )
+
+        evidence.append(
+            f"Pitcher split: {pitcher_name} has faced {pitcher_bf} "
+            f"{batter_side_text} batters in this split, allowing "
+            f"{pitcher_hr9:.2f} HR/9 with a {pitcher_whip:.2f} WHIP and "
+            f"{pitcher_k_rate * 100:.1f}% strikeout rate."
+        )
+
+    adjustment = float(
+        matchup.get(
+            "adjustment",
+            player_data.get("platoon_adjustment", 0.0),
+        )
+        or 0.0
+    )
+
+    if adjustment >= 0.75:
+        evidence.append(
+            f"Matchup impact: the hitter/pitcher split is a favorable "
+            f"today-specific signal and adds {adjustment:.2f} to the "
+            "platoon matchup adjustment."
+        )
+    elif adjustment <= -0.75:
+        evidence.append(
+            f"Matchup impact: the hitter/pitcher split is a tougher "
+            f"today-specific signal and applies a {adjustment:.2f} "
+            "platoon matchup adjustment."
+        )
+    else:
+        evidence.append(
+            "Matchup impact: the handedness splits are close to neutral, "
+            "so today's platoon matchup is not a major ranking driver."
+        )
+
+    return evidence
+
+
+
 def _ranking_evidence(
     player_data: dict,
     season: dict,
@@ -189,6 +286,10 @@ def _ranking_evidence(
     recent_pa = int(recent.get("plate_appearances", 0) or 0)
 
     if "home run" in category:
+        evidence.extend(
+            _hr_matchup_evidence(player_data)
+        )
+
         season_hr = int(season.get("home_runs", 0) or 0)
         recent_hr = int(recent.get("home_runs", 0) or 0)
         evidence.append(
