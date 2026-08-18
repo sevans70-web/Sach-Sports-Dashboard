@@ -281,6 +281,128 @@ def get_bulk_hitting_stats(
     }
 
 
+
+def get_hitting_platoon_splits(
+    season: int | None = None,
+) -> dict[str, Any]:
+    """
+    Retrieve season hitting splits vs left- and right-handed pitchers.
+
+    This is a data-only layer. It does not change any ranking score.
+    """
+    today = datetime.now(TORONTO_TIMEZONE).date()
+    requested_season = season or today.year
+
+    base_params: dict[str, Any] = {
+        "stats": "statSplits",
+        "group": "hitting",
+        "season": requested_season,
+        "sportIds": 1,
+        "leagueIds": "103,104",
+        "gameType": "R",
+        "playerPool": "ALL",
+        "limit": 2500,
+        "hydrate": "team",
+    }
+
+    split_requests = {
+        "vs_lhp": "vl",
+        "vs_rhp": "vr",
+    }
+
+    def _load_one(
+        label: str,
+        sit_code: str,
+    ) -> tuple[str, list[dict[str, Any]], str | None]:
+        params = {
+            **base_params,
+            "sitCodes": sit_code,
+        }
+        payload, error = _request_json(params)
+
+        if error or payload is None:
+            return label, [], error or f"{label} split could not be loaded."
+
+        normalized: list[dict[str, Any]] = []
+
+        for split in _stat_splits(payload):
+            record = _normalize_hitting_split(split)
+            if record is None:
+                continue
+
+            plate_appearances = int(
+                record.get("plate_appearances") or 0
+            )
+            home_runs = int(record.get("home_runs") or 0)
+
+            normalized.append(
+                {
+                    **record,
+                    "home_run_rate": round(
+                        home_runs / plate_appearances,
+                        5,
+                    )
+                    if plate_appearances > 0
+                    else 0.0,
+                    "split_label": label,
+                    "split_sit_code": sit_code,
+                }
+            )
+
+        return label, normalized, None
+
+    split_results: dict[str, list[dict[str, Any]]] = {
+        "vs_lhp": [],
+        "vs_rhp": [],
+    }
+    errors: list[str] = []
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [
+            executor.submit(
+                _load_one,
+                label,
+                sit_code,
+            )
+            for label, sit_code in split_requests.items()
+        ]
+
+        for future in futures:
+            label, records, error = future.result()
+            split_results[label] = records
+            if error:
+                errors.append(error)
+
+    by_player_team: dict[
+        tuple[int, int],
+        dict[str, dict[str, Any]],
+    ] = {}
+
+    for label, records in split_results.items():
+        for record in records:
+            player_id = int(record.get("player_id") or 0)
+            team_id = int(record.get("stat_team_id") or 0)
+
+            if not player_id or not team_id:
+                continue
+
+            by_player_team.setdefault(
+                (player_id, team_id),
+                {},
+            )[label] = record
+
+    return {
+        "success": bool(by_player_team),
+        "season": requested_season,
+        "by_player_team": by_player_team,
+        "player_team_count": len(by_player_team),
+        "vs_lhp_count": len(split_results["vs_lhp"]),
+        "vs_rhp_count": len(split_results["vs_rhp"]),
+        "errors": errors,
+    }
+
+
+
 def get_recent_hitting_stats(
     days: int = 14,
     end_date: date | str | None = None,
@@ -371,7 +493,7 @@ def get_today_hitters_with_stats(
     # counting stats for players across all three ranking categories.
     #
     # Recent form still uses the requested 14-day date range below.
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=3) as executor:
         season_future = executor.submit(
             get_bulk_hitting_stats,
             season=requested_date.year,
@@ -381,8 +503,13 @@ def get_today_hitters_with_stats(
             days=recent_days,
             end_date=stats_end_date,
         )
+        platoon_future = executor.submit(
+            get_hitting_platoon_splits,
+            season=requested_date.year,
+        )
         season_stats = season_future.result()
         recent_stats = recent_future.result()
+        platoon_stats = platoon_future.result()
 
     errors: list[str] = list(player_pool.get("errors", []))
 
@@ -398,8 +525,16 @@ def get_today_hitters_with_stats(
             or "Recent statistics were unavailable."
         )
 
+    if not platoon_stats.get("success"):
+        split_errors = platoon_stats.get("errors", [])
+        errors.extend(
+            split_errors
+            or ["Hitter platoon splits were unavailable."]
+        )
+
     season_lookup = season_stats.get("by_player_id", {})
     recent_lookup = recent_stats.get("by_player_id", {})
+    platoon_lookup = platoon_stats.get("by_player_team", {})
 
     enriched_hitters: list[dict[str, Any]] = []
 
@@ -439,6 +574,11 @@ def get_today_hitters_with_stats(
             else _empty_stats()
         )
 
+        platoon_splits = platoon_lookup.get(
+            (int(player_id), int(hitter_team_id)),
+            {},
+        )
+
         recent_window_start = (
             stats_end_date - timedelta(days=recent_days - 1)
         )
@@ -448,6 +588,11 @@ def get_today_hitters_with_stats(
                 **hitter,
                 "season_stats": season_record,
                 "recent_stats": recent_record,
+                "platoon_splits": {
+                    "vs_lhp": platoon_splits.get("vs_lhp", {}),
+                    "vs_rhp": platoon_splits.get("vs_rhp", {}),
+                },
+                "has_platoon_splits": bool(platoon_splits),
                 "recent_days": recent_days,
                 "recent_window_start": recent_window_start.isoformat(),
                 "recent_window_end": stats_end_date.isoformat(),
@@ -481,6 +626,11 @@ def get_today_hitters_with_stats(
         "recent_days": recent_days,
         "season_stats_loaded": season_stats.get("success", False),
         "recent_stats_loaded": recent_stats.get("success", False),
+        "platoon_splits_loaded": platoon_stats.get("success", False),
+        "platoon_player_team_count": platoon_stats.get(
+            "player_team_count",
+            0,
+        ),
         "errors": errors,
         "fetched_at": datetime.now(
             TORONTO_TIMEZONE
