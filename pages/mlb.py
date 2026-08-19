@@ -2192,11 +2192,7 @@ render_prediction_performance_tracker(
         "rbis": RBI_RANKINGS,
         "walks": WALK_RANKINGS,
         "stolen_bases": STOLEN_BASE_RANKINGS,
-    },
-    freeze_allowed=(
-        HAS_FULL_TEAM_SLATE
-        and ALL_TOP_25_COMPLETE
-    ),
+    }
 )
 
 st.divider()
