@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -37,8 +37,28 @@ def _tier_line(label: str, data: dict[str, Any]) -> str:
     )
 
 
+def _records_for_selected_period(
+    history: dict[str, Any],
+    category: str,
+    period: str,
+) -> list[dict[str, Any]]:
+    if period == "Yesterday":
+        yesterday = (
+            datetime.now(TORONTO_TIMEZONE).date()
+            - timedelta(days=1)
+        )
+        return records_for_period(
+            history,
+            category,
+            "Today",
+            today=yesterday,
+        )
+
+    return records_for_period(history, category, period)
+
+
 def _render_market(history: dict[str, Any], category: str, period: str) -> None:
-    rows = records_for_period(history, category, period)
+    rows = _records_for_selected_period(history, category, period)
     summary = summarize(rows)
 
     total_predictions = summary["graded"] + summary["pending"]
@@ -79,7 +99,10 @@ def _render_market(history: dict[str, Any], category: str, period: str) -> None:
             f"misses {summary['avg_gi_misses']:.1f}"
         )
     else:
-        st.caption("Final results will populate as today's games finish.")
+        if period == "Yesterday":
+            st.caption("No graded results are available for yesterday yet.")
+        else:
+            st.caption("Final results will populate as today's games finish.")
 
 
 def render_prediction_performance_tracker(
@@ -172,7 +195,7 @@ def render_prediction_performance_tracker(
 
     period = st.segmented_control(
         "Performance period",
-        options=["Today", "Week", "Month", "Season"],
+        options=["Today", "Yesterday", "Week", "Month", "Season"],
         default="Today",
         key="mlb_performance_period",
     ) or "Today"
