@@ -545,6 +545,10 @@ try:
             "home_runs": HOME_RUN_RANKINGS,
             "hits": HIT_RANKINGS,
             "total_bases": TOTAL_BASE_RANKINGS,
+            "runs": RUN_RANKINGS,
+            "rbis": RBI_RANKINGS,
+            "walks": WALK_RANKINGS,
+            "stolen_bases": STOLEN_BASE_RANKINGS,
         },
         captured_at=get_toronto_now(),
     )
@@ -567,6 +571,26 @@ try:
         comparisons.get("total_bases", {}),
         has_previous_snapshot,
     )
+    RUN_RANKINGS = attach_persistent_movement(
+        RUN_RANKINGS,
+        comparisons.get("runs", {}),
+        has_previous_snapshot,
+    )
+    RBI_RANKINGS = attach_persistent_movement(
+        RBI_RANKINGS,
+        comparisons.get("rbis", {}),
+        has_previous_snapshot,
+    )
+    WALK_RANKINGS = attach_persistent_movement(
+        WALK_RANKINGS,
+        comparisons.get("walks", {}),
+        has_previous_snapshot,
+    )
+    STOLEN_BASE_RANKINGS = attach_persistent_movement(
+        STOLEN_BASE_RANKINGS,
+        comparisons.get("stolen_bases", {}),
+        has_previous_snapshot,
+    )
 
     if has_previous_snapshot:
         MOVEMENT_SUMMARIES = movement_result["summaries"]
@@ -576,6 +600,10 @@ except (KeyError, ValueError, RankingSnapshotError) as error:
         HOME_RUN_RANKINGS,
         HIT_RANKINGS,
         TOTAL_BASE_RANKINGS,
+        RUN_RANKINGS,
+        RBI_RANKINGS,
+        WALK_RANKINGS,
+        STOLEN_BASE_RANKINGS,
     ):
         attach_persistent_movement(rankings, {}, False)
 
