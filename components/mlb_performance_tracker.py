@@ -1,282 +1,189 @@
-"""Persistent MLB prediction performance history for all tracked hitter markets."""
+"""MLB Prediction Performance Tracker UI."""
 
 from __future__ import annotations
 
-import base64
-import json
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
-import requests
+import streamlit as st
 
-from data.mlb_prediction_results import grade_top_25
-
-TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
-REPOSITORY = "sevans70-web/Sach-Sports-Dashboard"
-BRANCH = "main"
-HISTORY_PATH = "data/mlb_performance_history.json"
-GITHUB_API = "https://api.github.com"
-CORE_CATEGORIES = (
-    "home_runs",
-    "hits",
-    "total_bases",
-    "runs",
-    "rbis",
-    "walks",
-    "stolen_bases",
+from data.mlb_performance_tracker import (
+    current_day_view,
+    records_for_period,
+    summarize,
+    sync_history,
 )
 
+TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
-def _headers(token: str) -> dict[str, str]:
-    return {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
-
-
-def _history_url() -> str:
-    return f"{GITHUB_API}/repos/{REPOSITORY}/contents/{HISTORY_PATH}"
-
-
-def load_history(token: str) -> tuple[dict[str, Any], str | None]:
-    response = requests.get(_history_url(), headers=_headers(token), params={"ref": BRANCH}, timeout=20)
-    if response.status_code == 404:
-        return {"schema_version": 1, "days": {}}, None
-    response.raise_for_status()
-    payload = response.json()
-    raw = base64.b64decode(payload.get("content", "")).decode("utf-8")
-    return json.loads(raw), payload.get("sha")
+CATEGORY_CONFIG = {
+    "home_runs": ("🔥 Home Runs", "HR"),
+    "hits": ("⚾ Hits", "Hits"),
+    "total_bases": ("💥 Total Bases", "TB"),
+    "runs": ("🏃 Runs", "Runs"),
+    "rbis": ("🎯 RBIs", "RBIs"),
+    "walks": ("👁️ Walks", "Walks"),
+    "stolen_bases": ("💨 Stolen Bases", "SB"),
+}
 
 
-def save_history(token: str, history: dict[str, Any], sha: str | None) -> None:
-    content = json.dumps(history, indent=2, sort_keys=True)
-    body: dict[str, Any] = {
-        "message": "Update MLB prediction performance history",
-        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
-        "branch": BRANCH,
-    }
-    if sha:
-        body["sha"] = sha
-    response = requests.put(_history_url(), headers=_headers(token), json=body, timeout=25)
-    response.raise_for_status()
-
-
-def _player_name(row: dict[str, Any]) -> str:
-    return str(row.get("player") or row.get("player_name") or "Player")
-
-
-def _freeze_prediction(row: dict[str, Any], category: str) -> dict[str, Any]:
-    return {
-        "category": category,
-        "rank": int(row.get("rank") or 0),
-        "player_id": row.get("player_id"),
-        "player_name": _player_name(row),
-        "team": row.get("team") or row.get("team_name"),
-        "opponent": row.get("opponent") or row.get("opponent_name"),
-        "gi_score": float(row.get("score") or row.get("gi_score") or 0),
-        "home_run_probability": row.get("home_run_probability"),
-        "one_plus_hit_probability": row.get("one_plus_hit_probability"),
-        "over_1_5_total_bases_probability": row.get("over_1_5_total_bases_probability"),
-        "one_plus_run_probability": row.get("one_plus_run_probability"),
-        "one_plus_rbi_probability": row.get("one_plus_rbi_probability"),
-        "one_plus_walk_probability": row.get("one_plus_walk_probability"),
-        "one_plus_stolen_base_probability": row.get("one_plus_stolen_base_probability"),
-        "correct": None,
-        "result_label": "Pending",
-        "game_finished": False,
-    }
-
-
-def _prediction_key(row: dict[str, Any]) -> str:
-    player_id = row.get("player_id")
-    if player_id not in (None, ""):
-        return f"id:{player_id}"
-    return f"name:{_player_name(row).strip().casefold()}"
-
-
-def _apply_final_results(predictions: list[dict[str, Any]], category: str, result_date: str) -> list[dict[str, Any]]:
-    graded = grade_top_25(
-        rankings=predictions,
-        category=category,
-        result_date=result_date,
-        force_refresh=False,
-    ).get("graded", [])
-    lookup = {_prediction_key(row): row for row in graded}
-    updated: list[dict[str, Any]] = []
-    for frozen in predictions:
-        row = dict(frozen)
-        actual = lookup.get(_prediction_key(frozen), {})
-        if actual.get("game_finished"):
-            row["correct"] = actual.get("correct")
-            row["result_label"] = actual.get("result_label", "Final")
-            row["game_finished"] = True
-            for field in (
-                "actual_hits", "actual_home_runs", "actual_total_bases",
-                "actual_runs", "actual_rbis", "actual_walks", "actual_stolen_bases",
-            ):
-                if field in actual:
-                    row[field] = actual[field]
-        updated.append(row)
-    return updated
-
-
-
-def _ranking_is_pregame(row: dict[str, Any]) -> bool:
-    """Return True only when the player's game has not started."""
-    status = str(row.get("game_status") or "").strip().lower()
-
-    if not status:
-        return False
-
-    blocked_tokens = (
-        "in progress",
-        "live",
-        "final",
-        "game over",
-        "completed",
-        "suspended",
-        "delayed",
+def _tier_line(label: str, data: dict[str, Any]) -> str:
+    if not data.get("total"):
+        return f"**{label}:** —"
+    return (
+        f"**{label}:** {data['wins']}-{data['losses']} · "
+        f"{data['hit_rate']:.1f}%"
     )
-    return not any(token in status for token in blocked_tokens)
 
 
-def _category_ready_to_freeze(
-    rankings: list[dict[str, Any]],
-) -> bool:
-    """Freeze only a complete Top 25 whose games are still pregame."""
-    top_25 = rankings[:25]
+def _render_market(history: dict[str, Any], category: str, period: str) -> None:
+    rows = records_for_period(history, category, period)
+    summary = summarize(rows)
 
-    if len(top_25) != 25:
-        return False
+    total_predictions = summary["graded"] + summary["pending"]
 
-    return all(_ranking_is_pregame(row) for row in top_25)
+    st.markdown(
+        f"""
+        <div class="perf-summary-row">
+            <div class="perf-summary-item">
+                <span class="perf-label">Hits / Predictions</span>
+                <strong>{summary['wins']} / {total_predictions}</strong>
+                <span class="perf-subtext">{summary['hit_rate']:.1f}% hit rate</span>
+            </div>
+            <div class="perf-summary-item">
+                <span class="perf-label">Pending</span>
+                <strong>{summary['pending']}</strong>
+                <span class="perf-subtext">
+                    {'Awaiting results' if summary['pending'] else 'All results graded'}
+                </span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        " · ".join(
+            [
+                _tier_line("Top 5", summary["top_5"]),
+                _tier_line("#6–10", summary["six_to_ten"]),
+                _tier_line("#11–25", summary["eleven_to_25"]),
+            ]
+        )
+    )
+
+    if summary["graded"]:
+        st.caption(
+            f"Average GI — winners {summary['avg_gi_wins']:.1f} · "
+            f"misses {summary['avg_gi_misses']:.1f}"
+        )
+    else:
+        st.caption("Final results will populate as today's games finish.")
 
 
-
-def sync_history(
-    token: str,
+def render_prediction_performance_tracker(
     rankings_by_category: dict[str, list[dict[str, Any]]],
-    snapshot_date: str | None = None,
-    freeze_allowed: bool = True,
-) -> dict[str, Any]:
-    today = snapshot_date or datetime.now(TORONTO_TIMEZONE).date().isoformat()
-    history, sha = load_history(token)
-    history.setdefault("schema_version", 1)
-    days = history.setdefault("days", {})
-    changed = False
-
-    if today not in days:
-        days[today] = {
-            "captured_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
-            "categories": {},
-            "freeze_status": "waiting_for_complete_pregame_top_25",
-        }
-        changed = True
-
-    today_categories = days[today].setdefault("categories", {})
-    for category in CORE_CATEGORIES:
-        if category in today_categories:
-            continue
-
-        current_rankings = rankings_by_category.get(category, [])[:25]
-
-        if not freeze_allowed:
-            continue
-
-        if not _category_ready_to_freeze(current_rankings):
-            continue
-
-        today_categories[category] = [
-            _freeze_prediction(row, category)
-            for row in current_rankings
-        ]
-        days[today]["freeze_status"] = "frozen"
-        days[today]["last_frozen_at"] = datetime.now(
-            TORONTO_TIMEZONE
-        ).isoformat()
-        changed = True
-
-    for day_key, day_record in days.items():
-        if day_key >= today:
-            continue
-        categories = day_record.get("categories", {})
-        for category in CORE_CATEGORIES:
-            predictions = categories.get(category, [])
-            if predictions and any(not row.get("game_finished") for row in predictions):
-                resolved = _apply_final_results(predictions, category, day_key)
-                if resolved != predictions:
-                    categories[category] = resolved
-                    changed = True
-
-    if changed:
-        save_history(token, history, sha)
-    return history
-
-
-def current_day_view(history: dict[str, Any], rankings_by_category: dict[str, list[dict[str, Any]]], day_key: str | None = None) -> dict[str, Any]:
-    today = day_key or datetime.now(TORONTO_TIMEZONE).date().isoformat()
-    merged = json.loads(json.dumps(history))
-    day = merged.get("days", {}).get(today)
-    if not day:
-        return merged
-    categories = day.get("categories", {})
-    for category in CORE_CATEGORIES:
-        frozen = categories.get(category, [])
-        categories[category] = _apply_final_results(frozen, category, today)
-    return merged
-
-
-def _period_start(period: str, today: date) -> date:
-    if period == "Today":
-        return today
-    if period == "Week":
-        return today - timedelta(days=today.weekday())
-    if period == "Month":
-        return today.replace(day=1)
-    return today.replace(month=1, day=1)
-
-
-def records_for_period(history: dict[str, Any], category: str, period: str, today: date | None = None) -> list[dict[str, Any]]:
-    current = today or datetime.now(TORONTO_TIMEZONE).date()
-    start = _period_start(period, current)
-    rows: list[dict[str, Any]] = []
-    for day_key, day_record in history.get("days", {}).items():
-        try:
-            day = date.fromisoformat(day_key)
-        except ValueError:
-            continue
-        if not (start <= day <= current):
-            continue
-        for row in day_record.get("categories", {}).get(category, []):
-            rows.append({**row, "date": day_key})
-    return rows
-
-
-def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    graded = [row for row in rows if isinstance(row.get("correct"), bool)]
-    wins = sum(1 for row in graded if row.get("correct") is True)
-    losses = sum(1 for row in graded if row.get("correct") is False)
-    total = len(graded)
-    hit_rate = (wins / total * 100) if total else 0.0
-
-    def tier(start: int, end: int) -> dict[str, Any]:
-        subset = [row for row in graded if start <= int(row.get("rank") or 0) <= end]
-        tier_wins = sum(1 for row in subset if row.get("correct") is True)
-        count = len(subset)
-        return {
-            "wins": tier_wins, "losses": count - tier_wins, "total": count,
-            "hit_rate": (tier_wins / count * 100) if count else 0.0,
+) -> None:
+    """Render persistent MLB prediction testing performance."""
+    st.markdown(
+        """
+        <style>
+        .perf-summary-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 10px 0 14px 0;
         }
 
-    winner_scores = [float(row.get("gi_score") or 0) for row in graded if row.get("correct")]
-    miss_scores = [float(row.get("gi_score") or 0) for row in graded if row.get("correct") is False]
+        .perf-summary-item {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 14px;
+            padding: 12px 14px;
+            min-width: 0;
+        }
 
-    return {
-        "wins": wins, "losses": losses, "graded": total,
-        "pending": len(rows) - total, "hit_rate": hit_rate,
-        "top_5": tier(1, 5), "six_to_ten": tier(6, 10), "eleven_to_25": tier(11, 25),
-        "avg_gi_wins": sum(winner_scores) / len(winner_scores) if winner_scores else 0.0,
-        "avg_gi_misses": sum(miss_scores) / len(miss_scores) if miss_scores else 0.0,
-    }
+        .perf-summary-item .perf-label {
+            display: block;
+            font-size: 0.78rem;
+            opacity: 0.72;
+            margin-bottom: 4px;
+        }
+
+        .perf-summary-item strong {
+            display: block;
+            font-size: 1.55rem;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+        .perf-summary-item .perf-subtext {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.74rem;
+            opacity: 0.68;
+        }
+
+        @media (max-width: 700px) {
+            .perf-summary-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .perf-summary-item {
+                border-radius: 10px;
+                padding: 9px 8px;
+            }
+
+            .perf-summary-item .perf-label {
+                font-size: 0.68rem;
+            }
+
+            .perf-summary-item strong {
+                font-size: 1.15rem;
+            }
+
+            .perf-summary-item .perf-subtext {
+                font-size: 0.64rem;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.subheader("📊 Prediction Performance")
+    st.caption(
+        "Frozen Top 25 predictions are graded against actual results. "
+        "This testing record is not recalculated when the model changes."
+    )
+
+    try:
+        token = st.secrets["GITHUB_TOKEN"]
+        history = sync_history(token, rankings_by_category)
+        history = current_day_view(history, rankings_by_category)
+    except Exception as exc:
+        st.warning(
+            "Performance history could not be synchronized right now. "
+            f"Details: {exc}"
+        )
+        return
+
+    period = st.segmented_control(
+        "Performance period",
+        options=["Today", "Week", "Month", "Season"],
+        default="Today",
+        key="mlb_performance_period",
+    ) or "Today"
+
+    tabs = st.tabs([CATEGORY_CONFIG[key][0] for key in CATEGORY_CONFIG])
+    for tab, category in zip(tabs, CATEGORY_CONFIG):
+        with tab:
+            _render_market(history, category, period)
+
+    captured_days = len(history.get("days", {}))
+    st.caption(
+        f"Tracking history: {captured_days} slate"
+        f"{'s' if captured_days != 1 else ''}."
+    )
