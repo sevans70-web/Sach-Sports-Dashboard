@@ -113,7 +113,27 @@ def normalize_rankings(
                 "player": player_name(original),
                 "rank": rank,
                 "team": str(original.get("team", "")).strip(),
+                "opponent": str(original.get("opponent", "")).strip(),
                 "score": original.get("score"),
+                "gi_score": original.get("gi_score", original.get("score")),
+                "home_run_probability": original.get("home_run_probability"),
+                "one_plus_hit_probability": original.get("one_plus_hit_probability"),
+                "over_1_5_total_bases_probability": original.get(
+                    "over_1_5_total_bases_probability"
+                ),
+                "one_plus_run_probability": original.get("one_plus_run_probability"),
+                "one_plus_rbi_probability": original.get("one_plus_rbi_probability"),
+                "one_plus_walk_probability": original.get("one_plus_walk_probability"),
+                "one_plus_stolen_base_probability": original.get(
+                    "one_plus_stolen_base_probability"
+                ),
+                "lineup_status": original.get("lineup_status"),
+                "lineup_confirmed": bool(original.get("lineup_confirmed", False)),
+                "batting_order": original.get("batting_order"),
+                "projected_batting_order": original.get("projected_batting_order"),
+                "opposing_probable_pitcher": original.get(
+                    "opposing_probable_pitcher"
+                ),
             }
         )
         seen_keys.add(key)
@@ -425,6 +445,33 @@ def save_github_snapshot(
     return str(new_sha)
 
 
+
+def append_audit_snapshot(
+    stored_snapshot: dict[str, Any] | None,
+    current_snapshot: dict[str, Any],
+    maximum_entries: int = 300,
+) -> list[dict[str, Any]]:
+    """Preserve a bounded owner-only history of material Top-25 changes."""
+    existing: list[dict[str, Any]] = []
+
+    if stored_snapshot:
+        raw_existing = stored_snapshot.get("audit_history", [])
+        if isinstance(raw_existing, list):
+            existing = [
+                item for item in raw_existing
+                if isinstance(item, dict)
+            ]
+
+    existing.append(
+        {
+            "captured_at": current_snapshot.get("captured_at"),
+            "categories": current_snapshot.get("categories", {}),
+        }
+    )
+    return existing[-maximum_entries:]
+
+
+
 def load_compare_and_save(
     config: GitHubSnapshotConfig,
     category_rankings: dict[str, Iterable[dict[str, Any]]],
@@ -536,6 +583,11 @@ def load_compare_and_save(
                 {},
             )
     
+        snapshot_to_save["audit_history"] = append_audit_snapshot(
+            stored_snapshot=stored_snapshot,
+            current_snapshot=current_snapshot,
+        )
+
         save_github_snapshot(
             config=config,
             snapshot=snapshot_to_save,
