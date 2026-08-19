@@ -1716,18 +1716,18 @@ def rank_players(
 
             if statcast_metrics:
                 score = round(
-                    (hr_probability * 0.45)
-                    + (base_score * 0.20)
-                    + (matchup_score * 0.15)
-                    + (statcast_score * 0.20),
+                    (hr_probability * 0.35)
+                    + (base_score * 0.15)
+                    + (matchup_score * 0.25)
+                    + (statcast_score * 0.25),
                     1,
                 )
             else:
-                # Preserve the established HR model when Statcast is unavailable.
+                # Keep matchup influence meaningful when Statcast is unavailable.
                 score = round(
-                    (hr_probability * 0.55)
+                    (hr_probability * 0.45)
                     + (base_score * 0.30)
-                    + (matchup_score * 0.15),
+                    + (matchup_score * 0.25),
                     1,
                 )
 
