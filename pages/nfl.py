@@ -71,7 +71,7 @@ def show():
             key="nfl_prop_selector",
         )
 
-                st.caption(f"Selected: {prop}")
+        st.caption(f"Selected: {prop}")
 
 
 show()
