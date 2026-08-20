@@ -27,6 +27,7 @@ from components.mlb_schedule import (
 )
 from components.player_card import render_player_card
 from components.mlb_performance_tracker import render_prediction_performance_tracker
+from components.mlb_pitcher_rankings import render_pitcher_rankings
 from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
@@ -2353,7 +2354,7 @@ with batter_tab:
         )
 
 with pitcher_tab:
-    st.caption("Pitcher prop rankings are the next MLB build.")
+    render_pitcher_rankings()
 
 st.divider()
 
