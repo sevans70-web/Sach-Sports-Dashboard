@@ -25,6 +25,7 @@ CORE_CATEGORIES = (
     "rbis",
     "walks",
     "stolen_bases",
+    "hits_runs_rbis",
 )
 
 
@@ -83,6 +84,10 @@ def _freeze_prediction(row: dict[str, Any], category: str) -> dict[str, Any]:
         "one_plus_rbi_probability": row.get("one_plus_rbi_probability"),
         "one_plus_walk_probability": row.get("one_plus_walk_probability"),
         "one_plus_stolen_base_probability": row.get("one_plus_stolen_base_probability"),
+        "over_1_5_hits_runs_rbis_probability": row.get(
+            "over_1_5_hits_runs_rbis_probability"
+        ),
+        "projected_hits_runs_rbis": row.get("projected_hits_runs_rbis"),
         "correct": None,
         "result_label": "Pending",
         "game_finished": False,
@@ -115,6 +120,7 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
             for field in (
                 "actual_hits", "actual_home_runs", "actual_total_bases",
                 "actual_runs", "actual_rbis", "actual_walks", "actual_stolen_bases",
+                "actual_hits_runs_rbis",
             ):
                 if field in actual:
                     row[field] = actual[field]
