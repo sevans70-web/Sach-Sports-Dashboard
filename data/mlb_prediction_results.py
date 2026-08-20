@@ -747,6 +747,7 @@ def grade_top_25(
         "rbis",
         "walks",
         "stolen_bases",
+        "hits_runs_rbis",
     }:
         raise ValueError("Unsupported MLB prop category")
 
@@ -814,6 +815,7 @@ def grade_top_25(
         actual_rbis = int(actual.get("rbis", 0)) if actual else 0
         actual_walks = int(actual.get("walks", 0)) if actual else 0
         actual_stolen_bases = int(actual.get("stolen_bases", 0)) if actual else 0
+        actual_hits_runs_rbis = actual_hits + actual_runs + actual_rbis
         live_contact = actual.get("live_contact") if actual else None
 
         if normalized_category == "home_runs":
@@ -854,7 +856,7 @@ def grade_top_25(
             threshold_met = actual_walks >= 1
             live_value = f"{actual_walks} walk" if actual_walks == 1 else f"{actual_walks} walks"
             final_failure = "❌ 0 walks"
-        else:
+        elif normalized_category == "stolen_bases":
             threshold_met = actual_stolen_bases >= 1
             live_value = (
                 f"{actual_stolen_bases} stolen base"
@@ -862,6 +864,15 @@ def grade_top_25(
                 else f"{actual_stolen_bases} stolen bases"
             )
             final_failure = "❌ 0 stolen bases"
+
+        else:
+            threshold_met = actual_hits_runs_rbis >= 2
+            live_value = f"{actual_hits_runs_rbis} H+R+RBI"
+            final_failure = (
+                f"❌ {actual_hits_runs_rbis} H+R+RBI"
+                if actual_hits_runs_rbis
+                else "❌ 0 H+R+RBI"
+            )
 
         if result_live:
             # Never grade a live miss as a loss. A player can still reach
@@ -914,6 +925,7 @@ def grade_top_25(
                 "actual_rbis": actual_rbis,
                 "actual_walks": actual_walks,
                 "actual_stolen_bases": actual_stolen_bases,
+                "actual_hits_runs_rbis": actual_hits_runs_rbis,
                 "game_finished": game_finished,
                 "result_live": result_live,
                 "game_status": (
