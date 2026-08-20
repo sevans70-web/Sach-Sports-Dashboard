@@ -13,8 +13,11 @@ NFL_SCHEDULE_URL = (
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def load_nfl_schedule(season: int = 2026) -> pd.DataFrame:
-    """Load and normalize the NFL regular-season schedule from nflverse."""
+def load_nfl_schedule(
+    season: int = 2026,
+    game_type: str = "REG",
+) -> pd.DataFrame:
+    """Load and normalize NFL preseason or regular-season games from nflverse."""
 
     response = requests.get(NFL_SCHEDULE_URL, timeout=20)
     response.raise_for_status()
@@ -23,7 +26,7 @@ def load_nfl_schedule(season: int = 2026) -> pd.DataFrame:
 
     schedule = schedule[
         (schedule["season"] == season)
-        & (schedule["game_type"] == "REG")
+        & (schedule["game_type"] == game_type)
     ].copy()
 
     schedule["gameday"] = pd.to_datetime(
@@ -51,6 +54,7 @@ def load_nfl_schedule(season: int = 2026) -> pd.DataFrame:
         "game_id",
         "season",
         "week",
+        "game_type",
         "gameday",
         "weekday",
         "gametime",
