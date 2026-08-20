@@ -368,16 +368,6 @@ def _pitcher_quality_adjustment(
         elif 0 < k_rate <= 0.18:
             adjustment += 1.5
 
-    elif category == CATEGORY_HITS_RUNS_RBIS:
-        if percentiles["recent_hits_rate"] >= 75:
-            reasons.append("Recent hit production supports the combined H+R+RBI outlook")
-        if percentiles["recent_run_rate"] >= 75:
-            reasons.append("Recent run scoring adds to the combined production profile")
-        if percentiles["recent_rbi_rate"] >= 75:
-            reasons.append("Recent RBI production strengthens the combined prop outlook")
-        if percentiles["season_obp"] >= 75:
-            reasons.append("Strong on-base ability creates multiple paths to H+R+RBI production")
-
     elif category == CATEGORY_WALKS:
         bb9 = _safe_float(pitcher_stats.get("walks_per_nine"))
         if bb9 >= 4.0:
