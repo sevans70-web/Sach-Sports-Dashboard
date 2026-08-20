@@ -67,7 +67,11 @@ def show():
             key="nfl_season_type_selector",
         )
 
-        game_type = "PRE" if season_type_label == "Preseason" else "REG"
+        game_type = (
+            "PRE"
+            if season_type_label == "Preseason"
+            else "REG"
+        )
 
         try:
             schedule = load_nfl_schedule(
@@ -77,12 +81,16 @@ def show():
 
             if schedule.empty:
                 st.info(
-                    f"No {NFL_SEASON} {season_type_label.lower()} "
-                    "games are available yet."
+                    f"No {NFL_SEASON} "
+                    f"{season_type_label.lower()} games "
+                    "are available yet."
                 )
             else:
                 available_weeks = sorted(
-                    schedule["week"].dropna().astype(int).unique()
+                    schedule["week"]
+                    .dropna()
+                    .astype(int)
+                    .unique()
                 )
 
                 selected_week = st.selectbox(
@@ -92,11 +100,14 @@ def show():
                 )
 
                 week_games = schedule[
-                    schedule["week"].astype(int) == selected_week
+                    schedule["week"].astype(int)
+                    == selected_week
                 ]
 
                 st.caption(
-                    f"{NFL_SEASON} {season_type_label} • Week {selected_week}"
+                    f"{NFL_SEASON} "
+                    f"{season_type_label} "
+                    f"• Week {selected_week}"
                 )
 
                 for _, game in week_games.iterrows():
@@ -110,23 +121,32 @@ def show():
 
                     if game["status"] == "Final":
                         matchup = (
-                            f'{game["away_team"]} {int(game["away_score"])} '
-                            f'@ {game["home_team"]} {int(game["home_score"])}'
+                            f'{game["away_team"]} '
+                            f'{int(game["away_score"])} '
+                            f'@ {game["home_team"]} '
+                            f'{int(game["home_score"])}'
                         )
                     else:
                         matchup = (
-                            f'{game["away_team"]} @ {game["home_team"]}'
+                            f'{game["away_team"]} '
+                            f'@ {game["home_team"]}'
                         )
 
                     st.markdown(f"**{matchup}**")
-                    st.caption(f"{kickoff} • {game['status']}")
+                    st.caption(
+                        f"{kickoff} • {game['status']}"
+                    )
+
+                    if game.get("stadium"):
+                        st.caption(game["stadium"])
+
                     st.divider()
 
-        except Exception:
+        except Exception as exc:
             st.warning(
-                "NFL schedule data is temporarily unavailable. "
-                "Please refresh the page shortly."
+                "NFL schedule data is temporarily unavailable."
             )
+            st.caption(f"Schedule source detail: {exc}")
 
     with nfl_tabs[4]:
         st.subheader("Player Props")
