@@ -1,5 +1,8 @@
 """NFL schedule data helpers for Sach Sports Dashboard."""
 
+from datetime import datetime
+from html import unescape
+import re
 from io import StringIO
 
 import pandas as pd
@@ -11,148 +14,195 @@ NFLVERSE_SCHEDULE_URL = (
     "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 )
 
-ESPN_SCOREBOARD_URL = (
-    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+NFL_PRESEASON_URLS = {
+    0: "https://www.nfl.com/schedules/{season}/by-week/hall-of-fame",
+    1: "https://www.nfl.com/schedules/{season}/by-week/preseason-week-1",
+    2: "https://www.nfl.com/schedules/{season}/by-week/preseason-week-2",
+    3: "https://www.nfl.com/schedules/{season}/by-week/preseason-week-3",
+}
+
+TEAM_ABBREVIATIONS = {
+    "49ers": "SF",
+    "Bears": "CHI",
+    "Bengals": "CIN",
+    "Bills": "BUF",
+    "Broncos": "DEN",
+    "Browns": "CLE",
+    "Buccaneers": "TB",
+    "Cardinals": "ARI",
+    "Chargers": "LAC",
+    "Chiefs": "KC",
+    "Colts": "IND",
+    "Commanders": "WAS",
+    "Cowboys": "DAL",
+    "Dolphins": "MIA",
+    "Eagles": "PHI",
+    "Falcons": "ATL",
+    "Giants": "NYG",
+    "Jaguars": "JAX",
+    "Jets": "NYJ",
+    "Lions": "DET",
+    "Packers": "GB",
+    "Panthers": "CAR",
+    "Patriots": "NE",
+    "Raiders": "LV",
+    "Rams": "LAR",
+    "Ravens": "BAL",
+    "Saints": "NO",
+    "Seahawks": "SEA",
+    "Steelers": "PIT",
+    "Texans": "HOU",
+    "Titans": "TEN",
+    "Vikings": "MIN",
+}
+
+MONTHS = (
+    "January|February|March|April|May|June|"
+    "July|August|September|October|November|December"
+)
+
+GAME_TEXT_RE = re.compile(
+    rf"(?P<away>[A-Za-z0-9 ]+?)\s+at\s+"
+    rf"(?P<home>[A-Za-z0-9 ]+?),\s+"
+    rf"(?P<weekday>Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+"
+    rf"(?P<month>{MONTHS})\s+"
+    rf"(?P<day>\d{{1,2}})(?:st|nd|rd|th),\s+"
+    rf"(?P<time>\d{{1,2}}:\d{{2}}\s+[AP]M)",
+    re.IGNORECASE,
 )
 
 
-def _status_from_espn(status_type: dict) -> str:
-    """Normalize ESPN event status."""
-    if not status_type:
-        return "Scheduled"
-
-    if status_type.get("completed"):
-        return "Final"
-
-    state = str(status_type.get("state", "")).lower()
-
-    if state == "in":
-        return "Live"
-
-    return "Scheduled"
+def _strip_tags(value: str) -> str:
+    value = re.sub(r"<[^>]+>", " ", value)
+    value = unescape(value)
+    return " ".join(value.split())
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def load_nfl_preseason_schedule(season: int = 2026) -> pd.DataFrame:
-    """Load the NFL preseason schedule from ESPN."""
+def _team_abbreviation(team_name: str) -> str:
+    cleaned = " ".join(team_name.split()).title()
+    return TEAM_ABBREVIATIONS.get(cleaned, cleaned.upper())
 
-    response = requests.get(
-        ESPN_SCOREBOARD_URL,
-        params={
-            "dates": str(season),
-            "seasontype": 1,
-            "limit": 1000,
-        },
-        timeout=20,
-    )
-    response.raise_for_status()
 
-    payload = response.json()
+def _parse_official_nfl_page(
+    html_text: str,
+    season: int,
+    week: int,
+) -> list[dict]:
+    """Parse official NFL schedule game links from one preseason page."""
+
     rows = []
+    seen = set()
 
-    for event in payload.get("events", []):
-        competitions = event.get("competitions") or []
-        if not competitions:
+    anchor_blocks = re.findall(
+        r"<a\b[^>]*>(.*?)</a>",
+        html_text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+
+    for block in anchor_blocks:
+        text = _strip_tags(block)
+        match = GAME_TEXT_RE.search(text)
+
+        if not match:
             continue
 
-        competition = competitions[0]
-        competitors = competition.get("competitors") or []
+        away_name = " ".join(match.group("away").split())
+        home_name = " ".join(match.group("home").split())
 
-        home = next(
-            (
-                item
-                for item in competitors
-                if item.get("homeAway") == "home"
-            ),
-            {},
-        )
-        away = next(
-            (
-                item
-                for item in competitors
-                if item.get("homeAway") == "away"
-            ),
-            {},
-        )
+        # Avoid unrelated navigation/team links.
+        if (
+            away_name.title() not in TEAM_ABBREVIATIONS
+            or home_name.title() not in TEAM_ABBREVIATIONS
+        ):
+            continue
 
-        home_team = home.get("team", {})
-        away_team = away.get("team", {})
+        day = match.group("day")
+        month = match.group("month").title()
+        time_text = match.group("time").upper()
 
         kickoff = pd.to_datetime(
-            event.get("date"),
-            utc=True,
+            f"{month} {day} {season} {time_text}",
+            format="%B %d %Y %I:%M %p",
             errors="coerce",
         )
 
-        if pd.notna(kickoff):
-            kickoff = kickoff.tz_convert("America/New_York")
+        if pd.isna(kickoff):
+            continue
 
-        week_number = (
-            (event.get("week") or {}).get("number")
-            or (payload.get("week") or {}).get("number")
+        away_team = _team_abbreviation(away_name)
+        home_team = _team_abbreviation(home_name)
+        game_id = (
+            f"{season}_PRE_{week}_"
+            f"{away_team}_{home_team}_"
+            f"{kickoff.strftime('%Y%m%d%H%M')}"
         )
 
-        venue = competition.get("venue") or {}
+        if game_id in seen:
+            continue
+
+        seen.add(game_id)
+
+        now_et = pd.Timestamp.now(tz="America/New_York").tz_localize(None)
+        status = "Scheduled" if kickoff > now_et else "Completed"
 
         rows.append(
             {
-                "game_id": str(event.get("id", "")),
+                "game_id": game_id,
                 "season": season,
-                "week": week_number,
+                "week": week,
                 "game_type": "PRE",
-                "gameday": (
-                    kickoff.tz_localize(None).normalize()
-                    if pd.notna(kickoff)
-                    else pd.NaT
-                ),
-                "weekday": (
-                    kickoff.strftime("%A")
-                    if pd.notna(kickoff)
-                    else None
-                ),
-                "gametime": (
-                    kickoff.strftime("%H:%M")
-                    if pd.notna(kickoff)
-                    else None
-                ),
-                "kickoff_et": (
-                    kickoff.tz_localize(None)
-                    if pd.notna(kickoff)
-                    else pd.NaT
-                ),
-                "away_team": (
-                    away_team.get("abbreviation")
-                    or away_team.get("shortDisplayName")
-                ),
-                "home_team": (
-                    home_team.get("abbreviation")
-                    or home_team.get("shortDisplayName")
-                ),
-                "away_score": pd.to_numeric(
-                    away.get("score"),
-                    errors="coerce",
-                ),
-                "home_score": pd.to_numeric(
-                    home.get("score"),
-                    errors="coerce",
-                ),
-                "status": _status_from_espn(
-                    (event.get("status") or {}).get("type") or {}
-                ),
+                "gameday": kickoff.normalize(),
+                "weekday": match.group("weekday").title(),
+                "gametime": kickoff.strftime("%H:%M"),
+                "kickoff_et": kickoff,
+                "away_team": away_team,
+                "home_team": home_team,
+                "away_score": pd.NA,
+                "home_score": pd.NA,
+                "status": status,
                 "roof": None,
-                "stadium": venue.get("fullName"),
+                "stadium": None,
             }
+        )
+
+    return rows
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def load_nfl_preseason_schedule(season: int = 2026) -> pd.DataFrame:
+    """Load preseason dates and matchups from official NFL schedule pages."""
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 Chrome/126 Safari/537.36"
+        )
+    }
+
+    rows = []
+
+    for week, url_template in NFL_PRESEASON_URLS.items():
+        url = url_template.format(season=season)
+
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=20,
+        )
+        response.raise_for_status()
+
+        rows.extend(
+            _parse_official_nfl_page(
+                response.text,
+                season=season,
+                week=week,
+            )
         )
 
     schedule = pd.DataFrame(rows)
 
     if schedule.empty:
         return schedule
-
-    schedule["week"] = pd.to_numeric(
-        schedule["week"],
-        errors="coerce",
-    )
 
     return (
         schedule
@@ -163,7 +213,7 @@ def load_nfl_preseason_schedule(season: int = 2026) -> pd.DataFrame:
 
 @st.cache_data(ttl=300, show_spinner=False)
 def load_nfl_regular_schedule(season: int = 2026) -> pd.DataFrame:
-    """Load and normalize the NFL regular-season schedule from nflverse."""
+    """Load regular-season schedule from nflverse."""
 
     response = requests.get(
         NFLVERSE_SCHEDULE_URL,
@@ -232,7 +282,7 @@ def load_nfl_schedule(
     season: int = 2026,
     game_type: str = "REG",
 ) -> pd.DataFrame:
-    """Return preseason or regular-season NFL schedule data."""
+    """Return official preseason or nflverse regular-season schedule data."""
 
     if game_type == "PRE":
         return load_nfl_preseason_schedule(season)
