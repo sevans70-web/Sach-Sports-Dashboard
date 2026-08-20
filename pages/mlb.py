@@ -2245,91 +2245,115 @@ st.caption(
     "Official MLB player headshots are shown with today's live rankings."
 )
 
-st.markdown("### 🥎 Batter")
-
-(
-    home_run_tab, hits_tab, total_bases_tab, runs_tab,
-    rbis_tab, walks_tab, stolen_bases_tab, hrr_tab,
-) = st.tabs(
+batter_tab, pitcher_tab = st.tabs(
     [
-        "🔥 Home Runs", "⚾ Hits", "💥 Total Bases",
-        "🏃 Runs", "🎯 RBIs", "👁️ Walks", "💨 Stolen Bases",
-        "📊 H+R+RBI",
+        "🥎 Batter",
+        "⚾ Pitcher",
     ]
 )
 
-with home_run_tab:
-    render_ranking_category(
-        title="Home Run",
-        icon="🔥",
-        rankings=HOME_RUN_RANKINGS,
-        state_key="show_hr_25",
-        button_key="toggle_hr_25",
-        movement_summary=MOVEMENT_SUMMARIES.get("home_runs", []),
-        category_key="home_runs",
-    )
-     
-with hits_tab:
-    render_ranking_category(
-        title="Hit",
-        icon="⚾",
-        rankings=HIT_RANKINGS,
-        state_key="show_hits_25",
-        button_key="toggle_hits_25",
-        movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
-        category_key="hits",
+with batter_tab:
+    (
+        home_run_tab, hits_tab, total_bases_tab, runs_tab,
+        rbis_tab, walks_tab, stolen_bases_tab, hrr_tab,
+    ) = st.tabs(
+        [
+            "🔥 Home Runs", "⚾ Hits", "💥 Total Bases",
+            "🏃 Runs", "🎯 RBIs", "👁️ Walks", "💨 Stolen Bases",
+            "📊 H+R+RBI",
+        ]
     )
 
-with total_bases_tab:
-    render_ranking_category(
-        title="Total Base",
-        icon="💥",
-        rankings=TOTAL_BASE_RANKINGS,
-        state_key="show_tb_25",
-        button_key="toggle_tb_25",
-        movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
-        category_key="total_bases",
-    )
+    with home_run_tab:
+        render_ranking_category(
+            title="Home Run",
+            icon="🔥",
+            rankings=HOME_RUN_RANKINGS,
+            state_key="show_hr_25",
+            button_key="toggle_hr_25",
+            movement_summary=MOVEMENT_SUMMARIES.get("home_runs", []),
+            category_key="home_runs",
+        )
 
-with runs_tab:
-    render_ranking_category(
-        title="Run", icon="🏃", rankings=RUN_RANKINGS,
-        state_key="show_runs_25", button_key="toggle_runs_25",
-        movement_summary=[], category_key="runs",
-    )
+    with hits_tab:
+        render_ranking_category(
+            title="Hit",
+            icon="⚾",
+            rankings=HIT_RANKINGS,
+            state_key="show_hits_25",
+            button_key="toggle_hits_25",
+            movement_summary=MOVEMENT_SUMMARIES.get("hits", []),
+            category_key="hits",
+        )
 
-with rbis_tab:
-    render_ranking_category(
-        title="RBI", icon="🎯", rankings=RBI_RANKINGS,
-        state_key="show_rbis_25", button_key="toggle_rbis_25",
-        movement_summary=[], category_key="rbis",
-    )
+    with total_bases_tab:
+        render_ranking_category(
+            title="Total Base",
+            icon="💥",
+            rankings=TOTAL_BASE_RANKINGS,
+            state_key="show_tb_25",
+            button_key="toggle_tb_25",
+            movement_summary=MOVEMENT_SUMMARIES.get("total_bases", []),
+            category_key="total_bases",
+        )
 
-with walks_tab:
-    render_ranking_category(
-        title="Walk", icon="👁️", rankings=WALK_RANKINGS,
-        state_key="show_walks_25", button_key="toggle_walks_25",
-        movement_summary=[], category_key="walks",
-    )
+    with runs_tab:
+        render_ranking_category(
+            title="Run",
+            icon="🏃",
+            rankings=RUN_RANKINGS,
+            state_key="show_runs_25",
+            button_key="toggle_runs_25",
+            movement_summary=[],
+            category_key="runs",
+        )
 
-with stolen_bases_tab:
-    render_ranking_category(
-        title="Stolen Base", icon="💨", rankings=STOLEN_BASE_RANKINGS,
-        state_key="show_sb_25", button_key="toggle_sb_25",
-        movement_summary=[], category_key="stolen_bases",
-    )
+    with rbis_tab:
+        render_ranking_category(
+            title="RBI",
+            icon="🎯",
+            rankings=RBI_RANKINGS,
+            state_key="show_rbis_25",
+            button_key="toggle_rbis_25",
+            movement_summary=[],
+            category_key="rbis",
+        )
 
-with hrr_tab:
-    render_ranking_category(
-        title="Hits + Runs + RBIs", icon="📊",
-        rankings=HITS_RUNS_RBIS_RANKINGS,
-        state_key="show_hrr_25", button_key="toggle_hrr_25",
-        movement_summary=MOVEMENT_SUMMARIES.get("hits_runs_rbis", []),
-        category_key="hits_runs_rbis",
-    )
+    with walks_tab:
+        render_ranking_category(
+            title="Walk",
+            icon="👁️",
+            rankings=WALK_RANKINGS,
+            state_key="show_walks_25",
+            button_key="toggle_walks_25",
+            movement_summary=[],
+            category_key="walks",
+        )
 
-st.markdown("### ⚾ Pitcher")
-st.caption("Pitcher prop rankings are the next MLB build.")
+    with stolen_bases_tab:
+        render_ranking_category(
+            title="Stolen Base",
+            icon="💨",
+            rankings=STOLEN_BASE_RANKINGS,
+            state_key="show_sb_25",
+            button_key="toggle_sb_25",
+            movement_summary=[],
+            category_key="stolen_bases",
+        )
+
+    with hrr_tab:
+        render_ranking_category(
+            title="Hits + Runs + RBIs",
+            icon="📊",
+            rankings=HITS_RUNS_RBIS_RANKINGS,
+            state_key="show_hrr_25",
+            button_key="toggle_hrr_25",
+            movement_summary=MOVEMENT_SUMMARIES.get("hits_runs_rbis", []),
+            category_key="hits_runs_rbis",
+        )
+
+with pitcher_tab:
+    st.caption("Pitcher prop rankings are the next MLB build.")
 
 st.divider()
 
