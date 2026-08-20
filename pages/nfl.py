@@ -20,6 +20,7 @@ Important:
 - NFL data will be displayed only when real source data is available.
 """
 
+import pandas as pd
 import streamlit as st
 
 from data.nfl_schedule import load_nfl_schedule
@@ -60,18 +61,34 @@ def show():
     with nfl_tabs[3]:
         st.subheader("Games")
 
+        season_type_label = st.selectbox(
+            "Season Type",
+            ["Preseason", "Regular Season"],
+            key="nfl_season_type_selector",
+        )
+
+        game_type = "PRE" if season_type_label == "Preseason" else "REG"
+
         try:
-            schedule = load_nfl_schedule(NFL_SEASON)
+            schedule = load_nfl_schedule(
+                season=NFL_SEASON,
+                game_type=game_type,
+            )
 
             if schedule.empty:
-                st.info(f"No {NFL_SEASON} regular-season games are available yet.")
+                st.info(
+                    f"No {NFL_SEASON} {season_type_label.lower()} "
+                    "games are available yet."
+                )
             else:
-                available_weeks = sorted(schedule["week"].dropna().astype(int).unique())
+                available_weeks = sorted(
+                    schedule["week"].dropna().astype(int).unique()
+                )
 
                 selected_week = st.selectbox(
                     "Select Week",
                     available_weeks,
-                    key="nfl_week_selector",
+                    key=f"nfl_week_selector_{game_type}",
                 )
 
                 week_games = schedule[
@@ -79,14 +96,15 @@ def show():
                 ]
 
                 st.caption(
-                    f"{NFL_SEASON} Regular Season • Week {selected_week}"
+                    f"{NFL_SEASON} {season_type_label} • Week {selected_week}"
                 )
 
                 for _, game in week_games.iterrows():
                     kickoff = (
-                        game["kickoff_et"].strftime("%a, %b %d • %I:%M %p ET")
-                        if game["kickoff_et"] is not None
-                        and not game["kickoff_et"].__class__.__name__ == "NaTType"
+                        game["kickoff_et"].strftime(
+                            "%a, %b %d • %I:%M %p ET"
+                        )
+                        if pd.notna(game["kickoff_et"])
                         else "Kickoff TBD"
                     )
 
@@ -96,7 +114,9 @@ def show():
                             f'@ {game["home_team"]} {int(game["home_score"])}'
                         )
                     else:
-                        matchup = f'{game["away_team"]} @ {game["home_team"]}'
+                        matchup = (
+                            f'{game["away_team"]} @ {game["home_team"]}'
+                        )
 
                     st.markdown(f"**{matchup}**")
                     st.caption(f"{kickoff} • {game['status']}")
