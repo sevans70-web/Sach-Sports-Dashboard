@@ -9,7 +9,7 @@ import streamlit as st
 
 NFL_ROSTER_URL = (
     "https://github.com/nflverse/nflverse-data/releases/download/"
-    "rosters/roster_2026.parquet"
+    "rosters/roster_{season}.parquet"
 )
 
 
@@ -17,7 +17,8 @@ NFL_ROSTER_URL = (
 def load_nfl_roster(season: int = 2026) -> pd.DataFrame:
     """Load the current NFL roster and normalize stable player identity fields."""
 
-    url = NFL_ROSTER_URL.replace("2026", str(season))
+    url = NFL_ROSTER_URL.format(season=season)
+
     response = requests.get(url, timeout=30)
     response.raise_for_status()
 
@@ -41,8 +42,18 @@ def load_nfl_roster(season: int = 2026) -> pd.DataFrame:
 
     roster = roster.rename(columns=available)
 
-    required = ["player_id", "player_name", "team", "position"]
-    missing = [column for column in required if column not in roster.columns]
+    required = [
+        "player_id",
+        "player_name",
+        "team",
+        "position",
+    ]
+
+    missing = [
+        column
+        for column in required
+        if column not in roster.columns
+    ]
 
     if missing:
         raise ValueError(
@@ -68,14 +79,30 @@ def load_nfl_roster(season: int = 2026) -> pd.DataFrame:
         subset=["player_id", "player_name", "team"]
     )
 
+    roster["team"] = (
+        roster["team"]
+        .astype(str)
+        .str.upper()
+        .str.strip()
+    )
+
+    roster["position"] = (
+        roster["position"]
+        .astype(str)
+        .str.upper()
+        .str.strip()
+    )
+
     roster = roster.drop_duplicates(
         subset=["player_id"],
         keep="last",
     )
 
-    return roster.sort_values(
-        ["team", "position", "player_name"]
-    ).reset_index(drop=True)
+    return (
+        roster
+        .sort_values(["team", "position", "player_name"])
+        .reset_index(drop=True)
+    )
 
 
 def get_team_roster(
@@ -87,7 +114,7 @@ def get_team_roster(
     roster = load_nfl_roster(season)
 
     return roster[
-        roster["team"] == team
+        roster["team"] == str(team).upper()
     ].reset_index(drop=True)
 
 
@@ -102,4 +129,17 @@ def get_skill_players(
 
     return roster[
         roster["position"].isin(prop_positions)
+    ].reset_index(drop=True)
+
+
+def get_team_skill_players(
+    team: str,
+    season: int = 2026,
+) -> pd.DataFrame:
+    """Return QB/RB/WR/TE players for one NFL team."""
+
+    players = get_skill_players(season)
+
+    return players[
+        players["team"] == str(team).upper()
     ].reset_index(drop=True)
