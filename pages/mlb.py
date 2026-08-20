@@ -228,6 +228,10 @@ def convert_live_rankings(
                 "one_plus_rbi_probability": player.get("one_plus_rbi_probability", 0.0),
                 "one_plus_walk_probability": player.get("one_plus_walk_probability", 0.0),
                 "one_plus_stolen_base_probability": player.get("one_plus_stolen_base_probability", 0.0),
+                "projected_hits_runs_rbis": player.get("projected_hits_runs_rbis", 0.0),
+                "over_1_5_hits_runs_rbis_probability": player.get(
+                    "over_1_5_hits_runs_rbis_probability", 0.0
+                ),
                 "gi_score": player.get("gi_score", 0),
                 "player_name": player.get(
                     "player_name",
@@ -481,7 +485,7 @@ ALL_TOP_25_COMPLETE = all(
     )
     for category in (
         "home_runs", "hits", "total_bases",
-        "runs", "rbis", "walks", "stolen_bases",
+        "runs", "rbis", "walks", "stolen_bases", "hits_runs_rbis",
     )
 )
 
@@ -505,6 +509,9 @@ WALK_RANKINGS = convert_live_rankings(live_rankings.get("walks", {}), "Walks")
 STOLEN_BASE_RANKINGS = convert_live_rankings(
     live_rankings.get("stolen_bases", {}), "Stolen Bases"
 )
+HITS_RUNS_RBIS_RANKINGS = convert_live_rankings(
+    live_rankings.get("hits_runs_rbis", {}), "Hits + Runs + RBIs"
+)
 HOME_RUN_RANKINGS = attach_results_to_rankings(
     HOME_RUN_RANKINGS,
     "home_runs",
@@ -524,6 +531,9 @@ RBI_RANKINGS = attach_results_to_rankings(RBI_RANKINGS, "rbis")
 WALK_RANKINGS = attach_results_to_rankings(WALK_RANKINGS, "walks")
 STOLEN_BASE_RANKINGS = attach_results_to_rankings(
     STOLEN_BASE_RANKINGS, "stolen_bases"
+)
+HITS_RUNS_RBIS_RANKINGS = attach_results_to_rankings(
+    HITS_RUNS_RBIS_RANKINGS, "hits_runs_rbis"
 )
 MOVEMENT_SUMMARIES = {
     "home_runs": [],
@@ -549,6 +559,7 @@ try:
             "rbis": RBI_RANKINGS,
             "walks": WALK_RANKINGS,
             "stolen_bases": STOLEN_BASE_RANKINGS,
+            "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
         },
         captured_at=get_toronto_now(),
     )
@@ -591,6 +602,11 @@ try:
         comparisons.get("stolen_bases", {}),
         has_previous_snapshot,
     )
+    HITS_RUNS_RBIS_RANKINGS = attach_persistent_movement(
+        HITS_RUNS_RBIS_RANKINGS,
+        comparisons.get("hits_runs_rbis", {}),
+        has_previous_snapshot,
+    )
 
     if has_previous_snapshot:
         MOVEMENT_SUMMARIES = movement_result["summaries"]
@@ -604,6 +620,7 @@ except (KeyError, ValueError, RankingSnapshotError) as error:
         RBI_RANKINGS,
         WALK_RANKINGS,
         STOLEN_BASE_RANKINGS,
+        HITS_RUNS_RBIS_RANKINGS,
     ):
         attach_persistent_movement(rankings, {}, False)
 
@@ -620,6 +637,7 @@ except (KeyError, ValueError, RankingSnapshotError) as error:
 for state_key in (
     "show_hr_25", "show_hits_25", "show_tb_25",
     "show_runs_25", "show_rbis_25", "show_walks_25", "show_sb_25",
+    "show_hrr_25",
 ):
     if state_key not in st.session_state:
         st.session_state[state_key] = False
@@ -686,6 +704,13 @@ def projection_display(player: dict) -> tuple[str, str]:
         projected = float(player.get("projected_stolen_bases", 0.0) or 0.0)
         probability = float(player.get("one_plus_stolen_base_probability", 0.0) or 0.0)
         return "Projected Stolen Bases", f"{projected:.2f} · {probability:.0f}% for 1+"
+
+    if "hits + runs + rbis" in category or "hits runs rbis" in category:
+        projected = float(player.get("projected_hits_runs_rbis", 0.0) or 0.0)
+        probability = float(
+            player.get("over_1_5_hits_runs_rbis_probability", 0.0) or 0.0
+        )
+        return "Projected H+R+RBI", f"{projected:.1f} · {probability:.0f}% over 1.5"
 
     return "Projection", "Unavailable"
 
@@ -1742,6 +1767,7 @@ st.markdown(
 ALL_RANKING_LISTS = (
     HOME_RUN_RANKINGS, HIT_RANKINGS, TOTAL_BASE_RANKINGS, RUN_RANKINGS,
     RBI_RANKINGS, WALK_RANKINGS, STOLEN_BASE_RANKINGS,
+    HITS_RUNS_RBIS_RANKINGS,
 )
 PLAYER_INTELLIGENCE_LOOKUP: dict[int, dict] = {}
 for ranking_list in ALL_RANKING_LISTS:
@@ -2192,6 +2218,7 @@ render_prediction_performance_tracker(
         "rbis": RBI_RANKINGS,
         "walks": WALK_RANKINGS,
         "stolen_bases": STOLEN_BASE_RANKINGS,
+        "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
     }
 )
 
@@ -2218,13 +2245,16 @@ st.caption(
     "Official MLB player headshots are shown with today's live rankings."
 )
 
+st.markdown("### 🥎 Batter")
+
 (
     home_run_tab, hits_tab, total_bases_tab, runs_tab,
-    rbis_tab, walks_tab, stolen_bases_tab,
+    rbis_tab, walks_tab, stolen_bases_tab, hrr_tab,
 ) = st.tabs(
     [
         "🔥 Home Runs", "⚾ Hits", "💥 Total Bases",
         "🏃 Runs", "🎯 RBIs", "👁️ Walks", "💨 Stolen Bases",
+        "📊 H+R+RBI",
     ]
 )
 
@@ -2288,6 +2318,18 @@ with stolen_bases_tab:
         state_key="show_sb_25", button_key="toggle_sb_25",
         movement_summary=[], category_key="stolen_bases",
     )
+
+with hrr_tab:
+    render_ranking_category(
+        title="Hits + Runs + RBIs", icon="📊",
+        rankings=HITS_RUNS_RBIS_RANKINGS,
+        state_key="show_hrr_25", button_key="toggle_hrr_25",
+        movement_summary=MOVEMENT_SUMMARIES.get("hits_runs_rbis", []),
+        category_key="hits_runs_rbis",
+    )
+
+st.markdown("### ⚾ Pitcher")
+st.caption("Pitcher prop rankings are the next MLB build.")
 
 st.divider()
 
