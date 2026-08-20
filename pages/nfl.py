@@ -23,6 +23,10 @@ Important:
 import pandas as pd
 import streamlit as st
 
+from data.nfl_roster import (
+    get_team_skill_players,
+    load_nfl_roster,
+)
 from data.nfl_schedule import load_nfl_schedule
 
 
@@ -51,6 +55,57 @@ def show():
 
     with nfl_tabs[0]:
         st.subheader("NFL Overview")
+
+        try:
+            roster = load_nfl_roster(NFL_SEASON)
+
+            st.caption(
+                f"{NFL_SEASON} roster data connected • "
+                f"{roster['player_id'].nunique()} unique players"
+            )
+
+            teams = sorted(
+                roster["team"]
+                .dropna()
+                .astype(str)
+                .unique()
+            )
+
+            selected_team = st.selectbox(
+                "Roster Check",
+                teams,
+                key="nfl_roster_team_selector",
+            )
+
+            team_players = get_team_skill_players(
+                selected_team,
+                NFL_SEASON,
+            )
+
+            st.caption(
+                f"{selected_team} • "
+                f"{len(team_players)} QB/RB/WR/TE players"
+            )
+
+            display_columns = [
+                "player_name",
+                "position",
+                "status",
+                "depth_chart_position",
+                "player_id",
+            ]
+
+            st.dataframe(
+                team_players[display_columns],
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        except Exception as exc:
+            st.warning(
+                "NFL roster data is temporarily unavailable."
+            )
+            st.caption(f"Roster source detail: {exc}")
 
     with nfl_tabs[1]:
         st.subheader("Game Intelligence")
