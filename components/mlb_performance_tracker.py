@@ -25,6 +25,7 @@ CATEGORY_CONFIG = {
     "rbis": ("🎯 RBIs", "RBIs"),
     "walks": ("👁️ Walks", "Walks"),
     "stolen_bases": ("💨 Stolen Bases", "SB"),
+    "hits_runs_rbis": ("📊 H+R+RBI", "H+R+RBI"),
 }
 
 
