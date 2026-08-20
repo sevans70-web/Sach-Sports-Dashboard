@@ -14,10 +14,17 @@ from data.mlb_performance_tracker import (
     summarize,
     sync_history,
 )
+from data.mlb_pitcher_performance_tracker import (
+    current_day_view as current_pitcher_day_view,
+    records_for_period as pitcher_records_for_period,
+    summarize_projection_accuracy,
+    sync_history as sync_pitcher_history,
+)
+from engines.mlb_pitcher_intelligence import get_pitcher_rankings
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
-CATEGORY_CONFIG = {
+BATTER_CATEGORY_CONFIG = {
     "home_runs": ("🔥 Home Runs", "HR"),
     "hits": ("⚾ Hits", "Hits"),
     "total_bases": ("💥 Total Bases", "TB"),
@@ -26,6 +33,14 @@ CATEGORY_CONFIG = {
     "walks": ("👁️ Walks", "Walks"),
     "stolen_bases": ("💨 Stolen Bases", "SB"),
     "hits_runs_rbis": ("📊 H+R+RBI", "H+R+RBI"),
+}
+
+PITCHER_CATEGORY_CONFIG = {
+    "strikeouts": ("🎯 Strikeouts", "K"),
+    "outs_recorded": ("⏱️ Outs Recorded", "Outs"),
+    "hits_allowed": ("⚾ Hits Allowed", "Hits"),
+    "walks_allowed": ("👁️ Walks Allowed", "BB"),
+    "earned_runs": ("🔴 Earned Runs", "ER"),
 }
 
 
@@ -58,10 +73,33 @@ def _records_for_selected_period(
     return records_for_period(history, category, period)
 
 
-def _render_market(history: dict[str, Any], category: str, period: str) -> None:
+def _pitcher_records_for_selected_period(
+    history: dict[str, Any],
+    category: str,
+    period: str,
+) -> list[dict[str, Any]]:
+    if period == "Yesterday":
+        yesterday = (
+            datetime.now(TORONTO_TIMEZONE).date()
+            - timedelta(days=1)
+        )
+        return pitcher_records_for_period(
+            history,
+            category,
+            "Today",
+            today=yesterday,
+        )
+
+    return pitcher_records_for_period(history, category, period)
+
+
+def _render_batter_market(
+    history: dict[str, Any],
+    category: str,
+    period: str,
+) -> None:
     rows = _records_for_selected_period(history, category, period)
     summary = summarize(rows)
-
     total_predictions = summary["graded"] + summary["pending"]
 
     st.markdown(
@@ -99,17 +137,73 @@ def _render_market(history: dict[str, Any], category: str, period: str) -> None:
             f"Average GI — winners {summary['avg_gi_wins']:.1f} · "
             f"misses {summary['avg_gi_misses']:.1f}"
         )
+    elif period == "Yesterday":
+        st.caption("No graded results are available for yesterday yet.")
     else:
-        if period == "Yesterday":
-            st.caption("No graded results are available for yesterday yet.")
-        else:
-            st.caption("Final results will populate as today's games finish.")
+        st.caption("Final results will populate as today's games finish.")
 
 
-def render_prediction_performance_tracker(
-    rankings_by_category: dict[str, list[dict[str, Any]]],
+def _pitcher_tier_line(label: str, data: dict[str, Any]) -> str:
+    if not data.get("graded"):
+        return f"**{label}:** —"
+    return (
+        f"**{label}:** avg error {data['mean_absolute_error']:.2f} · "
+        f"within 1: {data['within_one_rate']:.1f}%"
+    )
+
+
+def _render_pitcher_market(
+    history: dict[str, Any],
+    category: str,
+    period: str,
 ) -> None:
-    """Render persistent MLB prediction testing performance."""
+    rows = _pitcher_records_for_selected_period(history, category, period)
+    summary = summarize_projection_accuracy(rows)
+    unit = PITCHER_CATEGORY_CONFIG[category][1]
+
+    st.markdown(
+        f"""
+        <div class="perf-summary-row">
+            <div class="perf-summary-item">
+                <span class="perf-label">Average Projection Error</span>
+                <strong>{summary['mean_absolute_error']:.2f}</strong>
+                <span class="perf-subtext">{unit} from final result</span>
+            </div>
+            <div class="perf-summary-item">
+                <span class="perf-label">Pending</span>
+                <strong>{summary['pending']}</strong>
+                <span class="perf-subtext">
+                    {'Awaiting final pitcher results' if summary['pending'] else 'All results recorded'}
+                </span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        " · ".join(
+            [
+                _pitcher_tier_line("Top 5", summary["top_5"]),
+                _pitcher_tier_line("#6–10", summary["six_to_ten"]),
+                _pitcher_tier_line("#11–25", summary["eleven_to_25"]),
+            ]
+        )
+    )
+
+    if summary["graded"]:
+        st.caption(
+            f"Projection accuracy — within 0.5: {summary['within_half_rate']:.1f}% · "
+            f"within 1.0: {summary['within_one_rate']:.1f}% · "
+            f"graded: {summary['graded']}."
+        )
+    elif period == "Yesterday":
+        st.caption("No finalized pitcher projections are available for yesterday yet.")
+    else:
+        st.caption("Final pitcher results will populate as games finish.")
+
+
+def _styles() -> None:
     st.markdown(
         """
         <style>
@@ -177,22 +271,33 @@ def render_prediction_performance_tracker(
         unsafe_allow_html=True,
     )
 
+
+def render_prediction_performance_tracker(
+    rankings_by_category: dict[str, list[dict[str, Any]]],
+) -> None:
+    """Render persistent MLB Batter and Pitcher prediction testing performance."""
+    _styles()
+
     st.subheader("📊 Prediction Performance")
     st.caption(
-        "Frozen Top 25 predictions are graded against actual results. "
-        "This testing record is not recalculated when the model changes."
+        "Frozen pregame predictions are compared with actual results. "
+        "Batter markets show hit rate; pitcher markets measure how close the "
+        "dashboard projection was to the pitcher's final stat."
     )
 
     try:
         token = st.secrets["GITHUB_TOKEN"]
-        history = sync_history(token, rankings_by_category)
-        history = current_day_view(history, rankings_by_category)
+        batter_history = sync_history(token, rankings_by_category)
+        batter_history = current_day_view(
+            batter_history,
+            rankings_by_category,
+        )
     except Exception as exc:
         st.warning(
-            "Performance history could not be synchronized right now. "
+            "Batter performance history could not be synchronized right now. "
             f"Details: {exc}"
         )
-        return
+        batter_history = {"days": {}}
 
     period = st.segmented_control(
         "Performance period",
@@ -201,13 +306,59 @@ def render_prediction_performance_tracker(
         key="mlb_performance_period",
     ) or "Today"
 
-    tabs = st.tabs([CATEGORY_CONFIG[key][0] for key in CATEGORY_CONFIG])
-    for tab, category in zip(tabs, CATEGORY_CONFIG):
-        with tab:
-            _render_market(history, category, period)
-
-    captured_days = len(history.get("days", {}))
-    st.caption(
-        f"Tracking history: {captured_days} slate"
-        f"{'s' if captured_days != 1 else ''}."
+    batter_perf_tab, pitcher_perf_tab = st.tabs(
+        ["🥎 Batter", "⚾ Pitcher"]
     )
+
+    with batter_perf_tab:
+        tabs = st.tabs(
+            [BATTER_CATEGORY_CONFIG[key][0] for key in BATTER_CATEGORY_CONFIG]
+        )
+        for tab, category in zip(tabs, BATTER_CATEGORY_CONFIG):
+            with tab:
+                _render_batter_market(batter_history, category, period)
+
+        captured_days = len(batter_history.get("days", {}))
+        st.caption(
+            f"Tracking history: {captured_days} slate"
+            f"{'s' if captured_days != 1 else ''}."
+        )
+
+    with pitcher_perf_tab:
+        try:
+            pitcher_result = get_pitcher_rankings(limit=25)
+            pitcher_rankings = pitcher_result.get("rankings", {})
+
+            pitcher_history = sync_pitcher_history(
+                token,
+                pitcher_rankings,
+            )
+            pitcher_history = current_pitcher_day_view(
+                pitcher_history,
+                pitcher_rankings,
+            )
+
+            tabs = st.tabs(
+                [
+                    PITCHER_CATEGORY_CONFIG[key][0]
+                    for key in PITCHER_CATEGORY_CONFIG
+                ]
+            )
+            for tab, category in zip(tabs, PITCHER_CATEGORY_CONFIG):
+                with tab:
+                    _render_pitcher_market(
+                        pitcher_history,
+                        category,
+                        period,
+                    )
+
+            captured_days = len(pitcher_history.get("days", {}))
+            st.caption(
+                f"Pitcher tracking history: {captured_days} slate"
+                f"{'s' if captured_days != 1 else ''}."
+            )
+        except Exception as exc:
+            st.warning(
+                "Pitcher performance history could not be synchronized right now. "
+                f"Details: {exc}"
+            )
