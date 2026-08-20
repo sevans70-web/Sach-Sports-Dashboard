@@ -127,6 +127,12 @@ def normalize_rankings(
                 "one_plus_stolen_base_probability": original.get(
                     "one_plus_stolen_base_probability"
                 ),
+                "over_1_5_hits_runs_rbis_probability": original.get(
+                    "over_1_5_hits_runs_rbis_probability"
+                ),
+                "projected_hits_runs_rbis": original.get(
+                    "projected_hits_runs_rbis"
+                ),
                 "lineup_status": original.get("lineup_status"),
                 "lineup_confirmed": bool(original.get("lineup_confirmed", False)),
                 "batting_order": original.get("batting_order"),
