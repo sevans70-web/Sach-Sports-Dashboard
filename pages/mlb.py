@@ -446,13 +446,14 @@ def card_result_html(player: dict) -> str:
         </div>
     """
 def load_live_rankings() -> dict:
-    """Load live MLB player rankings for today's games."""
-    snapshot = get_daily_ranking_snapshot(
+    """Load recalculated MLB player rankings for today's games."""
+    rankings = get_all_rankings(
+        schedule_date=datetime.now(TORONTO_TIMEZONE).date(),
         recent_days=14,
         limit=25,
     )
 
-    return snapshot.get("rankings", {})
+    return rankings
 
 def load_previous_rankings() -> dict:
     """Load yesterday's saved MLB rankings when available."""
