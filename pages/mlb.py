@@ -446,12 +446,44 @@ def card_result_html(player: dict) -> str:
         </div>
     """
 def load_live_rankings() -> dict:
-    """Load recalculated MLB player rankings for today's games."""
+    """Load live MLB rankings, falling back only when the live refresh is empty."""
+    schedule_date = datetime.now(TORONTO_TIMEZONE).date()
+
     rankings = get_all_rankings(
-        schedule_date=datetime.now(TORONTO_TIMEZONE).date(),
+        schedule_date=schedule_date,
         recent_days=14,
         limit=25,
     )
+
+    has_live_rankings = any(
+        bool(category_result.get("rankings"))
+        for category_result in rankings.values()
+        if isinstance(category_result, dict)
+    )
+
+    if has_live_rankings:
+        return rankings
+
+    # The rankings were intentionally "unfrozen" so they can recalculate
+    # throughout the day.  A temporary MLB/provider failure must not turn every
+    # category blank, though.  Reuse the valid same-day snapshot only when the
+    # live refresh returned no players at all.  If no snapshot exists yet,
+    # get_daily_ranking_snapshot() performs one fresh retry and saves it.
+    fallback_snapshot = get_daily_ranking_snapshot(
+        schedule_date=schedule_date,
+        recent_days=14,
+        limit=25,
+    )
+    fallback_rankings = fallback_snapshot.get("rankings", {})
+
+    has_fallback_rankings = any(
+        bool(category_result.get("rankings"))
+        for category_result in fallback_rankings.values()
+        if isinstance(category_result, dict)
+    )
+
+    if has_fallback_rankings:
+        return fallback_rankings
 
     return rankings
 
