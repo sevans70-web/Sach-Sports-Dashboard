@@ -63,9 +63,17 @@
             "team": "Tampa Bay Rays"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 82.7,
             "home_run_probability": 13.4,
             "one_plus_hit_probability": 78.6,
@@ -80,7 +88,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.68,
             "rank": 3,
-            "result_label": "Pending",
+            "result_label": "\u2705 2 hits",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -766,9 +774,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 80.3,
             "home_run_probability": 13.3,
             "one_plus_hit_probability": 78.3,
@@ -783,7 +799,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.65,
             "rank": 3,
-            "result_label": "Pending",
+            "result_label": "\u2705 3 H+R+RBI",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -1206,9 +1222,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 68.2,
             "home_run_probability": 18.6,
             "one_plus_hit_probability": 73.1,
@@ -1223,7 +1247,7 @@
             "player_name": "Sal Stewart",
             "projected_hits_runs_rbis": 2.48,
             "rank": 19,
-            "result_label": "Pending",
+            "result_label": "\u274c 1 H+R+RBI",
             "team": "Cincinnati Reds"
           },
           {
@@ -1648,9 +1672,17 @@
             "team": "San Diego Padres"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 63.2,
             "home_run_probability": 17.5,
             "one_plus_hit_probability": 73.8,
@@ -1665,7 +1697,7 @@
             "player_name": "Elly De La Cruz",
             "projected_hits_runs_rbis": 2.44,
             "rank": 10,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Cincinnati Reds"
           },
           {
@@ -1777,9 +1809,17 @@
             "team": "San Francisco Giants"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 61.6,
             "home_run_probability": 19.1,
             "one_plus_hit_probability": 74.3,
@@ -1794,7 +1834,7 @@
             "player_name": "Sal Stewart",
             "projected_hits_runs_rbis": 2.55,
             "rank": 15,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Cincinnati Reds"
           },
           {
@@ -2132,9 +2172,17 @@
             "team": "Baltimore Orioles"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 80.8,
             "home_run_probability": 13.3,
             "one_plus_hit_probability": 78.3,
@@ -2149,7 +2197,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.65,
             "rank": 3,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 RBI",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -2469,9 +2517,17 @@
             "team": "Chicago Cubs"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 70.8,
             "home_run_probability": 18.6,
             "one_plus_hit_probability": 73.1,
@@ -2486,7 +2542,7 @@
             "player_name": "Sal Stewart",
             "projected_hits_runs_rbis": 2.48,
             "rank": 16,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 RBIs",
             "team": "Cincinnati Reds"
           },
           {
@@ -2519,9 +2575,17 @@
             "team": "Colorado Rockies"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 69.3,
             "home_run_probability": 17.7,
             "one_plus_hit_probability": 70.4,
@@ -2536,7 +2600,7 @@
             "player_name": "Nolan Arenado",
             "projected_hits_runs_rbis": 2.29,
             "rank": 18,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 RBI",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -3011,9 +3075,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 76.3,
             "home_run_probability": 13.3,
             "one_plus_hit_probability": 78.3,
@@ -3028,7 +3100,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.65,
             "rank": 11,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 runs",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -3206,9 +3278,17 @@
             "team": "Minnesota Twins"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 2,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 3,
+            "actual_walks": 1,
             "category": "runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 71.7,
             "home_run_probability": 15.2,
             "one_plus_hit_probability": 70.8,
@@ -3223,7 +3303,7 @@
             "player_name": "Corbin Carroll",
             "projected_hits_runs_rbis": 2.27,
             "rank": 18,
-            "result_label": "Pending",
+            "result_label": "\u2705 2 runs",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -3959,9 +4039,17 @@
             "team": "New York Mets"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 1,
             "category": "stolen_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 65.8,
             "home_run_probability": 12.9,
             "one_plus_hit_probability": 71.7,
@@ -3976,7 +4064,7 @@
             "player_name": "Dane Myers",
             "projected_hits_runs_rbis": 2.11,
             "rank": 20,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 stolen bases",
             "team": "Cincinnati Reds"
           },
           {
@@ -4067,9 +4155,17 @@
             "team": "Texas Rangers"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 2,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 3,
+            "actual_walks": 1,
             "category": "stolen_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 65.0,
             "home_run_probability": 15.0,
             "one_plus_hit_probability": 70.3,
@@ -4084,7 +4180,7 @@
             "player_name": "Corbin Carroll",
             "projected_hits_runs_rbis": 2.24,
             "rank": 24,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 stolen base",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -4264,9 +4360,17 @@
             "team": "Philadelphia Phillies"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 79.9,
             "home_run_probability": 13.3,
             "one_plus_hit_probability": 78.3,
@@ -4281,7 +4385,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.65,
             "rank": 6,
-            "result_label": "Pending",
+            "result_label": "\u2705 2 total bases",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -4509,9 +4613,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 2,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 3,
+            "actual_walks": 1,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 71.6,
             "home_run_probability": 15.2,
             "one_plus_hit_probability": 70.8,
@@ -4526,7 +4638,7 @@
             "player_name": "Corbin Carroll",
             "projected_hits_runs_rbis": 2.27,
             "rank": 15,
-            "result_label": "Pending",
+            "result_label": "\u2705 3 total bases",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -4651,9 +4763,17 @@
             "team": "Los Angeles Dodgers"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 67.6,
             "home_run_probability": 17.7,
             "one_plus_hit_probability": 70.4,
@@ -4668,7 +4788,7 @@
             "player_name": "Nolan Arenado",
             "projected_hits_runs_rbis": 2.29,
             "rank": 21,
-            "result_label": "Pending",
+            "result_label": "\u274c 1 total base",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -4730,9 +4850,17 @@
             "team": "San Diego Padres"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 65.7,
             "home_run_probability": 18.6,
             "one_plus_hit_probability": 73.1,
@@ -4747,7 +4875,7 @@
             "player_name": "Sal Stewart",
             "projected_hits_runs_rbis": 2.48,
             "rank": 24,
-            "result_label": "Pending",
+            "result_label": "\u274c 1 total base",
             "team": "Cincinnati Reds"
           },
           {
@@ -5014,9 +5142,17 @@
             "team": "Detroit Tigers"
           },
           {
+            "actual_hits": 3,
+            "actual_hits_runs_rbis": 6,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 2,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 4,
+            "actual_walks": 0,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 72.1,
             "home_run_probability": 10.5,
             "one_plus_hit_probability": 70.9,
@@ -5031,7 +5167,7 @@
             "player_name": "Geraldo Perdomo",
             "projected_hits_runs_rbis": 2.07,
             "rank": 9,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 walks",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -5209,9 +5345,17 @@
             "team": "San Diego Padres"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 2,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 3,
+            "actual_walks": 1,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 69.6,
             "home_run_probability": 15.4,
             "one_plus_hit_probability": 71.5,
@@ -5226,7 +5370,7 @@
             "player_name": "Corbin Carroll",
             "projected_hits_runs_rbis": 2.31,
             "rank": 16,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 walk",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -5404,9 +5548,17 @@
             "team": "Boston Red Sox"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 1,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 66.1,
             "home_run_probability": 13.5,
             "one_plus_hit_probability": 78.9,
@@ -5421,7 +5573,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.7,
             "rank": 23,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 walks",
             "team": "Arizona Diamondbacks"
           },
           {
