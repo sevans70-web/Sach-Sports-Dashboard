@@ -47,8 +47,25 @@ def load_history(token: str) -> tuple[dict[str, Any], str | None]:
         return {"schema_version": 1, "days": {}}, None
     response.raise_for_status()
     payload = response.json()
-    raw = base64.b64decode(payload.get("content", "")).decode("utf-8")
-    return json.loads(raw), payload.get("sha")
+    raw = base64.b64decode(payload.get("content", "")).decode("utf-8").strip()
+
+    # GitHub can return an existing history file with empty content.
+    # Treat that as a brand-new history file instead of raising JSONDecodeError.
+    if not raw:
+        return {"schema_version": 1, "days": {}}, payload.get("sha")
+
+    try:
+        history = json.loads(raw)
+    except json.JSONDecodeError:
+        # Do not allow malformed/blank persisted history to break the dashboard.
+        history = {"schema_version": 1, "days": {}}
+
+    if not isinstance(history, dict):
+        history = {"schema_version": 1, "days": {}}
+
+    history.setdefault("schema_version", 1)
+    history.setdefault("days", {})
+    return history, payload.get("sha")
 
 
 def save_history(token: str, history: dict[str, Any], sha: str | None) -> None:
