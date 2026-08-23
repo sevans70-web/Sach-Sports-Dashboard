@@ -3,12 +3,9 @@ import streamlit as st
 
 from data.nfl_odds import sports_game_odds_configured
 from data.nfl_schedule import load_nfl_schedule
-from engines.nfl_passing_market_join import (
-    attach_live_passing_yards_lines,
-)
-from engines.nfl_passing_projection import (
-    build_passing_yards_projection,
-)
+from engines.nfl_passing_market_join import attach_live_passing_yards_lines
+from engines.nfl_passing_probability import attach_passing_yards_probabilities
+from engines.nfl_passing_projection import build_passing_yards_projection
 
 NFL_SEASON = 2026
 NFL_BASELINE_SEASON = 2025
@@ -29,23 +26,16 @@ def _build_game_qb_preview(game):
         NFL_SEASON,
         NFL_BASELINE_SEASON,
     )
-    away = away[
-        away["team"] == away_team
-    ].copy()
+    away = away[away["team"] == away_team].copy()
 
     home = build_passing_yards_projection(
         away_team,
         NFL_SEASON,
         NFL_BASELINE_SEASON,
     )
-    home = home[
-        home["team"] == home_team
-    ].copy()
+    home = home[home["team"] == home_team].copy()
 
-    qbs = pd.concat(
-        [away, home],
-        ignore_index=True,
-    )
+    qbs = pd.concat([away, home], ignore_index=True)
 
     if qbs.empty:
         return qbs
@@ -55,83 +45,58 @@ def _build_game_qb_preview(game):
         errors="coerce",
     )
 
-    # Temporary meaningful-sample filter.
     qbs = qbs[
         (qbs["games_played"].fillna(0) >= 3)
         | (qbs["attempts"].fillna(0) >= 50)
     ].copy()
 
     if sports_game_odds_configured():
-        qbs = attach_live_passing_yards_lines(
-            qbs
-        )
+        qbs = attach_live_passing_yards_lines(qbs)
+        qbs = attach_passing_yards_probabilities(qbs)
     else:
         qbs["market_match_status"] = "API not configured"
         qbs["consensus_line"] = pd.NA
-        qbs["best_over_line"] = pd.NA
-        qbs["best_over_book"] = None
-        qbs["best_over_odds"] = None
-        qbs["books_available"] = 0
         qbs["projection_edge_yards"] = pd.NA
+        qbs["over_probability"] = pd.NA
+        qbs["under_probability"] = pd.NA
+        qbs["model_probability"] = pd.NA
+        qbs["model_side"] = "NO PLAY"
 
     return qbs.sort_values(
-        "passing_yards_projection_matchup",
+        "model_probability",
         ascending=False,
         na_position="last",
     ).reset_index(drop=True)
 
 
 def _render_qb_card(row):
-    name = row.get(
-        "player_name",
-        "Unknown QB",
-    )
-    team = row.get(
-        "team",
-        "",
-    )
+    name = row.get("player_name", "Unknown QB")
+    team = row.get("team", "")
 
-    st.markdown(
-        f"### {name} · {team}"
-    )
+    st.markdown(f"### {name} · {team}")
 
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
         st.metric(
             "2025 Pass Yds/Game",
-            _format_number(
-                row.get(
-                    "passing_yards_per_game"
-                )
-            ),
+            _format_number(row.get("passing_yards_per_game")),
         )
 
     with c2:
         st.metric(
             "Matchup Projection",
-            _format_number(
-                row.get(
-                    "passing_yards_projection_matchup"
-                )
-            ),
+            _format_number(row.get("passing_yards_projection_matchup")),
         )
 
     with c3:
         st.metric(
             "Sportsbook Line",
-            _format_number(
-                row.get(
-                    "consensus_line"
-                )
-            ),
+            _format_number(row.get("consensus_line")),
         )
 
     with c4:
-        edge = row.get(
-            "projection_edge_yards"
-        )
-
+        edge = row.get("projection_edge_yards")
         edge_text = (
             "—"
             if edge is None or pd.isna(edge)
@@ -141,64 +106,48 @@ def _render_qb_card(row):
                 else f"{float(edge):.1f}"
             )
         )
-
-        st.metric(
-            "Model Edge",
-            edge_text,
-        )
+        st.metric("Model Edge", edge_text)
 
     c5, c6, c7 = st.columns(3)
 
     with c5:
-        st.caption(
-            "Last 5: "
-            + _format_number(
-                row.get(
-                    "last_5_passing_yards_per_game"
-                )
-            )
+        st.metric(
+            "Model Side",
+            str(row.get("model_side", "NO PLAY")),
         )
 
     with c6:
-        st.caption(
-            "Last 3: "
-            + _format_number(
-                row.get(
-                    "last_3_passing_yards_per_game"
-                )
-            )
+        probability = row.get("model_probability")
+        probability_text = (
+            "—"
+            if probability is None or pd.isna(probability)
+            else f"{float(probability):.1f}%"
+        )
+        st.metric(
+            "Model Probability",
+            probability_text,
         )
 
     with c7:
         st.caption(
-            "Yards/Attempt: "
+            "Last 5: "
             + _format_number(
-                row.get(
-                    "season_yards_per_attempt"
-                ),
-                2,
+                row.get("last_5_passing_yards_per_game")
+            )
+        )
+        st.caption(
+            "Last 3: "
+            + _format_number(
+                row.get("last_3_passing_yards_per_game")
             )
         )
 
-    market_status = row.get(
-        "market_match_status",
-        "No live market",
-    )
-
-    books = row.get(
-        "books_available",
-        0,
-    )
-
-    matchup = row.get(
-        "passing_matchup_label",
-        "Unknown",
-    )
+    matchup = row.get("passing_matchup_label", "Unknown")
+    market_status = row.get("market_match_status", "No live market")
 
     st.caption(
-        f"Matchup: {matchup} • "
-        f"Market: {market_status} • "
-        f"Books: {int(books or 0)}"
+        f"Matchup: {matchup} • Market: {market_status} • "
+        f"Yards/Attempt: {_format_number(row.get('season_yards_per_attempt'), 2)}"
     )
 
     st.divider()
@@ -206,7 +155,6 @@ def _render_qb_card(row):
 
 def show():
     st.title("🏈 NFL")
-
     st.caption(
         "Player Prop Intelligence • Matchup Analysis • "
         "Predictions • Performance Tracking"
@@ -223,56 +171,33 @@ def show():
     )
 
     with tabs[0]:
-        st.subheader(
-            "NFL Overview"
-        )
+        st.subheader("NFL Overview")
         st.caption(
             "Foundation view. Final overview design will be refined later."
         )
 
     with tabs[1]:
-        st.subheader(
-            "Game Intelligence"
-        )
+        st.subheader("Game Intelligence")
 
     with tabs[2]:
-        st.subheader(
-            "Results"
-        )
+        st.subheader("Results")
 
     with tabs[3]:
-        st.subheader(
-            "Games"
-        )
+        st.subheader("Games")
 
         season_type = st.selectbox(
             "Season Type",
-            [
-                "Preseason",
-                "Regular Season",
-            ],
+            ["Preseason", "Regular Season"],
             key="nfl_season_type_selector",
         )
 
-        game_type = (
-            "PRE"
-            if season_type == "Preseason"
-            else "REG"
-        )
+        game_type = "PRE" if season_type == "Preseason" else "REG"
 
         try:
-            schedule = load_nfl_schedule(
-                NFL_SEASON,
-                game_type,
-            )
+            schedule = load_nfl_schedule(NFL_SEASON, game_type)
 
             weeks = sorted(
-                schedule[
-                    "week"
-                ]
-                .dropna()
-                .astype(int)
-                .unique()
+                schedule["week"].dropna().astype(int).unique()
             )
 
             week = st.selectbox(
@@ -282,16 +207,13 @@ def show():
             )
 
             for _, game in schedule[
-                schedule["week"].astype(int)
-                == week
+                schedule["week"].astype(int) == week
             ].iterrows():
                 st.markdown(
-                    f'**{game["away_team"]} @ '
-                    f'{game["home_team"]}**'
+                    f'**{game["away_team"]} @ {game["home_team"]}**'
                 )
                 st.caption(
-                    f'{game["kickoff_et"]} • '
-                    f'{game["status"]}'
+                    f'{game["kickoff_et"]} • {game["status"]}'
                 )
                 st.divider()
 
@@ -299,14 +221,10 @@ def show():
             st.warning(
                 "NFL schedule data is temporarily unavailable."
             )
-            st.caption(
-                str(exc)
-            )
+            st.caption(str(exc))
 
     with tabs[4]:
-        st.subheader(
-            "Player Props"
-        )
+        st.subheader("Player Props")
 
         prop = st.selectbox(
             "Select Prop",
@@ -328,9 +246,7 @@ def show():
             )
             return
 
-        st.markdown(
-            "### Passing Yards"
-        )
+        st.markdown("### Passing Yards")
 
         if sports_game_odds_configured():
             st.caption(
@@ -342,42 +258,26 @@ def show():
             )
 
         try:
-            schedule = load_nfl_schedule(
-                NFL_SEASON,
-                "PRE",
-            )
+            schedule = load_nfl_schedule(NFL_SEASON, "PRE")
 
             weeks = sorted(
-                schedule[
-                    "week"
-                ]
-                .dropna()
-                .astype(int)
-                .unique()
+                schedule["week"].dropna().astype(int).unique()
             )
 
             week = st.selectbox(
                 "Preview Week",
                 weeks,
-                index=max(
-                    len(weeks) - 1,
-                    0,
-                ),
+                index=max(len(weeks) - 1, 0),
                 key="nfl_passing_card_week",
             )
 
             games = schedule[
-                schedule["week"].astype(int)
-                == week
-            ].reset_index(
-                drop=True
-            )
+                schedule["week"].astype(int) == week
+            ].reset_index(drop=True)
 
             labels = [
-                f'{game["away_team"]} @ '
-                f'{game["home_team"]}'
-                for _, game
-                in games.iterrows()
+                f'{game["away_team"]} @ {game["home_team"]}'
+                for _, game in games.iterrows()
             ]
 
             game_label = st.selectbox(
@@ -386,15 +286,9 @@ def show():
                 key="nfl_passing_card_game",
             )
 
-            game = games.iloc[
-                labels.index(
-                    game_label
-                )
-            ]
+            game = games.iloc[labels.index(game_label)]
 
-            qbs = _build_game_qb_preview(
-                game
-            )
+            qbs = _build_game_qb_preview(game)
 
             st.caption(
                 "Temporary intelligence cards while the final "
@@ -408,17 +302,13 @@ def show():
                 )
             else:
                 for _, row in qbs.iterrows():
-                    _render_qb_card(
-                        row
-                    )
+                    _render_qb_card(row)
 
         except Exception as exc:
             st.warning(
                 "Passing Yards cards are temporarily unavailable."
             )
-            st.caption(
-                str(exc)
-            )
+            st.caption(str(exc))
 
 
 show()
