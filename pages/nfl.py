@@ -5,6 +5,7 @@ from data.nfl_odds import sports_game_odds_configured
 from data.nfl_schedule import load_nfl_schedule
 from engines.nfl_passing_market_join import attach_live_passing_yards_lines
 from engines.nfl_passing_probability import attach_passing_yards_probabilities
+from engines.nfl_passing_ranking import rank_passing_yards_top25
 from engines.nfl_passing_projection import build_passing_yards_projection
 
 NFL_SEASON = 2026
@@ -68,6 +69,88 @@ def _build_game_qb_preview(game):
         na_position="last",
     ).reset_index(drop=True)
 
+
+
+def _build_week_top25(schedule, week):
+    """Build one ranked Passing Yards slate from every game in the selected week."""
+    games = schedule[
+        schedule["week"].astype(int) == int(week)
+    ].reset_index(drop=True)
+
+    candidates = []
+
+    for _, game in games.iterrows():
+        try:
+            game_qbs = _build_game_qb_preview(game)
+
+            if game_qbs is None or game_qbs.empty:
+                continue
+
+            game_qbs = game_qbs.copy()
+            game_qbs["game"] = (
+                str(game["away_team"]).upper()
+                + " @ "
+                + str(game["home_team"]).upper()
+            )
+            candidates.append(game_qbs)
+        except Exception:
+            # One failed matchup should not prevent the rest of the slate ranking.
+            continue
+
+    if not candidates:
+        return pd.DataFrame()
+
+    slate = pd.concat(candidates, ignore_index=True)
+    return rank_passing_yards_top25(slate, limit=25)
+
+
+def _render_top25_card(row):
+    rank = int(row.get("rank", 0))
+    name = row.get("player_name", "Unknown QB")
+    team = row.get("team", "")
+    game = row.get("game", "")
+    side = row.get("model_side", "—")
+
+    probability = row.get("model_probability")
+    probability_text = (
+        "—"
+        if probability is None or pd.isna(probability)
+        else f"{float(probability):.1f}%"
+    )
+
+    projection = _format_number(
+        row.get("passing_yards_projection_matchup")
+    )
+    line = _format_number(row.get("consensus_line"))
+
+    edge = row.get("projection_edge_yards")
+    edge_text = (
+        "—"
+        if edge is None or pd.isna(edge)
+        else (
+            f"+{float(edge):.1f}"
+            if float(edge) > 0
+            else f"{float(edge):.1f}"
+        )
+    )
+
+    st.markdown(f"### #{rank} · {name} · {team}")
+    if game:
+        st.caption(game)
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.metric("Model Side", side)
+        st.metric("Probability", probability_text)
+    with c2:
+        st.metric("Sportsbook Line", line)
+        st.metric("Projection", projection)
+
+    st.metric("Model Edge", edge_text)
+
+    matchup = row.get("passing_matchup_label", "Unknown")
+    st.caption(f"Matchup: {matchup}")
+    st.divider()
 
 def _render_qb_card(row):
     name = row.get("player_name", "Unknown QB")
@@ -270,6 +353,25 @@ def show():
                 index=max(len(weeks) - 1, 0),
                 key="nfl_passing_card_week",
             )
+
+            st.markdown("## Top 25 Passing Yards")
+            st.caption(
+                "Live slate ranking • model probability first • "
+                "projection edge used as the tiebreaker"
+            )
+
+            top25 = _build_week_top25(schedule, week)
+
+            if top25.empty:
+                st.info(
+                    "No valid Passing Yards Top 25 candidates are available "
+                    "for this slate yet."
+                )
+            else:
+                for _, ranked_row in top25.iterrows():
+                    _render_top25_card(ranked_row)
+
+            st.markdown("## Matchup Preview")
 
             games = schedule[
                 schedule["week"].astype(int) == week
