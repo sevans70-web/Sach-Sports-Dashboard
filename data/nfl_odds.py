@@ -174,3 +174,10 @@ def load_nfl_rushing_yards_markets():
         "rushing_yards",
         "Rushing Yards",
     )
+
+
+def load_nfl_receiving_yards_markets():
+    return load_nfl_prop_markets(
+        "receiving_yards",
+        "Receiving Yards",
+    )
