@@ -8,6 +8,7 @@ from engines.nfl_passing_probability import attach_passing_yards_probabilities
 from engines.nfl_passing_ranking import rank_passing_yards_top25
 from engines.nfl_passing_projection import build_passing_yards_projection
 from engines.nfl_rushing_yards import build_rushing_yards_top25
+from engines.nfl_receiving_yards import build_receiving_yards_top25
 
 NFL_SEASON = 2026
 NFL_BASELINE_SEASON = 2025
@@ -278,6 +279,42 @@ def _render_rushing():
         st.caption(str(exc))
 
 
+def _render_receiving():
+    st.markdown("### Receiving Yards")
+
+    if sports_game_odds_configured():
+        st.caption("Live sportsbook market connected.")
+    else:
+        st.caption("Sportsbook line feed not configured yet.")
+
+    st.markdown("## Top 25 Receiving Yards")
+    st.caption(
+        "Foundation ranking • 2025 receiving baseline + "
+        "recent form + live sportsbook line"
+    )
+
+    try:
+        top25 = build_receiving_yards_top25(
+            NFL_SEASON,
+            NFL_BASELINE_SEASON,
+        )
+
+        if top25.empty:
+            st.info(
+                "No valid live Receiving Yards candidates "
+                "are available right now."
+            )
+        else:
+            for _, row in top25.iterrows():
+                _render_top25_card(row, "receiving_projection")
+
+    except Exception as exc:
+        st.warning(
+            "Receiving Yards Top 25 is temporarily unavailable."
+        )
+        st.caption(str(exc))
+
+
 def show():
     st.title("🏈 NFL")
 
@@ -402,6 +439,9 @@ def show():
 
         elif prop == "Rushing Yards":
             _render_rushing()
+
+        elif prop == "Receiving Yards":
+            _render_receiving()
 
         else:
             st.caption(
