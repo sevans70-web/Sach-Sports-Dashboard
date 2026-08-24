@@ -1,8 +1,14 @@
+import json
+from datetime import datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
 import pandas as pd
 import streamlit as st
 
 from data.nfl_odds import sports_game_odds_configured, get_nfl_odds_feed_status
 from data.nfl_schedule import load_nfl_schedule
+from data.nfl_roster import load_nfl_roster
 from engines.nfl_passing_market_join import attach_live_passing_yards_lines
 from engines.nfl_passing_probability import attach_passing_yards_probabilities
 from engines.nfl_passing_ranking import rank_passing_yards_top25
@@ -14,6 +20,159 @@ from engines.nfl_touchdowns import build_anytime_td_top25, build_first_td_top25
 
 NFL_SEASON = 2026
 NFL_BASELINE_SEASON = 2025
+
+
+TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
+NFL_MOVEMENT_FILE = Path("/tmp/sach_nfl_rank_movement.json")
+
+
+def _active_schedule_context():
+    """Return the active NFL phase, schedule and week without a regular-season selector."""
+    now = datetime.now(TORONTO_TIMEZONE).replace(tzinfo=None)
+
+    try:
+        regular = load_nfl_schedule(NFL_SEASON, "REG")
+    except Exception:
+        regular = pd.DataFrame()
+
+    if not regular.empty:
+        regular = regular.copy()
+        regular["kickoff_et"] = pd.to_datetime(regular["kickoff_et"], errors="coerce")
+        future = regular[regular["kickoff_et"] >= now]
+        started = regular[regular["kickoff_et"] < now]
+
+        # Once the regular season reaches its opening week, live props follow
+        # the current regular-season slate automatically.
+        first_regular = regular["kickoff_et"].dropna().min()
+        if pd.notna(first_regular) and now >= first_regular - pd.Timedelta(days=2):
+            if not future.empty:
+                week = int(future.sort_values("kickoff_et").iloc[0]["week"])
+            elif not started.empty:
+                week = int(started.sort_values("kickoff_et").iloc[-1]["week"])
+            else:
+                week = int(regular["week"].min())
+            return "REG", regular, week
+
+    try:
+        preseason = load_nfl_schedule(NFL_SEASON, "PRE")
+    except Exception:
+        preseason = pd.DataFrame()
+
+    if preseason.empty:
+        return "PRE", preseason, None
+
+    preseason = preseason.copy()
+    preseason["kickoff_et"] = pd.to_datetime(preseason["kickoff_et"], errors="coerce")
+    future = preseason[preseason["kickoff_et"] >= now]
+    if not future.empty:
+        week = int(future.sort_values("kickoff_et").iloc[0]["week"])
+    else:
+        week = int(preseason["week"].max())
+    return "PRE", preseason, week
+
+
+def _matchup_map(schedule, week):
+    if schedule is None or schedule.empty or week is None:
+        return {}
+    games = schedule[pd.to_numeric(schedule["week"], errors="coerce") == int(week)]
+    result = {}
+    for _, game in games.iterrows():
+        away = str(game.get("away_team", "")).upper()
+        home = str(game.get("home_team", "")).upper()
+        if away and home:
+            result[away] = f"{away} @ {home}"
+            result[home] = f"{away} @ {home}"
+    return result
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def _headshot_map():
+    try:
+        roster = load_nfl_roster(NFL_SEASON)
+        return dict(zip(roster["player_id"].astype(str), roster["headshot_url"]))
+    except Exception:
+        return {}
+
+
+def _why_engine(row, projection_column, td=False):
+    mode = str(row.get("ranking_mode", "Foundation"))
+    if td:
+        probability = row.get("model_probability")
+        if probability is not None and not pd.isna(probability):
+            base = f"Projected scoring probability: {float(probability):.1f}%."
+        else:
+            base = "Ranked from prior scoring rate and recent touchdown form."
+        if mode == "Live market" and pd.notna(row.get("sportsbook_implied_probability")):
+            return base + " Live sportsbook probability is included in the ranking."
+        return base + " Foundation mode is active until a live scorer market is posted."
+
+    projection = row.get(projection_column)
+    if projection is not None and not pd.isna(projection):
+        base = f"Model projection: {float(projection):.1f}."
+    else:
+        base = "Ranked from prior-season production and recent form."
+    if mode == "Live market" and pd.notna(row.get("consensus_line")):
+        return base + f" Compared with a live line of {float(row.get('consensus_line')):.1f}."
+    return base + " Foundation mode is active until a live sportsbook line is posted."
+
+
+def _load_movement_state():
+    try:
+        if NFL_MOVEMENT_FILE.exists():
+            return json.loads(NFL_MOVEMENT_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+
+def _apply_rank_movement(df, category):
+    """Persist previous ranks across normal Streamlit reruns and show movement."""
+    if df is None or df.empty:
+        return df
+    state = _load_movement_state()
+    previous = state.get(category, {})
+    current = {}
+    movement = []
+    for _, row in df.iterrows():
+        key = str(row.get("player_id") or f"{row.get('player_name')}|{row.get('team')}")
+        rank = int(row.get("rank", 0))
+        current[key] = rank
+        old = previous.get(key)
+        if old is None:
+            movement.append("NEW")
+        elif int(old) > rank:
+            movement.append(f"↑ {int(old) - rank}")
+        elif int(old) < rank:
+            movement.append(f"↓ {rank - int(old)}")
+        else:
+            movement.append("—")
+    df = df.copy()
+    df["rank_movement"] = movement
+    state[category] = current
+    try:
+        NFL_MOVEMENT_FILE.write_text(json.dumps(state), encoding="utf-8")
+    except Exception:
+        pass
+    return df
+
+
+def _enrich_top25(df, category, schedule=None, week=None):
+    if df is None or df.empty:
+        return df
+    df = df.copy()
+    matchups = _matchup_map(schedule, week)
+    if "game" not in df.columns:
+        df["game"] = df.get("team", pd.Series("", index=df.index)).map(matchups).fillna("")
+    else:
+        fallback = df.get("team", pd.Series("", index=df.index)).map(matchups).fillna("")
+        df["game"] = df["game"].fillna("").where(df["game"].fillna("").ne(""), fallback)
+    shots = _headshot_map()
+    if "headshot_url" not in df.columns:
+        df["headshot_url"] = df.get("player_id", pd.Series("", index=df.index)).astype(str).map(shots)
+    else:
+        fallback = df.get("player_id", pd.Series("", index=df.index)).astype(str).map(shots)
+        df["headshot_url"] = df["headshot_url"].where(df["headshot_url"].notna(), fallback)
+    return _apply_rank_movement(df, category)
 
 
 def _format_number(value, digits=1):
@@ -138,71 +297,45 @@ def _render_top25_card(row, projection_column):
     name = row.get("player_name", "Unknown")
     team = row.get("team", "")
     game = row.get("game", "")
-    side = row.get("model_side", "—")
+    mode = str(row.get("ranking_mode", "Foundation"))
+    movement = row.get("rank_movement", "—")
+    headshot = row.get("headshot_url")
 
-    probability = row.get("model_probability")
-    probability_text = (
-        "—"
-        if probability is None or pd.isna(probability)
-        else f"{float(probability):.1f}%"
-    )
+    if headshot and not pd.isna(headshot):
+        c_photo, c_title = st.columns([1, 4])
+        with c_photo:
+            st.image(headshot, width=76)
+        with c_title:
+            st.markdown(f"### #{rank} · {name}")
+            st.caption(f"{team} • {movement}" + (f" • {game}" if game else ""))
+    else:
+        st.markdown(f"### #{rank} · {name} · {team}")
+        st.caption(f"{movement}" + (f" • {game}" if game else ""))
 
-    projection = _format_number(
-        row.get(projection_column)
-    )
-    line = _format_number(
-        row.get("consensus_line")
-    )
+    projection = _format_number(row.get(projection_column))
 
-    edge = row.get(
-        "projection_edge_yards"
-    )
-    edge_text = (
-        "—"
-        if edge is None or pd.isna(edge)
-        else (
-            f"+{float(edge):.1f}"
-            if float(edge) > 0
-            else f"{float(edge):.1f}"
-        )
-    )
+    if mode == "Live market" and pd.notna(row.get("consensus_line")):
+        probability = row.get("model_probability")
+        probability_text = "—" if probability is None or pd.isna(probability) else f"{float(probability):.1f}%"
+        edge = row.get("projection_edge_yards")
+        edge_text = "—" if edge is None or pd.isna(edge) else (f"+{float(edge):.1f}" if float(edge) > 0 else f"{float(edge):.1f}")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Model Side", row.get("model_side", "—"))
+            st.metric("Probability", probability_text)
+        with c2:
+            st.metric("Sportsbook Line", _format_number(row.get("consensus_line")))
+            st.metric("Projection", projection)
+        st.metric("Model Edge", edge_text)
+    else:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Ranking Mode", "Foundation")
+        with c2:
+            st.metric("Projection", projection)
 
-    st.markdown(
-        f"### #{rank} · {name} · {team}"
-    )
-
-    if game:
-        st.caption(game)
-
-    c1, c2 = st.columns(2)
-
-    with c1:
-        st.metric(
-            "Model Side",
-            side,
-        )
-        st.metric(
-            "Probability",
-            probability_text,
-        )
-
-    with c2:
-        st.metric(
-            "Sportsbook Line",
-            line,
-        )
-        st.metric(
-            "Projection",
-            projection,
-        )
-
-    st.metric(
-        "Model Edge",
-        edge_text,
-    )
-
+    st.caption("Why Engine • " + _why_engine(row, projection_column))
     st.divider()
-
 
 def _render_passing(schedule):
     st.markdown("### Passing Yards")
@@ -216,12 +349,19 @@ def _render_passing(schedule):
         .unique()
     )
 
-    week = st.selectbox(
-        "Preview Week",
-        weeks,
-        index=max(len(weeks) - 1, 0),
-        key="nfl_passing_card_week",
-    )
+    phase, active_schedule, active_week = _active_schedule_context()
+    if phase == "REG":
+        schedule = active_schedule
+        week = active_week
+        st.caption(f"Regular Season • Week {week} • selected automatically")
+    else:
+        default_index = weeks.index(active_week) if active_week in weeks else max(len(weeks) - 1, 0)
+        week = st.selectbox(
+            "Preview Week",
+            weeks,
+            index=default_index,
+            key="nfl_passing_card_week",
+        )
 
     st.markdown(
         "## Top 25 Passing Yards"
@@ -231,10 +371,8 @@ def _render_passing(schedule):
         "projection edge used as the tiebreaker"
     )
 
-    top25 = _build_week_top25(
-        schedule,
-        week,
-    )
+    top25 = _build_week_top25(schedule, week)
+    top25 = _enrich_top25(top25, "Passing Yards", schedule, week)
 
     if top25.empty:
         st.info(
@@ -263,10 +401,9 @@ def _render_rushing():
     )
 
     try:
-        top25 = build_rushing_yards_top25(
-            NFL_SEASON,
-            NFL_BASELINE_SEASON,
-        )
+        top25 = build_rushing_yards_top25(NFL_SEASON, NFL_BASELINE_SEASON)
+        _, active_schedule, active_week = _active_schedule_context()
+        top25 = _enrich_top25(top25, "Rushing Yards", active_schedule, active_week)
 
         if top25.empty:
             st.info(
@@ -299,10 +436,9 @@ def _render_receiving():
     )
 
     try:
-        top25 = build_receiving_yards_top25(
-            NFL_SEASON,
-            NFL_BASELINE_SEASON,
-        )
+        top25 = build_receiving_yards_top25(NFL_SEASON, NFL_BASELINE_SEASON)
+        _, active_schedule, active_week = _active_schedule_context()
+        top25 = _enrich_top25(top25, "Receiving Yards", active_schedule, active_week)
 
         if top25.empty:
             st.info(
@@ -332,10 +468,9 @@ def _render_receptions():
     )
 
     try:
-        top25 = build_receptions_top25(
-            NFL_SEASON,
-            NFL_BASELINE_SEASON,
-        )
+        top25 = build_receptions_top25(NFL_SEASON, NFL_BASELINE_SEASON)
+        _, active_schedule, active_week = _active_schedule_context()
+        top25 = _enrich_top25(top25, "Receptions", active_schedule, active_week)
 
         if top25.empty:
             st.info(
@@ -358,43 +493,45 @@ def _render_td_card(row):
     rank = int(row.get("rank", 0))
     name = row.get("player_name", "Unknown")
     team = row.get("team", "")
+    game = row.get("game", "")
+    movement = row.get("rank_movement", "—")
+    mode = str(row.get("ranking_mode", "Foundation"))
+    headshot = row.get("headshot_url")
     probability = row.get("model_probability")
-    probability_text = (
-        "—"
-        if probability is None or pd.isna(probability)
-        else f"{float(probability):.1f}%"
-    )
+    probability_text = "—" if probability is None or pd.isna(probability) else f"{float(probability):.1f}%"
 
-    sportsbook_probability = row.get("sportsbook_implied_probability")
-    sportsbook_probability_text = (
-        "—"
-        if sportsbook_probability is None or pd.isna(sportsbook_probability)
-        else f"{float(sportsbook_probability):.1f}%"
-    )
+    if headshot and not pd.isna(headshot):
+        c_photo, c_title = st.columns([1, 4])
+        with c_photo:
+            st.image(headshot, width=76)
+        with c_title:
+            st.markdown(f"### #{rank} · {name}")
+            st.caption(f"{team} • {movement}" + (f" • {game}" if game else ""))
+    else:
+        st.markdown(f"### #{rank} · {name} · {team}")
+        st.caption(f"{movement}" + (f" • {game}" if game else ""))
 
-    edge = row.get("probability_edge")
-    edge_text = (
-        "—"
-        if edge is None or pd.isna(edge)
-        else (
-            f"+{float(edge):.1f} pp"
-            if float(edge) > 0
-            else f"{float(edge):.1f} pp"
-        )
-    )
+    if mode == "Live market" and pd.notna(row.get("sportsbook_implied_probability")):
+        sportsbook_probability = row.get("sportsbook_implied_probability")
+        sportsbook_probability_text = f"{float(sportsbook_probability):.1f}%"
+        edge = row.get("probability_edge")
+        edge_text = "—" if edge is None or pd.isna(edge) else (f"+{float(edge):.1f} pp" if float(edge) > 0 else f"{float(edge):.1f} pp")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Model Probability", probability_text)
+            st.metric("Sportsbook Odds", str(row.get("consensus_odds") or "—"))
+        with c2:
+            st.metric("Sportsbook Implied", sportsbook_probability_text)
+            st.metric("Model Edge", edge_text)
+    else:
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Ranking Mode", "Foundation")
+        with c2:
+            st.metric("Model Probability", probability_text)
 
-    st.markdown(f"### #{rank} · {name} · {team}")
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.metric("Model Probability", probability_text)
-        st.metric("Sportsbook Odds", str(row.get("consensus_odds") or "—"))
-    with c2:
-        st.metric("Sportsbook Implied", sportsbook_probability_text)
-        st.metric("Model Edge", edge_text)
-
+    st.caption("Why Engine • " + _why_engine(row, "", td=True))
     st.divider()
-
 
 def _render_touchdowns(first_td=False):
     title = "First TD" if first_td else "Anytime TD"
@@ -415,6 +552,8 @@ def _render_touchdowns(first_td=False):
             if first_td
             else build_anytime_td_top25(NFL_SEASON, NFL_BASELINE_SEASON)
         )
+        _, active_schedule, active_week = _active_schedule_context()
+        top25 = _enrich_top25(top25, title, active_schedule, active_week)
 
         if top25.empty:
             st.info(
@@ -533,17 +672,14 @@ def show():
         )
 
         try:
-            schedule = load_nfl_schedule(
-                NFL_SEASON,
-                "PRE",
-            )
+            _, schedule, _ = _active_schedule_context()
         except Exception:
             schedule = pd.DataFrame()
 
         if prop == "Passing Yards":
             if schedule.empty:
                 st.info(
-                    "NFL preseason schedule is temporarily unavailable."
+                    "NFL schedule is temporarily unavailable."
                 )
             else:
                 _render_passing(
