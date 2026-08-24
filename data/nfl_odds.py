@@ -24,14 +24,33 @@ URL = "https://api.sportsgameodds.com/v2/events"
 CACHE_TTL_SECONDS = 1800
 RATE_LIMIT_COOLDOWN_SECONDS = 1800
 STALE_CACHE_FILE = Path("/tmp/sach_nfl_sgo_events.json")
+RATE_LIMIT_STATE_FILE = Path("/tmp/sach_nfl_sgo_rate_limit.json")
+
+
+def _load_rate_limit_state():
+    """Persist provider cooldown across Streamlit reruns/process recreation."""
+    try:
+        if RATE_LIMIT_STATE_FILE.exists():
+            payload = json.loads(RATE_LIMIT_STATE_FILE.read_text(encoding="utf-8"))
+            return {
+                "next_retry_at": float(payload.get("next_retry_at", 0.0) or 0.0),
+                "last_error": payload.get("last_error"),
+            }
+    except Exception:
+        pass
+    return {"next_retry_at": 0.0, "last_error": None}
+
+
+def _save_rate_limit_state(state):
+    try:
+        RATE_LIMIT_STATE_FILE.write_text(json.dumps(state), encoding="utf-8")
+    except Exception:
+        pass
 
 
 @st.cache_resource
 def _runtime_state():
-    return {
-        "next_retry_at": 0.0,
-        "last_error": None,
-    }
+    return _load_rate_limit_state()
 
 
 def _key():
@@ -162,6 +181,7 @@ def load_shared_nfl_events():
                 )
             )
             state["last_error"] = "429 Too Many Requests"
+            _save_rate_limit_state(state)
 
             stale = _load_stale_payload()
 
@@ -198,6 +218,7 @@ def load_shared_nfl_events():
 
         state["next_retry_at"] = 0.0
         state["last_error"] = None
+        _save_rate_limit_state(state)
 
         _save_stale_payload(payload)
 
