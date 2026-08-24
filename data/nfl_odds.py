@@ -1,17 +1,20 @@
 """SportsGameOdds integration for NFL player props.
 
-This version is deliberately defensive around API rate limits:
-- one shared NFL events request
-- 30-minute Streamlit cache
-- in-process cooldown after HTTP 429
-- stale last-successful payload fallback
-- no repeated 429 exception loop on every Streamlit rerun
+NFL-wide feed architecture:
+- checks account usage before requesting event objects
+- detects exhausted monthly object quota and stops doomed retries
+- uses one shared upcoming-NFL events request for every prop
+- limits the request to the near-term NFL window instead of all events
+- respects Retry-After for per-minute 429s
+- caches the shared response for all six NFL props
+- uses the last successful snapshot when available
 """
 
 import json
 import os
 import re
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -19,38 +22,21 @@ import requests
 import streamlit as st
 
 
-URL = "https://api.sportsgameodds.com/v2/events"
+EVENTS_URL = "https://api.sportsgameodds.com/v2/events"
+USAGE_URL = "https://api.sportsgameodds.com/v2/account/usage"
 
-CACHE_TTL_SECONDS = 1800
-RATE_LIMIT_COOLDOWN_SECONDS = 1800
+EVENT_CACHE_TTL_SECONDS = 600
+USAGE_CACHE_TTL_SECONDS = 60
+FALLBACK_RATE_LIMIT_SECONDS = 65
 STALE_CACHE_FILE = Path("/tmp/sach_nfl_sgo_events.json")
-RATE_LIMIT_STATE_FILE = Path("/tmp/sach_nfl_sgo_rate_limit.json")
-
-
-def _load_rate_limit_state():
-    """Persist provider cooldown across Streamlit reruns/process recreation."""
-    try:
-        if RATE_LIMIT_STATE_FILE.exists():
-            payload = json.loads(RATE_LIMIT_STATE_FILE.read_text(encoding="utf-8"))
-            return {
-                "next_retry_at": float(payload.get("next_retry_at", 0.0) or 0.0),
-                "last_error": payload.get("last_error"),
-            }
-    except Exception:
-        pass
-    return {"next_retry_at": 0.0, "last_error": None}
-
-
-def _save_rate_limit_state(state):
-    try:
-        RATE_LIMIT_STATE_FILE.write_text(json.dumps(state), encoding="utf-8")
-    except Exception:
-        pass
 
 
 @st.cache_resource
 def _runtime_state():
-    return _load_rate_limit_state()
+    return {
+        "next_retry_at": 0.0,
+        "last_error": None,
+    }
 
 
 def _key():
@@ -105,18 +91,174 @@ def _save_stale_payload(payload):
         pass
 
 
+def _number(value):
+    if value in (None, "", "n/a", "unlimited"):
+        return None
+
+    try:
+        return float(value)
+    except Exception:
+        return None
+
+
+def _extract_limit_bucket(rate_limits, bucket_name):
+    bucket = (
+        rate_limits.get(bucket_name)
+        or rate_limits.get(bucket_name.replace("-", "_"))
+        or {}
+    )
+
+    max_requests = _number(
+        bucket.get("maxRequestsPerInterval")
+        or bucket.get("max-requests")
+        or bucket.get("max_requests")
+    )
+    current_requests = _number(
+        bucket.get("currentIntervalRequests")
+        or bucket.get("current-requests")
+        or bucket.get("current_requests")
+    )
+    max_entities = _number(
+        bucket.get("maxEntitiesPerInterval")
+        or bucket.get("max-entities")
+        or bucket.get("max_entities")
+    )
+    current_entities = _number(
+        bucket.get("currentIntervalEntities")
+        or bucket.get("current-entities")
+        or bucket.get("current_entities")
+    )
+
+    return {
+        "max_requests": max_requests,
+        "current_requests": current_requests,
+        "max_entities": max_entities,
+        "current_entities": current_entities,
+    }
+
+
 @st.cache_data(
-    ttl=CACHE_TTL_SECONDS,
+    ttl=USAGE_CACHE_TTL_SECONDS,
+    show_spinner=False,
+)
+def load_sports_game_odds_usage():
+    """Read the account usage endpoint before consuming more event objects."""
+
+    api_key = _key()
+
+    if not api_key:
+        return {
+            "status": "not_configured",
+            "tier": None,
+            "rate_limits": {},
+            "message": "SportsGameOdds API key is not configured.",
+        }
+
+    try:
+        response = requests.get(
+            USAGE_URL,
+            headers={"x-api-key": api_key},
+            timeout=15,
+        )
+        response.raise_for_status()
+
+        payload = response.json()
+        data = payload.get("data") or {}
+        rate_limits = data.get("rateLimits") or {}
+
+        buckets = {
+            name: _extract_limit_bucket(rate_limits, name)
+            for name in [
+                "per-minute",
+                "per-hour",
+                "per-day",
+                "per-month",
+            ]
+        }
+
+        monthly = buckets["per-month"]
+        monthly_exhausted = (
+            monthly["max_entities"] is not None
+            and monthly["current_entities"] is not None
+            and monthly["current_entities"]
+            >= monthly["max_entities"]
+        )
+
+        minute = buckets["per-minute"]
+        minute_requests_exhausted = (
+            minute["max_requests"] is not None
+            and minute["current_requests"] is not None
+            and minute["current_requests"]
+            >= minute["max_requests"]
+        )
+
+        if monthly_exhausted:
+            return {
+                "status": "quota_exhausted",
+                "tier": data.get("tier"),
+                "rate_limits": buckets,
+                "message": (
+                    "SportsGameOdds monthly object allowance is exhausted. "
+                    "Live NFL sportsbook markets will resume when the provider "
+                    "resets the allowance or the API plan is upgraded."
+                ),
+            }
+
+        if minute_requests_exhausted:
+            return {
+                "status": "minute_limited",
+                "tier": data.get("tier"),
+                "rate_limits": buckets,
+                "message": (
+                    "SportsGameOdds per-minute request limit is temporarily full. "
+                    "The dashboard will retry after the interval resets."
+                ),
+            }
+
+        return {
+            "status": "available",
+            "tier": data.get("tier"),
+            "rate_limits": buckets,
+            "message": "SportsGameOdds account allowance is available.",
+        }
+
+    except Exception as exc:
+        return {
+            "status": "usage_unknown",
+            "tier": None,
+            "rate_limits": {},
+            "message": (
+                "SportsGameOdds usage could not be checked. "
+                f"{exc}"
+            ),
+        }
+
+
+def _stale_or_empty(status, message):
+    stale = _load_stale_payload()
+
+    if stale:
+        return {
+            "status": "stale",
+            "data": stale.get("data", []),
+            "message": (
+                f"{message} Using the last successful sportsbook snapshot."
+            ),
+        }
+
+    return {
+        "status": status,
+        "data": [],
+        "message": message,
+    }
+
+
+@st.cache_data(
+    ttl=EVENT_CACHE_TTL_SECONDS,
     show_spinner=False,
 )
 def load_shared_nfl_events():
-    """
-    Fetch one shared NFL events payload.
-
-    The function catches 429s instead of raising them. That is important:
-    Streamlit does not cache exceptions, so an uncaught 429 causes every
-    widget rerun to call the provider again and extend the problem.
-    """
+    """Fetch one tightly scoped NFL events payload for every prop."""
 
     api_key = _key()
 
@@ -127,84 +269,87 @@ def load_shared_nfl_events():
             "message": "SportsGameOdds API key is not configured.",
         }
 
+    usage = load_sports_game_odds_usage()
+
+    if usage.get("status") == "quota_exhausted":
+        return _stale_or_empty(
+            "quota_exhausted",
+            usage.get("message"),
+        )
+
+    if usage.get("status") == "minute_limited":
+        return _stale_or_empty(
+            "rate_limited",
+            usage.get("message"),
+        )
+
     state = _runtime_state()
-    now = time.time()
+    now_epoch = time.time()
 
-    if now < float(state.get("next_retry_at", 0.0)):
-        stale = _load_stale_payload()
-
-        if stale:
-            return {
-                "status": "stale",
-                "data": stale.get("data", []),
-                "message": (
-                    "SportsGameOdds is cooling down after a rate limit. "
-                    "Using the last successful market snapshot."
-                ),
-            }
-
-        return {
-            "status": "rate_limited",
-            "data": [],
-            "message": (
-                "SportsGameOdds rate limit is cooling down. "
-                "The dashboard will retry automatically later."
+    if now_epoch < float(state.get("next_retry_at", 0.0)):
+        seconds = max(
+            1,
+            int(state["next_retry_at"] - now_epoch),
+        )
+        return _stale_or_empty(
+            "rate_limited",
+            (
+                "SportsGameOdds is temporarily rate-limited. "
+                f"Next retry in about {seconds} seconds."
             ),
-        }
+        )
+
+    # Only request the near-term slate. The dashboard does not need every
+    # NFL event in the provider database in order to build today's prop boards.
+    now = datetime.now(timezone.utc)
+    starts_after = now - timedelta(hours=6)
+    starts_before = now + timedelta(days=10)
+
+    params = {
+        "leagueID": "NFL",
+        "oddsAvailable": "true",
+        "finalized": "false",
+        "startsAfter": starts_after.isoformat().replace("+00:00", "Z"),
+        "startsBefore": starts_before.isoformat().replace("+00:00", "Z"),
+        "limit": 32,
+    }
 
     try:
         response = requests.get(
-            URL,
+            EVENTS_URL,
             headers={"x-api-key": api_key},
-            params={
-                "leagueID": "NFL",
-                "oddsAvailable": "true",
-                "limit": 100,
-            },
+            params=params,
             timeout=30,
         )
 
         if response.status_code == 429:
-            retry_after = response.headers.get(
-                "Retry-After"
-            )
+            retry_after = response.headers.get("Retry-After")
 
             try:
-                retry_seconds = int(retry_after)
-            except Exception:
-                retry_seconds = RATE_LIMIT_COOLDOWN_SECONDS
-
-            state["next_retry_at"] = (
-                now + max(
-                    retry_seconds,
-                    RATE_LIMIT_COOLDOWN_SECONDS,
+                retry_seconds = max(
+                    int(float(retry_after)),
+                    1,
                 )
-            )
+            except Exception:
+                retry_seconds = FALLBACK_RATE_LIMIT_SECONDS
+
+            state["next_retry_at"] = now_epoch + retry_seconds
             state["last_error"] = "429 Too Many Requests"
-            _save_rate_limit_state(state)
 
-            stale = _load_stale_payload()
+            # Clear usage cache so the next allowed check can tell us whether
+            # this was a per-minute or monthly-object restriction.
+            try:
+                load_sports_game_odds_usage.clear()
+            except Exception:
+                pass
 
-            if stale:
-                return {
-                    "status": "stale",
-                    "data": stale.get("data", []),
-                    "message": (
-                        "SportsGameOdds returned 429. "
-                        "Using the last successful market snapshot "
-                        "instead of repeatedly calling the API."
-                    ),
-                }
-
-            return {
-                "status": "rate_limited",
-                "data": [],
-                "message": (
+            return _stale_or_empty(
+                "rate_limited",
+                (
                     "SportsGameOdds returned 429 Too Many Requests. "
-                    "Requests are paused for 30 minutes so Streamlit "
-                    "does not keep extending the rate-limit loop."
+                    f"The dashboard will retry in about {retry_seconds} seconds."
                 ),
-            }
+            )
 
         response.raise_for_status()
 
@@ -218,34 +363,25 @@ def load_shared_nfl_events():
 
         state["next_retry_at"] = 0.0
         state["last_error"] = None
-        _save_rate_limit_state(state)
-
         _save_stale_payload(payload)
 
         return {
             "status": "live",
             "data": payload.get("data", []),
-            "message": "Live sportsbook market connected.",
+            "message": (
+                "Live sportsbook market connected. "
+                f"{len(payload.get('data', []))} upcoming NFL events loaded."
+            ),
         }
 
     except requests.RequestException as exc:
-        stale = _load_stale_payload()
-
-        if stale:
-            return {
-                "status": "stale",
-                "data": stale.get("data", []),
-                "message": (
-                    "SportsGameOdds is temporarily unavailable. "
-                    "Using the last successful market snapshot."
-                ),
-            }
-
-        return {
-            "status": "error",
-            "data": [],
-            "message": str(exc),
-        }
+        return _stale_or_empty(
+            "error",
+            (
+                "SportsGameOdds is temporarily unavailable. "
+                f"{exc}"
+            ),
+        )
 
 
 def get_nfl_odds_feed_status():
@@ -257,7 +393,7 @@ def get_nfl_odds_feed_status():
 
 
 @st.cache_data(
-    ttl=CACHE_TTL_SECONDS,
+    ttl=EVENT_CACHE_TTL_SECONDS,
     show_spinner=False,
 )
 def load_nfl_prop_markets(
@@ -294,22 +430,12 @@ def load_nfl_prop_markets(
             ):
                 continue
 
-            if (
-                str(odd.get("sideID", "")).lower()
-                != "over"
-            ):
+            if str(odd.get("sideID", "")).lower() != "over":
                 continue
 
-            entity = str(
-                odd.get("statEntityID", "")
-            )
+            entity = str(odd.get("statEntityID", ""))
 
-            if entity.lower() in {
-                "",
-                "all",
-                "home",
-                "away",
-            }:
+            if entity.lower() in {"", "all", "home", "away"}:
                 continue
 
             books = []
@@ -337,10 +463,7 @@ def load_nfl_prop_markets(
                 )
 
             best = (
-                min(
-                    books,
-                    key=lambda item: item[1],
-                )
+                min(books, key=lambda item: item[1])
                 if books
                 else None
             )
@@ -362,24 +485,16 @@ def load_nfl_prop_markets(
                         errors="coerce",
                     ),
                     "best_over_line": (
-                        best[1]
-                        if best
-                        else pd.NA
+                        best[1] if best else pd.NA
                     ),
                     "best_over_book": (
-                        best[0]
-                        if best
-                        else None
+                        best[0] if best else None
                     ),
                     "best_over_odds": (
-                        best[2]
-                        if best
-                        else None
+                        best[2] if best else None
                     ),
                     "books_available": len(books),
-                    "feed_status": shared.get(
-                        "status"
-                    ),
+                    "feed_status": shared.get("status"),
                 }
             )
 
@@ -388,9 +503,7 @@ def load_nfl_prop_markets(
 
     return (
         pd.DataFrame(rows)
-        .sort_values(
-            ["matchup", "player_name"]
-        )
+        .sort_values(["matchup", "player_name"])
         .reset_index(drop=True)
     )
 
@@ -424,12 +537,15 @@ def load_nfl_receptions_markets():
 
 
 def _american_to_implied_probability(odds_value):
-    """Convert American odds text to implied probability percentage."""
     if odds_value is None:
         return pd.NA
 
     try:
-        value = float(str(odds_value).replace("+", "").strip())
+        value = float(
+            str(odds_value)
+            .replace("+", "")
+            .strip()
+        )
     except Exception:
         return pd.NA
 
@@ -439,36 +555,40 @@ def _american_to_implied_probability(odds_value):
     if value > 0:
         probability = 100.0 / (value + 100.0)
     else:
-        probability = abs(value) / (abs(value) + 100.0)
+        probability = (
+            abs(value)
+            / (abs(value) + 100.0)
+        )
 
     return round(probability * 100.0, 1)
 
 
 @st.cache_data(
-    ttl=CACHE_TTL_SECONDS,
+    ttl=EVENT_CACHE_TTL_SECONDS,
     show_spinner=False,
 )
 def load_nfl_yes_no_player_market(
     stat_id: str,
     market_label: str,
 ) -> pd.DataFrame:
-    """
-    Parse a player Yes/No scorer market from the shared NFL odds payload.
-
-    Example supported market:
-    touchdowns-PLAYER-game-yn-yes
-    """
-
     shared = load_shared_nfl_events()
     events = shared.get("data", [])
     rows = []
 
     for event in events:
         teams = event.get("teams") or {}
-        away = ((teams.get("away") or {}).get("names") or {})
-        home = ((teams.get("home") or {}).get("names") or {})
+        away = (
+            (teams.get("away") or {}).get("names")
+            or {}
+        )
+        home = (
+            (teams.get("home") or {}).get("names")
+            or {}
+        )
+
         matchup = (
-            f"{away.get('long', '')} @ {home.get('long', '')}"
+            f"{away.get('long', '')} @ "
+            f"{home.get('long', '')}"
         ).strip()
 
         for odd in (event.get("odds") or {}).values():
@@ -482,27 +602,25 @@ def load_nfl_yes_no_player_market(
             side = str(odd.get("sideID", "")).lower()
             bet_type = str(odd.get("betTypeID", "")).lower()
 
-            # Anytime TD is a yes/no player market.
             if stat_id.lower() == "touchdowns":
                 if bet_type != "yn" or side != "yes":
                     continue
 
-            # First TD can be represented as a player outcome market. We
-            # accept the player row regardless of provider side naming.
             if stat_id.lower() == "firsttouchdown":
                 if side in {"no", "under"}:
                     continue
 
-            market_name = str(odd.get("marketName", "")).strip()
+            market_name = str(
+                odd.get("marketName", "")
+            ).strip()
             player_name = market_name
 
-            cleanup_patterns = [
+            for pattern in [
                 rf"\s+{re.escape(market_label)}.*$",
                 r"\s+Any Touchdowns Yes/No$",
                 r"\s+Anytime Touchdown.*$",
                 r"\s+First Touchdown.*$",
-            ]
-            for pattern in cleanup_patterns:
+            ]:
                 player_name = re.sub(
                     pattern,
                     "",
@@ -514,13 +632,20 @@ def load_nfl_yes_no_player_market(
             fair_odds = odd.get("fairOdds")
 
             book_rows = []
-            for bookmaker, book in (odd.get("byBookmaker") or {}).items():
+
+            for bookmaker, book in (
+                odd.get("byBookmaker") or {}
+            ).items():
                 if not book.get("available"):
                     continue
+
                 price = book.get("odds")
                 if price in (None, ""):
                     continue
-                book_rows.append((bookmaker, price))
+
+                book_rows.append(
+                    (bookmaker, price)
+                )
 
             rows.append(
                 {
@@ -534,10 +659,14 @@ def load_nfl_yes_no_player_market(
                     "consensus_odds": consensus_odds,
                     "fair_odds": fair_odds,
                     "sportsbook_implied_probability": (
-                        _american_to_implied_probability(consensus_odds)
+                        _american_to_implied_probability(
+                            consensus_odds
+                        )
                     ),
                     "fair_implied_probability": (
-                        _american_to_implied_probability(fair_odds)
+                        _american_to_implied_probability(
+                            fair_odds
+                        )
                     ),
                     "books_available": len(book_rows),
                     "feed_status": shared.get("status"),
