@@ -211,12 +211,26 @@ def attach_receptions_market(df: pd.DataFrame) -> pd.DataFrame:
         "player_name"
     ].apply(_normalize_name)
 
+    # Create the projection before checking the live market.  This keeps the
+    # engine schema stable even when SportsGameOdds returns no reception lines.
+    result["receptions_projection"] = pd.to_numeric(
+        result.get("receptions_baseline_projection"),
+        errors="coerce",
+    )
+
     markets = _prepare_market()
 
     if markets.empty:
         result["consensus_line"] = pd.NA
+        result["best_over_line"] = pd.NA
+        result["best_over_book"] = pd.NA
+        result["best_over_odds"] = pd.NA
+        result["books_available"] = 0
+        result["matchup"] = pd.NA
+        result["market_player_id"] = pd.NA
         result["market_match_status"] = "No live market"
-        return result
+        result["projection_edge_yards"] = pd.NA
+        return result.drop(columns=["player_name_key"], errors="ignore")
 
     result = result.merge(
         markets[
