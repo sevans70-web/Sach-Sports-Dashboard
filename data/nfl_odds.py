@@ -181,3 +181,10 @@ def load_nfl_receiving_yards_markets():
         "receiving_yards",
         "Receiving Yards",
     )
+
+
+def load_nfl_receptions_markets():
+    return load_nfl_prop_markets(
+        "receptions",
+        "Receptions",
+    )
