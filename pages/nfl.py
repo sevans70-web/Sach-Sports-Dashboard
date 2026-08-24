@@ -7,6 +7,7 @@ from engines.nfl_passing_market_join import attach_live_passing_yards_lines
 from engines.nfl_passing_probability import attach_passing_yards_probabilities
 from engines.nfl_passing_ranking import rank_passing_yards_top25
 from engines.nfl_passing_projection import build_passing_yards_projection
+from engines.nfl_rushing_yards import build_rushing_yards_top25
 
 NFL_SEASON = 2026
 NFL_BASELINE_SEASON = 2025
@@ -70,9 +71,7 @@ def _build_game_qb_preview(game):
     ).reset_index(drop=True)
 
 
-
 def _build_week_top25(schedule, week):
-    """Build one ranked Passing Yards slate from every game in the selected week."""
     games = schedule[
         schedule["week"].astype(int) == int(week)
     ].reset_index(drop=True)
@@ -93,20 +92,27 @@ def _build_week_top25(schedule, week):
                 + str(game["home_team"]).upper()
             )
             candidates.append(game_qbs)
+
         except Exception:
-            # One failed matchup should not prevent the rest of the slate ranking.
             continue
 
     if not candidates:
         return pd.DataFrame()
 
-    slate = pd.concat(candidates, ignore_index=True)
-    return rank_passing_yards_top25(slate, limit=25)
+    slate = pd.concat(
+        candidates,
+        ignore_index=True,
+    )
+
+    return rank_passing_yards_top25(
+        slate,
+        limit=25,
+    )
 
 
-def _render_top25_card(row):
+def _render_top25_card(row, projection_column):
     rank = int(row.get("rank", 0))
-    name = row.get("player_name", "Unknown QB")
+    name = row.get("player_name", "Unknown")
     team = row.get("team", "")
     game = row.get("game", "")
     side = row.get("model_side", "—")
@@ -119,11 +125,15 @@ def _render_top25_card(row):
     )
 
     projection = _format_number(
-        row.get("passing_yards_projection_matchup")
+        row.get(projection_column)
     )
-    line = _format_number(row.get("consensus_line"))
+    line = _format_number(
+        row.get("consensus_line")
+    )
 
-    edge = row.get("projection_edge_yards")
+    edge = row.get(
+        "projection_edge_yards"
+    )
     edge_text = (
         "—"
         if edge is None or pd.isna(edge)
@@ -134,110 +144,143 @@ def _render_top25_card(row):
         )
     )
 
-    st.markdown(f"### #{rank} · {name} · {team}")
+    st.markdown(
+        f"### #{rank} · {name} · {team}"
+    )
+
     if game:
         st.caption(game)
 
     c1, c2 = st.columns(2)
-    with c1:
-        st.metric("Model Side", side)
-        st.metric("Probability", probability_text)
-    with c2:
-        st.metric("Sportsbook Line", line)
-        st.metric("Projection", projection)
-
-    st.metric("Model Edge", edge_text)
-
-    matchup = row.get("passing_matchup_label", "Unknown")
-    st.caption(f"Matchup: {matchup}")
-    st.divider()
-
-def _render_qb_card(row):
-    name = row.get("player_name", "Unknown QB")
-    team = row.get("team", "")
-
-    st.markdown(f"### {name} · {team}")
-
-    c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        st.metric(
-            "2025 Pass Yds/Game",
-            _format_number(row.get("passing_yards_per_game")),
-        )
-
-    with c2:
-        st.metric(
-            "Matchup Projection",
-            _format_number(row.get("passing_yards_projection_matchup")),
-        )
-
-    with c3:
-        st.metric(
-            "Sportsbook Line",
-            _format_number(row.get("consensus_line")),
-        )
-
-    with c4:
-        edge = row.get("projection_edge_yards")
-        edge_text = (
-            "—"
-            if edge is None or pd.isna(edge)
-            else (
-                f"+{float(edge):.1f}"
-                if float(edge) > 0
-                else f"{float(edge):.1f}"
-            )
-        )
-        st.metric("Model Edge", edge_text)
-
-    c5, c6, c7 = st.columns(3)
-
-    with c5:
         st.metric(
             "Model Side",
-            str(row.get("model_side", "NO PLAY")),
-        )
-
-    with c6:
-        probability = row.get("model_probability")
-        probability_text = (
-            "—"
-            if probability is None or pd.isna(probability)
-            else f"{float(probability):.1f}%"
+            side,
         )
         st.metric(
-            "Model Probability",
+            "Probability",
             probability_text,
         )
 
-    with c7:
-        st.caption(
-            "Last 5: "
-            + _format_number(
-                row.get("last_5_passing_yards_per_game")
-            )
+    with c2:
+        st.metric(
+            "Sportsbook Line",
+            line,
         )
-        st.caption(
-            "Last 3: "
-            + _format_number(
-                row.get("last_3_passing_yards_per_game")
-            )
+        st.metric(
+            "Projection",
+            projection,
         )
 
-    matchup = row.get("passing_matchup_label", "Unknown")
-    market_status = row.get("market_match_status", "No live market")
-
-    st.caption(
-        f"Matchup: {matchup} • Market: {market_status} • "
-        f"Yards/Attempt: {_format_number(row.get('season_yards_per_attempt'), 2)}"
+    st.metric(
+        "Model Edge",
+        edge_text,
     )
 
     st.divider()
 
 
+def _render_passing(schedule):
+    st.markdown("### Passing Yards")
+
+    if sports_game_odds_configured():
+        st.caption(
+            "Live sportsbook market connected."
+        )
+    else:
+        st.caption(
+            "Sportsbook line feed not configured yet."
+        )
+
+    weeks = sorted(
+        schedule["week"]
+        .dropna()
+        .astype(int)
+        .unique()
+    )
+
+    week = st.selectbox(
+        "Preview Week",
+        weeks,
+        index=max(len(weeks) - 1, 0),
+        key="nfl_passing_card_week",
+    )
+
+    st.markdown(
+        "## Top 25 Passing Yards"
+    )
+    st.caption(
+        "Live slate ranking • model probability first • "
+        "projection edge used as the tiebreaker"
+    )
+
+    top25 = _build_week_top25(
+        schedule,
+        week,
+    )
+
+    if top25.empty:
+        st.info(
+            "No valid Passing Yards Top 25 candidates "
+            "are available for this slate yet."
+        )
+    else:
+        for _, row in top25.iterrows():
+            _render_top25_card(
+                row,
+                "passing_yards_projection_matchup",
+            )
+
+
+def _render_rushing():
+    st.markdown("### Rushing Yards")
+
+    if sports_game_odds_configured():
+        st.caption(
+            "Live sportsbook market connected."
+        )
+    else:
+        st.caption(
+            "Sportsbook line feed not configured yet."
+        )
+
+    st.markdown(
+        "## Top 25 Rushing Yards"
+    )
+    st.caption(
+        "Foundation ranking • 2025 rushing baseline + "
+        "recent form + live sportsbook line"
+    )
+
+    try:
+        top25 = build_rushing_yards_top25(
+            NFL_SEASON,
+            NFL_BASELINE_SEASON,
+        )
+
+        if top25.empty:
+            st.info(
+                "No valid live Rushing Yards candidates "
+                "are available right now."
+            )
+        else:
+            for _, row in top25.iterrows():
+                _render_top25_card(
+                    row,
+                    "rushing_projection",
+                )
+
+    except Exception as exc:
+        st.warning(
+            "Rushing Yards Top 25 is temporarily unavailable."
+        )
+        st.caption(str(exc))
+
+
 def show():
     st.title("🏈 NFL")
+
     st.caption(
         "Player Prop Intelligence • Matchup Analysis • "
         "Predictions • Performance Tracking"
@@ -256,7 +299,8 @@ def show():
     with tabs[0]:
         st.subheader("NFL Overview")
         st.caption(
-            "Foundation view. Final overview design will be refined later."
+            "Foundation view. Final overview design "
+            "will be refined later."
         )
 
     with tabs[1]:
@@ -270,17 +314,30 @@ def show():
 
         season_type = st.selectbox(
             "Season Type",
-            ["Preseason", "Regular Season"],
+            [
+                "Preseason",
+                "Regular Season",
+            ],
             key="nfl_season_type_selector",
         )
 
-        game_type = "PRE" if season_type == "Preseason" else "REG"
+        game_type = (
+            "PRE"
+            if season_type == "Preseason"
+            else "REG"
+        )
 
         try:
-            schedule = load_nfl_schedule(NFL_SEASON, game_type)
+            schedule = load_nfl_schedule(
+                NFL_SEASON,
+                game_type,
+            )
 
             weeks = sorted(
-                schedule["week"].dropna().astype(int).unique()
+                schedule["week"]
+                .dropna()
+                .astype(int)
+                .unique()
             )
 
             week = st.selectbox(
@@ -290,13 +347,16 @@ def show():
             )
 
             for _, game in schedule[
-                schedule["week"].astype(int) == week
+                schedule["week"].astype(int)
+                == week
             ].iterrows():
                 st.markdown(
-                    f'**{game["away_team"]} @ {game["home_team"]}**'
+                    f'**{game["away_team"]} @ '
+                    f'{game["home_team"]}**'
                 )
                 st.caption(
-                    f'{game["kickoff_et"]} • {game["status"]}'
+                    f'{game["kickoff_et"]} • '
+                    f'{game["status"]}'
                 )
                 st.divider()
 
@@ -322,95 +382,31 @@ def show():
             key="nfl_prop_selector",
         )
 
-        if prop != "Passing Yards":
-            st.caption(
-                f"{prop} will be connected after "
-                "Passing Yards is validated."
+        try:
+            schedule = load_nfl_schedule(
+                NFL_SEASON,
+                "PRE",
             )
-            return
+        except Exception:
+            schedule = pd.DataFrame()
 
-        st.markdown("### Passing Yards")
+        if prop == "Passing Yards":
+            if schedule.empty:
+                st.info(
+                    "NFL preseason schedule is temporarily unavailable."
+                )
+            else:
+                _render_passing(
+                    schedule
+                )
 
-        if sports_game_odds_configured():
-            st.caption(
-                "Live sportsbook market connected."
-            )
+        elif prop == "Rushing Yards":
+            _render_rushing()
+
         else:
             st.caption(
-                "Sportsbook line feed not configured yet."
+                f"{prop} is next in today's build sequence."
             )
-
-        try:
-            schedule = load_nfl_schedule(NFL_SEASON, "PRE")
-
-            weeks = sorted(
-                schedule["week"].dropna().astype(int).unique()
-            )
-
-            week = st.selectbox(
-                "Preview Week",
-                weeks,
-                index=max(len(weeks) - 1, 0),
-                key="nfl_passing_card_week",
-            )
-
-            st.markdown("## Top 25 Passing Yards")
-            st.caption(
-                "Live slate ranking • model probability first • "
-                "projection edge used as the tiebreaker"
-            )
-
-            top25 = _build_week_top25(schedule, week)
-
-            if top25.empty:
-                st.info(
-                    "No valid Passing Yards Top 25 candidates are available "
-                    "for this slate yet."
-                )
-            else:
-                for _, ranked_row in top25.iterrows():
-                    _render_top25_card(ranked_row)
-
-            st.markdown("## Matchup Preview")
-
-            games = schedule[
-                schedule["week"].astype(int) == week
-            ].reset_index(drop=True)
-
-            labels = [
-                f'{game["away_team"]} @ {game["home_team"]}'
-                for _, game in games.iterrows()
-            ]
-
-            game_label = st.selectbox(
-                "Preview Game",
-                labels,
-                key="nfl_passing_card_game",
-            )
-
-            game = games.iloc[labels.index(game_label)]
-
-            qbs = _build_game_qb_preview(game)
-
-            st.caption(
-                "Temporary intelligence cards while the final "
-                "Top 25 design is being built."
-            )
-
-            if qbs.empty:
-                st.info(
-                    "No meaningful Passing Yards candidates "
-                    "are available for this game."
-                )
-            else:
-                for _, row in qbs.iterrows():
-                    _render_qb_card(row)
-
-        except Exception as exc:
-            st.warning(
-                "Passing Yards cards are temporarily unavailable."
-            )
-            st.caption(str(exc))
 
 
 show()
