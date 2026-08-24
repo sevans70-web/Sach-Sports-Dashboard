@@ -418,7 +418,7 @@ def _render_touchdowns(first_td=False):
 
         if top25.empty:
             st.info(
-                f"No valid live {title} candidates are available right now."
+                f"No valid {title} foundation candidates are available right now."
             )
         else:
             for _, row in top25.iterrows():
