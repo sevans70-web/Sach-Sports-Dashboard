@@ -71,6 +71,20 @@ GAME_TEXT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# NFL.com changes completed-game text from "Away at Home" to a score line
+# such as "Raiders 22, Texans 20, FINAL, Thursday, August 20th".
+# Without this second pattern, completed preseason weeks disappear from the
+# dashboard as soon as NFL.com marks every game in that week final.
+FINAL_GAME_TEXT_RE = re.compile(
+    rf"(?P<away>[A-Za-z0-9 ]+?)\s+(?P<away_score>\d+)\s*,\s*"
+    rf"(?P<home>[A-Za-z0-9 ]+?)\s+(?P<home_score>\d+)\s*,\s*"
+    rf"FINAL(?:\s*,\s*|\s+)"
+    rf"(?P<weekday>Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+"
+    rf"(?P<month>{MONTHS})\s+"
+    rf"(?P<day>\d{{1,2}})(?:st|nd|rd|th)",
+    re.IGNORECASE,
+)
+
 
 def _strip_tags(value: str) -> str:
     value = re.sub(r"<[^>]+>", " ", value)
@@ -88,11 +102,13 @@ def _parse_official_nfl_page(
     season: int,
     week: int,
 ) -> list[dict]:
-    """Parse official NFL schedule game links from one preseason page."""
+    """Parse scheduled and completed games from one official NFL page."""
 
     rows = []
     seen = set()
 
+    # NFL.com renders useful game text inside links. Completed games and
+    # scheduled games use different text formats, so support both.
     anchor_blocks = re.findall(
         r"<a\b[^>]*>(.*?)</a>",
         html_text,
@@ -101,15 +117,30 @@ def _parse_official_nfl_page(
 
     for block in anchor_blocks:
         text = _strip_tags(block)
-        match = GAME_TEXT_RE.search(text)
+        scheduled_match = GAME_TEXT_RE.search(text)
+        final_match = FINAL_GAME_TEXT_RE.search(text)
 
-        if not match:
+        if scheduled_match:
+            match = scheduled_match
+            status = "Scheduled"
+            away_score = pd.NA
+            home_score = pd.NA
+            time_text = match.group("time").upper()
+        elif final_match:
+            match = final_match
+            status = "Final"
+            away_score = int(match.group("away_score"))
+            home_score = int(match.group("home_score"))
+            # NFL.com's final score label does not include kickoff time.
+            # Midnight preserves the correct game date/week without inventing
+            # a kickoff time. Historical score display does not depend on it.
+            time_text = "12:00 AM"
+        else:
             continue
 
         away_name = " ".join(match.group("away").split())
         home_name = " ".join(match.group("home").split())
 
-        # Avoid unrelated navigation/team links.
         if (
             away_name.title() not in TEAM_ABBREVIATIONS
             or home_name.title() not in TEAM_ABBREVIATIONS
@@ -118,7 +149,6 @@ def _parse_official_nfl_page(
 
         day = match.group("day")
         month = match.group("month").title()
-        time_text = match.group("time").upper()
 
         kickoff = pd.to_datetime(
             f"{month} {day} {season} {time_text}",
@@ -142,9 +172,6 @@ def _parse_official_nfl_page(
 
         seen.add(game_id)
 
-        now_et = pd.Timestamp.now(tz="America/New_York").tz_localize(None)
-        status = "Scheduled" if kickoff > now_et else "Completed"
-
         rows.append(
             {
                 "game_id": game_id,
@@ -153,12 +180,16 @@ def _parse_official_nfl_page(
                 "game_type": "PRE",
                 "gameday": kickoff.normalize(),
                 "weekday": match.group("weekday").title(),
-                "gametime": kickoff.strftime("%H:%M"),
+                "gametime": (
+                    kickoff.strftime("%H:%M")
+                    if status == "Scheduled"
+                    else None
+                ),
                 "kickoff_et": kickoff,
                 "away_team": away_team,
                 "home_team": home_team,
-                "away_score": pd.NA,
-                "home_score": pd.NA,
+                "away_score": away_score,
+                "home_score": home_score,
                 "status": status,
                 "roof": None,
                 "stadium": None,
