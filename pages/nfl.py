@@ -567,7 +567,236 @@ def _render_touchdowns(first_td=False):
         st.warning(f"{title} Top 25 is temporarily unavailable.")
         st.caption(str(exc))
 
+
+def _inject_nfl_mobile_css():
+    st.markdown(
+        """
+        <style>
+        @media (max-width: 700px) {
+            div[data-testid="stMetric"] {
+                padding: 0.35rem 0.45rem;
+            }
+            div[data-testid="stMetricLabel"] {
+                font-size: 0.78rem;
+            }
+            div[data-testid="stMetricValue"] {
+                font-size: 1.15rem;
+            }
+            div[data-testid="stImage"] img {
+                border-radius: 12px;
+            }
+            .stTabs [data-baseweb="tab-list"] {
+                gap: 0.15rem;
+                overflow-x: auto;
+            }
+            .stTabs [data-baseweb="tab"] {
+                padding-left: 0.55rem;
+                padding-right: 0.55rem;
+                white-space: nowrap;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _active_week_games():
+    phase, schedule, week = _active_schedule_context()
+    if schedule is None or schedule.empty or week is None:
+        return phase, schedule, week, pd.DataFrame()
+    games = schedule[
+        pd.to_numeric(schedule["week"], errors="coerce") == int(week)
+    ].copy()
+    games = games.sort_values("kickoff_et", na_position="last").reset_index(drop=True)
+    return phase, schedule, week, games
+
+
+def _render_overview():
+    st.subheader("NFL Overview")
+    try:
+        phase, _, week, games = _active_week_games()
+        phase_label = "Regular Season" if phase == "REG" else "Preseason"
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Season", NFL_SEASON)
+        c2.metric("Active Slate", f"{phase_label} Wk {week}" if week is not None else phase_label)
+        c3.metric("Games", len(games))
+
+        feed = get_nfl_odds_feed_status()
+        provider = feed.get("provider") or "Foundation"
+        st.caption(f"Sportsbook source: {provider} • Foundation rankings remain available without live markets.")
+
+        if games.empty:
+            st.info("No NFL games are available for the active slate.")
+            return
+
+        st.markdown("### Active Slate")
+        for _, game in games.iterrows():
+            kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
+            kickoff_text = kickoff.strftime("%a %b %d • %I:%M %p") if pd.notna(kickoff) else "Time TBD"
+            status = str(game.get("status", "Scheduled"))
+            st.markdown(f"**{game.get('away_team', '')} @ {game.get('home_team', '')}**")
+            st.caption(f"{kickoff_text} • {status}")
+    except Exception as exc:
+        st.warning("NFL overview is temporarily unavailable.")
+        st.caption(str(exc))
+
+
+def _render_game_intelligence():
+    st.subheader("Game Intelligence")
+    st.caption("Matchup-level quarterback intelligence for the active NFL slate.")
+
+    try:
+        phase, _, week, games = _active_week_games()
+        if games.empty:
+            st.info("No active NFL games are available for matchup analysis.")
+            return
+
+        labels = [
+            f"{str(g.get('away_team', '')).upper()} @ {str(g.get('home_team', '')).upper()}"
+            for _, g in games.iterrows()
+        ]
+        selected = st.selectbox(
+            "Select Matchup",
+            labels,
+            key=f"nfl_gi_matchup_{phase}_{week}",
+        )
+        game = games.iloc[labels.index(selected)]
+        qbs = _build_game_qb_preview(game)
+
+        if qbs is None or qbs.empty:
+            st.info("No qualified quarterback intelligence is available for this matchup yet.")
+            return
+
+        for _, row in qbs.iterrows():
+            name = row.get("player_name", "Unknown QB")
+            team = row.get("team", "")
+            projection = _format_number(row.get("passing_yards_projection_matchup"))
+            baseline = _format_number(row.get("passing_yards_per_game"))
+            recent3 = _format_number(row.get("last_3_passing_yards_per_game"))
+            matchup = row.get("passing_matchup_label", "Unknown")
+
+            st.markdown(f"### {name} · {team}")
+            c1, c2, c3 = st.columns(3)
+            c1.metric("2025 Yds/Game", baseline)
+            c2.metric("Matchup Projection", projection)
+            c3.metric("Last 3", recent3)
+
+            if pd.notna(row.get("consensus_line")):
+                c4, c5, c6 = st.columns(3)
+                c4.metric("Sportsbook Line", _format_number(row.get("consensus_line")))
+                c5.metric("Model Side", str(row.get("model_side", "—")))
+                prob = row.get("model_probability")
+                c6.metric("Probability", "—" if pd.isna(prob) else f"{float(prob):.1f}%")
+
+            st.caption(f"Matchup: {matchup}")
+            st.divider()
+    except Exception as exc:
+        st.warning("Game Intelligence is temporarily unavailable.")
+        st.caption(str(exc))
+
+
+def _render_results():
+    st.subheader("Results")
+    st.caption("Completed NFL games from the current season schedule.")
+
+    season_type = st.selectbox(
+        "Results Season Type",
+        ["Preseason", "Regular Season"],
+        key="nfl_results_season_type",
+    )
+    game_type = "PRE" if season_type == "Preseason" else "REG"
+
+    try:
+        schedule = load_nfl_schedule(NFL_SEASON, game_type)
+        if schedule.empty:
+            st.info("No NFL results are available yet.")
+            return
+
+        completed = schedule[
+            schedule["status"].astype(str).str.lower().eq("final")
+        ].copy()
+
+        if completed.empty:
+            st.info("No completed games are available for this season type yet.")
+            return
+
+        weeks = sorted(pd.to_numeric(completed["week"], errors="coerce").dropna().astype(int).unique())
+        week = st.selectbox(
+            "Results Week",
+            weeks,
+            index=len(weeks) - 1,
+            key=f"nfl_results_week_{game_type}",
+        )
+
+        games = completed[
+            pd.to_numeric(completed["week"], errors="coerce") == int(week)
+        ].copy()
+
+        for _, game in games.iterrows():
+            away = game.get("away_team", "")
+            home = game.get("home_team", "")
+            away_score = game.get("away_score")
+            home_score = game.get("home_score")
+            score = ""
+            if pd.notna(away_score) and pd.notna(home_score):
+                score = f" • {away} {int(away_score)} — {home} {int(home_score)}"
+            st.markdown(f"**{away} @ {home}**")
+            st.caption(f"Final{score}")
+            st.divider()
+    except Exception as exc:
+        st.warning("NFL results are temporarily unavailable.")
+        st.caption(str(exc))
+
+
+def _render_games():
+    st.subheader("Games")
+
+    season_type = st.selectbox(
+        "Season Type",
+        ["Preseason", "Regular Season"],
+        key="nfl_season_type_selector",
+    )
+    game_type = "PRE" if season_type == "Preseason" else "REG"
+
+    try:
+        schedule = load_nfl_schedule(NFL_SEASON, game_type)
+        if schedule.empty:
+            st.info("No NFL schedule is available for this season type.")
+            return
+
+        weeks = sorted(schedule["week"].dropna().astype(int).unique())
+        _, _, active_week = _active_schedule_context()
+        default_index = weeks.index(active_week) if active_week in weeks else 0
+
+        week = st.selectbox(
+            "Select Week",
+            weeks,
+            index=default_index,
+            key=f"nfl_week_selector_{game_type}",
+        )
+
+        games = schedule[schedule["week"].astype(int) == week].copy()
+        for _, game in games.iterrows():
+            kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
+            kickoff_text = kickoff.strftime("%a %b %d • %I:%M %p") if pd.notna(kickoff) else "Time TBD"
+            away = game.get("away_team", "")
+            home = game.get("home_team", "")
+            status = str(game.get("status", "Scheduled"))
+
+            st.markdown(f"### {away} @ {home}")
+            if status.lower() == "final" and pd.notna(game.get("away_score")) and pd.notna(game.get("home_score")):
+                st.metric("Final", f"{away} {int(game.get('away_score'))} — {home} {int(game.get('home_score'))}")
+            st.caption(f"{kickoff_text} • {status}")
+            st.divider()
+    except Exception as exc:
+        st.warning("NFL schedule data is temporarily unavailable.")
+        st.caption(str(exc))
+
+
 def show():
+    _inject_nfl_mobile_css()
     st.title("🏈 NFL")
 
     st.caption(
@@ -586,74 +815,16 @@ def show():
     )
 
     with tabs[0]:
-        st.subheader("NFL Overview")
-        st.caption(
-            "Foundation view. Final overview design "
-            "will be refined later."
-        )
+        _render_overview()
 
     with tabs[1]:
-        st.subheader("Game Intelligence")
+        _render_game_intelligence()
 
     with tabs[2]:
-        st.subheader("Results")
+        _render_results()
 
     with tabs[3]:
-        st.subheader("Games")
-
-        season_type = st.selectbox(
-            "Season Type",
-            [
-                "Preseason",
-                "Regular Season",
-            ],
-            key="nfl_season_type_selector",
-        )
-
-        game_type = (
-            "PRE"
-            if season_type == "Preseason"
-            else "REG"
-        )
-
-        try:
-            schedule = load_nfl_schedule(
-                NFL_SEASON,
-                game_type,
-            )
-
-            weeks = sorted(
-                schedule["week"]
-                .dropna()
-                .astype(int)
-                .unique()
-            )
-
-            week = st.selectbox(
-                "Select Week",
-                weeks,
-                key=f"nfl_week_selector_{game_type}",
-            )
-
-            for _, game in schedule[
-                schedule["week"].astype(int)
-                == week
-            ].iterrows():
-                st.markdown(
-                    f'**{game["away_team"]} @ '
-                    f'{game["home_team"]}**'
-                )
-                st.caption(
-                    f'{game["kickoff_et"]} • '
-                    f'{game["status"]}'
-                )
-                st.divider()
-
-        except Exception as exc:
-            st.warning(
-                "NFL schedule data is temporarily unavailable."
-            )
-            st.caption(str(exc))
+        _render_games()
 
     with tabs[4]:
         st.subheader("Player Props")
