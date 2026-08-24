@@ -22,6 +22,26 @@ def _format_number(value, digits=1):
     return f"{float(value):.{digits}f}"
 
 
+def _render_sportsbook_feed_status():
+    feed = get_nfl_odds_feed_status()
+    message = (
+        feed.get("message")
+        or "Sportsbook market status unavailable."
+    )
+    status = feed.get("status")
+
+    if status == "live":
+        st.caption(message)
+    elif status == "stale":
+        st.warning(message)
+    elif status in {"quota_exhausted", "rate_limited"}:
+        st.info(message)
+    elif status == "not_configured":
+        st.info(message)
+    else:
+        st.caption(message)
+
+
 def _build_game_qb_preview(game):
     away_team = str(game["away_team"]).upper()
     home_team = str(game["home_team"]).upper()
@@ -187,14 +207,7 @@ def _render_top25_card(row, projection_column):
 def _render_passing(schedule):
     st.markdown("### Passing Yards")
 
-    if sports_game_odds_configured():
-        st.caption(
-            "Live sportsbook market connected."
-        )
-    else:
-        st.caption(
-            "Sportsbook line feed not configured yet."
-        )
+    _render_sportsbook_feed_status()
 
     weeks = sorted(
         schedule["week"]
@@ -239,14 +252,7 @@ def _render_passing(schedule):
 def _render_rushing():
     st.markdown("### Rushing Yards")
 
-    if sports_game_odds_configured():
-        st.caption(
-            "Live sportsbook market connected."
-        )
-    else:
-        st.caption(
-            "Sportsbook line feed not configured yet."
-        )
+    _render_sportsbook_feed_status()
 
     st.markdown(
         "## Top 25 Rushing Yards"
@@ -284,10 +290,7 @@ def _render_rushing():
 def _render_receiving():
     st.markdown("### Receiving Yards")
 
-    if sports_game_odds_configured():
-        st.caption("Live sportsbook market connected.")
-    else:
-        st.caption("Sportsbook line feed not configured yet.")
+    _render_sportsbook_feed_status()
 
     st.markdown("## Top 25 Receiving Yards")
     st.caption(
@@ -320,10 +323,7 @@ def _render_receiving():
 def _render_receptions():
     st.markdown("### Receptions")
 
-    if sports_game_odds_configured():
-        st.caption("Live sportsbook market connected.")
-    else:
-        st.caption("Sportsbook line feed not configured yet.")
+    _render_sportsbook_feed_status()
 
     st.markdown("## Top 25 Receptions")
     st.caption(
@@ -400,8 +400,7 @@ def _render_touchdowns(first_td=False):
     title = "First TD" if first_td else "Anytime TD"
     st.markdown(f"### {title}")
 
-    feed = get_nfl_odds_feed_status()
-    st.caption(feed.get("message") or "Sportsbook market status unavailable.")
+    _render_sportsbook_feed_status()
 
     heading = "Top 25 First TD" if first_td else "Top 25 Anytime TD"
     st.markdown(f"## {heading}")
