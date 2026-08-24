@@ -572,15 +572,47 @@ def _inject_nfl_mobile_css():
     st.markdown(
         """
         <style>
+        :root {
+            --nfl-panel: #172235;
+            --nfl-panel-2: #1d2b42;
+            --nfl-border: #314766;
+            --nfl-text-soft: #aebbd0;
+        }
+
+        .nfl-hero {
+            border: 1px solid var(--nfl-border);
+            border-radius: 18px;
+            padding: 1rem 1.05rem;
+            background: linear-gradient(135deg, #172235 0%, #1d2b42 100%);
+            margin-bottom: 0.85rem;
+        }
+
+        .nfl-hero-title {
+            font-size: 1.28rem;
+            font-weight: 800;
+            margin-bottom: 0.2rem;
+        }
+
+        .nfl-soft {
+            color: var(--nfl-text-soft);
+            font-size: 0.9rem;
+        }
+
+        .nfl-section-label {
+            font-size: 1.02rem;
+            font-weight: 800;
+            margin: 1rem 0 0.45rem 0;
+        }
+
         @media (max-width: 700px) {
             div[data-testid="stMetric"] {
                 padding: 0.35rem 0.45rem;
             }
             div[data-testid="stMetricLabel"] {
-                font-size: 0.78rem;
+                font-size: 0.76rem;
             }
             div[data-testid="stMetricValue"] {
-                font-size: 1.15rem;
+                font-size: 1.08rem;
             }
             div[data-testid="stImage"] img {
                 border-radius: 12px;
@@ -594,12 +626,15 @@ def _inject_nfl_mobile_css():
                 padding-right: 0.55rem;
                 white-space: nowrap;
             }
+            .nfl-hero {
+                padding: 0.85rem;
+                border-radius: 15px;
+            }
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
 
 def _active_week_games():
     phase, schedule, week = _active_schedule_context()
@@ -612,36 +647,111 @@ def _active_week_games():
     return phase, schedule, week, games
 
 
-def _render_overview():
-    st.subheader("NFL Overview")
-    try:
-        phase, _, week, games = _active_week_games()
-        phase_label = "Regular Season" if phase == "REG" else "Preseason"
+def _render_intelligence_center():
+    """NFL landing workspace: slate + matchup intelligence + prop pulse."""
+    st.markdown(
+        """
+        <div class="nfl-hero">
+            <div class="nfl-hero-title">🏈 NFL Intelligence Center</div>
+            <div class="nfl-soft">
+                Active slate • matchup intelligence • prop pulse • sportsbook status
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Season", NFL_SEASON)
-        c2.metric("Active Slate", f"{phase_label} Wk {week}" if week is not None else phase_label)
-        c3.metric("Games", len(games))
+    try:
+        phase, schedule, week, games = _active_week_games()
+        phase_label = "Regular Season" if phase == "REG" else "Preseason"
 
         feed = get_nfl_odds_feed_status()
         provider = feed.get("provider") or "Foundation"
-        st.caption(f"Sportsbook source: {provider} • Foundation rankings remain available without live markets.")
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Active Week", f"{phase_label} {week}" if week is not None else phase_label)
+        c2.metric("Games", len(games))
+        c3.metric("Prop Mode", "Live" if feed.get("status") == "live" else "Foundation")
+
+        st.caption(
+            f"Sportsbook source: {provider}. "
+            "Foundation rankings remain available when live player-prop markets are not posted."
+        )
 
         if games.empty:
             st.info("No NFL games are available for the active slate.")
             return
 
-        st.markdown("### Active Slate")
-        for _, game in games.iterrows():
-            kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
-            kickoff_text = kickoff.strftime("%a %b %d • %I:%M %p") if pd.notna(kickoff) else "Time TBD"
-            status = str(game.get("status", "Scheduled"))
-            st.markdown(f"**{game.get('away_team', '')} @ {game.get('home_team', '')}**")
-            st.caption(f"{kickoff_text} • {status}")
-    except Exception as exc:
-        st.warning("NFL overview is temporarily unavailable.")
-        st.caption(str(exc))
+        st.markdown('<div class="nfl-section-label">🔥 Matchup Intelligence</div>', unsafe_allow_html=True)
 
+        labels = [
+            f"{str(g.get('away_team', '')).upper()} @ {str(g.get('home_team', '')).upper()}"
+            for _, g in games.iterrows()
+        ]
+        selected = st.selectbox(
+            "Select Matchup",
+            labels,
+            key=f"nfl_center_matchup_{phase}_{week}",
+        )
+        game = games.iloc[labels.index(selected)]
+
+        kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
+        kickoff_text = kickoff.strftime("%a %b %d • %I:%M %p") if pd.notna(kickoff) else "Time TBD"
+        st.caption(f"{kickoff_text} • {game.get('status', 'Scheduled')}")
+
+        qbs = _build_game_qb_preview(game)
+        if qbs is not None and not qbs.empty:
+            for _, row in qbs.head(2).iterrows():
+                name = row.get("player_name", "Unknown QB")
+                team = row.get("team", "")
+                projection = _format_number(row.get("passing_yards_projection_matchup"))
+                baseline = _format_number(row.get("passing_yards_per_game"))
+                recent3 = _format_number(row.get("last_3_passing_yards_per_game"))
+
+                st.markdown(f"**{name} · {team}**")
+                q1, q2, q3 = st.columns(3)
+                q1.metric("2025 Y/G", baseline)
+                q2.metric("Projection", projection)
+                q3.metric("Last 3", recent3)
+
+                if pd.notna(row.get("consensus_line")):
+                    st.caption(
+                        f"Live line {_format_number(row.get('consensus_line'))} • "
+                        f"Model side {row.get('model_side', '—')}"
+                    )
+        else:
+            st.caption("Qualified matchup intelligence will appear here as the slate data fills in.")
+
+        st.markdown('<div class="nfl-section-label">🎯 Prop Pulse</div>', unsafe_allow_html=True)
+        try:
+            passing = _build_week_top25(schedule, week)
+            if passing is not None and not passing.empty:
+                passing = _enrich_top25(passing.head(3), "center_passing", schedule, week)
+                for _, row in passing.iterrows():
+                    st.markdown(
+                        f"**#{int(row.get('rank', 0))} {row.get('player_name', '')} · "
+                        f"{row.get('team', '')}**"
+                    )
+                    st.caption(
+                        f"{row.get('game', '')} • Projection "
+                        f"{_format_number(row.get('passing_yards_projection_matchup'))} passing yards"
+                    )
+            else:
+                st.caption("Passing-yard prop pulse will populate when qualified players are available.")
+        except Exception:
+            st.caption("Prop pulse is temporarily unavailable.")
+
+        st.markdown('<div class="nfl-section-label">📅 Active Slate</div>', unsafe_allow_html=True)
+        for _, slate_game in games.iterrows():
+            slate_kickoff = pd.to_datetime(slate_game.get("kickoff_et"), errors="coerce")
+            slate_time = slate_kickoff.strftime("%a %b %d • %I:%M %p") if pd.notna(slate_kickoff) else "Time TBD"
+            st.markdown(
+                f"**{slate_game.get('away_team', '')} @ {slate_game.get('home_team', '')}**"
+            )
+            st.caption(f"{slate_time} • {slate_game.get('status', 'Scheduled')}")
+    except Exception as exc:
+        st.warning("NFL Intelligence Center is temporarily unavailable.")
+        st.caption(str(exc))
 
 def _render_game_intelligence():
     st.subheader("Game Intelligence")
@@ -697,66 +807,14 @@ def _render_game_intelligence():
         st.caption(str(exc))
 
 
-def _render_results():
-    st.subheader("Results")
-    st.caption("Completed NFL games from the current season schedule.")
-
-    season_type = st.selectbox(
-        "Results Season Type",
-        ["Preseason", "Regular Season"],
-        key="nfl_results_season_type",
-    )
-    game_type = "PRE" if season_type == "Preseason" else "REG"
-
-    try:
-        schedule = load_nfl_schedule(NFL_SEASON, game_type)
-        if schedule.empty:
-            st.info("No NFL results are available yet.")
-            return
-
-        completed = schedule[
-            schedule["status"].astype(str).str.lower().eq("final")
-        ].copy()
-
-        if completed.empty:
-            st.info("No completed games are available for this season type yet.")
-            return
-
-        weeks = sorted(pd.to_numeric(completed["week"], errors="coerce").dropna().astype(int).unique())
-        week = st.selectbox(
-            "Results Week",
-            weeks,
-            index=len(weeks) - 1,
-            key=f"nfl_results_week_{game_type}",
-        )
-
-        games = completed[
-            pd.to_numeric(completed["week"], errors="coerce") == int(week)
-        ].copy()
-
-        for _, game in games.iterrows():
-            away = game.get("away_team", "")
-            home = game.get("home_team", "")
-            away_score = game.get("away_score")
-            home_score = game.get("home_score")
-            score = ""
-            if pd.notna(away_score) and pd.notna(home_score):
-                score = f" • {away} {int(away_score)} — {home} {int(home_score)}"
-            st.markdown(f"**{away} @ {home}**")
-            st.caption(f"Final{score}")
-            st.divider()
-    except Exception as exc:
-        st.warning("NFL results are temporarily unavailable.")
-        st.caption(str(exc))
-
-
-def _render_games():
-    st.subheader("Games")
+def _render_games_results():
+    st.subheader("Games / Results")
+    st.caption("Schedule, game status, final scores, and prediction-performance home.")
 
     season_type = st.selectbox(
         "Season Type",
         ["Preseason", "Regular Season"],
-        key="nfl_season_type_selector",
+        key="nfl_games_results_season_type",
     )
     game_type = "PRE" if season_type == "Preseason" else "REG"
 
@@ -766,7 +824,7 @@ def _render_games():
             st.info("No NFL schedule is available for this season type.")
             return
 
-        weeks = sorted(schedule["week"].dropna().astype(int).unique())
+        weeks = sorted(pd.to_numeric(schedule["week"], errors="coerce").dropna().astype(int).unique())
         _, _, active_week = _active_schedule_context()
         default_index = weeks.index(active_week) if active_week in weeks else 0
 
@@ -774,10 +832,15 @@ def _render_games():
             "Select Week",
             weeks,
             index=default_index,
-            key=f"nfl_week_selector_{game_type}",
+            key=f"nfl_games_results_week_{game_type}",
         )
 
-        games = schedule[schedule["week"].astype(int) == week].copy()
+        games = schedule[
+            pd.to_numeric(schedule["week"], errors="coerce") == int(week)
+        ].copy()
+        games = games.sort_values("kickoff_et", na_position="last")
+
+        completed_count = 0
         for _, game in games.iterrows():
             kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
             kickoff_text = kickoff.strftime("%a %b %d • %I:%M %p") if pd.notna(kickoff) else "Time TBD"
@@ -786,47 +849,55 @@ def _render_games():
             status = str(game.get("status", "Scheduled"))
 
             st.markdown(f"### {away} @ {home}")
-            if status.lower() == "final" and pd.notna(game.get("away_score")) and pd.notna(game.get("home_score")):
-                st.metric("Final", f"{away} {int(game.get('away_score'))} — {home} {int(game.get('home_score'))}")
+
+            if status.lower() == "final":
+                completed_count += 1
+                away_score = game.get("away_score")
+                home_score = game.get("home_score")
+                if pd.notna(away_score) and pd.notna(home_score):
+                    st.metric(
+                        "Final",
+                        f"{away} {int(away_score)} — {home} {int(home_score)}",
+                    )
+
             st.caption(f"{kickoff_text} • {status}")
             st.divider()
-    except Exception as exc:
-        st.warning("NFL schedule data is temporarily unavailable.")
-        st.caption(str(exc))
 
+        st.markdown("### 📈 Prediction Performance")
+        if completed_count == 0:
+            st.info(
+                "Prediction grading will appear here after games are final. "
+                "This section is reserved for our model results—not duplicate NFL scores."
+            )
+        else:
+            st.info(
+                "Final games are available. Prop-level grading will populate as "
+                "the prediction-history tracker records completed NFL predictions."
+            )
+    except Exception as exc:
+        st.warning("NFL Games / Results is temporarily unavailable.")
+        st.caption(str(exc))
 
 def show():
     _inject_nfl_mobile_css()
     st.title("🏈 NFL")
 
     st.caption(
-        "Player Prop Intelligence • Matchup Analysis • "
-        "Predictions • Performance Tracking"
+        "Intelligence Center • Player Props • Games & Results"
     )
 
     tabs = st.tabs(
         [
-            "🏈 Overview",
-            "🧠 Game Intelligence",
-            "📈 Results",
-            "🎮 Games",
+            "🏈 Intelligence Center",
             "🎯 Player Props",
+            "🎮 Games / Results",
         ]
     )
 
     with tabs[0]:
-        _render_overview()
+        _render_intelligence_center()
 
     with tabs[1]:
-        _render_game_intelligence()
-
-    with tabs[2]:
-        _render_results()
-
-    with tabs[3]:
-        _render_games()
-
-    with tabs[4]:
         st.subheader("Player Props")
 
         prop = st.selectbox(
@@ -871,6 +942,10 @@ def show():
 
         elif prop == "First TD":
             _render_touchdowns(first_td=True)
+
+
+    with tabs[2]:
+        _render_games_results()
 
 
 show()
