@@ -1,7 +1,18 @@
-"""SportsGameOdds integration for NFL player props."""
+"""SportsGameOdds integration for NFL player props.
 
+This version is deliberately defensive around API rate limits:
+- one shared NFL events request
+- 30-minute Streamlit cache
+- in-process cooldown after HTTP 429
+- stale last-successful payload fallback
+- no repeated 429 exception loop on every Streamlit rerun
+"""
+
+import json
 import os
 import re
+import time
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -9,6 +20,18 @@ import streamlit as st
 
 
 URL = "https://api.sportsgameodds.com/v2/events"
+
+CACHE_TTL_SECONDS = 1800
+RATE_LIMIT_COOLDOWN_SECONDS = 1800
+STALE_CACHE_FILE = Path("/tmp/sach_nfl_sgo_events.json")
+
+
+@st.cache_resource
+def _runtime_state():
+    return {
+        "next_retry_at": 0.0,
+        "last_error": None,
+    }
 
 
 def _key():
@@ -30,87 +53,249 @@ def sports_game_odds_configured():
 def _clean_player_name(name, prop_label):
     text = str(name or "").strip()
 
-    patterns = [
+    for pattern in [
         rf"\s+{re.escape(prop_label)} Over/Under$",
         rf"\s+{re.escape(prop_label)}$",
-    ]
-
-    for pattern in patterns:
+    ]:
         text = re.sub(pattern, "", text, flags=re.I)
 
     return text.strip()
 
 
-@st.cache_data(ttl=900, show_spinner=False)
-def _load_nfl_events():
-    """Fetch the shared NFL odds payload once and reuse it across every prop.
+def _load_stale_payload():
+    try:
+        if STALE_CACHE_FILE.exists():
+            return json.loads(
+                STALE_CACHE_FILE.read_text(
+                    encoding="utf-8",
+                )
+            )
+    except Exception:
+        pass
 
-    Streamlit reruns the page frequently. All NFL prop loaders read the same
-    SportsGameOdds /events response, so caching the raw event payload prevents
-    one API request per prop type.
+    return None
+
+
+def _save_stale_payload(payload):
+    try:
+        STALE_CACHE_FILE.write_text(
+            json.dumps(payload),
+            encoding="utf-8",
+        )
+    except Exception:
+        pass
+
+
+@st.cache_data(
+    ttl=CACHE_TTL_SECONDS,
+    show_spinner=False,
+)
+def load_shared_nfl_events():
     """
+    Fetch one shared NFL events payload.
+
+    The function catches 429s instead of raising them. That is important:
+    Streamlit does not cache exceptions, so an uncaught 429 causes every
+    widget rerun to call the provider again and extend the problem.
+    """
+
     api_key = _key()
 
     if not api_key:
-        return []
+        return {
+            "status": "not_configured",
+            "data": [],
+            "message": "SportsGameOdds API key is not configured.",
+        }
 
-    response = requests.get(
-        URL,
-        headers={"x-api-key": api_key},
-        params={
-            "leagueID": "NFL",
-            "oddsAvailable": "true",
-            "limit": 100,
-        },
-        timeout=30,
-    )
-    response.raise_for_status()
+    state = _runtime_state()
+    now = time.time()
 
-    payload = response.json()
+    if now < float(state.get("next_retry_at", 0.0)):
+        stale = _load_stale_payload()
 
-    if not payload.get("success", True):
-        raise RuntimeError(
-            payload.get("error")
-            or "SportsGameOdds request failed"
+        if stale:
+            return {
+                "status": "stale",
+                "data": stale.get("data", []),
+                "message": (
+                    "SportsGameOdds is cooling down after a rate limit. "
+                    "Using the last successful market snapshot."
+                ),
+            }
+
+        return {
+            "status": "rate_limited",
+            "data": [],
+            "message": (
+                "SportsGameOdds rate limit is cooling down. "
+                "The dashboard will retry automatically later."
+            ),
+        }
+
+    try:
+        response = requests.get(
+            URL,
+            headers={"x-api-key": api_key},
+            params={
+                "leagueID": "NFL",
+                "oddsAvailable": "true",
+                "limit": 100,
+            },
+            timeout=30,
         )
 
-    return payload.get("data", []) or []
+        if response.status_code == 429:
+            retry_after = response.headers.get(
+                "Retry-After"
+            )
+
+            try:
+                retry_seconds = int(retry_after)
+            except Exception:
+                retry_seconds = RATE_LIMIT_COOLDOWN_SECONDS
+
+            state["next_retry_at"] = (
+                now + max(
+                    retry_seconds,
+                    RATE_LIMIT_COOLDOWN_SECONDS,
+                )
+            )
+            state["last_error"] = "429 Too Many Requests"
+
+            stale = _load_stale_payload()
+
+            if stale:
+                return {
+                    "status": "stale",
+                    "data": stale.get("data", []),
+                    "message": (
+                        "SportsGameOdds returned 429. "
+                        "Using the last successful market snapshot "
+                        "instead of repeatedly calling the API."
+                    ),
+                }
+
+            return {
+                "status": "rate_limited",
+                "data": [],
+                "message": (
+                    "SportsGameOdds returned 429 Too Many Requests. "
+                    "Requests are paused for 30 minutes so Streamlit "
+                    "does not keep extending the rate-limit loop."
+                ),
+            }
+
+        response.raise_for_status()
+
+        payload = response.json()
+
+        if not payload.get("success", True):
+            raise RuntimeError(
+                payload.get("error")
+                or "SportsGameOdds request failed"
+            )
+
+        state["next_retry_at"] = 0.0
+        state["last_error"] = None
+
+        _save_stale_payload(payload)
+
+        return {
+            "status": "live",
+            "data": payload.get("data", []),
+            "message": "Live sportsbook market connected.",
+        }
+
+    except requests.RequestException as exc:
+        stale = _load_stale_payload()
+
+        if stale:
+            return {
+                "status": "stale",
+                "data": stale.get("data", []),
+                "message": (
+                    "SportsGameOdds is temporarily unavailable. "
+                    "Using the last successful market snapshot."
+                ),
+            }
+
+        return {
+            "status": "error",
+            "data": [],
+            "message": str(exc),
+        }
 
 
-@st.cache_data(ttl=900, show_spinner=False)
-def load_nfl_prop_markets(stat_id: str, prop_label: str) -> pd.DataFrame:
-    """Build one NFL player-prop market from the shared cached payload."""
-    events = _load_nfl_events()
+def get_nfl_odds_feed_status():
+    result = load_shared_nfl_events()
+    return {
+        "status": result.get("status"),
+        "message": result.get("message"),
+    }
 
-    if not events:
-        return pd.DataFrame()
+
+@st.cache_data(
+    ttl=CACHE_TTL_SECONDS,
+    show_spinner=False,
+)
+def load_nfl_prop_markets(
+    stat_id: str,
+    prop_label: str,
+) -> pd.DataFrame:
+    """Parse one NFL player-prop market from the shared events payload."""
+
+    shared = load_shared_nfl_events()
+    events = shared.get("data", [])
 
     rows = []
 
     for event in events:
         teams = event.get("teams") or {}
-        away = (teams.get("away") or {}).get("names") or {}
-        home = (teams.get("home") or {}).get("names") or {}
+        away = (
+            (teams.get("away") or {}).get("names")
+            or {}
+        )
+        home = (
+            (teams.get("home") or {}).get("names")
+            or {}
+        )
 
         matchup = (
-            f"{away.get('long', '')} @ {home.get('long', '')}"
+            f"{away.get('long', '')} @ "
+            f"{home.get('long', '')}"
         ).strip()
 
         for odd in (event.get("odds") or {}).values():
-            if str(odd.get("statID", "")).lower() != stat_id.lower():
+            if (
+                str(odd.get("statID", "")).lower()
+                != stat_id.lower()
+            ):
                 continue
 
-            if str(odd.get("sideID", "")).lower() != "over":
+            if (
+                str(odd.get("sideID", "")).lower()
+                != "over"
+            ):
                 continue
 
-            entity = str(odd.get("statEntityID", ""))
+            entity = str(
+                odd.get("statEntityID", "")
+            )
 
-            if entity.lower() in {"", "all", "home", "away"}:
+            if entity.lower() in {
+                "",
+                "all",
+                "home",
+                "away",
+            }:
                 continue
 
             books = []
 
-            for bookmaker, book in (odd.get("byBookmaker") or {}).items():
+            for bookmaker, book in (
+                odd.get("byBookmaker") or {}
+            ).items():
                 if not book.get("available"):
                     continue
 
@@ -131,7 +316,10 @@ def load_nfl_prop_markets(stat_id: str, prop_label: str) -> pd.DataFrame:
                 )
 
             best = (
-                min(books, key=lambda item: item[1])
+                min(
+                    books,
+                    key=lambda item: item[1],
+                )
                 if books
                 else None
             )
@@ -153,15 +341,24 @@ def load_nfl_prop_markets(stat_id: str, prop_label: str) -> pd.DataFrame:
                         errors="coerce",
                     ),
                     "best_over_line": (
-                        best[1] if best else pd.NA
+                        best[1]
+                        if best
+                        else pd.NA
                     ),
                     "best_over_book": (
-                        best[0] if best else None
+                        best[0]
+                        if best
+                        else None
                     ),
                     "best_over_odds": (
-                        best[2] if best else None
+                        best[2]
+                        if best
+                        else None
                     ),
                     "books_available": len(books),
+                    "feed_status": shared.get(
+                        "status"
+                    ),
                 }
             )
 
