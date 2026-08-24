@@ -400,3 +400,148 @@ def load_nfl_receptions_markets():
         "receptions",
         "Receptions",
     )
+
+
+def _american_to_implied_probability(odds_value):
+    """Convert American odds text to implied probability percentage."""
+    if odds_value is None:
+        return pd.NA
+
+    try:
+        value = float(str(odds_value).replace("+", "").strip())
+    except Exception:
+        return pd.NA
+
+    if value == 0:
+        return pd.NA
+
+    if value > 0:
+        probability = 100.0 / (value + 100.0)
+    else:
+        probability = abs(value) / (abs(value) + 100.0)
+
+    return round(probability * 100.0, 1)
+
+
+@st.cache_data(
+    ttl=CACHE_TTL_SECONDS,
+    show_spinner=False,
+)
+def load_nfl_yes_no_player_market(
+    stat_id: str,
+    market_label: str,
+) -> pd.DataFrame:
+    """
+    Parse a player Yes/No scorer market from the shared NFL odds payload.
+
+    Example supported market:
+    touchdowns-PLAYER-game-yn-yes
+    """
+
+    shared = load_shared_nfl_events()
+    events = shared.get("data", [])
+    rows = []
+
+    for event in events:
+        teams = event.get("teams") or {}
+        away = ((teams.get("away") or {}).get("names") or {})
+        home = ((teams.get("home") or {}).get("names") or {})
+        matchup = (
+            f"{away.get('long', '')} @ {home.get('long', '')}"
+        ).strip()
+
+        for odd in (event.get("odds") or {}).values():
+            if str(odd.get("statID", "")).lower() != stat_id.lower():
+                continue
+
+            entity = str(odd.get("statEntityID", ""))
+            if entity.lower() in {"", "all", "home", "away"}:
+                continue
+
+            side = str(odd.get("sideID", "")).lower()
+            bet_type = str(odd.get("betTypeID", "")).lower()
+
+            # Anytime TD is a yes/no player market.
+            if stat_id.lower() == "touchdowns":
+                if bet_type != "yn" or side != "yes":
+                    continue
+
+            # First TD can be represented as a player outcome market. We
+            # accept the player row regardless of provider side naming.
+            if stat_id.lower() == "firsttouchdown":
+                if side in {"no", "under"}:
+                    continue
+
+            market_name = str(odd.get("marketName", "")).strip()
+            player_name = market_name
+
+            cleanup_patterns = [
+                rf"\s+{re.escape(market_label)}.*$",
+                r"\s+Any Touchdowns Yes/No$",
+                r"\s+Anytime Touchdown.*$",
+                r"\s+First Touchdown.*$",
+            ]
+            for pattern in cleanup_patterns:
+                player_name = re.sub(
+                    pattern,
+                    "",
+                    player_name,
+                    flags=re.I,
+                )
+
+            consensus_odds = odd.get("bookOdds")
+            fair_odds = odd.get("fairOdds")
+
+            book_rows = []
+            for bookmaker, book in (odd.get("byBookmaker") or {}).items():
+                if not book.get("available"):
+                    continue
+                price = book.get("odds")
+                if price in (None, ""):
+                    continue
+                book_rows.append((bookmaker, price))
+
+            rows.append(
+                {
+                    "event_id": event.get("eventID"),
+                    "matchup": matchup,
+                    "player_name": player_name.strip(),
+                    "market_player_id": (
+                        odd.get("playerID")
+                        or odd.get("statEntityID")
+                    ),
+                    "consensus_odds": consensus_odds,
+                    "fair_odds": fair_odds,
+                    "sportsbook_implied_probability": (
+                        _american_to_implied_probability(consensus_odds)
+                    ),
+                    "fair_implied_probability": (
+                        _american_to_implied_probability(fair_odds)
+                    ),
+                    "books_available": len(book_rows),
+                    "feed_status": shared.get("status"),
+                }
+            )
+
+    if not rows:
+        return pd.DataFrame()
+
+    return (
+        pd.DataFrame(rows)
+        .sort_values(["matchup", "player_name"])
+        .reset_index(drop=True)
+    )
+
+
+def load_nfl_anytime_td_markets():
+    return load_nfl_yes_no_player_market(
+        "touchdowns",
+        "Anytime TD",
+    )
+
+
+def load_nfl_first_td_markets():
+    return load_nfl_yes_no_player_market(
+        "firstTouchdown",
+        "First TD",
+    )
