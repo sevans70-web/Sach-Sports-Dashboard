@@ -41,14 +41,18 @@ def _clean_player_name(name, prop_label):
     return text.strip()
 
 
-@st.cache_data(ttl=600, show_spinner=False)
-def load_nfl_prop_markets(stat_id: str, prop_label: str) -> pd.DataFrame:
-    """Load one NFL player-prop market from SportsGameOdds."""
+@st.cache_data(ttl=900, show_spinner=False)
+def _load_nfl_events():
+    """Fetch the shared NFL odds payload once and reuse it across every prop.
 
+    Streamlit reruns the page frequently. All NFL prop loaders read the same
+    SportsGameOdds /events response, so caching the raw event payload prevents
+    one API request per prop type.
+    """
     api_key = _key()
 
     if not api_key:
-        return pd.DataFrame()
+        return []
 
     response = requests.get(
         URL,
@@ -70,9 +74,20 @@ def load_nfl_prop_markets(stat_id: str, prop_label: str) -> pd.DataFrame:
             or "SportsGameOdds request failed"
         )
 
+    return payload.get("data", []) or []
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def load_nfl_prop_markets(stat_id: str, prop_label: str) -> pd.DataFrame:
+    """Build one NFL player-prop market from the shared cached payload."""
+    events = _load_nfl_events()
+
+    if not events:
+        return pd.DataFrame()
+
     rows = []
 
-    for event in payload.get("data", []):
+    for event in events:
         teams = event.get("teams") or {}
         away = (teams.get("away") or {}).get("names") or {}
         home = (teams.get("home") or {}).get("names") or {}
