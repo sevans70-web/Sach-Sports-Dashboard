@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-from data.nfl_odds import sports_game_odds_configured
+from data.nfl_odds import sports_game_odds_configured, get_nfl_odds_feed_status
 from data.nfl_schedule import load_nfl_schedule
 from engines.nfl_passing_market_join import attach_live_passing_yards_lines
 from engines.nfl_passing_probability import attach_passing_yards_probabilities
@@ -10,6 +10,7 @@ from engines.nfl_passing_projection import build_passing_yards_projection
 from engines.nfl_rushing_yards import build_rushing_yards_top25
 from engines.nfl_receiving_yards import build_receiving_yards_top25
 from engines.nfl_receptions import build_receptions_top25
+from engines.nfl_touchdowns import build_anytime_td_top25, build_first_td_top25
 
 NFL_SEASON = 2026
 NFL_BASELINE_SEASON = 2025
@@ -352,6 +353,82 @@ def _render_receptions():
         st.caption(str(exc))
 
 
+
+def _render_td_card(row):
+    rank = int(row.get("rank", 0))
+    name = row.get("player_name", "Unknown")
+    team = row.get("team", "")
+    probability = row.get("model_probability")
+    probability_text = (
+        "—"
+        if probability is None or pd.isna(probability)
+        else f"{float(probability):.1f}%"
+    )
+
+    sportsbook_probability = row.get("sportsbook_implied_probability")
+    sportsbook_probability_text = (
+        "—"
+        if sportsbook_probability is None or pd.isna(sportsbook_probability)
+        else f"{float(sportsbook_probability):.1f}%"
+    )
+
+    edge = row.get("probability_edge")
+    edge_text = (
+        "—"
+        if edge is None or pd.isna(edge)
+        else (
+            f"+{float(edge):.1f} pp"
+            if float(edge) > 0
+            else f"{float(edge):.1f} pp"
+        )
+    )
+
+    st.markdown(f"### #{rank} · {name} · {team}")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.metric("Model Probability", probability_text)
+        st.metric("Sportsbook Odds", str(row.get("consensus_odds") or "—"))
+    with c2:
+        st.metric("Sportsbook Implied", sportsbook_probability_text)
+        st.metric("Model Edge", edge_text)
+
+    st.divider()
+
+
+def _render_touchdowns(first_td=False):
+    title = "First TD" if first_td else "Anytime TD"
+    st.markdown(f"### {title}")
+
+    feed = get_nfl_odds_feed_status()
+    st.caption(feed.get("message") or "Sportsbook market status unavailable.")
+
+    heading = "Top 25 First TD" if first_td else "Top 25 Anytime TD"
+    st.markdown(f"## {heading}")
+    st.caption(
+        "Foundation ranking • prior scoring rate + recent TD form + "
+        "live sportsbook scorer market"
+    )
+
+    try:
+        top25 = (
+            build_first_td_top25(NFL_SEASON, NFL_BASELINE_SEASON)
+            if first_td
+            else build_anytime_td_top25(NFL_SEASON, NFL_BASELINE_SEASON)
+        )
+
+        if top25.empty:
+            st.info(
+                f"No valid live {title} candidates are available right now."
+            )
+        else:
+            for _, row in top25.iterrows():
+                _render_td_card(row)
+
+    except Exception as exc:
+        st.warning(f"{title} Top 25 is temporarily unavailable.")
+        st.caption(str(exc))
+
 def show():
     st.title("🏈 NFL")
 
@@ -483,10 +560,11 @@ def show():
         elif prop == "Receptions":
             _render_receptions()
 
-        else:
-            st.caption(
-                f"{prop} is next in today's build sequence."
-            )
+        elif prop == "Anytime TD":
+            _render_touchdowns(first_td=False)
+
+        elif prop == "First TD":
+            _render_touchdowns(first_td=True)
 
 
 show()
