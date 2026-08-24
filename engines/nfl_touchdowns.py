@@ -318,11 +318,16 @@ def _rank(df: pd.DataFrame, limit: int = 25) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame()
 
-    ranked = df[
-        (df["market_match_status"] == "Matched")
-        & (df["td_data_status"] == "Established baseline")
-        & df["model_probability"].notna()
-    ].copy()
+    established = (df["td_data_status"] == "Established baseline")
+    valid_probability = df["model_probability"].notna()
+    live = (df["market_match_status"] == "Matched")
+
+    if (established & valid_probability & live).any():
+        ranked = df[established & valid_probability & live].copy()
+        ranked["ranking_mode"] = "Live market"
+    else:
+        ranked = df[established & valid_probability].copy()
+        ranked["ranking_mode"] = "Foundation"
 
     if ranked.empty:
         return ranked

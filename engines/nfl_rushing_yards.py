@@ -211,12 +211,25 @@ def attach_rushing_market(df: pd.DataFrame) -> pd.DataFrame:
         "player_name"
     ].apply(_normalize_name)
 
+    # Keep a stable projection schema even when no sportsbook market is posted.
+    result["rushing_projection"] = pd.to_numeric(
+        result.get("rushing_baseline_projection"),
+        errors="coerce",
+    )
+
     markets = _prepare_market()
 
     if markets.empty:
         result["consensus_line"] = pd.NA
+        result["best_over_line"] = pd.NA
+        result["best_over_book"] = pd.NA
+        result["best_over_odds"] = pd.NA
+        result["books_available"] = 0
+        result["matchup"] = pd.NA
+        result["market_player_id"] = pd.NA
         result["market_match_status"] = "No live market"
-        return result
+        result["projection_edge_yards"] = pd.NA
+        return result.drop(columns=["player_name_key"], errors="ignore")
 
     result = result.merge(
         markets[
@@ -351,30 +364,38 @@ def rank_rushing_yards_top25(
 
     ranked = df.copy()
 
-    ranked = ranked[
+    # Live-market mode ranks by model probability.  Foundation mode remains
+    # available when sportsbooks have not posted props yet.
+    established = (ranked["rushing_data_status"] == "Established baseline")
+    valid_projection = ranked["rushing_projection"].notna() & (ranked["rushing_projection"] > 0)
+    live_mask = (
         (ranked["market_match_status"] == "Matched")
-        & ranked["rushing_projection"].notna()
         & ranked["consensus_line"].notna()
         & ranked["model_probability"].notna()
         & ranked["model_side"].isin(["OVER", "UNDER"])
-        & (ranked["rushing_data_status"] == "Established baseline")
-        & (ranked["rushing_projection"] > 0)
-    ].copy()
+    )
 
-    if ranked.empty:
-        return ranked
+    if (established & valid_projection & live_mask).any():
+        ranked = ranked[established & valid_projection & live_mask].copy()
+        ranked["ranking_mode"] = "Live market"
+    else:
+        ranked = ranked[established & valid_projection].copy()
+        if ranked.empty:
+            return ranked
+        ranked["ranking_mode"] = "Foundation"
+        ranked["model_side"] = "FOUNDATION"
+        ranked["model_probability"] = pd.NA
+        ranked["projection_edge_yards"] = pd.NA
 
-    ranked["abs_model_edge"] = ranked[
-        "projection_edge_yards"
-    ].abs()
+    ranked["abs_model_edge"] = pd.to_numeric(
+        ranked["projection_edge_yards"], errors="coerce"
+    ).abs()
 
     ranked = (
         ranked.sort_values(
-            [
-                "model_probability",
-                "abs_model_edge",
-            ],
-            ascending=[False, False],
+            ["model_probability", "abs_model_edge", "rushing_projection"],
+            ascending=[False, False, False],
+            na_position="last",
         )
         .drop_duplicates(
             subset=["player_id"],

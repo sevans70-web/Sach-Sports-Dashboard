@@ -72,89 +72,59 @@ def rank_passing_yards_top25(
     df: pd.DataFrame,
     limit: int = 25,
 ) -> pd.DataFrame:
-    """
-    Rank trustworthy Passing Yards candidates.
-
-    A player is ranked only when:
-    - the live market is matched,
-    - projection/line/probability are present,
-    - the historical QB sample is established,
-    - the projection is positive,
-    - the model has an actionable OVER/UNDER side.
-
-    Ranking priority:
-    1. model probability
-    2. absolute projection edge
-    3. matchup projection
-    """
-
+    """Rank live-market candidates when available, otherwise rank the foundation."""
     if df is None or df.empty:
         return pd.DataFrame()
 
     ranked = df.copy()
-
     for column in [
-        "model_probability",
-        "projection_edge_yards",
-        "passing_yards_projection_matchup",
-        "consensus_line",
-        "attempts",
-        "games_played",
+        "model_probability", "projection_edge_yards",
+        "passing_yards_projection_matchup", "consensus_line",
+        "attempts", "games_played",
     ]:
         if column in ranked.columns:
             ranked[column] = _numeric(ranked[column])
 
-    eligibility = ranked.apply(
-        _ranking_eligibility,
-        axis=1,
+    projection_ok = ranked["passing_yards_projection_matchup"].notna() & (
+        ranked["passing_yards_projection_matchup"] > 0
+    )
+    established = ranked.get("passing_data_status", pd.Series("", index=ranked.index)).ne(
+        "No prior NFL baseline"
+    )
+    attempts_ok = ranked["attempts"].isna() | (ranked["attempts"] >= MIN_BASELINE_ATTEMPTS)
+    games_ok = ranked["games_played"].isna() | (ranked["games_played"] >= MIN_BASELINE_GAMES)
+    base_ok = projection_ok & established & attempts_ok & games_ok
+
+    live_ok = (
+        ranked.get("market_match_status", pd.Series("", index=ranked.index)).eq("Matched")
+        & ranked["consensus_line"].notna()
+        & ranked["model_probability"].notna()
+        & ranked.get("model_side", pd.Series("", index=ranked.index)).isin(["OVER", "UNDER"])
     )
 
-    ranked["top25_eligible"] = eligibility.apply(
-        lambda result: result[0]
-    )
-    ranked["top25_eligibility_reason"] = eligibility.apply(
-        lambda result: result[1]
-    )
+    if (base_ok & live_ok).any():
+        ranked = ranked[base_ok & live_ok].copy()
+        ranked["ranking_mode"] = "Live market"
+    else:
+        ranked = ranked[base_ok].copy()
+        if ranked.empty:
+            return ranked
+        ranked["ranking_mode"] = "Foundation"
+        ranked["model_side"] = "FOUNDATION"
+        ranked["model_probability"] = pd.NA
+        ranked["projection_edge_yards"] = pd.NA
 
-    ranked = ranked[
-        ranked["top25_eligible"]
-    ].copy()
-
-    if ranked.empty:
-        return ranked
-
-    ranked["abs_model_edge"] = ranked[
-        "projection_edge_yards"
-    ].abs()
-
-    dedupe_columns = (
-        ["player_id"]
-        if "player_id" in ranked.columns
-        else ["player_name", "team"]
-    )
-
+    ranked["abs_model_edge"] = pd.to_numeric(
+        ranked["projection_edge_yards"], errors="coerce"
+    ).abs()
+    dedupe_columns = ["player_id"] if "player_id" in ranked.columns else ["player_name", "team"]
     ranked = (
         ranked.sort_values(
-            [
-                "model_probability",
-                "abs_model_edge",
-                "passing_yards_projection_matchup",
-            ],
-            ascending=[False, False, False],
-            na_position="last",
+            ["model_probability", "abs_model_edge", "passing_yards_projection_matchup"],
+            ascending=[False, False, False], na_position="last",
         )
-        .drop_duplicates(
-            subset=dedupe_columns,
-            keep="first",
-        )
-        .head(limit)
-        .reset_index(drop=True)
+        .drop_duplicates(subset=dedupe_columns, keep="first")
+        .head(limit).reset_index(drop=True)
     )
-
-    ranked.insert(
-        0,
-        "rank",
-        ranked.index + 1,
-    )
-
+    ranked.insert(0, "rank", ranked.index + 1)
     return ranked
