@@ -143,7 +143,7 @@ def _render_prop_card(row, prop):
 def _props():
     st.subheader("Player Props")
     prop=st.selectbox("Select Prop",["Passing Yards","Rushing Yards","Receiving Yards","Receptions","Anytime TD","First TD"],key="cfb_prop_selector")
-    st.markdown(f"### Top 25 {prop}")
+    st.markdown(f"### Top {prop}")
 
     feed=get_cfb_odds_feed_status()
     rankings=build_cfb_rankings(prop)
