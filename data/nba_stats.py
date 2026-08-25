@@ -49,22 +49,40 @@ BASE_COLUMNS = [
     "blocks_per_game",
 ]
 
-STAT_ALIASES = {
-    "games_played": {"gp", "gamesplayed", "games"},
-    "minutes_per_game": {"min", "minutes", "avgminutes", "minutespergame"},
-    "points_per_game": {"pts", "points", "avgpoints", "pointspergame"},
-    "rebounds_per_game": {"reb", "rebs", "rebounds", "avgrebounds", "reboundspergame"},
-    "assists_per_game": {"ast", "assists", "avgassists", "assistspergame"},
-    "threes_per_game": {
-        "3pm",
-        "fg3m",
+# ESPN exposes both season totals and per-game averages in the same payload.
+# Average aliases are intentionally ordered and checked first. If ESPN changes a
+# label or omits an average, the total is divided by games played as a safe fallback.
+AVG_ALIASES = {
+    "minutes_per_game": ("avgminutes", "minutespergame", "minpergame"),
+    "points_per_game": ("avgpoints", "pointspergame", "ptspergame"),
+    "rebounds_per_game": ("avgrebounds", "reboundspergame", "rebpergame"),
+    "assists_per_game": ("avgassists", "assistspergame", "astpergame"),
+    "threes_per_game": (
+        "avgthreepointfieldgoalsmade",
+        "threepointfieldgoalsmadepergame",
+        "threepointersmadepergame",
+        "fg3mpergame",
+    ),
+    "steals_per_game": ("avgsteals", "stealspergame", "stlpergame"),
+    "blocks_per_game": ("avgblocks", "blockspergame", "blkpergame"),
+}
+
+TOTAL_ALIASES = {
+    "minutes_per_game": ("minutes", "min"),
+    "points_per_game": ("points", "pts"),
+    "rebounds_per_game": ("rebounds", "rebs", "reb"),
+    "assists_per_game": ("assists", "ast"),
+    "threes_per_game": (
         "threepointfieldgoalsmade",
         "threepointersmade",
-        "avgthreepointfieldgoalsmade",
-    },
-    "steals_per_game": {"stl", "steals", "avgsteals", "stealspergame"},
-    "blocks_per_game": {"blk", "blocks", "avgblocks", "blockspergame"},
+        "fg3m",
+        "3pm",
+    ),
+    "steals_per_game": ("steals", "stl"),
+    "blocks_per_game": ("blocks", "blk"),
 }
+
+GAME_ALIASES = ("gamesplayed", "games", "gp")
 
 
 def _empty_stats() -> pd.DataFrame:
@@ -184,11 +202,31 @@ def _flatten_player_stats(
     return flattened
 
 
-def _find_stat(stats: dict[str, float], field: str) -> float | None:
-    for alias in STAT_ALIASES[field]:
+def _first_stat(stats: dict[str, float], aliases: tuple[str, ...]) -> float | None:
+    for alias in aliases:
         if alias in stats:
             return stats[alias]
     return None
+
+
+def _games_played(stats: dict[str, float]) -> float | None:
+    return _first_stat(stats, GAME_ALIASES)
+
+
+def _per_game_stat(
+    stats: dict[str, float],
+    field: str,
+    games_played: float | None,
+) -> float | None:
+    average = _first_stat(stats, AVG_ALIASES[field])
+    if average is not None:
+        return average
+
+    total = _first_stat(stats, TOTAL_ALIASES[field])
+    if total is None or games_played is None or games_played <= 0:
+        return None
+
+    return total / games_played
 
 
 def _player_row(
@@ -218,20 +256,21 @@ def _player_row(
     )
 
     stats = _flatten_player_stats(player_entry, payload_category_labels)
+    games_played = _games_played(stats)
 
     return {
         "player_id": normalized_player_id,
         "player_name": str(player_name),
         "team": str(team),
         "age": _to_number(athlete.get("age")),
-        "games_played": _find_stat(stats, "games_played"),
-        "minutes_per_game": _find_stat(stats, "minutes_per_game"),
-        "points_per_game": _find_stat(stats, "points_per_game"),
-        "rebounds_per_game": _find_stat(stats, "rebounds_per_game"),
-        "assists_per_game": _find_stat(stats, "assists_per_game"),
-        "threes_per_game": _find_stat(stats, "threes_per_game"),
-        "steals_per_game": _find_stat(stats, "steals_per_game"),
-        "blocks_per_game": _find_stat(stats, "blocks_per_game"),
+        "games_played": games_played,
+        "minutes_per_game": _per_game_stat(stats, "minutes_per_game", games_played),
+        "points_per_game": _per_game_stat(stats, "points_per_game", games_played),
+        "rebounds_per_game": _per_game_stat(stats, "rebounds_per_game", games_played),
+        "assists_per_game": _per_game_stat(stats, "assists_per_game", games_played),
+        "threes_per_game": _per_game_stat(stats, "threes_per_game", games_played),
+        "steals_per_game": _per_game_stat(stats, "steals_per_game", games_played),
+        "blocks_per_game": _per_game_stat(stats, "blocks_per_game", games_played),
     }
 
 
@@ -282,11 +321,7 @@ def _normalize_espn_payloads(payloads: list[dict[str, Any]]) -> pd.DataFrame:
 
 @st.cache_data(ttl=21600, show_spinner=False)
 def load_nba_player_baseline(season: str = NBA_BASELINE_SEASON) -> pd.DataFrame:
-    """Load real previous-season NBA player statistics from ESPN.
-
-    Raises the upstream exception when data cannot be reached so the UI can clearly
-    report that the baseline is unavailable rather than substituting invented rows.
-    """
+    """Load real previous-season NBA player statistics from ESPN."""
     session = _session()
     payloads: list[dict[str, Any]] = []
     page = 1
