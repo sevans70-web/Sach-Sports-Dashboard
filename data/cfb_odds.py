@@ -1,28 +1,70 @@
-"""College Football sportsbook market helpers.
+"""College Football sportsbook provider layer.
 
-Uses the existing SportsGameOdds API key already configured for the dashboard,
-but queries the NCAAF league instead of NFL.
+Primary: SportsGameOdds
+Backup: The Odds API
+Last resort: last successful local snapshot
+
+This file is intentionally CFB-only. It never reuses NFL events or NFL prop rows.
 """
 
+import json
 import os
 import re
+import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pandas as pd
 import requests
 import streamlit as st
 
+
 SGO_EVENTS_URL = "https://api.sportsgameodds.com/v2/events"
-CFB_LEAGUE_ID = "NCAAF"
+SGO_LEAGUE_ID = "NCAAF"
+
+ODDS_API_BASE = "https://api.the-odds-api.com/v4"
+ODDS_API_SPORT = "americanfootball_ncaaf"
+ODDS_API_REGION = "us"
 
 PROP_MAP = {
-    "Passing Yards": ("passing_yards", "over"),
-    "Rushing Yards": ("rushing_yards", "over"),
-    "Receiving Yards": ("receiving_yards", "over"),
-    "Receptions": ("receptions", "over"),
-    "Anytime TD": ("touchdowns", None),
-    "First TD": ("firstTouchdown", None),
+    "Passing Yards": {
+        "sgo_stat": "passing_yards",
+        "odds_market": "player_pass_yds",
+        "side": "over",
+    },
+    "Rushing Yards": {
+        "sgo_stat": "rushing_yards",
+        "odds_market": "player_rush_yds",
+        "side": "over",
+    },
+    "Receiving Yards": {
+        "sgo_stat": "receiving_yards",
+        "odds_market": "player_reception_yds",
+        "side": "over",
+    },
+    "Receptions": {
+        "sgo_stat": "receptions",
+        "odds_market": "player_receptions",
+        "side": "over",
+    },
+    "Anytime TD": {
+        "sgo_stat": "touchdowns",
+        "odds_market": "player_anytime_td",
+        "side": None,
+    },
+    "First TD": {
+        "sgo_stat": "firstTouchdown",
+        "odds_market": "player_1st_td",
+        "side": None,
+    },
 }
+
+SGO_TTL = 600
+ODDS_TTL = 21600
+RATE_LIMIT_COOLDOWN = 65
+
+SGO_SNAPSHOT = Path("/tmp/sach_cfb_sgo_events.json")
+ODDS_SNAPSHOT = Path("/tmp/sach_cfb_odds_api_events.json")
 
 
 def _secret(name):
@@ -34,6 +76,27 @@ def _secret(name):
         pass
     value = os.getenv(name)
     return str(value).strip() if value else None
+
+
+def _read_json(path):
+    try:
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return None
+
+
+def _write_json(path, payload):
+    try:
+        path.write_text(json.dumps(payload), encoding="utf-8")
+    except Exception:
+        pass
+
+
+@st.cache_resource
+def _state():
+    return {"sgo_retry": 0.0, "odds_retry": 0.0}
 
 
 def _american_to_probability(value):
@@ -50,53 +113,189 @@ def _american_to_probability(value):
     return round(p * 100, 1)
 
 
-def _clean_player_name(odd, prop_label):
-    candidates = [
-        odd.get("statEntityName"),
-        odd.get("playerName"),
-        odd.get("participantName"),
-        odd.get("marketName"),
-        odd.get("name"),
-    ]
-    text = next((str(x).strip() for x in candidates if x), "")
-    if not text:
-        entity = str(odd.get("statEntityID") or "")
-        text = entity.replace("_NCAAF", "").replace("_", " ").title()
-
-    patterns = [
+def _clean_player_name(text, prop_label):
+    text = str(text or "").strip()
+    for pattern in [
         rf"\s+{re.escape(prop_label)}\s+Over/Under$",
         rf"\s+{re.escape(prop_label)}$",
         r"\s+Over/Under$",
         r"\s+Over$",
         r"\s+Under$",
-    ]
-    for pattern in patterns:
+    ]:
         text = re.sub(pattern, "", text, flags=re.I)
     return text.strip()
 
 
-def _event_matchup(event):
-    teams = event.get("teams") or {}
-    away = (
-        event.get("awayTeamName")
-        or event.get("awayTeam")
-        or (teams.get("away") or {}).get("name")
-        or (teams.get("away") or {}).get("displayName")
-    )
-    home = (
-        event.get("homeTeamName")
-        or event.get("homeTeam")
-        or (teams.get("home") or {}).get("name")
-        or (teams.get("home") or {}).get("displayName")
-    )
-    if away and home:
-        return f"{away} @ {home}"
+@st.cache_data(ttl=SGO_TTL, show_spinner=False)
+def _load_sgo():
+    key = _secret("SPORTSGAMEODDS_API_KEY")
+    if not key:
+        return {"status": "not_configured", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds is not configured."}
 
-    name = event.get("name") or event.get("eventName") or ""
-    return str(name)
+    state = _state()
+    if time.time() < state["sgo_retry"]:
+        stale = _read_json(SGO_SNAPSHOT)
+        if stale:
+            return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "Using the last successful SportsGameOdds CFB snapshot."}
+        return {"status": "rate_limited", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds is cooling down after a rate limit."}
+
+    now = datetime.now(timezone.utc)
+    try:
+        response = requests.get(
+            SGO_EVENTS_URL,
+            headers={"x-api-key": key},
+            params={
+                "leagueID": SGO_LEAGUE_ID,
+                "oddsAvailable": "true",
+                "finalized": "false",
+                "startsAfter": (now - timedelta(hours=6)).isoformat().replace("+00:00", "Z"),
+                "startsBefore": (now + timedelta(days=10)).isoformat().replace("+00:00", "Z"),
+                "limit": 100,
+            },
+            timeout=30,
+        )
+        if response.status_code == 429:
+            try:
+                wait = max(int(float(response.headers.get("Retry-After", RATE_LIMIT_COOLDOWN))), 1)
+            except Exception:
+                wait = RATE_LIMIT_COOLDOWN
+            state["sgo_retry"] = time.time() + wait
+            stale = _read_json(SGO_SNAPSHOT)
+            if stale:
+                return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is rate-limited; using the last successful CFB snapshot."}
+            return {"status": "rate_limited", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds is temporarily rate-limited."}
+
+        response.raise_for_status()
+        payload = response.json()
+        events = payload.get("data") or []
+        if events:
+            _write_json(SGO_SNAPSHOT, {"data": events})
+            return {"status": "live", "provider": "SportsGameOdds", "data": events, "message": "Live CFB markets connected via SportsGameOdds."}
+        return {"status": "empty", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds has no current CFB prop markets."}
+    except Exception as exc:
+        stale = _read_json(SGO_SNAPSHOT)
+        if stale:
+            return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is unavailable; using the last successful CFB snapshot."}
+        return {"status": "error", "provider": "SportsGameOdds", "data": [], "message": f"SportsGameOdds CFB error: {exc}"}
 
 
-def _event_odds(event):
+@st.cache_data(ttl=ODDS_TTL, show_spinner=False)
+def _load_odds_api():
+    key = _secret("THE_ODDS_API_KEY")
+    if not key:
+        return {"status": "not_configured", "provider": "The Odds API", "data": [], "message": "The Odds API is not configured."}
+
+    state = _state()
+    if time.time() < state["odds_retry"]:
+        stale = _read_json(ODDS_SNAPSHOT)
+        if stale:
+            return {"status": "stale", "provider": "The Odds API", "data": stale.get("data", []), "message": "Using the last successful CFB backup snapshot."}
+        return {"status": "rate_limited", "provider": "The Odds API", "data": [], "message": "The Odds API is temporarily rate-limited."}
+
+    try:
+        events_response = requests.get(
+            f"{ODDS_API_BASE}/sports/{ODDS_API_SPORT}/events",
+            params={"apiKey": key, "dateFormat": "iso"},
+            timeout=30,
+        )
+        events_response.raise_for_status()
+        events = events_response.json()
+
+        now = datetime.now(timezone.utc)
+        cutoff = now + timedelta(days=10)
+        upcoming = []
+        for event in events:
+            try:
+                commence = datetime.fromisoformat(str(event.get("commence_time")).replace("Z", "+00:00"))
+            except Exception:
+                continue
+            if now - timedelta(hours=6) <= commence <= cutoff:
+                upcoming.append(event)
+
+        markets = ",".join(sorted({v["odds_market"] for v in PROP_MAP.values()}))
+        collected = []
+        credits_remaining = None
+
+        for event in upcoming:
+            event_id = event.get("id")
+            if not event_id:
+                continue
+
+            response = requests.get(
+                f"{ODDS_API_BASE}/sports/{ODDS_API_SPORT}/events/{event_id}/odds",
+                params={
+                    "apiKey": key,
+                    "regions": ODDS_API_REGION,
+                    "markets": markets,
+                    "oddsFormat": "american",
+                    "dateFormat": "iso",
+                },
+                timeout=30,
+            )
+
+            remaining = response.headers.get("x-requests-remaining")
+            if remaining is not None:
+                try:
+                    credits_remaining = int(float(remaining))
+                except Exception:
+                    pass
+
+            if response.status_code == 429:
+                state["odds_retry"] = time.time() + RATE_LIMIT_COOLDOWN
+                break
+            if response.status_code == 422:
+                continue
+            if response.status_code in {401, 403}:
+                return {"status": "auth_error", "provider": "The Odds API", "data": [], "message": "The Odds API rejected THE_ODDS_API_KEY."}
+
+            response.raise_for_status()
+            payload = response.json()
+            if payload.get("bookmakers"):
+                collected.append(payload)
+
+            if credits_remaining is not None and credits_remaining < 12:
+                break
+
+        if collected:
+            _write_json(ODDS_SNAPSHOT, {"data": collected})
+            return {"status": "live", "provider": "The Odds API", "data": collected, "message": "Live CFB backup markets connected via The Odds API."}
+
+        stale = _read_json(ODDS_SNAPSHOT)
+        if stale:
+            return {"status": "stale", "provider": "The Odds API", "data": stale.get("data", []), "message": "No fresh backup markets were returned; using the last successful CFB backup snapshot."}
+
+        return {"status": "empty", "provider": "The Odds API", "data": [], "message": "No CFB player-prop markets are posted by the backup provider yet."}
+    except Exception as exc:
+        stale = _read_json(ODDS_SNAPSHOT)
+        if stale:
+            return {"status": "stale", "provider": "The Odds API", "data": stale.get("data", []), "message": "The Odds API is unavailable; using the last successful CFB backup snapshot."}
+        return {"status": "error", "provider": "The Odds API", "data": [], "message": f"The Odds API CFB error: {exc}"}
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def load_shared_cfb_events():
+    primary = _load_sgo()
+    if primary.get("data"):
+        return primary
+
+    backup = _load_odds_api()
+    if backup.get("data"):
+        return backup
+
+    # Prefer the backup's actionable message when both are empty/unavailable.
+    return backup if backup.get("status") != "not_configured" else primary
+
+
+def get_cfb_odds_feed_status():
+    result = load_shared_cfb_events()
+    return {
+        "status": result.get("status"),
+        "provider": result.get("provider"),
+        "message": result.get("message"),
+    }
+
+
+def _sgo_event_odds(event):
     raw = event.get("odds") or event.get("markets") or []
     if isinstance(raw, dict):
         values = []
@@ -106,96 +305,28 @@ def _event_odds(event):
                 item.setdefault("oddID", key)
                 values.append(item)
             elif isinstance(value, list):
-                values.extend([x for x in value if isinstance(x, dict)])
+                values.extend(x for x in value if isinstance(x, dict))
         return values
-    if isinstance(raw, list):
-        return [x for x in raw if isinstance(x, dict)]
-    return []
+    return [x for x in raw if isinstance(x, dict)] if isinstance(raw, list) else []
 
 
-@st.cache_data(ttl=600, show_spinner=False)
-def load_cfb_events():
-    api_key = _secret("SPORTSGAMEODDS_API_KEY")
-    if not api_key:
-        return {
-            "status": "not_configured",
-            "provider": "SportsGameOdds",
-            "message": "SportsGameOdds API key is not configured.",
-            "events": [],
-        }
-
-    now = datetime.now(timezone.utc)
-    try:
-        response = requests.get(
-            SGO_EVENTS_URL,
-            headers={"x-api-key": api_key},
-            params={
-                "leagueID": CFB_LEAGUE_ID,
-                "oddsAvailable": "true",
-                "finalized": "false",
-                "startsAfter": (now - timedelta(hours=6)).isoformat().replace("+00:00", "Z"),
-                "startsBefore": (now + timedelta(days=10)).isoformat().replace("+00:00", "Z"),
-                "limit": 100,
-            },
-            timeout=30,
-        )
-
-        if response.status_code == 429:
-            return {
-                "status": "rate_limited",
-                "provider": "SportsGameOdds",
-                "message": "SportsGameOdds is temporarily rate-limited.",
-                "events": [],
-            }
-
-        response.raise_for_status()
-        payload = response.json()
-        events = payload.get("data") or []
-
-        return {
-            "status": "live" if events else "empty",
-            "provider": "SportsGameOdds",
-            "message": (
-                "Live NCAAF sportsbook markets connected."
-                if events
-                else "No NCAAF sportsbook markets are posted yet."
-            ),
-            "events": events,
-        }
-    except Exception as exc:
-        return {
-            "status": "error",
-            "provider": "SportsGameOdds",
-            "message": f"SportsGameOdds NCAAF feed error: {exc}",
-            "events": [],
-        }
+def _sgo_matchup(event):
+    teams = event.get("teams") or {}
+    away = event.get("awayTeamName") or event.get("awayTeam") or (teams.get("away") or {}).get("name")
+    home = event.get("homeTeamName") or event.get("homeTeam") or (teams.get("home") or {}).get("name")
+    if away and home:
+        return f"{away} @ {home}"
+    return str(event.get("name") or event.get("eventName") or "")
 
 
-def get_cfb_odds_feed_status():
-    feed = load_cfb_events()
-    return {
-        "status": feed.get("status"),
-        "provider": feed.get("provider"),
-        "message": feed.get("message"),
-    }
-
-
-@st.cache_data(ttl=600, show_spinner=False)
-def load_cfb_prop_markets(prop_label):
-    if prop_label not in PROP_MAP:
-        return pd.DataFrame()
-
-    stat_id, required_side = PROP_MAP[prop_label]
-    feed = load_cfb_events()
+def _normalize_sgo(events, prop_label):
+    config = PROP_MAP[prop_label]
     rows = []
-
-    for event in feed.get("events", []):
-        matchup = _event_matchup(event)
-        event_id = event.get("eventID") or event.get("id")
-
-        for odd in _event_odds(event):
-            odd_stat = str(odd.get("statID") or odd.get("statId") or "").lower()
-            if odd_stat != stat_id.lower():
+    for event in events:
+        matchup = _sgo_matchup(event)
+        for odd in _sgo_event_odds(event):
+            stat_id = str(odd.get("statID") or odd.get("statId") or "").lower()
+            if stat_id != config["sgo_stat"].lower():
                 continue
 
             entity = str(odd.get("statEntityID") or "")
@@ -203,69 +334,138 @@ def load_cfb_prop_markets(prop_label):
                 continue
 
             side = str(odd.get("sideID") or odd.get("side") or "").lower()
-            if required_side and side != required_side:
+            if config["side"] and side != config["side"]:
                 continue
-
-            # Touchdown markets may be encoded as yes/over/anytime depending on book.
             if prop_label in {"Anytime TD", "First TD"} and side in {"no", "under"}:
                 continue
 
-            player_name = _clean_player_name(odd, prop_label)
-            if not player_name:
+            name = (
+                odd.get("statEntityName")
+                or odd.get("playerName")
+                or odd.get("participantName")
+                or odd.get("marketName")
+                or entity.replace("_NCAAF", "").replace("_", " ").title()
+            )
+            name = _clean_player_name(name, prop_label)
+            if not name:
                 continue
 
-            line = pd.to_numeric(odd.get("bookOverUnder"), errors="coerce")
             odds_value = odd.get("bookOdds")
             fair_odds = odd.get("fairOdds")
-            probability = _american_to_probability(fair_odds if fair_odds is not None else odds_value)
-
             books = odd.get("byBookmaker") or {}
-            bookmaker_count = len(books) if isinstance(books, dict) else 0
+            rows.append({
+                "event_id": event.get("eventID") or event.get("id"),
+                "matchup": matchup,
+                "player_name": name,
+                "market_player_id": odd.get("playerID") or entity,
+                "consensus_line": pd.to_numeric(odd.get("bookOverUnder"), errors="coerce"),
+                "consensus_odds": odds_value,
+                "fair_odds": fair_odds,
+                "sportsbook_implied_probability": _american_to_probability(fair_odds if fair_odds is not None else odds_value),
+                "bookmaker_count": len(books) if isinstance(books, dict) else 0,
+            })
+    return pd.DataFrame(rows)
 
-            rows.append(
-                {
-                    "event_id": event_id,
-                    "matchup": matchup,
-                    "player_name": player_name,
-                    "market_player_id": odd.get("playerID") or entity,
-                    "consensus_line": line,
-                    "consensus_odds": odds_value,
-                    "fair_odds": fair_odds,
-                    "sportsbook_implied_probability": probability,
-                    "bookmaker_count": bookmaker_count,
-                    "prop": prop_label,
-                }
-            )
 
-    if not rows:
+def _normalize_odds_api(events, prop_label):
+    market_key = PROP_MAP[prop_label]["odds_market"]
+    raw_rows = []
+
+    for event in events:
+        matchup = f"{event.get('away_team', '')} @ {event.get('home_team', '')}".strip()
+        for bookmaker in event.get("bookmakers") or []:
+            for market in bookmaker.get("markets") or []:
+                if market.get("key") != market_key:
+                    continue
+                for outcome in market.get("outcomes") or []:
+                    outcome_name = str(outcome.get("name") or "")
+                    description = str(outcome.get("description") or "")
+
+                    if prop_label not in {"Anytime TD", "First TD"} and outcome_name.lower() != "over":
+                        continue
+                    if prop_label in {"Anytime TD", "First TD"} and outcome_name.lower() in {"no", "under"}:
+                        continue
+
+                    player = description or outcome_name
+                    player = _clean_player_name(player, prop_label)
+                    if not player:
+                        continue
+
+                    raw_rows.append({
+                        "event_id": event.get("id"),
+                        "matchup": matchup,
+                        "player_name": player,
+                        "market_player_id": player.lower(),
+                        "consensus_line": pd.to_numeric(outcome.get("point"), errors="coerce"),
+                        "price": pd.to_numeric(outcome.get("price"), errors="coerce"),
+                        "book": bookmaker.get("key"),
+                    })
+
+    if not raw_rows:
         return pd.DataFrame()
 
-    df = pd.DataFrame(rows)
+    raw = pd.DataFrame(raw_rows)
+    rows = []
+    for (event_id, matchup, player_id, player), group in raw.groupby(
+        ["event_id", "matchup", "market_player_id", "player_name"], dropna=False
+    ):
+        prices = group["price"].dropna()
+        lines = group["consensus_line"].dropna()
+        consensus_odds = int(round(float(prices.median()))) if not prices.empty else None
+        rows.append({
+            "event_id": event_id,
+            "matchup": matchup,
+            "player_name": player,
+            "market_player_id": player_id,
+            "consensus_line": round(float(lines.median()), 1) if not lines.empty else pd.NA,
+            "consensus_odds": consensus_odds,
+            "fair_odds": None,
+            "sportsbook_implied_probability": _american_to_probability(consensus_odds),
+            "bookmaker_count": int(group["book"].nunique()),
+        })
+    return pd.DataFrame(rows)
 
-    # Multiple books/market records can exist for the same player.
+
+@st.cache_data(ttl=600, show_spinner=False)
+def load_cfb_prop_markets(prop_label):
+    if prop_label not in PROP_MAP:
+        return pd.DataFrame()
+
+    shared = load_shared_cfb_events()
+    provider = shared.get("provider")
+    events = shared.get("data") or []
+
+    if not events:
+        return pd.DataFrame()
+
+    if provider == "The Odds API":
+        df = _normalize_odds_api(events, prop_label)
+    else:
+        df = _normalize_sgo(events, prop_label)
+
+    if df.empty:
+        return df
+
     df["sportsbook_implied_probability"] = pd.to_numeric(
         df["sportsbook_implied_probability"], errors="coerce"
     )
     df["consensus_line"] = pd.to_numeric(df["consensus_line"], errors="coerce")
 
+    # Collapse duplicate SportsGameOdds records if necessary.
     grouped = []
     for (player_id, player_name, matchup), group in df.groupby(
         ["market_player_id", "player_name", "matchup"], dropna=False
     ):
+        row = group.iloc[0].to_dict()
         probs = group["sportsbook_implied_probability"].dropna()
         lines = group["consensus_line"].dropna()
-
-        row = group.iloc[0].to_dict()
         row["sportsbook_implied_probability"] = round(float(probs.median()), 1) if not probs.empty else pd.NA
         row["consensus_line"] = round(float(lines.median()), 1) if not lines.empty else pd.NA
-        row["bookmaker_count"] = int(group["bookmaker_count"].max()) if not group.empty else 0
+        row["bookmaker_count"] = int(pd.to_numeric(group["bookmaker_count"], errors="coerce").fillna(0).max())
+        row["provider"] = provider
         grouped.append(row)
 
     result = pd.DataFrame(grouped)
-
-    # First usable CFB ranking mode: sportsbook market probability.
-    # This is deliberately labelled Market Foundation until the college
-    # statistical projection engine is attached.
     result = result.sort_values(
         ["sportsbook_implied_probability", "consensus_line"],
         ascending=[False, False],
