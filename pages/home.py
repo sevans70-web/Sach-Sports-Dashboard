@@ -768,7 +768,7 @@ with sport_2:
     render_sport_link(
         "🏈",
         "NFL",
-        "Future phase",
+        "Active build",
         "Game, player, matchup, injury, and market intelligence.",
         "pages/nfl.py",
     )
@@ -777,14 +777,23 @@ with sport_3:
     render_sport_link(
         "🏀",
         "NBA",
-        "Future phase",
+        "Active build",
         "Points, rebounds, assists, combinations, and matchup intelligence.",
         "pages/nba.py",
     )
 
-sport_4, sport_5 = st.columns(2)
+sport_4, sport_5, sport_6 = st.columns(3)
 
 with sport_4:
+    render_sport_link(
+        "🏀",
+        "WNBA",
+        "Active build",
+        "Current-season points, rebounds, assists, combinations, and matchup intelligence.",
+        "pages/wnba.py",
+    )
+
+with sport_5:
     render_sport_link(
         "🏒",
         "NHL",
@@ -793,7 +802,7 @@ with sport_4:
         "pages/nhl.py",
     )
 
-with sport_5:
+with sport_6:
     render_sport_link(
         "⚽",
         "Soccer",
