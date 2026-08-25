@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from html import escape
+import json
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -15,6 +17,7 @@ from engines.wnba_rankings import build_wnba_baseline_top25
 
 WNBA_SEASON = "2026"
 TORONTO_TZ = ZoneInfo("America/Toronto")
+WNBA_MOVEMENT_FILE = Path("/tmp/sach_wnba_rank_movement.json")
 
 WNBA_PROPS = [
     "Points",
@@ -326,6 +329,57 @@ def _render_games_schedule() -> None:
         _render_game_card(game, show_score=True)
 
 
+def _load_movement_state() -> dict:
+    try:
+        if WNBA_MOVEMENT_FILE.exists():
+            return json.loads(WNBA_MOVEMENT_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+
+def _apply_rank_movement(df: pd.DataFrame, category: str) -> pd.DataFrame:
+    """Compare the current Top 25 with the prior rendered ranking for this prop."""
+    if df is None or df.empty:
+        return df
+
+    state = _load_movement_state()
+    previous = state.get(category, {})
+    current = {}
+    movement = []
+
+    for _, row in df.iterrows():
+        player_id = row.get("player_id")
+        if pd.notna(player_id):
+            key = str(int(player_id))
+        else:
+            key = f"{row.get('player_name')}|{row.get('team')}"
+
+        rank = int(row.get("rank", 0))
+        current[key] = rank
+        old_rank = previous.get(key)
+
+        if old_rank is None:
+            movement.append("NEW")
+        elif int(old_rank) > rank:
+            movement.append(f"↑ {int(old_rank) - rank}")
+        elif int(old_rank) < rank:
+            movement.append(f"↓ {rank - int(old_rank)}")
+        else:
+            movement.append("—")
+
+    out = df.copy()
+    out["rank_movement"] = movement
+    state[category] = current
+
+    try:
+        WNBA_MOVEMENT_FILE.write_text(json.dumps(state), encoding="utf-8")
+    except Exception:
+        pass
+
+    return out
+
+
 def _format_number(value, digits: int = 1) -> str:
     numeric = pd.to_numeric(value, errors="coerce")
     if pd.isna(numeric):
@@ -339,6 +393,7 @@ def _render_baseline_player(row: pd.Series) -> None:
     team = escape(str(row.get("team", "—")))
     player_id = row.get("player_id")
     metric_label = escape(str(row.get("metric_label", "Per Game")))
+    movement = escape(str(row.get("rank_movement", "—")))
 
     image_html = ""
     if pd.notna(player_id):
@@ -358,7 +413,7 @@ def _render_baseline_player(row: pd.Series) -> None:
             <div>{image_html}</div>
             <div>
                 <div class="wnba-player-rank">#{rank} {player}</div>
-                <div class="wnba-player-meta">{team} • {WNBA_BASELINE_SEASON} regular-season baseline</div>
+                <div class="wnba-player-meta">{team} • {movement} • {WNBA_BASELINE_SEASON} regular-season baseline</div>
                 <div class="wnba-stat-grid">
                     <div class="wnba-stat-box">
                         <div class="wnba-stat-label">{metric_label}</div>
@@ -397,6 +452,8 @@ def _render_player_props() -> None:
         st.warning("WNBA player baseline data is temporarily unavailable.")
         st.caption(str(exc))
         return
+
+    top25 = _apply_rank_movement(top25, prop)
 
     if top25.empty:
         st.info("No qualified real-player baseline rows are available for this prop right now.")
