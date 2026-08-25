@@ -18,7 +18,7 @@ import streamlit as st
 
 from data.cfb_odds import load_cfb_prop_markets
 
-ESPN_SEARCH = "https://site.api.espn.com/apis/search/v2"
+ESPN_SEARCH = "https://site.web.api.espn.com/apis/search/v2"
 ESPN_WEB_BASE = "https://site.web.api.espn.com/apis/common/v3/sports/football/college-football/athletes"
 CURRENT_SEASON = 2026
 FOUNDATION_SEASON = 2025
@@ -61,7 +61,7 @@ def _espn_player_search(player_name):
     try:
         response = requests.get(
             ESPN_SEARCH,
-            params={"query": player_name, "limit": 12},
+            params={"query": player_name, "limit": 12, "sport": "football"},
             timeout=15,
         )
         response.raise_for_status()
