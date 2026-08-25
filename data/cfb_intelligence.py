@@ -84,8 +84,6 @@ def _espn_player_search(player_name):
             continue
 
         node_text = str(node).lower()
-        if "football" not in node_text:
-            continue
 
         score = 0
         candidate_norm = _norm(name)
@@ -93,7 +91,7 @@ def _espn_player_search(player_name):
             score += 100
         elif target in candidate_norm or candidate_norm in target:
             score += 50
-        if "college" in node_text or "ncaaf" in node_text:
+        if "college" in node_text or "ncaaf" in node_text or "football" in node_text:
             score += 20
 
         if score:
