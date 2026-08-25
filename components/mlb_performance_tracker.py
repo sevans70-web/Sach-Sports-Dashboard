@@ -9,9 +9,11 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from data.mlb_performance_tracker import (
+    all_records_for_period,
     current_day_view,
     records_for_period,
     summarize,
+    summarize_overall,
     sync_history,
 )
 from data.mlb_pitcher_performance_tracker import (
@@ -71,6 +73,52 @@ def _records_for_selected_period(
         )
 
     return records_for_period(history, category, period)
+
+
+def _all_records_for_selected_period(
+    history: dict[str, Any],
+    period: str,
+) -> list[dict[str, Any]]:
+    if period == "Yesterday":
+        yesterday = datetime.now(TORONTO_TIMEZONE).date() - timedelta(days=1)
+        return all_records_for_period(history, "Today", today=yesterday)
+    return all_records_for_period(history, period)
+
+
+def _render_overall_batter_performance(
+    history: dict[str, Any],
+    period: str,
+) -> None:
+    rows = _all_records_for_selected_period(history, period)
+    summary = summarize_overall(rows)
+    top_5 = summary["top_5_overall"]
+    top_25 = summary["top_25_overall"]
+
+    st.markdown("#### 🌐 Overall MLB Batter Performance")
+    if not summary["graded"]:
+        st.caption("Overall performance will populate as tracked predictions settle.")
+        return
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Overall Hit Rate", f"{summary['hit_rate']:.1f}%")
+    col2.metric("Correct / Settled", f"{summary['wins']} / {summary['graded']}")
+    col3.metric("Pending", str(summary["pending"]))
+
+    left, right = st.columns(2)
+    left.metric(
+        "Top 5 Overall",
+        f"{top_5['hit_rate']:.1f}%" if top_5["total"] else "—",
+        f"{top_5['wins']}-{top_5['losses']}" if top_5["total"] else None,
+    )
+    right.metric(
+        "Full Top 25 Overall",
+        f"{top_25['hit_rate']:.1f}%" if top_25["total"] else "—",
+        f"{top_25['wins']}-{top_25['losses']}" if top_25["total"] else None,
+    )
+    st.caption(
+        "Combined across all tracked batter prop categories. Each settled prop "
+        "prediction counts once; category percentages are not simply averaged."
+    )
 
 
 def _pitcher_records_for_selected_period(
@@ -311,6 +359,8 @@ def render_prediction_performance_tracker(
     )
 
     with batter_perf_tab:
+        _render_overall_batter_performance(batter_history, period)
+        st.divider()
         tabs = st.tabs(
             [BATTER_CATEGORY_CONFIG[key][0] for key in BATTER_CATEGORY_CONFIG]
         )
