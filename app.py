@@ -14,6 +14,7 @@ pages = {
         st.Page("pages/nfl.py", title="NFL", icon="🏈"),
         st.Page("pages/cfb.py", title="College Football", icon="🏈"),
         st.Page("pages/nba.py", title="NBA", icon="🏀"),
+        st.Page("pages/wnba.py", title="WNBA", icon="🏀"),
         st.Page("pages/nhl.py", title="NHL", icon="🏒"),
         st.Page("pages/soccer.py", title="Soccer", icon="⚽"),
     ]
