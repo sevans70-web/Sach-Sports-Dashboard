@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from html import escape
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -100,6 +101,64 @@ def _inject_nba_mobile_css() -> None:
             margin-top: .35rem;
         }
 
+        .nba-player-card {
+            display: grid;
+            grid-template-columns: 92px minmax(0, 1fr);
+            gap: .85rem;
+            align-items: center;
+            border: 1px solid rgba(49, 90, 114, .75);
+            border-radius: 16px;
+            padding: .78rem;
+            margin: .58rem 0;
+            background: linear-gradient(135deg, rgba(17,26,45,.88), rgba(27,36,80,.58));
+        }
+        .nba-player-photo {
+            width: 92px;
+            height: 92px;
+            object-fit: contain;
+            object-position: center bottom;
+            border-radius: 12px;
+            background: rgba(255,255,255,.96);
+        }
+        .nba-player-rank {
+            font-size: 1.12rem;
+            font-weight: 850;
+            line-height: 1.2;
+            margin-bottom: .18rem;
+        }
+        .nba-player-meta {
+            color: var(--nba-soft);
+            font-size: .78rem;
+            margin-bottom: .55rem;
+        }
+        .nba-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: .4rem;
+        }
+        .nba-stat-box {
+            border: 1px solid rgba(49, 90, 114, .55);
+            border-radius: 10px;
+            padding: .42rem .5rem;
+            background: rgba(8, 14, 27, .30);
+        }
+        .nba-stat-label {
+            color: var(--nba-soft);
+            font-size: .66rem;
+            line-height: 1.1;
+            margin-bottom: .16rem;
+        }
+        .nba-stat-value {
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+        .nba-baseline-note {
+            color: var(--nba-soft);
+            font-size: .68rem;
+            margin-top: .45rem;
+        }
+
         @media (max-width: 700px) {
             .block-container { padding-left: .82rem; padding-right: .82rem; }
             .nba-hero { padding: .82rem; border-radius: 15px; }
@@ -118,6 +177,25 @@ def _inject_nba_mobile_css() -> None:
             div[data-testid="stMetric"] { padding: .3rem .35rem; }
             div[data-testid="stMetricLabel"] { font-size: .72rem; }
             div[data-testid="stMetricValue"] { font-size: 1rem; }
+
+            .nba-player-card {
+                grid-template-columns: 74px minmax(0, 1fr);
+                gap: .65rem;
+                padding: .64rem;
+                border-radius: 14px;
+            }
+            .nba-player-photo {
+                width: 74px;
+                height: 74px;
+                border-radius: 10px;
+            }
+            .nba-player-rank { font-size: 1rem; }
+            .nba-player-meta { font-size: .71rem; margin-bottom: .42rem; }
+            .nba-stat-grid { gap: .3rem; }
+            .nba-stat-box { padding: .34rem .38rem; border-radius: 8px; }
+            .nba-stat-label { font-size: .6rem; }
+            .nba-stat-value { font-size: .9rem; }
+            .nba-baseline-note { font-size: .62rem; }
         }
         </style>
         """,
@@ -163,9 +241,9 @@ def _render_game_card(game: pd.Series, show_score: bool = True) -> None:
     st.markdown(
         f"""
         <div class="nba-game">
-            <strong>{game.get('away_team', 'Away')} @ {game.get('home_team', 'Home')}</strong>
+            <strong>{escape(str(game.get('away_team', 'Away')))} @ {escape(str(game.get('home_team', 'Home')))}</strong>
             {score_line}
-            <br><span class="nba-soft">{_format_tipoff(game.get('tipoff_et'))} • {game.get('status', 'Scheduled')}</span>
+            <br><span class="nba-soft">{_format_tipoff(game.get('tipoff_et'))} • {escape(str(game.get('status', 'Scheduled')))}</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -248,38 +326,64 @@ def _render_games_schedule() -> None:
         _render_game_card(game, show_score=True)
 
 
+def _format_number(value, digits: int = 1) -> str:
+    numeric = pd.to_numeric(value, errors="coerce")
+    if pd.isna(numeric):
+        return "—"
+    return f"{float(numeric):.{digits}f}"
+
+
 def _render_baseline_player(row: pd.Series) -> None:
     rank = int(row.get("rank", 0))
-    player = str(row.get("player_name", "Unknown Player"))
-    team = str(row.get("team", "—"))
+    player = escape(str(row.get("player_name", "Unknown Player")))
+    team = escape(str(row.get("team", "—")))
     player_id = row.get("player_id")
-    value = pd.to_numeric(row.get("ranking_value"), errors="coerce")
-    metric_label = str(row.get("metric_label", "Per Game"))
-    games = pd.to_numeric(row.get("games_played"), errors="coerce")
-    minutes = pd.to_numeric(row.get("minutes_per_game"), errors="coerce")
+    metric_label = escape(str(row.get("metric_label", "Per Game")))
 
-    c1, c2 = st.columns([1, 4])
-    with c1:
-        if pd.notna(player_id):
-            st.image(nba_headshot_url(int(player_id)), use_container_width=True)
-    with c2:
-        st.markdown(f"### #{rank} {player}")
-        st.caption(f"{team} • {NBA_BASELINE_SEASON} regular-season baseline")
-        m1, m2, m3 = st.columns(3)
-        m1.metric(metric_label, f"{value:.1f}" if pd.notna(value) else "—")
-        m2.metric("Games", f"{int(games)}" if pd.notna(games) else "—")
-        m3.metric("MIN/G", f"{minutes:.1f}" if pd.notna(minutes) else "—")
-        st.caption("Baseline ranking only • not yet a 2026–27 slate prediction")
-    st.divider()
+    image_html = ""
+    if pd.notna(player_id):
+        image_html = (
+            f'<img class="nba-player-photo" src="{nba_headshot_url(int(player_id))}" '
+            f'alt="{player} headshot">'
+        )
+    else:
+        image_html = '<div class="nba-player-photo"></div>'
+
+    games = pd.to_numeric(row.get("games_played"), errors="coerce")
+    games_text = f"{int(games)}" if pd.notna(games) else "—"
+
+    st.markdown(
+        f"""
+        <div class="nba-player-card">
+            <div>{image_html}</div>
+            <div>
+                <div class="nba-player-rank">#{rank} {player}</div>
+                <div class="nba-player-meta">{team} • {NBA_BASELINE_SEASON} regular-season baseline</div>
+                <div class="nba-stat-grid">
+                    <div class="nba-stat-box">
+                        <div class="nba-stat-label">{metric_label}</div>
+                        <div class="nba-stat-value">{_format_number(row.get('ranking_value'))}</div>
+                    </div>
+                    <div class="nba-stat-box">
+                        <div class="nba-stat-label">Games</div>
+                        <div class="nba-stat-value">{games_text}</div>
+                    </div>
+                    <div class="nba-stat-box">
+                        <div class="nba-stat-label">MIN/G</div>
+                        <div class="nba-stat-value">{_format_number(row.get('minutes_per_game'))}</div>
+                    </div>
+                </div>
+                <div class="nba-baseline-note">Baseline ranking only • not yet a 2026–27 slate prediction</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def _render_player_props() -> None:
     st.subheader("Player Props")
-    prop = st.selectbox(
-        "Select Prop",
-        NBA_PROPS,
-        key="nba_prop_selector",
-    )
+    prop = st.selectbox("Select Prop", NBA_PROPS, key="nba_prop_selector")
 
     st.markdown(f"### Top 25 {prop}")
     st.caption(
@@ -304,7 +408,9 @@ def _render_player_props() -> None:
 
 def _render_results_performance() -> None:
     st.subheader("Results / Performance")
-    st.caption("Completed games now; prediction grading and model performance will live here as NBA predictions are recorded.")
+    st.caption(
+        "Completed games now; prediction grading and model performance will live here as NBA predictions are recorded."
+    )
 
     today = datetime.now(TORONTO_TZ).date()
     try:
@@ -317,7 +423,11 @@ def _render_results_performance() -> None:
         st.caption(str(exc))
         return
 
-    completed = games[games["completed"].fillna(False)].copy() if not games.empty else pd.DataFrame()
+    completed = (
+        games[games["completed"].fillna(False)].copy()
+        if not games.empty
+        else pd.DataFrame()
+    )
 
     if completed.empty:
         st.info("No completed NBA games are available in the last 14 days.")
@@ -346,13 +456,10 @@ def show() -> None:
 
     with tabs[0]:
         _render_intelligence()
-
     with tabs[1]:
         _render_games_schedule()
-
     with tabs[2]:
         _render_player_props()
-
     with tabs[3]:
         _render_results_performance()
 
