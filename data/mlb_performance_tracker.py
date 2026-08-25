@@ -251,3 +251,39 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "avg_gi_wins": sum(winner_scores) / len(winner_scores) if winner_scores else 0.0,
         "avg_gi_misses": sum(miss_scores) / len(miss_scores) if miss_scores else 0.0,
     }
+
+
+def all_records_for_period(
+    history: dict[str, Any],
+    period: str,
+    today: date | None = None,
+) -> list[dict[str, Any]]:
+    """Return every tracked batter prediction across all prop categories."""
+    rows: list[dict[str, Any]] = []
+    for category in CORE_CATEGORIES:
+        rows.extend(records_for_period(history, category, period, today=today))
+    return rows
+
+
+def summarize_overall(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Summarize the MLB batter model as one combined prediction system."""
+    overall = summarize(rows)
+    graded = [row for row in rows if isinstance(row.get("correct"), bool)]
+    top_5_rows = [row for row in graded if 1 <= int(row.get("rank") or 0) <= 5]
+    full_top_25_rows = [row for row in graded if 1 <= int(row.get("rank") or 0) <= 25]
+
+    def compact(subset: list[dict[str, Any]]) -> dict[str, Any]:
+        wins = sum(1 for row in subset if row.get("correct") is True)
+        total = len(subset)
+        return {
+            "wins": wins,
+            "losses": total - wins,
+            "total": total,
+            "hit_rate": (wins / total * 100) if total else 0.0,
+        }
+
+    return {
+        **overall,
+        "top_5_overall": compact(top_5_rows),
+        "top_25_overall": compact(full_top_25_rows),
+    }
