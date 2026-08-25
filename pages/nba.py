@@ -9,6 +9,8 @@ import pandas as pd
 import streamlit as st
 
 from data.nba_schedule import current_nba_window, load_nba_scoreboard
+from data.nba_stats import NBA_BASELINE_SEASON, nba_headshot_url
+from engines.nba_rankings import build_nba_baseline_top25
 
 NBA_SEASON = "2026–27"
 TORONTO_TZ = ZoneInfo("America/Toronto")
@@ -214,7 +216,7 @@ def _render_intelligence() -> None:
         unsafe_allow_html=True,
     )
     st.caption(
-        "Player rankings will appear only after the NBA statistical, availability, matchup and market inputs are connected to the ranking engine."
+        "Stage 2 baseline rankings use real 2025–26 regular-season statistics. Current-slate availability, matchup, market and prediction layers are added separately so baseline performance is never mislabeled as a prediction."
     )
 
 
@@ -246,6 +248,31 @@ def _render_games_schedule() -> None:
         _render_game_card(game, show_score=True)
 
 
+def _render_baseline_player(row: pd.Series) -> None:
+    rank = int(row.get("rank", 0))
+    player = str(row.get("player_name", "Unknown Player"))
+    team = str(row.get("team", "—"))
+    player_id = row.get("player_id")
+    value = pd.to_numeric(row.get("ranking_value"), errors="coerce")
+    metric_label = str(row.get("metric_label", "Per Game"))
+    games = pd.to_numeric(row.get("games_played"), errors="coerce")
+    minutes = pd.to_numeric(row.get("minutes_per_game"), errors="coerce")
+
+    c1, c2 = st.columns([1, 4])
+    with c1:
+        if pd.notna(player_id):
+            st.image(nba_headshot_url(int(player_id)), use_container_width=True)
+    with c2:
+        st.markdown(f"### #{rank} {player}")
+        st.caption(f"{team} • {NBA_BASELINE_SEASON} regular-season baseline")
+        m1, m2, m3 = st.columns(3)
+        m1.metric(metric_label, f"{value:.1f}" if pd.notna(value) else "—")
+        m2.metric("Games", f"{int(games)}" if pd.notna(games) else "—")
+        m3.metric("MIN/G", f"{minutes:.1f}" if pd.notna(minutes) else "—")
+        st.caption("Baseline ranking only • not yet a 2026–27 slate prediction")
+    st.divider()
+
+
 def _render_player_props() -> None:
     st.subheader("Player Props")
     prop = st.selectbox(
@@ -255,19 +282,24 @@ def _render_player_props() -> None:
     )
 
     st.markdown(f"### Top 25 {prop}")
-    st.markdown(
-        f"""
-        <div class="nba-prop-shell">
-            <div class="nba-prop-name">{prop}</div>
-            <div class="nba-soft">Top 25 ranking workspace is ready for the NBA model layer.</div>
-            <div class="nba-status-chip">Live-data foundation only</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.caption(
+        f"Real {NBA_BASELINE_SEASON} regular-season statistical baseline • minimum 20 games • "
+        "prediction/GI layer comes after current-slate inputs are connected"
     )
-    st.info(
-        "No NBA player ranking is being shown yet because we are not using placeholder or invented player data. The next NBA build will connect real player/stat inputs and create the prop-ranking engines behind this dropdown."
-    )
+
+    try:
+        top25 = build_nba_baseline_top25(prop, NBA_BASELINE_SEASON, minimum_games=20)
+    except Exception as exc:
+        st.warning("NBA player baseline data is temporarily unavailable.")
+        st.caption(str(exc))
+        return
+
+    if top25.empty:
+        st.info("No qualified real-player baseline rows are available for this prop right now.")
+        return
+
+    for _, row in top25.iterrows():
+        _render_baseline_player(row)
 
 
 def _render_results_performance() -> None:
@@ -302,7 +334,6 @@ def _render_results_performance() -> None:
 def show() -> None:
     _inject_nba_mobile_css()
     st.title("🏀 NBA")
-    st.caption("Intelligence • Games / Schedule • Player Props • Results / Performance")
 
     tabs = st.tabs(
         [
