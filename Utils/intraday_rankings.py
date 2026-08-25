@@ -512,15 +512,6 @@ def load_compare_and_save(
     previous_snapshot = stored_snapshot
     is_new_day = True
 
-    if stored_snapshot and stored_snapshot.get("previous_categories"):
-        previous_snapshot = {
-            "version": stored_snapshot.get("version", 1),
-            "captured_at": stored_snapshot.get("captured_at"),
-            "categories": stored_snapshot.get(
-                "previous_categories",
-                {},
-            ),
-        }
     if stored_snapshot:
         stored_captured_at = stored_snapshot.get("captured_at")
 
@@ -548,6 +539,26 @@ def load_compare_and_save(
 
     if is_new_day:
         previous_snapshot = None
+    elif stored_snapshot:
+        # Movement needs two different baselines depending on what happened on
+        # this render. If the ranking changed, compare the new ranking with the
+        # last stored current ranking. If this is only a Streamlit rerun of the
+        # same ranking, keep comparing with the stored previous ranking so the
+        # visible ↑ / ↓ / NEW label does not disappear on refresh.
+        ranking_changed = categories_changed(
+            current_snapshot=current_snapshot,
+            previous_snapshot=stored_snapshot,
+        )
+        if ranking_changed:
+            previous_snapshot = stored_snapshot
+        elif stored_snapshot.get("previous_categories"):
+            previous_snapshot = {
+                "version": stored_snapshot.get("version", 1),
+                "captured_at": stored_snapshot.get("captured_at"),
+                "categories": stored_snapshot.get("previous_categories", {}),
+            }
+        else:
+            previous_snapshot = stored_snapshot
 
     comparisons: dict[
         str,
