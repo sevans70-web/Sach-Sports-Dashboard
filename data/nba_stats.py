@@ -1,7 +1,11 @@
 """NBA player statistics helpers for Sach Sports Dashboard.
 
 Stage 2 uses the previous completed regular season as a real-data baseline.
-No placeholder or invented player rows are produced if the upstream source is unavailable.
+The baseline source is ESPN's league-wide player statistics endpoint rather than
+stats.nba.com, which can be unreliable from hosted Streamlit environments.
+
+No placeholder or invented player rows are produced if the upstream source is
+unavailable.
 """
 
 from __future__ import annotations
@@ -11,11 +15,16 @@ from typing import Any
 import pandas as pd
 import requests
 import streamlit as st
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-NBA_PLAYER_STATS_URL = "https://stats.nba.com/stats/leaguedashplayerstats"
+ESPN_NBA_STATS_URL = (
+    "https://site.web.api.espn.com/apis/common/v3/sports/"
+    "basketball/nba/statistics/byathlete"
+)
 NBA_BASELINE_SEASON = "2025-26"
 
-NBA_HEADERS = {
+ESPN_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -23,9 +32,6 @@ NBA_HEADERS = {
     ),
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9",
-    "Origin": "https://www.nba.com",
-    "Referer": "https://www.nba.com/",
-    "Connection": "keep-alive",
 }
 
 BASE_COLUMNS = [
@@ -43,84 +49,214 @@ BASE_COLUMNS = [
     "blocks_per_game",
 ]
 
+STAT_ALIASES = {
+    "games_played": {"gp", "gamesplayed", "games"},
+    "minutes_per_game": {"min", "minutes", "avgminutes", "minutespergame"},
+    "points_per_game": {"pts", "points", "avgpoints", "pointspergame"},
+    "rebounds_per_game": {"reb", "rebs", "rebounds", "avgrebounds", "reboundspergame"},
+    "assists_per_game": {"ast", "assists", "avgassists", "assistspergame"},
+    "threes_per_game": {
+        "3pm",
+        "fg3m",
+        "threepointfieldgoalsmade",
+        "threepointersmade",
+        "avgthreepointfieldgoalsmade",
+    },
+    "steals_per_game": {"stl", "steals", "avgsteals", "stealspergame"},
+    "blocks_per_game": {"blk", "blocks", "avgblocks", "blockspergame"},
+}
+
 
 def _empty_stats() -> pd.DataFrame:
     return pd.DataFrame(columns=BASE_COLUMNS)
 
 
-def _nba_params(season: str) -> dict[str, Any]:
+def _espn_season_year(season: str) -> int:
+    text = str(season).strip().replace("–", "-")
+    if "-" not in text:
+        return int(text)
+
+    start_text, end_text = text.split("-", 1)
+    start_year = int(start_text)
+    end_text = end_text.strip()
+
+    if len(end_text) == 2:
+        century = (start_year // 100) * 100
+        end_year = century + int(end_text)
+        if end_year < start_year:
+            end_year += 100
+        return end_year
+
+    return int(end_text)
+
+
+def _normalize_label(value: Any) -> str:
+    return "".join(ch for ch in str(value or "").lower() if ch.isalnum())
+
+
+def _to_number(value: Any) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+
+    text = str(value).strip().replace(",", "")
+    if not text or text in {"-", "--", "—", "N/A", "NA"}:
+        return None
+
+    try:
+        return float(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def _session() -> requests.Session:
+    session = requests.Session()
+    retry = Retry(
+        total=2,
+        connect=2,
+        read=2,
+        backoff_factor=0.35,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset(["GET"]),
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    session.headers.update(ESPN_HEADERS)
+    return session
+
+
+def _espn_params(season: str, page: int, limit: int = 500) -> dict[str, Any]:
     return {
-        "College": "",
-        "Conference": "",
-        "Country": "",
-        "DateFrom": "",
-        "DateTo": "",
-        "Division": "",
-        "DraftPick": "",
-        "DraftYear": "",
-        "GameScope": "",
-        "GameSegment": "",
-        "Height": "",
-        "LastNGames": 0,
-        "LeagueID": "00",
-        "Location": "",
-        "MeasureType": "Base",
-        "Month": 0,
-        "OpponentTeamID": 0,
-        "Outcome": "",
-        "PORound": 0,
-        "PaceAdjust": "N",
-        "PerMode": "PerGame",
-        "Period": 0,
-        "PlayerExperience": "",
-        "PlayerPosition": "",
-        "PlusMinus": "N",
-        "Rank": "N",
-        "Season": season,
-        "SeasonSegment": "",
-        "SeasonType": "Regular Season",
-        "ShotClockRange": "",
-        "StarterBench": "",
-        "TeamID": 0,
-        "VsConference": "",
-        "VsDivision": "",
-        "Weight": "",
+        "region": "us",
+        "lang": "en",
+        "contentorigin": "espn",
+        "isqualified": "false",
+        "page": page,
+        "limit": limit,
+        "sort": "offensive.avgPoints:desc",
+        "season": _espn_season_year(season),
+        "seasontype": 2,
     }
 
 
-def _normalize_result(payload: dict[str, Any]) -> pd.DataFrame:
-    result_sets = payload.get("resultSets") or []
-    if not result_sets:
-        return _empty_stats()
+def _category_labels(payload: dict[str, Any]) -> list[list[str]]:
+    result: list[list[str]] = []
+    for category in payload.get("categories") or []:
+        if not isinstance(category, dict):
+            result.append([])
+            continue
+        labels = category.get("labels") or category.get("names") or []
+        result.append([str(label) for label in labels])
+    return result
 
-    result = result_sets[0]
-    headers = result.get("headers") or []
-    rows = result.get("rowSet") or []
-    if not headers or not rows:
-        return _empty_stats()
 
-    raw = pd.DataFrame(rows, columns=headers)
-    rename = {
-        "PLAYER_ID": "player_id",
-        "PLAYER_NAME": "player_name",
-        "TEAM_ABBREVIATION": "team",
-        "AGE": "age",
-        "GP": "games_played",
-        "MIN": "minutes_per_game",
-        "PTS": "points_per_game",
-        "REB": "rebounds_per_game",
-        "AST": "assists_per_game",
-        "FG3M": "threes_per_game",
-        "STL": "steals_per_game",
-        "BLK": "blocks_per_game",
+def _flatten_player_stats(
+    player_entry: dict[str, Any],
+    payload_category_labels: list[list[str]],
+) -> dict[str, float]:
+    flattened: dict[str, float] = {}
+
+    for index, category in enumerate(player_entry.get("categories") or []):
+        if not isinstance(category, dict):
+            continue
+
+        labels = category.get("labels") or category.get("names")
+        if not labels and index < len(payload_category_labels):
+            labels = payload_category_labels[index]
+        labels = labels or []
+
+        totals = category.get("totals") or category.get("values") or []
+        if isinstance(totals, dict):
+            for label, value in totals.items():
+                number = _to_number(value)
+                if number is not None:
+                    flattened[_normalize_label(label)] = number
+            continue
+
+        for label, value in zip(labels, totals):
+            number = _to_number(value)
+            if number is not None:
+                flattened[_normalize_label(label)] = number
+
+    return flattened
+
+
+def _find_stat(stats: dict[str, float], field: str) -> float | None:
+    for alias in STAT_ALIASES[field]:
+        if alias in stats:
+            return stats[alias]
+    return None
+
+
+def _player_row(
+    player_entry: dict[str, Any],
+    payload_category_labels: list[list[str]],
+) -> dict[str, Any] | None:
+    athlete = player_entry.get("athlete") or {}
+    if not isinstance(athlete, dict):
+        return None
+
+    player_id = athlete.get("id") or athlete.get("uid")
+    player_name = athlete.get("displayName") or athlete.get("fullName")
+    if not player_id or not player_name:
+        return None
+
+    try:
+        normalized_player_id = int(str(player_id).split(":")[-1].split("~")[-1])
+    except (TypeError, ValueError):
+        return None
+
+    team_data = athlete.get("team") or {}
+    team = (
+        athlete.get("teamShortName")
+        or athlete.get("teamAbbreviation")
+        or (team_data.get("abbreviation") if isinstance(team_data, dict) else None)
+        or "—"
+    )
+
+    stats = _flatten_player_stats(player_entry, payload_category_labels)
+
+    return {
+        "player_id": normalized_player_id,
+        "player_name": str(player_name),
+        "team": str(team),
+        "age": _to_number(athlete.get("age")),
+        "games_played": _find_stat(stats, "games_played"),
+        "minutes_per_game": _find_stat(stats, "minutes_per_game"),
+        "points_per_game": _find_stat(stats, "points_per_game"),
+        "rebounds_per_game": _find_stat(stats, "rebounds_per_game"),
+        "assists_per_game": _find_stat(stats, "assists_per_game"),
+        "threes_per_game": _find_stat(stats, "threes_per_game"),
+        "steals_per_game": _find_stat(stats, "steals_per_game"),
+        "blocks_per_game": _find_stat(stats, "blocks_per_game"),
     }
-    raw = raw.rename(columns=rename)
+
+
+def _normalize_espn_payloads(payloads: list[dict[str, Any]]) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+
+    for payload in payloads:
+        labels = _category_labels(payload)
+        for player_entry in payload.get("athletes") or []:
+            if not isinstance(player_entry, dict):
+                continue
+            row = _player_row(player_entry, labels)
+            if row:
+                rows.append(row)
+
+    if not rows:
+        return _empty_stats()
+
+    out = pd.DataFrame(rows)
 
     for column in BASE_COLUMNS:
-        if column not in raw.columns:
-            raw[column] = pd.NA
+        if column not in out.columns:
+            out[column] = pd.NA
 
-    out = raw[BASE_COLUMNS].copy()
+    out = out[BASE_COLUMNS].copy()
     numeric = [
         "player_id",
         "age",
@@ -140,26 +276,59 @@ def _normalize_result(payload: dict[str, Any]) -> pd.DataFrame:
     out["team"] = out["team"].astype("string")
     out = out.dropna(subset=["player_id", "player_name"]).copy()
     out["player_id"] = out["player_id"].astype(int)
-    return out.reset_index(drop=True)
+
+    return out.drop_duplicates(subset=["player_id"], keep="first").reset_index(drop=True)
 
 
 @st.cache_data(ttl=21600, show_spinner=False)
 def load_nba_player_baseline(season: str = NBA_BASELINE_SEASON) -> pd.DataFrame:
-    """Load real NBA regular-season per-game player statistics.
+    """Load real previous-season NBA player statistics from ESPN.
 
     Raises the upstream exception when data cannot be reached so the UI can clearly
-    report that live baseline data is unavailable rather than substituting fake rows.
+    report that the baseline is unavailable rather than substituting invented rows.
     """
-    response = requests.get(
-        NBA_PLAYER_STATS_URL,
-        params=_nba_params(season),
-        headers=NBA_HEADERS,
-        timeout=25,
-    )
-    response.raise_for_status()
-    return _normalize_result(response.json())
+    session = _session()
+    payloads: list[dict[str, Any]] = []
+    page = 1
+    max_pages = 8
+
+    while page <= max_pages:
+        response = session.get(
+            ESPN_NBA_STATS_URL,
+            params=_espn_params(season, page=page),
+            timeout=(5, 12),
+        )
+        response.raise_for_status()
+        payload = response.json()
+        payloads.append(payload)
+
+        pagination = payload.get("pagination") or {}
+        pages = int(pagination.get("pages") or 1)
+        if page >= pages:
+            break
+        page += 1
+
+    stats = _normalize_espn_payloads(payloads)
+    if stats.empty:
+        raise RuntimeError(
+            f"ESPN returned no NBA player statistics for the {season} regular season."
+        )
+
+    required = [
+        "games_played",
+        "points_per_game",
+        "rebounds_per_game",
+        "assists_per_game",
+    ]
+    if all(stats[column].isna().all() for column in required):
+        raise RuntimeError(
+            "ESPN NBA statistics were received, but the expected player-stat fields "
+            "could not be parsed."
+        )
+
+    return stats
 
 
 def nba_headshot_url(player_id: int | str) -> str:
-    """Return the NBA CDN headshot URL for a real NBA player id."""
-    return f"https://cdn.nba.com/headshots/nba/latest/260x190/{int(player_id)}.png"
+    """Return the ESPN CDN headshot URL for a real NBA player id."""
+    return f"https://a.espncdn.com/i/headshots/nba/players/full/{int(player_id)}.png"
