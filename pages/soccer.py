@@ -11,10 +11,7 @@ from data.soccer_data import (
     load_soccer_scoreboard,
     recent_stats_for_scoreboard,
 )
-from data.soccer_odds import (
-    load_soccer_prop_markets,
-    market_feed_status,
-)
+from data.soccer_odds import load_soccer_prop_markets
 from engines.soccer_rankings import (
     SOCCER_PROPS,
     build_soccer_rankings,
@@ -190,7 +187,7 @@ def _load(league_name, league_slug):
 
 
 def _market_message(markets):
-    status = market_feed_status(markets)
+    status = str(getattr(markets, "attrs", {}).get("status") or "")
 
     if status == "rate_limited":
         st.warning(
