@@ -99,21 +99,21 @@ def _render_overall_batter_performance(
         st.caption("Overall performance will populate as tracked predictions settle.")
         return
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Overall Hit Rate", f"{summary['hit_rate']:.1f}%")
-    col2.metric("Correct / Settled", f"{summary['wins']} / {summary['graded']}")
-    col3.metric("Pending", str(summary["pending"]))
-
-    left, right = st.columns(2)
-    left.metric(
-        "Top 5 Overall",
-        f"{top_5['hit_rate']:.1f}%" if top_5["total"] else "—",
-        f"{top_5['wins']}-{top_5['losses']}" if top_5["total"] else None,
-    )
-    right.metric(
-        "Full Top 25 Overall",
-        f"{top_25['hit_rate']:.1f}%" if top_25["total"] else "—",
-        f"{top_25['wins']}-{top_25['losses']}" if top_25["total"] else None,
+    top5_value = f"{top_5['hit_rate']:.1f}%" if top_5["total"] else "—"
+    top25_value = f"{top_25['hit_rate']:.1f}%" if top_25["total"] else "—"
+    top5_record = f"{top_5['wins']}-{top_5['losses']}" if top_5["total"] else "No settled plays"
+    top25_record = f"{top_25['wins']}-{top_25['losses']}" if top_25["total"] else "No settled plays"
+    st.markdown(
+        f"""
+        <div class="perf-kpi-grid">
+            <div class="perf-kpi"><span>Hit Rate</span><strong>{summary['hit_rate']:.1f}%</strong></div>
+            <div class="perf-kpi"><span>Settled</span><strong>{summary['wins']} / {summary['graded']}</strong></div>
+            <div class="perf-kpi"><span>Pending</span><strong>{summary['pending']}</strong></div>
+            <div class="perf-kpi"><span>Top 5</span><strong>{top5_value}</strong><small>{top5_record}</small></div>
+            <div class="perf-kpi"><span>Top 25</span><strong>{top25_value}</strong><small>{top25_record}</small></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
     st.caption(
         "Combined across all tracked batter prop categories. Each settled prop "
@@ -255,6 +255,32 @@ def _styles() -> None:
     st.markdown(
         """
         <style>
+        .perf-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 7px;
+            margin: 8px 0 10px;
+        }
+        .perf-kpi {
+            min-width: 0;
+            padding: 10px 9px;
+            border-radius: 11px;
+            background: rgba(24, 24, 21, 0.86);
+            border: 1px solid rgba(214, 179, 92, 0.28);
+        }
+        .perf-kpi span, .perf-kpi small {
+            display: block;
+            color: #b8b09f;
+            font-size: .68rem;
+        }
+        .perf-kpi strong {
+            display: block;
+            color: #f7f1e3;
+            font-size: 1.08rem;
+            line-height: 1.15;
+            margin-top: 2px;
+        }
+
         .perf-summary-row {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -292,7 +318,33 @@ def _styles() -> None:
         }
 
         @media (max-width: 700px) {
-            .perf-summary-row {
+            .perf-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 7px;
+            margin: 8px 0 10px;
+        }
+        .perf-kpi {
+            min-width: 0;
+            padding: 10px 9px;
+            border-radius: 11px;
+            background: rgba(24, 24, 21, 0.86);
+            border: 1px solid rgba(214, 179, 92, 0.28);
+        }
+        .perf-kpi span, .perf-kpi small {
+            display: block;
+            color: #b8b09f;
+            font-size: .68rem;
+        }
+        .perf-kpi strong {
+            display: block;
+            color: #f7f1e3;
+            font-size: 1.08rem;
+            line-height: 1.15;
+            margin-top: 2px;
+        }
+
+        .perf-summary-row {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 6px;
             }
