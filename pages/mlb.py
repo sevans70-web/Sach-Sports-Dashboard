@@ -190,6 +190,8 @@ def convert_live_rankings(
                 ),
                 "team": player.get("team_name", "TBD"),
                 "opponent": player.get("opponent_name", "TBD"),
+                "team_id": player.get("team_id"),
+                "opponent_id": player.get("opponent_id"),
                 "is_home": player.get("is_home"),
                 "headshot_url": player.get("headshot_url"),
                 "player_id": player.get("player_id"),
@@ -335,6 +337,39 @@ def attach_persistent_movement(
         player["movement"] = movement
 
     return rankings
+
+
+def team_logo_html(team_id: object, team_name: str) -> str:
+    """Return a small official MLB team mark for compact matchup rows."""
+    try:
+        numeric_id = int(team_id or 0)
+    except (TypeError, ValueError):
+        numeric_id = 0
+    if not numeric_id:
+        return ""
+    return (
+        f'<img class="gi-team-logo" '
+        f'src="https://www.mlbstatic.com/team-logos/{numeric_id}.svg" '
+        f'alt="{escape(_short_team(team_name))} logo" loading="lazy">'
+    )
+
+
+def matchup_html(player: dict) -> str:
+    """Return abbreviated matchup with official team marks when IDs exist."""
+    team = str(player.get("team") or "TBD")
+    opponent = str(player.get("opponent") or "TBD")
+    is_home = player.get("is_home")
+    if is_home is True:
+        away_name, away_id = opponent, player.get("opponent_id")
+        home_name, home_id = team, player.get("team_id")
+    else:
+        away_name, away_id = team, player.get("team_id")
+        home_name, home_id = opponent, player.get("opponent_id")
+    return (
+        f'{team_logo_html(away_id, away_name)}<span>{escape(_short_team(away_name))}</span>'
+        f'<span class="gi-vs">vs.</span>'
+        f'{team_logo_html(home_id, home_name)}<span>{escape(_short_team(home_name))}</span>'
+    )
 
 
 def matchup_display(player: dict) -> str:
@@ -658,10 +693,9 @@ except (KeyError, ValueError, RankingSnapshotError) as error:
     ):
         attach_persistent_movement(rankings, {}, False)
 
-    st.warning(
-        "Intraday movement history is temporarily unavailable. "
-        f"Current rankings are still displayed. Details: {error}"
-    )
+    # Movement history is supplemental. Keep current rankings clean and usable
+    # when the snapshot service is temporarily unavailable.
+    pass
 
 
 # ============================================================
@@ -779,8 +813,8 @@ def render_compact_player(player: dict) -> None:
                 </div>
 
                 <div class="gi-compact-matchup">
-                    {escape(matchup_display(player))}
-                    · GI {player['score']}
+                    {matchup_html(player)}
+                    <span class="gi-score-inline">GI {player['score']}</span>
                 </div>
 
                 <div class="gi-compact-reason">
@@ -865,7 +899,7 @@ def render_expandable_ranking_header(player: dict) -> None:
             {photo_html}
             <div class="gi-card-player">
                 <strong>{escape(player['player'])}</strong>
-                <span>{escape(matchup_display(player))}</span>
+                <span class="gi-card-matchup">{matchup_html(player)}</span>
                 <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
                 <span class="gi-card-reason">{escape(player['reason'])}</span>
                 <span>{lineup_status_html(player)}</span>
@@ -952,7 +986,8 @@ def render_ranking_category(
             """
         )
 
-        for player in rankings:
+        # The Top 5 is already visible above. Expanded view continues at #6.
+        for player in rankings[5:]:
             intelligence_key = (
                 f"{state_key}_intelligence_{player['rank']}"
             )
@@ -996,43 +1031,38 @@ st.markdown(
     """
     <style>
         :root {
-            --gi-bg: #06111f;
-            --gi-panel: rgba(15, 23, 42, 0.84);
-            --gi-panel-soft: rgba(15, 23, 42, 0.68);
-            --gi-border: rgba(56, 189, 248, 0.22);
-            --gi-blue: #38bdf8;
-            --gi-blue-light: #bae6fd;
-            --gi-text: #f8fafc;
-            --gi-muted: #94a3b8;
-            --gi-green: #34d399;
-            --gi-yellow: #fbbf24;
-            --gi-orange: #fb923c;
+            --gi-bg: #090a0b;
+            --gi-panel: rgba(20, 20, 18, 0.92);
+            --gi-panel-soft: rgba(24, 24, 21, 0.82);
+            --gi-border: rgba(214, 179, 92, 0.28);
+            --gi-blue: #d6b35c;
+            --gi-blue-light: #f3ead5;
+            --gi-text: #f7f1e3;
+            --gi-muted: #b8b09f;
+            --gi-green: #2fbf71;
+            --gi-yellow: #d6b35c;
+            --gi-orange: #c99445;
         }
 
         .stApp {
             background:
                 radial-gradient(
                     circle at 50% -8%,
-                    rgba(56, 189, 248, 0.16),
-                    transparent 31%
+                    rgba(214, 179, 92, 0.10),
+                    transparent 30%
                 ),
-                linear-gradient(
-                    180deg,
-                    #06111f 0%,
-                    #0a1d33 46%,
-                    #102b46 100%
-                );
+                linear-gradient(180deg, #080909 0%, #10110f 52%, #15140f 100%);
             color: var(--gi-text);
         }
 
         [data-testid="stSidebar"] {
-            background: #030b16;
-            border-right: 1px solid rgba(56, 189, 248, 0.20);
+            background: #050606;
+            border-right: 1px solid rgba(214, 179, 92, 0.20);
         }
 
         [data-testid="stSidebarNav"] a,
         [data-testid="stSidebarNav"] span {
-            color: #e2e8f0;
+            color: #f3ead5;
         }
 
         .block-container {
@@ -1047,7 +1077,7 @@ st.markdown(
         }
 
         p {
-            color: #cbd5e1;
+            color: #d8d0bf;
         }
 
         .gi-hero {
@@ -1057,15 +1087,15 @@ st.markdown(
             background:
                 radial-gradient(
                     circle at 84% 12%,
-                    rgba(56, 189, 248, 0.24),
+                    rgba(214, 179, 92, 0.24),
                     transparent 28%
                 ),
                 linear-gradient(
                     135deg,
-                    rgba(7, 26, 47, 0.99),
-                    rgba(11, 42, 74, 0.96)
+                    rgba(10, 10, 9, 0.99),
+                    rgba(31, 27, 18, 0.97)
                 );
-            border: 1px solid rgba(56, 189, 248, 0.36);
+            border: 1px solid rgba(214, 179, 92, 0.36);
             box-shadow: 0 18px 48px rgba(2, 8, 23, 0.32);
         }
 
@@ -1124,7 +1154,7 @@ st.markdown(
         }
 
         div[data-testid="stMetricLabel"] {
-            color: #cbd5e1;
+            color: #d8d0bf;
         }
 
         div[data-testid="stMetricValue"] {
@@ -1147,7 +1177,7 @@ st.markdown(
         }
 
         .gi-before-text {
-            color: #cbd5e1;
+            color: #d8d0bf;
             line-height: 1.55;
         }
 
@@ -1179,11 +1209,11 @@ st.markdown(
         }
 
         .gi-section-count {
-            color: #d8f3ff;
+            color: #f3ead5;
             padding: 6px 10px;
             border-radius: 999px;
-            background: rgba(56, 189, 248, 0.13);
-            border: 1px solid rgba(56, 189, 248, 0.28);
+            background: rgba(214, 179, 92, 0.13);
+            border: 1px solid rgba(214, 179, 92, 0.28);
             font-size: 0.76rem;
             font-weight: 800;
         }
@@ -1201,7 +1231,7 @@ st.markdown(
                     rgba(14, 116, 144, 0.15),
                     rgba(15, 23, 42, 0.88)
                 );
-            border: 1px solid rgba(56, 189, 248, 0.30);
+            border: 1px solid rgba(214, 179, 92, 0.30);
             box-shadow: 0 14px 34px rgba(2, 8, 23, 0.22);
         }
 
@@ -1222,7 +1252,7 @@ st.markdown(
             background:
                 radial-gradient(
                     circle at 50% 30%,
-                    rgba(56, 189, 248, 0.24),
+                    rgba(214, 179, 92, 0.24),
                     transparent 45%
                 ),
                 linear-gradient(
@@ -1230,7 +1260,7 @@ st.markdown(
                     #123e66,
                     #0a1c31
                 );
-            border: 1px solid rgba(56, 189, 248, 0.36);
+            border: 1px solid rgba(214, 179, 92, 0.36);
             color: #ffffff;
             font-size: 2.2rem;
             font-weight: 900;
@@ -1259,8 +1289,8 @@ st.markdown(
             color: #ffffff;
             padding: 6px 10px;
             border-radius: 10px;
-            background: rgba(56, 189, 248, 0.13);
-            border: 1px solid rgba(56, 189, 248, 0.28);
+            background: rgba(214, 179, 92, 0.13);
+            border: 1px solid rgba(214, 179, 92, 0.28);
             font-weight: 850;
         }
         
@@ -1284,7 +1314,7 @@ st.markdown(
         }
 
         .gi-featured-reason {
-            color: #cbd5e1;
+            color: #d8d0bf;
             line-height: 1.58;
             margin-top: 8px;
         }
@@ -1325,7 +1355,7 @@ st.markdown(
                     #123e66,
                     #0a1c31
                 );
-            border: 1px solid rgba(56, 189, 248, 0.32);
+            border: 1px solid rgba(214, 179, 92, 0.32);
         }
 
         .gi-compact-photo-placeholder {
@@ -1390,13 +1420,13 @@ st.markdown(
         }
 
         .gi-lineup-unconfirmed {
-            color: #cbd5e1;
+            color: #d8d0bf;
             background: rgba(148, 163, 184, 0.08);
             border: 1px solid rgba(148, 163, 184, 0.18);
         }
 
         .gi-compact-reason {
-            color: #cbd5e1;
+            color: #d8d0bf;
             font-size: 0.88rem;
             line-height: 1.45;
             margin-top: 6px;
@@ -1418,12 +1448,12 @@ st.markdown(
             margin-bottom: 8px;
             border-radius: 14px;
             background: rgba(15, 23, 42, 0.66);
-            border: 1px solid rgba(56, 189, 248, 0.17);
+            border: 1px solid rgba(214, 179, 92, 0.17);
         }
 
         [class*="st-key-show_"][class*="_player_"] {
             background: rgba(15, 23, 42, 0.72);
-            border: 1px solid rgba(56, 189, 248, 0.28) !important;
+            border: 1px solid rgba(214, 179, 92, 0.28) !important;
             border-radius: 16px;
             padding: 4px 10px 12px;
             margin-bottom: 12px;
@@ -1438,7 +1468,7 @@ st.markdown(
         [class*="st-key-show_"][class*="_player_"] .stButton > button {
             background: rgba(14, 116, 144, 0.12);
             border: 0;
-            border-top: 1px solid rgba(56, 189, 248, 0.18);
+            border-top: 1px solid rgba(214, 179, 92, 0.18);
             border-radius: 0 0 10px 10px;
             color: #bae6fd;
             justify-content: flex-start;
@@ -1451,7 +1481,7 @@ st.markdown(
         .gi-native-photo {
             align-items: center;
             background: linear-gradient(145deg, #075985, #0f172a);
-            border: 1px solid rgba(56, 189, 248, 0.55);
+            border: 1px solid rgba(214, 179, 92, 0.55);
             display: flex;
             justify-content: center;
             overflow: hidden;
@@ -1494,7 +1524,7 @@ st.markdown(
         .gi-native-initials {
             align-items: center;
             background: linear-gradient(145deg, #075985, #0f172a);
-            border: 1px solid rgba(56, 189, 248, 0.55);
+            border: 1px solid rgba(214, 179, 92, 0.55);
             border-radius: 12px;
             color: #e0f2fe;
             display: flex;
@@ -1549,7 +1579,7 @@ st.markdown(
         }
 
         .gi-card-player span {
-            color: #cbd5e1;
+            color: #d8d0bf;
             font-size: 0.79rem;
             line-height: 1.3;
         }
@@ -1611,13 +1641,44 @@ st.markdown(
 
         div[data-testid="stVerticalBlockBorderWrapper"] {
             background: rgba(15, 23, 42, 0.66);
-            border: 1px solid rgba(56, 189, 248, 0.18);
+            border: 1px solid rgba(214, 179, 92, 0.18);
             border-radius: 18px;
         }
 
         hr {
             border-color: rgba(148, 163, 184, 0.16);
             margin: 30px 0;
+        }
+
+        .gi-team-logo {
+            width: 17px;
+            height: 17px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin: 0 3px 0 1px;
+        }
+        .gi-vs { opacity: .58; margin: 0 4px; }
+        .gi-score-inline { color: var(--gi-yellow); font-weight: 800; margin-left: 7px; }
+        .gi-card-matchup { display: flex !important; align-items: center; flex-wrap: wrap; gap: 1px; }
+
+        .gi-compact-photo, .gi-full-photo, .gi-native-photo, .gi-featured-photo {
+            object-fit: contain;
+            object-position: center bottom;
+            background: linear-gradient(145deg, #f7f1e3, #ddd3bc);
+            border: 1px solid rgba(214, 179, 92, 0.38);
+        }
+
+        @media (max-width: 760px) {
+            div[data-testid="stMetric"] {
+                min-height: 78px;
+                padding: 9px 10px;
+                border-radius: 12px;
+            }
+            div[data-testid="stMetricLabel"] { font-size: 0.70rem; }
+            div[data-testid="stMetricValue"] { font-size: 1.28rem; }
+            div[data-testid="stMetricDelta"] { font-size: 0.66rem; }
+            .gi-section-subtitle { display: none; }
+            hr { margin: 18px 0; }
         }
 
         @media (min-width: 1100px) {
@@ -1978,9 +2039,15 @@ def render_live_hr_intelligence(rankings: list[dict]) -> None:
 
         render_html("".join(html_rows))
 
-    render_group("⭐ HR TOP 25", top_25, True)
+    render_group("⭐ HR TOP 25", top_25[:3], True)
+    if len(top_25) > 3:
+        with st.expander(f"Show {len(top_25) - 3} more Top 25 signals"):
+            render_group("More HR TOP 25", top_25[3:], True)
     st.markdown("")
-    render_group("🆕 OUTSIDE HR TOP 25", outside, False)
+    render_group("🆕 OUTSIDE HR TOP 25", outside[:3], False)
+    if len(outside) > 3:
+        with st.expander(f"Show {len(outside) - 3} more outside signals"):
+            render_group("More outside HR TOP 25", outside[3:], False)
 
 def render_yesterday_power_watch(
     rankings: list[dict],
@@ -2018,8 +2085,8 @@ def render_yesterday_power_watch(
 
     st.markdown("### 👀 Yesterday's Power Watch")
     st.caption(
-        "Working name. Yesterday's strongest HR-shaped contact that stayed "
-        "in the park: barrels or 100+ mph contact in a 15°–40° launch window, "
+        "Yesterday's strongest HR-shaped contact that stayed in the park: "
+        "barrels or 100+ mph contact in a 15°–40° launch window, "
         "with all players who homered excluded. Context only — not a 'due' signal."
     )
 
@@ -2088,9 +2155,12 @@ def render_yesterday_power_watch(
 
     render_group(
         "⭐ ALSO IN TODAY'S HR TOP 25",
-        today_top_25,
+        today_top_25[:3],
         True,
     )
+    if len(today_top_25) > 3:
+        with st.expander(f"Show {len(today_top_25) - 3} more Top 25 watch signals"):
+            render_group("More in today's HR Top 25", today_top_25[3:], True)
     st.markdown("")
     outside_top_25.sort(
         key=lambda item: (
@@ -2100,10 +2170,13 @@ def render_yesterday_power_watch(
     )
 
     render_group(
-        "👀 TOP 10 OUTSIDE TODAY'S HR TOP 25",
-        outside_top_25[:10],
+        "👀 OUTSIDE TODAY'S HR TOP 25",
+        outside_top_25[:3],
         False,
     )
+    if len(outside_top_25) > 3:
+        with st.expander(f"Show {min(len(outside_top_25), 10) - 3} more watch signals"):
+            render_group("More outside today's HR Top 25", outside_top_25[3:10], False)
 
 
 
@@ -2170,19 +2243,6 @@ render_html(
     """
 )
 
-render_html(
-    f"""
-    <div class="gi-status-strip">
-        <div class="gi-status-primary">
-            MLB Page v1.1 is ready for visual review.
-        </div>
-
-        <div class="gi-status-secondary">
-            Refreshed {escape(refreshed_time)}
-        </div>
-    </div>
-    """
-)
 
 with st.expander("⚾ View today's MLB games", expanded=False):
     live_schedule = render_live_mlb_schedule(
@@ -2192,7 +2252,14 @@ with st.expander("⚾ View today's MLB games", expanded=False):
 
 live_summary = schedule_summary(live_schedule)
 
-st.subheader("Today's MLB Snapshot")
+render_html(
+    """
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 4px;">
+        <strong style="font-size:1.05rem;color:#f7f1e3;">Today's MLB Snapshot</strong>
+        <span style="font-size:.72rem;color:#b8b09f;">Always confirm starting lineups</span>
+    </div>
+    """
+)
 
 snapshot_1, snapshot_2, snapshot_3 = st.columns(3)
 
@@ -2219,15 +2286,7 @@ with snapshot_3:
         weather_count,
         weather_note,
     )
-if HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE:
-    st.success(
-        "Full ranking pool loaded: "
-        f"{RANKING_GAME_COUNT} games, "
-        f"{RANKING_TEAM_COUNT} teams, "
-        f"{RANKING_HITTER_COUNT} hitters. "
-        "All seven Top 25 lists are complete."
-    )
-else:
+if not (HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE):
     st.warning(
         "Ranking data is incomplete: "
         f"{RANKING_GAME_COUNT} games, "
@@ -2258,26 +2317,7 @@ render_prediction_performance_tracker(
 
 st.divider()
 
-render_html(
-    """
-    <div class="gi-before-ranking">
-        <div class="gi-before-title">
-            Before using a ranking
-        </div>
-
-        <div class="gi-before-text">
-            Confirm the player is in the starting lineup, review weather and park
-            conditions, and check whether the available market value still supports
-            the recommendation.
-        </div>
-    </div>
-    """
-)
-
 st.subheader("Player Rankings")
-st.caption(
-    "Official MLB player headshots are shown with today's live rankings."
-)
 
 batter_tab, pitcher_tab = st.tabs(
     [
