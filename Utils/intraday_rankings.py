@@ -619,3 +619,67 @@ def load_compare_and_save(
         "snapshot_saved": should_save,
         "is_new_day": is_new_day,
      }
+
+
+def load_compare_and_save_local(
+    category_rankings: dict[str, Iterable[dict[str, Any]]],
+    captured_at: datetime,
+    path: str = "/tmp/sach_mlb_intraday_rankings.json",
+) -> dict[str, Any]:
+    """Local-runtime fallback when GitHub persistence is unavailable."""
+    current_snapshot = create_snapshot(category_rankings, captured_at)
+    file_path = __import__("pathlib").Path(path)
+    stored_snapshot = None
+    if file_path.exists():
+        try:
+            stored_snapshot = json.loads(file_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            stored_snapshot = None
+
+    previous_snapshot = stored_snapshot
+    is_new_day = True
+    if stored_snapshot and stored_snapshot.get("captured_at"):
+        try:
+            dt = datetime.fromisoformat(str(stored_snapshot["captured_at"]))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=captured_at.tzinfo)
+            is_new_day = dt.astimezone(captured_at.tzinfo).date() != captured_at.date()
+        except (TypeError, ValueError):
+            is_new_day = True
+
+    if is_new_day:
+        previous_snapshot = None
+    elif stored_snapshot:
+        changed = categories_changed(current_snapshot, stored_snapshot)
+        if not changed and stored_snapshot.get("previous_categories"):
+            previous_snapshot = {
+                "version": 1,
+                "captured_at": stored_snapshot.get("captured_at"),
+                "categories": stored_snapshot.get("previous_categories", {}),
+            }
+
+    comparisons = {}
+    summaries = {}
+    for category in current_snapshot.get("categories", {}):
+        comparison = compare_snapshot_category(current_snapshot, previous_snapshot, category)
+        comparisons[category] = comparison
+        summaries[category] = build_movement_summary(comparison)
+
+    should_save = is_new_day or categories_changed(current_snapshot, stored_snapshot)
+    if should_save and any(current_snapshot.get("categories", {}).values()):
+        to_save = dict(current_snapshot)
+        if stored_snapshot and not is_new_day:
+            to_save["previous_categories"] = stored_snapshot.get("categories", {})
+        try:
+            file_path.write_text(json.dumps(to_save, indent=2), encoding="utf-8")
+        except OSError:
+            pass
+
+    return {
+        "previous_snapshot": previous_snapshot,
+        "current_snapshot": current_snapshot,
+        "comparisons": comparisons,
+        "summaries": summaries,
+        "snapshot_saved": should_save,
+        "is_new_day": is_new_day,
+    }
