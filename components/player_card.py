@@ -345,6 +345,30 @@ def _ranking_evidence(
             f"{season.get('caught_stealing', 0)} CS this season."
         )
 
+    pitcher_name = str(player_data.get("opposing_probable_pitcher") or "").strip()
+    pitcher_adjustment = float(player_data.get("pitcher_adjustment", 0.0) or 0.0)
+    if pitcher_name and "home run" not in category:
+        if pitcher_adjustment >= 1.5:
+            evidence.append(f"Pitcher matchup: {pitcher_name} is a meaningful positive driver for this market today.")
+        elif pitcher_adjustment <= -1.5:
+            evidence.append(f"Pitcher matchup: {pitcher_name} is a meaningful resistance factor for this market today.")
+
+    park_adjustment = float(player_data.get("park_adjustment", 0.0) or 0.0)
+    park_factor = float(player_data.get("park_factor", 1.0) or 1.0)
+    if abs(park_adjustment) >= 1.0:
+        direction = "supports" if park_adjustment > 0 else "suppresses"
+        evidence.append(f"Park environment: today’s venue {direction} this market (park factor {park_factor:.2f}).")
+
+    weather = player_data.get("weather", {}) or {}
+    if weather.get("success"):
+        temp = weather.get("temperature_f")
+        wind = weather.get("wind_speed_mph")
+        precip = weather.get("precipitation_probability")
+        if temp is not None and (float(temp) >= 78 or float(temp) <= 50):
+            evidence.append(f"Weather: {float(temp):.0f}°F at game time is a material environmental input; wind is {float(wind or 0):.0f} mph.")
+        if precip is not None and float(precip) >= 40:
+            evidence.append(f"Weather risk: precipitation probability is {float(precip):.0f}% near game time.")
+
     if statcast:
         evidence.append(
             "Contact quality: "
@@ -393,7 +417,7 @@ def render_player_card(player_data: dict) -> None:
         }
         .gi-intel-player-name {
             color: #ffffff;
-            font-size: 1.18rem;
+            font-size: 1.24rem;
             font-weight: 800;
             line-height: 1.2;
         }
@@ -418,13 +442,13 @@ def render_player_card(player_data: dict) -> None:
         .gi-intel-metric span {
             color: #a7abb2;
             display: block;
-            font-size: 0.72rem;
+            font-size: 0.82rem;
             line-height: 1.2;
         }
         .gi-intel-metric strong {
             color: #ffffff;
             display: block;
-            font-size: 1.18rem;
+            font-size: 1.24rem;
             line-height: 1.15;
             margin-top: 4px;
         }
@@ -438,7 +462,7 @@ def render_player_card(player_data: dict) -> None:
             background: #101112;
             border-radius: 10px;
             color: #ffffff;
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             line-height: 1.45;
             padding: 9px 10px;
         }
@@ -456,7 +480,7 @@ def render_player_card(player_data: dict) -> None:
                 width: 58px;
             }
             .gi-intel-player-name {
-                font-size: 1rem;
+                font-size: 1.08rem;
             }
             .gi-intel-grid {
                 gap: 7px;
@@ -470,17 +494,17 @@ def render_player_card(player_data: dict) -> None:
                 padding: 8px 9px;
             }
             .gi-intel-metric span {
-                font-size: 0.64rem;
+                font-size: 0.76rem;
             }
             .gi-intel-metric strong {
-                font-size: 1rem;
+                font-size: 1.08rem;
             }
             .gi-evidence-grid {
                 gap: 7px;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
             .gi-evidence-grid > div {
-                font-size: 0.7rem;
+                font-size: 0.80rem;
                 padding: 8px;
             }
         }
@@ -510,28 +534,6 @@ def render_player_card(player_data: dict) -> None:
     if not headshot_url and player_id:
         headshot_url = get_player_headshot_url(player_id)
 
-    if headshot_url:
-        st.markdown(
-            f"""
-            <div class="gi-intel-player-header">
-                <div class="gi-intel-player-photo">
-                    <img
-                        src="{escape(headshot_url)}"
-                        alt="{escape(player_name)} headshot"
-                        loading="lazy"
-                        referrerpolicy="no-referrer"
-                    >
-                </div>
-                <div>
-                    <div class="gi-intel-player-name">{escape(player_name)}</div>
-                    <div class="gi-intel-player-team">
-                        {escape(matchup)}
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
     gi_score = float(
         player_data.get("gi_score", 0.0) or 0.0
