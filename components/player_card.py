@@ -377,8 +377,8 @@ def render_player_card(player_data: dict) -> None:
             margin: 4px 0 14px;
         }
         .gi-intel-player-photo {
-            background: linear-gradient(145deg, #075985, #0f172a);
-            border: 1px solid rgba(56, 189, 248, 0.42);
+            background: #050505;
+            border: 1px solid rgba(246, 200, 76, 0.62);
             border-radius: 14px;
             height: 78px;
             overflow: hidden;
@@ -387,17 +387,18 @@ def render_player_card(player_data: dict) -> None:
         .gi-intel-player-photo img {
             height: 100%;
             object-fit: cover;
-            object-position: center top;
+            object-position: center 15%;
             width: 100%;
+            transform: scale(1.10);
         }
         .gi-intel-player-name {
-            color: #f8fafc;
+            color: #ffffff;
             font-size: 1.18rem;
             font-weight: 800;
             line-height: 1.2;
         }
         .gi-intel-player-team {
-            color: #94a3b8;
+            color: #a7abb2;
             font-size: 0.8rem;
             margin-top: 4px;
         }
@@ -408,20 +409,20 @@ def render_player_card(player_data: dict) -> None:
             margin: 8px 0 14px;
         }
         .gi-intel-metric {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(56, 189, 248, 0.24);
+            background: #101112;
+            border: 1px solid #303236;
             border-radius: 12px;
             min-width: 0;
             padding: 10px 12px;
         }
         .gi-intel-metric span {
-            color: #94a3b8;
+            color: #a7abb2;
             display: block;
             font-size: 0.72rem;
             line-height: 1.2;
         }
         .gi-intel-metric strong {
-            color: #f8fafc;
+            color: #ffffff;
             display: block;
             font-size: 1.18rem;
             line-height: 1.15;
@@ -434,15 +435,15 @@ def render_player_card(player_data: dict) -> None:
             margin: 6px 0 14px;
         }
         .gi-evidence-grid > div {
-            background: rgba(15, 23, 42, 0.42);
+            background: #101112;
             border-radius: 10px;
-            color: #cbd5e1;
+            color: #ffffff;
             font-size: 0.78rem;
             line-height: 1.45;
             padding: 9px 10px;
         }
         .gi-evidence-grid small {
-            color: #94a3b8;
+            color: #a7abb2;
         }
         @media (max-width: 760px) {
             .gi-intel-player-header {
@@ -591,47 +592,47 @@ def render_player_card(player_data: dict) -> None:
 
     st.write(f"**Opposing Pitcher:** {pitcher}")
 
-    st.markdown("**Performance evidence**")
-    st.markdown(
-        _performance_evidence_html(
-            player_data,
-            season,
-            recent,
-        ),
-        unsafe_allow_html=True,
-    )
-
-    if statcast:
-        st.markdown("**Statcast contact quality**")
+    with st.expander("Performance Evidence", expanded=False):
         st.markdown(
-            "<div class='gi-intel-grid'>"
-            + _compact_metric(
-                "Avg Exit Velocity",
-                f"{_number(statcast.get('average_exit_velocity'), 1)} mph",
-            )
-            + _compact_metric("Barrel Rate", _percent(statcast.get("barrel_rate")))
-            + _compact_metric("Hard-Hit Rate", _percent(statcast.get("hard_hit_rate")))
-            + _compact_metric("xBA", _number(statcast.get("xba")))
-            + _compact_metric("xSLG", _number(statcast.get("xslg")))
-            + _compact_metric("xwOBA", _number(statcast.get("xwoba")))
-            + "</div>",
+            _performance_evidence_html(
+                player_data,
+                season,
+                recent,
+            ),
             unsafe_allow_html=True,
         )
 
-        warning = str(statcast.get("sample_warning") or "")
-        if warning:
-            st.warning(warning)
-    else:
-        st.caption("Statcast contact-quality data is currently unavailable.")
+    with st.expander("Statcast Contact Quality", expanded=False):
+        if statcast:
+            st.markdown(
+                "<div class='gi-intel-grid'>"
+                + _compact_metric(
+                    "Avg Exit Velocity",
+                    f"{_number(statcast.get('average_exit_velocity'), 1)} mph",
+                )
+                + _compact_metric("Barrel Rate", _percent(statcast.get("barrel_rate")))
+                + _compact_metric("Hard-Hit Rate", _percent(statcast.get("hard_hit_rate")))
+                + _compact_metric("xBA", _number(statcast.get("xba")))
+                + _compact_metric("xSLG", _number(statcast.get("xslg")))
+                + _compact_metric("xwOBA", _number(statcast.get("xwoba")))
+                + "</div>",
+                unsafe_allow_html=True,
+            )
 
-    st.markdown("**Why this player ranks here**")
-    for reason in _ranking_evidence(
-        player_data,
-        season,
-        recent,
-        statcast,
-    ):
-        st.write(f"• {reason}")
+            warning = str(statcast.get("sample_warning") or "")
+            if warning:
+                st.warning(warning)
+        else:
+            st.caption("Statcast contact-quality data is currently unavailable.")
+
+    with st.expander("Why This Player Ranks Here", expanded=False):
+        for reason in _ranking_evidence(
+            player_data,
+            season,
+            recent,
+            statcast,
+        ):
+            st.write(f"• {reason}")
 
     if game_finished:
         risk_flags = [
@@ -642,6 +643,6 @@ def render_player_card(player_data: dict) -> None:
         ]
 
     if risk_flags:
-        st.markdown("**Things to watch**")
-        for flag in risk_flags:
-            st.write(f"• {flag}")
+        with st.expander("Things to Watch", expanded=False):
+            for flag in risk_flags:
+                st.write(f"• {flag}")
