@@ -124,6 +124,10 @@ pages = {
     ]
 }
 
+# Register all pages before rendering custom page links.
+# Streamlit page_link needs the st.navigation page registry to exist first.
+navigation = st.navigation(pages, position="hidden")
+
 # Custom square-grid Sport Hub replaces the old >> / sidebar control.
 nav_col, brand_col = st.columns([1, 8], vertical_alignment="center")
 with nav_col:
@@ -143,5 +147,4 @@ with nav_col:
 with brand_col:
     st.markdown('<div class="ssd-shell"><div class="ssd-shell-brand">Game Intelligence</div></div>', unsafe_allow_html=True)
 
-navigation = st.navigation(pages, position="hidden")
 navigation.run()
