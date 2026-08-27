@@ -42,6 +42,7 @@ from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
     load_compare_and_save,
+    load_compare_and_save_local,
     player_key,
 )
 
@@ -680,22 +681,30 @@ try:
     if has_previous_snapshot:
         MOVEMENT_SUMMARIES = movement_result["summaries"]
 
-except (KeyError, ValueError, RankingSnapshotError) as error:
-    for rankings in (
-        HOME_RUN_RANKINGS,
-        HIT_RANKINGS,
-        TOTAL_BASE_RANKINGS,
-        RUN_RANKINGS,
-        RBI_RANKINGS,
-        WALK_RANKINGS,
-        STOLEN_BASE_RANKINGS,
-        HITS_RUNS_RBIS_RANKINGS,
+except (KeyError, ValueError, RankingSnapshotError):
+    # Keep movement functional even when GitHub persistence is unavailable.
+    movement_result = load_compare_and_save_local(
+        category_rankings={
+            "home_runs": HOME_RUN_RANKINGS, "hits": HIT_RANKINGS,
+            "total_bases": TOTAL_BASE_RANKINGS, "runs": RUN_RANKINGS,
+            "rbis": RBI_RANKINGS, "walks": WALK_RANKINGS,
+            "stolen_bases": STOLEN_BASE_RANKINGS,
+            "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
+        },
+        captured_at=get_toronto_now(),
+    )
+    has_previous_snapshot = movement_result["previous_snapshot"] is not None
+    comparisons = movement_result["comparisons"]
+    for rankings, key in (
+        (HOME_RUN_RANKINGS, "home_runs"), (HIT_RANKINGS, "hits"),
+        (TOTAL_BASE_RANKINGS, "total_bases"), (RUN_RANKINGS, "runs"),
+        (RBI_RANKINGS, "rbis"), (WALK_RANKINGS, "walks"),
+        (STOLEN_BASE_RANKINGS, "stolen_bases"),
+        (HITS_RUNS_RBIS_RANKINGS, "hits_runs_rbis"),
     ):
-        attach_persistent_movement(rankings, {}, False)
-
-    # Movement history is supplemental. Keep current rankings clean and usable
-    # when the snapshot service is temporarily unavailable.
-    pass
+        attach_persistent_movement(rankings, comparisons.get(key, {}), has_previous_snapshot)
+    if has_previous_snapshot:
+        MOVEMENT_SUMMARIES = movement_result["summaries"]
 
 
 # ============================================================
@@ -1327,6 +1336,8 @@ st.markdown(
         }
 
         .gi-compact-player {
+        border-left:5px solid #ffcc33 !important;
+        border-top:2px solid rgba(255,204,51,.88) !important;
             display: grid;
             grid-template-columns: 54px 42px minmax(0, 1fr);
             align-items: center;
@@ -2231,7 +2242,7 @@ st.markdown(
         --gi-text: #ffffff !important;
         --gi-muted: #a7abb2 !important;
         --gi-green: #19d978 !important;
-        --gi-yellow: #f6c84c !important;
+        --gi-yellow: #ffcc33 !important;
         --gi-orange: #f0a547 !important;
     }
 
@@ -2294,12 +2305,12 @@ st.markdown(
     .gi-snapshot-emerald { border-color:rgba(25,217,120,.62); box-shadow:inset 0 0 20px rgba(25,217,120,.05); }
     .gi-snapshot-emerald strong { color:#19d978; }
     .gi-snapshot-gold { border-color:rgba(246,200,76,.58); box-shadow:inset 0 0 20px rgba(246,200,76,.04); }
-    .gi-snapshot-gold strong { color:#f6c84c; }
+    .gi-snapshot-gold strong { color:#ffcc33; }
 
     .gi-section-title, .gi-full-list-heading, .gi-compact-name, .gi-card-player strong { color:#ffffff !important; }
-    .gi-section-count { color:#000000 !important; background:#f6c84c !important; border-color:#f6c84c !important; }
+    .gi-section-count { color:#000000 !important; background:#ffcc33 !important; border-color:#ffcc33 !important; }
     .gi-section-subtitle, .gi-compact-reason, .gi-compact-matchup, .gi-card-reason { color:#c4c7cc !important; }
-    .gi-score-inline, .gi-card-score strong { color:#f6c84c !important; }
+    .gi-score-inline, .gi-card-score strong { color:#ffcc33 !important; }
     .gi-card-rank, .gi-compact-rank { color:#19d978 !important; }
 
     .gi-compact-player {
@@ -2310,7 +2321,7 @@ st.markdown(
     .gi-compact-player:nth-of-type(odd) { box-shadow:inset 3px 0 0 rgba(246,200,76,.72); }
 
     .gi-featured-photo, .gi-compact-photo, .gi-full-photo, .gi-native-photo {
-        background:#050505 !important; border:1px solid rgba(246,200,76,.65) !important;
+        background:#050505 !important; border:2px solid rgba(255,204,51,.65) !important;
     }
     .gi-featured-photo img, .gi-compact-photo img, .gi-full-photo img, .gi-native-photo img {
         width:100% !important; height:100% !important; object-fit:cover !important; object-position:center 16% !important; transform:scale(1.12);
@@ -2328,7 +2339,7 @@ st.markdown(
         border-radius:9px !important; text-align:center !important; justify-content:center !important;
     }
     [class*="st-key-show_"][class*="_player_"] .stButton > button:hover {
-        border-color:#f6c84c !important; color:#f6c84c !important;
+        border-color:#ffcc33 !important; color:#ffcc33 !important;
     }
 
     .gi-lineup-confirmed { color:#ffffff !important; background:rgba(25,217,120,.16) !important; border-color:rgba(25,217,120,.55) !important; }
@@ -2352,18 +2363,20 @@ st.markdown(
         .gi-hero-title { font-size:1.82rem !important; line-height:1.08 !important; }
         .gi-hero-subtitle { font-size:.92rem !important; margin-top:10px !important; }
         .gi-snapshot-grid { gap:6px; }
-        .gi-snapshot-card { aspect-ratio:1.05/1; padding:8px 6px; }
-        .gi-snapshot-card strong { font-size:1.18rem; }
+        .gi-snapshot-card { aspect-ratio:auto; min-height:88px; padding:10px 7px; border-width:2px !important; }
+        .gi-snapshot-card span { font-size:.70rem !important; font-weight:900 !important; color:#ffffff !important; }
+        .gi-snapshot-card strong { font-size:1.42rem !important; }
+        .gi-snapshot-card small { font-size:.70rem !important; color:#ffffff !important; font-weight:650 !important; }
         .gi-snapshot-heading span { max-width:45%; text-align:right; }
         .gi-section-title { font-size:1.03rem !important; }
-        .gi-section-subtitle { font-size:.80rem !important; line-height:1.35; }
+        .gi-section-subtitle { font-size:.88rem !important; line-height:1.42; color:#ffffff !important; }
         .gi-compact-player { padding:11px 9px !important; gap:9px !important; grid-template-columns:54px 34px minmax(0,1fr) !important; }
         .gi-compact-name { font-size:1.02rem !important; }
-        .gi-compact-reason { font-size:.82rem !important; }
+        .gi-compact-reason { font-size:.88rem !important; color:#ffffff !important; }
         .gi-card-header { grid-template-columns:34px 50px minmax(0,1fr) 48px !important; gap:7px !important; padding:8px 2px !important; }
         .gi-native-photo { height:50px !important; width:50px !important; }
         .gi-card-player strong { font-size:.96rem !important; }
-        .gi-card-player span { font-size:.75rem !important; }
+        .gi-card-player span { font-size:.82rem !important; color:#ffffff !important; }
     }
     </style>
     """,
@@ -2380,8 +2393,6 @@ refreshed_time = toronto_now.strftime("%B %d, %Y at %I:%M %p ET")
 render_html(
     """
     <section class="gi-hero">
-        <div class="gi-eyebrow">⚾ Game Intelligence</div>
-
         <h1 class="gi-hero-title">
             MLB Intelligence Center
         </h1>
