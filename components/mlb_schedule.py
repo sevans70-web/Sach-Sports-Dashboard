@@ -17,18 +17,50 @@ TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 st.markdown(
     """
     <style>
+    div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"] {
+        gap: 8px !important;
+        flex-wrap: nowrap !important;
+    }
+    div[class*="st-key-mlb_game_grid"] [data-testid="column"] {
+        width: 50% !important;
+        flex: 1 1 50% !important;
+        min-width: 0 !important;
+    }
+    div[class*="st-key-mlb_game_grid"] [data-testid="stVerticalBlockBorderWrapper"] {
+        background: #101112 !important;
+        border: 1px solid #2a2d31 !important;
+        border-radius: 12px !important;
+    }
     div[class*="st-key-roster_player_"] button,
     div[class*="st-key-open_game_"] button {
-        background: rgba(15, 23, 42, 0.88) !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(56, 189, 248, 0.24) !important;
-        border-radius: 10px !important;
-        font-weight: 650 !important;
+        background: #080909 !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(25, 217, 120, .55) !important;
+        border-radius: 9px !important;
+        font-weight: 800 !important;
     }
     div[class*="st-key-roster_player_"] button:hover,
     div[class*="st-key-open_game_"] button:hover {
-        border-color: rgba(56, 189, 248, 0.55) !important;
+        border-color: #f6c84c !important;
         color: #ffffff !important;
+    }
+    @media (max-width: 700px) {
+        div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 7px !important;
+        }
+        div[class*="st-key-mlb_game_grid"] [data-testid="column"] {
+            width: calc(50% - 4px) !important;
+            flex: 0 0 calc(50% - 4px) !important;
+        }
+        div[class*="st-key-mlb_game_grid"] p {
+            font-size: .78rem !important;
+            line-height: 1.25 !important;
+        }
+        div[class*="st-key-mlb_game_grid"] [data-testid="stCaptionContainer"] {
+            font-size: .65rem !important;
+        }
     }
     </style>
     """,
@@ -152,7 +184,7 @@ def render_live_mlb_schedule(
     player_lookup: dict[int, dict[str, Any]] | None = None,
     player_renderer: Any | None = None,
 ) -> dict[str, Any]:
-    """Display today's schedule as a compact three-column game grid."""
+    """Display today's schedule as a compact two-column mobile-first game grid."""
     schedule = load_today_schedule()
     lineup_data = load_today_lineups()
     player_lookup = player_lookup or {}
@@ -181,13 +213,14 @@ def render_live_mlb_schedule(
         st.info("No MLB games are scheduled for today's Toronto date.")
         return schedule
 
-    for start in range(0, len(games), 3):
-        columns = st.columns(3)
-        for offset, game in enumerate(games[start:start + 3]):
-            with columns[offset]:
-                if _game_card(game, lineup_data):
-                    st.session_state["selected_game_pk"] = game.get("game_pk")
-                    st.session_state.pop("selected_game_player_id", None)
+    with st.container(key="mlb_game_grid"):
+        for start in range(0, len(games), 2):
+            columns = st.columns(2, gap="small")
+            for offset, game in enumerate(games[start:start + 2]):
+                with columns[offset]:
+                    if _game_card(game, lineup_data):
+                        st.session_state["selected_game_pk"] = game.get("game_pk")
+                        st.session_state.pop("selected_game_player_id", None)
 
     selected_game_pk = st.session_state.get("selected_game_pk")
     if selected_game_pk:
