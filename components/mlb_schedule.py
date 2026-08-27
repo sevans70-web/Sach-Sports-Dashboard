@@ -28,7 +28,7 @@ st.markdown(
     }
     div[class*="st-key-mlb_game_grid"] [data-testid="stVerticalBlockBorderWrapper"] {
         background: #101112 !important;
-        border: 1px solid #2a2d31 !important;
+        border: 2px solid #30343a !important;
         border-radius: 12px !important;
     }
     div[class*="st-key-roster_player_"] button,
@@ -55,11 +55,11 @@ st.markdown(
             flex: 0 0 calc(50% - 4px) !important;
         }
         div[class*="st-key-mlb_game_grid"] p {
-            font-size: .78rem !important;
+            font-size: .88rem !important;
             line-height: 1.25 !important;
         }
         div[class*="st-key-mlb_game_grid"] [data-testid="stCaptionContainer"] {
-            font-size: .65rem !important;
+            font-size: .76rem !important;
         }
     }
     </style>
