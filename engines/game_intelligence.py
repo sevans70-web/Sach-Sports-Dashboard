@@ -1677,8 +1677,11 @@ def rank_players(
                 elif temperature <= 50:
                     weather_adjustment -= 2.0
 
-                if wind_speed >= 15:
-                    weather_adjustment -= 1.0
+                precipitation = _safe_float(weather.get("precipitation_probability", 0))
+                if precipitation >= 60:
+                    weather_adjustment -= 1.5
+                elif precipitation >= 40:
+                    weather_adjustment -= 0.75
 
             elif category == CATEGORY_TOTAL_BASES:
                 if temperature >= 85:
@@ -1688,7 +1691,10 @@ def rank_players(
                 elif temperature <= 50:
                     weather_adjustment -= 1.5
 
-                if wind_speed >= 15:
+                precipitation = _safe_float(weather.get("precipitation_probability", 0))
+                if precipitation >= 60:
+                    weather_adjustment -= 1.0
+                elif precipitation >= 40:
                     weather_adjustment -= 0.5
 
             else:
@@ -1697,8 +1703,11 @@ def rank_players(
                 elif temperature <= 50:
                     weather_adjustment -= 0.75
 
-                if wind_speed >= 15:
-                    weather_adjustment -= 0.25
+                precipitation = _safe_float(weather.get("precipitation_probability", 0))
+                if precipitation >= 60:
+                    weather_adjustment -= 0.75
+                elif precipitation >= 40:
+                    weather_adjustment -= 0.35
 
         park_category = category
         if category in {CATEGORY_RUNS, CATEGORY_RBIS, CATEGORY_HITS_RUNS_RBIS}:
