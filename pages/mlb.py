@@ -1017,10 +1017,6 @@ def render_ranking_category(
                 if st.session_state[intelligence_key]:
                     render_player_card(player)
                 
-        st.caption(
-            "In a later build, selecting a player will open that player's "
-            "full Intelligence page."
-        )
 
 
 # ============================================================
@@ -2219,6 +2215,162 @@ def weather_alert_summary(rankings: list[dict]) -> tuple[int, str]:
 
 
 # ============================================================
+# MOBILE-FIRST VISUAL OVERRIDES - PLATFORM V2
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    :root {
+        --gi-bg: #000000 !important;
+        --gi-panel: #101112 !important;
+        --gi-panel-soft: #131415 !important;
+        --gi-border: #303236 !important;
+        --gi-blue: #19d978 !important;
+        --gi-blue-light: #ffffff !important;
+        --gi-text: #ffffff !important;
+        --gi-muted: #a7abb2 !important;
+        --gi-green: #19d978 !important;
+        --gi-yellow: #f6c84c !important;
+        --gi-orange: #f0a547 !important;
+    }
+
+    .stApp {
+        background: #000000 !important;
+        color: #ffffff !important;
+    }
+    .block-container {
+        max-width: 1320px;
+        padding-top: .35rem !important;
+        padding-bottom: 4rem;
+    }
+    h1, h2, h3, h4, p, li, label, .stMarkdown {
+        color: #ffffff;
+    }
+    [data-testid="stCaptionContainer"], .stCaption, small {
+        color: #a7abb2 !important;
+    }
+
+    .gi-hero {
+        padding: 22px 22px !important;
+        margin-bottom: 10px !important;
+        border-radius: 18px !important;
+        background:
+            radial-gradient(circle at 88% 12%, rgba(25,217,120,.17), transparent 30%),
+            radial-gradient(circle at 10% 90%, rgba(246,200,76,.10), transparent 34%),
+            #090a0a !important;
+        border: 1px solid rgba(246,200,76,.52) !important;
+        box-shadow: 0 0 0 1px rgba(25,217,120,.06), 0 14px 40px rgba(0,0,0,.42) !important;
+    }
+    .gi-eyebrow {
+        color: #19d978 !important;
+        font-size: .76rem !important;
+        letter-spacing: .16em !important;
+    }
+    .gi-hero-title {
+        color: #ffffff !important;
+    }
+    .gi-hero-subtitle {
+        color: #ffffff !important;
+        opacity: .92;
+        line-height: 1.5 !important;
+    }
+
+    .gi-snapshot-heading {
+        display:flex; align-items:end; justify-content:space-between; gap:8px; margin:10px 0 7px;
+    }
+    .gi-snapshot-heading strong { color:#ffffff; font-size:1.08rem; }
+    .gi-snapshot-heading span { color:#19d978; font-size:.70rem; font-weight:750; }
+    .gi-snapshot-grid {
+        display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-bottom:14px;
+    }
+    .gi-snapshot-card {
+        min-width:0; aspect-ratio:1.25/1; padding:10px 8px; border-radius:12px;
+        background:#101112; border:1px solid #303236; display:flex; flex-direction:column; justify-content:center;
+    }
+    .gi-snapshot-card span { color:#a7abb2; font-size:.62rem; font-weight:850; letter-spacing:.08em; }
+    .gi-snapshot-card strong { color:#ffffff; font-size:1.32rem; line-height:1.1; margin:4px 0; }
+    .gi-snapshot-card small { color:#a7abb2 !important; font-size:.60rem; line-height:1.15; }
+    .gi-snapshot-emerald { border-color:rgba(25,217,120,.62); box-shadow:inset 0 0 20px rgba(25,217,120,.05); }
+    .gi-snapshot-emerald strong { color:#19d978; }
+    .gi-snapshot-gold { border-color:rgba(246,200,76,.58); box-shadow:inset 0 0 20px rgba(246,200,76,.04); }
+    .gi-snapshot-gold strong { color:#f6c84c; }
+
+    .gi-section-title, .gi-full-list-heading, .gi-compact-name, .gi-card-player strong { color:#ffffff !important; }
+    .gi-section-count { color:#000000 !important; background:#f6c84c !important; border-color:#f6c84c !important; }
+    .gi-section-subtitle, .gi-compact-reason, .gi-compact-matchup, .gi-card-reason { color:#c4c7cc !important; }
+    .gi-score-inline, .gi-card-score strong { color:#f6c84c !important; }
+    .gi-card-rank, .gi-compact-rank { color:#19d978 !important; }
+
+    .gi-compact-player {
+        background:#101112 !important;
+        border:1px solid #303236 !important;
+        box-shadow:inset 3px 0 0 rgba(25,217,120,.80);
+    }
+    .gi-compact-player:nth-of-type(odd) { box-shadow:inset 3px 0 0 rgba(246,200,76,.72); }
+
+    .gi-featured-photo, .gi-compact-photo, .gi-full-photo, .gi-native-photo {
+        background:#050505 !important; border:1px solid rgba(246,200,76,.65) !important;
+    }
+    .gi-featured-photo img, .gi-compact-photo img, .gi-full-photo img, .gi-native-photo img {
+        width:100% !important; height:100% !important; object-fit:cover !important; object-position:center 16% !important; transform:scale(1.12);
+    }
+    .gi-compact-photo-placeholder, .gi-full-photo-placeholder, .gi-native-initials {
+        background:#0a0b0b !important; color:#ffffff !important; border-color:#19d978 !important;
+    }
+
+    [class*="st-key-show_"][class*="_player_"] {
+        background:#101112 !important; border:1px solid #303236 !important; border-radius:14px !important;
+        box-shadow:inset 3px 0 0 rgba(25,217,120,.70) !important;
+    }
+    [class*="st-key-show_"][class*="_player_"] .stButton > button {
+        background:#0b0c0d !important; color:#ffffff !important; border:1px solid rgba(25,217,120,.42) !important;
+        border-radius:9px !important; text-align:center !important; justify-content:center !important;
+    }
+    [class*="st-key-show_"][class*="_player_"] .stButton > button:hover {
+        border-color:#f6c84c !important; color:#f6c84c !important;
+    }
+
+    .gi-lineup-confirmed { color:#ffffff !important; background:rgba(25,217,120,.16) !important; border-color:rgba(25,217,120,.55) !important; }
+    .gi-result-live, .gi-result-win { color:#19d978 !important; }
+
+    div[data-testid="stExpander"] { background:#080909 !important; border:1px solid #2a2d31 !important; border-radius:12px !important; }
+    div[data-testid="stExpander"] summary { color:#ffffff !important; }
+    div[data-testid="stExpander"] summary:hover { color:#19d978 !important; }
+
+    div[data-testid="stTabs"] button { color:#b8bbc0 !important; }
+    div[data-testid="stTabs"] button[aria-selected="true"] { color:#ffffff !important; }
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] { background:#19d978 !important; }
+
+    button[kind="secondary"], .stButton > button {
+        background:#0c0d0e !important; color:#ffffff !important; border:1px solid #303236 !important;
+    }
+    .stButton > button:hover { border-color:#19d978 !important; color:#ffffff !important; }
+
+    @media (max-width:700px) {
+        .gi-hero { padding:16px 15px !important; border-radius:15px !important; }
+        .gi-hero-title { font-size:1.82rem !important; line-height:1.08 !important; }
+        .gi-hero-subtitle { font-size:.92rem !important; margin-top:10px !important; }
+        .gi-snapshot-grid { gap:6px; }
+        .gi-snapshot-card { aspect-ratio:1.05/1; padding:8px 6px; }
+        .gi-snapshot-card strong { font-size:1.18rem; }
+        .gi-snapshot-heading span { max-width:45%; text-align:right; }
+        .gi-section-title { font-size:1.03rem !important; }
+        .gi-section-subtitle { font-size:.80rem !important; line-height:1.35; }
+        .gi-compact-player { padding:11px 9px !important; gap:9px !important; grid-template-columns:54px 34px minmax(0,1fr) !important; }
+        .gi-compact-name { font-size:1.02rem !important; }
+        .gi-compact-reason { font-size:.82rem !important; }
+        .gi-card-header { grid-template-columns:34px 50px minmax(0,1fr) 48px !important; gap:7px !important; padding:8px 2px !important; }
+        .gi-native-photo { height:50px !important; width:50px !important; }
+        .gi-card-player strong { font-size:.96rem !important; }
+        .gi-card-player span { font-size:.75rem !important; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ============================================================
 # PAGE CONTENT
 # ============================================================
 
@@ -2252,40 +2404,38 @@ with st.expander("⚾ View today's MLB games", expanded=False):
 
 live_summary = schedule_summary(live_schedule)
 
+confirmed_teams = live_summary.get("confirmed_teams", 0)
+total_teams = live_summary.get("total_teams", 0)
+pending_teams = max(total_teams - confirmed_teams, 0)
+weather_count, weather_note = weather_alert_summary(HOME_RUN_RANKINGS)
+lineup_note = "Confirmed" if pending_teams == 0 and total_teams else f"{pending_teams} pending"
+weather_short = "Clear" if weather_count == 0 else f"{weather_count} alert{'s' if weather_count != 1 else ''}"
+
 render_html(
-    """
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 4px;">
-        <strong style="font-size:1.05rem;color:#f7f1e3;">Today's MLB Snapshot</strong>
-        <span style="font-size:.72rem;color:#b8b09f;">Always confirm starting lineups</span>
+    f"""
+    <div class="gi-snapshot-heading">
+        <strong>Today's MLB Snapshot</strong>
+        <span>Always confirm starting lineups</span>
+    </div>
+    <div class="gi-snapshot-grid">
+        <div class="gi-snapshot-card gi-snapshot-emerald">
+            <span>GAMES</span>
+            <strong>{live_summary['games']}</strong>
+            <small>{live_summary['live']} live · {live_summary['final']} final</small>
+        </div>
+        <div class="gi-snapshot-card">
+            <span>LINEUPS</span>
+            <strong>{confirmed_teams}/{total_teams}</strong>
+            <small>{lineup_note}</small>
+        </div>
+        <div class="gi-snapshot-card gi-snapshot-gold">
+            <span>WEATHER</span>
+            <strong>{weather_count}</strong>
+            <small>{weather_short}</small>
+        </div>
     </div>
     """
 )
-
-snapshot_1, snapshot_2, snapshot_3 = st.columns(3)
-
-with snapshot_1:
-    games_status = (
-        f"{live_summary['live']} live · {live_summary['final']} final"
-    )
-    st.metric("Games", live_summary["games"], games_status)
-
-with snapshot_2:
-    confirmed_teams = live_summary.get("confirmed_teams", 0)
-    total_teams = live_summary.get("total_teams", 0)
-    pending_teams = max(total_teams - confirmed_teams, 0)
-    st.metric(
-        "Lineups",
-        f"{confirmed_teams}/{total_teams}",
-        "All confirmed" if pending_teams == 0 and total_teams else f"{pending_teams} pending",
-    )
-
-with snapshot_3:
-    weather_count, weather_note = weather_alert_summary(HOME_RUN_RANKINGS)
-    st.metric(
-        "Weather Alerts",
-        weather_count,
-        weather_note,
-    )
 if not (HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE):
     st.warning(
         "Ranking data is incomplete: "
