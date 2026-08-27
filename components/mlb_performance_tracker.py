@@ -256,115 +256,91 @@ def _styles() -> None:
         """
         <style>
         .perf-kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 7px;
-            margin: 8px 0 10px;
+            display:grid !important;
+            grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+            gap:7px !important;
+            margin:8px 0 10px !important;
         }
         .perf-kpi {
-            min-width: 0;
-            padding: 10px 9px;
-            border-radius: 11px;
-            background: rgba(24, 24, 21, 0.86);
-            border: 1px solid rgba(214, 179, 92, 0.28);
+            min-width:0 !important;
+            aspect-ratio:1.12/1 !important;
+            padding:9px 8px !important;
+            border-radius:11px !important;
+            background:#101112 !important;
+            border:1px solid #303236 !important;
+            display:flex !important;
+            flex-direction:column !important;
+            justify-content:center !important;
+        }
+        .perf-kpi:nth-child(1), .perf-kpi:nth-child(3) {
+            border-color:rgba(25,217,120,.62) !important;
+        }
+        .perf-kpi:nth-child(5) {
+            border-color:rgba(246,200,76,.64) !important;
         }
         .perf-kpi span, .perf-kpi small {
-            display: block;
-            color: #b8b09f;
-            font-size: .68rem;
+            display:block !important;
+            color:#a7abb2 !important;
+            font-size:.64rem !important;
+            line-height:1.15 !important;
         }
         .perf-kpi strong {
-            display: block;
-            color: #f7f1e3;
-            font-size: 1.08rem;
-            line-height: 1.15;
-            margin-top: 2px;
+            display:block !important;
+            color:#ffffff !important;
+            font-size:1.12rem !important;
+            line-height:1.08 !important;
+            margin:3px 0 !important;
         }
+        .perf-kpi:nth-child(1) strong, .perf-kpi:nth-child(3) strong { color:#19d978 !important; }
+        .perf-kpi:nth-child(5) strong { color:#f6c84c !important; }
 
         .perf-summary-row {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin: 10px 0 14px 0;
+            display:grid !important;
+            grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+            gap:7px !important;
+            margin:8px 0 12px !important;
         }
-
         .perf-summary-item {
-            background: rgba(15, 23, 42, 0.72);
-            border: 1px solid rgba(56, 189, 248, 0.28);
-            border-radius: 14px;
-            padding: 12px 14px;
-            min-width: 0;
+            aspect-ratio:1.35/1 !important;
+            background:#101112 !important;
+            border:1px solid #303236 !important;
+            border-radius:11px !important;
+            padding:10px !important;
+            min-width:0 !important;
+            display:flex !important;
+            flex-direction:column !important;
+            justify-content:center !important;
         }
+        .perf-summary-item:first-child { border-color:rgba(25,217,120,.55) !important; }
+        .perf-summary-item .perf-label { color:#a7abb2 !important; display:block; font-size:.69rem !important; margin-bottom:3px; }
+        .perf-summary-item strong { color:#ffffff !important; display:block; font-size:1.22rem !important; line-height:1.05; white-space:nowrap; }
+        .perf-summary-item:first-child strong { color:#19d978 !important; }
+        .perf-summary-item .perf-subtext { color:#a7abb2 !important; display:block; margin-top:4px; font-size:.62rem !important; }
 
-        .perf-summary-item .perf-label {
-            display: block;
-            font-size: 0.78rem;
-            opacity: 0.72;
-            margin-bottom: 4px;
+        div[data-testid="stSegmentedControl"] button {
+            background:#0b0c0d !important;
+            color:#ffffff !important;
+            border-color:#303236 !important;
+            font-weight:800 !important;
         }
-
-        .perf-summary-item strong {
-            display: block;
-            font-size: 1.55rem;
-            line-height: 1.1;
-            white-space: nowrap;
+        div[data-testid="stSegmentedControl"] button[aria-pressed="true"] {
+            background:rgba(25,217,120,.18) !important;
+            border-color:#19d978 !important;
+            color:#ffffff !important;
+            box-shadow:inset 0 0 0 1px rgba(25,217,120,.2), 0 0 14px rgba(25,217,120,.08) !important;
         }
+        div[data-testid="stTabs"] [data-baseweb="tab-highlight"] { background:#19d978 !important; }
 
-        .perf-summary-item .perf-subtext {
-            display: block;
-            margin-top: 5px;
-            font-size: 0.74rem;
-            opacity: 0.68;
-        }
-
-        @media (max-width: 700px) {
-            .perf-kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 7px;
-            margin: 8px 0 10px;
-        }
-        .perf-kpi {
-            min-width: 0;
-            padding: 10px 9px;
-            border-radius: 11px;
-            background: rgba(24, 24, 21, 0.86);
-            border: 1px solid rgba(214, 179, 92, 0.28);
-        }
-        .perf-kpi span, .perf-kpi small {
-            display: block;
-            color: #b8b09f;
-            font-size: .68rem;
-        }
-        .perf-kpi strong {
-            display: block;
-            color: #f7f1e3;
-            font-size: 1.08rem;
-            line-height: 1.15;
-            margin-top: 2px;
-        }
-
-        .perf-summary-row {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 6px;
-            }
-
-            .perf-summary-item {
-                border-radius: 10px;
-                padding: 9px 8px;
-            }
-
-            .perf-summary-item .perf-label {
-                font-size: 0.68rem;
-            }
-
-            .perf-summary-item strong {
-                font-size: 1.15rem;
-            }
-
-            .perf-summary-item .perf-subtext {
-                font-size: 0.64rem;
-            }
+        @media (max-width:700px) {
+            .perf-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:6px !important; }
+            .perf-kpi { padding:8px 6px !important; border-radius:10px !important; aspect-ratio:1/1 !important; }
+            .perf-kpi span, .perf-kpi small { font-size:.58rem !important; }
+            .perf-kpi strong { font-size:1.03rem !important; }
+            .perf-summary-row { gap:6px !important; }
+            .perf-summary-item { aspect-ratio:1.12/1 !important; padding:8px !important; }
+            .perf-summary-item .perf-label { font-size:.62rem !important; }
+            .perf-summary-item strong { font-size:1.06rem !important; }
+            .perf-summary-item .perf-subtext { font-size:.57rem !important; }
         }
         </style>
         """,
@@ -379,11 +355,12 @@ def render_prediction_performance_tracker(
     _styles()
 
     st.subheader("📊 Prediction Performance")
-    st.caption(
-        "Frozen pregame predictions are compared with actual results. "
-        "Batter markets show hit rate; pitcher markets measure how close the "
-        "dashboard projection was to the pitcher's final stat."
-    )
+    with st.expander("ⓘ How performance is measured", expanded=False):
+        st.caption(
+            "Frozen pregame predictions are compared with actual results. "
+            "Batter markets show hit rate; pitcher markets measure how close the "
+            "dashboard projection was to the pitcher's final stat."
+        )
 
     try:
         token = st.secrets["GITHUB_TOKEN"]
