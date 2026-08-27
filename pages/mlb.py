@@ -42,7 +42,6 @@ from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
     load_compare_and_save,
-    load_compare_and_save_local,
     player_key,
 )
 
@@ -682,29 +681,43 @@ try:
         MOVEMENT_SUMMARIES = movement_result["summaries"]
 
 except (KeyError, ValueError, RankingSnapshotError):
-    # Keep movement functional even when GitHub persistence is unavailable.
-    movement_result = load_compare_and_save_local(
-        category_rankings={
-            "home_runs": HOME_RUN_RANKINGS, "hits": HIT_RANKINGS,
-            "total_bases": TOTAL_BASE_RANKINGS, "runs": RUN_RANKINGS,
-            "rbis": RBI_RANKINGS, "walks": WALK_RANKINGS,
-            "stolen_bases": STOLEN_BASE_RANKINGS,
-            "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
-        },
-        captured_at=get_toronto_now(),
+    # GitHub persistence is unavailable. Keep the page usable and compare
+    # against the previous rankings held in this Streamlit session.
+    current_rankings_by_category = {
+        "home_runs": HOME_RUN_RANKINGS, "hits": HIT_RANKINGS,
+        "total_bases": TOTAL_BASE_RANKINGS, "runs": RUN_RANKINGS,
+        "rbis": RBI_RANKINGS, "walks": WALK_RANKINGS,
+        "stolen_bases": STOLEN_BASE_RANKINGS,
+        "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
+    }
+    previous_rankings_by_category = st.session_state.get(
+        "mlb_previous_rankings_by_category"
     )
-    has_previous_snapshot = movement_result["previous_snapshot"] is not None
-    comparisons = movement_result["comparisons"]
-    for rankings, key in (
-        (HOME_RUN_RANKINGS, "home_runs"), (HIT_RANKINGS, "hits"),
-        (TOTAL_BASE_RANKINGS, "total_bases"), (RUN_RANKINGS, "runs"),
-        (RBI_RANKINGS, "rbis"), (WALK_RANKINGS, "walks"),
-        (STOLEN_BASE_RANKINGS, "stolen_bases"),
-        (HITS_RUNS_RBIS_RANKINGS, "hits_runs_rbis"),
-    ):
-        attach_persistent_movement(rankings, comparisons.get(key, {}), has_previous_snapshot)
-    if has_previous_snapshot:
-        MOVEMENT_SUMMARIES = movement_result["summaries"]
+
+    if previous_rankings_by_category:
+        for category_key, rankings in current_rankings_by_category.items():
+            previous = previous_rankings_by_category.get(category_key, [])
+            previous_positions = {
+                player_key(player): index + 1
+                for index, player in enumerate(previous)
+            }
+            comparison = {}
+            for index, player in enumerate(rankings):
+                key = player_key(player)
+                new_rank = index + 1
+                old_rank = previous_positions.get(key)
+                comparison[key] = {
+                    "movement": (old_rank - new_rank) if old_rank else None,
+                    "is_new": old_rank is None,
+                    "previous_rank": old_rank,
+                    "current_rank": new_rank,
+                }
+            attach_persistent_movement(rankings, comparison, True)
+
+    st.session_state["mlb_previous_rankings_by_category"] = {
+        category_key: [dict(player) for player in rankings]
+        for category_key, rankings in current_rankings_by_category.items()
+    }
 
 
 # ============================================================
