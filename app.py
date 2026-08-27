@@ -70,6 +70,10 @@ st.markdown(
         border: 1px solid rgba(25, 217, 120, .72) !important;
         border-radius: 11px !important;
         min-height: 38px !important;
+        width: 42px !important;
+        min-width: 42px !important;
+        padding: 0 !important;
+        font-size: 1.18rem !important;
         font-weight: 900 !important;
         box-shadow: 0 0 0 1px rgba(246, 200, 76, .10), 0 0 18px rgba(25, 217, 120, .08);
     }
@@ -112,15 +116,15 @@ st.markdown(
 )
 
 pages = {
-    "Game Intelligence": [
-        st.Page("pages/home.py", title="Home", icon="🏠", default=True),
+    "Sports": [
+        st.Page("pages/home.py", title="HOME", icon="🏠", default=True),
         st.Page("pages/mlb.py", title="MLB", icon="⚾"),
-        st.Page("pages/nfl.py", title="NFL", icon="🏈"),
-        st.Page("pages/cfb.py", title="College Football", icon="🏈"),
-        st.Page("pages/nba.py", title="NBA", icon="🏀"),
         st.Page("pages/wnba.py", title="WNBA", icon="🏀"),
+        st.Page("pages/soccer.py", title="SOCCER", icon="⚽"),
+        st.Page("pages/nfl.py", title="NFL", icon="🏈"),
+        st.Page("pages/cfb.py", title="CFB", icon="🏈"),
+        st.Page("pages/nba.py", title="NBA", icon="🏀"),
         st.Page("pages/nhl.py", title="NHL", icon="🏒"),
-        st.Page("pages/soccer.py", title="Soccer", icon="⚽"),
     ]
 }
 
@@ -128,23 +132,37 @@ pages = {
 # Streamlit page_link needs the st.navigation page registry to exist first.
 navigation = st.navigation(pages, position="hidden")
 
-# Custom square-grid Sport Hub replaces the old >> / sidebar control.
-nav_col, brand_col = st.columns([1, 8], vertical_alignment="center")
+# Compact square-grid Sport Hub in the upper-left.
+nav_col, brand_col = st.columns([0.55, 9.45], vertical_alignment="center")
 with nav_col:
-    with st.popover("▦", use_container_width=True):
+    with st.popover("▦", use_container_width=False):
         st.markdown("**SPORT HUB**")
         left, right = st.columns(2)
         with left:
-            st.page_link("pages/home.py", label="Home", icon="🏠")
+            st.page_link("pages/home.py", label="HOME", icon="🏠")
             st.page_link("pages/mlb.py", label="MLB", icon="⚾")
-            st.page_link("pages/cfb.py", label="CFB", icon="🏈")
             st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
+            st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
         with right:
             st.page_link("pages/nfl.py", label="NFL", icon="🏈")
+            st.page_link("pages/cfb.py", label="CFB", icon="🏈")
             st.page_link("pages/nba.py", label="NBA", icon="🏀")
             st.page_link("pages/nhl.py", label="NHL", icon="🏒")
-            st.page_link("pages/soccer.py", label="Soccer", icon="⚽")
 with brand_col:
-    st.markdown('<div class="ssd-shell"><div class="ssd-shell-brand">Game Intelligence</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="ssd-shell"></div>', unsafe_allow_html=True)
 
 navigation.run()
+
+st.markdown(
+    """
+<style>
+@media (max-width:700px){
+  html, body, .stApp, [data-testid="stAppViewContainer"] { font-size: 17px !important; }
+  p, li, label, [data-testid="stMarkdownContainer"] p { font-size: .94rem; line-height: 1.42; }
+  [data-testid="stCaptionContainer"], small { font-size: .78rem !important; }
+}
+</style>
+
+    """,
+    unsafe_allow_html=True,
+)
