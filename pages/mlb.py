@@ -805,6 +805,42 @@ def projection_display(player: dict) -> tuple[str, str]:
 
     return "Projection", "Unavailable"
 
+def category_card_reason(player: dict) -> str:
+    """Return a market-specific one-line reason for the collapsed card."""
+    category = str(player.get("category") or "").strip().lower()
+    pitcher = str(player.get("opposing_probable_pitcher") or "").strip()
+    hand = str(player.get("opposing_pitcher_hand") or "").upper()
+    pitcher_text = pitcher if pitcher and pitcher != "Not announced" else "the opposing pitcher"
+    hand_text = f" ({hand}HP)" if hand else ""
+
+    if category in {"home run", "home runs"}:
+        return f"Power, barrel quality and matchup vs. {pitcher_text}{hand_text} support HR upside."
+    if category in {"hit", "hits"}:
+        return f"Contact quality and 1+ hit probability grade well vs. {pitcher_text}{hand_text}."
+    if category in {"total base", "total bases"}:
+        return f"Extra-base power, xSLG and matchup quality support total-base upside."
+    if category == "runs":
+        return "Lineup position, on-base opportunity and the game run environment support scoring upside."
+    if category in {"rbi", "rbis"}:
+        return "Run-producing opportunity, batting-order position and matchup quality support RBI upside."
+    if category == "walks":
+        return f"Plate-discipline opportunity and the matchup vs. {pitcher_text}{hand_text} support a walk."
+    if "stolen" in category:
+        return "Speed, on-base opportunity and lineup context support stolen-base upside."
+    if "hits + runs + rbis" in category or "hits runs rbis" in category:
+        return "Contact, lineup position and run environment provide multiple paths to H+R+RBI production."
+
+    return str(player.get("reason") or "Live statistical profile is being evaluated.")
+
+
+def opposing_pitcher_line(player: dict) -> str:
+    """Return the opposing pitcher line shown before intelligence is expanded."""
+    pitcher = str(player.get("opposing_probable_pitcher") or "Not announced").strip()
+    hand = str(player.get("opposing_pitcher_hand") or "").upper()
+    hand_text = f" · {hand}HP" if hand else ""
+    return f'<span class="gi-card-pitcher"><b>vs. {escape(pitcher)}</b>{escape(hand_text)}</span>'
+
+
 def render_featured_player(player: dict) -> None:
     """Render the #1 player using the same card design as the rest of the Top 5."""
     render_compact_player(player)
@@ -923,8 +959,9 @@ def render_expandable_ranking_header(player: dict) -> None:
             <div class="gi-card-player">
                 <strong>{escape(player['player'])}</strong>
                 <span class="gi-card-matchup">{matchup_html(player)}</span>
+                {opposing_pitcher_line(player)}
                 <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
-                <span class="gi-card-reason">{escape(player['reason'])}</span>
+                <span class="gi-card-reason">{escape(category_card_reason(player))}</span>
                 <span>{lineup_status_html(player)}</span>
                 {card_result_html(player)}
             </div>
@@ -2607,6 +2644,130 @@ st.markdown(
         }
     }
 
+
+    /* ============================================================
+       FINAL MLB MOBILE CLOSEOUT — authoritative overrides
+       ============================================================ */
+    .gi-card-pitcher {
+        color:#f6c84c !important;
+        font-size:.73rem !important;
+        margin-top:1px !important;
+    }
+    .gi-card-pitcher b {
+        color:#f6c84c !important;
+        font-weight:850 !important;
+    }
+
+    .gi-rankings-banner {
+        margin:.45rem 0 .55rem;
+        padding:11px 14px;
+        border:2px solid rgba(214,179,92,.68);
+        border-radius:15px;
+        background:
+            linear-gradient(
+                105deg,
+                rgba(214,179,92,.20) 0%,
+                #080909 48%,
+                rgba(47,191,113,.18) 100%
+            );
+    }
+    .gi-rankings-banner strong {
+        display:block;
+        color:#fff;
+        font-size:1.35rem;
+        font-weight:900;
+    }
+    .gi-rankings-banner span {
+        display:block;
+        color:#b8b09f;
+        font-size:.70rem;
+        margin-top:2px;
+    }
+
+    /* Player photos: show the complete head/face instead of aggressive crop. */
+    .gi-native-photo img,
+    .gi-compact-photo img,
+    .gi-full-photo img {
+        width:88% !important;
+        height:88% !important;
+        object-fit:contain !important;
+        object-position:center bottom !important;
+        transform:none !important;
+    }
+
+    /* Stronger finished expander/button language. */
+    div[data-testid="stExpander"] {
+        background:#080909 !important;
+        border:2px solid #3a3d42 !important;
+        border-radius:14px !important;
+        overflow:hidden !important;
+    }
+    div[data-testid="stExpander"] summary,
+    div[data-testid="stExpander"] details {
+        background:#080909 !important;
+        color:#fff !important;
+    }
+
+    /* Kill native navy/blue alert surfaces. */
+    div[data-testid="stAlert"],
+    div[data-testid="stAlert"] > div,
+    div[role="alert"] {
+        background:#090b0a !important;
+        background-color:#090b0a !important;
+        color:#fff !important;
+        border-radius:14px !important;
+    }
+
+    /* No red active tabs anywhere on MLB. Batter/Pitcher = emerald;
+       market tabs = gold for better palette balance. */
+    [data-testid="stTabs"] [data-baseweb="tab-highlight"],
+    [data-baseweb="tab-highlight"] {
+        background:#d6b35c !important;
+        background-color:#d6b35c !important;
+    }
+    [data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color:#fff !important;
+        border-bottom-color:#d6b35c !important;
+        box-shadow:inset 0 -3px 0 #d6b35c !important;
+    }
+
+    @media (max-width:700px) {
+        /* Remove the large black dead zone above the hero. */
+        [data-testid="stAppViewBlockContainer"],
+        [data-testid="stAppViewContainer"] .block-container,
+        .main .block-container,
+        .block-container {
+            padding-top:0 !important;
+            margin-top:0 !important;
+        }
+        .gi-hero {
+            margin-top:-3.0rem !important;
+            margin-bottom:.45rem !important;
+            padding:14px 14px !important;
+        }
+
+        /* Compact player imagery and spacing. */
+        .gi-native-photo {
+            width:48px !important;
+            height:48px !important;
+        }
+        .gi-card-header {
+            grid-template-columns:44px 52px minmax(0,1fr) 58px !important;
+            gap:8px !important;
+            padding:7px 2px 4px !important;
+        }
+
+        /* Keep section rhythm tight. */
+        h2, h3 {
+            margin-top:.25rem !important;
+            margin-bottom:.22rem !important;
+        }
+        hr {
+            margin:.30rem 0 !important;
+        }
+    }
+
 </style>
     """,
     unsafe_allow_html=True,
@@ -2707,7 +2868,14 @@ render_prediction_performance_tracker(
 
 st.divider()
 
-st.subheader("Player Rankings")
+render_html(
+    """
+    <div class="gi-rankings-banner">
+        <strong>Player Rankings</strong>
+        <span>Market-specific intelligence · live matchup context</span>
+    </div>
+    """
+)
 
 batter_tab, pitcher_tab = st.tabs(
     [
