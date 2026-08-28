@@ -2281,11 +2281,11 @@ st.markdown(
         margin-bottom: 10px !important;
         border-radius: 18px !important;
         background:
-            radial-gradient(circle at 88% 12%, rgba(25,217,120,.17), transparent 30%),
-            radial-gradient(circle at 10% 90%, rgba(246,200,76,.10), transparent 34%),
-            #090a0a !important;
-        border: 1px solid rgba(246,200,76,.52) !important;
-        box-shadow: 0 0 0 1px rgba(25,217,120,.06), 0 14px 40px rgba(0,0,0,.42) !important;
+            radial-gradient(circle at 88% 12%, rgba(25,217,120,.34), transparent 34%),
+            radial-gradient(circle at 12% 88%, rgba(255,204,51,.26), transparent 38%),
+            linear-gradient(135deg, #030403 0%, #111007 48%, #062215 100%) !important;
+        border: 2px solid rgba(255,204,51,.86) !important;
+        box-shadow: 0 0 0 1px rgba(25,217,120,.22), 0 14px 40px rgba(0,0,0,.52), inset 0 0 34px rgba(25,217,120,.08) !important;
     }
     .gi-eyebrow {
         color: #19d978 !important;
@@ -2311,28 +2311,29 @@ st.markdown(
     }
     .gi-snapshot-card {
         min-width:0; aspect-ratio:1.25/1; padding:10px 8px; border-radius:12px;
-        background:#101112; border:1px solid #303236; display:flex; flex-direction:column; justify-content:center;
+        background:#101112; border:2px solid #3b3e43; display:flex; flex-direction:column; justify-content:center;
     }
     .gi-snapshot-card span { color:#a7abb2; font-size:.62rem; font-weight:850; letter-spacing:.08em; }
     .gi-snapshot-card strong { color:#ffffff; font-size:1.32rem; line-height:1.1; margin:4px 0; }
     .gi-snapshot-card small { color:#a7abb2 !important; font-size:.60rem; line-height:1.15; }
-    .gi-snapshot-emerald { border-color:rgba(25,217,120,.62); box-shadow:inset 0 0 20px rgba(25,217,120,.05); }
+    .gi-snapshot-emerald { border-color:rgba(25,217,120,.92); box-shadow:inset 0 0 24px rgba(25,217,120,.09), 0 0 0 1px rgba(25,217,120,.10); }
     .gi-snapshot-emerald strong { color:#19d978; }
-    .gi-snapshot-gold { border-color:rgba(246,200,76,.58); box-shadow:inset 0 0 20px rgba(246,200,76,.04); }
+    .gi-snapshot-gold { border-color:rgba(255,204,51,.92); box-shadow:inset 0 0 24px rgba(255,204,51,.08), 0 0 0 1px rgba(255,204,51,.10); }
     .gi-snapshot-gold strong { color:#ffcc33; }
 
     .gi-section-title, .gi-full-list-heading, .gi-compact-name, .gi-card-player strong { color:#ffffff !important; }
-    .gi-section-count { color:#000000 !important; background:#ffcc33 !important; border-color:#ffcc33 !important; }
+    .gi-section-count { color:#000000 !important; background:#ffcc33 !important; border:2px solid #ffe06a !important; box-shadow:0 0 0 1px rgba(255,204,51,.16); }
     .gi-section-subtitle, .gi-compact-reason, .gi-compact-matchup, .gi-card-reason { color:#c4c7cc !important; }
     .gi-score-inline, .gi-card-score strong { color:#ffcc33 !important; }
     .gi-card-rank, .gi-compact-rank { color:#19d978 !important; }
 
     .gi-compact-player {
         background:#101112 !important;
-        border:1px solid #303236 !important;
-        box-shadow:inset 3px 0 0 rgba(25,217,120,.80);
+        border:2px solid #3a3d42 !important;
+        border-left:5px solid #19d978 !important;
+        box-shadow:inset 0 0 24px rgba(25,217,120,.035);
     }
-    .gi-compact-player:nth-of-type(odd) { box-shadow:inset 3px 0 0 rgba(246,200,76,.72); }
+    .gi-compact-player:nth-of-type(odd) { border-left-color:#ffcc33 !important; box-shadow:inset 0 0 24px rgba(255,204,51,.035); }
 
     .gi-featured-photo, .gi-compact-photo, .gi-full-photo, .gi-native-photo {
         background:#050505 !important; border:2px solid rgba(255,204,51,.65) !important;
@@ -2345,11 +2346,11 @@ st.markdown(
     }
 
     [class*="st-key-show_"][class*="_player_"] {
-        background:#101112 !important; border:1px solid #303236 !important; border-radius:14px !important;
-        box-shadow:inset 3px 0 0 rgba(25,217,120,.70) !important;
+        background:#101112 !important; border:2px solid #3a3d42 !important; border-left:5px solid #19d978 !important; border-radius:14px !important;
+        box-shadow:inset 0 0 24px rgba(25,217,120,.035) !important;
     }
     [class*="st-key-show_"][class*="_player_"] .stButton > button {
-        background:#0b0c0d !important; color:#ffffff !important; border:1px solid rgba(25,217,120,.42) !important;
+        background:#0b0c0d !important; color:#ffffff !important; border:2px solid rgba(25,217,120,.72) !important;
         border-radius:9px !important; text-align:center !important; justify-content:center !important;
     }
     [class*="st-key-show_"][class*="_player_"] .stButton > button:hover {
@@ -2359,7 +2360,7 @@ st.markdown(
     .gi-lineup-confirmed { color:#ffffff !important; background:rgba(25,217,120,.16) !important; border-color:rgba(25,217,120,.55) !important; }
     .gi-result-live, .gi-result-win { color:#19d978 !important; }
 
-    div[data-testid="stExpander"] { background:#080909 !important; border:1px solid #2a2d31 !important; border-radius:12px !important; }
+    div[data-testid="stExpander"] { background:#080909 !important; border:2px solid #34373c !important; border-radius:12px !important; }
     div[data-testid="stExpander"] summary { color:#ffffff !important; }
     div[data-testid="stExpander"] summary:hover { color:#19d978 !important; }
 
@@ -2368,12 +2369,29 @@ st.markdown(
     div[data-testid="stTabs"] [data-baseweb="tab-highlight"] { background:#19d978 !important; }
 
     button[kind="secondary"], .stButton > button {
-        background:#0c0d0e !important; color:#ffffff !important; border:1px solid #303236 !important;
+        background:#0c0d0e !important; color:#ffffff !important; border:2px solid #3a3d42 !important;
     }
     .stButton > button:hover { border-color:#19d978 !important; color:#ffffff !important; }
 
+    /* MLB final visual-strength pass */
+    div[data-testid="stMetric"] {
+        border-width:2px !important;
+        border-color:#3a3d42 !important;
+    }
+    .gi-before-ranking,
+    .gi-status-strip,
+    .gi-full-row,
+    .gi-featured-player,
+    .gi-rank-badge,
+    .gi-full-list-heading {
+        border-width:2px !important;
+    }
+    .gi-lineup-status {
+        border-width:2px !important;
+    }
+
     @media (max-width:700px) {
-        .gi-hero { padding:16px 15px !important; border-radius:15px !important; }
+        .gi-hero { padding:16px 15px !important; border-radius:15px !important; border-width:2px !important; }
         .gi-hero-title { font-size:1.82rem !important; line-height:1.08 !important; }
         .gi-hero-subtitle { font-size:.92rem !important; margin-top:10px !important; }
         .gi-snapshot-grid { gap:6px; }
