@@ -481,3 +481,21 @@ def schedule_summary(
         "confirmed_teams": confirmed,
         "total_teams": len(games) * 2,
     }
+
+
+st.markdown(
+    """
+<style>
+@media(max-width:700px){
+    div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"]{
+        flex-wrap:nowrap!important;gap:6px!important
+    }
+    div[class*="st-key-mlb_game_grid"] [data-testid="column"]{
+        flex:0 0 calc(50% - 3px)!important;width:calc(50% - 3px)!important;min-width:0!important
+    }
+}
+</style>
+
+    """,
+    unsafe_allow_html=True,
+)

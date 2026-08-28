@@ -156,81 +156,134 @@ def _render_pitcher_market(history, category, period):
     if not summary["graded"]:
         st.caption("Results will appear after games are graded.")
 
+def _period_selector(prefix_key: str) -> str:
+    options = [
+        ("Today", "Today"),
+        ("Yesterday", "Yesterday"),
+        ("7 Days", "Week"),
+        ("Month", "Month"),
+        ("Season", "Season"),
+    ]
+    state_key = f"{prefix_key}_period"
+    if state_key not in st.session_state:
+        st.session_state[state_key] = "Today"
+    current = st.session_state[state_key]
+
+    cols = st.columns(5, gap="small")
+    for col, (label, value) in zip(cols, options):
+        with col:
+            if st.button(label, key=f"{prefix_key}_{value}", use_container_width=True):
+                st.session_state[state_key] = value
+                st.rerun()
+
+    current = st.session_state[state_key]
+    st.markdown(
+        f"""
+        <style>
+        div[class*="st-key-{prefix_key}_"] button {{
+            min-height:34px!important;padding:.24rem .04rem!important;
+            background:#080909!important;color:#fff!important;
+            border:2px solid #34373c!important;border-radius:9px!important;
+            font-size:.62rem!important;font-weight:850!important;
+        }}
+        div[class*="st-key-{prefix_key}_{current}"] button {{
+            background:#11100c!important;border-color:#d6b35c!important;
+            color:#f6c84c!important;box-shadow:inset 0 -2px 0 #d6b35c!important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    return current
+
+
 def render_prediction_performance_tracker(rankings_by_category: dict[str,list[dict[str,Any]]]) -> None:
     _styles()
     st.subheader("📊 Prediction Performance")
+
     with st.expander("ⓘ How performance is measured", expanded=False):
-        st.caption("Frozen pregame predictions are compared with actual results. Batter markets show hit rate; pitcher markets measure projection accuracy.")
+        st.caption(
+            "Frozen pregame predictions are compared with actual results. "
+            "Batter markets show hit rate; pitcher markets measure projection accuracy."
+        )
 
     token = _token()
     batter_history = {"days":{}}
     if token:
         try:
-            batter_history = current_day_view(sync_history(token, rankings_by_category), rankings_by_category)
+            batter_history = current_day_view(
+                sync_history(token, rankings_by_category),
+                rankings_by_category,
+            )
         except Exception:
             st.caption("Performance history is temporarily unavailable.")
     else:
         st.caption("Performance history is temporarily unavailable.")
 
-    period = st.selectbox(
-        "Performance period",
-        options=["Today", "Yesterday", "Week", "Month", "Season"],
-        index=0,
-        key="mlb_performance_period_select",
-    )
+    batter_tab, pitcher_tab = st.tabs(["🥎 Batter","⚾ Pitcher"])
 
-    st.markdown(
-        """
-        <style>
-        div[data-baseweb="select"] > div {
-            background:#0b0c0d !important;
-            color:#fff !important;
-            border:2px solid #d6b35c !important;
-            border-radius:10px !important;
-        }
-        div[data-baseweb="select"] svg {
-            fill:#d6b35c !important;
-        }
-        div[data-testid="stExpander"] summary {
-            min-height:42px !important;
-            padding-top:.35rem !important;
-            padding-bottom:.35rem !important;
-        }
-        [data-testid="stTabs"] [data-baseweb="tab-highlight"],
-        [data-baseweb="tab-highlight"] {
-            background:#d6b35c !important;
-        }
-        [data-testid="stTabs"] button[role="tab"][aria-selected="true"],
-        button[data-baseweb="tab"][aria-selected="true"] {
-            box-shadow:inset 0 -3px 0 #d6b35c !important;
-            border-bottom-color:#d6b35c !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    batter_tab,pitcher_tab = st.tabs(["🥎 Batter","⚾ Pitcher"])
     with batter_tab:
-        _render_overall(batter_history,period)
+        st.markdown("#### 🌐 Overall MLB Batter Performance")
+        st.markdown("<div class='perf-period-label'>Performance Period</div>", unsafe_allow_html=True)
+        period = _period_selector("batter_perf")
+
+        summary = summarize_overall(_all_records(batter_history, period))
+        if summary["graded"]:
+            st.markdown(
+                f"<div class='perf-kpi-grid'>"
+                f"<div class='perf-kpi'><span>Hit Rate</span><strong>{summary['hit_rate']:.1f}%</strong></div>"
+                f"<div class='perf-kpi'><span>Settled</span><strong>{summary['wins']} / {summary['graded']}</strong></div>"
+                f"<div class='perf-kpi'><span>Pending</span><strong>{summary['pending']}</strong></div>"
+                f"</div>", unsafe_allow_html=True
+            )
+        else:
+            st.caption("Overall performance will populate as tracked predictions settle.")
+
         tabs = st.tabs([BATTER_CATEGORY_CONFIG[k][0] for k in BATTER_CATEGORY_CONFIG])
-        for tab,category in zip(tabs,BATTER_CATEGORY_CONFIG):
-            with tab: _render_batter_market(batter_history,category,period)
+        for tab, category in zip(tabs, BATTER_CATEGORY_CONFIG):
+            with tab:
+                _render_batter_market(batter_history, category, period)
+
         days = len(batter_history.get("days",{}))
         st.caption(f"Tracking history: {days} slate{'s' if days!=1 else ''}.")
 
     with pitcher_tab:
+        st.markdown("#### 🌐 Overall MLB Pitcher Performance")
+        st.markdown("<div class='perf-period-label'>Performance Period</div>", unsafe_allow_html=True)
+        period = _period_selector("pitcher_perf")
+
         if not token:
             st.caption("Pitcher performance history is temporarily unavailable.")
             return
+
         try:
             result = get_pitcher_rankings(limit=25)
             rankings = result.get("rankings",{})
             history = current_pitcher_day_view(sync_pitcher_history(token,rankings),rankings)
+
             tabs = st.tabs([PITCHER_CATEGORY_CONFIG[k][0] for k in PITCHER_CATEGORY_CONFIG])
-            for tab,category in zip(tabs,PITCHER_CATEGORY_CONFIG):
-                with tab: _render_pitcher_market(history,category,period)
+            for tab, category in zip(tabs, PITCHER_CATEGORY_CONFIG):
+                with tab:
+                    _render_pitcher_market(history, category, period)
+
             days = len(history.get("days",{}))
             st.caption(f"Pitcher tracking history: {days} slate{'s' if days!=1 else ''}.")
         except Exception:
             st.caption("Pitcher performance history is temporarily unavailable.")
+
+    st.markdown(
+        """
+        <style>
+        .perf-period-label{color:#d8d0bf;font-size:.70rem;font-weight:800;margin:.04rem 0 .18rem}
+        .perf-summary-row,.perf-kpi-grid{margin:3px 0 5px!important}
+        [data-testid="stTabs"] [data-baseweb="tab-highlight"],[data-baseweb="tab-highlight"]{
+            background:#d6b35c!important
+        }
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"]{
+            box-shadow:inset 0 -3px 0 #d6b35c!important;border-bottom-color:#d6b35c!important
+        }
+        div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
+        div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.05rem .42rem .28rem!important}
+        </style>
+        """, unsafe_allow_html=True
+    )
