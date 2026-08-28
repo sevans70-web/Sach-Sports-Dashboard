@@ -130,21 +130,22 @@ def _render_game_details(
         st.caption("Official lineups are not available for this game yet.")
         return
 
-    away_col, home_col = st.columns(2, gap="small")
+    with st.container(key=f"mlb_roster_grid_{game.get('game_pk')}"):
+        away_col, home_col = st.columns(2, gap="small")
 
-    with away_col:
-        _render_roster_column(
-            _abbr(str(lineup_game.get("away_team") or "Away")),
-            lineup_game.get("away_lineup", []),
-            player_lookup,
-        )
+        with away_col:
+            _render_roster_column(
+                _abbr(str(lineup_game.get("away_team") or "Away")),
+                lineup_game.get("away_lineup", []),
+                player_lookup,
+            )
 
-    with home_col:
-        _render_roster_column(
-            _abbr(str(lineup_game.get("home_team") or "Home")),
-            lineup_game.get("home_lineup", []),
-            player_lookup,
-        )
+        with home_col:
+            _render_roster_column(
+                _abbr(str(lineup_game.get("home_team") or "Home")),
+                lineup_game.get("home_lineup", []),
+                player_lookup,
+            )
 
     selected_id = int(
         st.session_state.get("selected_game_player_id") or 0
@@ -200,13 +201,13 @@ def _render_game_card(
             f"<div class='mlb-game-meta'>"
             f"{escape(str(game.get('start_time') or 'Time TBA'))}"
             f"</div>"
-            f"<div class='mlb-game-meta'>"
+            f"<div class='mlb-game-pitchers'>"
             f"{escape(str(game.get('away_probable_pitcher') or 'TBA'))} "
             f"vs. "
             f"{escape(str(game.get('home_probable_pitcher') or 'TBA'))}"
             f"</div>"
             f"<div class='mlb-game-venue'>"
-            f"📍 {escape(str(game.get('venue') or 'Venue TBA'))}"
+            f"{escape(str(game.get('venue') or 'Venue TBA'))}"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -223,7 +224,6 @@ def _render_game_card(
                 "selected_game_player_id",
                 None,
             )
-            st.rerun()
 
         if st.session_state[open_key]:
             _render_game_details(
@@ -241,143 +241,134 @@ def render_live_mlb_schedule(
     st.markdown(
         """
         <style>
-        div[class*="st-key-mlb_game_grid"]
-        [data-testid="stHorizontalBlock"] {
-            gap:7px!important;
+        /* True 2-across mobile game grid. Target actual Streamlit stColumn nodes. */
+        div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"]{
+            display:flex!important;
+            flex-direction:row!important;
             flex-wrap:nowrap!important;
+            gap:6px!important;
+            width:100%!important;
         }
-
-        div[class*="st-key-mlb_game_grid"]
-        [data-testid="column"] {
-            width:calc(50% - 4px)!important;
-            flex:0 0 calc(50% - 4px)!important;
+        div[class*="st-key-mlb_game_grid"] [data-testid="stColumn"]{
+            flex:0 0 calc(50% - 3px)!important;
+            width:calc(50% - 3px)!important;
             min-width:0!important;
+            max-width:calc(50% - 3px)!important;
         }
-
-        div[class*="st-key-mlb_game_card_"]
-        [data-testid="stVerticalBlockBorderWrapper"] {
-            background:
-                linear-gradient(
-                    115deg,
-                    rgba(255,204,51,.08),
-                    #0c0d0e 40%,
-                    rgba(25,217,120,.06)
-                )!important;
+        div[class*="st-key-mlb_game_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
+            background:linear-gradient(115deg,rgba(255,204,51,.07),#0c0d0e 42%,rgba(25,217,120,.05))!important;
             border:2px solid #34373c!important;
-            border-radius:13px!important;
+            border-radius:12px!important;
+            padding:.36rem!important;
+            overflow:hidden!important;
+        }
+        div[class*="st-key-mlb_game_card_"] [data-testid="stVerticalBlock"]{
+            gap:.18rem!important;
+        }
+        .mlb-game-matchup{
+            font-weight:900!important;
+            font-size:.84rem!important;
+            color:#fff!important;
+            white-space:normal!important;
+            line-height:1.12!important;
+            overflow-wrap:anywhere!important;
+        }
+        .mlb-game-meta{
+            color:#a7abb2!important;
+            font-size:.67rem!important;
+            line-height:1.12!important;
+            margin-top:1px!important;
+        }
+        .mlb-game-pitchers{
+            color:#f2f3f4!important;
+            font-size:.74rem!important;
+            font-weight:800!important;
+            line-height:1.16!important;
+            margin-top:2px!important;
+            overflow-wrap:anywhere!important;
+        }
+        .mlb-game-venue{
+            color:#d6b35c!important;
+            font-size:.61rem!important;
+            line-height:1.10!important;
+            margin-top:1px!important;
         }
 
-        div[class*="st-key-mlb_game_card_"]
-        [data-testid="stVerticalBlock"] {
-            gap:.36rem!important;
+        /* Open/Close button: roughly half the game-card width. */
+        div[class*="st-key-toggle_game_"]{
+            display:flex!important;
+            justify-content:center!important;
+            margin-top:3px!important;
+        }
+        div[class*="st-key-toggle_game_"] button{
+            width:48%!important;
+            max-width:48%!important;
+            min-width:72px!important;
+            min-height:30px!important;
+            padding:.18rem .20rem!important;
+            background:#080909!important;
+            color:#fff!important;
+            border:2px solid #d6b35c!important;
+            border-radius:8px!important;
+            font-size:.62rem!important;
+            font-weight:850!important;
         }
 
-        div[class*="st-key-toggle_game_"] button,
-        div[class*="st-key-roster_player_"] button {
+        .mlb-expanded-game-head{
+            margin:5px 0 4px!important;
+            padding:6px 7px!important;
+            border-radius:9px!important;
+            border:2px solid rgba(214,179,92,.60)!important;
+            background:#080909!important;
+        }
+        .mlb-expanded-game-head strong{display:block;color:#fff;font-size:.78rem!important}
+        .mlb-expanded-game-head span{display:block;color:#b8bbc0;font-size:.62rem!important;margin-top:1px!important}
+
+        /* Expanded roster: force both teams to remain side-by-side on mobile. */
+        div[class*="st-key-mlb_roster_grid_"] [data-testid="stHorizontalBlock"]{
+            display:flex!important;
+            flex-direction:row!important;
+            flex-wrap:nowrap!important;
+            gap:6px!important;
+            width:100%!important;
+        }
+        div[class*="st-key-mlb_roster_grid_"] [data-testid="stColumn"]{
+            flex:0 0 calc(50% - 3px)!important;
+            width:calc(50% - 3px)!important;
+            min-width:0!important;
+            max-width:calc(50% - 3px)!important;
+        }
+        div[class*="st-key-roster_player_"] button{
+            width:100%!important;
+            max-width:100%!important;
+            min-height:31px!important;
+            padding:.18rem .16rem!important;
             background:#080909!important;
             color:#fff!important;
             border:2px solid rgba(25,217,120,.62)!important;
-            border-radius:9px!important;
+            border-radius:8px!important;
+            font-size:.61rem!important;
             font-weight:800!important;
+            line-height:1.10!important;
+            white-space:normal!important;
         }
 
-        .mlb-game-matchup {
-            font-weight:850;
-            font-size:.92rem;
-            color:#fff;
-            white-space:nowrap;
+        @media(max-width:700px){
+            div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"],
+            div[class*="st-key-mlb_roster_grid_"] [data-testid="stHorizontalBlock"]{
+                gap:5px!important;
+            }
+            div[class*="st-key-mlb_game_grid"] [data-testid="stColumn"],
+            div[class*="st-key-mlb_roster_grid_"] [data-testid="stColumn"]{
+                flex-basis:calc(50% - 2.5px)!important;
+                width:calc(50% - 2.5px)!important;
+                max-width:calc(50% - 2.5px)!important;
+            }
+            .mlb-game-matchup{font-size:.78rem!important}
+            .mlb-game-pitchers{font-size:.70rem!important}
+            div[class*="st-key-toggle_game_"] button{width:50%!important;max-width:50%!important}
         }
-
-        .mlb-game-meta {
-            color:#a7abb2;
-            font-size:.74rem;
-            line-height:1.25;
-        }
-
-        .mlb-game-venue {
-            color:#f6c84c;
-            font-size:.72rem;
-        }
-
-        .mlb-expanded-game-head {
-            margin-top:5px;
-            padding:8px 9px;
-            border-radius:10px;
-            border:2px solid rgba(255,204,51,.58);
-            background:
-                linear-gradient(
-                    105deg,
-                    rgba(255,204,51,.15),
-                    #080909 50%,
-                    rgba(25,217,120,.15)
-                );
-        }
-
-        .mlb-expanded-game-head strong {
-            display:block;
-            color:#fff;
-        }
-
-        .mlb-expanded-game-head span {
-            display:block;
-            color:#b8bbc0;
-            font-size:.72rem;
-            margin-top:2px;
-        }
-
-        @media(max-width:700px) {
-            div[class*="st-key-mlb_game_grid"]
-            [data-testid="stHorizontalBlock"] {
-                display:flex!important;
-                flex-direction:row!important;
-                gap:7px!important;
-            }
-
-            div[class*="st-key-mlb_game_grid"]
-            [data-testid="column"] {
-                width:calc(50% - 4px)!important;
-                flex:0 0 calc(50% - 4px)!important;
-            }
-        }
-        
-        @media(max-width:700px) {
-            div[class*="st-key-mlb_game_grid"] > div > div[data-testid="stVerticalBlock"] {
-                gap:7px !important;
-            }
-            div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"] {
-                display:flex !important;
-                flex-direction:row !important;
-                flex-wrap:nowrap !important;
-                align-items:stretch !important;
-                gap:7px !important;
-            }
-            div[class*="st-key-mlb_game_grid"] [data-testid="column"] {
-                flex:1 1 0 !important;
-                width:0 !important;
-                min-width:0 !important;
-                max-width:50% !important;
-            }
-            .mlb-game-matchup {
-                font-size:.78rem !important;
-                white-space:normal !important;
-                line-height:1.15 !important;
-            }
-            .mlb-game-meta {
-                font-size:.62rem !important;
-                line-height:1.2 !important;
-            }
-            .mlb-game-venue {
-                font-size:.61rem !important;
-                line-height:1.2 !important;
-            }
-            div[class*="st-key-toggle_game_"] button {
-                min-height:34px !important;
-                font-size:.68rem !important;
-                padding:.25rem .2rem !important;
-                border-color:#d6b35c !important;
-            }
-        }
-</style>
+        </style>
         """,
         unsafe_allow_html=True,
     )
@@ -481,21 +472,3 @@ def schedule_summary(
         "confirmed_teams": confirmed,
         "total_teams": len(games) * 2,
     }
-
-
-st.markdown(
-    """
-<style>
-@media(max-width:700px){
-    div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"]{
-        flex-wrap:nowrap!important;gap:6px!important
-    }
-    div[class*="st-key-mlb_game_grid"] [data-testid="column"]{
-        flex:0 0 calc(50% - 3px)!important;width:calc(50% - 3px)!important;min-width:0!important
-    }
-}
-</style>
-
-    """,
-    unsafe_allow_html=True,
-)

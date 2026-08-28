@@ -447,14 +447,13 @@ def render_player_card(player_data: dict) -> None:
 
 st.markdown(
     """
-<style>
-.gi-intel-summary-grid,.gi-evidence-grid,.gi-statcast-grid{margin:1px 0 3px!important;gap:5px!important}
-div.gi-statcast-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
-div[data-testid="stExpander"]{margin:.18rem 0!important}
-div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
-div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.05rem .42rem .28rem!important}
-</style>
-
+    <style>
+    .gi-intel-summary-grid,.gi-evidence-grid,.gi-statcast-grid{margin:1px 0 3px!important;gap:5px!important}
+    div.gi-statcast-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+    div[data-testid="stExpander"]{margin:.18rem 0!important}
+    div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
+    div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.05rem .42rem .28rem!important}
+    </style>
     """,
     unsafe_allow_html=True,
 )
