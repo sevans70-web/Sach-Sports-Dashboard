@@ -89,7 +89,25 @@ def _styles():
       .perf-summary-item,.perf-kpi{min-height:74px!important;padding:7px 6px!important}
       .perf-summary-item strong,.perf-kpi strong{font-size:.96rem!important}
     }
-    </style>
+    
+    [data-testid="stTabs"] [data-baseweb="tab-highlight"],
+    [data-baseweb="tab-highlight"] {
+        background:#19d978!important;
+    }
+
+    [data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+    button[data-baseweb="tab"][aria-selected="true"] {
+        box-shadow:inset 0 -3px 0 #19d978!important;
+        border-bottom-color:#19d978!important;
+    }
+
+    [data-testid="stTabs"] button[aria-label*="scroll" i],
+    [data-testid="stTabs"] button[title*="scroll" i] {
+        background:#080909!important;
+        color:#f6c84c!important;
+        border:1px solid #34373c!important;
+    }
+</style>
     """, unsafe_allow_html=True)
 
 def _render_batter_market(history, category, period):
@@ -154,11 +172,77 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
     else:
         st.caption("Performance history is temporarily unavailable.")
 
-    period = st.segmented_control(
-        "Performance period",
-        options=["Today","Yesterday","Week","Month","Season"],
-        default="Today", key="mlb_performance_period"
-    ) or "Today"
+    st.markdown("**Performance period**")
+
+    if "mlb_performance_period_value" not in st.session_state:
+        st.session_state["mlb_performance_period_value"] = "Today"
+
+    period_options = [
+        ("Today", "Today"),
+        ("Yesterday", "Yesterday"),
+        ("7 Days", "Week"),
+        ("Month", "Month"),
+        ("Season", "Season"),
+    ]
+
+    period_columns = st.columns(
+        5,
+        gap="small",
+    )
+
+    current_period = st.session_state[
+        "mlb_performance_period_value"
+    ]
+
+    for column, (label, value) in zip(
+        period_columns,
+        period_options,
+    ):
+        with column:
+            if st.button(
+                label,
+                key=f"perf_period_{value}",
+                use_container_width=True,
+            ):
+                st.session_state[
+                    "mlb_performance_period_value"
+                ] = value
+                st.rerun()
+
+    period = st.session_state[
+        "mlb_performance_period_value"
+    ]
+
+    st.markdown(
+        f"""
+        <style>
+        div[class*="st-key-perf_period_"] button {{
+            background:#0b0c0d!important;
+            color:#ffffff!important;
+            border:2px solid #34373c!important;
+            border-radius:10px!important;
+            font-weight:800!important;
+            padding:.42rem .15rem!important;
+            font-size:.72rem!important;
+        }}
+
+        div[class*="st-key-perf_period_{current_period}"] button {{
+            background:
+                linear-gradient(
+                    110deg,
+                    rgba(255,204,51,.15),
+                    #0b0c0d 50%,
+                    rgba(25,217,120,.16)
+                )!important;
+            border-color:#19d978!important;
+            box-shadow:
+                0 0 0 1px
+                rgba(25,217,120,.12)!important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     batter_tab,pitcher_tab = st.tabs(["🥎 Batter","⚾ Pitcher"])
     with batter_tab:
