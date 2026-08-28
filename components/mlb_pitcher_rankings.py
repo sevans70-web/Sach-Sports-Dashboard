@@ -402,9 +402,9 @@ def render_pitcher_rankings() -> None:
         .pitcher-photo img {
             width:100%;
             height:100%;
-            object-fit:cover;
-            object-position:center 12%;
-            transform:scale(1.02);
+            object-fit:contain;
+            object-position:center bottom;
+            transform:scale(.90);
         }
 
         .pitcher-photo-fallback {
@@ -521,14 +521,14 @@ def render_pitcher_rankings() -> None:
         [data-testid="stTabs"]
         [data-baseweb="tab-highlight"],
         [data-baseweb="tab-highlight"] {
-            background:#19d978!important;
+            background:#d6b35c!important;
         }
 
         [data-testid="stTabs"]
         button[role="tab"][aria-selected="true"] {
             box-shadow:
                 inset 0 -3px 0
-                #19d978!important;
+                #d6b35c!important;
         }
 
         @media(max-width:700px) {

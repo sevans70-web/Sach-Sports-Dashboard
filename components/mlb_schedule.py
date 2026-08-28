@@ -115,12 +115,11 @@ def _render_game_details(
         f"""
         <div class="mlb-expanded-game-head">
             <strong>
-                ⚾ {_abbr(game.get('away_team'))}
+                {_abbr(game.get('away_team'))}
                 @ {_abbr(game.get('home_team'))}
             </strong>
             <span>
-                {escape(str(game.get('status') or 'Status unavailable'))}
-                · 📍 {escape(str(game.get('venue') or 'Venue TBA'))}
+                {escape(str(game.get('venue') or 'Venue TBA'))}
             </span>
         </div>
         """,
@@ -192,14 +191,13 @@ def _render_game_card(
     ):
         st.markdown(
             f"<div class='mlb-game-matchup'>"
-            f"⚾ {escape(matchup)}"
+            f"{escape(matchup)}"
             f"</div>",
             unsafe_allow_html=True,
         )
 
         st.markdown(
             f"<div class='mlb-game-meta'>"
-            f"{_status_icon(status_group)} {escape(status)} · "
             f"{escape(str(game.get('start_time') or 'Time TBA'))}"
             f"</div>"
             f"<div class='mlb-game-meta'>"
@@ -225,6 +223,7 @@ def _render_game_card(
                 "selected_game_player_id",
                 None,
             )
+            st.rerun()
 
         if st.session_state[open_key]:
             _render_game_details(
@@ -340,7 +339,45 @@ def render_live_mlb_schedule(
                 flex:0 0 calc(50% - 4px)!important;
             }
         }
-        </style>
+        
+        @media(max-width:700px) {
+            div[class*="st-key-mlb_game_grid"] > div > div[data-testid="stVerticalBlock"] {
+                gap:7px !important;
+            }
+            div[class*="st-key-mlb_game_grid"] [data-testid="stHorizontalBlock"] {
+                display:flex !important;
+                flex-direction:row !important;
+                flex-wrap:nowrap !important;
+                align-items:stretch !important;
+                gap:7px !important;
+            }
+            div[class*="st-key-mlb_game_grid"] [data-testid="column"] {
+                flex:1 1 0 !important;
+                width:0 !important;
+                min-width:0 !important;
+                max-width:50% !important;
+            }
+            .mlb-game-matchup {
+                font-size:.78rem !important;
+                white-space:normal !important;
+                line-height:1.15 !important;
+            }
+            .mlb-game-meta {
+                font-size:.62rem !important;
+                line-height:1.2 !important;
+            }
+            .mlb-game-venue {
+                font-size:.61rem !important;
+                line-height:1.2 !important;
+            }
+            div[class*="st-key-toggle_game_"] button {
+                min-height:34px !important;
+                font-size:.68rem !important;
+                padding:.25rem .2rem !important;
+                border-color:#d6b35c !important;
+            }
+        }
+</style>
         """,
         unsafe_allow_html=True,
     )

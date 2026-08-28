@@ -76,6 +76,7 @@ def _summary(player):
 
 
 def _evidence(player, statcast):
+    """Build evidence that changes with the selected prop market."""
     season = player.get("season_stats", {}) or {}
     recent = player.get("recent_stats", {}) or {}
     cat = str(player.get("category") or "").lower()
@@ -83,67 +84,135 @@ def _evidence(player, statcast):
 
     pitcher = str(player.get("opposing_probable_pitcher") or "").strip()
     hand = str(player.get("opposing_pitcher_hand") or "").upper()
+    handedness = "RHP" if hand == "R" else "LHP" if hand == "L" else "this pitcher"
 
     platoon = player.get("platoon_matchup", {}) or {}
     hitter_split = platoon.get("hitter_split", {}) or {}
 
-    if hitter_split.get("plate_appearances"):
-        rows.append(
-            f"Handedness split: {int(hitter_split.get('home_runs') or 0)} HR in "
-            f"{int(hitter_split.get('plate_appearances') or 0)} PA vs "
-            f"{('RHP' if hand == 'R' else 'LHP' if hand == 'L' else 'this handedness')}, "
-            f"{_number(hitter_split.get('slg'))} SLG and "
-            f"{_number(hitter_split.get('ops'))} OPS."
-        )
-
     bvp = player.get("batter_vs_pitcher") or player.get("bvp") or {}
-    if (
-        isinstance(bvp, dict)
-        and int(bvp.get("plate_appearances") or bvp.get("pa") or 0) >= 3
-    ):
+    if isinstance(bvp, dict):
         pa = int(bvp.get("plate_appearances") or bvp.get("pa") or 0)
-        hits = int(bvp.get("hits") or 0)
-        hrs = int(bvp.get("home_runs") or bvp.get("hr") or 0)
-        rows.append(
-            f"Batter vs pitcher: {hits} hits, {hrs} HR in {pa} PA"
-            + (f" vs {pitcher}." if pitcher else ".")
-        )
+        if pa >= 3:
+            hits = int(bvp.get("hits") or 0)
+            hrs = int(bvp.get("home_runs") or bvp.get("hr") or 0)
+            rows.append(
+                f"History vs pitcher: {hits} hits and {hrs} HR in {pa} PA"
+                + (f" vs {pitcher}." if pitcher else ".")
+            )
+
+    split_pa = int(hitter_split.get("plate_appearances") or 0)
+    split_hr = int(hitter_split.get("home_runs") or 0)
+    split_slg = _number(hitter_split.get("slg"))
+    split_ops = _number(hitter_split.get("ops"))
 
     if "home run" in cat:
-        rows += [
-            f"Season power: {int(season.get('home_runs') or 0)} HR in "
-            f"{int(season.get('plate_appearances') or 0)} PA.",
-            f"Recent power: {int(recent.get('home_runs') or 0)} HR in "
-            f"{int(recent.get('plate_appearances') or 0)} recent PA.",
-        ]
-    else:
-        rows += [
-            f"Season contact: {_number(season.get('avg'))} AVG.",
-            f"Recent contact: {_number(recent.get('avg'))} AVG.",
-        ]
+        rows.append(
+            f"Power profile: {int(season.get('home_runs') or 0)} season HR; "
+            f"{int(recent.get('home_runs') or 0)} HR in the recent pregame window."
+        )
+        if split_pa:
+            rows.append(
+                f"Vs {handedness}: {split_hr} HR in {split_pa} PA, "
+                f"{split_slg} SLG and {split_ops} OPS."
+            )
+        if statcast:
+            rows.append(
+                f"HR contact quality: {_percent(statcast.get('barrel_rate'))} barrel rate, "
+                f"{_percent(statcast.get('hard_hit_rate'))} hard-hit rate and "
+                f"{_number(statcast.get('xslg'))} xSLG."
+            )
 
-    if statcast:
+    elif "total base" in cat:
         rows.append(
-            f"Contact quality: "
-            f"{_number(statcast.get('average_exit_velocity'), 1)} mph average exit velocity, "
-            f"{_percent(statcast.get('barrel_rate'))} barrels and "
-            f"{_percent(statcast.get('hard_hit_rate'))} hard-hit rate."
+            f"Total-base projection: {float(player.get('projected_total_bases', 0) or 0):.1f}; "
+            f"{float(player.get('over_1_5_total_bases_probability', 0) or 0):.0f}% over 1.5 TB."
+        )
+        if split_pa:
+            rows.append(
+                f"Damage vs {handedness}: {split_slg} SLG and {split_ops} OPS across {split_pa} PA."
+            )
+        if statcast:
+            rows.append(
+                f"Extra-base indicators: {_number(statcast.get('xslg'))} xSLG, "
+                f"{_percent(statcast.get('barrel_rate'))} barrels and "
+                f"{_number(statcast.get('average_exit_velocity'),1)} mph average exit velocity."
+            )
+
+    elif cat in {"hit", "hits"}:
+        rows.append(
+            f"Hit projection: {float(player.get('projected_hits', 0) or 0):.1f}; "
+            f"{float(player.get('one_plus_hit_probability', 0) or 0):.0f}% for 1+ hit."
+        )
+        if split_pa:
+            rows.append(
+                f"Contact vs {handedness}: {split_ops} OPS in {split_pa} PA."
+            )
+        if statcast:
+            rows.append(
+                f"Expected contact: {_number(statcast.get('xba'))} xBA and "
+                f"{_percent(statcast.get('hard_hit_rate'))} hard-hit rate."
+            )
+
+    elif cat == "runs":
+        rows.append(
+            f"Run projection: {float(player.get('projected_runs', 0) or 0):.1f}; "
+            f"{float(player.get('one_plus_run_probability', 0) or 0):.0f}% for 1+ run."
+        )
+        order = player.get("batting_order") or player.get("projected_batting_order")
+        if order:
+            rows.append(f"Lineup opportunity: batting #{int(order)} creates expected scoring chances.")
+        rows.append("Runs are driven by on-base opportunity, lineup position and the game run environment.")
+
+    elif cat in {"rbi", "rbis"}:
+        rows.append(
+            f"RBI projection: {float(player.get('projected_rbis', 0) or 0):.1f}; "
+            f"{float(player.get('one_plus_rbi_probability', 0) or 0):.0f}% for 1+ RBI."
+        )
+        order = player.get("batting_order") or player.get("projected_batting_order")
+        if order:
+            rows.append(f"Run-producing slot: batting #{int(order)} shapes RBI opportunity.")
+        if statcast:
+            rows.append(
+                f"Damage support: {_number(statcast.get('xslg'))} xSLG and "
+                f"{_percent(statcast.get('hard_hit_rate'))} hard-hit rate."
+            )
+
+    elif cat == "walks":
+        rows.append(
+            f"Walk projection: {float(player.get('projected_walks', 0) or 0):.1f}; "
+            f"{float(player.get('one_plus_walk_probability', 0) or 0):.0f}% for 1+ walk."
         )
         rows.append(
-            f"Expected results: {_number(statcast.get('xba'))} xBA, "
-            f"{_number(statcast.get('xslg'))} xSLG and "
-            f"{_number(statcast.get('xwoba'))} xwOBA."
+            f"Matchup focus: plate-discipline opportunity against {pitcher or 'the opposing pitcher'}"
+            + (f" ({handedness})." if hand else ".")
         )
+
+    elif "stolen" in cat:
+        rows.append(
+            f"Steal projection: {float(player.get('projected_stolen_bases', 0) or 0):.2f}; "
+            f"{float(player.get('one_plus_stolen_base_probability', 0) or 0):.0f}% for 1+ SB."
+        )
+        rows.append("Stolen-base value depends on speed plus getting on base often enough to create attempts.")
+        order = player.get("batting_order") or player.get("projected_batting_order")
+        if order:
+            rows.append(f"Batting #{int(order)} affects expected times on base and running opportunities.")
+
+    elif "hits + runs + rbis" in cat or "hits runs rbis" in cat:
+        rows.append(
+            f"Combined projection: {float(player.get('projected_hits_runs_rbis', 0) or 0):.1f} H+R+RBI; "
+            f"{float(player.get('over_1_5_hits_runs_rbis_probability', 0) or 0):.0f}% over 1.5."
+        )
+        rows.append("This market has multiple paths: contact, scoring and run production all contribute.")
+
+    else:
+        rows.append("Live matchup and season data are being evaluated for this market.")
 
     weather = player.get("weather", {}) or {}
-    if weather.get("success"):
-        temp = weather.get("temperature_f")
-        wind = weather.get("wind_speed_mph")
-        if temp is not None:
-            rows.append(
-                f"Game environment: {float(temp):.0f}°F with "
-                f"{float(wind or 0):.0f} mph wind."
-            )
+    if weather.get("success") and weather.get("temperature_f") is not None:
+        rows.append(
+            f"Environment: {float(weather.get('temperature_f')):.0f}°F with "
+            f"{float(weather.get('wind_speed_mph') or 0):.0f} mph wind."
+        )
 
     park_factor = float(player.get("park_factor", 1.0) or 1.0)
     if abs(park_factor - 1.0) >= .03:
@@ -259,8 +328,14 @@ def render_player_card(player_data: dict) -> None:
                 grid-template-columns:repeat(2,minmax(0,1fr));
             }
 
-            .gi-statcast-grid {
-                grid-template-columns:repeat(3,minmax(0,1fr));
+            div.gi-statcast-grid {
+                display:grid !important;
+                grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+                gap:5px !important;
+            }
+            div.gi-statcast-grid .gi-intel-metric {
+                min-width:0 !important;
+                padding:6px 4px !important;
             }
         }
         </style>
@@ -268,18 +343,6 @@ def render_player_card(player_data: dict) -> None:
         unsafe_allow_html=True,
     )
 
-    pitcher = str(
-        player_data.get("opposing_probable_pitcher") or "Not announced"
-    )
-    hand = str(player_data.get("opposing_pitcher_hand") or "").upper()
-
-    st.markdown(
-        f"<div class='gi-intel-matchup-line'>"
-        f"<b>Opposing pitcher:</b> {escape(pitcher)}"
-        + (f" · {escape(hand)}HP" if hand else "")
-        + "</div>",
-        unsafe_allow_html=True,
-    )
 
     st.markdown(
         "<div class='gi-intel-summary-grid'>"
@@ -306,27 +369,36 @@ def render_player_card(player_data: dict) -> None:
     season = player_data.get("season_stats", {}) or {}
     recent = player_data.get("recent_stats", {}) or {}
 
-    with st.expander("Performance Evidence", expanded=False):
+    with st.expander("Market Performance Evidence", expanded=False):
         cat = str(player_data.get("category") or "").lower()
 
         if "home run" in cat:
-            sline = (
-                f"{season.get('home_runs', 0)} HR · "
-                f"{_number(season.get('slg'))} SLG"
-            )
-            rline = (
-                f"{recent.get('home_runs', 0)} HR · "
-                f"{_number(recent.get('slg'))} SLG"
-            )
+            sline = f"{season.get('home_runs', 0)} HR · {_number(season.get('slg'))} SLG"
+            rline = f"{recent.get('home_runs', 0)} HR · {_number(recent.get('slg'))} SLG"
+        elif "total base" in cat:
+            sline = f"{_number(season.get('slg'))} SLG · {season.get('home_runs', 0)} HR"
+            rline = f"{_number(recent.get('slg'))} SLG · {recent.get('home_runs', 0)} HR"
+        elif cat in {"rbi", "rbis"}:
+            sline = f"{season.get('rbis', season.get('rbi', '—'))} RBI"
+            rline = f"{recent.get('rbis', recent.get('rbi', '—'))} RBI"
+        elif cat == "runs":
+            sline = f"{season.get('runs', '—')} Runs"
+            rline = f"{recent.get('runs', '—')} Runs"
+        elif cat == "walks":
+            sline = f"{season.get('walks', season.get('bb', '—'))} Walks"
+            rline = f"{recent.get('walks', recent.get('bb', '—'))} Walks"
+        elif "stolen" in cat:
+            sline = f"{season.get('stolen_bases', season.get('sb', '—'))} SB"
+            rline = f"{recent.get('stolen_bases', recent.get('sb', '—'))} SB"
         else:
             sline = f"{_number(season.get('avg'))} AVG"
             rline = f"{_number(recent.get('avg'))} AVG"
 
         st.markdown(
             "<div class='gi-evidence-grid'>"
-            f"<div><b>Season</b><br>{escape(sline)}<br>"
+            f"<div><b>Season</b><br>{escape(str(sline))}<br>"
             f"<small>{season.get('plate_appearances', 0)} PA</small></div>"
-            f"<div><b>Recent pregame</b><br>{escape(rline)}<br>"
+            f"<div><b>Recent pregame</b><br>{escape(str(rline))}<br>"
             f"<small>{recent.get('plate_appearances', 0)} PA</small></div>"
             "</div>",
             unsafe_allow_html=True,
