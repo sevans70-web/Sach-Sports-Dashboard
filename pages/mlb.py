@@ -18,6 +18,7 @@ from datetime import datetime
 from html import escape
 from textwrap import dedent
 from zoneinfo import ZoneInfo
+import os
 import streamlit as st
 
 from components.mlb_schedule import (
@@ -613,7 +614,7 @@ MOVEMENT_SUMMARIES = {
 try:
     snapshot_config = GitHubSnapshotConfig(
         repository="sevans70-web/Sach-Sports-Dashboard",
-        token=st.secrets["GITHUB_TOKEN"],
+        token=os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN"),
         branch="main",
         path="data/intraday_rankings.json",
     )
