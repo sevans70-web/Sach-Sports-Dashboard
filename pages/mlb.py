@@ -981,13 +981,31 @@ def render_ranking_category(
 
     render_recent_movement(movement_summary)
 
-    render_featured_player(rankings[0])
+    for player in rankings[:5]:
+        intelligence_key = f"{state_key}_top5_intelligence_{player['rank']}"
+        if intelligence_key not in st.session_state:
+            st.session_state[intelligence_key] = False
 
-    for player in rankings[1:5]:
-        render_compact_player(player)
+        with st.container(
+            border=True,
+            key=f"{state_key}_top5_player_{player['rank']}",
+        ):
+            render_expandable_ranking_header(player)
+
+            if st.button(
+                "ⓘ Hide Intelligence"
+                if st.session_state[intelligence_key]
+                else "ⓘ View Intelligence",
+                key=f"{intelligence_key}_button",
+                use_container_width=True,
+            ):
+                st.session_state[intelligence_key] = not st.session_state[intelligence_key]
+
+            if st.session_state[intelligence_key]:
+                render_player_card(player)
 
     button_label = (
-        "Hide Full Top 25"
+        "Show Top 5 Only"
         if st.session_state[state_key]
         else "View Full Top 25"
     )
@@ -1024,9 +1042,7 @@ def render_ranking_category(
                 render_expandable_ranking_header(player)
 
                 button_label = (
-                    f"ⓘ Hide Intelligence — {player['player']}"
-                    if st.session_state[intelligence_key]
-                    else f"ⓘ View Intelligence — {player['player']}"
+                    "ⓘ Hide Intelligence" if st.session_state[intelligence_key] else "ⓘ View Intelligence"
                 )
                 if st.button(
                     button_label,
@@ -2410,7 +2426,119 @@ st.markdown(
         .gi-card-player strong { font-size:.96rem !important; }
         .gi-card-player span { font-size:.82rem !important; color:#ffffff !important; }
     }
-    </style>
+    
+        /* ============================================================
+           MLB MOBILE CLOSEOUT PASS
+           ============================================================ */
+        @media (max-width: 700px) {
+            .block-container {
+                padding-top: .35rem !important;
+                padding-left: .85rem !important;
+                padding-right: .85rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            /* Tighten major vertical rhythm without shrinking type. */
+            [data-testid="stVerticalBlock"] { gap: .65rem !important; }
+            h1, h2, h3 { margin-top: .45rem !important; margin-bottom: .35rem !important; }
+            hr { margin: .55rem 0 !important; }
+
+            .gi-hero {
+                padding: 14px 14px !important;
+                margin-top: 0 !important;
+                margin-bottom: 10px !important;
+                background:
+                    linear-gradient(105deg,
+                        rgba(255,204,51,.28) 0%,
+                        rgba(4,5,4,.98) 44%,
+                        rgba(25,217,120,.28) 100%) !important;
+                border: 2px solid rgba(255,204,51,.88) !important;
+                box-shadow:
+                    inset 0 0 24px rgba(25,217,120,.08),
+                    0 0 0 1px rgba(25,217,120,.18) !important;
+            }
+            .gi-hero-title { font-size: 1.85rem !important; }
+            .gi-hero-subtitle { font-size: .95rem !important; line-height: 1.45 !important; margin-top: 9px !important; }
+
+            /* All Streamlit expanders stay dark when open. */
+            div[data-testid="stExpander"] {
+                background:#080909 !important;
+                border:2px solid #3a3d42 !important;
+                border-radius:12px !important;
+                overflow:hidden !important;
+            }
+            div[data-testid="stExpander"] details,
+            div[data-testid="stExpander"] summary,
+            div[data-testid="stExpander"] summary:hover,
+            div[data-testid="stExpander"] summary:focus {
+                background:#080909 !important;
+                color:#ffffff !important;
+            }
+            div[data-testid="stExpander"] summary svg { color:#19d978 !important; }
+
+            /* Remove old blue info/status surfaces. */
+            div[data-testid="stAlert"] {
+                background:#0c0d0e !important;
+                color:#ffffff !important;
+                border:2px solid rgba(25,217,120,.45) !important;
+            }
+
+            /* Ranking cards: one emerald system for Top 5 and 6-25. */
+            div[class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"],
+            div[class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"] {
+                background:
+                    linear-gradient(100deg,
+                        rgba(25,217,120,.12) 0%,
+                        #101112 18%,
+                        #101112 82%,
+                        rgba(25,217,120,.035) 100%) !important;
+                border:2px solid #3a3d42 !important;
+                border-left:6px solid #19d978 !important;
+                border-radius:16px !important;
+                box-shadow:
+                    inset 1px 0 0 rgba(25,217,120,.72),
+                    inset 0 0 24px rgba(25,217,120,.035) !important;
+            }
+
+            .gi-card-header {
+                padding: 8px 6px !important;
+                gap: 8px !important;
+            }
+            .gi-native-photo, .gi-native-initials {
+                width: 52px !important;
+                height: 52px !important;
+            }
+            .gi-native-photo img {
+                object-fit: cover !important;
+                object-position: center 12% !important;
+                transform: scale(1.02) !important;
+            }
+
+            /* Active tabs use emerald, never red. */
+            div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
+                background:#19d978 !important;
+            }
+            div[data-testid="stTabs"] button[aria-selected="true"] {
+                color:#ffffff !important;
+            }
+
+            /* Strong, intentional action buttons. */
+            .stButton > button {
+                border-width:2px !important;
+                border-color:#3a3d42 !important;
+                background:#0b0c0d !important;
+            }
+            .stButton > button:hover {
+                border-color:#19d978 !important;
+                box-shadow:0 0 0 1px rgba(25,217,120,.18) !important;
+            }
+
+            /* Less dead space around ranking headings. */
+            .gi-section-heading { margin: 8px 0 8px !important; }
+            .gi-full-list-heading { margin: 10px 0 7px !important; }
+        }
+
+</style>
     """,
     unsafe_allow_html=True,
 )
