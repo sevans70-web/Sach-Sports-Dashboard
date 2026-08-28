@@ -303,11 +303,34 @@ def attach_persistent_movement(
     comparison: dict,
     has_previous_snapshot: bool,
 ) -> list[dict]:
-    """Attach persistent Top 25 movement details to the live card records."""
-    movement_lookup = {
-        item["player_key"]: item.get("movement", {})
-        for item in comparison.get("current", [])
-    }
+    """Attach durable Top-25 movement to every live batter card."""
+    movement_lookup: dict[str, dict] = {}
+
+    if isinstance(comparison, dict) and isinstance(comparison.get("current"), list):
+        movement_lookup = {
+            str(item.get("player_key")): item.get("movement", {})
+            for item in comparison.get("current", [])
+            if item.get("player_key")
+        }
+    elif isinstance(comparison, dict):
+        for key, item in comparison.items():
+            if not isinstance(item, dict):
+                continue
+            old_rank = item.get("previous_rank")
+            new_rank = item.get("current_rank")
+            if item.get("is_new"):
+                movement = {"status": "new", "previous": None, "current": new_rank}
+            elif old_rank and new_rank and new_rank < old_rank:
+                movement = {"status": "up", "previous": old_rank, "current": new_rank}
+            elif old_rank and new_rank and new_rank > old_rank:
+                movement = {"status": "down", "previous": old_rank, "current": new_rank}
+            else:
+                movement = {
+                    "status": "unchanged",
+                    "previous": old_rank or new_rank,
+                    "current": new_rank,
+                }
+            movement_lookup[str(key)] = movement
 
     for player in rankings:
         try:
@@ -321,8 +344,6 @@ def attach_persistent_movement(
                 "status": "unchanged",
                 "current": player.get("rank"),
                 "previous": player.get("rank"),
-                "change": 0,
-                "label": "—",
             },
         )
 
@@ -331,8 +352,6 @@ def attach_persistent_movement(
                 "status": "unchanged",
                 "current": player.get("rank"),
                 "previous": player.get("rank"),
-                "change": 0,
-                "label": "—",
             }
 
         player["movement"] = movement
@@ -424,13 +443,22 @@ def lineup_status_html(player: dict) -> str:
 
 
 def movement_label(player: dict) -> str:
-    """Return the short movement label shown beside a player's rank."""
+    """Return accountable previous-to-current movement on the card."""
     movement = player.get("movement", {})
-
     if not isinstance(movement, dict):
         return "—"
 
-    return str(movement.get("label") or "—")
+    status = str(movement.get("status") or "").lower()
+    current = movement.get("current")
+    previous = movement.get("previous")
+
+    if status == "new":
+        return "NEW"
+    if status == "up" and previous and current:
+        return f"↑ {previous}→{current}"
+    if status == "down" and previous and current:
+        return f"↓ {previous}→{current}"
+    return "—"
 
 
 def render_recent_movement(changes: list[str]) -> None:
@@ -606,9 +634,8 @@ HITS_RUNS_RBIS_RANKINGS = attach_results_to_rankings(
     HITS_RUNS_RBIS_RANKINGS, "hits_runs_rbis"
 )
 MOVEMENT_SUMMARIES = {
-    "home_runs": [],
-    "hits": [],
-    "total_bases": [],
+    "home_runs": [], "hits": [], "total_bases": [], "runs": [],
+    "rbis": [], "walks": [], "stolen_bases": [], "hits_runs_rbis": [],
 }
 
 try:
@@ -974,7 +1001,6 @@ def render_expandable_ranking_header(player: dict) -> None:
     )
 
 
-@st.fragment(run_every="30s")
 def render_ranking_category(
     title: str,
     icon: str,
@@ -2870,7 +2896,7 @@ st.divider()
 
 render_html(
     """
-    <div class="gi-rankings-banner">
+    <div class="gi-rankings-heading">
         <strong>Player Rankings</strong>
         <span>Market-specific intelligence · live matchup context</span>
     </div>
@@ -2936,7 +2962,7 @@ with batter_tab:
             rankings=RUN_RANKINGS,
             state_key="show_runs_25",
             button_key="toggle_runs_25",
-            movement_summary=[],
+            movement_summary=MOVEMENT_SUMMARIES.get("runs", []),
             category_key="runs",
         )
 
@@ -2947,7 +2973,7 @@ with batter_tab:
             rankings=RBI_RANKINGS,
             state_key="show_rbis_25",
             button_key="toggle_rbis_25",
-            movement_summary=[],
+            movement_summary=MOVEMENT_SUMMARIES.get("rbis", []),
             category_key="rbis",
         )
 
@@ -2958,7 +2984,7 @@ with batter_tab:
             rankings=WALK_RANKINGS,
             state_key="show_walks_25",
             button_key="toggle_walks_25",
-            movement_summary=[],
+            movement_summary=MOVEMENT_SUMMARIES.get("walks", []),
             category_key="walks",
         )
 
@@ -2969,7 +2995,7 @@ with batter_tab:
             rankings=STOLEN_BASE_RANKINGS,
             state_key="show_sb_25",
             button_key="toggle_sb_25",
-            movement_summary=[],
+            movement_summary=MOVEMENT_SUMMARIES.get("stolen_bases", []),
             category_key="stolen_bases",
         )
 
@@ -2991,4 +3017,56 @@ st.divider()
 
 st.caption(
     "Sach Sports Dashboard · MLB Intelligence"
+)
+
+
+st.markdown(
+    """
+<style>
+/* FINAL MLB ACCEPTANCE OVERRIDES */
+.gi-rankings-heading{margin:.25rem 0 .45rem!important;padding:5px 2px!important;background:#080909!important}
+.gi-rankings-heading strong{display:block;color:#fff;font-size:1.35rem;font-weight:900}
+.gi-rankings-heading span{display:block;color:#b8b09f;font-size:.70rem;margin-top:1px}
+
+.gi-section-heading{margin:5px 0 7px!important;align-items:flex-start!important}
+.gi-section-count{font-size:.66rem!important;padding:4px 7px!important;margin:0 0 5px!important}
+
+.gi-lineup-status{margin:4px 0 5px!important}
+.gi-card-header{padding-bottom:7px!important}
+[class*="st-key-show_"][class*="_player_"] .stButton{margin-top:5px!important}
+[class*="st-key-show_"][class*="_player_"] .stButton>button{margin-top:2px!important}
+
+.gi-card-rank small{color:#f6c84c!important;font-size:.60rem!important;font-weight:900!important;white-space:nowrap!important}
+
+div[data-testid="stExpander"]{margin:.18rem 0!important}
+div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
+div[data-testid="stExpander"] summary p{margin:0!important;line-height:1.10!important}
+div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.05rem .42rem .28rem!important}
+
+[data-testid="stTabs"] [data-baseweb="tab-highlight"],[data-baseweb="tab-highlight"]{
+    background:#d6b35c!important;background-color:#d6b35c!important
+}
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"],button[data-baseweb="tab"][aria-selected="true"]{
+    box-shadow:inset 0 -3px 0 #d6b35c!important;border-bottom-color:#d6b35c!important;color:#fff!important
+}
+div[data-testid="stAlert"],div[role="alert"]{
+    background:#080909!important;color:#fff!important;border-color:#19d978!important
+}
+
+.gi-native-photo img,.gi-compact-photo img,.gi-full-photo img{
+    object-fit:contain!important;object-position:center bottom!important;transform:none!important
+}
+
+@media(max-width:700px){
+    .gi-rankings-heading{margin:.12rem 0 .25rem!important;padding:3px 2px!important}
+    .gi-section-heading{margin:3px 0 5px!important}
+    .gi-card-header{padding:4px 2px 5px!important}
+    .gi-card-player{gap:1px!important}
+    .gi-card-player span{line-height:1.18!important}
+    [data-testid="stTabs"] [role="tablist"]{margin-bottom:0!important}
+}
+</style>
+
+    """,
+    unsafe_allow_html=True,
 )
