@@ -1967,7 +1967,7 @@ def _live_contact_text(signal: dict) -> str:
 
 def render_hr_signal_legend() -> None:
     """Explain HR contact symbols and Statcast terms in plain language."""
-    with st.expander("ℹ️ What do the HR contact signals mean?", expanded=False):
+    with st.expander("ⓘ What do the HR contact signals mean?", expanded=False):
         st.markdown(
             """
             **🔥 Barrel** — a batted ball with a strong combination of exit velocity
@@ -2127,7 +2127,6 @@ def render_yesterday_power_watch(
         "with all players who homered excluded. Context only — not a 'due' signal."
     )
 
-    render_hr_signal_legend()
 
     if not signals:
         st.info(
@@ -2537,6 +2536,76 @@ st.markdown(
             .gi-section-heading { margin: 8px 0 8px !important; }
             .gi-full-list-heading { margin: 10px 0 7px !important; }
         }
+
+
+    /* ============================================================
+       MLB PHONE CLOSEOUT — PASS 2
+       ============================================================ */
+    @media (max-width: 700px) {
+        [data-testid="stAppViewContainer"] .block-container,
+        .main .block-container {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        .gi-hero {
+            margin-top: -0.35rem !important;
+            margin-bottom: 0.45rem !important;
+            padding: 12px 13px !important;
+        }
+
+        div[data-testid="stAlert"] {
+            border-radius: 14px !important;
+            overflow: hidden !important;
+            background: linear-gradient(
+                105deg,
+                rgba(25,217,120,.08),
+                #0b0c0d 52%,
+                rgba(255,204,51,.04)
+            ) !important;
+            border: 2px solid rgba(25,217,120,.48) !important;
+        }
+
+        [data-testid="stTabs"] [data-baseweb="tab-highlight"],
+        [data-baseweb="tab-highlight"] {
+            background-color: #19d978 !important;
+        }
+
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+        button[data-baseweb="tab"][aria-selected="true"] {
+            color: #ffffff !important;
+            box-shadow: inset 0 -3px 0 #19d978 !important;
+            border-bottom-color: #19d978 !important;
+        }
+
+        [data-testid="stTabs"] button[aria-label*="scroll" i],
+        [data-testid="stTabs"] button[title*="scroll" i],
+        [data-baseweb="tab-list"] + button,
+        [data-baseweb="tab-list"] ~ button {
+            background: #080909 !important;
+            color: #f6c84c !important;
+            border: 1px solid #34373c !important;
+            box-shadow: none !important;
+        }
+
+        [data-testid="stVerticalBlock"] {
+            gap: .48rem !important;
+        }
+
+        h2, h3 {
+            margin-top: .35rem !important;
+            margin-bottom: .28rem !important;
+        }
+
+        hr {
+            margin: .38rem 0 !important;
+        }
+
+        .stButton > button,
+        div[data-testid="stExpander"] {
+            border-width: 2px !important;
+        }
+    }
 
 </style>
     """,
