@@ -3030,3 +3030,24 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+st.markdown(
+    """
+    <style>
+    /* MOBILE RANKING EXPLANATION FIX — keep desktop explanation visible on phone */
+    @media (max-width: 760px) {
+        .gi-section-subtitle {
+            display: block !important;
+            visibility: visible !important;
+            color: #c4c7cc !important;
+            font-size: 0.78rem !important;
+            line-height: 1.35 !important;
+            margin-top: 4px !important;
+            max-width: 100% !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
