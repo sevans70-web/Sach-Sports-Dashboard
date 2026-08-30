@@ -465,11 +465,11 @@ def get_previous_day_lineup_projection(
     current_lineup_data: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
-    Build a clearly labeled early-slate lineup projection from each team's
-    most recent confirmed batting order from the previous calendar day.
+    Build an early-slate projected lineup from each team's most recent
+    confirmed batting order in the previous 7 days.
 
-    This never marks a projected player as confirmed. It is only used before
-    today's official lineup is posted, and it is disabled once a game is live.
+    The projection is clearly marked as projected and is replaced immediately
+    when MLB posts today's official batting order.
     """
     if schedule_date is None:
         requested_date = datetime.now(TORONTO_TIMEZONE).date()
@@ -481,101 +481,134 @@ def get_previous_day_lineup_projection(
     current = current_lineup_data or get_mlb_lineups(
         schedule_date=requested_date,
     )
-    previous_date = requested_date - timedelta(days=1)
-    previous = get_mlb_lineups(
-        schedule_date=previous_date,
-    )
 
-    if not current.get("success") or not previous.get("success"):
+    if not current.get("success"):
         return {
             "success": False,
             "date": requested_date.isoformat(),
-            "source_date": previous_date.isoformat(),
             "projected_hitters": [],
             "projected_hitter_count": 0,
-            "error": "Previous-day lineup projection could not be built.",
+            "error": "Current lineup data is unavailable.",
         }
 
-    previous_by_team: dict[int, list[dict[str, Any]]] = {}
-    for player in previous.get("confirmed_hitters", []):
-        try:
-            team_id = int(player.get("team_id") or 0)
-        except (TypeError, ValueError):
-            team_id = 0
-
-        if not team_id:
-            continue
-
-        previous_by_team.setdefault(team_id, []).append(player)
-
-    # If a team played twice yesterday, use the later confirmed batting order.
-    # confirmed_hitters are already sorted by game_time, so later entries replace
-    # earlier slot values naturally.
-    latest_slots_by_team: dict[int, dict[int, dict[str, Any]]] = {}
-    for team_id, players in previous_by_team.items():
-        slots: dict[int, dict[str, Any]] = {}
-        for player in players:
-            try:
-                slot = int(player.get("batting_order") or 0)
-            except (TypeError, ValueError):
-                slot = 0
-            if 1 <= slot <= 9:
-                slots[slot] = player
-        latest_slots_by_team[team_id] = slots
-
-    projected_hitters: list[dict[str, Any]] = []
+    # Teams that still need a projected batting order today.
+    needed_team_ids: set[int] = set()
+    current_game_by_team: dict[int, tuple[dict[str, Any], str]] = {}
 
     for game in current.get("games", []):
-        if not _projection_allowed_for_status(
-            game.get("game_status")
-        ):
+        if not _projection_allowed_for_status(game.get("game_status")):
             continue
-
-        game_pk = game.get("game_pk")
 
         for side in ("away", "home"):
             if game.get(f"{side}_lineup_confirmed"):
                 continue
-
             try:
                 team_id = int(game.get(f"{side}_team_id") or 0)
             except (TypeError, ValueError):
                 team_id = 0
+            if team_id:
+                needed_team_ids.add(team_id)
+                current_game_by_team[team_id] = (game, side)
 
-            if not team_id:
+    if not needed_team_ids:
+        return {
+            "success": True,
+            "date": requested_date.isoformat(),
+            "projected_hitters": [],
+            "projected_hitter_count": 0,
+            "error": None,
+        }
+
+    # Find each missing team's most recent confirmed lineup, allowing for
+    # off-days so the game page still has a useful projected nine.
+    latest_by_team: dict[int, tuple[date, list[dict[str, Any]]]] = {}
+
+    for days_back in range(1, 8):
+        if len(latest_by_team) == len(needed_team_ids):
+            break
+
+        source_date = requested_date - timedelta(days=days_back)
+        previous = get_mlb_lineups(schedule_date=source_date)
+
+        if not previous.get("success"):
+            continue
+
+        by_team: dict[int, list[dict[str, Any]]] = {}
+        for player in previous.get("confirmed_hitters", []):
+            try:
+                team_id = int(player.get("team_id") or 0)
+            except (TypeError, ValueError):
+                team_id = 0
+            if team_id in needed_team_ids and team_id not in latest_by_team:
+                by_team.setdefault(team_id, []).append(player)
+
+        for team_id, players in by_team.items():
+            slots: dict[int, dict[str, Any]] = {}
+            for player in players:
+                try:
+                    slot = int(player.get("batting_order") or 0)
+                except (TypeError, ValueError):
+                    slot = 0
+                if 1 <= slot <= 9:
+                    slots[slot] = player
+
+            if len(slots) >= 9:
+                ordered = [slots[slot] for slot in sorted(slots)[:9]]
+                latest_by_team[team_id] = (source_date, ordered)
+
+    projected_hitters: list[dict[str, Any]] = []
+
+    for team_id, (source_date, prior_lineup) in latest_by_team.items():
+        current_game, side = current_game_by_team[team_id]
+        opponent_side = "home" if side == "away" else "away"
+        is_home = side == "home"
+
+        opposing_pitcher = current_game.get(f"{opponent_side}_probable_pitcher") or {}
+        if not isinstance(opposing_pitcher, dict):
+            opposing_pitcher = {}
+
+        team_name = str(current_game.get(f"{side}_team") or "")
+        opponent_name = str(current_game.get(f"{opponent_side}_team") or "")
+
+        for slot, prior in enumerate(prior_lineup, start=1):
+            player_id = prior.get("player_id")
+            if not player_id:
                 continue
 
-            slots = latest_slots_by_team.get(team_id, {})
-            if not slots:
-                continue
-
-            for slot in sorted(slots):
-                prior = slots[slot]
-                player_id = prior.get("player_id")
-                if not player_id:
-                    continue
-
-                projected_hitters.append(
-                    {
-                        "player_id": int(player_id),
-                        "team_id": team_id,
-                        "game_pk": game_pk,
-                        "projected_batting_order": slot,
-                        "lineup_projected": True,
-                        "lineup_confirmed": False,
-                        "lineup_projection_source": (
-                            f"Previous confirmed lineup ({previous_date.isoformat()})"
-                        ),
-                    }
-                )
+            projected_hitters.append(
+                {
+                    **prior,
+                    "player_id": int(player_id),
+                    "player_name": prior.get("player_name") or "MLB Player",
+                    "team_id": team_id,
+                    "team_name": team_name,
+                    "opponent_name": opponent_name,
+                    "is_home": is_home,
+                    "game_pk": current_game.get("game_pk"),
+                    "game_time": current_game.get("game_time"),
+                    "game_status": current_game.get("game_status"),
+                    "venue": current_game.get("venue"),
+                    "batting_order": slot,
+                    "batting_order_label": str(slot),
+                    "projected_batting_order": slot,
+                    "lineup_projected": True,
+                    "lineup_confirmed": False,
+                    "lineup_projection_source": (
+                        f"Most recent confirmed lineup ({source_date.isoformat()})"
+                    ),
+                    "opposing_probable_pitcher_id": opposing_pitcher.get("pitcher_id"),
+                    "opposing_probable_pitcher": opposing_pitcher.get("pitcher_name") or "Not announced",
+                    "opposing_pitcher_hand": opposing_pitcher.get("pitcher_hand") or "",
+                    "opposing_pitcher_hand_description": opposing_pitcher.get("pitcher_hand_description") or "",
+                }
+            )
 
     return {
         "success": bool(projected_hitters),
         "date": requested_date.isoformat(),
-        "source_date": previous_date.isoformat(),
         "projected_hitters": projected_hitters,
         "projected_hitter_count": len(projected_hitters),
-        "error": None,
+        "error": None if projected_hitters else "No recent confirmed lineup was found.",
     }
 
 
