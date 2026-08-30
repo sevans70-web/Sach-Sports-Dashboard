@@ -1,1 +1,9 @@
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "none"
 
+[ui]
+hideTopBar = true
+
+[theme]
+base = "dark"
