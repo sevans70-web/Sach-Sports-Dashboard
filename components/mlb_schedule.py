@@ -110,37 +110,37 @@ def _render_game_card(
 
     live_class = " mlb-live-card" if live else ""
 
-    st.markdown(
-        f"""
-        <div class="mlb-slate-card{live_class}">
-          <div class="mlb-slate-top">
-            <span class="mlb-slate-status">{_status_label(game)}</span>
-            <span>{escape(str(game.get("venue") or "Venue TBA"))}</span>
-          </div>
-
-          <div class="mlb-slate-team">
-            {_logo(game.get("away_team_id"), away)}
-            <div class="mlb-slate-team-main">
-              <strong>{escape(away)}</strong>
-              <span>{escape(str(game.get("away_probable_pitcher") or "Pitcher TBA"))}</span>
-              {f"<small>{_team_intel(away_top)}</small>" if away_top else ""}
-            </div>
-            <b>{_score_or_record(game, "away")}</b>
-          </div>
-
-          <div class="mlb-slate-team">
-            {_logo(game.get("home_team_id"), home)}
-            <div class="mlb-slate-team-main">
-              <strong>{escape(home)}</strong>
-              <span>{escape(str(game.get("home_probable_pitcher") or "Pitcher TBA"))}</span>
-              {f"<small>{_team_intel(home_top)}</small>" if home_top else ""}
-            </div>
-            <b>{_score_or_record(game, "home")}</b>
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    # Use Streamlit's HTML renderer so the card markup can never be
+    # reinterpreted as Markdown/code on mobile.
+    away_intel_html = f"<small>{_team_intel(away_top)}</small>" if away_top else ""
+    home_intel_html = f"<small>{_team_intel(home_top)}</small>" if home_top else ""
+    card_html = (
+        f'<div class="mlb-slate-card{live_class}">'
+        f'<div class="mlb-slate-top">'
+        f'<span class="mlb-slate-status">{_status_label(game)}</span>'
+        f'<span>{escape(str(game.get("venue") or "Venue TBA"))}</span>'
+        f'</div>'
+        f'<div class="mlb-slate-team">'
+        f'{_logo(game.get("away_team_id"), away)}'
+        f'<div class="mlb-slate-team-main">'
+        f'<strong>{escape(away)}</strong>'
+        f'<span>{escape(str(game.get("away_probable_pitcher") or "Pitcher TBA"))}</span>'
+        f'{away_intel_html}'
+        f'</div>'
+        f'<b>{_score_or_record(game, "away")}</b>'
+        f'</div>'
+        f'<div class="mlb-slate-team">'
+        f'{_logo(game.get("home_team_id"), home)}'
+        f'<div class="mlb-slate-team-main">'
+        f'<strong>{escape(home)}</strong>'
+        f'<span>{escape(str(game.get("home_probable_pitcher") or "Pitcher TBA"))}</span>'
+        f'{home_intel_html}'
+        f'</div>'
+        f'<b>{_score_or_record(game, "home")}</b>'
+        f'</div>'
+        f'</div>'
     )
+    st.html(card_html)
 
     if st.button(
         f"View {_abbr(away)} @ {_abbr(home)}  →",
