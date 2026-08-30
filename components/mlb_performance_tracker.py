@@ -92,26 +92,6 @@ def _styles():
     .perf-summary-item:nth-child(3),.perf-kpi:nth-child(3){border-color:rgba(255,204,51,.72)!important}
     .perf-label,.perf-summary-item span,.perf-kpi span,.perf-kpi small{color:#a7abb2!important;font-size:.66rem!important;line-height:1.15!important}
     .perf-summary-item strong,.perf-kpi strong{color:#fff!important;font-size:1.04rem!important;line-height:1.05!important;margin:3px 0!important}
-    /* Performance period buttons: five visible choices, never a dropdown. */
-    div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]{
-      display:flex!important;flex-wrap:nowrap!important;gap:6px!important;width:100%!important
-    }
-    div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]{
-      flex:1 1 0!important;min-width:0!important;width:auto!important
-    }
-    div[class*="st-key-mlb_performance_period_control"] button{
-      width:100%!important;min-height:36px!important;padding:.20rem .28rem!important;
-      background:#080909!important;color:#fff!important;border:2px solid #d6b35c!important;
-      border-radius:9px!important;font-size:.72rem!important;font-weight:850!important;white-space:nowrap!important
-    }
-    div[class*="st-key-mlb_performance_period_control"] button[kind="primary"]{
-      background:linear-gradient(110deg,rgba(255,204,51,.20),#0b0c0d 58%,rgba(25,217,120,.12))!important;
-      border-color:#ffcc33!important;box-shadow:0 0 0 1px rgba(255,204,51,.20)!important
-    }
-    div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
-    div[data-testid="stExpander"],div[data-testid="stExpander"] summary{
-      background:#080909!important;color:#fff!important;border-color:#3a3d42!important
-    }
     @media(max-width:700px){
       .perf-summary-row,.perf-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
       .perf-summary-item,.perf-kpi{min-height:74px!important;padding:7px 6px!important}
@@ -163,7 +143,6 @@ def _render_batter_market(history, category, period):
 
 def _render_overall(history, period):
     summary = summarize_overall(_all_records(history, period))
-    st.markdown("#### 🌐 Overall MLB Batter Performance")
     if not summary["graded"]:
         st.caption("Overall performance will populate as tracked predictions settle.")
         return
@@ -228,10 +207,11 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
     else:
         st.caption("Performance history is temporarily unavailable.")
 
-    period = _period_control("mlb_performance_period")
     batter_tab, pitcher_tab = st.tabs(["🥎 Batter", "⚾ Pitcher"])
 
     with batter_tab:
+        st.markdown("#### 🌐 Overall MLB Batter Performance")
+        period = _period_control("mlb_batter_performance_period")
         _render_overall(batter_history, period)
 
         tabs = st.tabs([BATTER_CATEGORY_CONFIG[k][0] for k in BATTER_CATEGORY_CONFIG])
@@ -244,6 +224,7 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
 
     with pitcher_tab:
         st.markdown("#### 🌐 Overall MLB Pitcher Performance")
+        period = _period_control("mlb_pitcher_performance_period")
 
         if not token:
             st.caption("Pitcher performance history is temporarily unavailable.")
@@ -265,27 +246,29 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
     st.markdown(
         """
         <style>
-        /* Prediction Performance: visible controls, dark surfaces, no red. */
+        /* Compact period selector: one clean row, not a 3+2 button block. */
         div[data-testid="stSegmentedControl"]{
-            margin:.12rem 0 .35rem!important;
+            margin:.10rem 0 .38rem!important;
         }
         div[data-testid="stSegmentedControl"] > div{
             width:100%!important;
-            display:grid!important;
-            grid-template-columns:repeat(5,minmax(0,1fr))!important;
-            gap:4px!important;
+            display:flex!important;
+            flex-wrap:nowrap!important;
+            gap:3px!important;
         }
         div[data-testid="stSegmentedControl"] button{
+            flex:1 1 0!important;
             min-width:0!important;
-            width:100%!important;
-            min-height:34px!important;
-            padding:.20rem .05rem!important;
+            width:auto!important;
+            min-height:30px!important;
+            padding:.14rem .08rem!important;
             background:#080909!important;
             color:#fff!important;
-            border:2px solid #34373c!important;
-            border-radius:9px!important;
-            font-size:.64rem!important;
-            font-weight:850!important;
+            border:1px solid #34373c!important;
+            border-radius:7px!important;
+            font-size:.62rem!important;
+            font-weight:800!important;
+            white-space:nowrap!important;
         }
         div[data-testid="stSegmentedControl"] button[aria-pressed="true"]{
             background:#11100c!important;
@@ -313,8 +296,9 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
         }
         @media(max-width:700px){
             div[data-testid="stSegmentedControl"] button{
-                min-height:32px!important;
-                font-size:.57rem!important;
+                min-height:29px!important;
+                font-size:.54rem!important;
+                padding:.12rem .03rem!important;
             }
         }
         </style>
@@ -322,37 +306,3 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
         unsafe_allow_html=True,
     )
 
-
-# Compact five-choice performance selector override.
-st.markdown(
-    """
-    <style>
-    div[data-testid="stSegmentedControl"] {
-        margin:.10rem 0 .35rem!important;
-    }
-    div[data-testid="stSegmentedControl"] > div {
-        display:grid!important;
-        grid-template-columns:repeat(5,minmax(0,1fr))!important;
-        gap:3px!important;
-        width:100%!important;
-    }
-    div[data-testid="stSegmentedControl"] button {
-        min-width:0!important;
-        min-height:31px!important;
-        padding:.12rem .02rem!important;
-        font-size:.60rem!important;
-        white-space:nowrap!important;
-        background:#080909!important;
-        color:#fff!important;
-        border:1px solid #d6b35c!important;
-        border-radius:7px!important;
-    }
-    div[data-testid="stSegmentedControl"] button[aria-pressed="true"] {
-        color:#f6c84c!important;
-        border:2px solid #f6c84c!important;
-        background:#11100c!important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
