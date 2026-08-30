@@ -442,6 +442,7 @@ def render_recent_movement(changes: list[str]) -> None:
 
     for change in changes:
         st.write(change)
+@st.cache_data(ttl=180, show_spinner=False)
 def attach_results_to_rankings(
     rankings: list[dict],
     category: str,
@@ -481,6 +482,7 @@ def card_result_html(player: dict) -> str:
             Result: {result_label}
         </div>
     """
+@st.cache_data(ttl=300, show_spinner=False)
 def load_live_rankings() -> dict:
     """Load live MLB rankings, falling back only when the live refresh is empty."""
     schedule_date = datetime.now(TORONTO_TIMEZONE).date()
@@ -532,6 +534,24 @@ def load_previous_rankings() -> dict:
 
     return snapshot.get("rankings", {})
     
+@st.cache_data(ttl=300, show_spinner=False)
+def load_batter_movement_snapshot(
+    category_rankings: dict[str, list[dict]],
+) -> dict:
+    """Persist/compare movement at most once per cache window, not every click."""
+    snapshot_config = GitHubSnapshotConfig(
+        repository="sevans70-web/Sach-Sports-Dashboard",
+        token=os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN"),
+        branch="main",
+        path="data/intraday_rankings.json",
+    )
+    return load_compare_and_save(
+        config=snapshot_config,
+        category_rankings=category_rankings,
+        captured_at=get_toronto_now(),
+    )
+
+
 live_rankings = load_live_rankings()
 previous_rankings = load_previous_rankings()
 use_previous_rankings = False
@@ -612,16 +632,8 @@ MOVEMENT_SUMMARIES = {
 }
 
 try:
-    snapshot_config = GitHubSnapshotConfig(
-        repository="sevans70-web/Sach-Sports-Dashboard",
-        token=os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN"),
-        branch="main",
-        path="data/intraday_rankings.json",
-    )
-
-    movement_result = load_compare_and_save(
-        config=snapshot_config,
-        category_rankings={
+    movement_result = load_batter_movement_snapshot(
+        {
             "home_runs": HOME_RUN_RANKINGS,
             "hits": HIT_RANKINGS,
             "total_bases": TOTAL_BASE_RANKINGS,
@@ -630,8 +642,7 @@ try:
             "walks": WALK_RANKINGS,
             "stolen_bases": STOLEN_BASE_RANKINGS,
             "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
-        },
-        captured_at=get_toronto_now(),
+        }
     )
 
     has_previous_snapshot = movement_result["previous_snapshot"] is not None
@@ -1008,12 +1019,8 @@ def render_ranking_category(
         st.info(f"No {title.lower()} rankings are available right now.")
         return
 
-    live_result = grade_top_25(
-        rankings=rankings,
-        category=category_key,
-        force_refresh=True,
-    )
-    rankings = live_result.get("graded", rankings)
+    # Rankings were already graded once when the page data was prepared.
+    # Do not force another MLB results request for every tab on every click.
 
     render_recent_movement(movement_summary)
 
