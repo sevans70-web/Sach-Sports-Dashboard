@@ -1949,10 +1949,11 @@ def rank_players(
 
     complete_top_25 = len(ranked) == min(limit, 25)
 
-    has_full_team_slate = (
-        dataset.get("team_count", 0)
-        == dataset.get("game_count", 0) * 2
-    )
+    # team_count is a UNIQUE-team count. On doubleheader days the number of
+    # game-team entries can exceed 30, so comparing unique teams with
+    # game_count * 2 creates a false "incomplete" warning. The player-pool
+    # loader already tracks whether every scheduled team context loaded.
+    has_full_team_slate = bool(dataset.get("complete_slate", False))
 
     return {
         "success": bool(ranked),
