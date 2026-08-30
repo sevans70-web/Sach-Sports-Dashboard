@@ -2837,41 +2837,42 @@ st.markdown(
     """
     <style>
     div[class*="st-key-mlb_page_refresh"] button {
-      width:72px!important;
-      min-width:72px!important;
-      height:72px!important;
-      min-height:72px!important;
-      padding:0!important;
-      margin:0 0 5px auto!important;
+      width:auto!important;
+      min-width:108px!important;
+      height:40px!important;
+      min-height:40px!important;
+      padding:0 13px!important;
+      margin:0 0 6px auto!important;
       background:#090a0b!important;
       color:#d6b35c!important;
-      border:2px solid #d6b35c!important;
-      border-radius:50%!important;
-      box-shadow:0 0 0 2px rgba(214,179,92,.12)!important;
-      font-size:.66rem!important;
+      border:1.5px solid #d6b35c!important;
+      border-radius:9px!important;
+      box-shadow:0 0 0 1px rgba(214,179,92,.10)!important;
+      font-size:.74rem!important;
       font-weight:900!important;
-      letter-spacing:.035em!important;
-      line-height:1.18!important;
-      white-space:pre-line!important;
+      letter-spacing:.025em!important;
+      line-height:1!important;
+      white-space:nowrap!important;
     }
     div[class*="st-key-mlb_page_refresh"] button:hover,
     div[class*="st-key-mlb_page_refresh"] button:focus {
       background:#111312!important;
       color:#f6c84c!important;
       border-color:#f6c84c!important;
-      box-shadow:0 0 0 3px rgba(25,217,120,.12)!important;
+      box-shadow:0 0 0 2px rgba(214,179,92,.14)!important;
     }
     .mlb-page-refresh-time {
-      color:#8f949c;
-      font-size:.62rem;
       text-align:right;
+      color:#aeb1b7;
+      font-size:.76rem;
+      font-weight:600;
+      line-height:1.2;
+      margin:0 0 6px 0;
       white-space:nowrap;
-      line-height:1.1;
-      margin-top:1px;
     }
     .mlb-refresh-row-spacer { min-height:1px; }
     @media(max-width:700px){
-      div[class*="st-key-mlb_page_refresh"] { margin-top:.10rem!important; margin-bottom:0!important; }
+      div[class*="st-key-mlb_page_refresh"] { margin-top:18px!important; margin-bottom:0!important; }
     }
     </style>
     """,
@@ -2879,7 +2880,7 @@ st.markdown(
 )
 _refresh_left, _refresh_right = st.columns([6.8, 1.2], gap="small")
 with _refresh_right:
-    if st.button("⟳\nREFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
+    if st.button("⟳  REFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
         load_today_schedule.clear()
         load_today_lineups.clear()
         st.rerun()
