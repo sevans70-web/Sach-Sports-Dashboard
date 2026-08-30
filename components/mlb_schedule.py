@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from html import escape
 from typing import Any
-from zoneinfo import ZoneInfo
 
 import streamlit as st
 
@@ -13,7 +11,6 @@ from data.mlb_live import get_team_logo_url, get_today_mlb_schedule
 from data.mlb_lineups import get_mlb_lineups
 
 
-TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
 TEAM_ABBR = {
     "Arizona Diamondbacks":"ARI","Atlanta Braves":"ATL",
@@ -225,12 +222,6 @@ def render_live_mlb_schedule(
         unsafe_allow_html=True,
     )
 
-    refresh_col, updated_spacer = st.columns([1.3, 3.7], vertical_alignment="center")
-    with refresh_col:
-        if st.button("Refresh", key="refresh_live_mlb_schedule", use_container_width=True):
-            load_today_schedule.clear()
-            load_today_lineups.clear()
-
     schedule = load_today_schedule()
     lineup_data = load_today_lineups()
     schedule["lineup_data"] = lineup_data
@@ -244,13 +235,6 @@ def render_live_mlb_schedule(
         st.caption("No MLB games are scheduled for today's Toronto date.")
         return schedule
 
-    fetched_at = schedule.get("fetched_at")
-    if fetched_at:
-        try:
-            dt = datetime.fromisoformat(str(fetched_at)).astimezone(TORONTO_TIMEZONE)
-            st.caption(f"Updated {dt.strftime('%I:%M %p ET')}")
-        except ValueError:
-            pass
 
     for game in games:
         _render_game_card(game, player_lookup)
