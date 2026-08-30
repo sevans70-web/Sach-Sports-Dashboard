@@ -3,7 +3,7 @@ from __future__ import annotations
 from math import exp
 from typing import Any
 
-from data.mlb_lineups import get_mlb_lineups
+from data.mlb_lineups import get_mlb_lineups, get_previous_day_lineup_projection
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 
 
@@ -47,15 +47,22 @@ def _probability_from_projection(
 def _opponent_lineup_for_pitcher(
     pitcher: dict[str, Any],
     games_by_pk: dict[int, dict[str, Any]],
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], str]:
+    """Return opponent lineup plus context status."""
     game_pk = _safe_int(pitcher.get("game_pk"))
     game = games_by_pk.get(game_pk, {})
     if not game:
-        return []
+        return [], "unavailable"
 
-    if pitcher.get("is_home") is True:
-        return list(game.get("away_lineup") or [])
-    return list(game.get("home_lineup") or [])
+    side = "away" if pitcher.get("is_home") is True else "home"
+    lineup = list(game.get(f"{side}_lineup") or [])
+    if len(lineup) < 9:
+        return lineup, "unavailable"
+    if bool(game.get(f"{side}_lineup_confirmed")):
+        return lineup, "confirmed"
+    if bool(game.get(f"{side}_lineup_projected")):
+        return lineup, "projected"
+    return lineup, "projected"
 
 
 def _lineup_handedness_weights(
@@ -165,11 +172,13 @@ def _build_pitcher_row(
     pitcher_id = _safe_int(pitcher.get("pitcher_id"))
     pitcher_hand = str(pitcher.get("pitcher_hand") or "")
 
-    lineup = _opponent_lineup_for_pitcher(pitcher, games_by_pk)
-    left_weight, right_weight, confirmed_context = _lineup_handedness_weights(
+    lineup, lineup_context_status = _opponent_lineup_for_pitcher(pitcher, games_by_pk)
+    left_weight, right_weight, usable_lineup_context = _lineup_handedness_weights(
         pitcher_hand,
         lineup,
     )
+    confirmed_context = lineup_context_status == "confirmed" and usable_lineup_context
+    projected_context = lineup_context_status == "projected" and usable_lineup_context
 
     avg_outs, avg_innings = _starter_workload(stats)
 
@@ -179,7 +188,7 @@ def _build_pitcher_row(
         "strikeouts_per_nine",
         left_weight,
         right_weight,
-        confirmed_context,
+        usable_lineup_context,
     )
     h9 = _weighted_split_rate(
         _safe_float(stats.get("hits_per_nine")),
@@ -187,7 +196,7 @@ def _build_pitcher_row(
         "hits_per_nine",
         left_weight,
         right_weight,
-        confirmed_context,
+        usable_lineup_context,
     )
     bb9 = _weighted_split_rate(
         _safe_float(stats.get("walks_per_nine")),
@@ -195,7 +204,7 @@ def _build_pitcher_row(
         "walks_per_nine",
         left_weight,
         right_weight,
-        confirmed_context,
+        usable_lineup_context,
     )
     era = _weighted_split_rate(
         _safe_float(stats.get("era")),
@@ -203,7 +212,7 @@ def _build_pitcher_row(
         "era",
         left_weight,
         right_weight,
-        confirmed_context,
+        usable_lineup_context,
     )
 
     projected_strikeouts = (k9 * avg_innings) / 9.0
@@ -257,12 +266,18 @@ def _build_pitcher_row(
         for category in PITCHER_CATEGORIES
     }
 
-    context_text = (
-        f"Confirmed opponent lineup: {left_weight * 100:.0f}% LHB / "
-        f"{right_weight * 100:.0f}% RHB."
-        if confirmed_context
-        else "Opponent lineup not fully confirmed; season rates carry more weight."
-    )
+    if confirmed_context:
+        context_text = (
+            f"Confirmed opponent lineup: {left_weight * 100:.0f}% LHB / "
+            f"{right_weight * 100:.0f}% RHB."
+        )
+    elif projected_context:
+        context_text = (
+            f"Projected opponent lineup: {left_weight * 100:.0f}% LHB / "
+            f"{right_weight * 100:.0f}% RHB; matchup splits are included."
+        )
+    else:
+        context_text = "Opponent lineup is unavailable; season rates carry more weight."
 
     base = {
         "pitcher_id": pitcher_id,
@@ -278,6 +293,9 @@ def _build_pitcher_row(
         "pitcher_hand": pitcher_hand,
         "season_stats": stats,
         "lineup_context_confirmed": confirmed_context,
+        "lineup_context_projected": projected_context,
+        "lineup_context_available": usable_lineup_context,
+        "lineup_context_status": lineup_context_status,
         "reliability": reliability,
         "projected_strikeouts": projections["strikeouts"],
         "projected_outs_recorded": projections["outs_recorded"],
@@ -328,6 +346,40 @@ def _reason_for(category: str, row: dict[str, Any]) -> str:
 
 def get_pitcher_rankings(limit: int = 25) -> dict[str, Any]:
     lineups = get_mlb_lineups()
+
+    projection = get_previous_day_lineup_projection(
+        current_lineup_data=lineups,
+    )
+    projected_rows = projection.get("projected_hitters", []) if projection.get("success") else []
+
+    by_game_team: dict[tuple[int, int], list[dict[str, Any]]] = {}
+    for player in projected_rows:
+        game_pk = _safe_int(player.get("game_pk"))
+        team_id = _safe_int(player.get("team_id"))
+        if game_pk and team_id:
+            by_game_team.setdefault((game_pk, team_id), []).append(player)
+
+    for game in lineups.get("games", []):
+        game_pk = _safe_int(game.get("game_pk"))
+        for side in ("away", "home"):
+            if bool(game.get(f"{side}_lineup_confirmed")):
+                game[f"{side}_lineup_projected"] = False
+                continue
+
+            team_id = _safe_int(game.get(f"{side}_team_id"))
+            projected = by_game_team.get((game_pk, team_id), [])
+            if projected:
+                game[f"{side}_lineup"] = sorted(
+                    projected,
+                    key=lambda row: _safe_int(
+                        row.get("batting_order") or row.get("projected_batting_order"),
+                        99,
+                    ),
+                )[:9]
+                game[f"{side}_lineup_projected"] = True
+            else:
+                game[f"{side}_lineup_projected"] = False
+
     pitcher_data = get_today_probable_pitchers_with_stats(lineup_data=lineups)
 
     games_by_pk = {
