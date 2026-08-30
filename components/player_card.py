@@ -418,6 +418,10 @@ def render_player_card(player_data: dict) -> None:
             "</div>",
             unsafe_allow_html=True,
         )
+        st.markdown(
+            "<div class='gi-expander-bottom-space'></div>",
+            unsafe_allow_html=True,
+        )
 
     with st.expander("Statcast Contact Quality", expanded=False):
         if statcast:
@@ -437,6 +441,10 @@ def render_player_card(player_data: dict) -> None:
                 "<div class='gi-statcast-grid'>"
                 + "".join(_metric(label, value) for label, value in values)
                 + "</div>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                "<div class='gi-expander-bottom-space'></div>",
                 unsafe_allow_html=True,
             )
         else:
@@ -464,6 +472,7 @@ st.markdown(
     """
     <style>
     .gi-intel-summary-grid,.gi-evidence-grid,.gi-statcast-grid{margin:1px 0 3px!important;gap:5px!important}
+    .gi-expander-bottom-space{display:block!important;height:12px!important;min-height:12px!important;width:100%!important}
     div.gi-statcast-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
     div[data-testid="stExpander"]{margin:.18rem 0!important}
     div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
