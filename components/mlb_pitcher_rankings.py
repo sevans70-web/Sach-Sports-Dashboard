@@ -33,7 +33,16 @@ def _render_html(html: str) -> None:
 
 
 def _token() -> str | None:
-    return os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
+    token = os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if token:
+        return token
+    try:
+        return (
+            st.secrets.get("SACH_GITHUB_TOKEN")
+            or st.secrets.get("GITHUB_TOKEN")
+        )
+    except Exception:
+        return None
 
 
 def _normalized_rankings(rankings: dict[str, list[dict]]) -> dict[str, list[dict]]:
@@ -53,48 +62,90 @@ def _normalized_rankings(rankings: dict[str, list[dict]]) -> dict[str, list[dict
 
 
 def _attach_persistent_movement(rankings: dict[str, list[dict]]) -> dict[str, list[dict]]:
-    """Use GitHub-backed snapshots so movement survives refreshes/restarts."""
+    """Use durable snapshots plus live-session movement so pitcher changes stay visible."""
+    session_previous = st.session_state.get("mlb_pitcher_previous_rankings", {})
+
     token = _token()
-    if not token:
-        return _attach_session_fallback(rankings)
+    if token:
+        try:
+            result = load_compare_and_save(
+                config=GitHubSnapshotConfig(
+                    repository="sevans70-web/Sach-Sports-Dashboard",
+                    token=token,
+                    branch="main",
+                    path="data/intraday_pitcher_rankings.json",
+                ),
+                category_rankings=_normalized_rankings(rankings),
+                captured_at=datetime.now(TORONTO_TIMEZONE),
+            )
 
-    try:
-        result = load_compare_and_save(
-            config=GitHubSnapshotConfig(
-                repository="sevans70-web/Sach-Sports-Dashboard",
-                token=token,
-                branch="main",
-                path="data/intraday_pitcher_rankings.json",
-            ),
-            category_rankings=_normalized_rankings(rankings),
-            captured_at=datetime.now(TORONTO_TIMEZONE),
-        )
+            comparisons = result.get("comparisons", {})
+            has_previous = result.get("previous_snapshot") is not None
 
-        comparisons = result.get("comparisons", {})
-        has_previous = result.get("previous_snapshot") is not None
-
-        for category, rows in rankings.items():
-            lookup = {
-                str(item.get("player_key")): item.get("movement", {})
-                for item in comparisons.get(category, {}).get("current", [])
-            }
-            for row in rows:
-                key = str(row.get("pitcher_id") or str(row.get("pitcher_name") or "").casefold())
-                row["movement"] = lookup.get(
-                    key,
-                    {
-                        "status": "unchanged",
-                        "previous": row.get("rank"),
-                        "current": row.get("rank"),
-                    },
-                ) if has_previous else {
-                    "status": "unchanged",
-                    "previous": row.get("rank"),
-                    "current": row.get("rank"),
+            for category, rows in rankings.items():
+                lookup = {
+                    str(item.get("player_key")): item.get("movement", {})
+                    for item in comparisons.get(category, {}).get("current", [])
                 }
-        return rankings
-    except (ValueError, KeyError, RankingSnapshotError):
-        return _attach_session_fallback(rankings)
+                old_positions = {
+                    int(r.get("pitcher_id") or 0): int(r.get("rank") or i + 1)
+                    for i, r in enumerate(session_previous.get(category, []))
+                    if r.get("pitcher_id")
+                }
+
+                for i, row in enumerate(rows):
+                    pid = int(row.get("pitcher_id") or 0)
+                    current = int(row.get("rank") or i + 1)
+                    key = str(pid or str(row.get("pitcher_name") or "").casefold())
+
+                    movement = lookup.get(
+                        key,
+                        {
+                            "status": "unchanged",
+                            "previous": current,
+                            "current": current,
+                        },
+                    ) if has_previous else {
+                        "status": "unchanged",
+                        "previous": current,
+                        "current": current,
+                    }
+
+                    # Live-session safety net: never let a stale durable snapshot
+                    # suppress movement we can prove happened in this session.
+                    if str(movement.get("status") or "").lower() == "unchanged":
+                        old = old_positions.get(pid)
+                        if old is None and session_previous:
+                            movement = {
+                                "status": "new",
+                                "previous": None,
+                                "current": current,
+                            }
+                        elif old is not None and current < old:
+                            movement = {
+                                "status": "up",
+                                "previous": old,
+                                "current": current,
+                            }
+                        elif old is not None and current > old:
+                            movement = {
+                                "status": "down",
+                                "previous": old,
+                                "current": current,
+                            }
+
+                    row["movement"] = movement
+
+            st.session_state["mlb_pitcher_previous_rankings"] = {
+                cat: [dict(row) for row in rows]
+                for cat, rows in rankings.items()
+            }
+            return rankings
+
+        except (ValueError, KeyError, RankingSnapshotError):
+            pass
+
+    return _attach_session_fallback(rankings)
 
 
 def _attach_session_fallback(rankings: dict[str, list[dict]]) -> dict[str, list[dict]]:
@@ -215,10 +266,10 @@ def _render_pitcher_card(category: str, row: dict) -> None:
     confirmed = bool(row.get("lineup_context_confirmed"))
     projected = bool(row.get("lineup_context_projected"))
     if confirmed:
-        lineup = "✓ Confirmed opponent lineup"
+        lineup = "✓ Confirmed lineup"
         lineup_class = "pitch-lineup-confirmed"
     elif projected:
-        lineup = "○ Projected opponent lineup"
+        lineup = "○ Projected lineup"
         lineup_class = "pitch-lineup-projected"
     else:
         lineup = "○ Opponent lineup unavailable"
@@ -402,3 +453,71 @@ def render_pitcher_rankings() -> None:
     for tab, category in zip(tabs, CATEGORY_CONFIG):
         with tab:
             _render_category(category, rankings.get(category, []))
+
+
+st.markdown(
+    """
+    <style>
+    /* LOCKED COMPACT PITCHER CARD REDESIGN */
+    div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlock"]{
+        gap:.12rem!important;
+    }
+
+    .pitcher-card-main{
+        grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+        gap:6px!important;
+        align-items:start!important;
+        padding:4px 1px 2px!important;
+    }
+
+    .pitcher-rank{padding-top:5px!important}
+    .pitcher-rank strong{font-size:.92rem!important}
+    .pitcher-rank small{
+        margin-top:5px!important;
+        font-size:.54rem!important;
+        line-height:1!important;
+    }
+
+    .pitcher-photo{
+        width:48px!important;height:48px!important;
+        min-width:48px!important;min-height:48px!important;
+        max-width:48px!important;max-height:48px!important;
+    }
+    .pitcher-headshot{
+        object-fit:cover!important;
+        object-position:center 8%!important;
+        transform:scale(.92)!important;
+        transform-origin:center 38%!important;
+    }
+
+    .pitcher-copy{gap:1px!important;align-self:start!important}
+    .pitcher-copy>strong{font-size:.88rem!important;line-height:1.08!important}
+    .pitcher-copy>span{font-size:.65rem!important;line-height:1.14!important}
+    .pitcher-reason{
+        -webkit-line-clamp:2!important;
+        margin-top:1px!important;
+    }
+    .pitcher-copy em{
+        margin:3px 0 2px!important;
+        padding:3px 6px!important;
+        font-size:.55rem!important;
+        line-height:1!important;
+    }
+
+    .pitcher-score{
+        align-self:start!important;
+        padding-top:5px!important;
+    }
+    .pitcher-score small{font-size:.49rem!important}
+    .pitcher-score strong{font-size:.88rem!important}
+
+    div[class*="st-key-pitcher_intelligence_"] button{
+        min-height:34px!important;
+        padding:.15rem .55rem!important;
+        margin-top:3px!important;
+        font-size:.72rem!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)

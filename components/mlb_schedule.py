@@ -94,7 +94,7 @@ def _team_intel(player: dict[str, Any] | None) -> str:
     rank = player.get("rank")
     score = float(player.get("score", player.get("gi_score", 0)) or 0)
     rank_text = f"#{rank}" if rank else "GI"
-    return f"{escape(name)} · {rank_text} · {score:.1f}"
+    return f"Lineup GI {rank_text} · {escape(name)} · {score:.1f}"
 
 
 def _render_game_card(
