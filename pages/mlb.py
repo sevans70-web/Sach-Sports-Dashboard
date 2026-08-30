@@ -58,6 +58,20 @@ from Utils.intraday_rankings import (
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
 
+def _github_token() -> str | None:
+    """Return movement snapshot token from env or Streamlit secrets."""
+    token = os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if token:
+        return token
+    try:
+        return (
+            st.secrets.get("SACH_GITHUB_TOKEN")
+            or st.secrets.get("GITHUB_TOKEN")
+        )
+    except Exception:
+        return None
+
+
 def get_toronto_now() -> datetime:
     """Return the current date and time in Toronto."""
     return datetime.now(TORONTO_TIMEZONE)
@@ -203,6 +217,11 @@ def convert_live_rankings(
                 "player_id": player.get("player_id"),
                 "game_pk": player.get("game_pk"),
                 "weather": player.get("weather", {}),
+                "park_factor": player.get("park_factor", 1.0),
+                "park_adjustment": player.get("park_adjustment", 0.0),
+                "pitcher_adjustment": player.get("pitcher_adjustment", 0.0),
+                "handedness_adjustment": player.get("handedness_adjustment", 0.0),
+                "statcast": player.get("statcast", {}),
                 "position": player.get(
                     "position_abbreviation",
                     "",
@@ -402,9 +421,14 @@ def lineup_status_html(player: dict) -> str:
             if isinstance(batting_order, int)
             else ""
         )
+        compact_order = (
+            f" · #{int(batting_order)}"
+            if isinstance(batting_order, int)
+            else ""
+        )
         return (
             '<span class="gi-lineup-status gi-lineup-confirmed">'
-            f'✓ Confirmed lineup{escape(order_text)}'
+            f'✓ Confirmed{escape(compact_order)}'
             '</span>'
         )
 
@@ -415,9 +439,14 @@ def lineup_status_html(player: dict) -> str:
             if isinstance(batting_order, int)
             else ""
         )
+        compact_order = (
+            f" · #{int(batting_order)}"
+            if isinstance(batting_order, int)
+            else ""
+        )
         return (
             '<span class="gi-lineup-status gi-lineup-projected">'
-            f'◌ Projected lineup{escape(order_text)}'
+            f'◌ Projected{escape(compact_order)}'
             '</span>'
         )
 
@@ -429,13 +458,22 @@ def lineup_status_html(player: dict) -> str:
 
 
 def movement_label(player: dict) -> str:
-    """Return the short movement label shown beside a player's rank."""
+    """Return NEW / ↑ old→new / ↓ old→new beside every batter rank."""
     movement = player.get("movement", {})
-
     if not isinstance(movement, dict):
         return "—"
 
-    return str(movement.get("label") or "—")
+    status = str(movement.get("status") or "").lower()
+    previous = movement.get("previous")
+    current = movement.get("current")
+
+    if status == "new":
+        return "NEW"
+    if status == "up" and previous and current:
+        return f"↑ {previous}→{current}"
+    if status == "down" and previous and current:
+        return f"↓ {previous}→{current}"
+    return "—"
 
 
 def render_recent_movement(changes: list[str]) -> None:
@@ -558,7 +596,7 @@ def load_batter_movement_snapshot(
     """Persist/compare movement at most once per cache window, not every click."""
     snapshot_config = GitHubSnapshotConfig(
         repository="sevans70-web/Sach-Sports-Dashboard",
-        token=os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN"),
+        token=_github_token(),
         branch="main",
         path="data/intraday_rankings.json",
     )
@@ -730,23 +768,119 @@ except (KeyError, ValueError, RankingSnapshotError):
                 player_key(player): index + 1
                 for index, player in enumerate(previous)
             }
-            comparison = {}
+
+            comparison_rows = []
             for index, player in enumerate(rankings):
                 key = player_key(player)
                 new_rank = index + 1
                 old_rank = previous_positions.get(key)
-                comparison[key] = {
-                    "movement": (old_rank - new_rank) if old_rank else None,
-                    "is_new": old_rank is None,
-                    "previous_rank": old_rank,
-                    "current_rank": new_rank,
-                }
-            attach_persistent_movement(rankings, comparison, True)
+
+                if old_rank is None:
+                    movement = {
+                        "status": "new",
+                        "previous": None,
+                        "current": new_rank,
+                        "change": None,
+                        "label": "NEW",
+                    }
+                elif new_rank < old_rank:
+                    movement = {
+                        "status": "up",
+                        "previous": old_rank,
+                        "current": new_rank,
+                        "change": old_rank - new_rank,
+                        "label": f"↑ {old_rank}→{new_rank}",
+                    }
+                elif new_rank > old_rank:
+                    movement = {
+                        "status": "down",
+                        "previous": old_rank,
+                        "current": new_rank,
+                        "change": old_rank - new_rank,
+                        "label": f"↓ {old_rank}→{new_rank}",
+                    }
+                else:
+                    movement = {
+                        "status": "unchanged",
+                        "previous": old_rank,
+                        "current": new_rank,
+                        "change": 0,
+                        "label": "—",
+                    }
+
+                comparison_rows.append({
+                    "player_key": key,
+                    "movement": movement,
+                })
+
+            attach_persistent_movement(
+                rankings,
+                {"current": comparison_rows},
+                True,
+            )
 
     st.session_state["mlb_previous_rankings_by_category"] = {
         category_key: [dict(player) for player in rankings]
         for category_key, rankings in current_rankings_by_category.items()
     }
+
+
+# Persistent snapshots survive refresh/app restarts; this session overlay catches
+# any rank movement that occurs before the next durable snapshot comparison.
+_current_batter_rankings = {
+    "home_runs": HOME_RUN_RANKINGS,
+    "hits": HIT_RANKINGS,
+    "total_bases": TOTAL_BASE_RANKINGS,
+    "runs": RUN_RANKINGS,
+    "rbis": RBI_RANKINGS,
+    "walks": WALK_RANKINGS,
+    "stolen_bases": STOLEN_BASE_RANKINGS,
+    "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
+}
+_previous_batter_rankings = st.session_state.get("mlb_live_movement_baseline", {})
+
+if _previous_batter_rankings:
+    for _category, _rows in _current_batter_rankings.items():
+        _old_positions = {
+            player_key(_row): int(_row.get("rank") or _i + 1)
+            for _i, _row in enumerate(_previous_batter_rankings.get(_category, []))
+        }
+
+        for _i, _row in enumerate(_rows):
+            _current = int(_row.get("rank") or _i + 1)
+            _old = _old_positions.get(player_key(_row))
+            _existing = _row.get("movement", {}) or {}
+            _existing_status = str(_existing.get("status") or "").lower()
+
+            if _existing_status in {"new", "up", "down"}:
+                continue
+
+            if _old is None:
+                _row["movement"] = {
+                    "status": "new",
+                    "previous": None,
+                    "current": _current,
+                    "label": "NEW",
+                }
+            elif _current < _old:
+                _row["movement"] = {
+                    "status": "up",
+                    "previous": _old,
+                    "current": _current,
+                    "label": f"↑ {_old}→{_current}",
+                }
+            elif _current > _old:
+                _row["movement"] = {
+                    "status": "down",
+                    "previous": _old,
+                    "current": _current,
+                    "label": f"↓ {_old}→{_current}",
+                }
+
+st.session_state["mlb_live_movement_baseline"] = {
+    _category: [dict(_row) for _row in _rows]
+    for _category, _rows in _current_batter_rankings.items()
+}
 
 
 # ============================================================
@@ -834,10 +968,15 @@ def projection_display(player: dict) -> tuple[str, str]:
     return "Projection", "Unavailable"
 
 def category_card_reason(player: dict) -> str:
-    """Return a concise, player-specific reason for each collapsed Top-25 card."""
+    """Return one concise, evidence-driven reason unique to this player's rank."""
     category = str(player.get("category") or "").strip().lower()
     pitcher = str(player.get("opposing_probable_pitcher") or "").strip()
     pitcher_text = pitcher if pitcher and pitcher != "Not announced" else "the opposing starter"
+
+    season = player.get("season_stats", {}) or {}
+    recent = player.get("recent_stats", {}) or {}
+    statcast = player.get("statcast", {}) or {}
+    weather = player.get("weather", {}) or {}
 
     order = player.get("batting_order") or player.get("projected_batting_order")
     try:
@@ -853,39 +992,101 @@ def category_card_reason(player: dict) -> str:
     walk = float(player.get("one_plus_walk_probability", 0.0) or 0.0)
     sb = float(player.get("one_plus_stolen_base_probability", 0.0) or 0.0)
 
-    lineup_text = f" from the #{order_num} spot" if order_num else ""
+    season_hr = int(season.get("home_runs") or 0)
+    recent_hr = int(recent.get("home_runs") or 0)
+    season_slg = float(season.get("slg") or 0.0)
+    barrel = float(statcast.get("barrel_rate") or 0.0)
+    hard_hit = float(statcast.get("hard_hit_rate") or 0.0)
+    xslg = float(statcast.get("xslg") or 0.0)
+    pitcher_adj = float(player.get("pitcher_adjustment") or 0.0)
+    platoon_adj = float(player.get("platoon_adjustment") or 0.0)
+    park_adj = float(player.get("park_adjustment") or 0.0)
 
     if category in {"home run", "home runs"}:
-        if hr >= 25:
-            return f"{hr:.0f}% HR probability is elite on this slate{lineup_text}; the matchup vs. {pitcher_text} keeps the power ceiling high."
-        if tb >= 60:
-            return f"{hr:.0f}% HR probability pairs with {tb:.0f}% over-1.5-TB upside{lineup_text} vs. {pitcher_text}."
+        candidates: list[tuple[float, str]] = []
+
+        if season_hr:
+            candidates.append((
+                min(season_hr / 4.0, 10.0),
+                f"{season_hr} season HR and {season_slg:.3f} SLG give this ranking proven power"
+            ))
+        if barrel:
+            candidates.append((
+                barrel / 1.5,
+                f"{barrel:.1f}% barrel rate and {xslg:.3f} xSLG provide elite contact-quality support"
+            ))
+        if recent_hr:
+            candidates.append((
+                5.5 + recent_hr,
+                f"{recent_hr} recent HR show the power is arriving into today's matchup"
+            ))
+        if pitcher_adj >= 1.5:
+            candidates.append((
+                7.0 + pitcher_adj,
+                f"{pitcher_text} materially improves the HR matchup"
+            ))
+        if platoon_adj >= 1.0:
+            candidates.append((
+                6.5 + platoon_adj,
+                f"the handedness matchup vs. {pitcher_text} is a meaningful advantage"
+            ))
+        if park_adj >= 0.8:
+            candidates.append((
+                6.0 + park_adj,
+                "today's park environment adds measurable home-run upside"
+            ))
         if order_num and order_num <= 3:
-            return f"{hr:.0f}% HR probability plus a top-{order_num} lineup spot gives extra plate-appearance value vs. {pitcher_text}."
-        return f"{hr:.0f}% HR probability is the key driver here, with the matchup vs. {pitcher_text} supporting the ranking."
+            candidates.append((
+                5.0,
+                f"batting #{order_num} adds expected plate appearances"
+            ))
+        if hr >= 23:
+            candidates.append((
+                5.5,
+                f"{hr:.0f}% HR probability is among the strongest raw chances on the slate"
+            ))
+        if tb >= 64:
+            candidates.append((
+                5.0,
+                f"{tb:.0f}% over-1.5-TB probability confirms extra-base damage upside"
+            ))
+
+        candidates.sort(key=lambda item: item[0], reverse=True)
+        chosen = [text for _, text in candidates[:2]]
+        if chosen:
+            return "; ".join(chosen) + "."
+        return f"{hr:.0f}% HR probability is supported by the matchup vs. {pitcher_text}."
 
     if category in {"hit", "hits"}:
-        return f"{hit:.0f}% chance for 1+ hit{lineup_text}; contact probability is the main edge vs. {pitcher_text}."
+        recent_avg = float(recent.get("avg") or 0.0)
+        if recent_avg >= .300:
+            return f"{hit:.0f}% for 1+ hit with a {recent_avg:.3f} recent AVG; current contact form is the separator."
+        if pitcher_adj >= 1.5:
+            return f"{hit:.0f}% for 1+ hit; {pitcher_text}'s profile is the strongest matchup edge."
+        return f"{hit:.0f}% for 1+ hit with batting #{order_num or '—'} supplying the opportunity volume."
 
     if category in {"total base", "total bases"}:
-        return f"{tb:.0f}% chance to clear 1.5 total bases{lineup_text}, with {hr:.0f}% HR upside adding extra-base ceiling vs. {pitcher_text}."
+        if xslg >= .475:
+            return f"{tb:.0f}% over 1.5 TB with a {xslg:.3f} xSLG; quality of contact drives the ceiling."
+        return f"{tb:.0f}% over 1.5 TB; {hr:.0f}% HR probability adds a second path to clearing the line."
 
     if category == "runs":
-        return f"{run:.0f}% chance to score{lineup_text}; lineup opportunity and on-base paths are the primary drivers."
+        return f"{run:.0f}% to score; batting #{order_num or '—'} and on-base opportunity are the main ranking drivers."
 
     if category in {"rbi", "rbis"}:
-        return f"{rbi:.0f}% chance for 1+ RBI{lineup_text}; run-producing opportunity is strongest in this matchup vs. {pitcher_text}."
+        return f"{rbi:.0f}% for 1+ RBI; batting #{order_num or '—'} and the matchup vs. {pitcher_text} shape the run-producing opportunity."
 
     if category == "walks":
-        return f"{walk:.0f}% chance for 1+ walk{lineup_text}; plate-discipline probability is the main edge vs. {pitcher_text}."
+        return f"{walk:.0f}% for 1+ walk; plate-discipline opportunity against {pitcher_text} is the core edge."
 
     if "stolen" in category:
-        return f"{sb:.0f}% chance for 1+ stolen base{lineup_text}; speed and on-base opportunity drive this ranking."
+        return f"{sb:.0f}% for 1+ stolen base; on-base access plus speed creates the attempt opportunity."
 
     if "hits + runs + rbis" in category or "hits runs rbis" in category:
-        return f"{hit:.0f}% 1+ hit, {run:.0f}% run and {rbi:.0f}% RBI probabilities create multiple scoring paths{lineup_text}."
+        return f"{hit:.0f}% hit, {run:.0f}% run and {rbi:.0f}% RBI chances give this player multiple paths to production."
 
-    return str(player.get("reason") or "Live statistical profile is being evaluated.")
+    reasons = player.get("why", []) or []
+    return str(reasons[0] if reasons else player.get("reason") or "Live statistical profile is being evaluated.")
 
 
 def opposing_pitcher_line(player: dict) -> str:
@@ -3324,3 +3525,127 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+st.markdown(
+    """
+    <style>
+    /* LOCKED COMPACT TOP-25 CARD REDESIGN */
+    [class*="st-key-show_"][class*="_player_"],
+    [class*="st-key-show_"][class*="_top5_player_"]{
+        padding:2px 8px 7px!important;
+        margin-bottom:8px!important;
+    }
+
+    .gi-card-header{
+        grid-template-columns:38px 54px minmax(0,1fr) 54px!important;
+        gap:7px!important;
+        align-items:start!important;
+        padding:5px 1px 2px!important;
+    }
+
+    .gi-card-rank{
+        padding-top:5px!important;
+        font-size:.92rem!important;
+        line-height:1!important;
+    }
+
+    .gi-card-rank small{
+        margin-top:5px!important;
+        font-size:.55rem!important;
+        line-height:1!important;
+    }
+
+    .gi-native-photo,.gi-native-initials{
+        width:52px!important;
+        height:52px!important;
+        min-width:52px!important;
+        min-height:52px!important;
+        border-radius:50%!important;
+        border:2px solid rgba(214,179,92,.86)!important;
+        overflow:hidden!important;
+        background:#080909!important;
+    }
+
+    .gi-native-photo img{
+        width:100%!important;
+        height:100%!important;
+        object-fit:cover!important;
+        object-position:center 24%!important;
+        border-radius:50%!important;
+    }
+
+    .gi-card-player{
+        gap:1px!important;
+        align-self:start!important;
+    }
+    .gi-card-player>strong{
+        font-size:.92rem!important;
+        line-height:1.08!important;
+        margin-bottom:1px!important;
+    }
+    .gi-card-player>span{
+        font-size:.69rem!important;
+        line-height:1.18!important;
+    }
+    .gi-card-matchup{
+        white-space:nowrap!important;
+        overflow:hidden!important;
+        text-overflow:ellipsis!important;
+    }
+    .gi-card-reason{
+        display:-webkit-box!important;
+        -webkit-line-clamp:2!important;
+        -webkit-box-orient:vertical!important;
+        overflow:hidden!important;
+        margin-top:2px!important;
+        color:#e5e7eb!important;
+    }
+
+    .gi-card-score{
+        align-self:start!important;
+        padding-top:5px!important;
+    }
+    .gi-card-score small{font-size:.50rem!important}
+    .gi-card-score strong{font-size:.88rem!important;margin-top:2px!important}
+
+    .gi-lineup-status{
+        display:inline-block!important;
+        width:auto!important;
+        margin:3px 0 2px!important;
+        padding:3px 7px!important;
+        border-radius:999px!important;
+        font-size:.58rem!important;
+        line-height:1.08!important;
+        white-space:nowrap!important;
+    }
+
+    [class*="st-key-show_"][class*="_player_"] .stButton,
+    [class*="st-key-show_"][class*="_top5_player_"] .stButton{
+        margin-top:3px!important;
+    }
+    [class*="st-key-show_"][class*="_player_"] .stButton>button,
+    [class*="st-key-show_"][class*="_top5_player_"] .stButton>button{
+        min-height:34px!important;
+        padding:.15rem .55rem!important;
+        font-size:.72rem!important;
+        border-radius:9px!important;
+    }
+
+    @media(max-width:700px){
+        .gi-card-header{
+            grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+            gap:6px!important;
+        }
+        .gi-native-photo,.gi-native-initials{
+            width:48px!important;height:48px!important;
+            min-width:48px!important;min-height:48px!important;
+        }
+        .gi-card-player>strong{font-size:.88rem!important}
+        .gi-card-player>span{font-size:.66rem!important}
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
