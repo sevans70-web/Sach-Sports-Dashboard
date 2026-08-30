@@ -69,6 +69,15 @@ st.markdown(
         padding-top: .55rem !important;
     }
 
+    /* Community Cloud can keep a host-level owner strip visible.
+       On phones, reserve only enough room for our custom Sport Hub row
+       so it cannot be covered by that host chrome. */
+    @media (max-width: 700px) {
+        .block-container {
+            padding-top: 3.15rem !important;
+        }
+    }
+
     .ssd-shell {
         display: flex;
         align-items: center;
