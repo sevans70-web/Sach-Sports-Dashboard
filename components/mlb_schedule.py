@@ -65,11 +65,12 @@ def _status_label(game: dict[str, Any]) -> str:
 
 
 def _score_or_record(game: dict[str, Any], side: str) -> str:
+    """Show only an actual live/final game score; never a pregame season record."""
     status_group = str(game.get("status_group") or "").lower()
     if status_group in {"live", "final"}:
         score = game.get(f"{side}_score")
         return "—" if score is None else str(score)
-    return escape(str(game.get(f"{side}_record") or ""))
+    return ""
 
 
 def _top_ranked_for_team(
