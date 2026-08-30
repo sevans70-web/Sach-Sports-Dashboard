@@ -223,9 +223,6 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
             with tab:
                 _render_batter_market(batter_history, category, period)
 
-        days = len(batter_history.get("days",{}))
-        st.caption(f"Tracking history: {days} slate{'s' if days!=1 else ''}.")
-
     with pitcher_tab:
         st.markdown("#### 🌐 Overall MLB Pitcher Performance")
         period = _period_control("mlb_pitcher_performance_period")
@@ -242,8 +239,6 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
             for tab, category in zip(tabs, PITCHER_CATEGORY_CONFIG):
                 with tab:
                     _render_pitcher_market(history, category, period)
-            days = len(history.get("days",{}))
-            st.caption(f"Pitcher tracking history: {days} slate{'s' if days!=1 else ''}.")
         except Exception:
             st.caption("Pitcher performance history is temporarily unavailable.")
 

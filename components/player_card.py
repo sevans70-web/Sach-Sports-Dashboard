@@ -317,7 +317,7 @@ def render_player_card(player_data: dict) -> None:
 
         /* Keep inner evidence/statcast cards visibly separated from the outer expander border. */
         div[data-testid="stExpander"] [data-testid="stExpanderDetails"] {
-            padding:8px 14px 14px!important;
+            padding:8px 14px 18px!important;
         }
 
         div[data-testid="stExpander"] [data-testid="stExpanderDetails"] > div {

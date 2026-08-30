@@ -91,7 +91,7 @@ def _top_ranked_for_team(
 
 def _team_intel(player: dict[str, Any] | None) -> str:
     if not player:
-        return "Top GI player available on game page"
+        return ""
     name = str(player.get("player") or player.get("player_name") or "Player")
     rank = player.get("rank")
     score = float(player.get("score", player.get("gi_score", 0)) or 0)
@@ -126,7 +126,7 @@ def _render_game_card(
             <div class="mlb-slate-team-main">
               <strong>{escape(away)}</strong>
               <span>{escape(str(game.get("away_probable_pitcher") or "Pitcher TBA"))}</span>
-              <small>{_team_intel(away_top)}</small>
+              {f"<small>{_team_intel(away_top)}</small>" if away_top else ""}
             </div>
             <b>{_score_or_record(game, "away")}</b>
           </div>
@@ -136,7 +136,7 @@ def _render_game_card(
             <div class="mlb-slate-team-main">
               <strong>{escape(home)}</strong>
               <span>{escape(str(game.get("home_probable_pitcher") or "Pitcher TBA"))}</span>
-              <small>{_team_intel(home_top)}</small>
+              {f"<small>{_team_intel(home_top)}</small>" if home_top else ""}
             </div>
             <b>{_score_or_record(game, "home")}</b>
           </div>
@@ -225,9 +225,7 @@ def render_live_mlb_schedule(
         unsafe_allow_html=True,
     )
 
-    title_col, refresh_col = st.columns([4, 1.2], vertical_alignment="center")
-    with title_col:
-        st.subheader("Today's MLB Games")
+    refresh_col, updated_spacer = st.columns([1.3, 3.7], vertical_alignment="center")
     with refresh_col:
         if st.button("Refresh", key="refresh_live_mlb_schedule", use_container_width=True):
             load_today_schedule.clear()
