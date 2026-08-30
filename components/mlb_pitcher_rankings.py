@@ -200,8 +200,6 @@ def _render_pitcher_intelligence(category: str, row: dict) -> None:
         st.write(f"• {reason}")
         if row.get("lineup_context_confirmed"):
             st.write("• Confirmed opponent lineup is included in the matchup weighting.")
-        else:
-            st.write("• Opponent lineup is not fully confirmed, so season rates carry more weight.")
         if row.get("venue"):
             st.write(f"• Venue: {row.get('venue')}.")
 

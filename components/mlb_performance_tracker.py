@@ -30,7 +30,7 @@ BATTER_CATEGORY_CONFIG = {
 PITCHER_CATEGORY_CONFIG = {
     "strikeouts":("🎯 Strikeouts","K"), "outs_recorded":("⏱️ Outs","Outs"),
     "hits_allowed":("⚾ Hits Allowed","Hits"), "walks_allowed":("◉ Walks Allowed","BB"),
-    "earned_runs":("🔴 Earned Runs","ER"),
+    "earned_runs":("● Earned Runs","ER"),
 }
 
 def _token() -> str | None:
@@ -73,12 +73,21 @@ def _styles():
     .perf-summary-item:nth-child(3),.perf-kpi:nth-child(3){border-color:rgba(255,204,51,.72)!important}
     .perf-label,.perf-summary-item span,.perf-kpi span,.perf-kpi small{color:#a7abb2!important;font-size:.66rem!important;line-height:1.15!important}
     .perf-summary-item strong,.perf-kpi strong{color:#fff!important;font-size:1.04rem!important;line-height:1.05!important;margin:3px 0!important}
-    div[data-testid="stSegmentedControl"] button{
-      background:#0b0c0d!important;color:#fff!important;border:2px solid #34373c!important;font-weight:800!important
+    /* Performance period buttons: five visible choices, never a dropdown. */
+    div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]{
+      display:flex!important;flex-wrap:nowrap!important;gap:6px!important;width:100%!important
     }
-    div[data-testid="stSegmentedControl"] button[aria-pressed="true"]{
-      background:linear-gradient(110deg,rgba(255,204,51,.16),#0b0c0d 48%,rgba(25,217,120,.17))!important;
-      border-color:#19d978!important;color:#fff!important
+    div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]{
+      flex:1 1 0!important;min-width:0!important;width:auto!important
+    }
+    div[class*="st-key-mlb_performance_period_control"] button{
+      width:100%!important;min-height:36px!important;padding:.20rem .28rem!important;
+      background:#080909!important;color:#fff!important;border:2px solid #d6b35c!important;
+      border-radius:9px!important;font-size:.72rem!important;font-weight:850!important;white-space:nowrap!important
+    }
+    div[class*="st-key-mlb_performance_period_control"] button[kind="primary"]{
+      background:linear-gradient(110deg,rgba(255,204,51,.20),#0b0c0d 58%,rgba(25,217,120,.12))!important;
+      border-color:#ffcc33!important;box-shadow:0 0 0 1px rgba(255,204,51,.20)!important
     }
     div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
     div[data-testid="stExpander"],div[data-testid="stExpander"] summary{
@@ -88,6 +97,11 @@ def _styles():
       .perf-summary-row,.perf-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
       .perf-summary-item,.perf-kpi{min-height:74px!important;padding:7px 6px!important}
       .perf-summary-item strong,.perf-kpi strong{font-size:.96rem!important}
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]{flex-wrap:wrap!important}
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]{flex:0 0 calc(33.333% - 4px)!important;max-width:calc(33.333% - 4px)!important}
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]:nth-child(4),
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]:nth-child(5){flex-basis:calc(50% - 3px)!important;max-width:calc(50% - 3px)!important}
+      div[class*="st-key-mlb_performance_period_control"] button{font-size:.70rem!important;min-height:34px!important}
     }
     
     [data-testid="stTabs"] [data-baseweb="tab-highlight"],
@@ -157,20 +171,28 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """Visible one-tap period selector; never collapse to a dropdown."""
+    """Five visible period buttons with a compact mobile wrap."""
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
-    selected = st.segmented_control(
-        "Performance Period",
-        options=options,
-        default=current,
-        key=f"{key}_control",
-        label_visibility="visible",
-        selection_mode="single",
-    )
-    selected = selected or current
-    st.session_state[key] = selected
-    return "Week" if selected == "7 Days" else selected
+    if current not in options:
+        current = "Today"
+        st.session_state[key] = current
+
+    st.markdown("**Performance Period**")
+    with st.container(key="mlb_performance_period_control"):
+        columns = st.columns(5, gap="small")
+        for column, option in zip(columns, options):
+            with column:
+                if st.button(
+                    option,
+                    key=f"{key}_{option.lower().replace(' ', '_')}",
+                    type="primary" if option == current else "secondary",
+                    use_container_width=True,
+                ):
+                    current = option
+                    st.session_state[key] = option
+
+    return "Week" if current == "7 Days" else current
 
 
 def render_prediction_performance_tracker(rankings_by_category: dict[str,list[dict[str,Any]]]) -> None:
@@ -196,11 +218,10 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
     else:
         st.caption("Performance history is temporarily unavailable.")
 
+    period = _period_control("mlb_performance_period")
     batter_tab, pitcher_tab = st.tabs(["🥎 Batter", "⚾ Pitcher"])
 
     with batter_tab:
-        st.markdown("#### 🌐 Overall MLB Batter Performance")
-        period = _period_control("mlb_batter_performance_period")
         _render_overall(batter_history, period)
 
         tabs = st.tabs([BATTER_CATEGORY_CONFIG[k][0] for k in BATTER_CATEGORY_CONFIG])
@@ -213,7 +234,6 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
 
     with pitcher_tab:
         st.markdown("#### 🌐 Overall MLB Pitcher Performance")
-        period = _period_control("mlb_pitcher_performance_period")
 
         if not token:
             st.caption("Pitcher performance history is temporarily unavailable.")
