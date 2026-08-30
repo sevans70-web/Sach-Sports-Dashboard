@@ -43,6 +43,25 @@ def _token() -> str | None:
     except Exception:
         return None
 
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_batter_history(_token_value: str, rankings_by_category: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    """Avoid re-reading/re-grading performance history on every UI click."""
+    synced = sync_history(_token_value, rankings_by_category)
+    return current_day_view(synced, rankings_by_category)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_pitcher_rankings() -> dict[str, Any]:
+    """Reuse pitcher rankings while the user interacts with the MLB page."""
+    return get_pitcher_rankings(limit=25)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_pitcher_history(_token_value: str, rankings: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    synced = sync_pitcher_history(_token_value, rankings)
+    return current_pitcher_day_view(synced, rankings)
+
+
 def _records(history, category, period):
     if period == "Yesterday":
         y = datetime.now(TORONTO_TIMEZONE).date() - timedelta(days=1)
@@ -171,28 +190,22 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """Five visible period buttons with a compact mobile wrap."""
+    """Restore the compact period selector used before the large button grid."""
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"
-        st.session_state[key] = current
 
-    st.markdown("**Performance Period**")
-    with st.container(key="mlb_performance_period_control"):
-        columns = st.columns(5, gap="small")
-        for column, option in zip(columns, options):
-            with column:
-                if st.button(
-                    option,
-                    key=f"{key}_{option.lower().replace(' ', '_')}",
-                    type="primary" if option == current else "secondary",
-                    use_container_width=True,
-                ):
-                    current = option
-                    st.session_state[key] = option
-
-    return "Week" if current == "7 Days" else current
+    selected = st.segmented_control(
+        "Performance Period",
+        options=options,
+        default=current,
+        key=f"{key}_control",
+        selection_mode="single",
+    )
+    selected = selected or current
+    st.session_state[key] = selected
+    return "Week" if selected == "7 Days" else selected
 
 
 def render_prediction_performance_tracker(rankings_by_category: dict[str,list[dict[str,Any]]]) -> None:
@@ -209,10 +222,7 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
     batter_history = {"days":{}}
     if token:
         try:
-            batter_history = current_day_view(
-                sync_history(token, rankings_by_category),
-                rankings_by_category,
-            )
+            batter_history = _cached_batter_history(token, rankings_by_category)
         except Exception:
             st.caption("Performance history is temporarily unavailable.")
     else:
@@ -240,12 +250,9 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
             return
 
         try:
-            result = get_pitcher_rankings(limit=25)
+            result = _cached_pitcher_rankings()
             rankings = result.get("rankings",{})
-            history = current_pitcher_day_view(
-                sync_pitcher_history(token, rankings),
-                rankings,
-            )
+            history = _cached_pitcher_history(token, rankings)
             tabs = st.tabs([PITCHER_CATEGORY_CONFIG[k][0] for k in PITCHER_CATEGORY_CONFIG])
             for tab, category in zip(tabs, PITCHER_CATEGORY_CONFIG):
                 with tab:
@@ -314,3 +321,38 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
         """,
         unsafe_allow_html=True,
     )
+
+
+# Compact five-choice performance selector override.
+st.markdown(
+    """
+    <style>
+    div[data-testid="stSegmentedControl"] {
+        margin:.10rem 0 .35rem!important;
+    }
+    div[data-testid="stSegmentedControl"] > div {
+        display:grid!important;
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        gap:3px!important;
+        width:100%!important;
+    }
+    div[data-testid="stSegmentedControl"] button {
+        min-width:0!important;
+        min-height:31px!important;
+        padding:.12rem .02rem!important;
+        font-size:.60rem!important;
+        white-space:nowrap!important;
+        background:#080909!important;
+        color:#fff!important;
+        border:1px solid #d6b35c!important;
+        border-radius:7px!important;
+    }
+    div[data-testid="stSegmentedControl"] button[aria-pressed="true"] {
+        color:#f6c84c!important;
+        border:2px solid #f6c84c!important;
+        background:#11100c!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)

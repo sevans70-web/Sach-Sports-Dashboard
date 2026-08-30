@@ -4,6 +4,12 @@ import streamlit as st
 from data.mlb_statcast import get_statcast_batter, load_statcast_batter_metrics
 
 
+@st.cache_data(ttl=1800, show_spinner=False)
+def _cached_statcast_snapshot() -> dict:
+    """Reuse the season Statcast snapshot across card clicks."""
+    return load_statcast_batter_metrics(minimum_pa=10)
+
+
 def _number(value, digits=3):
     try:
         return f"{float(value):.{digits}f}"
@@ -269,7 +275,7 @@ def render_player_card(player_data: dict) -> None:
             display:grid;
             grid-template-columns:repeat(2,minmax(0,1fr));
             gap:7px;
-            margin:5px 0 7px;
+            margin:5px 0 12px;
         }
 
         .gi-evidence-grid > div {
@@ -284,7 +290,7 @@ def render_player_card(player_data: dict) -> None:
             display:grid;
             grid-template-columns:repeat(3,minmax(0,1fr));
             gap:6px;
-            margin:5px 0 7px;
+            margin:5px 0 12px;
         }
 
         .gi-statcast-grid .gi-intel-metric {
@@ -361,7 +367,7 @@ def render_player_card(player_data: dict) -> None:
         try:
             statcast = get_statcast_batter(
                 player_id,
-                load_statcast_batter_metrics(minimum_pa=10),
+                _cached_statcast_snapshot(),
             )
         except Exception:
             statcast = None

@@ -373,8 +373,6 @@ def render_live_mlb_schedule(
         unsafe_allow_html=True,
     )
 
-    schedule = load_today_schedule()
-    lineup_data = load_today_lineups()
     player_lookup = player_lookup or {}
 
     st.subheader("Today's MLB Games")
@@ -382,14 +380,19 @@ def render_live_mlb_schedule(
     refresh_col, updated_col = st.columns([1, 2])
 
     with refresh_col:
-        if st.button(
+        refresh_clicked = st.button(
             "Refresh",
             key="refresh_live_mlb_schedule",
             use_container_width=True,
-        ):
+        )
+        if refresh_clicked:
             load_today_schedule.clear()
             load_today_lineups.clear()
-            st.rerun()
+
+    # Load after the refresh control so the same Streamlit rerun can fetch
+    # fresh data without triggering a second full-page rerun.
+    schedule = load_today_schedule()
+    lineup_data = load_today_lineups()
 
     with updated_col:
         fetched_at = schedule.get("fetched_at")
