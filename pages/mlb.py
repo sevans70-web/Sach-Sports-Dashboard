@@ -2719,15 +2719,32 @@ st.markdown(
         margin-top:2px;
     }
 
-    /* Player photos: show the complete head/face instead of aggressive crop. */
+    /* Player photos: one consistent circular treatment across every MLB ranking card. */
+    .gi-featured-photo,
+    .gi-native-photo,
+    .gi-compact-photo,
+    .gi-full-photo,
+    .gi-featured-photo-placeholder,
+    .gi-compact-photo-placeholder,
+    .gi-full-photo-placeholder,
+    .gi-native-initials {
+        border-radius:50% !important;
+        overflow:hidden !important;
+        aspect-ratio:1 / 1 !important;
+        background:#0b0d0e !important;
+        border:2px solid rgba(214,179,92,.86) !important;
+        box-shadow:0 0 0 1px rgba(25,217,120,.18) !important;
+    }
+    .gi-featured-photo img,
     .gi-native-photo img,
     .gi-compact-photo img,
     .gi-full-photo img {
-        width:88% !important;
-        height:88% !important;
-        object-fit:contain !important;
-        object-position:center bottom !important;
+        width:100% !important;
+        height:100% !important;
+        object-fit:cover !important;
+        object-position:center 18% !important;
         transform:none !important;
+        border-radius:50% !important;
     }
 
     /* Stronger finished expander/button language. */
@@ -2815,57 +2832,58 @@ st.markdown(
 toronto_now = get_toronto_now()
 refreshed_time = toronto_now.strftime("%B %d, %Y at %I:%M %p ET")
 
-# MLB-level refresh stays compact at the upper-right without overlapping the hero.
+# MLB-level refresh controls live above the hero, aligned to the upper-right.
 st.markdown(
     """
     <style>
-    div[class*="st-key-mlb_page_refresh"] {
-      display:flex!important;
-      justify-content:flex-end!important;
-      margin:.05rem 0 0!important;
-      min-height:0!important;
-    }
     div[class*="st-key-mlb_page_refresh"] button {
-      width:auto!important;
-      min-width:0!important;
-      min-height:0!important;
-      height:auto!important;
-      padding:.05rem .10rem!important;
-      margin:0!important;
-      background:transparent!important;
+      width:38px!important;
+      min-width:38px!important;
+      height:36px!important;
+      min-height:36px!important;
+      padding:0!important;
+      margin:0 0 2px auto!important;
+      background:#101214!important;
       color:#f6c84c!important;
-      border:0!important;
-      border-radius:0!important;
+      border:1.5px solid #3a3d42!important;
+      border-radius:8px!important;
       box-shadow:none!important;
-      font-size:1.15rem!important;
+      font-size:1.05rem!important;
       line-height:1!important;
     }
     div[class*="st-key-mlb_page_refresh"] button:hover,
     div[class*="st-key-mlb_page_refresh"] button:focus {
-      background:transparent!important;
+      background:#111714!important;
       color:#19d978!important;
-      border:0!important;
+      border-color:#19d978!important;
       box-shadow:none!important;
     }
     .mlb-page-refresh-time {
       color:#8f949c;
       font-size:.62rem;
       text-align:right;
+      white-space:nowrap;
       line-height:1.1;
-      margin:-.05rem .12rem .30rem 0;
+      margin-top:1px;
+    }
+    .mlb-refresh-row-spacer { min-height:1px; }
+    @media(max-width:700px){
+      div[class*="st-key-mlb_page_refresh"] { margin-top:.10rem!important; margin-bottom:0!important; }
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-if st.button("↻", key="mlb_page_refresh", help="Refresh MLB data"):
-    load_today_schedule.clear()
-    load_today_lineups.clear()
-    st.rerun()
-st.markdown(
-    f'<div class="mlb-page-refresh-time">Updated {toronto_now.strftime("%I:%M %p ET")}</div>',
-    unsafe_allow_html=True,
-)
+_refresh_left, _refresh_right = st.columns([6.8, 1.2], gap="small")
+with _refresh_right:
+    if st.button("↻", key="mlb_page_refresh", help="Refresh MLB data"):
+        load_today_schedule.clear()
+        load_today_lineups.clear()
+        st.rerun()
+    st.markdown(
+        f'<div class="mlb-page-refresh-time">Updated {toronto_now.strftime("%I:%M %p ET")}</div>',
+        unsafe_allow_html=True,
+    )
 
 render_html(
     """

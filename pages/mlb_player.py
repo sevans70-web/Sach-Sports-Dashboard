@@ -146,12 +146,13 @@ st.markdown(
       border:1.5px solid #30343a;border-radius:14px;margin:5px 0 9px;
     }
     .player-profile-photo,.player-profile-photo-fallback{
-      width:72px;height:72px;border-radius:13px;overflow:hidden;
-      background:#080909;border:2px solid rgba(214,179,92,.82);
+      width:72px;height:72px;border-radius:50%;overflow:hidden;
+      background:#080909;border:2px solid rgba(214,179,92,.86);
+      box-shadow:0 0 0 1px rgba(25,217,120,.18);
     }
     .player-profile-photo img{
       width:100%;height:100%;display:block;object-fit:cover;object-position:center 18%;
-      transform:scale(1.24);transform-origin:center 22%;
+      transform:none;border-radius:50%;
     }
     .player-profile-photo-fallback{
       display:flex;align-items:center;justify-content:center;color:#f6c84c;font-weight:900;
