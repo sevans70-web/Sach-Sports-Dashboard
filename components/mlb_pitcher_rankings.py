@@ -200,6 +200,8 @@ def _render_pitcher_intelligence(category: str, row: dict) -> None:
         st.write(f"• {reason}")
         if row.get("lineup_context_confirmed"):
             st.write("• Confirmed opponent lineup is included in the matchup weighting.")
+        elif row.get("lineup_context_projected"):
+            st.write("• Projected opponent lineup is included in the matchup weighting until the official order posts.")
         if row.get("venue"):
             st.write(f"• Venue: {row.get('venue')}.")
 
@@ -211,8 +213,16 @@ def _render_pitcher_card(category: str, row: dict) -> None:
     hand = str(row.get("pitcher_hand") or "")
     reason = str(row.get("why") or "")
     confirmed = bool(row.get("lineup_context_confirmed"))
-    lineup = "✓ Confirmed opponent lineup" if confirmed else "○ Opponent lineup not fully confirmed"
-    lineup_class = "pitch-lineup-confirmed" if confirmed else "pitch-lineup-projected"
+    projected = bool(row.get("lineup_context_projected"))
+    if confirmed:
+        lineup = "✓ Confirmed opponent lineup"
+        lineup_class = "pitch-lineup-confirmed"
+    elif projected:
+        lineup = "○ Projected opponent lineup"
+        lineup_class = "pitch-lineup-projected"
+    else:
+        lineup = "○ Opponent lineup unavailable"
+        lineup_class = "pitch-lineup-unavailable"
 
     state_key = f"pitcher_intelligence_{category}_{row.get('pitcher_id')}_{rank}"
     if state_key not in st.session_state:
@@ -303,23 +313,24 @@ def render_pitcher_rankings() -> None:
         .pitcher-rank small{display:block!important;color:#f6c84c!important;font-size:.56rem!important;font-weight:900!important;white-space:nowrap!important;margin-top:1px!important}
         .pitcher-photo{
             width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;
-            max-width:50px!important;max-height:50px!important;border-radius:11px!important;
-            border:2px solid rgba(214,179,92,.62)!important;background:#050505!important;
+            max-width:50px!important;max-height:50px!important;border-radius:50%!important;
+            border:2px solid rgba(214,179,92,.82)!important;background:#050505!important;
             overflow:hidden!important;display:grid!important;place-items:center!important;
         }
         .pitcher-headshot{
             display:block!important;width:100%!important;height:100%!important;
-            object-fit:contain!important;object-position:center bottom!important;background:#050505!important;
+            object-fit:cover!important;object-position:center 28%!important;background:#050505!important;
+            border-radius:50%!important;
         }
         .pitcher-photo-fallback{
-            width:100%!important;height:100%!important;place-items:center!important;
+            width:100%!important;height:100%!important;place-items:center!important;border-radius:50%!important;
             color:#fff!important;font-size:.82rem!important;font-weight:900!important;background:#050505!important;
         }
         .pitcher-copy{min-width:0!important;display:grid!important;gap:1px!important;overflow:hidden!important}
         .pitcher-copy>strong{color:#fff!important;font-size:.90rem!important;font-weight:900!important;line-height:1.08!important;overflow-wrap:anywhere!important}
         .pitcher-copy>span{color:#d0d2d5!important;font-size:.66rem!important;line-height:1.15!important;overflow-wrap:anywhere!important}
         .pitcher-projection b{color:#f6c84c!important}
-        .pitcher-reason{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;margin-top:1px!important}
+        .pitcher-reason{display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important;margin-top:1px!important}
         .pitcher-copy em{
             justify-self:start!important;display:inline-block!important;margin:4px 0 6px!important;
             padding:3px 7px!important;border-radius:999px!important;font-size:.57rem!important;
@@ -327,6 +338,7 @@ def render_pitcher_rankings() -> None:
         }
         .pitch-lineup-confirmed{color:#c8f7d9!important;border:1px solid rgba(47,191,113,.55)!important;background:rgba(47,191,113,.10)!important}
         .pitch-lineup-projected{color:#fde68a!important;border:1px solid rgba(214,179,92,.55)!important;background:rgba(214,179,92,.10)!important}
+        .pitch-lineup-unavailable{color:#a7abb2!important;border:1px solid #3a3d42!important;background:#101112!important}
         .pitcher-score{text-align:right!important;min-width:0!important}
         .pitcher-score small{color:#a7abb2!important;font-size:.54rem!important;font-weight:850!important}
         .pitcher-score strong{display:block!important;color:#f6c84c!important;font-size:.96rem!important;margin-top:2px!important}
