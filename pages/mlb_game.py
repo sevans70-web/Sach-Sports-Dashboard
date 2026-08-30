@@ -151,6 +151,9 @@ st.markdown(
     div[class*="st-key-back_to_mlb_from_game"] button:hover{
       border-color:#d6b35c!important;color:#f6c84c!important;
     }
+    @media(max-width:700px){
+      div[class*="st-key-back_to_mlb_from_game"]{margin-top:-2.15rem!important;margin-bottom:.2rem!important}
+    }
     </style>
     """,
     unsafe_allow_html=True,

@@ -28,12 +28,8 @@ st.markdown(
     div[class*="st-key-back_to_mlb_from_slate"] button:hover{
       border-color:#d6b35c!important;color:#f6c84c!important;
     }
-    div[class*="st-key-refresh_live_mlb_schedule"] button{
-      background:#080909!important;color:#fff!important;border:1.5px solid #34373c!important;
-      border-radius:10px!important;min-height:38px!important;font-weight:800!important;
-    }
-    div[class*="st-key-refresh_live_mlb_schedule"] button:hover{
-      border-color:#d6b35c!important;color:#f6c84c!important;
+    @media(max-width:700px){
+      div[class*="st-key-back_to_mlb_from_slate"]{margin-top:-2.15rem!important;margin-bottom:.2rem!important}
     }
     </style>
     """,

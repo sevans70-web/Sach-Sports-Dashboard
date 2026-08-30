@@ -55,7 +55,7 @@ def _player_header(player: dict[str, Any]) -> None:
     hand_label = f" · {hand}HP" if hand in {"R", "L"} else ""
 
     img_html = (
-        f"<img class='player-profile-photo' src='{escape(image)}' alt='{escape(name)} headshot'>"
+        f"<div class='player-profile-photo'><img src='{escape(image)}' alt='{escape(name)} headshot'></div>"
         if image
         else "<div class='player-profile-photo-fallback'>MLB</div>"
     )
@@ -146,8 +146,12 @@ st.markdown(
       border:1.5px solid #30343a;border-radius:14px;margin:5px 0 9px;
     }
     .player-profile-photo,.player-profile-photo-fallback{
-      width:72px;height:72px;border-radius:13px;object-fit:cover;
-      background:#080909;border:2px solid rgba(214,179,92,.75);
+      width:72px;height:72px;border-radius:13px;overflow:hidden;
+      background:#080909;border:2px solid rgba(214,179,92,.82);
+    }
+    .player-profile-photo img{
+      width:100%;height:100%;display:block;object-fit:cover;object-position:center 18%;
+      transform:scale(1.24);transform-origin:center 22%;
     }
     .player-profile-photo-fallback{
       display:flex;align-items:center;justify-content:center;color:#f6c84c;font-weight:900;
@@ -175,7 +179,9 @@ st.markdown(
       display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0;
     }
     .player-profile-metric{
-      min-width:0;background:#101112;border:1.5px solid #34373c;border-radius:10px;
+      min-width:0;background:linear-gradient(145deg,#111315,#0d0f10);
+      border:1.5px solid rgba(214,179,92,.62);border-left:3px solid #19d978;border-radius:10px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
       min-height:68px;padding:7px 6px;display:flex;flex-direction:column;justify-content:center;
     }
     .player-profile-metric span{color:#9da2aa;font-size:.61rem;line-height:1.1}
@@ -204,7 +210,10 @@ st.markdown(
       display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:7px;
     }
     .player-bvp-stat{
-      background:#080909;border:1px solid #30343a;border-radius:8px;padding:7px 5px;min-width:0;
+      background:linear-gradient(145deg,#111315,#090b0c);
+      border:1.5px solid rgba(214,179,92,.62);border-bottom:2px solid #19d978;
+      border-radius:8px;padding:7px 5px;min-width:0;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
     }
     .player-bvp-stat span{display:block;color:#90959d;font-size:.55rem}
     .player-bvp-stat strong{display:block;color:#fff;font-size:.82rem;margin-top:2px}
@@ -219,6 +228,7 @@ st.markdown(
     }
 
     @media(max-width:700px){
+      div[class*="st-key-back_to_mlb_game"]{margin-top:-2.15rem!important;margin-bottom:.15rem!important}
       .player-profile-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
       .player-profile-photo,.player-profile-photo-fallback{width:60px;height:60px}
       .player-profile-copy h2{font-size:1.12rem}
@@ -287,17 +297,7 @@ hand = str(
 )
 venue = str(game.get("venue") or player.get("venue") or "Venue TBA")
 
-st.markdown(
-    f"""
-    <div class="player-matchup-card">
-      <b>Today's Matchup</b>
-      <span>Opposing pitcher: {escape(pitcher)}{(' · ' + escape(hand)) if hand else ''}</span>
-      <span>Venue: {escape(venue)}</span>
-      <span>Confirmed batting order: #{escape(str(player.get('batting_order') or '—'))}</span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 # Batter vs. pitcher history.
 bvp = get_batter_vs_pitcher_history(
