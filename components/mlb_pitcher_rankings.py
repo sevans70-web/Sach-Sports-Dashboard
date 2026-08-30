@@ -292,6 +292,10 @@ def render_pitcher_rankings() -> None:
         """
         <style>
         /* Pitcher cards use the same compact visual language as batter cards. */
+        div[class*="st-key-pitcher_card_"]{
+            border-left:5px solid #d6b35c!important;
+            border-radius:16px!important;
+        }
         div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
             background:#101112!important;
             border:2px solid #3a3d42!important;
