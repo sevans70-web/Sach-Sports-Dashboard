@@ -851,6 +851,61 @@ def _player_percentiles(
     }
 
 
+def _hr_power_credibility_adjustment(
+    season: dict[str, Any],
+    statcast_metrics: dict[str, Any] | None,
+) -> float:
+    """
+    Keep the HR board anchored to demonstrated power.
+
+    Matchup, park and Statcast can move a hitter up, but an established hitter
+    with a very low season HR rate should not outrank true power bats solely
+    because today's matchup is favorable. Small-sample/young hitters can still
+    be rescued by elite Statcast power quality.
+    """
+    home_runs = _safe_float(season.get("home_runs"))
+    plate_appearances = _safe_float(season.get("plate_appearances"))
+    games = _safe_float(season.get("games_played"))
+
+    if plate_appearances <= 0 and games > 0:
+        plate_appearances = games * 4.1
+
+    # Do not punish very small samples.
+    if plate_appearances < 60:
+        return 0.0
+
+    hr_rate = home_runs / max(plate_appearances, 1.0)
+
+    adjustment = 0.0
+
+    # Stronger penalty for established hitters showing little actual HR power.
+    if plate_appearances >= 200 and home_runs <= 4:
+        adjustment = -10.0
+    elif hr_rate < 0.015:       # fewer than ~1 HR per 67 PA
+        adjustment = -8.0
+    elif hr_rate < 0.022:       # fewer than ~1 HR per 45 PA
+        adjustment = -5.0
+    elif hr_rate < 0.030:       # fewer than ~1 HR per 33 PA
+        adjustment = -2.0
+    elif hr_rate >= 0.050:      # ~1 HR per 20 PA or better
+        adjustment = 3.0
+    elif hr_rate >= 0.040:
+        adjustment = 1.5
+
+    # Emerging-power exception: elite contact quality can soften a low-HR
+    # penalty, so we do not bury legitimate breakouts or young hitters.
+    if adjustment < 0 and statcast_metrics:
+        barrel_rate = _safe_float(statcast_metrics.get("barrel_rate"))
+        xslg = _safe_float(statcast_metrics.get("xslg"))
+
+        if barrel_rate >= 14.0 and xslg >= 0.500:
+            adjustment = max(adjustment, -2.0)
+        elif barrel_rate >= 10.0 and xslg >= 0.450:
+            adjustment *= 0.50
+
+    return round(adjustment, 2)
+
+
 def _category_score(
     category: str,
     percentiles: dict[str, float],
@@ -1774,6 +1829,22 @@ def rank_players(
                     + (matchup_score * 0.25),
                     1,
                 )
+
+            # Power credibility guardrail: matchup can elevate a hitter, but
+            # established low-HR hitters should not leapfrog demonstrated power
+            # bats unless their Statcast profile strongly supports a breakout.
+            score = round(
+                _clamp(
+                    score
+                    + _hr_power_credibility_adjustment(
+                        season,
+                        statcast_metrics,
+                    ),
+                    0.0,
+                    100.0,
+                ),
+                1,
+            )
 
         else:
             score = min(
