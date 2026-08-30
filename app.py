@@ -121,6 +121,7 @@ pages = {
         st.Page("pages/mlb.py", title="MLB", icon="⚾"),
         # Internal MLB drill-down pages. They are registered so st.switch_page
         # works, but the custom Sport Hub does not expose them as top-level sports.
+        st.Page("pages/mlb_games.py", title="MLB GAMES", icon="⚾"),
         st.Page("pages/mlb_game.py", title="MLB GAME", icon="⚾"),
         st.Page("pages/mlb_player.py", title="MLB PLAYER", icon="⚾"),
         st.Page("pages/wnba.py", title="WNBA", icon="🏀"),
