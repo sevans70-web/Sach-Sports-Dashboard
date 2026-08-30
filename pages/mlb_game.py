@@ -9,7 +9,7 @@ import streamlit as st
 
 from components.mlb_schedule import load_today_lineups, load_today_schedule
 from data.mlb_live import get_team_logo_url
-from data.mlb_lineups import get_previous_day_lineup_projection
+from data.mlb_lineups import get_previous_day_lineup_projection, _player_details
 
 
 def _logo(team_id: Any, team_name: str) -> str:
@@ -104,7 +104,14 @@ def _roster_column(
 
     for player in players:
         order = player.get("batting_order") or player.get("projected_batting_order") or "—"
-        name = str(player.get("player_name") or "Player")
+        name = str(player.get("player_name") or "").strip()
+        if not name or name.lower() in {"player", "mlb player"}:
+            try:
+                details = _player_details({}, int(player.get("player_id") or 0))
+                name = str(details.get("fullName") or f"MLB Player {player.get('player_id')}")
+            except Exception:
+                name = f"MLB Player {player.get('player_id')}"
+            player["player_name"] = name
         pos = str(player.get("position_abbreviation") or "")
         label = f"{order}. {name}" + (f" · {pos}" if pos else "")
         if st.button(
