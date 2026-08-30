@@ -2836,13 +2836,13 @@ refreshed_time = toronto_now.strftime("%B %d, %Y at %I:%M %p ET")
 st.markdown(
     """
     <style>
-    /* Keep the functional Streamlit button and timestamp together on the right. */
+    /* Refresh and Updated are one right-aligned utility block above the hero. */
     div[class*="st-key-mlb_page_refresh"] {
       display:flex!important;
       justify-content:flex-end!important;
       align-items:center!important;
       width:100%!important;
-      margin:4px 0 3px!important;
+      margin:8px 0 4px!important;
     }
     div[class*="st-key-mlb_page_refresh"] > div {
       width:auto!important;
@@ -2875,16 +2875,16 @@ st.markdown(
     .mlb-page-refresh-time {
       width:100%;
       text-align:right;
-      color:#b9bdc4;
-      font-size:.80rem;
-      font-weight:650;
+      color:#c2c5ca;
+      font-size:.82rem;
+      font-weight:700;
       line-height:1.25;
       margin:0 0 10px 0;
       white-space:nowrap;
     }
     @media(max-width:700px){
-      div[class*="st-key-mlb_page_refresh"] { margin-top:5px!important; }
-      .mlb-page-refresh-time { font-size:.82rem; margin-bottom:9px; }
+      div[class*="st-key-mlb_page_refresh"] { margin-top:7px!important; }
+      .mlb-page-refresh-time { font-size:.84rem; margin-bottom:10px; }
     }
     </style>
     """,
