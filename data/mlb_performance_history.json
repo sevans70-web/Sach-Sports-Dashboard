@@ -17452,9 +17452,17 @@
       "categories": {
         "hits": [
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 73.4,
             "home_run_probability": 8.4,
             "one_plus_hit_probability": 75.9,
@@ -17469,7 +17477,7 @@
             "player_name": "Luis Arraez",
             "projected_hits_runs_rbis": 2.19,
             "rank": 1,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 hits",
             "team": "Philadelphia Phillies"
           },
           {
@@ -17705,9 +17713,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 69.2,
             "home_run_probability": 12.5,
             "one_plus_hit_probability": 72.2,
@@ -17722,7 +17738,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.31,
             "rank": 10,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 hits",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -17813,9 +17829,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 68.8,
             "home_run_probability": 20.1,
             "one_plus_hit_probability": 72.4,
@@ -17830,7 +17854,7 @@
             "player_name": "Pete Alonso",
             "projected_hits_runs_rbis": 2.4,
             "rank": 14,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 hits",
             "team": "Baltimore Orioles"
           },
           {
@@ -17921,9 +17945,17 @@
             "team": "Minnesota Twins"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "hits",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 67.5,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -17938,7 +17970,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 18,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 hits",
             "team": "Philadelphia Phillies"
           },
           {
@@ -18205,9 +18237,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 74.4,
             "home_run_probability": 20.1,
             "one_plus_hit_probability": 72.4,
@@ -18222,7 +18262,7 @@
             "player_name": "Pete Alonso",
             "projected_hits_runs_rbis": 2.4,
             "rank": 3,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 H+R+RBI",
             "team": "Baltimore Orioles"
           },
           {
@@ -18371,9 +18411,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 1,
+            "actual_rbis": 1,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 4,
+            "actual_walks": 0,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 70.8,
             "home_run_probability": 15.1,
             "one_plus_hit_probability": 69.8,
@@ -18388,7 +18436,7 @@
             "player_name": "Zach Neto",
             "projected_hits_runs_rbis": 2.21,
             "rank": 9,
-            "result_label": "Pending",
+            "result_label": "\u2705 3 H+R+RBI",
             "team": "Los Angeles Angels"
           },
           {
@@ -18421,9 +18469,17 @@
             "team": "New York Yankees"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 69.8,
             "home_run_probability": 12.5,
             "one_plus_hit_probability": 72.2,
@@ -18438,7 +18494,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.31,
             "rank": 11,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 H+R+RBI",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -18587,9 +18643,17 @@
             "team": "Kansas City Royals"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 68.7,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -18604,7 +18668,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 17,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 H+R+RBI",
             "team": "Philadelphia Phillies"
           },
           {
@@ -18637,9 +18701,17 @@
             "team": "Chicago Cubs"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 2,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "hits_runs_rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 67.9,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 68.7,
@@ -18654,7 +18726,7 @@
             "player_name": "Rafael Devers",
             "projected_hits_runs_rbis": 2.24,
             "rank": 19,
-            "result_label": "Pending",
+            "result_label": "\u2705 4 H+R+RBI",
             "team": "San Francisco Giants"
           },
           {
@@ -18863,9 +18935,17 @@
             "team": "New York Yankees"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 2,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 62.1,
             "home_run_probability": 22.2,
             "one_plus_hit_probability": 65.8,
@@ -18880,7 +18960,7 @@
             "player_name": "Kyle Schwarber",
             "projected_hits_runs_rbis": 2.16,
             "rank": 2,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Philadelphia Phillies"
           },
           {
@@ -18913,9 +18993,17 @@
             "team": "Colorado Rockies"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 61.4,
             "home_run_probability": 20.1,
             "one_plus_hit_probability": 72.4,
@@ -18930,7 +19018,7 @@
             "player_name": "Pete Alonso",
             "projected_hits_runs_rbis": 2.4,
             "rank": 4,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Baltimore Orioles"
           },
           {
@@ -19340,9 +19428,17 @@
             "team": "Atlanta Braves"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 2,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 56.8,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 68.7,
@@ -19357,7 +19453,7 @@
             "player_name": "Rafael Devers",
             "projected_hits_runs_rbis": 2.24,
             "rank": 19,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "San Francisco Giants"
           },
           {
@@ -19419,9 +19515,17 @@
             "team": "Tampa Bay Rays"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 56.5,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -19436,7 +19540,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 22,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Philadelphia Phillies"
           },
           {
@@ -19469,9 +19573,17 @@
             "team": "Chicago White Sox"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 2,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 1,
             "category": "home_runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 55.6,
             "home_run_probability": 17.4,
             "one_plus_hit_probability": 65.2,
@@ -19486,7 +19598,7 @@
             "player_name": "Coby Mayo",
             "projected_hits_runs_rbis": 2.11,
             "rank": 24,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 HR",
             "team": "Baltimore Orioles"
           },
           {
@@ -19521,9 +19633,17 @@
         ],
         "rbis": [
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 75.5,
             "home_run_probability": 20.1,
             "one_plus_hit_probability": 72.4,
@@ -19538,7 +19658,7 @@
             "player_name": "Pete Alonso",
             "projected_hits_runs_rbis": 2.4,
             "rank": 1,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 RBIs",
             "team": "Baltimore Orioles"
           },
           {
@@ -19687,9 +19807,17 @@
             "team": "Pittsburgh Pirates"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 71.4,
             "home_run_probability": 12.5,
             "one_plus_hit_probability": 72.2,
@@ -19704,7 +19832,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.31,
             "rank": 7,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 RBIs",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -19795,9 +19923,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 2,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 69.1,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 68.7,
@@ -19812,7 +19948,7 @@
             "player_name": "Rafael Devers",
             "projected_hits_runs_rbis": 2.24,
             "rank": 11,
-            "result_label": "Pending",
+            "result_label": "\u2705 2 RBIs",
             "team": "San Francisco Giants"
           },
           {
@@ -19845,9 +19981,17 @@
             "team": "Kansas City Royals"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 2,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 68.7,
             "home_run_probability": 22.2,
             "one_plus_hit_probability": 65.8,
@@ -19862,7 +20006,7 @@
             "player_name": "Kyle Schwarber",
             "projected_hits_runs_rbis": 2.16,
             "rank": 13,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 RBI",
             "team": "Philadelphia Phillies"
           },
           {
@@ -20040,9 +20184,17 @@
             "team": "Miami Marlins"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 1,
+            "actual_rbis": 1,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 4,
+            "actual_walks": 0,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 65.9,
             "home_run_probability": 15.1,
             "one_plus_hit_probability": 69.8,
@@ -20057,7 +20209,7 @@
             "player_name": "Zach Neto",
             "projected_hits_runs_rbis": 2.21,
             "rank": 20,
-            "result_label": "Pending",
+            "result_label": "\u2705 1 RBI",
             "team": "Los Angeles Angels"
           },
           {
@@ -20148,9 +20300,17 @@
             "team": "Atlanta Braves"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "rbis",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 65.2,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -20165,7 +20325,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 24,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 RBIs",
             "team": "Philadelphia Phillies"
           },
           {
@@ -20229,9 +20389,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 75.1,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -20246,7 +20414,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 2,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 runs",
             "team": "Philadelphia Phillies"
           },
           {
@@ -20424,9 +20592,17 @@
             "team": "Seattle Mariners"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 71.7,
             "home_run_probability": 20.1,
             "one_plus_hit_probability": 72.4,
@@ -20441,7 +20617,7 @@
             "player_name": "Pete Alonso",
             "projected_hits_runs_rbis": 2.4,
             "rank": 9,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 runs",
             "team": "Baltimore Orioles"
           },
           {
@@ -20619,9 +20795,17 @@
             "team": "Cleveland Guardians"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 68.5,
             "home_run_probability": 12.5,
             "one_plus_hit_probability": 72.2,
@@ -20636,7 +20820,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.31,
             "rank": 16,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 runs",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -20872,9 +21056,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 2,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "runs",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 65.3,
             "home_run_probability": 22.2,
             "one_plus_hit_probability": 65.8,
@@ -20889,7 +21081,7 @@
             "player_name": "Kyle Schwarber",
             "projected_hits_runs_rbis": 2.16,
             "rank": 25,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 runs",
             "team": "Philadelphia Phillies"
           }
         ],
@@ -20982,9 +21174,17 @@
             "team": "Chicago Cubs"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 2,
             "category": "stolen_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 68.8,
             "home_run_probability": 13.2,
             "one_plus_hit_probability": 67.8,
@@ -20999,7 +21199,7 @@
             "player_name": "Corbin Carroll",
             "projected_hits_runs_rbis": 2.04,
             "rank": 4,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 stolen bases",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -21090,9 +21290,17 @@
             "team": "Washington Nationals"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 1,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "stolen_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 66.5,
             "home_run_probability": 9.8,
             "one_plus_hit_probability": 71.4,
@@ -21107,7 +21315,7 @@
             "player_name": "Wade Meckler",
             "projected_hits_runs_rbis": 2.07,
             "rank": 8,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 stolen bases",
             "team": "Los Angeles Angels"
           },
           {
@@ -21169,9 +21377,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "stolen_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 65.6,
             "home_run_probability": 14.3,
             "one_plus_hit_probability": 65.0,
@@ -21186,7 +21402,7 @@
             "player_name": "Mike Trout",
             "projected_hits_runs_rbis": 1.94,
             "rank": 11,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 stolen bases",
             "team": "Los Angeles Angels"
           },
           {
@@ -21538,9 +21754,17 @@
             "team": "St. Louis Cardinals"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 1,
             "category": "stolen_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 62.2,
             "home_run_probability": 9.6,
             "one_plus_hit_probability": 66.7,
@@ -21555,7 +21779,7 @@
             "player_name": "Bryson Stott",
             "projected_hits_runs_rbis": 1.96,
             "rank": 24,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 stolen bases",
             "team": "Philadelphia Phillies"
           },
           {
@@ -21619,9 +21843,17 @@
             "team": "Chicago Cubs"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 76.0,
             "home_run_probability": 20.1,
             "one_plus_hit_probability": 72.4,
@@ -21636,7 +21868,7 @@
             "player_name": "Pete Alonso",
             "projected_hits_runs_rbis": 2.4,
             "rank": 2,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 total bases",
             "team": "Baltimore Orioles"
           },
           {
@@ -21727,9 +21959,17 @@
             "team": "Milwaukee Brewers"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 72.1,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -21744,7 +21984,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 6,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 total bases",
             "team": "Philadelphia Phillies"
           },
           {
@@ -21835,9 +22075,17 @@
             "team": "Atlanta Braves"
           },
           {
+            "actual_hits": 2,
+            "actual_hits_runs_rbis": 4,
+            "actual_home_runs": 0,
+            "actual_rbis": 2,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 2,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 70.9,
             "home_run_probability": 18.8,
             "one_plus_hit_probability": 68.7,
@@ -21852,7 +22100,7 @@
             "player_name": "Rafael Devers",
             "projected_hits_runs_rbis": 2.24,
             "rank": 10,
-            "result_label": "Pending",
+            "result_label": "\u2705 2 total bases",
             "team": "San Francisco Giants"
           },
           {
@@ -21885,9 +22133,17 @@
             "team": "Kansas City Royals"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 3,
+            "actual_home_runs": 1,
+            "actual_rbis": 1,
+            "actual_runs": 1,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 4,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 70.4,
             "home_run_probability": 15.1,
             "one_plus_hit_probability": 69.8,
@@ -21902,7 +22158,7 @@
             "player_name": "Zach Neto",
             "projected_hits_runs_rbis": 2.21,
             "rank": 12,
-            "result_label": "Pending",
+            "result_label": "\u2705 4 total bases",
             "team": "Los Angeles Angels"
           },
           {
@@ -22051,9 +22307,17 @@
             "team": "Atlanta Braves"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "total_bases",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 69.2,
             "home_run_probability": 12.5,
             "one_plus_hit_probability": 72.2,
@@ -22068,7 +22332,7 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.31,
             "rank": 18,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 total bases",
             "team": "Arizona Diamondbacks"
           },
           {
@@ -22364,9 +22628,17 @@
             "team": "Houston Astros"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 3,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": true,
+            "game_finished": true,
             "gi_score": 72.6,
             "home_run_probability": 16.8,
             "one_plus_hit_probability": 69.6,
@@ -22381,7 +22653,7 @@
             "player_name": "Bryce Harper",
             "projected_hits_runs_rbis": 2.22,
             "rank": 4,
-            "result_label": "Pending",
+            "result_label": "\u2705 3 walks",
             "team": "Philadelphia Phillies"
           },
           {
@@ -22472,9 +22744,17 @@
             "team": "Houston Astros"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 67.4,
             "home_run_probability": 12.5,
             "one_plus_hit_probability": 72.2,
@@ -22489,13 +22769,21 @@
             "player_name": "Gabriel Moreno",
             "projected_hits_runs_rbis": 2.31,
             "rank": 8,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 walks",
             "team": "Arizona Diamondbacks"
           },
           {
+            "actual_hits": 0,
+            "actual_hits_runs_rbis": 0,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 0,
+            "actual_walks": 0,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 66.6,
             "home_run_probability": 14.3,
             "one_plus_hit_probability": 65.0,
@@ -22510,7 +22798,7 @@
             "player_name": "Mike Trout",
             "projected_hits_runs_rbis": 1.94,
             "rank": 9,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 walks",
             "team": "Los Angeles Angels"
           },
           {
@@ -22775,9 +23063,17 @@
             "team": "Toronto Blue Jays"
           },
           {
+            "actual_hits": 1,
+            "actual_hits_runs_rbis": 1,
+            "actual_home_runs": 0,
+            "actual_rbis": 0,
+            "actual_runs": 0,
+            "actual_stolen_bases": 0,
+            "actual_total_bases": 1,
+            "actual_walks": 0,
             "category": "walks",
-            "correct": null,
-            "game_finished": false,
+            "correct": false,
+            "game_finished": true,
             "gi_score": 63.6,
             "home_run_probability": 9.0,
             "one_plus_hit_probability": 67.0,
@@ -22792,7 +23088,7 @@
             "player_name": "Geraldo Perdomo",
             "projected_hits_runs_rbis": 1.85,
             "rank": 19,
-            "result_label": "Pending",
+            "result_label": "\u274c 0 walks",
             "team": "Arizona Diamondbacks"
           },
           {
