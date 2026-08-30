@@ -2807,17 +2807,17 @@ render_html(
 st.markdown(
     """
     <style>
-    .mlb-games-entry {
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-        width:100%;
-        padding:13px 15px;
-        margin:4px 0 6px;
-        border:1.5px solid rgba(214,179,92,.68);
-        border-left:5px solid #19d978;
-        border-radius:13px;
+    /* The MLB Games entry IS the action — no second "open slate" button. */
+    div[class*="st-key-mlb_games_entry"] button {
+        width:100%!important;
+        min-height:82px!important;
+        padding:12px 15px!important;
+        margin:4px 0 10px!important;
+        text-align:left!important;
+        justify-content:flex-start!important;
+        border:1.5px solid rgba(214,179,92,.68)!important;
+        border-left:5px solid #19d978!important;
+        border-radius:13px!important;
         background:
             linear-gradient(
                 112deg,
@@ -2825,96 +2825,48 @@ st.markdown(
                 #0d0f10 36%,
                 #0b0d0e 68%,
                 rgba(25,217,120,.10) 100%
-            );
-    }
-    .mlb-games-entry-copy {
-        min-width:0;
-    }
-    .mlb-games-entry-title {
-        color:#fff;
-        font-size:1.02rem;
-        font-weight:950;
-        line-height:1.12;
-    }
-    .mlb-games-entry-subtitle {
-        color:#aeb2b8;
-        font-size:.72rem;
-        line-height:1.3;
-        margin-top:4px;
-    }
-    .mlb-games-entry-arrow {
-        flex:0 0 auto;
-        color:#f6c84c;
-        font-size:1.35rem;
-        font-weight:950;
-    }
-
-    div[class*="st-key-mlb_games_cta"] button {
-        width:100%!important;
-        min-height:39px!important;
-        margin:0 0 8px!important;
-        padding:.28rem .70rem!important;
-        background:#080909!important;
-        color:#f6c84c!important;
-        border:1.5px solid rgba(25,217,120,.70)!important;
-        border-radius:10px!important;
-        font-size:.79rem!important;
+            )!important;
+        color:#fff!important;
         font-weight:900!important;
+        white-space:pre-line!important;
+        line-height:1.28!important;
     }
-
+    div[class*="st-key-mlb_games_entry"] button:hover {
+        border-color:#f6c84c!important;
+        border-left-color:#19d978!important;
+        box-shadow:inset 0 0 0 1px rgba(25,217,120,.15)!important;
+    }
+    div[class*="st-key-mlb_games_entry"] button p {
+        margin:0!important;
+        font-size:.84rem!important;
+        line-height:1.32!important;
+    }
     @media(max-width:700px){
-        .mlb-games-entry {
-            padding:12px 13px;
+        div[class*="st-key-mlb_games_entry"] button{
+            min-height:78px!important;
+            padding:11px 13px!important;
         }
-        .mlb-games-entry-title {
-            font-size:.97rem;
-        }
-        .mlb-games-entry-subtitle {
-            font-size:.69rem;
+        div[class*="st-key-mlb_games_entry"] button p{
+            font-size:.80rem!important;
         }
     }
     </style>
-
-    <div class="mlb-games-entry">
-        <div class="mlb-games-entry-copy">
-            <div class="mlb-games-entry-title">⚾ Today's MLB Games</div>
-            <div class="mlb-games-entry-subtitle">
-                Open today's slate, lineups &amp; Game Intelligence
-            </div>
-        </div>
-        <div class="mlb-games-entry-arrow">›</div>
-    </div>
     """,
     unsafe_allow_html=True,
 )
 
-if "mlb_games_open" not in st.session_state:
-    st.session_state["mlb_games_open"] = False
-
-cta_label = (
-    "Hide today's game slate"
-    if st.session_state["mlb_games_open"]
-    else "Open today's game slate  →"
-)
-
 if st.button(
-    cta_label,
-    key="mlb_games_cta",
+    "⚾  TODAY'S MLB GAMES   ›\\nOpen today's slate, lineups & Game Intelligence",
+    key="mlb_games_entry",
     use_container_width=True,
 ):
-    st.session_state["mlb_games_open"] = not st.session_state["mlb_games_open"]
+    st.session_state.pop("mlb_selected_game", None)
+    st.switch_page("pages/mlb_games.py")
 
-if st.session_state["mlb_games_open"]:
-    live_schedule = render_live_mlb_schedule(
-        player_lookup=PLAYER_INTELLIGENCE_LOOKUP,
-        player_renderer=render_player_card,
-    )
-else:
-    # The snapshot still needs game and lineup totals even while the visual
-    # slate stays closed. Both loaders are cached, so this remains lightweight.
-    live_schedule = load_today_schedule()
-    live_schedule["lineup_data"] = load_today_lineups()
-
+# The snapshot still needs game + lineup totals, but the slate itself now lives
+# on its own page and is not rendered inside the MLB Intelligence page.
+live_schedule = load_today_schedule()
+live_schedule["lineup_data"] = load_today_lineups()
 live_summary = schedule_summary(live_schedule)
 
 confirmed_teams = live_summary.get("confirmed_teams", 0)
