@@ -9,6 +9,7 @@ import streamlit as st
 
 from components.mlb_schedule import load_today_lineups, load_today_schedule
 from data.mlb_live import get_team_logo_url
+from data.mlb_lineups import get_previous_day_lineup_projection
 
 
 def _logo(team_id: Any, team_name: str) -> str:
@@ -86,15 +87,23 @@ def _roster_column(
     title: str,
     players: list[dict[str, Any]],
     game: dict[str, Any],
+    confirmed: bool,
 ) -> None:
     st.markdown(f"<div class='roster-team-title'>{escape(title)}</div>", unsafe_allow_html=True)
 
+    status_text = "CONFIRMED" if confirmed else "PROJECTED"
+    status_class = "confirmed" if confirmed else "projected"
+    st.markdown(
+        f"<div class='lineup-status {status_class}'>{status_text}</div>",
+        unsafe_allow_html=True,
+    )
+
     if not players:
-        st.caption("Official lineup has not been posted yet.")
+        st.caption("Lineup projection is temporarily unavailable.")
         return
 
     for player in players:
-        order = player.get("batting_order") or "—"
+        order = player.get("batting_order") or player.get("projected_batting_order") or "—"
         name = str(player.get("player_name") or "Player")
         pos = str(player.get("position_abbreviation") or "")
         label = f"{order}. {name}" + (f" · {pos}" if pos else "")
@@ -130,7 +139,19 @@ st.markdown(
     .game-team-copy strong{display:block;color:#fff;font-size:1.05rem;font-weight:950}
     .game-team-copy span{display:block;color:#a7abb2;font-size:.75rem;margin-top:2px}
     .game-team-row>b{color:#fff;text-align:right;font-size:1.12rem}
-    .roster-team-title{color:#f6c84c;font-weight:900;margin:2px 0 6px}
+    .roster-team-title{color:#f6c84c;font-weight:900;margin:2px 0 4px}
+    .lineup-status{
+      display:inline-block;margin:0 0 7px;padding:3px 7px;border-radius:999px;
+      font-size:.58rem;font-weight:950;letter-spacing:.055em;
+    }
+    .lineup-status.confirmed{
+      color:#19d978;border:1px solid rgba(25,217,120,.55);
+      background:rgba(25,217,120,.08);
+    }
+    .lineup-status.projected{
+      color:#f6c84c;border:1px solid rgba(246,200,76,.55);
+      background:rgba(246,200,76,.08);
+    }
     div[class*="st-key-open_player_"] button{
       background:#101112!important;color:#fff!important;border:1px solid #30343a!important;
       border-radius:9px!important;min-height:39px!important;text-align:left!important;
@@ -190,21 +211,68 @@ st.markdown(
 
 st.markdown("### Starting Lineups")
 
-if not lineup_game:
-    st.caption("Official lineups are not available for this game yet.")
-else:
-    away_col, home_col = st.columns(2, gap="small")
-    with away_col:
-        _roster_column(
-            str(lineup_game.get("away_team") or game.get("away_team") or "Away"),
-            lineup_game.get("away_lineup", []),
-            game,
-        )
-    with home_col:
-        _roster_column(
-            str(lineup_game.get("home_team") or game.get("home_team") or "Home"),
-            lineup_game.get("home_lineup", []),
-            game,
-        )
+lineup_data = load_today_lineups()
+lineup_game = lineup_game or {
+    "game_pk": game.get("game_pk"),
+    "away_team": game.get("away_team"),
+    "home_team": game.get("home_team"),
+    "away_lineup": [],
+    "home_lineup": [],
+    "away_lineup_confirmed": False,
+    "home_lineup_confirmed": False,
+}
 
+projection = get_previous_day_lineup_projection(
+    current_lineup_data=lineup_data,
+)
+
+projected_for_game = [
+    player
+    for player in projection.get("projected_hitters", [])
+    if player.get("game_pk") == game.get("game_pk")
+]
+
+away_projected = [
+    player for player in projected_for_game
+    if int(player.get("team_id") or 0) == int(game.get("away_team_id") or 0)
+]
+home_projected = [
+    player for player in projected_for_game
+    if int(player.get("team_id") or 0) == int(game.get("home_team_id") or 0)
+]
+
+away_confirmed = bool(lineup_game.get("away_lineup_confirmed"))
+home_confirmed = bool(lineup_game.get("home_lineup_confirmed"))
+
+away_players = (
+    lineup_game.get("away_lineup", [])
+    if away_confirmed
+    else away_projected
+)
+home_players = (
+    lineup_game.get("home_lineup", [])
+    if home_confirmed
+    else home_projected
+)
+
+away_col, home_col = st.columns(2, gap="small")
+with away_col:
+    _roster_column(
+        str(lineup_game.get("away_team") or game.get("away_team") or "Away"),
+        away_players,
+        game,
+        confirmed=away_confirmed,
+    )
+with home_col:
+    _roster_column(
+        str(lineup_game.get("home_team") or game.get("home_team") or "Home"),
+        home_players,
+        game,
+        confirmed=home_confirmed,
+    )
+
+st.caption(
+    "Confirmed lineups replace projections automatically. "
+    "Projected lineups use each team's most recent confirmed batting order."
+)
 st.caption("Tap any lineup player to open the dedicated Player Intelligence page.")

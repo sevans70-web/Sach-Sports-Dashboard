@@ -834,29 +834,56 @@ def projection_display(player: dict) -> tuple[str, str]:
     return "Projection", "Unavailable"
 
 def category_card_reason(player: dict) -> str:
-    """Return a market-specific one-line reason for the collapsed card."""
+    """Return a concise, player-specific reason for each collapsed Top-25 card."""
     category = str(player.get("category") or "").strip().lower()
     pitcher = str(player.get("opposing_probable_pitcher") or "").strip()
-    hand = str(player.get("opposing_pitcher_hand") or "").upper()
-    pitcher_text = pitcher if pitcher and pitcher != "Not announced" else "the opposing pitcher"
-    hand_text = f" ({hand}HP)" if hand else ""
+    pitcher_text = pitcher if pitcher and pitcher != "Not announced" else "the opposing starter"
+
+    order = player.get("batting_order") or player.get("projected_batting_order")
+    try:
+        order_num = int(order) if order not in (None, "", "—") else None
+    except (TypeError, ValueError):
+        order_num = None
+
+    hr = float(player.get("home_run_probability", 0.0) or 0.0)
+    hit = float(player.get("one_plus_hit_probability", 0.0) or 0.0)
+    tb = float(player.get("over_1_5_total_bases_probability", 0.0) or 0.0)
+    run = float(player.get("one_plus_run_probability", 0.0) or 0.0)
+    rbi = float(player.get("one_plus_rbi_probability", 0.0) or 0.0)
+    walk = float(player.get("one_plus_walk_probability", 0.0) or 0.0)
+    sb = float(player.get("one_plus_stolen_base_probability", 0.0) or 0.0)
+
+    lineup_text = f" from the #{order_num} spot" if order_num else ""
 
     if category in {"home run", "home runs"}:
-        return f"Power, barrel quality and matchup vs. {pitcher_text}{hand_text} support HR upside."
+        if hr >= 25:
+            return f"{hr:.0f}% HR probability is elite on this slate{lineup_text}; the matchup vs. {pitcher_text} keeps the power ceiling high."
+        if tb >= 60:
+            return f"{hr:.0f}% HR probability pairs with {tb:.0f}% over-1.5-TB upside{lineup_text} vs. {pitcher_text}."
+        if order_num and order_num <= 3:
+            return f"{hr:.0f}% HR probability plus a top-{order_num} lineup spot gives extra plate-appearance value vs. {pitcher_text}."
+        return f"{hr:.0f}% HR probability is the key driver here, with the matchup vs. {pitcher_text} supporting the ranking."
+
     if category in {"hit", "hits"}:
-        return f"Contact quality and 1+ hit probability grade well vs. {pitcher_text}{hand_text}."
+        return f"{hit:.0f}% chance for 1+ hit{lineup_text}; contact probability is the main edge vs. {pitcher_text}."
+
     if category in {"total base", "total bases"}:
-        return f"Extra-base power, xSLG and matchup quality support total-base upside."
+        return f"{tb:.0f}% chance to clear 1.5 total bases{lineup_text}, with {hr:.0f}% HR upside adding extra-base ceiling vs. {pitcher_text}."
+
     if category == "runs":
-        return "Lineup position, on-base opportunity and the game run environment support scoring upside."
+        return f"{run:.0f}% chance to score{lineup_text}; lineup opportunity and on-base paths are the primary drivers."
+
     if category in {"rbi", "rbis"}:
-        return "Run-producing opportunity, batting-order position and matchup quality support RBI upside."
+        return f"{rbi:.0f}% chance for 1+ RBI{lineup_text}; run-producing opportunity is strongest in this matchup vs. {pitcher_text}."
+
     if category == "walks":
-        return f"Plate-discipline opportunity and the matchup vs. {pitcher_text}{hand_text} support a walk."
+        return f"{walk:.0f}% chance for 1+ walk{lineup_text}; plate-discipline probability is the main edge vs. {pitcher_text}."
+
     if "stolen" in category:
-        return "Speed, on-base opportunity and lineup context support stolen-base upside."
+        return f"{sb:.0f}% chance for 1+ stolen base{lineup_text}; speed and on-base opportunity drive this ranking."
+
     if "hits + runs + rbis" in category or "hits runs rbis" in category:
-        return "Contact, lineup position and run environment provide multiple paths to H+R+RBI production."
+        return f"{hit:.0f}% 1+ hit, {run:.0f}% run and {rbi:.0f}% RBI probabilities create multiple scoring paths{lineup_text}."
 
     return str(player.get("reason") or "Live statistical profile is being evaluated.")
 
