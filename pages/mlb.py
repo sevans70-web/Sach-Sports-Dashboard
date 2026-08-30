@@ -2742,7 +2742,7 @@ st.markdown(
         width:100% !important;
         height:100% !important;
         object-fit:cover !important;
-        object-position:center 18% !important;
+        object-position:center 28% !important;
         transform:none !important;
         border-radius:50% !important;
     }
@@ -2794,7 +2794,7 @@ st.markdown(
             margin-top:0 !important;
         }
         .gi-hero {
-            margin-top:-3.0rem !important;
+            margin-top:.35rem !important;
             margin-bottom:.45rem !important;
             padding:14px 14px !important;
         }
@@ -2837,18 +2837,20 @@ st.markdown(
     """
     <style>
     div[class*="st-key-mlb_page_refresh"] button {
-      width:38px!important;
-      min-width:38px!important;
-      height:36px!important;
-      min-height:36px!important;
-      padding:0!important;
-      margin:0 0 2px auto!important;
-      background:#101214!important;
-      color:#f6c84c!important;
-      border:1.5px solid #3a3d42!important;
+      width:auto!important;
+      min-width:104px!important;
+      height:34px!important;
+      min-height:34px!important;
+      padding:0 12px!important;
+      margin:0 0 3px auto!important;
+      background:#f6c84c!important;
+      color:#080909!important;
+      border:1.5px solid #d6b35c!important;
       border-radius:8px!important;
-      box-shadow:none!important;
-      font-size:1.05rem!important;
+      box-shadow:0 0 0 1px rgba(246,200,76,.14)!important;
+      font-size:.70rem!important;
+      font-weight:900!important;
+      letter-spacing:.02em!important;
       line-height:1!important;
     }
     div[class*="st-key-mlb_page_refresh"] button:hover,
@@ -2876,12 +2878,12 @@ st.markdown(
 )
 _refresh_left, _refresh_right = st.columns([6.8, 1.2], gap="small")
 with _refresh_right:
-    if st.button("↻", key="mlb_page_refresh", help="Refresh MLB data"):
+    if st.button("⟳  REFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
         load_today_schedule.clear()
         load_today_lineups.clear()
         st.rerun()
     st.markdown(
-        f'<div class="mlb-page-refresh-time">Updated {toronto_now.strftime("%I:%M %p ET")}</div>',
+        f'<div class="mlb-page-refresh-time">Updated {toronto_now.strftime("%A · %I:%M %p ET")}</div>',
         unsafe_allow_html=True,
     )
 

@@ -151,7 +151,7 @@ st.markdown(
       box-shadow:0 0 0 1px rgba(25,217,120,.18);
     }
     .player-profile-photo img{
-      width:100%;height:100%;display:block;object-fit:cover;object-position:center 18%;
+      width:100%;height:100%;display:block;object-fit:cover;object-position:center 28%;
       transform:none;border-radius:50%;
     }
     .player-profile-photo-fallback{
