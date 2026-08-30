@@ -84,6 +84,7 @@ def _styles():
     st.markdown("""
     <style>
     .perf-summary-row,.perf-kpi-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin:7px 0 8px!important}
+    .perf-summary-row.perf-batter-four{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;}
     .perf-summary-item,.perf-kpi{
       min-width:0!important;min-height:86px!important;padding:8px!important;border-radius:11px!important;
       background:#101112!important;border:2px solid #34373c!important;display:flex!important;flex-direction:column!important;justify-content:center!important
@@ -94,7 +95,11 @@ def _styles():
     .perf-summary-item strong,.perf-kpi strong{color:#fff!important;font-size:1.04rem!important;line-height:1.05!important;margin:3px 0!important}
     @media(max-width:700px){
       .perf-summary-row,.perf-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
+      .perf-summary-row.perf-batter-four{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important}
       .perf-summary-item,.perf-kpi{min-height:74px!important;padding:7px 6px!important}
+      .perf-summary-row.perf-batter-four .perf-summary-item{min-height:68px!important;padding:6px 4px!important}
+      .perf-summary-row.perf-batter-four .perf-label{font-size:.56rem!important;line-height:1.08!important}
+      .perf-summary-row.perf-batter-four .perf-summary-item strong{font-size:.84rem!important}
       .perf-summary-item strong,.perf-kpi strong{font-size:.96rem!important}
       div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]{flex-wrap:wrap!important}
       div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]{flex:0 0 calc(33.333% - 4px)!important;max-width:calc(33.333% - 4px)!important}
@@ -127,10 +132,11 @@ def _render_batter_market(history, category, period):
     summary = summarize(_records(history, category, period))
     total = summary["graded"] + summary["pending"]
     st.markdown(
-        f"<div class='perf-summary-row'>"
-        f"<div class='perf-summary-item'><span class='perf-label'>Hits / Predictions</span><strong>{summary['wins']} / {total}</strong><span>{summary['hit_rate']:.1f}% hit rate</span></div>"
-        f"<div class='perf-summary-item'><span class='perf-label'>Pending</span><strong>{summary['pending']}</strong><span>{'Awaiting results' if summary['pending'] else 'All graded'}</span></div>"
-        f"<div class='perf-summary-item'><span class='perf-label'>Settled</span><strong>{summary['graded']}</strong><span>predictions</span></div>"
+        f"<div class='perf-summary-row perf-batter-four'>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Hits / Predictions</span><strong>{summary['wins']} / {total}</strong></div>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Pending</span><strong>{summary['pending']}</strong></div>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Settled</span><strong>{summary['graded']}</strong></div>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Hit Rate</span><strong>{summary['hit_rate']:.1f}%</strong></div>"
         f"</div>", unsafe_allow_html=True
     )
     if summary["graded"]:
@@ -212,8 +218,6 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
     with batter_tab:
         st.markdown("#### 🌐 Overall MLB Batter Performance")
         period = _period_control("mlb_batter_performance_period")
-        _render_overall(batter_history, period)
-
         tabs = st.tabs([BATTER_CATEGORY_CONFIG[k][0] for k in BATTER_CATEGORY_CONFIG])
         for tab, category in zip(tabs, BATTER_CATEGORY_CONFIG):
             with tab:

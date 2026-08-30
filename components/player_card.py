@@ -275,7 +275,7 @@ def render_player_card(player_data: dict) -> None:
             display:grid;
             grid-template-columns:repeat(2,minmax(0,1fr));
             gap:7px;
-            margin:5px 0 12px;
+            margin:5px 0 6px;
         }
 
         .gi-evidence-grid > div {
@@ -290,7 +290,7 @@ def render_player_card(player_data: dict) -> None:
             display:grid;
             grid-template-columns:repeat(3,minmax(0,1fr));
             gap:6px;
-            margin:5px 0 12px;
+            margin:5px 0 6px;
         }
 
         .gi-statcast-grid .gi-intel-metric {
@@ -313,6 +313,15 @@ def render_player_card(player_data: dict) -> None:
 
         div[data-testid="stExpander"] summary svg {
             color:#19d978!important;
+        }
+
+        /* Keep inner evidence/statcast cards visibly separated from the outer expander border. */
+        div[data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+            padding:8px 14px 14px!important;
+        }
+
+        div[data-testid="stExpander"] [data-testid="stExpanderDetails"] > div {
+            padding-bottom:2px!important;
         }
 
         @media(max-width:700px) {
