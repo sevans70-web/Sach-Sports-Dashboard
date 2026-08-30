@@ -50,7 +50,9 @@ def _team_row(game: dict[str, Any], side: str) -> str:
     pitcher = str(game.get(f"{side}_probable_pitcher") or "Pitcher TBA")
     score = game.get(f"{side}_score")
     group = str(game.get("status_group") or "").lower()
-    right = str(score) if group in {"live", "final"} and score is not None else str(game.get(f"{side}_record") or "")
+    # The right column is reserved for the actual game score.
+    # Pregame season records are intentionally omitted here.
+    right = str(score) if group in {"live", "final"} and score is not None else ""
 
     return (
         "<div class='game-team-row'>"

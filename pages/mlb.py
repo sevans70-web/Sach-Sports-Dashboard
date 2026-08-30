@@ -2837,28 +2837,29 @@ st.markdown(
     """
     <style>
     div[class*="st-key-mlb_page_refresh"] button {
-      width:auto!important;
-      min-width:104px!important;
-      height:34px!important;
-      min-height:34px!important;
-      padding:0 12px!important;
-      margin:0 0 3px auto!important;
-      background:#f6c84c!important;
-      color:#080909!important;
-      border:1.5px solid #d6b35c!important;
-      border-radius:8px!important;
-      box-shadow:0 0 0 1px rgba(246,200,76,.14)!important;
-      font-size:.70rem!important;
+      width:72px!important;
+      min-width:72px!important;
+      height:72px!important;
+      min-height:72px!important;
+      padding:0!important;
+      margin:0 0 5px auto!important;
+      background:#090a0b!important;
+      color:#d6b35c!important;
+      border:2px solid #d6b35c!important;
+      border-radius:50%!important;
+      box-shadow:0 0 0 2px rgba(214,179,92,.12)!important;
+      font-size:.66rem!important;
       font-weight:900!important;
-      letter-spacing:.02em!important;
-      line-height:1!important;
+      letter-spacing:.035em!important;
+      line-height:1.18!important;
+      white-space:pre-line!important;
     }
     div[class*="st-key-mlb_page_refresh"] button:hover,
     div[class*="st-key-mlb_page_refresh"] button:focus {
-      background:#111714!important;
-      color:#19d978!important;
-      border-color:#19d978!important;
-      box-shadow:none!important;
+      background:#111312!important;
+      color:#f6c84c!important;
+      border-color:#f6c84c!important;
+      box-shadow:0 0 0 3px rgba(25,217,120,.12)!important;
     }
     .mlb-page-refresh-time {
       color:#8f949c;
@@ -2878,7 +2879,7 @@ st.markdown(
 )
 _refresh_left, _refresh_right = st.columns([6.8, 1.2], gap="small")
 with _refresh_right:
-    if st.button("⟳  REFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
+    if st.button("⟳\nREFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
         load_today_schedule.clear()
         load_today_lineups.clear()
         st.rerun()
