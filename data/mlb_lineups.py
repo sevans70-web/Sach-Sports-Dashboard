@@ -575,11 +575,17 @@ def get_previous_day_lineup_projection(
             if not player_id:
                 continue
 
+            prior_name = str(prior.get("player_name") or "").strip()
+            if not prior_name or prior_name.lower() in {"player", "mlb player"}:
+                details = _player_details({}, int(player_id))
+                prior_name = str(details.get("fullName") or f"MLB Player {player_id}")
+
             projected_hitters.append(
                 {
                     **prior,
                     "player_id": int(player_id),
-                    "player_name": prior.get("player_name") or "MLB Player",
+                    "player_name": prior_name,
+                    "headshot_url": prior.get("headshot_url") or get_player_headshot_url(int(player_id)),
                     "team_id": team_id,
                     "team_name": team_name,
                     "opponent_name": opponent_name,
