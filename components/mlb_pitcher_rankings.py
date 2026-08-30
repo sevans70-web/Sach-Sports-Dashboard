@@ -295,7 +295,7 @@ def render_pitcher_rankings() -> None:
         div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
             background:#101112!important;
             border:2px solid #3a3d42!important;
-            border-left:5px solid #19d978!important;
+            border-left:5px solid #d6b35c!important;
             border-radius:16px!important;
             overflow:hidden!important;
         }
@@ -314,12 +314,12 @@ def render_pitcher_rankings() -> None:
         .pitcher-photo{
             width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;
             max-width:50px!important;max-height:50px!important;border-radius:50%!important;
-            border:2px solid rgba(214,179,92,.82)!important;background:#050505!important;
+            border:2.5px solid #d6b35c!important;background:#050505!important;
             overflow:hidden!important;display:grid!important;place-items:center!important;
         }
         .pitcher-headshot{
             display:block!important;width:100%!important;height:100%!important;
-            object-fit:cover!important;object-position:center 28%!important;background:#050505!important;
+            object-fit:cover!important;object-position:center 18%!important;background:#050505!important;
             border-radius:50%!important;
         }
         .pitcher-photo-fallback{
@@ -345,11 +345,21 @@ def render_pitcher_rankings() -> None:
 
         .pitch-intel-summary,.pitch-evidence-grid{
             display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
-            gap:5px!important;margin:1px 0 3px!important;
+            gap:6px!important;margin:2px 0 8px!important;
         }
         .pitch-intel-summary>div,.pitch-evidence-grid>div{
             min-width:0!important;background:#101112!important;border:2px solid #3a3d42!important;
             border-radius:10px!important;padding:6px!important;
+        }
+        .pitch-intel-summary>div:nth-child(odd),
+        .pitch-evidence-grid>div:nth-child(odd){
+            border-left:3px solid #19d978!important;
+            border-bottom-color:rgba(25,217,120,.55)!important;
+        }
+        .pitch-intel-summary>div:nth-child(even),
+        .pitch-evidence-grid>div:nth-child(even){
+            border-left:3px solid #d6b35c!important;
+            border-bottom-color:rgba(214,179,92,.62)!important;
         }
         .pitch-intel-summary span,.pitch-evidence-grid span{display:block!important;color:#a7abb2!important;font-size:.57rem!important;line-height:1.08!important}
         .pitch-intel-summary b,.pitch-evidence-grid b{display:block!important;color:#fff!important;font-size:.81rem!important;line-height:1.05!important;margin-top:2px!important}
@@ -360,7 +370,7 @@ def render_pitcher_rankings() -> None:
         }
         div[data-testid="stExpander"]{margin:.18rem 0!important}
         div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
-        div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.05rem .42rem .30rem!important}
+        div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.08rem .42rem .62rem!important}
 
         /* No red tab underline anywhere in pitcher categories. */
         [data-testid="stTabs"] [data-baseweb="tab-highlight"],[data-baseweb="tab-highlight"]{
