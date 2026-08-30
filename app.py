@@ -28,7 +28,7 @@ st.markdown(
         color: var(--ssd-white) !important;
     }
 
-    /* Hide Streamlit/Community Cloud developer chrome on the deployed app. */
+    /* Hide Streamlit chrome; keep only our custom Sport Hub button. */
     header[data-testid="stHeader"],
     [data-testid="stHeader"],
     [data-testid="stToolbar"],
@@ -36,17 +36,28 @@ st.markdown(
     [data-testid="stHeaderActionElements"],
     [data-testid="stMainMenu"],
     [data-testid="stAppDeployButton"],
+    [data-testid="stAppDeployButtonContainer"],
+    [data-testid="stStatusWidget"],
+    [data-testid="stDecoration"],
     .stAppDeployButton,
     #MainMenu,
-    footer,
-    [data-testid="stDecoration"],
-    [data-testid="stStatusWidget"] {
+    footer {
         display: none !important;
         visibility: hidden !important;
         height: 0 !important;
         min-height: 0 !important;
         max-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
         overflow: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* Prevent hidden Streamlit chrome from reserving vertical space. */
+    [data-testid="stAppViewContainer"] > .main,
+    [data-testid="stMain"] {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
 
     [data-testid="stSidebar"],
@@ -75,7 +86,9 @@ st.markdown(
 
     div[data-testid="stPopover"] {
         position: relative !important;
-        z-index: 999 !important;
+        z-index: 10000 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     div[data-testid="stPopover"] > button,
