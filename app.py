@@ -28,15 +28,25 @@ st.markdown(
         color: var(--ssd-white) !important;
     }
 
+    /* Hide Streamlit/Community Cloud developer chrome on the deployed app. */
+    header[data-testid="stHeader"],
     [data-testid="stHeader"],
     [data-testid="stToolbar"],
+    [data-testid="stToolbarActions"],
+    [data-testid="stHeaderActionElements"],
+    [data-testid="stMainMenu"],
+    [data-testid="stAppDeployButton"],
+    .stAppDeployButton,
     #MainMenu,
     footer,
     [data-testid="stDecoration"],
     [data-testid="stStatusWidget"] {
         display: none !important;
+        visibility: hidden !important;
         height: 0 !important;
         min-height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
     }
 
     [data-testid="stSidebar"],
@@ -61,6 +71,11 @@ st.markdown(
         font-weight: 900;
         letter-spacing: .14em;
         text-transform: uppercase;
+    }
+
+    div[data-testid="stPopover"] {
+        position: relative !important;
+        z-index: 999 !important;
     }
 
     div[data-testid="stPopover"] > button,
@@ -105,6 +120,9 @@ st.markdown(
         .ssd-shell {
             min-height: 36px;
             margin-bottom: 5px;
+        }
+        div[data-testid="stPopover"] {
+            margin-top: 2px !important;
         }
         .ssd-shell-brand {
             font-size: .68rem;
