@@ -2832,17 +2832,28 @@ st.markdown(
 toronto_now = get_toronto_now()
 refreshed_time = toronto_now.strftime("%B %d, %Y at %I:%M %p ET")
 
-# MLB-level refresh controls live above the hero, aligned to the upper-right.
+# MLB-level refresh controls live above the hero as one right-aligned utility block.
 st.markdown(
     """
     <style>
+    /* Keep the functional Streamlit button and timestamp together on the right. */
+    div[class*="st-key-mlb_page_refresh"] {
+      display:flex!important;
+      justify-content:flex-end!important;
+      align-items:center!important;
+      width:100%!important;
+      margin:4px 0 3px!important;
+    }
+    div[class*="st-key-mlb_page_refresh"] > div {
+      width:auto!important;
+    }
     div[class*="st-key-mlb_page_refresh"] button {
       width:auto!important;
       min-width:108px!important;
       height:40px!important;
       min-height:40px!important;
       padding:0 13px!important;
-      margin:0 0 6px auto!important;
+      margin:0!important;
       background:#090a0b!important;
       color:#d6b35c!important;
       border:1.5px solid #d6b35c!important;
@@ -2862,32 +2873,33 @@ st.markdown(
       box-shadow:0 0 0 2px rgba(214,179,92,.14)!important;
     }
     .mlb-page-refresh-time {
+      width:100%;
       text-align:right;
-      color:#aeb1b7;
-      font-size:.76rem;
-      font-weight:600;
-      line-height:1.2;
-      margin:0 0 6px 0;
+      color:#b9bdc4;
+      font-size:.80rem;
+      font-weight:650;
+      line-height:1.25;
+      margin:0 0 10px 0;
       white-space:nowrap;
     }
-    .mlb-refresh-row-spacer { min-height:1px; }
     @media(max-width:700px){
-      div[class*="st-key-mlb_page_refresh"] { margin-top:18px!important; margin-bottom:0!important; }
+      div[class*="st-key-mlb_page_refresh"] { margin-top:5px!important; }
+      .mlb-page-refresh-time { font-size:.82rem; margin-bottom:9px; }
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-_refresh_left, _refresh_right = st.columns([6.8, 1.2], gap="small")
-with _refresh_right:
-    if st.button("⟳  REFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
-        load_today_schedule.clear()
-        load_today_lineups.clear()
-        st.rerun()
-    st.markdown(
-        f'<div class="mlb-page-refresh-time">Updated {toronto_now.strftime("%A · %I:%M %p ET")}</div>',
-        unsafe_allow_html=True,
-    )
+
+if st.button("⟳  REFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
+    load_today_schedule.clear()
+    load_today_lineups.clear()
+    st.rerun()
+
+st.markdown(
+    f'<div class="mlb-page-refresh-time">Updated {toronto_now.strftime("%A · %I:%M %p ET")}</div>',
+    unsafe_allow_html=True,
+)
 
 render_html(
     """
