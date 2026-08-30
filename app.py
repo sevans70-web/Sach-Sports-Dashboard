@@ -119,6 +119,10 @@ pages = {
     "Sports": [
         st.Page("pages/home.py", title="HOME", icon="🏠", default=True),
         st.Page("pages/mlb.py", title="MLB", icon="⚾"),
+        # Internal MLB drill-down pages. They are registered so st.switch_page
+        # works, but the custom Sport Hub does not expose them as top-level sports.
+        st.Page("pages/mlb_game.py", title="MLB GAME", icon="⚾"),
+        st.Page("pages/mlb_player.py", title="MLB PLAYER", icon="⚾"),
         st.Page("pages/wnba.py", title="WNBA", icon="🏀"),
         st.Page("pages/soccer.py", title="SOCCER", icon="⚽"),
         st.Page("pages/nfl.py", title="NFL", icon="🏈"),
@@ -129,7 +133,6 @@ pages = {
 }
 
 # Register all pages before rendering custom page links.
-# Streamlit page_link needs the st.navigation page registry to exist first.
 navigation = st.navigation(pages, position="hidden")
 
 # Compact square-grid Sport Hub in the upper-left.
@@ -162,7 +165,6 @@ st.markdown(
   [data-testid="stCaptionContainer"], small { font-size: .78rem !important; }
 }
 </style>
-
     """,
     unsafe_allow_html=True,
 )
