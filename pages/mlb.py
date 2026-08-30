@@ -2842,7 +2842,7 @@ st.markdown(
       justify-content:flex-end!important;
       align-items:center!important;
       width:100%!important;
-      margin:8px 0 4px!important;
+      margin:2px 0 4px!important;
     }
     div[class*="st-key-mlb_page_refresh"] > div {
       width:auto!important;
@@ -2883,7 +2883,7 @@ st.markdown(
       white-space:nowrap;
     }
     @media(max-width:700px){
-      div[class*="st-key-mlb_page_refresh"] { margin-top:7px!important; }
+      div[class*="st-key-mlb_page_refresh"] { margin-top:2px!important; }
       .mlb-page-refresh-time { font-size:.84rem; margin-bottom:10px; }
     }
     </style>
