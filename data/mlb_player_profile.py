@@ -139,3 +139,151 @@ def summarize_game_log(
     totals["recent_games"] = selected[-5:]
     totals["all_selected_games"] = selected
     return totals
+
+MLB_PERSON_URL = "https://statsapi.mlb.com/api/v1/people/{player_id}"
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_player_bio(player_id: int) -> dict[str, Any]:
+    """Return basic MLB player bio used to identify limited/rookie samples."""
+    try:
+        response = requests.get(
+            MLB_PERSON_URL.format(player_id=int(player_id)),
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+        people = response.json().get("people", []) or []
+    except (requests.RequestException, ValueError):
+        return {}
+
+    if not people:
+        return {}
+
+    person = people[0] or {}
+    return {
+        "player_id": int(player_id),
+        "full_name": person.get("fullName"),
+        "mlb_debut_date": person.get("mlbDebutDate"),
+        "primary_position": (person.get("primaryPosition", {}) or {}).get("abbreviation"),
+    }
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_batter_vs_pitcher_history(
+    batter_id: int,
+    pitcher_id: int,
+) -> dict[str, Any]:
+    """Return career MLB batter-vs-pitcher totals when MLB exposes them."""
+    if not batter_id or not pitcher_id:
+        return {}
+
+    url = MLB_STATS_URL.format(player_id=int(batter_id))
+    params = {
+        "stats": "vsPlayer",
+        "group": "hitting",
+        "opposingPlayerId": int(pitcher_id),
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=REQUEST_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        payload = response.json()
+    except (requests.RequestException, ValueError):
+        return {}
+
+    totals = {
+        "plate_appearances": 0,
+        "at_bats": 0,
+        "hits": 0,
+        "doubles": 0,
+        "triples": 0,
+        "home_runs": 0,
+        "total_bases": 0,
+        "runs": 0,
+        "rbi": 0,
+        "walks": 0,
+        "strikeouts": 0,
+    }
+
+    found = False
+    for block in payload.get("stats", []) or []:
+        for split in block.get("splits", []) or []:
+            stat = split.get("stat", {}) or {}
+            found = True
+            totals["plate_appearances"] += _int(
+                stat.get("plateAppearances")
+                or (
+                    _num(stat.get("atBats"))
+                    + _num(stat.get("baseOnBalls"))
+                    + _num(stat.get("hitByPitch"))
+                    + _num(stat.get("sacFlies"))
+                )
+            )
+            totals["at_bats"] += _int(stat.get("atBats"))
+            totals["hits"] += _int(stat.get("hits"))
+            totals["doubles"] += _int(stat.get("doubles"))
+            totals["triples"] += _int(stat.get("triples"))
+            totals["home_runs"] += _int(stat.get("homeRuns"))
+            totals["total_bases"] += _int(stat.get("totalBases"))
+            totals["runs"] += _int(stat.get("runs"))
+            totals["rbi"] += _int(stat.get("rbi"))
+            totals["walks"] += _int(stat.get("baseOnBalls"))
+            totals["strikeouts"] += _int(stat.get("strikeOuts"))
+
+    if not found:
+        return {}
+
+    ab = totals["at_bats"]
+    totals["avg"] = totals["hits"] / ab if ab else 0.0
+    totals["slg"] = totals["total_bases"] / ab if ab else 0.0
+    return totals
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_spring_training_hitting(
+    player_id: int,
+    season: int | None = None,
+) -> dict[str, Any]:
+    """Return current-season MLB Spring Training hitting totals when available."""
+    if season is None:
+        season = datetime.now(TORONTO_TIMEZONE).year
+
+    url = MLB_STATS_URL.format(player_id=int(player_id))
+    params = {
+        "stats": "statsSingleSeason",
+        "group": "hitting",
+        "season": int(season),
+        "gameType": "S",
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=REQUEST_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        payload = response.json()
+    except (requests.RequestException, ValueError):
+        return {}
+
+    for block in payload.get("stats", []) or []:
+        splits = block.get("splits", []) or []
+        if not splits:
+            continue
+        stat = (splits[0] or {}).get("stat", {}) or {}
+        ab = _int(stat.get("atBats"))
+        hits = _int(stat.get("hits"))
+        tb = _int(stat.get("totalBases"))
+        return {
+            "games": _int(stat.get("gamesPlayed")),
+            "at_bats": ab,
+            "plate_appearances": _int(stat.get("plateAppearances")),
+            "hits": hits,
+            "home_runs": _int(stat.get("homeRuns")),
+            "total_bases": tb,
+            "runs": _int(stat.get("runs")),
+            "rbi": _int(stat.get("rbi")),
+            "walks": _int(stat.get("baseOnBalls")),
+            "avg": hits / ab if ab else 0.0,
+            "slg": tb / ab if ab else 0.0,
+        }
+
+    return {}
+
