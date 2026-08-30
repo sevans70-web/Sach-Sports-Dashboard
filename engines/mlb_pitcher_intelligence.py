@@ -56,13 +56,11 @@ def _opponent_lineup_for_pitcher(
 
     side = "away" if pitcher.get("is_home") is True else "home"
     lineup = list(game.get(f"{side}_lineup") or [])
-    if len(lineup) < 9:
-        return lineup, "unavailable"
-    if bool(game.get(f"{side}_lineup_confirmed")):
+    if bool(game.get(f"{side}_lineup_confirmed")) and len(lineup) >= 9:
         return lineup, "confirmed"
-    if bool(game.get(f"{side}_lineup_projected")):
+    if len(lineup) >= 9:
         return lineup, "projected"
-    return lineup, "projected"
+    return lineup, "unavailable"
 
 
 def _lineup_handedness_weights(
