@@ -39,6 +39,10 @@ from data.mlb_prediction_results import (
     get_yesterday_hr_near_misses,
     grade_top_25,
 )
+from data.mlb_emerging_power import (
+    build_emerging_power_candidates,
+    emerging_power_explanation,
+)
 from data.ranking_history import load_previous_day_snapshot
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
@@ -483,6 +487,18 @@ def card_result_html(player: dict) -> str:
             Result: {result_label}
         </div>
     """
+@st.cache_data(ttl=600, show_spinner=False)
+def load_emerging_power_pool() -> list[dict]:
+    """Load a wider HR-ranked pool only when Emerging Power is opened."""
+    schedule_date = datetime.now(TORONTO_TIMEZONE).date()
+    result = get_all_rankings(
+        schedule_date=schedule_date,
+        recent_days=14,
+        limit=125,
+    )
+    return list((result.get("home_runs", {}) or {}).get("rankings", []) or [])
+
+
 @st.cache_data(ttl=300, show_spinner=False)
 def load_live_rankings() -> dict:
     """Load live MLB rankings, falling back only when the live refresh is empty."""
@@ -1946,10 +1962,22 @@ ALL_RANKING_LISTS = (
     HITS_RUNS_RBIS_RANKINGS,
 )
 PLAYER_INTELLIGENCE_LOOKUP: dict[int, dict] = {}
+PLAYER_MARKET_CONTEXT: dict[int, list[dict]] = {}
+
 for ranking_list in ALL_RANKING_LISTS:
     for ranked_player in ranking_list:
         player_id = int(ranked_player.get("player_id") or 0)
-        if player_id and player_id not in PLAYER_INTELLIGENCE_LOOKUP:
+        if not player_id:
+            continue
+
+        PLAYER_MARKET_CONTEXT.setdefault(player_id, []).append(ranked_player)
+
+        current = PLAYER_INTELLIGENCE_LOOKUP.get(player_id)
+        current_gi = float((current or {}).get("gi_score", (current or {}).get("score", 0)) or 0)
+        candidate_gi = float(
+            ranked_player.get("gi_score", ranked_player.get("score", 0)) or 0
+        )
+        if current is None or candidate_gi > current_gi:
             PLAYER_INTELLIGENCE_LOOKUP[player_id] = ranked_player
 
 def _short_team(value: str) -> str:
@@ -2062,7 +2090,7 @@ def render_live_hr_intelligence(rankings: list[dict]) -> None:
         else:
             outside.append(signal)
 
-    st.markdown("### 🔥 Live HR Intelligence")
+    st.markdown("**Live hard-contact signals**")
     st.caption(
         "Live hard-contact signals from all hitters in games currently in progress. "
         "Barrels and 95+ mph hard-hit balls are context signals, not guarantees."
@@ -2804,6 +2832,68 @@ render_html(
 )
 
 
+def render_emerging_power_watch() -> None:
+    """Surface low-HR / limited-sample hitters with evidence-backed upside."""
+    raw_pool = load_emerging_power_pool()
+    candidates = build_emerging_power_candidates(raw_pool, limit=10)
+
+    st.markdown("**Emerging Power · low-HR & limited-sample hitters**")
+    st.caption(
+        "This view looks for players whose low season HR total may hide stronger underlying "
+        "matchup/contact evidence. A player is never included simply because they are 'due'."
+    )
+
+    if not candidates:
+        st.info("No evidence-backed emerging-power signals qualify right now.")
+        return
+
+    def render_rows(rows: list[dict]) -> None:
+        html_rows = []
+        for row in rows:
+            name = escape(str(row.get("player_name") or "Player"))
+            team = escape(str(row.get("team_abbreviation") or row.get("team_name") or ""))
+            opponent = escape(str(row.get("opponent_abbreviation") or row.get("opponent_name") or ""))
+            season_hr = int(row.get("season_home_runs") or 0)
+            gi = float(row.get("gi_score") or 0)
+            probability = float(row.get("home_run_probability") or 0)
+            rookie_tag = (
+                " · ROOKIE/LIMITED SAMPLE"
+                if row.get("current_year_debut") or row.get("limited_sample")
+                else ""
+            )
+            evidence = emerging_power_explanation(row)
+            reason = escape(evidence[0] if evidence else "Underlying power indicators are being evaluated.")
+
+            html_rows.append(
+                f"""
+                <div style="
+                    padding:9px 0;
+                    border-bottom:1px solid rgba(148,163,184,.18);
+                    line-height:1.35;
+                ">
+                    <div>
+                        <strong>{name}</strong>
+                        <span style="opacity:.72;"> · {team} vs {opponent}{escape(rookie_tag)}</span>
+                    </div>
+                    <div style="margin-top:3px;color:#f6c84c;font-size:.82rem;">
+                        {season_hr} season HR · GI {gi:.1f}
+                        {f" · {probability:.0f}% HR" if probability else ""}
+                    </div>
+                    <div style="margin-top:3px;color:#b8bbc1;font-size:.78rem;">
+                        {reason}
+                    </div>
+                </div>
+                """
+            )
+        render_html("".join(html_rows))
+
+    render_rows(candidates[:4])
+    if len(candidates) > 4:
+        with st.expander(f"Show {len(candidates) - 4} more emerging-power signals"):
+            render_rows(candidates[4:])
+
+
+
 st.markdown(
     """
     <style>
@@ -2856,11 +2946,13 @@ st.markdown(
 )
 
 if st.button(
-    "⚾  TODAY'S MLB GAMES   ›\\nOpen today's slate, lineups & Game Intelligence",
+    "⚾ TODAY'S MLB GAMES  ›  Open today's slate, lineups & Game Intelligence",
     key="mlb_games_entry",
     use_container_width=True,
 ):
     st.session_state.pop("mlb_selected_game", None)
+    st.session_state["mlb_ranked_player_lookup"] = PLAYER_INTELLIGENCE_LOOKUP
+    st.session_state["mlb_player_market_context"] = PLAYER_MARKET_CONTEXT
     st.switch_page("pages/mlb_games.py")
 
 # The snapshot still needs game + lineup totals, but the slate itself now lives
@@ -2869,8 +2961,8 @@ live_schedule = load_today_schedule()
 live_schedule["lineup_data"] = load_today_lineups()
 live_summary = schedule_summary(live_schedule)
 
-confirmed_teams = live_summary.get("confirmed_teams", 0)
-total_teams = live_summary.get("total_teams", 0)
+confirmed_teams = live_summary.get("lineups_confirmed", 0)
+total_teams = live_summary.get("lineups_total", 0)
 pending_teams = max(total_teams - confirmed_teams, 0)
 weather_count, weather_note = weather_alert_summary(HOME_RUN_RANKINGS)
 lineup_note = "Confirmed" if pending_teams == 0 and total_teams else f"{pending_teams} pending"
@@ -2901,19 +2993,22 @@ render_html(
     </div>
     """
 )
-if not (HAS_FULL_TEAM_SLATE and ALL_TOP_25_COMPLETE):
-    st.warning(
-        "Ranking data is incomplete: "
-        f"{RANKING_GAME_COUNT} games, "
-        f"{RANKING_TEAM_COUNT} teams, "
-        f"{RANKING_HITTER_COUNT} hitters loaded. "
-        "Use the rankings cautiously while the remaining data loads."
-    )
-render_live_hr_intelligence(HOME_RUN_RANKINGS)
+st.markdown("### 🔥 HR Intelligence")
+hr_intel_view = st.segmented_control(
+    "HR Intelligence view",
+    options=["Live HR", "Yesterday", "Emerging Power"],
+    default="Live HR",
+    key="mlb_hr_intelligence_view",
+    selection_mode="single",
+    label_visibility="collapsed",
+) or "Live HR"
 
-st.divider()
-
-render_yesterday_power_watch(HOME_RUN_RANKINGS)
+if hr_intel_view == "Live HR":
+    render_live_hr_intelligence(HOME_RUN_RANKINGS)
+elif hr_intel_view == "Yesterday":
+    render_yesterday_power_watch(HOME_RUN_RANKINGS)
+else:
+    render_emerging_power_watch()
 
 st.divider()
 

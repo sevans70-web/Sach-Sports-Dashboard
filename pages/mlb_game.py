@@ -66,11 +66,13 @@ def _team_row(game: dict[str, Any], side: str) -> str:
 
 def _open_player(player: dict[str, Any], game: dict[str, Any]) -> None:
     ranked_lookup = st.session_state.get("mlb_ranked_player_lookup", {}) or {}
+    market_lookup = st.session_state.get("mlb_player_market_context", {}) or {}
     player_id = int(player.get("player_id") or 0)
     ranked = ranked_lookup.get(player_id)
 
     context = dict(player)
     context["game"] = game
+    context["market_context"] = list(market_lookup.get(player_id, []) or [])
     if ranked:
         context["ranking"] = ranked
 
@@ -141,6 +143,13 @@ st.markdown(
       .game-team-logo,.game-team-logo-fallback{width:40px;height:40px}
       .game-team-copy strong{font-size:.94rem}
       div[class*="st-key-open_player_"] button{font-size:.65rem!important;padding:.28rem .30rem!important}
+    }
+    div[class*="st-key-back_to_mlb_from_game"] button{
+      background:#080909!important;color:#fff!important;border:1.5px solid #34373c!important;
+      border-radius:10px!important;min-height:38px!important;font-weight:800!important;
+    }
+    div[class*="st-key-back_to_mlb_from_game"] button:hover{
+      border-color:#d6b35c!important;color:#f6c84c!important;
     }
     </style>
     """,
