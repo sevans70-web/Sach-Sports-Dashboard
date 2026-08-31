@@ -67,6 +67,24 @@ st.markdown(
 
     .block-container {
         padding-top: .55rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    [data-testid="stMainBlockContainer"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    [data-testid="stPopover"],
+    [data-testid="stMainBlockContainer"] > div {
+        transition: none !important;
+        animation: none !important;
     }
 
     /* Community Cloud can keep a host-level owner strip visible.
@@ -177,23 +195,21 @@ pages = {
 navigation = st.navigation(pages, position="hidden")
 
 # Compact square-grid Sport Hub in the upper-left.
-nav_col, brand_col = st.columns([0.55, 9.45], vertical_alignment="center")
-with nav_col:
-    with st.popover("▦", use_container_width=False):
-        st.markdown("**SPORT HUB**")
-        left, right = st.columns(2)
-        with left:
-            st.page_link("pages/home.py", label="HOME", icon="🏠")
-            st.page_link("pages/mlb.py", label="MLB", icon="⚾")
-            st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
-            st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
-        with right:
-            st.page_link("pages/nfl.py", label="NFL", icon="🏈")
-            st.page_link("pages/cfb.py", label="CFB", icon="🏈")
-            st.page_link("pages/nba.py", label="NBA", icon="🏀")
-            st.page_link("pages/nhl.py", label="NHL", icon="🏒")
-with brand_col:
-    st.markdown('<div class="ssd-shell"></div>', unsafe_allow_html=True)
+# Render directly instead of inside temporary columns so it does not shift
+# or disappear while the page is hydrating.
+with st.popover("▦", use_container_width=False):
+    st.markdown("**SPORT HUB**")
+    left, right = st.columns(2)
+    with left:
+        st.page_link("pages/home.py", label="HOME", icon="🏠")
+        st.page_link("pages/mlb.py", label="MLB", icon="⚾")
+        st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
+        st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
+    with right:
+        st.page_link("pages/nfl.py", label="NFL", icon="🏈")
+        st.page_link("pages/cfb.py", label="CFB", icon="🏈")
+        st.page_link("pages/nba.py", label="NBA", icon="🏀")
+        st.page_link("pages/nhl.py", label="NHL", icon="🏒")
 
 navigation.run()
 
