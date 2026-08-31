@@ -3570,9 +3570,10 @@ st.markdown(
     .gi-native-photo img{
         width:100%!important;
         height:100%!important;
-        object-fit:cover!important;
-        object-position:center 24%!important;
+        object-fit:contain!important;
+        object-position:center center!important;
         border-radius:50%!important;
+        background:#080909!important;
     }
 
     .gi-card-player{
