@@ -48,6 +48,7 @@ from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
     load_compare_and_save,
+    load_compare_and_save_local,
     player_key,
 )
 
@@ -593,17 +594,36 @@ def load_previous_rankings() -> dict:
 def load_batter_movement_snapshot(
     category_rankings: dict[str, list[dict]],
 ) -> dict:
-    """Persist/compare movement at most once per cache window, not every click."""
-    snapshot_config = GitHubSnapshotConfig(
-        repository="sevans70-web/Sach-Sports-Dashboard",
-        token=_github_token(),
-        branch="main",
-        path="data/intraday_rankings.json",
-    )
-    return load_compare_and_save(
-        config=snapshot_config,
+    """
+    Compare today's Top 25 against the last material ranking.
+
+    GitHub remains the durable source when its token can read/write. If that
+    persistence is unavailable, keep a server-runtime snapshot instead of
+    dropping all the way back to browser-session state.
+    """
+    captured_at = get_toronto_now()
+    token = _github_token()
+
+    if token:
+        try:
+            snapshot_config = GitHubSnapshotConfig(
+                repository="sevans70-web/Sach-Sports-Dashboard",
+                token=token,
+                branch="main",
+                path="data/intraday_rankings.json",
+            )
+            return load_compare_and_save(
+                config=snapshot_config,
+                category_rankings=category_rankings,
+                captured_at=captured_at,
+            )
+        except (ValueError, KeyError, RankingSnapshotError):
+            pass
+
+    return load_compare_and_save_local(
         category_rankings=category_rankings,
-        captured_at=get_toronto_now(),
+        captured_at=captured_at,
+        path="/tmp/sach_mlb_batter_intraday_rankings.json",
     )
 
 
@@ -3650,3 +3670,44 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+
+st.markdown(
+    """
+    <style>
+    /* MLB LOAD STABILITY: keep Top-25 cards anchored while Streamlit hydrates. */
+    [data-testid="stMainBlockContainer"],
+    .block-container,
+    [data-testid="stVerticalBlock"],
+    [data-testid="stElementContainer"]{
+        box-sizing:border-box!important;
+        max-width:100%!important;
+        min-width:0!important;
+    }
+    [data-testid="stMainBlockContainer"],
+    .block-container{
+        width:100%!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+        overflow-x:hidden!important;
+    }
+    [class*="st-key-show_"][class*="_player_"],
+    [class*="st-key-show_"][class*="_top5_player_"],
+    .gi-card-header{
+        width:100%!important;
+        max-width:100%!important;
+        min-width:0!important;
+        transform:none!important;
+        translate:none!important;
+        transition:none!important;
+        animation:none!important;
+    }
+    @media(max-width:700px){
+        html,body,[data-testid="stAppViewContainer"],.stApp{
+            overflow-x:hidden!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
