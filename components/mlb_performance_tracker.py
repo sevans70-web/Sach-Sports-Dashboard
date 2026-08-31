@@ -101,11 +101,17 @@ def _styles():
       .perf-summary-row.perf-batter-four .perf-label{font-size:.56rem!important;line-height:1.08!important}
       .perf-summary-row.perf-batter-four .perf-summary-item strong{font-size:.84rem!important}
       .perf-summary-item strong,.perf-kpi strong{font-size:.96rem!important}
-      div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]{flex-wrap:wrap!important}
-      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]{flex:0 0 calc(33.333% - 4px)!important;max-width:calc(33.333% - 4px)!important}
-      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]:nth-child(4),
-      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]:nth-child(5){flex-basis:calc(50% - 3px)!important;max-width:calc(50% - 3px)!important}
-      div[class*="st-key-mlb_performance_period_control"] button{font-size:.70rem!important;min-height:34px!important}
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]{
+        flex-wrap:nowrap!important;gap:0!important;overflow-x:auto!important;scrollbar-width:none!important
+      }
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stHorizontalBlock"]::-webkit-scrollbar{display:none!important}
+      div[class*="st-key-mlb_performance_period_control"] [data-testid="stColumn"]{
+        flex:1 1 20%!important;min-width:0!important;max-width:20%!important
+      }
+      div[class*="st-key-mlb_performance_period_control"] button{
+        width:100%!important;min-width:0!important;padding-left:3px!important;padding-right:3px!important;
+        font-size:.61rem!important;min-height:34px!important;white-space:nowrap!important
+      }
     }
     
     [data-testid="stTabs"] [data-baseweb="tab-highlight"],

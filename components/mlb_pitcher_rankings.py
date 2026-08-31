@@ -13,6 +13,7 @@ from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
     load_compare_and_save,
+    load_compare_and_save_local,
 )
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
@@ -55,7 +56,9 @@ def _normalized_rankings(rankings: dict[str, list[dict]]) -> dict[str, list[dict
                 "player_id": row.get("pitcher_id"),
                 "player": row.get("pitcher_name") or "Pitcher",
                 "team": row.get("team_name") or "",
+                "team_id": row.get("team_id"),
                 "opponent": row.get("opponent_name") or "",
+                "opponent_id": row.get("opponent_id"),
                 "score": row.get("gi_score"),
             })
     return normalized
@@ -145,7 +148,44 @@ def _attach_persistent_movement(rankings: dict[str, list[dict]]) -> dict[str, li
         except (ValueError, KeyError, RankingSnapshotError):
             pass
 
-    return _attach_session_fallback(rankings)
+    try:
+        result = load_compare_and_save_local(
+            category_rankings=_normalized_rankings(rankings),
+            captured_at=datetime.now(TORONTO_TIMEZONE),
+            path="/tmp/sach_mlb_pitcher_intraday_rankings.json",
+        )
+        comparisons = result.get("comparisons", {})
+        has_previous = result.get("previous_snapshot") is not None
+
+        for category, rows in rankings.items():
+            lookup = {
+                str(item.get("player_key")): item.get("movement", {})
+                for item in comparisons.get(category, {}).get("current", [])
+            }
+            for i, row in enumerate(rows):
+                pid = int(row.get("pitcher_id") or 0)
+                current = int(row.get("rank") or i + 1)
+                key = str(pid or str(row.get("pitcher_name") or "").casefold())
+                row["movement"] = lookup.get(
+                    key,
+                    {
+                        "status": "unchanged",
+                        "previous": current,
+                        "current": current,
+                    },
+                ) if has_previous else {
+                    "status": "unchanged",
+                    "previous": current,
+                    "current": current,
+                }
+
+        st.session_state["mlb_pitcher_previous_rankings"] = {
+            cat: [dict(row) for row in rows]
+            for cat, rows in rankings.items()
+        }
+        return rankings
+    except Exception:
+        return _attach_session_fallback(rankings)
 
 
 def _attach_session_fallback(rankings: dict[str, list[dict]]) -> dict[str, list[dict]]:
@@ -212,12 +252,59 @@ def _headshot_html(row: dict) -> str:
     return f'<span class="pitcher-photo-fallback">{escape(initials)}</span>'
 
 
-def _matchup(row: dict) -> str:
+def _short_team(value: str) -> str:
+    teams = {
+        "Arizona Diamondbacks": "ARI", "Athletics": "ATH",
+        "Atlanta Braves": "ATL", "Baltimore Orioles": "BAL",
+        "Boston Red Sox": "BOS", "Chicago Cubs": "CHC",
+        "Chicago White Sox": "CWS", "Cincinnati Reds": "CIN",
+        "Cleveland Guardians": "CLE", "Colorado Rockies": "COL",
+        "Detroit Tigers": "DET", "Houston Astros": "HOU",
+        "Kansas City Royals": "KC", "Los Angeles Angels": "LAA",
+        "Los Angeles Dodgers": "LAD", "Miami Marlins": "MIA",
+        "Milwaukee Brewers": "MIL", "Minnesota Twins": "MIN",
+        "New York Mets": "NYM", "New York Yankees": "NYY",
+        "Philadelphia Phillies": "PHI", "Pittsburgh Pirates": "PIT",
+        "San Diego Padres": "SD", "San Francisco Giants": "SF",
+        "Seattle Mariners": "SEA", "St. Louis Cardinals": "STL",
+        "Tampa Bay Rays": "TB", "Texas Rangers": "TEX",
+        "Toronto Blue Jays": "TOR", "Washington Nationals": "WSH",
+    }
+    value = str(value or "").strip()
+    return teams.get(value, value)
+
+
+def _team_logo(team_id: object, team_name: str) -> str:
+    try:
+        numeric_id = int(team_id or 0)
+    except (TypeError, ValueError):
+        numeric_id = 0
+    if not numeric_id:
+        return ""
+    return (
+        f'<img class="pitcher-team-logo" '
+        f'src="https://www.mlbstatic.com/team-logos/{numeric_id}.svg" '
+        f'alt="{escape(_short_team(team_name))} logo" loading="lazy">'
+    )
+
+
+def _matchup_html(row: dict) -> str:
     team = str(row.get("team_name") or "TBD")
     opponent = str(row.get("opponent_name") or "TBD")
     if row.get("is_home") is True:
-        return f"{opponent} vs. {team}"
-    return f"{team} vs. {opponent}"
+        away_name, away_id = opponent, row.get("opponent_id")
+        home_name, home_id = team, row.get("team_id")
+    else:
+        away_name, away_id = team, row.get("team_id")
+        home_name, home_id = opponent, row.get("opponent_id")
+
+    return (
+        f'{_team_logo(away_id, away_name)}'
+        f'<span>{escape(_short_team(away_name))}</span>'
+        f'<span class="pitcher-vs">vs.</span>'
+        f'{_team_logo(home_id, home_name)}'
+        f'<span>{escape(_short_team(home_name))}</span>'
+    )
 
 
 def _projection_text(category: str, row: dict) -> str:
@@ -287,7 +374,7 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                 <div class="pitcher-photo">{_headshot_html(row)}</div>
                 <div class="pitcher-copy">
                     <strong>{escape(name)}</strong>
-                    <span>{escape(_matchup(row))}{escape(f' · {hand}HP' if hand else '')}</span>
+                    <span class="pitcher-matchup">{_matchup_html(row)}{escape(f' · {hand}HP' if hand else '')}</span>
                     <span class="pitcher-projection"><b>Projection:</b> {escape(_projection_text(category,row))}</span>
                     <span class="pitcher-reason">{escape(reason)}</span>
                     <em class="{lineup_class}">{escape(lineup)}</em>
@@ -417,7 +504,8 @@ def render_pitcher_rankings() -> None:
             height:100%!important;
             object-fit:contain!important;
             object-position:center center!important;
-            transform:none!important;
+            transform:scale(.86) translateY(-2%)!important;
+            transform-origin:center center!important;
             border-radius:50%!important;
             background:#080909!important;
         }
@@ -455,6 +543,20 @@ def render_pitcher_rankings() -> None:
             line-height:1.18!important;
             overflow-wrap:anywhere!important;
         }
+        .pitcher-matchup{
+            display:flex!important;
+            align-items:center!important;
+            gap:5px!important;
+            min-width:0!important;
+            white-space:nowrap!important;
+            overflow:hidden!important;
+            text-overflow:ellipsis!important;
+        }
+        .pitcher-team-logo{
+            width:19px!important;height:19px!important;
+            object-fit:contain!important;flex:0 0 19px!important;
+        }
+        .pitcher-vs{color:#a7abb2!important;font-weight:700!important}
         .pitcher-projection b{color:#f6c84c!important}
         .pitcher-reason{
             display:-webkit-box!important;
@@ -468,7 +570,7 @@ def render_pitcher_rankings() -> None:
             justify-self:start!important;
             display:inline-block!important;
             width:auto!important;
-            margin:3px 0 2px!important;
+            margin:4px 0 7px!important;
             padding:3px 7px!important;
             border-radius:999px!important;
             font-size:.58rem!important;
@@ -558,7 +660,7 @@ def render_pitcher_rankings() -> None:
             border-radius:9px!important;
             min-height:34px!important;
             padding:.15rem .55rem!important;
-            margin-top:3px!important;
+            margin-top:0!important;
             font-size:.72rem!important;
         }
 
@@ -617,3 +719,24 @@ def render_pitcher_rankings() -> None:
     for tab, category in zip(tabs, CATEGORY_CONFIG):
         with tab:
             _render_category(category, rankings.get(category, []))
+
+
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-pitcher_card_"],
+    div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"],
+    .pitcher-card-main{
+        width:100%!important;
+        max-width:100%!important;
+        min-width:0!important;
+        box-sizing:border-box!important;
+        transform:none!important;
+        translate:none!important;
+        transition:none!important;
+        animation:none!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
