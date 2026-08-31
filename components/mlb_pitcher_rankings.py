@@ -342,11 +342,12 @@ def render_pitcher_rankings() -> None:
     st.markdown(
         """
         <style>
-        /* Pitcher cards use the same compact visual language as batter cards. */
+        /* PITCHER TOP-25 = EXACT BATTER CARD GEOMETRY, GOLD ROLE ACCENT */
         div[class*="st-key-pitcher_card_"]{
             border-left:5px solid #d6b35c!important;
             border-radius:16px!important;
         }
+
         div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
             background:#101112!important;
             border:2px solid #3a3d42!important;
@@ -354,57 +355,177 @@ def render_pitcher_rankings() -> None:
             border-radius:16px!important;
             overflow:hidden!important;
         }
-        div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlock"]{gap:.22rem!important}
+
+        div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlock"]{
+            gap:.12rem!important;
+        }
+
         .pitcher-card-main{
             display:grid!important;
-            grid-template-columns:38px 52px minmax(0,1fr) 52px!important;
+            grid-template-columns:38px 54px minmax(0,1fr) 54px!important;
             gap:7px!important;
-            align-items:center!important;
+            align-items:start!important;
             min-width:0!important;
-            padding:4px 1px 5px!important;
+            padding:5px 1px 2px!important;
         }
-        .pitcher-rank{text-align:center!important;min-width:0!important}
-        .pitcher-rank strong{display:block!important;color:#19d978!important;font-size:.96rem!important;font-weight:900!important}
-        .pitcher-rank small{display:block!important;color:#f6c84c!important;font-size:.56rem!important;font-weight:900!important;white-space:nowrap!important;margin-top:1px!important}
-        .pitcher-photo{
-            width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;
-            max-width:50px!important;max-height:50px!important;border-radius:50%!important;
-            border:2.5px solid #d6b35c!important;background:#050505!important;
-            overflow:hidden!important;display:grid!important;place-items:center!important;
-        }
-        .pitcher-headshot{
-            display:block!important;width:100%!important;height:100%!important;
-            object-fit:cover!important;object-position:center 18%!important;background:#050505!important;
-            border-radius:50%!important;
-        }
-        .pitcher-photo-fallback{
-            width:100%!important;height:100%!important;place-items:center!important;border-radius:50%!important;
-            color:#fff!important;font-size:.82rem!important;font-weight:900!important;background:#050505!important;
-        }
-        .pitcher-copy{min-width:0!important;display:grid!important;gap:1px!important;overflow:hidden!important}
-        .pitcher-copy>strong{color:#fff!important;font-size:.90rem!important;font-weight:900!important;line-height:1.08!important;overflow-wrap:anywhere!important}
-        .pitcher-copy>span{color:#d0d2d5!important;font-size:.66rem!important;line-height:1.15!important;overflow-wrap:anywhere!important}
-        .pitcher-projection b{color:#f6c84c!important}
-        .pitcher-reason{display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important;margin-top:1px!important}
-        .pitcher-copy em{
-            justify-self:start!important;display:inline-block!important;margin:4px 0 6px!important;
-            padding:3px 7px!important;border-radius:999px!important;font-size:.57rem!important;
-            font-style:normal!important;font-weight:850!important;max-width:100%!important;
-        }
-        .pitch-lineup-confirmed{color:#c8f7d9!important;border:1px solid rgba(47,191,113,.55)!important;background:rgba(47,191,113,.10)!important}
-        .pitch-lineup-projected{color:#fde68a!important;border:1px solid rgba(214,179,92,.55)!important;background:rgba(214,179,92,.10)!important}
-        .pitch-lineup-unavailable{color:#a7abb2!important;border:1px solid #3a3d42!important;background:#101112!important}
-        .pitcher-score{text-align:right!important;min-width:0!important}
-        .pitcher-score small{color:#a7abb2!important;font-size:.54rem!important;font-weight:850!important}
-        .pitcher-score strong{display:block!important;color:#f6c84c!important;font-size:.96rem!important;margin-top:2px!important}
 
+        .pitcher-rank{
+            text-align:center!important;
+            min-width:0!important;
+            padding-top:5px!important;
+            font-size:.92rem!important;
+            line-height:1!important;
+        }
+        .pitcher-rank strong{
+            display:block!important;
+            color:#19d978!important;
+            font-size:.92rem!important;
+            font-weight:900!important;
+            line-height:1!important;
+        }
+        .pitcher-rank small{
+            display:block!important;
+            color:#f6c84c!important;
+            margin-top:5px!important;
+            font-size:.55rem!important;
+            line-height:1!important;
+            font-weight:900!important;
+            white-space:nowrap!important;
+        }
+
+        /* SAME circle dimensions/ring system as batter. */
+        .pitcher-photo{
+            width:52px!important;
+            height:52px!important;
+            min-width:52px!important;
+            min-height:52px!important;
+            max-width:52px!important;
+            max-height:52px!important;
+            border-radius:50%!important;
+            border:2px solid rgba(214,179,92,.86)!important;
+            overflow:hidden!important;
+            background:#080909!important;
+            display:grid!important;
+            place-items:center!important;
+        }
+
+        /* Important: contain the MLB headshot instead of cropping it.
+           This is the face/chin correction. */
+        .pitcher-headshot{
+            display:block!important;
+            width:100%!important;
+            height:100%!important;
+            object-fit:contain!important;
+            object-position:center center!important;
+            transform:none!important;
+            border-radius:50%!important;
+            background:#080909!important;
+        }
+
+        .pitcher-photo-fallback{
+            width:100%!important;
+            height:100%!important;
+            display:grid!important;
+            place-items:center!important;
+            border-radius:50%!important;
+            color:#fff!important;
+            font-size:.82rem!important;
+            font-weight:900!important;
+            background:#080909!important;
+        }
+
+        .pitcher-copy{
+            min-width:0!important;
+            display:grid!important;
+            gap:1px!important;
+            align-self:start!important;
+            overflow:hidden!important;
+        }
+        .pitcher-copy>strong{
+            color:#fff!important;
+            font-size:.92rem!important;
+            font-weight:900!important;
+            line-height:1.08!important;
+            margin-bottom:1px!important;
+            overflow-wrap:anywhere!important;
+        }
+        .pitcher-copy>span{
+            color:#d0d2d5!important;
+            font-size:.69rem!important;
+            line-height:1.18!important;
+            overflow-wrap:anywhere!important;
+        }
+        .pitcher-projection b{color:#f6c84c!important}
+        .pitcher-reason{
+            display:-webkit-box!important;
+            -webkit-line-clamp:2!important;
+            -webkit-box-orient:vertical!important;
+            overflow:hidden!important;
+            margin-top:2px!important;
+            color:#e5e7eb!important;
+        }
+        .pitcher-copy em{
+            justify-self:start!important;
+            display:inline-block!important;
+            width:auto!important;
+            margin:3px 0 2px!important;
+            padding:3px 7px!important;
+            border-radius:999px!important;
+            font-size:.58rem!important;
+            line-height:1.08!important;
+            font-style:normal!important;
+            font-weight:850!important;
+            white-space:nowrap!important;
+        }
+
+        .pitch-lineup-confirmed{
+            color:#c8f7d9!important;
+            border:1px solid rgba(47,191,113,.55)!important;
+            background:rgba(47,191,113,.10)!important;
+        }
+        .pitch-lineup-projected{
+            color:#fde68a!important;
+            border:1px solid rgba(214,179,92,.55)!important;
+            background:rgba(214,179,92,.10)!important;
+        }
+        .pitch-lineup-unavailable{
+            color:#a7abb2!important;
+            border:1px solid #3a3d42!important;
+            background:#101112!important;
+        }
+
+        .pitcher-score{
+            text-align:right!important;
+            min-width:0!important;
+            align-self:start!important;
+            padding-top:5px!important;
+        }
+        .pitcher-score small{
+            display:block!important;
+            color:#a7abb2!important;
+            font-size:.50rem!important;
+            font-weight:850!important;
+        }
+        .pitcher-score strong{
+            display:block!important;
+            color:#f6c84c!important;
+            font-size:.88rem!important;
+            margin-top:2px!important;
+        }
+
+        /* EXACT SAME green/gold language as batter intelligence boxes. */
         .pitch-intel-summary,.pitch-evidence-grid{
-            display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
-            gap:6px!important;margin:2px 0 8px!important;
+            display:grid!important;
+            grid-template-columns:repeat(3,minmax(0,1fr))!important;
+            gap:6px!important;
+            margin:2px 0 8px!important;
         }
         .pitch-intel-summary>div,.pitch-evidence-grid>div{
-            min-width:0!important;background:#101112!important;border:2px solid #3a3d42!important;
-            border-radius:10px!important;padding:6px!important;
+            min-width:0!important;
+            background:#101112!important;
+            border:2px solid #3a3d42!important;
+            border-radius:10px!important;
+            padding:6px!important;
         }
         .pitch-intel-summary>div:nth-child(odd),
         .pitch-evidence-grid>div:nth-child(odd){
@@ -416,25 +537,67 @@ def render_pitcher_rankings() -> None:
             border-left:3px solid #d6b35c!important;
             border-bottom-color:rgba(214,179,92,.62)!important;
         }
-        .pitch-intel-summary span,.pitch-evidence-grid span{display:block!important;color:#a7abb2!important;font-size:.57rem!important;line-height:1.08!important}
-        .pitch-intel-summary b,.pitch-evidence-grid b{display:block!important;color:#fff!important;font-size:.81rem!important;line-height:1.05!important;margin-top:2px!important}
+        .pitch-intel-summary span,.pitch-evidence-grid span{
+            display:block!important;
+            color:#a7abb2!important;
+            font-size:.57rem!important;
+            line-height:1.08!important;
+        }
+        .pitch-intel-summary b,.pitch-evidence-grid b{
+            display:block!important;
+            color:#fff!important;
+            font-size:.81rem!important;
+            line-height:1.05!important;
+            margin-top:2px!important;
+        }
 
         div[class*="st-key-pitcher_intelligence_"] button{
-            background:#080909!important;color:#fff!important;border:2px solid #d6b35c!important;
-            border-radius:10px!important;min-height:35px!important;margin-top:4px!important;
+            background:#080909!important;
+            color:#fff!important;
+            border:2px solid #d6b35c!important;
+            border-radius:9px!important;
+            min-height:34px!important;
+            padding:.15rem .55rem!important;
+            margin-top:3px!important;
+            font-size:.72rem!important;
         }
-        div[data-testid="stExpander"]{margin:.18rem 0!important}
-        div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
-        div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.08rem .42rem .62rem!important}
 
-        /* No red tab underline anywhere in pitcher categories. */
-        [data-testid="stTabs"] [data-baseweb="tab-highlight"],[data-baseweb="tab-highlight"]{
-            background:#d6b35c!important;background-color:#d6b35c!important;
+        div[data-testid="stExpander"]{margin:.18rem 0!important}
+        div[data-testid="stExpander"] summary{
+            min-height:33px!important;
+            padding:.18rem .42rem!important;
         }
-        [data-testid="stTabs"] button[role="tab"][aria-selected="true"],button[data-baseweb="tab"][aria-selected="true"]{
-            box-shadow:inset 0 -3px 0 #d6b35c!important;border-bottom-color:#d6b35c!important;color:#fff!important;
+        div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{
+            padding:.08rem .42rem .62rem!important;
         }
+
+        [data-testid="stTabs"] [data-baseweb="tab-highlight"],
+        [data-baseweb="tab-highlight"]{
+            background:#d6b35c!important;
+            background-color:#d6b35c!important;
+        }
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+        button[data-baseweb="tab"][aria-selected="true"]{
+            box-shadow:inset 0 -3px 0 #d6b35c!important;
+            border-bottom-color:#d6b35c!important;
+            color:#fff!important;
+        }
+
         @media(max-width:700px){
+            .pitcher-card-main{
+                grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+                gap:6px!important;
+            }
+            .pitcher-photo{
+                width:48px!important;
+                height:48px!important;
+                min-width:48px!important;
+                min-height:48px!important;
+                max-width:48px!important;
+                max-height:48px!important;
+            }
+            .pitcher-copy>strong{font-size:.88rem!important}
+            .pitcher-copy>span{font-size:.66rem!important}
             h3{margin-top:.10rem!important;margin-bottom:.08rem!important}
             [data-testid="stTabs"] [role="tablist"]{margin-bottom:0!important}
         }
@@ -442,6 +605,7 @@ def render_pitcher_rankings() -> None:
         """,
         unsafe_allow_html=True,
     )
+
 
     result = get_pitcher_rankings(limit=25)
     if not result.get("success"):
@@ -453,71 +617,3 @@ def render_pitcher_rankings() -> None:
     for tab, category in zip(tabs, CATEGORY_CONFIG):
         with tab:
             _render_category(category, rankings.get(category, []))
-
-
-st.markdown(
-    """
-    <style>
-    /* LOCKED COMPACT PITCHER CARD REDESIGN */
-    div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlock"]{
-        gap:.12rem!important;
-    }
-
-    .pitcher-card-main{
-        grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
-        gap:6px!important;
-        align-items:start!important;
-        padding:4px 1px 2px!important;
-    }
-
-    .pitcher-rank{padding-top:5px!important}
-    .pitcher-rank strong{font-size:.92rem!important}
-    .pitcher-rank small{
-        margin-top:5px!important;
-        font-size:.54rem!important;
-        line-height:1!important;
-    }
-
-    .pitcher-photo{
-        width:48px!important;height:48px!important;
-        min-width:48px!important;min-height:48px!important;
-        max-width:48px!important;max-height:48px!important;
-    }
-    .pitcher-headshot{
-        object-fit:cover!important;
-        object-position:center 8%!important;
-        transform:scale(.92)!important;
-        transform-origin:center 38%!important;
-    }
-
-    .pitcher-copy{gap:1px!important;align-self:start!important}
-    .pitcher-copy>strong{font-size:.88rem!important;line-height:1.08!important}
-    .pitcher-copy>span{font-size:.65rem!important;line-height:1.14!important}
-    .pitcher-reason{
-        -webkit-line-clamp:2!important;
-        margin-top:1px!important;
-    }
-    .pitcher-copy em{
-        margin:3px 0 2px!important;
-        padding:3px 6px!important;
-        font-size:.55rem!important;
-        line-height:1!important;
-    }
-
-    .pitcher-score{
-        align-self:start!important;
-        padding-top:5px!important;
-    }
-    .pitcher-score small{font-size:.49rem!important}
-    .pitcher-score strong{font-size:.88rem!important}
-
-    div[class*="st-key-pitcher_intelligence_"] button{
-        min-height:34px!important;
-        padding:.15rem .55rem!important;
-        margin-top:3px!important;
-        font-size:.72rem!important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)

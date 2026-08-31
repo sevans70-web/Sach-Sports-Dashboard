@@ -255,6 +255,19 @@ def render_player_card(player_data: dict) -> None:
             min-width:0;
         }
 
+        /* Same green/gold inner-card language used on pitcher intelligence. */
+        .gi-intel-summary-grid .gi-intel-metric:nth-child(odd),
+        .gi-statcast-grid .gi-intel-metric:nth-child(odd) {
+            border-left:3px solid #19d978 !important;
+            border-bottom-color:rgba(25,217,120,.55) !important;
+        }
+
+        .gi-intel-summary-grid .gi-intel-metric:nth-child(even),
+        .gi-statcast-grid .gi-intel-metric:nth-child(even) {
+            border-left:3px solid #d6b35c !important;
+            border-bottom-color:rgba(214,179,92,.62) !important;
+        }
+
         .gi-intel-metric span {
             display:block;
             color:#a7abb2;
@@ -284,6 +297,16 @@ def render_player_card(player_data: dict) -> None:
             border-radius:10px;
             padding:8px;
             min-width:0;
+        }
+
+        .gi-evidence-grid > div:nth-child(odd) {
+            border-left:3px solid #19d978 !important;
+            border-bottom-color:rgba(25,217,120,.55) !important;
+        }
+
+        .gi-evidence-grid > div:nth-child(even) {
+            border-left:3px solid #d6b35c !important;
+            border-bottom-color:rgba(214,179,92,.62) !important;
         }
 
         .gi-statcast-grid {
@@ -477,47 +500,6 @@ st.markdown(
     div[data-testid="stExpander"]{margin:.18rem 0!important}
     div[data-testid="stExpander"] summary{min-height:33px!important;padding:.18rem .42rem!important}
     div[data-testid="stExpander"] [data-testid="stExpanderDetails"]{padding:.05rem .42rem .28rem!important}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-st.markdown(
-    """
-    <style>
-    /* Expanded batter intelligence: same green/gold visual language as player detail. */
-    .gi-intel-summary-grid .gi-intel-metric:nth-child(odd),
-    .gi-statcast-grid .gi-intel-metric:nth-child(odd){
-        border-left:3px solid #19d978!important;
-        border-bottom-color:rgba(25,217,120,.58)!important;
-    }
-    .gi-intel-summary-grid .gi-intel-metric:nth-child(even),
-    .gi-statcast-grid .gi-intel-metric:nth-child(even){
-        border-left:3px solid #d6b35c!important;
-        border-bottom-color:rgba(214,179,92,.65)!important;
-    }
-
-    .gi-evidence-grid>div:first-child{
-        border-left:3px solid #d6b35c!important;
-        border-bottom-color:rgba(214,179,92,.65)!important;
-        background:linear-gradient(135deg,#101112 0%,rgba(214,179,92,.055) 100%)!important;
-    }
-    .gi-evidence-grid>div:last-child{
-        border-left:3px solid #19d978!important;
-        border-bottom-color:rgba(25,217,120,.58)!important;
-        background:linear-gradient(135deg,#101112 0%,rgba(25,217,120,.05) 100%)!important;
-    }
-
-    div[data-testid="stExpander"]{
-        border-color:#3a3d42!important;
-    }
-    div[data-testid="stExpander"]:has(.gi-evidence-grid){
-        border-left:2px solid #d6b35c!important;
-    }
-    div[data-testid="stExpander"]:has(.gi-statcast-grid){
-        border-left:2px solid #19d978!important;
-    }
     </style>
     """,
     unsafe_allow_html=True,
