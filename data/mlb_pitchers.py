@@ -293,7 +293,9 @@ def _probable_pitcher_record(
             pitcher.get("pitcher_hand_description") or ""
         ),
         "team_name": game.get(f"{side}_team"),
+        "team_id": game.get(f"{side}_team_id"),
         "opponent_name": game.get(f"{opponent_side}_team"),
+        "opponent_id": game.get(f"{opponent_side}_team_id"),
         "is_home": side == "home",
         "game_pk": game.get("game_pk"),
         "game_time": game.get("game_time"),
