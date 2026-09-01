@@ -3592,6 +3592,8 @@ st.markdown(
         height:100%!important;
         object-fit:contain!important;
         object-position:center center!important;
+        transform:scale(.90) translateY(-2%)!important;
+        transform-origin:center center!important;
         border-radius:50%!important;
         background:#080909!important;
     }
