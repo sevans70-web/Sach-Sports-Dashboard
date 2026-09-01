@@ -1,0 +1,11 @@
+[client]
+toolbarMode = "minimal"
+showSidebarNavigation = false
+toolbarMode = "minimal"
+showErrorDetails = "none"
+
+[ui]
+hideTopBar = true
+
+[theme]
+base = "dark"
