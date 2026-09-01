@@ -7,6 +7,8 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+st.set_option("client.showSidebarNavigation", False)
+
 # Platform shell: true-black canvas, custom sport hub, no Streamlit chrome.
 st.markdown(
     """
@@ -210,6 +212,41 @@ with st.popover("▦", use_container_width=False):
         st.page_link("pages/cfb.py", label="CFB", icon="🏈")
         st.page_link("pages/nba.py", label="NBA", icon="🏀")
         st.page_link("pages/nhl.py", label="NHL", icon="🏒")
+
+
+st.markdown(
+    """
+    <style>
+    /* The custom Sport Hub owns navigation. Hide native Streamlit chrome. */
+    [data-testid="stSidebar"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="stToolbar"],
+    [data-testid="stMainMenu"],
+    [data-testid="stStatusWidget"],
+    #MainMenu{
+        display:none!important;
+        visibility:hidden!important;
+        width:0!important;
+        min-width:0!important;
+        max-width:0!important;
+        overflow:hidden!important;
+        pointer-events:none!important;
+    }
+    section[data-testid="stSidebar"]{
+        transform:translateX(-110%)!important;
+        left:-100vw!important;
+    }
+    [data-testid="stMainBlockContainer"]{
+        margin-left:0!important;
+        left:0!important;
+        width:100%!important;
+        max-width:100%!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 navigation.run()
 
