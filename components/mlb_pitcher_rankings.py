@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from datetime import datetime
 from html import escape
 import os
@@ -412,17 +414,38 @@ def _render_pitcher_intelligence(category: str, row: dict) -> None:
             st.write(f"• Venue: {row.get('venue')}.")
 
 
+def _compact_pitcher_reason(row: dict, game_phase: str) -> str:
+    """Remove stale lineup wording from LIVE / FINAL compact cards."""
+    reason = str(row.get("why") or "").strip()
+    if game_phase not in {"live", "final"}:
+        return reason
+
+    reason = re.sub(
+        r"\s*(?:Confirmed|Projected) opponent lineup\s*:[^.;]*[.;]?",
+        "",
+        reason,
+        flags=re.IGNORECASE,
+    ).strip()
+    reason = re.sub(
+        r"\s*(?:Confirmed|Projected) opponent lineup[^.]*\.?",
+        "",
+        reason,
+        flags=re.IGNORECASE,
+    ).strip()
+    return reason.rstrip(" ·;/,")
+
+
 def _render_pitcher_card(category: str, row: dict) -> None:
     rank = int(row.get("rank") or 0)
     name = str(row.get("pitcher_name") or "Pitcher")
     score = float(row.get("gi_score") or 0)
     hand = str(row.get("pitcher_hand") or "")
-    reason = str(row.get("why") or "")
     confirmed = bool(row.get("lineup_context_confirmed"))
     projected = bool(row.get("lineup_context_projected"))
     game_result = _pitcher_result(row)
     game_phase = str(game_result.get("game_phase") or "").lower()
     result_line = _result_line(category, game_result)
+    reason = _compact_pitcher_reason(row, game_phase)
 
     if game_phase == "live":
         lineup = "● LIVE"
@@ -908,3 +931,108 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+
+st.markdown(
+    """
+    <style>
+    /* MLB TRUE CARD MATCH — PITCHER */
+    .pitcher-card-main{
+        grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+        gap:6px!important;
+        align-items:start!important;
+        padding:5px 1px 18px!important;
+        min-width:0!important;
+    }
+
+    .pitcher-rank{
+        padding-top:5px!important;
+        font-size:.92rem!important;
+        line-height:1!important;
+    }
+    .pitcher-rank strong{
+        font-size:.92rem!important;
+        line-height:1!important;
+    }
+    .pitcher-rank small{
+        margin-top:5px!important;
+        font-size:.55rem!important;
+        line-height:1!important;
+    }
+
+    .pitcher-photo{
+        width:48px!important;
+        height:48px!important;
+        min-width:48px!important;
+        min-height:48px!important;
+        max-width:48px!important;
+        max-height:48px!important;
+        padding:0!important;
+        display:grid!important;
+        place-items:center!important;
+        overflow:hidden!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;
+        height:100%!important;
+        object-fit:contain!important;
+        object-position:center center!important;
+        transform:scale(.84) translateY(-2%)!important;
+        transform-origin:center center!important;
+        background:#080909!important;
+    }
+
+    .pitcher-copy{
+        gap:1px!important;
+        overflow:visible!important;
+    }
+    .pitcher-copy>strong{
+        font-size:.88rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+        margin-bottom:1px!important;
+    }
+    .pitcher-copy>span{
+        font-size:.66rem!important;
+        line-height:1.18!important;
+    }
+    .pitcher-copy em{
+        display:inline-block!important;
+        width:auto!important;
+        margin:5px 0 7px!important;
+        padding:3px 7px!important;
+        border-radius:999px!important;
+        font-size:.58rem!important;
+        line-height:1.08!important;
+        font-weight:850!important;
+        white-space:nowrap!important;
+    }
+
+    .pitcher-card-result{
+        display:block!important;
+        min-height:.92rem!important;
+        margin-top:1px!important;
+        margin-bottom:5px!important;
+        color:#fff!important;
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+    }
+
+    .pitcher-score{
+        padding-top:5px!important;
+    }
+    .pitcher-score small{font-size:.50rem!important}
+    .pitcher-score strong{
+        font-size:.88rem!important;
+        margin-top:2px!important;
+    }
+
+    div[class*="st-key-pitcher_intelligence_"] button{
+        margin-top:8px!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
