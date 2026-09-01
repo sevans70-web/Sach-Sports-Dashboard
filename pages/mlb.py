@@ -1,3 +1,4 @@
+import re
 """
 Game Intelligence - MLB Page v1.1
 ----------------------------------
@@ -20,6 +21,8 @@ from textwrap import dedent
 from zoneinfo import ZoneInfo
 import os
 import streamlit as st
+
+from data.mlb_players import get_player_headshot_url
 
 from components.mlb_schedule import (
     load_today_lineups,
@@ -97,7 +100,12 @@ def player_photo_html(
 ) -> str:
     """Return official MLB headshot HTML when available."""
     name = str(player.get("player") or player.get("player_name") or "MLB Player")
-    headshot_url = str(player.get("headshot_url") or "").strip()
+    player_id = int(player.get("player_id") or 0)
+    headshot_url = str(
+        get_player_headshot_url(player_id)
+        or player.get("headshot_url")
+        or ""
+    ).strip()
     initials = player_initials(name)
 
     if headshot_url:
@@ -549,15 +557,20 @@ def card_result_html(
         player.get("result_label", "Result unavailable")
     ).strip()
 
-    if player.get("game_finished"):
-        if raw_label.startswith("✅"):
-            result_label = "✅ FINAL · " + raw_label.lstrip("✅").strip()
-        elif raw_label.startswith("❌"):
-            result_label = "❌ FINAL · " + raw_label.lstrip("❌").strip()
-        else:
-            result_label = "FINAL · " + raw_label
-    else:
-        result_label = raw_label
+    # Game state is shown only in the LIVE / FINAL pill above this row.
+    # Strip LIVE / FINAL wording here so the card does not say it twice.
+    result_label = re.sub(
+        r"^(?:🟢|🟡)?\s*LIVE\s*·\s*",
+        "",
+        raw_label,
+        flags=re.IGNORECASE,
+    )
+    result_label = re.sub(
+        r"^(?:✅|❌)?\s*FINAL\s*·\s*",
+        "",
+        result_label,
+        flags=re.IGNORECASE,
+    ).strip()
 
     return (
         '<div class="gi-card-result">'
@@ -3891,3 +3904,61 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown(
+    """
+    <style>
+    /* MLB CLOSEOUT — PLAYER PAGE PHOTO IS THE SOURCE OF TRUTH */
+    .gi-native-photo,
+    .gi-native-initials{
+        width:48px!important;
+        height:48px!important;
+        min-width:48px!important;
+        min-height:48px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        padding:0!important;
+        background:#080909!important;
+        border:2px solid rgba(214,179,92,.86)!important;
+        box-shadow:0 0 0 1px rgba(25,217,120,.18)!important;
+    }
+
+    .gi-native-photo img{
+        width:100%!important;
+        height:100%!important;
+        display:block!important;
+        object-fit:cover!important;
+        object-position:center 28%!important;
+        transform:none!important;
+        border-radius:50%!important;
+        background:#080909!important;
+    }
+
+    /* Batter compact-card type scale = pitcher compact-card type scale. */
+    .gi-card-player>strong{
+        font-size:.88rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+    }
+    .gi-card-player>span{
+        font-size:.66rem!important;
+        line-height:1.18!important;
+    }
+    .gi-lineup-status{
+        font-size:.58rem!important;
+        line-height:1.08!important;
+        margin:5px 0 7px!important;
+        padding:3px 7px!important;
+    }
+    .gi-card-result{
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        min-height:.92rem!important;
+        margin:1px 0 6px!important;
+        font-weight:800!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
