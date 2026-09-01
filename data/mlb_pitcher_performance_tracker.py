@@ -281,8 +281,11 @@ def current_day_view(
 def _period_start(period: str, today: date) -> date:
     if period == "Today":
         return today
+    if period == "7 Days":
+        return today - timedelta(days=6)
     if period == "Week":
-        return today - timedelta(days=today.weekday())
+        # Backward compatibility for any older stored/session value.
+        return today - timedelta(days=6)
     if period == "Month":
         return today.replace(day=1)
     return today.replace(month=1, day=1)
