@@ -181,11 +181,7 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """
-    Compact five-choice period selector.
-
-    "7 Days" is a true rolling seven-day window, not "week to date".
-    """
+    """Compact five-choice selector; 7 Days is a true rolling seven days."""
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
@@ -387,6 +383,60 @@ st.markdown(
         div[data-testid="stSegmentedControl"] button p{
             margin:0!important;
             padding:0!important;
+            font-size:.50rem!important;
+            line-height:1!important;
+            white-space:nowrap!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB PERFORMANCE FINAL LAYOUT:
+# The wrapper that directly owns the five buttons is always one grid row.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+        div[data-testid="stSegmentedControl"]{
+            width:100%!important;
+            max-width:100%!important;
+            overflow:visible!important;
+        }
+
+        div[data-testid="stSegmentedControl"] div:has(> button){
+            display:grid!important;
+            grid-template-columns:repeat(5,minmax(0,1fr))!important;
+            grid-auto-flow:column!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            gap:0!important;
+            flex-wrap:nowrap!important;
+            overflow:visible!important;
+        }
+
+        div[data-testid="stSegmentedControl"] div:has(> button) > button{
+            width:100%!important;
+            min-width:0!important;
+            max-width:none!important;
+            margin:0!important;
+            padding:.14rem .01rem!important;
+            min-height:34px!important;
+            font-size:.50rem!important;
+            line-height:1!important;
+            white-space:nowrap!important;
+            overflow:hidden!important;
+            text-overflow:clip!important;
+        }
+
+        div[data-testid="stSegmentedControl"] button p,
+        div[data-testid="stSegmentedControl"] button span{
+            margin:0!important;
+            padding:0!important;
+            min-width:0!important;
             font-size:.50rem!important;
             line-height:1!important;
             white-space:nowrap!important;
