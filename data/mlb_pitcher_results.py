@@ -38,6 +38,26 @@ def _game_is_final(feed: dict[str, Any]) -> bool:
     )
 
 
+def _game_phase(feed: dict[str, Any]) -> str:
+    status = feed.get("gameData", {}).get("status", {}) or {}
+    abstract_state = str(status.get("abstractGameState") or "").strip().lower()
+    detailed_state = str(status.get("detailedState") or "").strip().lower()
+    coded_state = str(status.get("codedGameState") or "").strip().upper()
+
+    if _game_is_final(feed):
+        return "final"
+    if abstract_state == "live" or detailed_state in {
+        "live", "in progress", "manager challenge", "review", "delayed", "warmup"
+    } or coded_state in {"I", "M", "N"}:
+        return "live"
+    return "pregame"
+
+
+def _status_label(feed: dict[str, Any]) -> str:
+    status = feed.get("gameData", {}).get("status", {}) or {}
+    return str(status.get("detailedState") or status.get("abstractGameState") or "").strip()
+
+
 def _pitcher_stats_from_team(
     team_boxscore: dict[str, Any],
     pitcher_id: int,
@@ -75,67 +95,54 @@ def _pitcher_stats_from_team(
     }
 
 
+def get_pitcher_game_result(game_pk: int, pitcher_id: int) -> dict[str, Any]:
+    """Return current pitcher line for live games and final line for completed games."""
+    if not game_pk or not pitcher_id:
+        return {"game_phase":"pregame","game_live":False,"game_finished":False,
+                "result_available":False,"status_label":"","error":"Game or pitcher ID is unavailable."}
+    try:
+        response = requests.get(MLB_FEED_URL.format(game_pk=int(game_pk)), timeout=12)
+        response.raise_for_status()
+        feed = response.json()
+    except Exception as exc:
+        return {"game_phase":"unknown","game_live":False,"game_finished":False,
+                "result_available":False,"status_label":"","error":f"MLB game feed unavailable: {exc}"}
+
+    phase = _game_phase(feed)
+    status_label = _status_label(feed)
+    if phase == "pregame":
+        return {"game_phase":"pregame","game_live":False,"game_finished":False,
+                "result_available":False,"status_label":status_label,"error":None}
+
+    teams = feed.get("liveData", {}).get("boxscore", {}).get("teams", {}) or {}
+    stats = None
+    for side in ("away", "home"):
+        stats = _pitcher_stats_from_team(teams.get(side, {}) or {}, int(pitcher_id))
+        if stats is not None:
+            break
+
+    return {
+        "game_phase": phase,
+        "game_live": phase == "live",
+        "game_finished": phase == "final",
+        "result_available": stats is not None,
+        "status_label": status_label,
+        "error": None,
+        **(stats or {}),
+    }
+
+
 def get_pitcher_final_result(
     game_pk: int,
     pitcher_id: int,
     result_date: date | str | None = None,
 ) -> dict[str, Any]:
-    """Return final pitching line for one pitcher when the game is complete."""
-    if not game_pk or not pitcher_id:
+    """Return final pitching line only when the game is complete."""
+    result = get_pitcher_game_result(game_pk=game_pk, pitcher_id=pitcher_id)
+    if not result.get("game_finished"):
         return {
             "game_finished": False,
             "result_available": False,
-            "error": "Game or pitcher ID is unavailable.",
+            "error": result.get("error"),
         }
-
-    try:
-        response = requests.get(
-            MLB_FEED_URL.format(game_pk=int(game_pk)),
-            timeout=20,
-        )
-        response.raise_for_status()
-        feed = response.json()
-    except Exception as exc:
-        return {
-            "game_finished": False,
-            "result_available": False,
-            "error": f"MLB game feed unavailable: {exc}",
-        }
-
-    game_finished = _game_is_final(feed)
-    if not game_finished:
-        return {
-            "game_finished": False,
-            "result_available": False,
-            "error": None,
-        }
-
-    teams = (
-        feed.get("liveData", {})
-        .get("boxscore", {})
-        .get("teams", {})
-        or {}
-    )
-
-    stats = None
-    for side in ("away", "home"):
-        stats = _pitcher_stats_from_team(
-            teams.get(side, {}) or {},
-            int(pitcher_id),
-        )
-        if stats is not None:
-            break
-
-    if stats is None:
-        return {
-            "game_finished": True,
-            "result_available": False,
-            "error": "Final pitcher line was not found in the MLB boxscore.",
-        }
-
-    return {
-        "game_finished": True,
-        "result_available": True,
-        "error": None,
-        **stats,
-    }
+    return result
