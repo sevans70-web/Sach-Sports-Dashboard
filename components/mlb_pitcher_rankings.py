@@ -358,19 +358,15 @@ def _result_value(category: str, result: dict) -> str:
 
 
 def _result_line(category: str, result: dict) -> str:
+    """Use the exact same result language as batter cards."""
     value = _result_value(category, result)
     if not value:
         return ""
+
     phase = str(result.get("game_phase") or "").lower()
-    label = "Final Result" if phase == "final" else "Live Result"
-    innings = str(result.get("innings_pitched") or "").strip()
-    pitches = int(result.get("pitches") or 0)
-    details = []
-    if innings:
-        details.append(f"{innings} IP")
-    if pitches:
-        details.append(f"{pitches} pitches")
-    return f"{label}: {value}" + (f" · {' · '.join(details)}" if details else "")
+    if phase == "final":
+        return f"Result: ✅ FINAL · {value}"
+    return f"Result: 🟡 LIVE · {value}"
 
 
 def _render_pitcher_intelligence(category: str, row: dict) -> None:
@@ -459,8 +455,8 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                     <span class="pitcher-matchup">{_matchup_html(row)}{escape(f' · {hand}HP' if hand else '')}</span>
                     <span class="pitcher-projection"><b>Projection:</b> {escape(_projection_text(category,row))}</span>
                     <span class="pitcher-reason">{escape(reason)}</span>
-                    {f'<span class="pitcher-live-result">{escape(result_line)}</span>' if result_line else ''}
                     <em class="{lineup_class}">{escape(lineup)}</em>
+                    <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or 'Result: —')}</span>
                 </div>
                 <div class="pitcher-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
             </div>
@@ -838,3 +834,77 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown(
+    """
+    <style>
+    /* MLB FINAL CLOSEOUT: pitcher card type/spacing mirrors batter card. */
+    .pitcher-photo{
+        box-sizing:border-box!important;
+        padding:2px!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;
+        height:100%!important;
+        object-fit:contain!important;
+        object-position:center center!important;
+        transform:none!important;
+        border-radius:50%!important;
+    }
+
+    .pitcher-copy>strong{
+        font-size:.92rem!important;
+        line-height:1.08!important;
+        margin-bottom:1px!important;
+    }
+    .pitcher-copy>span{
+        font-size:.69rem!important;
+        line-height:1.18!important;
+    }
+    .pitcher-copy em{
+        margin-top:4px!important;
+        margin-bottom:7px!important;
+        font-size:.58rem!important;
+        line-height:1.08!important;
+    }
+
+    .pitcher-card-result{
+        display:block!important;
+        min-height:1.16rem!important;
+        margin-top:1px!important;
+        margin-bottom:2px!important;
+        color:#fff!important;
+        font-size:.92rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+    }
+    .pitcher-result-placeholder{
+        visibility:hidden!important;
+    }
+
+    div[class*="st-key-pitcher_intelligence_"] button{
+        margin-top:5px!important;
+    }
+
+    @media(max-width:700px){
+        .pitcher-copy>strong{
+            font-size:.88rem!important;
+        }
+        .pitcher-copy>span{
+            font-size:.66rem!important;
+        }
+        .pitcher-copy em{
+            font-size:.58rem!important;
+            margin-bottom:7px!important;
+        }
+        .pitcher-card-result{
+            font-size:.76rem!important;
+            min-height:.92rem!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+

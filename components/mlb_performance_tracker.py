@@ -300,10 +300,33 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
             padding:.05rem .45rem .28rem!important;
         }
         @media(max-width:700px){
+            div[data-testid="stSegmentedControl"],
+            div[data-testid="stSegmentedControl"] > div,
+            div[data-testid="stSegmentedControl"] [role="radiogroup"]{
+                width:100%!important;
+                max-width:100%!important;
+                display:flex!important;
+                flex-direction:row!important;
+                flex-wrap:nowrap!important;
+                gap:0!important;
+                overflow:visible!important;
+            }
+            div[data-testid="stSegmentedControl"] > div > *,
+            div[data-testid="stSegmentedControl"] [role="radiogroup"] > *{
+                flex:1 1 20%!important;
+                width:20%!important;
+                min-width:0!important;
+                max-width:20%!important;
+            }
             div[data-testid="stSegmentedControl"] button{
+                flex:1 1 20%!important;
+                width:100%!important;
+                min-width:0!important;
+                max-width:none!important;
                 min-height:29px!important;
-                font-size:.54rem!important;
-                padding:.12rem .03rem!important;
+                font-size:.52rem!important;
+                padding:.12rem .01rem!important;
+                white-space:nowrap!important;
             }
         }
         </style>
