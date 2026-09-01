@@ -362,11 +362,7 @@ def _result_value(category: str, result: dict) -> str:
 
 
 def _result_line(category: str, result: dict) -> str:
-    """
-    Result row contains only the actual stat.
-
-    LIVE / FINAL is already displayed in the status pill directly above it.
-    """
+    """Return the stat only; LIVE / FINAL is displayed in the status pill."""
     value = _result_value(category, result)
     if not value:
         return ""
@@ -1041,10 +1037,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# MLB CLOSEOUT: pitcher geometry mirrors batter geometry.
 st.markdown(
     """
     <style>
-    /* MLB CLOSEOUT — PITCHER USES EXACT PLAYER-PAGE PHOTO TREATMENT */
     .pitcher-photo{
         width:48px!important;
         height:48px!important;
@@ -1057,9 +1054,7 @@ st.markdown(
         padding:0!important;
         background:#080909!important;
         border:2px solid rgba(214,179,92,.86)!important;
-        box-shadow:0 0 0 1px rgba(25,217,120,.18)!important;
     }
-
     .pitcher-headshot{
         width:100%!important;
         height:100%!important;
@@ -1068,10 +1063,7 @@ st.markdown(
         object-position:center 28%!important;
         transform:none!important;
         border-radius:50%!important;
-        background:#080909!important;
     }
-
-    /* EXACT SAME COMPACT TYPE SCALE AS BATTER */
     .pitcher-copy>strong{
         font-size:.88rem!important;
         line-height:1.08!important;
@@ -1081,18 +1073,15 @@ st.markdown(
         font-size:.66rem!important;
         line-height:1.18!important;
     }
-
     .pitcher-state-result{
         display:flex!important;
         flex-direction:column!important;
         align-items:flex-start!important;
         width:100%!important;
-        min-height:46px!important;
-        padding:0 0 9px!important;
-        margin:3px 0 0!important;
-        overflow:visible!important;
+        min-height:48px!important;
+        margin:5px 0 0!important;
+        padding:0 0 7px!important;
     }
-
     .pitcher-state-result em{
         display:inline-block!important;
         width:auto!important;
@@ -1103,26 +1092,21 @@ st.markdown(
         font-weight:850!important;
         white-space:nowrap!important;
     }
-
     .pitcher-state-result .pitcher-card-result{
         display:block!important;
         position:static!important;
-        width:auto!important;
-        min-height:.92rem!important;
         margin:0!important;
         padding:0!important;
-        color:#fff!important;
+        min-height:.92rem!important;
         font-size:.76rem!important;
         line-height:1.16!important;
         font-weight:800!important;
+        color:#fff!important;
         white-space:nowrap!important;
-        overflow:visible!important;
     }
-
     .pitcher-result-placeholder{
         visibility:hidden!important;
     }
-
     div[class*="st-key-pitcher_intelligence_"] button{
         position:static!important;
         margin-top:8px!important;
@@ -1131,4 +1115,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
