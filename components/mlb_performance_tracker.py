@@ -340,8 +340,10 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
 
 
 
+
+
 # MLB PERFORMANCE CLOSEOUT:
-# Keep Today / Yesterday / 7 Days / Month / Season on one mobile row.
+# Force Today / Yesterday / 7 Days / Month / Season onto one mobile row.
 st.markdown(
     """
     <style>
@@ -349,27 +351,33 @@ st.markdown(
         div[data-testid="stSegmentedControl"]{
             width:100%!important;
             max-width:100%!important;
-            overflow:hidden!important;
+            overflow:visible!important;
         }
 
-        div[data-testid="stSegmentedControl"] > div,
+        div[data-testid="stSegmentedControl"] [data-baseweb="button-group"],
         div[data-testid="stSegmentedControl"] [role="radiogroup"]{
-            display:flex!important;
-            flex-direction:row!important;
-            flex-wrap:nowrap!important;
+            display:grid!important;
+            grid-template-columns:repeat(5,minmax(0,1fr))!important;
             width:100%!important;
             max-width:100%!important;
             gap:0!important;
+            overflow:visible!important;
+        }
+
+        div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] > *,
+        div[data-testid="stSegmentedControl"] [role="radiogroup"] > *{
+            min-width:0!important;
+            width:100%!important;
+            max-width:none!important;
         }
 
         div[data-testid="stSegmentedControl"] button{
-            flex:1 1 20%!important;
-            width:20%!important;
             min-width:0!important;
-            max-width:20%!important;
+            width:100%!important;
+            max-width:none!important;
             min-height:34px!important;
-            padding:.15rem .08rem!important;
-            font-size:.56rem!important;
+            padding:.12rem .02rem!important;
+            font-size:.50rem!important;
             line-height:1!important;
             white-space:nowrap!important;
             overflow:hidden!important;
@@ -377,7 +385,9 @@ st.markdown(
         }
 
         div[data-testid="stSegmentedControl"] button p{
-            font-size:.56rem!important;
+            margin:0!important;
+            padding:0!important;
+            font-size:.50rem!important;
             line-height:1!important;
             white-space:nowrap!important;
         }
