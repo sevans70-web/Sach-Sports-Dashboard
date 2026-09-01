@@ -55,21 +55,134 @@ def _history_url() -> str:
     return f"{GITHUB_API}/repos/{REPOSITORY}/contents/{HISTORY_PATH}"
 
 
+def _history_commits_url() -> str:
+    return f"{GITHUB_API}/repos/{REPOSITORY}/commits"
+
+
+def _load_history_at_sha(token: str, sha: str) -> dict[str, Any]:
+    """Read one older copy of the history file from GitHub."""
+    response = requests.get(
+        _history_url(),
+        headers=_headers(token),
+        params={"ref": sha},
+        timeout=20,
+    )
+    if response.status_code != 200:
+        return {"schema_version": 1, "days": {}}
+
+    payload = response.json()
+    raw = base64.b64decode(payload.get("content", "")).decode("utf-8").strip()
+    if not raw:
+        return {"schema_version": 1, "days": {}}
+
+    try:
+        history = json.loads(raw)
+    except json.JSONDecodeError:
+        return {"schema_version": 1, "days": {}}
+
+    if not isinstance(history, dict):
+        return {"schema_version": 1, "days": {}}
+
+    history.setdefault("schema_version", 1)
+    history.setdefault("days", {})
+    return history
+
+
+def _recover_days_from_git_history(
+    token: str,
+    current_history: dict[str, Any],
+    max_commits: int = 60,
+) -> tuple[dict[str, Any], bool]:
+    """
+    Recover historical day records from older Git commits.
+
+    This makes a deploy-safe history: if a ZIP upload accidentally replaces
+    the tracked JSON with a one-day file, older days are rebuilt from Git's
+    own file history instead of being permanently lost.
+    """
+    merged = {
+        "schema_version": int(current_history.get("schema_version") or 1),
+        "days": dict(current_history.get("days") or {}),
+    }
+    recovered = False
+
+    try:
+        response = requests.get(
+            _history_commits_url(),
+            headers=_headers(token),
+            params={
+                "path": HISTORY_PATH,
+                "sha": BRANCH,
+                "per_page": min(max_commits, 100),
+            },
+            timeout=25,
+        )
+        response.raise_for_status()
+        commits = response.json()
+    except Exception:
+        return merged, False
+
+    if not isinstance(commits, list):
+        return merged, False
+
+    for commit in commits[:max_commits]:
+        sha = str((commit or {}).get("sha") or "").strip()
+        if not sha:
+            continue
+
+        older = _load_history_at_sha(token, sha)
+        for day_key, day_record in (older.get("days") or {}).items():
+            if day_key not in merged["days"]:
+                merged["days"][day_key] = day_record
+                recovered = True
+
+    merged["days"] = {
+        key: merged["days"][key]
+        for key in sorted(merged["days"])
+    }
+    return merged, recovered
+
+
 def load_history(token: str) -> tuple[dict[str, Any], str | None]:
+    """
+    Load current history and automatically repair missing historical days
+    from older Git revisions of this same file.
+    """
     response = requests.get(
         _history_url(),
         headers=_headers(token),
         params={"ref": BRANCH},
         timeout=20,
     )
+
     if response.status_code == 404:
-        return {"schema_version": 1, "days": {}}, None
+        history = {"schema_version": 1, "days": {}}
+        sha = None
+    else:
+        response.raise_for_status()
+        payload = response.json()
+        sha = payload.get("sha")
+        raw = base64.b64decode(payload.get("content", "")).decode("utf-8").strip()
 
-    response.raise_for_status()
-    payload = response.json()
-    raw = base64.b64decode(payload.get("content", "")).decode("utf-8")
-    return json.loads(raw), payload.get("sha")
+        if not raw:
+            history = {"schema_version": 1, "days": {}}
+        else:
+            try:
+                history = json.loads(raw)
+            except json.JSONDecodeError:
+                history = {"schema_version": 1, "days": {}}
 
+        if not isinstance(history, dict):
+            history = {"schema_version": 1, "days": {}}
+
+        history.setdefault("schema_version", 1)
+        history.setdefault("days", {})
+
+    history, recovered = _recover_days_from_git_history(token, history)
+    if recovered:
+        history["_history_recovered"] = True
+
+    return history, sha
 
 def save_history(
     token: str,
@@ -202,7 +315,7 @@ def sync_history(
     history, sha = load_history(token)
     history.setdefault("schema_version", 1)
     days = history.setdefault("days", {})
-    changed = False
+    changed = bool(history.pop("_history_recovered", False))
 
     if today not in days:
         days[today] = {
