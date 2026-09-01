@@ -1115,3 +1115,51 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB PLATFORM CLOSEOUT — pitcher Top-25 uses the same locked geometry as batter Top-25.
+st.markdown(
+    """
+    <style>
+    .pitcher-card-main{
+        grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+        gap:6px!important;align-items:start!important;
+        padding:5px 1px 12px!important;min-width:0!important;
+    }
+    .pitcher-photo{
+        width:48px!important;height:48px!important;
+        min-width:48px!important;min-height:48px!important;
+        max-width:48px!important;max-height:48px!important;
+        padding:0!important;border-radius:50%!important;overflow:hidden!important;
+        background:#080909!important;border:2px solid rgba(214,179,92,.86)!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;height:100%!important;display:block!important;
+        object-fit:cover!important;object-position:center 28%!important;
+        transform:none!important;border-radius:50%!important;background:#080909!important;
+    }
+    .pitcher-copy{gap:1px!important;align-self:start!important;min-width:0!important;overflow:visible!important}
+    .pitcher-copy>strong{font-size:.88rem!important;line-height:1.08!important;font-weight:900!important;margin-bottom:1px!important}
+    .pitcher-copy>span{font-size:.66rem!important;line-height:1.18!important}
+    .pitcher-state-result{
+        display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+        width:100%!important;min-height:0!important;margin:5px 0 0!important;padding:0!important;overflow:visible!important;
+    }
+    .pitcher-state-result em{
+        display:inline-block!important;width:auto!important;
+        margin:0 0 7px!important;padding:3px 7px!important;
+        border-radius:999px!important;font-size:.58rem!important;line-height:1.08!important;
+        font-weight:850!important;white-space:nowrap!important;
+    }
+    .pitcher-state-result .pitcher-card-result{
+        display:block!important;position:static!important;width:auto!important;
+        min-height:.92rem!important;margin:0 0 7px!important;padding:0!important;
+        color:#fff!important;font-size:.76rem!important;line-height:1.16!important;
+        font-weight:800!important;white-space:nowrap!important;overflow:visible!important;
+    }
+    .pitcher-result-placeholder{visibility:hidden!important}
+    div[class*="st-key-pitcher_intelligence_"] button{position:static!important;margin-top:5px!important}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)

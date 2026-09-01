@@ -43,7 +43,7 @@ def _token() -> str | None:
     except Exception:
         return None
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=30, show_spinner=False)
 def _cached_batter_history(_token_value: str, rankings_by_category: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     """Avoid re-reading/re-grading performance history on every UI click."""
     synced = sync_history(_token_value, rankings_by_category)
@@ -56,7 +56,7 @@ def _cached_pitcher_rankings() -> dict[str, Any]:
     return get_pitcher_rankings(limit=25)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=30, show_spinner=False)
 def _cached_pitcher_history(_token_value: str, rankings: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     synced = sync_pitcher_history(_token_value, rankings)
     return current_pitcher_day_view(synced, rankings)
@@ -181,20 +181,24 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """Compact five-choice selector; 7 Days is a true rolling seven days."""
+    """
+    Five fixed mobile cells with no wrapping.
+
+    A horizontal radio is used instead of segmented_control because the
+    segmented widget was forcing Season onto a second line on iPhone.
+    """
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"
 
-    selected = st.segmented_control(
+    selected = st.radio(
         "Performance Period",
         options=options,
-        default=current,
-        key=f"{key}_control",
-        selection_mode="single",
+        index=options.index(current),
+        horizontal=True,
+        key=f"{key}_radio",
     )
-    selected = selected or current
     st.session_state[key] = selected
     return selected
 
@@ -394,52 +398,52 @@ st.markdown(
 )
 
 
-# MLB PERFORMANCE FINAL LAYOUT:
-# The wrapper that directly owns the five buttons is always one grid row.
+
+
+# MLB PERFORMANCE: locked five-cell mobile period row.
 st.markdown(
     """
     <style>
     @media(max-width:700px){
-        div[data-testid="stSegmentedControl"]{
-            width:100%!important;
-            max-width:100%!important;
-            overflow:visible!important;
-        }
-
-        div[data-testid="stSegmentedControl"] div:has(> button){
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
             display:grid!important;
             grid-template-columns:repeat(5,minmax(0,1fr))!important;
-            grid-auto-flow:column!important;
+            gap:0!important;
             width:100%!important;
             max-width:100%!important;
-            min-width:0!important;
-            gap:0!important;
-            flex-wrap:nowrap!important;
-            overflow:visible!important;
         }
 
-        div[data-testid="stSegmentedControl"] div:has(> button) > button{
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+            min-width:0!important;
             width:100%!important;
-            min-width:0!important;
-            max-width:none!important;
-            margin:0!important;
-            padding:.14rem .01rem!important;
-            min-height:34px!important;
-            font-size:.50rem!important;
-            line-height:1!important;
-            white-space:nowrap!important;
-            overflow:hidden!important;
-            text-overflow:clip!important;
-        }
-
-        div[data-testid="stSegmentedControl"] button p,
-        div[data-testid="stSegmentedControl"] button span{
             margin:0!important;
             padding:0!important;
-            min-width:0!important;
-            font-size:.50rem!important;
+            border:1px solid #3b3e43!important;
+            background:#101112!important;
+            justify-content:center!important;
+            min-height:34px!important;
+        }
+
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label:has(input:checked),
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label:has(input:checked){
+            border-color:#ff5a61!important;
+            background:rgba(255,90,97,.08)!important;
+        }
+
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label > div:first-child,
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label > div:first-child{
+            display:none!important;
+        }
+
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] p,
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] p{
+            margin:0!important;
+            font-size:.52rem!important;
             line-height:1!important;
             white-space:nowrap!important;
+            text-align:center!important;
         }
     }
     </style>
