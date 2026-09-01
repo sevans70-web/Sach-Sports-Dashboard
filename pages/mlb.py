@@ -1,28 +1,10 @@
-import re
-"""
-Game Intelligence - MLB Page v1.1
-----------------------------------
-File location: pages/mlb.py
-
-Fixes in this version:
-- Prevents player-card HTML from appearing as raw code.
-- Removes dependency on temporary internet avatar images.
-- Uses official MLB headshots with initials only as a fallback.
-- Keeps the existing tablet/app-first visual design.
-- Adds responsive desktop behaviour without changing the mobile identity.
-
-Important:
-The page uses live ranking data and official MLB player headshots when available.
-"""
-
 from datetime import datetime
 from html import escape
 from textwrap import dedent
 from zoneinfo import ZoneInfo
 import os
+import re
 import streamlit as st
-
-from data.mlb_players import get_player_headshot_url
 
 from components.mlb_schedule import (
     load_today_lineups,
@@ -37,6 +19,7 @@ from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
 )
+from data.mlb_players import get_player_headshot_url
 from data.mlb_prediction_results import (
     get_live_hr_contact_signals,
     get_yesterday_hr_near_misses,
@@ -535,10 +518,11 @@ def card_result_html(
     reserve_space: bool = False,
 ) -> str:
     """
-    Return a live/final result row.
+    Return only the live/final stat result.
 
-    Compact ranking cards reserve this row before first pitch so card height
-    never changes when a game later becomes LIVE or FINAL.
+    LIVE / FINAL belongs in the status pill above this row, so it is never
+    repeated here. Space is reserved pregame so every compact card stays the
+    same height when games later become live or final.
     """
     has_result = bool(
         player.get("game_finished")
@@ -557,16 +541,14 @@ def card_result_html(
         player.get("result_label", "Result unavailable")
     ).strip()
 
-    # Game state is shown only in the LIVE / FINAL pill above this row.
-    # Strip LIVE / FINAL wording here so the card does not say it twice.
     result_label = re.sub(
-        r"^(?:🟢|🟡)?\s*LIVE\s*·\s*",
+        r"^(?:🟢|🟡)?\\s*LIVE\\s*·\\s*",
         "",
         raw_label,
         flags=re.IGNORECASE,
     )
     result_label = re.sub(
-        r"^(?:✅|❌)?\s*FINAL\s*·\s*",
+        r"^(?:✅|❌)?\\s*FINAL\\s*·\\s*",
         "",
         result_label,
         flags=re.IGNORECASE,
@@ -577,6 +559,8 @@ def card_result_html(
         f'Result: {escape(result_label)}'
         '</div>'
     )
+
+
 @st.cache_data(ttl=600, show_spinner=False)
 def load_emerging_power_pool() -> list[dict]:
     """Load a wider HR-ranked pool only when Emerging Power is opened."""
@@ -3905,10 +3889,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# MLB CLOSEOUT: player-page photo treatment + shared compact-card typography.
 st.markdown(
     """
     <style>
-    /* MLB CLOSEOUT — PLAYER PAGE PHOTO IS THE SOURCE OF TRUTH */
     .gi-native-photo,
     .gi-native-initials{
         width:48px!important;
@@ -3920,9 +3905,7 @@ st.markdown(
         padding:0!important;
         background:#080909!important;
         border:2px solid rgba(214,179,92,.86)!important;
-        box-shadow:0 0 0 1px rgba(25,217,120,.18)!important;
     }
-
     .gi-native-photo img{
         width:100%!important;
         height:100%!important;
@@ -3931,10 +3914,7 @@ st.markdown(
         object-position:center 28%!important;
         transform:none!important;
         border-radius:50%!important;
-        background:#080909!important;
     }
-
-    /* Batter compact-card type scale = pitcher compact-card type scale. */
     .gi-card-player>strong{
         font-size:.88rem!important;
         line-height:1.08!important;
@@ -3951,14 +3931,15 @@ st.markdown(
         padding:3px 7px!important;
     }
     .gi-card-result{
+        display:block!important;
         font-size:.76rem!important;
         line-height:1.16!important;
-        min-height:.92rem!important;
-        margin:1px 0 6px!important;
         font-weight:800!important;
+        min-height:.92rem!important;
+        margin:0 0 7px!important;
+        white-space:nowrap!important;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
