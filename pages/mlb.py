@@ -503,29 +503,38 @@ def attach_results_to_rankings(
     return result.get("graded", rankings)
 
 
-def card_result_html(player: dict) -> str:
-    """Return live or final result HTML when game data is available."""
-    if not (
+def card_result_html(
+    player: dict,
+    *,
+    reserve_space: bool = False,
+) -> str:
+    """
+    Return a live/final result row.
+
+    Compact ranking cards reserve this row before first pitch so card height
+    never changes when a game later becomes LIVE or FINAL.
+    """
+    has_result = bool(
         player.get("game_finished")
         or player.get("result_live")
-    ):
+    )
+
+    if not has_result:
+        if reserve_space:
+            return (
+                '<div class="gi-card-result gi-card-result-placeholder" '
+                'aria-hidden="true">Result: —</div>'
+            )
         return ""
 
     result_label = escape(
         str(player.get("result_label", "Result unavailable"))
     )
-
-    return f"""
-        <div
-            style="
-                margin-top: 10px;
-                font-weight: 700;
-                font-size: 0.92rem;
-            "
-        >
-            Result: {result_label}
-        </div>
-    """
+    return (
+        '<div class="gi-card-result">'
+        f'Result: {result_label}'
+        '</div>'
+    )
 @st.cache_data(ttl=600, show_spinner=False)
 def load_emerging_power_pool() -> list[dict]:
     """Load a wider HR-ranked pool only when Emerging Power is opened."""
@@ -1239,7 +1248,7 @@ def render_expandable_ranking_header(player: dict) -> None:
                 <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
                 <span class="gi-card-reason">{escape(category_card_reason(player))}</span>
                 <span>{lineup_status_html(player)}</span>
-                {card_result_html(player)}
+                {card_result_html(player, reserve_space=True)}
             </div>
             <div class="gi-card-score">
                 <small>GI SCORE</small>
@@ -3713,3 +3722,62 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown(
+    """
+    <style>
+    /* MLB FINAL CLOSEOUT: batter cards use one locked geometry. */
+    .gi-native-photo,
+    .gi-native-initials{
+        box-sizing:border-box!important;
+        padding:2px!important;
+    }
+    .gi-native-photo img{
+        width:100%!important;
+        height:100%!important;
+        object-fit:contain!important;
+        object-position:center center!important;
+        transform:none!important;
+        border-radius:50%!important;
+    }
+
+    .gi-card-result{
+        display:block!important;
+        min-height:1.16rem!important;
+        margin-top:7px!important;
+        margin-bottom:2px!important;
+        color:#fff!important;
+        font-size:.92rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+    }
+    .gi-card-result-placeholder{
+        visibility:hidden!important;
+    }
+
+    .gi-lineup-status{
+        margin-top:4px!important;
+        margin-bottom:7px!important;
+    }
+
+    [class*="st-key-show_"][class*="_player_"] .stButton,
+    [class*="st-key-show_"][class*="_top5_player_"] .stButton{
+        margin-top:5px!important;
+    }
+
+    @media(max-width:700px){
+        .gi-card-result{
+            font-size:.76rem!important;
+            min-height:.92rem!important;
+            margin-top:7px!important;
+        }
+        .gi-lineup-status{
+            margin-bottom:7px!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
