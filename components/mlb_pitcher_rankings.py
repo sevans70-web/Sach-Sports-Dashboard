@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from engines.mlb_pitcher_intelligence import get_pitcher_rankings
+from data.mlb_pitcher_results import get_pitcher_game_result
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
@@ -238,9 +239,9 @@ def _headshot_html(row: dict) -> str:
     initials = "".join(part[0] for part in name.split()[:2]).upper() or "P"
 
     if pitcher_id:
-        url = (
+        url = str(row.get("headshot_url") or "").strip() or (
             "https://img.mlbstatic.com/mlb-photos/image/upload/"
-            f"w_180,q_100/v1/people/{pitcher_id}/headshot/67/current"
+            f"w_180,q_auto:best/v1/people/{pitcher_id}/headshot/67/current"
         )
         return (
             f'<img class="pitcher-headshot" src="{escape(url)}" '
@@ -250,6 +251,20 @@ def _headshot_html(row: dict) -> str:
         )
 
     return f'<span class="pitcher-photo-fallback">{escape(initials)}</span>'
+
+
+MLB_TEAM_IDS = {
+    "Los Angeles Angels":108,"Arizona Diamondbacks":109,"Baltimore Orioles":110,
+    "Boston Red Sox":111,"Chicago Cubs":112,"Cincinnati Reds":113,
+    "Cleveland Guardians":114,"Colorado Rockies":115,"Detroit Tigers":116,
+    "Houston Astros":117,"Kansas City Royals":118,"Los Angeles Dodgers":119,
+    "Washington Nationals":120,"New York Mets":121,"Athletics":133,
+    "Pittsburgh Pirates":134,"San Diego Padres":135,"Seattle Mariners":136,
+    "San Francisco Giants":137,"St. Louis Cardinals":138,"Tampa Bay Rays":139,
+    "Texas Rangers":140,"Toronto Blue Jays":141,"Minnesota Twins":142,
+    "Philadelphia Phillies":143,"Atlanta Braves":144,"Chicago White Sox":145,
+    "Miami Marlins":146,"New York Yankees":147,"Milwaukee Brewers":158,
+}
 
 
 def _short_team(value: str) -> str:
@@ -279,6 +294,8 @@ def _team_logo(team_id: object, team_name: str) -> str:
         numeric_id = int(team_id or 0)
     except (TypeError, ValueError):
         numeric_id = 0
+    if not numeric_id:
+        numeric_id = int(MLB_TEAM_IDS.get(str(team_name or "").strip()) or 0)
     if not numeric_id:
         return ""
     return (
@@ -311,6 +328,51 @@ def _projection_text(category: str, row: dict) -> str:
     return f"{float(row.get('projection') or 0):.1f} {CATEGORY_CONFIG[category][1]}"
 
 
+@st.cache_data(ttl=15, show_spinner=False)
+def _cached_pitcher_game_result(game_pk: int, pitcher_id: int) -> dict:
+    return get_pitcher_game_result(game_pk=game_pk, pitcher_id=pitcher_id)
+
+
+def _pitcher_result(row: dict) -> dict:
+    game_pk = int(row.get("game_pk") or 0)
+    pitcher_id = int(row.get("pitcher_id") or 0)
+    if not game_pk or not pitcher_id:
+        return {"game_phase":"pregame","result_available":False}
+    return _cached_pitcher_game_result(game_pk, pitcher_id)
+
+
+def _result_value(category: str, result: dict) -> str:
+    if not result.get("result_available"):
+        return ""
+    values = {
+        "strikeouts": (result.get("actual_strikeouts"), "K"),
+        "outs_recorded": (result.get("actual_outs_recorded"), "outs"),
+        "hits_allowed": (result.get("actual_hits_allowed"), "H"),
+        "walks_allowed": (result.get("actual_walks_allowed"), "BB"),
+        "earned_runs": (result.get("actual_earned_runs"), "ER"),
+    }
+    value, unit = values.get(category, ("", ""))
+    if value in (None, ""):
+        return ""
+    return f"{value} {unit}"
+
+
+def _result_line(category: str, result: dict) -> str:
+    value = _result_value(category, result)
+    if not value:
+        return ""
+    phase = str(result.get("game_phase") or "").lower()
+    label = "Final Result" if phase == "final" else "Live Result"
+    innings = str(result.get("innings_pitched") or "").strip()
+    pitches = int(result.get("pitches") or 0)
+    details = []
+    if innings:
+        details.append(f"{innings} IP")
+    if pitches:
+        details.append(f"{pitches} pitches")
+    return f"{label}: {value}" + (f" · {' · '.join(details)}" if details else "")
+
+
 def _render_pitcher_intelligence(category: str, row: dict) -> None:
     season = row.get("season_stats", {}) or {}
     _render_html(
@@ -336,7 +398,17 @@ def _render_pitcher_intelligence(category: str, row: dict) -> None:
     with st.expander("Why This Pitcher Ranks Here", expanded=False):
         reason = str(row.get("why") or "Pitcher profile is being evaluated.")
         st.write(f"• {reason}")
-        if row.get("lineup_context_confirmed"):
+        game_result = _pitcher_result(row)
+        phase = str(game_result.get("game_phase") or "").lower()
+        if phase == "live":
+            value = _result_value(category, game_result)
+            if value:
+                st.write(f"• Live result: {value}.")
+        elif phase == "final":
+            value = _result_value(category, game_result)
+            if value:
+                st.write(f"• Final result: {value}.")
+        elif row.get("lineup_context_confirmed"):
             st.write("• Confirmed opponent lineup is included in the matchup weighting.")
         elif row.get("lineup_context_projected"):
             st.write("• Projected opponent lineup is included in the matchup weighting until the official order posts.")
@@ -352,7 +424,17 @@ def _render_pitcher_card(category: str, row: dict) -> None:
     reason = str(row.get("why") or "")
     confirmed = bool(row.get("lineup_context_confirmed"))
     projected = bool(row.get("lineup_context_projected"))
-    if confirmed:
+    game_result = _pitcher_result(row)
+    game_phase = str(game_result.get("game_phase") or "").lower()
+    result_line = _result_line(category, game_result)
+
+    if game_phase == "live":
+        lineup = "● LIVE"
+        lineup_class = "pitch-game-live"
+    elif game_phase == "final":
+        lineup = "✓ FINAL"
+        lineup_class = "pitch-game-final"
+    elif confirmed:
         lineup = "✓ Confirmed lineup"
         lineup_class = "pitch-lineup-confirmed"
     elif projected:
@@ -377,6 +459,7 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                     <span class="pitcher-matchup">{_matchup_html(row)}{escape(f' · {hand}HP' if hand else '')}</span>
                     <span class="pitcher-projection"><b>Projection:</b> {escape(_projection_text(category,row))}</span>
                     <span class="pitcher-reason">{escape(reason)}</span>
+                    {f'<span class="pitcher-live-result">{escape(result_line)}</span>' if result_line else ''}
                     <em class="{lineup_class}">{escape(lineup)}</em>
                 </div>
                 <div class="pitcher-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
@@ -504,7 +587,7 @@ def render_pitcher_rankings() -> None:
             height:100%!important;
             object-fit:contain!important;
             object-position:center center!important;
-            transform:scale(.86) translateY(-2%)!important;
+            transform:scale(.90) translateY(-2%)!important;
             transform-origin:center center!important;
             border-radius:50%!important;
             background:#080909!important;
@@ -580,6 +663,21 @@ def render_pitcher_rankings() -> None:
             white-space:nowrap!important;
         }
 
+        .pitcher-live-result{
+            color:#fff!important;
+            font-weight:900!important;
+            margin-top:2px!important;
+        }
+        .pitch-game-live{
+            color:#20e783!important;
+            border:1px solid rgba(32,231,131,.82)!important;
+            background:rgba(32,231,131,.10)!important;
+        }
+        .pitch-game-final{
+            color:#f6c84c!important;
+            border:1px solid rgba(246,200,76,.82)!important;
+            background:rgba(246,200,76,.10)!important;
+        }
         .pitch-lineup-confirmed{
             color:#c8f7d9!important;
             border:1px solid rgba(47,191,113,.55)!important;
