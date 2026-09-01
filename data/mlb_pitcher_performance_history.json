@@ -28745,7 +28745,7 @@
       }
     },
     "2026-09-01": {
-      "captured_at": "2026-09-01T00:27:16.454848-04:00",
+      "captured_at": "2026-09-01T09:17:31.678715-04:00",
       "categories": {
         "earned_runs": [
           {
@@ -29348,12 +29348,12 @@
             "category": "hits_allowed",
             "finalized": false,
             "game_pk": 824313,
-            "gi_score": 57.6,
+            "gi_score": 57.8,
             "lineup_context_confirmed": false,
             "opponent": "Colorado Rockies",
             "pitcher_id": 680694,
             "pitcher_name": "Kyle Bradish",
-            "projection": 5.45,
+            "projection": 5.48,
             "rank": 13,
             "result_label": "Pending",
             "team": "Baltimore Orioles"
@@ -29396,12 +29396,12 @@
             "category": "hits_allowed",
             "finalized": false,
             "game_pk": 824313,
-            "gi_score": 57.0,
+            "gi_score": 56.9,
             "lineup_context_confirmed": false,
             "opponent": "Baltimore Orioles",
             "pitcher_id": 687312,
             "pitcher_name": "Gabriel Hughes",
-            "projection": 5.64,
+            "projection": 5.63,
             "rank": 16,
             "result_label": "Pending",
             "team": "Colorado Rockies"
@@ -30152,12 +30152,12 @@
             "category": "strikeouts",
             "finalized": false,
             "game_pk": 824313,
-            "gi_score": 55.4,
+            "gi_score": 55.6,
             "lineup_context_confirmed": false,
             "opponent": "Colorado Rockies",
             "pitcher_id": 680694,
             "pitcher_name": "Kyle Bradish",
-            "projection": 5.18,
+            "projection": 5.2,
             "rank": 13,
             "result_label": "Pending",
             "team": "Baltimore Orioles"
@@ -30311,6 +30311,22 @@
             "actual": null,
             "category": "strikeouts",
             "finalized": false,
+            "game_pk": 824313,
+            "gi_score": 49.9,
+            "lineup_context_confirmed": false,
+            "opponent": "Baltimore Orioles",
+            "pitcher_id": 687312,
+            "pitcher_name": "Gabriel Hughes",
+            "projection": 4.49,
+            "rank": 23,
+            "result_label": "Pending",
+            "team": "Colorado Rockies"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "strikeouts",
+            "finalized": false,
             "game_pk": 822687,
             "gi_score": 49.1,
             "lineup_context_confirmed": false,
@@ -30318,7 +30334,7 @@
             "pitcher_id": 700363,
             "pitcher_name": "AJ Smith-Shawver",
             "projection": 4.03,
-            "rank": 23,
+            "rank": 24,
             "result_label": "Pending",
             "team": "Atlanta Braves"
           },
@@ -30334,25 +30350,9 @@
             "pitcher_id": 641778,
             "pitcher_name": "Eric Lauer",
             "projection": 4.32,
-            "rank": 24,
-            "result_label": "Pending",
-            "team": "Los Angeles Dodgers"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "strikeouts",
-            "finalized": false,
-            "game_pk": 823984,
-            "gi_score": 48.2,
-            "lineup_context_confirmed": false,
-            "opponent": "New York Yankees",
-            "pitcher_id": 680570,
-            "pitcher_name": "Grayson Rodriguez",
-            "projection": 4.27,
             "rank": 25,
             "result_label": "Pending",
-            "team": "Los Angeles Angels"
+            "team": "Los Angeles Dodgers"
           }
         ],
         "walks_allowed": [
@@ -30410,12 +30410,12 @@
             "category": "walks_allowed",
             "finalized": false,
             "game_pk": 824313,
-            "gi_score": 60.9,
+            "gi_score": 61.3,
             "lineup_context_confirmed": false,
             "opponent": "Colorado Rockies",
             "pitcher_id": 680694,
             "pitcher_name": "Kyle Bradish",
-            "projection": 2.41,
+            "projection": 2.44,
             "rank": 4,
             "result_label": "Pending",
             "team": "Baltimore Orioles"
@@ -30586,12 +30586,12 @@
             "category": "walks_allowed",
             "finalized": false,
             "game_pk": 824313,
-            "gi_score": 55.9,
+            "gi_score": 56.0,
             "lineup_context_confirmed": false,
             "opponent": "Baltimore Orioles",
             "pitcher_id": 687312,
             "pitcher_name": "Gabriel Hughes",
-            "projection": 2.14,
+            "projection": 2.15,
             "rank": 15,
             "result_label": "Pending",
             "team": "Colorado Rockies"
