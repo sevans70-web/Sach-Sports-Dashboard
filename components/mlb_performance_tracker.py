@@ -181,21 +181,36 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """Restore the compact period selector used before the large button grid."""
+    """
+    Five fixed columns are used instead of Streamlit's segmented control.
+
+    The segmented control was wrapping "Season" onto a second row on iPhone.
+    Five real columns keep all periods on one row at every mobile width.
+    """
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"
 
-    selected = st.segmented_control(
-        "Performance Period",
-        options=options,
-        default=current,
-        key=f"{key}_control",
-        selection_mode="single",
+    st.markdown(
+        '<div class="perf-period-label">Performance Period</div>',
+        unsafe_allow_html=True,
     )
-    selected = selected or current
-    st.session_state[key] = selected
+
+    with st.container(key=f"{key}_buttons"):
+        columns = st.columns(5, gap="small")
+        for column, option in zip(columns, options):
+            with column:
+                if st.button(
+                    option,
+                    key=f"{key}_{option.replace(' ', '_').lower()}",
+                    type="primary" if option == current else "secondary",
+                    use_container_width=True,
+                ):
+                    st.session_state[key] = option
+                    st.rerun()
+
+    selected = st.session_state.get(key, current)
     return "Week" if selected == "7 Days" else selected
 
 
@@ -329,6 +344,58 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
                 white-space:nowrap!important;
             }
         }
+
+    <style>
+    .perf-period-label{
+        color:#fff!important;
+        font-size:.82rem!important;
+        line-height:1.15!important;
+        margin:.10rem 0 .30rem!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_buttons"] [data-testid="stHorizontalBlock"],
+    div[class*="st-key-mlb_pitcher_performance_period_buttons"] [data-testid="stHorizontalBlock"]{
+        display:flex!important;
+        flex-wrap:nowrap!important;
+        gap:3px!important;
+        width:100%!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_buttons"] [data-testid="stColumn"],
+    div[class*="st-key-mlb_pitcher_performance_period_buttons"] [data-testid="stColumn"]{
+        flex:1 1 20%!important;
+        width:20%!important;
+        min-width:0!important;
+        max-width:20%!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_buttons"] button,
+    div[class*="st-key-mlb_pitcher_performance_period_buttons"] button{
+        width:100%!important;
+        min-width:0!important;
+        min-height:31px!important;
+        padding:.12rem .02rem!important;
+        font-size:.58rem!important;
+        line-height:1!important;
+        white-space:nowrap!important;
+        border-radius:0!important;
+    }
+
+    @media(max-width:700px){
+        div[class*="st-key-mlb_batter_performance_period_buttons"] [data-testid="stHorizontalBlock"],
+        div[class*="st-key-mlb_pitcher_performance_period_buttons"] [data-testid="stHorizontalBlock"]{
+            gap:0!important;
+        }
+
+        div[class*="st-key-mlb_batter_performance_period_buttons"] button,
+        div[class*="st-key-mlb_pitcher_performance_period_buttons"] button{
+            font-size:.54rem!important;
+            padding-left:1px!important;
+            padding-right:1px!important;
+        }
+    }
+    </style>
+
         </style>
         """,
         unsafe_allow_html=True,

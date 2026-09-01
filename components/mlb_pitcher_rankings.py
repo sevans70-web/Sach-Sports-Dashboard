@@ -12,6 +12,7 @@ import streamlit as st
 
 from engines.mlb_pitcher_intelligence import get_pitcher_rankings
 from data.mlb_pitcher_results import get_pitcher_game_result
+from data.mlb_players import get_player_headshot_url
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
@@ -241,10 +242,11 @@ def _headshot_html(row: dict) -> str:
     initials = "".join(part[0] for part in name.split()[:2]).upper() or "P"
 
     if pitcher_id:
-        url = str(row.get("headshot_url") or "").strip() or (
-            "https://img.mlbstatic.com/mlb-photos/image/upload/"
-            f"w_180,q_auto:best/v1/people/{pitcher_id}/headshot/67/current"
-        )
+        url = str(
+            get_player_headshot_url(pitcher_id)
+            or row.get("headshot_url")
+            or ""
+        ).strip()
         return (
             f'<img class="pitcher-headshot" src="{escape(url)}" '
             f'alt="{escape(name)} headshot" loading="lazy" '
@@ -360,15 +362,15 @@ def _result_value(category: str, result: dict) -> str:
 
 
 def _result_line(category: str, result: dict) -> str:
-    """Use the exact same result language as batter cards."""
+    """
+    Result row contains only the actual stat.
+
+    LIVE / FINAL is already displayed in the status pill directly above it.
+    """
     value = _result_value(category, result)
     if not value:
         return ""
-
-    phase = str(result.get("game_phase") or "").lower()
-    if phase == "final":
-        return f"Result: ✅ FINAL · {value}"
-    return f"Result: 🟡 LIVE · {value}"
+    return f"Result: {value}"
 
 
 def _render_pitcher_intelligence(category: str, row: dict) -> None:
@@ -478,8 +480,10 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                     <span class="pitcher-matchup">{_matchup_html(row)}{escape(f' · {hand}HP' if hand else '')}</span>
                     <span class="pitcher-projection"><b>Projection:</b> {escape(_projection_text(category,row))}</span>
                     <span class="pitcher-reason">{escape(reason)}</span>
-                    <em class="{lineup_class}">{escape(lineup)}</em>
-                    <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or 'Result: —')}</span>
+                    <div class="pitcher-state-result">
+                        <em class="{lineup_class}">{escape(lineup)}</em>
+                        <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or 'Result: —')}</span>
+                    </div>
                 </div>
                 <div class="pitcher-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
             </div>
@@ -1036,3 +1040,95 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown(
+    """
+    <style>
+    /* MLB CLOSEOUT — PITCHER USES EXACT PLAYER-PAGE PHOTO TREATMENT */
+    .pitcher-photo{
+        width:48px!important;
+        height:48px!important;
+        min-width:48px!important;
+        min-height:48px!important;
+        max-width:48px!important;
+        max-height:48px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        padding:0!important;
+        background:#080909!important;
+        border:2px solid rgba(214,179,92,.86)!important;
+        box-shadow:0 0 0 1px rgba(25,217,120,.18)!important;
+    }
+
+    .pitcher-headshot{
+        width:100%!important;
+        height:100%!important;
+        display:block!important;
+        object-fit:cover!important;
+        object-position:center 28%!important;
+        transform:none!important;
+        border-radius:50%!important;
+        background:#080909!important;
+    }
+
+    /* EXACT SAME COMPACT TYPE SCALE AS BATTER */
+    .pitcher-copy>strong{
+        font-size:.88rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+    }
+    .pitcher-copy>span{
+        font-size:.66rem!important;
+        line-height:1.18!important;
+    }
+
+    .pitcher-state-result{
+        display:flex!important;
+        flex-direction:column!important;
+        align-items:flex-start!important;
+        width:100%!important;
+        min-height:46px!important;
+        padding:0 0 9px!important;
+        margin:3px 0 0!important;
+        overflow:visible!important;
+    }
+
+    .pitcher-state-result em{
+        display:inline-block!important;
+        width:auto!important;
+        margin:0 0 7px!important;
+        padding:3px 7px!important;
+        font-size:.58rem!important;
+        line-height:1.08!important;
+        font-weight:850!important;
+        white-space:nowrap!important;
+    }
+
+    .pitcher-state-result .pitcher-card-result{
+        display:block!important;
+        position:static!important;
+        width:auto!important;
+        min-height:.92rem!important;
+        margin:0!important;
+        padding:0!important;
+        color:#fff!important;
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+        overflow:visible!important;
+    }
+
+    .pitcher-result-placeholder{
+        visibility:hidden!important;
+    }
+
+    div[class*="st-key-pitcher_intelligence_"] button{
+        position:static!important;
+        margin-top:8px!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
