@@ -412,7 +412,25 @@ def matchup_display(player: dict) -> str:
 
 
 def lineup_status_html(player: dict) -> str:
-    """Return a compact lineup-status label for ranking cards."""
+    """
+    Return the compact card state.
+
+    LIVE / FINAL always outrank the pregame lineup state.
+    """
+    if player.get("game_finished"):
+        return (
+            '<span class="gi-lineup-status gi-game-final">'
+            '✓ FINAL'
+            '</span>'
+        )
+
+    if player.get("result_live"):
+        return (
+            '<span class="gi-lineup-status gi-game-live">'
+            '● LIVE'
+            '</span>'
+        )
+
     status = str(player.get("lineup_status") or "").strip().lower()
 
     if status == "confirmed" or player.get("lineup_confirmed"):
@@ -527,12 +545,23 @@ def card_result_html(
             )
         return ""
 
-    result_label = escape(
-        str(player.get("result_label", "Result unavailable"))
-    )
+    raw_label = str(
+        player.get("result_label", "Result unavailable")
+    ).strip()
+
+    if player.get("game_finished"):
+        if raw_label.startswith("✅"):
+            result_label = "✅ FINAL · " + raw_label.lstrip("✅").strip()
+        elif raw_label.startswith("❌"):
+            result_label = "❌ FINAL · " + raw_label.lstrip("❌").strip()
+        else:
+            result_label = "FINAL · " + raw_label
+    else:
+        result_label = raw_label
+
     return (
         '<div class="gi-card-result">'
-        f'Result: {result_label}'
+        f'Result: {escape(result_label)}'
         '</div>'
     )
 @st.cache_data(ttl=600, show_spinner=False)
@@ -3781,3 +3810,84 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+
+st.markdown(
+    """
+    <style>
+    /* MLB TRUE CARD MATCH — BATTER */
+    .gi-card-header{
+        grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+        gap:6px!important;
+        align-items:start!important;
+        padding:5px 1px 12px!important;
+    }
+
+    .gi-card-player>strong{
+        font-size:.88rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+    }
+    .gi-card-player>span{
+        font-size:.66rem!important;
+        line-height:1.18!important;
+    }
+
+    .gi-native-photo,
+    .gi-native-initials{
+        width:48px!important;
+        height:48px!important;
+        min-width:48px!important;
+        min-height:48px!important;
+        padding:0!important;
+        display:grid!important;
+        place-items:center!important;
+        overflow:hidden!important;
+    }
+    .gi-native-photo img{
+        width:100%!important;
+        height:100%!important;
+        object-fit:contain!important;
+        object-position:center center!important;
+        transform:scale(.84) translateY(-2%)!important;
+        transform-origin:center center!important;
+        background:#080909!important;
+    }
+
+    .gi-lineup-status{
+        display:inline-block!important;
+        width:auto!important;
+        margin:5px 0 7px!important;
+        padding:3px 7px!important;
+        border-radius:999px!important;
+        font-size:.58rem!important;
+        line-height:1.08!important;
+        font-weight:850!important;
+        white-space:nowrap!important;
+    }
+    .gi-game-live{
+        color:#20e783!important;
+        border:1px solid rgba(32,231,131,.82)!important;
+        background:rgba(32,231,131,.10)!important;
+    }
+    .gi-game-final{
+        color:#f6c84c!important;
+        border:1px solid rgba(246,200,76,.82)!important;
+        background:rgba(246,200,76,.10)!important;
+    }
+
+    .gi-card-result{
+        display:block!important;
+        min-height:.92rem!important;
+        margin-top:1px!important;
+        margin-bottom:5px!important;
+        color:#fff!important;
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
