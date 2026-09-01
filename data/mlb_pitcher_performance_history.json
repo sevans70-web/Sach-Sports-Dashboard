@@ -28745,7 +28745,7 @@
       }
     },
     "2026-09-01": {
-      "captured_at": "2026-09-01T09:17:31.678715-04:00",
+      "captured_at": "2026-09-01T12:36:59.769538-04:00",
       "categories": {
         "earned_runs": [
           {
@@ -28785,6 +28785,22 @@
             "actual": null,
             "category": "earned_runs",
             "finalized": false,
+            "game_pk": 824716,
+            "gi_score": 59.0,
+            "lineup_context_confirmed": false,
+            "opponent": "Seattle Mariners",
+            "pitcher_id": 699151,
+            "pitcher_name": "Jedixson Paez",
+            "projection": 10.0,
+            "rank": 3,
+            "result_label": "Pending",
+            "team": "Boston Red Sox"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "earned_runs",
+            "finalized": false,
             "game_pk": 824148,
             "gi_score": 58.8,
             "lineup_context_confirmed": false,
@@ -28792,7 +28808,7 @@
             "pitcher_id": 669854,
             "pitcher_name": "Ronel Blanco",
             "projection": 5.0,
-            "rank": 3,
+            "rank": 4,
             "result_label": "Pending",
             "team": "Houston Astros"
           },
@@ -28808,7 +28824,7 @@
             "pitcher_id": 641778,
             "pitcher_name": "Eric Lauer",
             "projection": 3.29,
-            "rank": 4,
+            "rank": 5,
             "result_label": "Pending",
             "team": "Los Angeles Dodgers"
           },
@@ -28824,7 +28840,7 @@
             "pitcher_id": 680570,
             "pitcher_name": "Grayson Rodriguez",
             "projection": 3.2,
-            "rank": 5,
+            "rank": 6,
             "result_label": "Pending",
             "team": "Los Angeles Angels"
           },
@@ -28840,7 +28856,7 @@
             "pitcher_id": 663623,
             "pitcher_name": "Jake Irvin",
             "projection": 3.0,
-            "rank": 6,
+            "rank": 7,
             "result_label": "Pending",
             "team": "Washington Nationals"
           },
@@ -28856,7 +28872,7 @@
             "pitcher_id": 642547,
             "pitcher_name": "Freddy Peralta",
             "projection": 2.97,
-            "rank": 7,
+            "rank": 8,
             "result_label": "Pending",
             "team": "Tampa Bay Rays"
           },
@@ -28872,7 +28888,7 @@
             "pitcher_id": 666157,
             "pitcher_name": "Nick Lodolo",
             "projection": 2.87,
-            "rank": 8,
+            "rank": 9,
             "result_label": "Pending",
             "team": "Cincinnati Reds"
           },
@@ -28888,25 +28904,9 @@
             "pitcher_id": 669620,
             "pitcher_name": "Brady Basso",
             "projection": 3.5,
-            "rank": 9,
-            "result_label": "Pending",
-            "team": "Athletics"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "earned_runs",
-            "finalized": false,
-            "game_pk": 824391,
-            "gi_score": 53.3,
-            "lineup_context_confirmed": false,
-            "opponent": "Cleveland Guardians",
-            "pitcher_id": 681293,
-            "pitcher_name": "Spencer Arrighetti",
-            "projection": 2.83,
             "rank": 10,
             "result_label": "Pending",
-            "team": "Toronto Blue Jays"
+            "team": "Athletics"
           },
           {
             "absolute_error": null,
@@ -29105,6 +29105,22 @@
             "actual": null,
             "category": "earned_runs",
             "finalized": false,
+            "game_pk": 824391,
+            "gi_score": 48.6,
+            "lineup_context_confirmed": false,
+            "opponent": "Cleveland Guardians",
+            "pitcher_id": 693686,
+            "pitcher_name": "Spencer Miles",
+            "projection": 2.27,
+            "rank": 23,
+            "result_label": "Pending",
+            "team": "Toronto Blue Jays"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "earned_runs",
+            "finalized": false,
             "game_pk": 823908,
             "gi_score": 48.5,
             "lineup_context_confirmed": false,
@@ -29112,7 +29128,7 @@
             "pitcher_id": 700241,
             "pitcher_name": "Michael McGreevy",
             "projection": 2.35,
-            "rank": 23,
+            "rank": 24,
             "result_label": "Pending",
             "team": "St. Louis Cardinals"
           },
@@ -29128,25 +29144,9 @@
             "pitcher_id": 694973,
             "pitcher_name": "Paul Skenes",
             "projection": 2.26,
-            "rank": 24,
-            "result_label": "Pending",
-            "team": "Pittsburgh Pirates"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "earned_runs",
-            "finalized": false,
-            "game_pk": 825038,
-            "gi_score": 45.7,
-            "lineup_context_confirmed": false,
-            "opponent": "Arizona Diamondbacks",
-            "pitcher_id": 666200,
-            "pitcher_name": "Jes\u00fas Luzardo",
-            "projection": 2.07,
             "rank": 25,
             "result_label": "Pending",
-            "team": "Philadelphia Phillies"
+            "team": "Pittsburgh Pirates"
           }
         ],
         "hits_allowed": [
@@ -29331,6 +29331,22 @@
             "actual": null,
             "category": "hits_allowed",
             "finalized": false,
+            "game_pk": 824391,
+            "gi_score": 58.5,
+            "lineup_context_confirmed": false,
+            "opponent": "Cleveland Guardians",
+            "pitcher_id": 693686,
+            "pitcher_name": "Spencer Miles",
+            "projection": 6.21,
+            "rank": 12,
+            "result_label": "Pending",
+            "team": "Toronto Blue Jays"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "hits_allowed",
+            "finalized": false,
             "game_pk": 825038,
             "gi_score": 57.9,
             "lineup_context_confirmed": false,
@@ -29338,7 +29354,7 @@
             "pitcher_id": 593958,
             "pitcher_name": "Eduardo Rodriguez",
             "projection": 5.49,
-            "rank": 12,
+            "rank": 13,
             "result_label": "Pending",
             "team": "Arizona Diamondbacks"
           },
@@ -29354,7 +29370,7 @@
             "pitcher_id": 680694,
             "pitcher_name": "Kyle Bradish",
             "projection": 5.48,
-            "rank": 13,
+            "rank": 14,
             "result_label": "Pending",
             "team": "Baltimore Orioles"
           },
@@ -29370,7 +29386,7 @@
             "pitcher_id": 700241,
             "pitcher_name": "Michael McGreevy",
             "projection": 5.43,
-            "rank": 14,
+            "rank": 15,
             "result_label": "Pending",
             "team": "St. Louis Cardinals"
           },
@@ -29386,7 +29402,7 @@
             "pitcher_id": 666200,
             "pitcher_name": "Jes\u00fas Luzardo",
             "projection": 5.4,
-            "rank": 15,
+            "rank": 16,
             "result_label": "Pending",
             "team": "Philadelphia Phillies"
           },
@@ -29402,7 +29418,7 @@
             "pitcher_id": 687312,
             "pitcher_name": "Gabriel Hughes",
             "projection": 5.63,
-            "rank": 16,
+            "rank": 17,
             "result_label": "Pending",
             "team": "Colorado Rockies"
           },
@@ -29418,7 +29434,7 @@
             "pitcher_id": 642547,
             "pitcher_name": "Freddy Peralta",
             "projection": 5.34,
-            "rank": 17,
+            "rank": 18,
             "result_label": "Pending",
             "team": "Tampa Bay Rays"
           },
@@ -29434,7 +29450,7 @@
             "pitcher_id": 680732,
             "pitcher_name": "Sean Burke",
             "projection": 5.33,
-            "rank": 18,
+            "rank": 19,
             "result_label": "Pending",
             "team": "Chicago White Sox"
           },
@@ -29450,7 +29466,7 @@
             "pitcher_id": 657277,
             "pitcher_name": "Logan Webb",
             "projection": 5.31,
-            "rank": 19,
+            "rank": 20,
             "result_label": "Pending",
             "team": "San Francisco Giants"
           },
@@ -29466,7 +29482,7 @@
             "pitcher_id": 668909,
             "pitcher_name": "Gavin Williams",
             "projection": 5.25,
-            "rank": 20,
+            "rank": 21,
             "result_label": "Pending",
             "team": "Cleveland Guardians"
           },
@@ -29482,7 +29498,7 @@
             "pitcher_id": 571510,
             "pitcher_name": "Matthew Boyd",
             "projection": 5.18,
-            "rank": 21,
+            "rank": 22,
             "result_label": "Pending",
             "team": "Chicago Cubs"
           },
@@ -29498,9 +29514,25 @@
             "pitcher_id": 693433,
             "pitcher_name": "Bryan Woo",
             "projection": 5.0,
-            "rank": 22,
+            "rank": 23,
             "result_label": "Pending",
             "team": "Seattle Mariners"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "hits_allowed",
+            "finalized": false,
+            "game_pk": 824716,
+            "gi_score": 53.5,
+            "lineup_context_confirmed": false,
+            "opponent": "Seattle Mariners",
+            "pitcher_id": 699151,
+            "pitcher_name": "Jedixson Paez",
+            "projection": 6.67,
+            "rank": 24,
+            "result_label": "Pending",
+            "team": "Boston Red Sox"
           },
           {
             "absolute_error": null,
@@ -29514,41 +29546,9 @@
             "pitcher_id": 669022,
             "pitcher_name": "MacKenzie Gore",
             "projection": 4.88,
-            "rank": 23,
-            "result_label": "Pending",
-            "team": "Texas Rangers"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "hits_allowed",
-            "finalized": false,
-            "game_pk": 824148,
-            "gi_score": 51.8,
-            "lineup_context_confirmed": false,
-            "opponent": "Chicago White Sox",
-            "pitcher_id": 669854,
-            "pitcher_name": "Ronel Blanco",
-            "projection": 5.12,
-            "rank": 24,
-            "result_label": "Pending",
-            "team": "Houston Astros"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "hits_allowed",
-            "finalized": false,
-            "game_pk": 822687,
-            "gi_score": 51.6,
-            "lineup_context_confirmed": false,
-            "opponent": "Washington Nationals",
-            "pitcher_id": 700363,
-            "pitcher_name": "AJ Smith-Shawver",
-            "projection": 5.34,
             "rank": 25,
             "result_label": "Pending",
-            "team": "Atlanta Braves"
+            "team": "Texas Rangers"
           }
         ],
         "outs_recorded": [
@@ -29589,6 +29589,22 @@
             "actual": null,
             "category": "outs_recorded",
             "finalized": false,
+            "game_pk": 824391,
+            "gi_score": 58.7,
+            "lineup_context_confirmed": false,
+            "opponent": "Cleveland Guardians",
+            "pitcher_id": 693686,
+            "pitcher_name": "Spencer Miles",
+            "projection": 21.0,
+            "rank": 3,
+            "result_label": "Pending",
+            "team": "Toronto Blue Jays"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "outs_recorded",
+            "finalized": false,
             "game_pk": 824148,
             "gi_score": 57.6,
             "lineup_context_confirmed": false,
@@ -29596,7 +29612,7 @@
             "pitcher_id": 680732,
             "pitcher_name": "Sean Burke",
             "projection": 19.4,
-            "rank": 3,
+            "rank": 4,
             "result_label": "Pending",
             "team": "Chicago White Sox"
           },
@@ -29612,7 +29628,7 @@
             "pitcher_id": 702193,
             "pitcher_name": "Andrew Morris",
             "projection": 21.0,
-            "rank": 4,
+            "rank": 5,
             "result_label": "Pending",
             "team": "Minnesota Twins"
           },
@@ -29628,7 +29644,7 @@
             "pitcher_id": 677976,
             "pitcher_name": "Randy Dobnak",
             "projection": 19.4,
-            "rank": 5,
+            "rank": 6,
             "result_label": "Pending",
             "team": "Kansas City Royals"
           },
@@ -29644,7 +29660,7 @@
             "pitcher_id": 669620,
             "pitcher_name": "Brady Basso",
             "projection": 21.0,
-            "rank": 6,
+            "rank": 7,
             "result_label": "Pending",
             "team": "Athletics"
           },
@@ -29660,7 +29676,7 @@
             "pitcher_id": 641778,
             "pitcher_name": "Eric Lauer",
             "projection": 18.6,
-            "rank": 7,
+            "rank": 8,
             "result_label": "Pending",
             "team": "Los Angeles Dodgers"
           },
@@ -29676,7 +29692,7 @@
             "pitcher_id": 657277,
             "pitcher_name": "Logan Webb",
             "projection": 18.5,
-            "rank": 8,
+            "rank": 9,
             "result_label": "Pending",
             "team": "San Francisco Giants"
           },
@@ -29692,7 +29708,7 @@
             "pitcher_id": 675512,
             "pitcher_name": "Troy Melton",
             "projection": 18.2,
-            "rank": 9,
+            "rank": 10,
             "result_label": "Pending",
             "team": "Detroit Tigers"
           },
@@ -29708,7 +29724,7 @@
             "pitcher_id": 666200,
             "pitcher_name": "Jes\u00fas Luzardo",
             "projection": 18.1,
-            "rank": 10,
+            "rank": 11,
             "result_label": "Pending",
             "team": "Philadelphia Phillies"
           },
@@ -29724,7 +29740,7 @@
             "pitcher_id": 593958,
             "pitcher_name": "Eduardo Rodriguez",
             "projection": 18.0,
-            "rank": 11,
+            "rank": 12,
             "result_label": "Pending",
             "team": "Arizona Diamondbacks"
           },
@@ -29740,7 +29756,7 @@
             "pitcher_id": 681190,
             "pitcher_name": "Randy V\u00e1squez",
             "projection": 17.6,
-            "rank": 12,
+            "rank": 13,
             "result_label": "Pending",
             "team": "San Diego Padres"
           },
@@ -29756,7 +29772,7 @@
             "pitcher_id": 669854,
             "pitcher_name": "Ronel Blanco",
             "projection": 17.5,
-            "rank": 13,
+            "rank": 14,
             "result_label": "Pending",
             "team": "Houston Astros"
           },
@@ -29772,7 +29788,7 @@
             "pitcher_id": 543037,
             "pitcher_name": "Gerrit Cole",
             "projection": 17.4,
-            "rank": 14,
+            "rank": 15,
             "result_label": "Pending",
             "team": "New York Yankees"
           },
@@ -29788,7 +29804,7 @@
             "pitcher_id": 668909,
             "pitcher_name": "Gavin Williams",
             "projection": 17.3,
-            "rank": 15,
+            "rank": 16,
             "result_label": "Pending",
             "team": "Cleveland Guardians"
           },
@@ -29804,7 +29820,7 @@
             "pitcher_id": 693433,
             "pitcher_name": "Bryan Woo",
             "projection": 17.1,
-            "rank": 16,
+            "rank": 17,
             "result_label": "Pending",
             "team": "Seattle Mariners"
           },
@@ -29820,9 +29836,25 @@
             "pitcher_id": 571510,
             "pitcher_name": "Matthew Boyd",
             "projection": 17.1,
-            "rank": 17,
+            "rank": 18,
             "result_label": "Pending",
             "team": "Chicago Cubs"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "outs_recorded",
+            "finalized": false,
+            "game_pk": 824716,
+            "gi_score": 48.0,
+            "lineup_context_confirmed": false,
+            "opponent": "Seattle Mariners",
+            "pitcher_id": 699151,
+            "pitcher_name": "Jedixson Paez",
+            "projection": 15.0,
+            "rank": 19,
+            "result_label": "Pending",
+            "team": "Boston Red Sox"
           },
           {
             "absolute_error": null,
@@ -29836,7 +29868,7 @@
             "pitcher_id": 700363,
             "pitcher_name": "AJ Smith-Shawver",
             "projection": 13.7,
-            "rank": 18,
+            "rank": 20,
             "result_label": "Pending",
             "team": "Atlanta Braves"
           },
@@ -29852,7 +29884,7 @@
             "pitcher_id": 680694,
             "pitcher_name": "Kyle Bradish",
             "projection": 16.5,
-            "rank": 19,
+            "rank": 21,
             "result_label": "Pending",
             "team": "Baltimore Orioles"
           },
@@ -29868,7 +29900,7 @@
             "pitcher_id": 688107,
             "pitcher_name": "Robert Gasser",
             "projection": 16.5,
-            "rank": 20,
+            "rank": 22,
             "result_label": "Pending",
             "team": "Milwaukee Brewers"
           },
@@ -29884,7 +29916,7 @@
             "pitcher_id": 700241,
             "pitcher_name": "Michael McGreevy",
             "projection": 16.4,
-            "rank": 21,
+            "rank": 23,
             "result_label": "Pending",
             "team": "St. Louis Cardinals"
           },
@@ -29900,7 +29932,7 @@
             "pitcher_id": 687312,
             "pitcher_name": "Gabriel Hughes",
             "projection": 15.9,
-            "rank": 22,
+            "rank": 24,
             "result_label": "Pending",
             "team": "Colorado Rockies"
           },
@@ -29916,41 +29948,9 @@
             "pitcher_id": 694973,
             "pitcher_name": "Paul Skenes",
             "projection": 16.1,
-            "rank": 23,
-            "result_label": "Pending",
-            "team": "Pittsburgh Pirates"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "outs_recorded",
-            "finalized": false,
-            "game_pk": 822854,
-            "gi_score": 44.0,
-            "lineup_context_confirmed": false,
-            "opponent": "Athletics",
-            "pitcher_id": 669022,
-            "pitcher_name": "MacKenzie Gore",
-            "projection": 16.0,
-            "rank": 24,
-            "result_label": "Pending",
-            "team": "Texas Rangers"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "outs_recorded",
-            "finalized": false,
-            "game_pk": 824391,
-            "gi_score": 43.6,
-            "lineup_context_confirmed": false,
-            "opponent": "Cleveland Guardians",
-            "pitcher_id": 681293,
-            "pitcher_name": "Spencer Arrighetti",
-            "projection": 15.9,
             "rank": 25,
             "result_label": "Pending",
-            "team": "Toronto Blue Jays"
+            "team": "Pittsburgh Pirates"
           }
         ],
         "strikeouts": [
@@ -30103,6 +30103,22 @@
             "actual": null,
             "category": "strikeouts",
             "finalized": false,
+            "game_pk": 824391,
+            "gi_score": 60.0,
+            "lineup_context_confirmed": false,
+            "opponent": "Cleveland Guardians",
+            "pitcher_id": 693686,
+            "pitcher_name": "Spencer Miles",
+            "projection": 6.51,
+            "rank": 10,
+            "result_label": "Pending",
+            "team": "Toronto Blue Jays"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "strikeouts",
+            "finalized": false,
             "game_pk": 823661,
             "gi_score": 57.7,
             "lineup_context_confirmed": false,
@@ -30110,25 +30126,9 @@
             "pitcher_id": 702193,
             "pitcher_name": "Andrew Morris",
             "projection": 6.5,
-            "rank": 10,
-            "result_label": "Pending",
-            "team": "Minnesota Twins"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "strikeouts",
-            "finalized": false,
-            "game_pk": 824391,
-            "gi_score": 57.0,
-            "lineup_context_confirmed": false,
-            "opponent": "Cleveland Guardians",
-            "pitcher_id": 681293,
-            "pitcher_name": "Spencer Arrighetti",
-            "projection": 5.37,
             "rank": 11,
             "result_label": "Pending",
-            "team": "Toronto Blue Jays"
+            "team": "Minnesota Twins"
           },
           {
             "absolute_error": null,
@@ -30361,22 +30361,6 @@
             "actual": null,
             "category": "walks_allowed",
             "finalized": false,
-            "game_pk": 824391,
-            "gi_score": 71.8,
-            "lineup_context_confirmed": false,
-            "opponent": "Cleveland Guardians",
-            "pitcher_id": 681293,
-            "pitcher_name": "Spencer Arrighetti",
-            "projection": 3.32,
-            "rank": 1,
-            "result_label": "Pending",
-            "team": "Toronto Blue Jays"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "walks_allowed",
-            "finalized": false,
             "game_pk": 824070,
             "gi_score": 70.4,
             "lineup_context_confirmed": false,
@@ -30384,7 +30368,7 @@
             "pitcher_id": 663969,
             "pitcher_name": "Tyler Phillips",
             "projection": 3.2,
-            "rank": 2,
+            "rank": 1,
             "result_label": "Pending",
             "team": "Miami Marlins"
           },
@@ -30400,7 +30384,7 @@
             "pitcher_id": 677976,
             "pitcher_name": "Randy Dobnak",
             "projection": 3.27,
-            "rank": 3,
+            "rank": 2,
             "result_label": "Pending",
             "team": "Kansas City Royals"
           },
@@ -30416,7 +30400,7 @@
             "pitcher_id": 680694,
             "pitcher_name": "Kyle Bradish",
             "projection": 2.44,
-            "rank": 4,
+            "rank": 3,
             "result_label": "Pending",
             "team": "Baltimore Orioles"
           },
@@ -30432,9 +30416,25 @@
             "pitcher_id": 680570,
             "pitcher_name": "Grayson Rodriguez",
             "projection": 2.4,
-            "rank": 5,
+            "rank": 4,
             "result_label": "Pending",
             "team": "Los Angeles Angels"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "walks_allowed",
+            "finalized": false,
+            "game_pk": 824716,
+            "gi_score": 59.0,
+            "lineup_context_confirmed": false,
+            "opponent": "Seattle Mariners",
+            "pitcher_id": 699151,
+            "pitcher_name": "Jedixson Paez",
+            "projection": 7.22,
+            "rank": 5,
+            "result_label": "Pending",
+            "team": "Boston Red Sox"
           },
           {
             "absolute_error": null,
@@ -30665,6 +30665,22 @@
             "actual": null,
             "category": "walks_allowed",
             "finalized": false,
+            "game_pk": 824391,
+            "gi_score": 51.6,
+            "lineup_context_confirmed": false,
+            "opponent": "Cleveland Guardians",
+            "pitcher_id": 693686,
+            "pitcher_name": "Spencer Miles",
+            "projection": 1.72,
+            "rank": 20,
+            "result_label": "Pending",
+            "team": "Toronto Blue Jays"
+          },
+          {
+            "absolute_error": null,
+            "actual": null,
+            "category": "walks_allowed",
+            "finalized": false,
             "game_pk": 824472,
             "gi_score": 50.8,
             "lineup_context_confirmed": false,
@@ -30672,7 +30688,7 @@
             "pitcher_id": 681190,
             "pitcher_name": "Randy V\u00e1squez",
             "projection": 1.57,
-            "rank": 20,
+            "rank": 21,
             "result_label": "Pending",
             "team": "San Diego Padres"
           },
@@ -30688,7 +30704,7 @@
             "pitcher_id": 675512,
             "pitcher_name": "Troy Melton",
             "projection": 1.57,
-            "rank": 21,
+            "rank": 22,
             "result_label": "Pending",
             "team": "Detroit Tigers"
           },
@@ -30704,7 +30720,7 @@
             "pitcher_id": 688107,
             "pitcher_name": "Robert Gasser",
             "projection": 1.55,
-            "rank": 22,
+            "rank": 23,
             "result_label": "Pending",
             "team": "Milwaukee Brewers"
           },
@@ -30720,7 +30736,7 @@
             "pitcher_id": 657277,
             "pitcher_name": "Logan Webb",
             "projection": 1.52,
-            "rank": 23,
+            "rank": 24,
             "result_label": "Pending",
             "team": "San Francisco Giants"
           },
@@ -30736,25 +30752,9 @@
             "pitcher_id": 700241,
             "pitcher_name": "Michael McGreevy",
             "projection": 1.49,
-            "rank": 24,
-            "result_label": "Pending",
-            "team": "St. Louis Cardinals"
-          },
-          {
-            "absolute_error": null,
-            "actual": null,
-            "category": "walks_allowed",
-            "finalized": false,
-            "game_pk": 825038,
-            "gi_score": 49.5,
-            "lineup_context_confirmed": false,
-            "opponent": "Philadelphia Phillies",
-            "pitcher_id": 593958,
-            "pitcher_name": "Eduardo Rodriguez",
-            "projection": 1.46,
             "rank": 25,
             "result_label": "Pending",
-            "team": "Arizona Diamondbacks"
+            "team": "St. Louis Cardinals"
           }
         ]
       }
