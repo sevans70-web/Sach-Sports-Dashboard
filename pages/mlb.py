@@ -3943,3 +3943,50 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB PLATFORM CLOSEOUT — authoritative batter Top-25 geometry.
+# This block intentionally comes last so older historical overrides cannot change the locked card.
+st.markdown(
+    """
+    <style>
+    .gi-card-header{
+        grid-template-columns:34px 50px minmax(0,1fr) 48px!important;
+        gap:6px!important;
+        align-items:start!important;
+        padding:5px 1px 12px!important;
+    }
+    .gi-native-photo,.gi-native-initials{
+        width:48px!important;height:48px!important;
+        min-width:48px!important;min-height:48px!important;
+        max-width:48px!important;max-height:48px!important;
+        padding:0!important;border-radius:50%!important;overflow:hidden!important;
+        background:#080909!important;border:2px solid rgba(214,179,92,.86)!important;
+    }
+    .gi-native-photo img{
+        width:100%!important;height:100%!important;display:block!important;
+        object-fit:cover!important;object-position:center 28%!important;
+        transform:none!important;border-radius:50%!important;background:#080909!important;
+    }
+    .gi-card-player{gap:1px!important;align-self:start!important;min-width:0!important}
+    .gi-card-player>strong{font-size:.88rem!important;line-height:1.08!important;font-weight:900!important;margin-bottom:1px!important}
+    .gi-card-player>span{font-size:.66rem!important;line-height:1.18!important}
+    .gi-lineup-status{
+        display:inline-block!important;width:auto!important;
+        margin:5px 0 7px!important;padding:3px 7px!important;
+        border-radius:999px!important;font-size:.58rem!important;line-height:1.08!important;
+        font-weight:850!important;white-space:nowrap!important;
+    }
+    .gi-card-result{
+        display:block!important;position:static!important;
+        min-height:.92rem!important;margin:0 0 7px!important;padding:0!important;
+        color:#fff!important;font-size:.76rem!important;line-height:1.16!important;
+        font-weight:800!important;white-space:nowrap!important;
+    }
+    .gi-card-result-placeholder{visibility:hidden!important}
+    [class*="st-key-show_"][class*="_player_"] .stButton,
+    [class*="st-key-show_"][class*="_top5_player_"] .stButton{margin-top:5px!important}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
