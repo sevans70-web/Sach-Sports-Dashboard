@@ -88,60 +88,60 @@ def _load_history_at_sha(token: str, sha: str) -> dict[str, Any]:
     return history
 
 
+def _day_quality(day_record: dict[str, Any]) -> tuple[int, int, str]:
+    categories = (day_record or {}).get("categories", {}) or {}
+    settled = 0
+    total = 0
+    for rows in categories.values():
+        if not isinstance(rows, list):
+            continue
+        total += len(rows)
+        settled += sum(1 for row in rows if isinstance(row, dict) and row.get("game_finished") is True)
+    return settled, total, str((day_record or {}).get("captured_at") or "")
+
+
+def _merge_best_day(existing: dict[str, Any] | None, candidate: dict[str, Any]) -> dict[str, Any]:
+    if not existing or _day_quality(candidate) > _day_quality(existing):
+        return candidate
+    return existing
+
+
 def _recover_days_from_git_history(
     token: str,
     current_history: dict[str, Any],
     max_commits: int = 60,
 ) -> tuple[dict[str, Any], bool]:
-    """
-    Recover historical day records from older Git commits.
-
-    This makes a deploy-safe history: if a ZIP upload accidentally replaces
-    the tracked JSON with a one-day file, older days are rebuilt from Git's
-    own file history instead of being permanently lost.
-    """
     merged = {
         "schema_version": int(current_history.get("schema_version") or 1),
         "days": dict(current_history.get("days") or {}),
     }
     recovered = False
-
     try:
         response = requests.get(
-            _history_commits_url(),
-            headers=_headers(token),
-            params={
-                "path": HISTORY_PATH,
-                "sha": BRANCH,
-                "per_page": min(max_commits, 100),
-            },
-            timeout=25,
+            _history_commits_url(), headers=_headers(token),
+            params={"path": HISTORY_PATH, "sha": BRANCH, "per_page": min(max_commits, 100)}, timeout=25,
         )
         response.raise_for_status()
         commits = response.json()
     except Exception:
         return merged, False
-
     if not isinstance(commits, list):
         return merged, False
-
     for commit in commits[:max_commits]:
         sha = str((commit or {}).get("sha") or "").strip()
         if not sha:
             continue
-
         older = _load_history_at_sha(token, sha)
         for day_key, day_record in (older.get("days") or {}).items():
-            if day_key not in merged["days"]:
-                merged["days"][day_key] = day_record
+            if not isinstance(day_record, dict):
+                continue
+            before = merged["days"].get(day_key)
+            best = _merge_best_day(before, day_record)
+            if best != before:
+                merged["days"][day_key] = best
                 recovered = True
-
-    merged["days"] = {
-        key: merged["days"][key]
-        for key in sorted(merged["days"])
-    }
+    merged["days"] = {key: merged["days"][key] for key in sorted(merged["days"])}
     return merged, recovered
-
 
 def load_history(token: str) -> tuple[dict[str, Any], str | None]:
     """
