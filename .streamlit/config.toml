@@ -3,11 +3,10 @@ toolbarMode = "minimal"
 showErrorDetails = "none"
 
 [runner]
-# Avoid module-unload/import races during rapid reruns and cloud code refreshes.
 fastReruns = false
-# The deployed app should not hot-reload Python modules from filesystem watches.
+
+[server]
 fileWatcherType = "none"
-# Keep explicit even though the default is false.
 runOnSave = false
 
 [ui]
