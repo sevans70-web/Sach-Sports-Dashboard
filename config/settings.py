@@ -9,4 +9,7 @@ APP_VERSION = "1.0.0"
 APP_ENVIRONMENT = os.getenv("APP_ENVIRONMENT", "development")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+SUPABASE_KEY = (
+    os.getenv("SUPABASE_KEY", "")
+    or os.getenv("SUPABASE_SECRET_KEY", "")
+)
