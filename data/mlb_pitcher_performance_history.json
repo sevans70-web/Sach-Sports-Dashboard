@@ -26519,19 +26519,26 @@
             "team": "Philadelphia Phillies"
           },
           {
-            "absolute_error": null,
-            "actual": null,
+            "absolute_error": 2.04,
+            "actual": 8.0,
+            "actual_earned_runs": 4,
+            "actual_hits_allowed": 8,
+            "actual_outs_recorded": 18,
+            "actual_strikeouts": 3,
+            "actual_walks_allowed": 1,
             "category": "hits_allowed",
-            "finalized": false,
+            "finalized": true,
             "game_pk": 822690,
             "gi_score": 61.7,
+            "innings_pitched": "6.0",
             "lineup_context_confirmed": false,
             "opponent": "Washington Nationals",
             "pitcher_id": 645261,
             "pitcher_name": "Sandy Alcantara",
+            "pitches": 94,
             "projection": 5.96,
             "rank": 4,
-            "result_label": "Pending",
+            "result_label": "Projected 6.0 \u00b7 Actual 8 \u00b7 Error 2.0",
             "team": "Miami Marlins"
           },
           {
@@ -28738,7 +28745,7 @@
       }
     },
     "2026-09-01": {
-      "captured_at": "2026-09-01T20:35:44.069077-04:00",
+      "captured_at": "2026-09-01T20:39:32.471166-04:00",
       "categories": {
         "earned_runs": [
           {
