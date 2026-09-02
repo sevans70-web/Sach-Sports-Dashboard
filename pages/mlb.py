@@ -626,31 +626,14 @@ def load_batter_movement_snapshot(
     category_rankings: dict[str, list[dict]],
 ) -> dict:
     """
-    Compare today's Top 25 against the last material ranking.
+    Compare today's Top 25 against the last material ranking without writing
+    back to the deployed GitHub repository.
 
-    GitHub remains the durable source when its token can read/write. If that
-    persistence is unavailable, keep a server-runtime snapshot instead of
-    dropping all the way back to browser-session state.
+    Runtime GitHub writes cause Streamlit Community Cloud to detect a repo
+    change and redeploy the app while a user is actively using it. Until
+    movement persistence is moved to Supabase, keep this snapshot in /tmp.
     """
     captured_at = get_toronto_now()
-    token = _github_token()
-
-    if token:
-        try:
-            snapshot_config = GitHubSnapshotConfig(
-                repository="sevans70-web/Sach-Sports-Dashboard",
-                token=token,
-                branch="main",
-                path="data/intraday_rankings.json",
-            )
-            return load_compare_and_save(
-                config=snapshot_config,
-                category_rankings=category_rankings,
-                captured_at=captured_at,
-            )
-        except (ValueError, KeyError, RankingSnapshotError):
-            pass
-
     return load_compare_and_save_local(
         category_rankings=category_rankings,
         captured_at=captured_at,
