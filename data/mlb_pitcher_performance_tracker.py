@@ -178,9 +178,15 @@ def load_history(token: str) -> tuple[dict[str, Any], str | None]:
         history.setdefault("schema_version", 1)
         history.setdefault("days", {})
 
-    history, recovered = _recover_days_from_git_history(token, history)
-    if recovered:
-        history["_history_recovered"] = True
+    # Git-history recovery is a disaster-recovery path, not a normal navigation step.
+    # Once the repository has a real history window, avoid dozens of GitHub requests
+    # on ordinary Streamlit reruns. Empty/near-empty history still self-recovers.
+    current_days = history.get("days") or {}
+    should_recover = len(current_days) < 2
+    if should_recover:
+        history, recovered = _recover_days_from_git_history(token, history)
+        if recovered:
+            history["_history_recovered"] = True
 
     return history, sha
 
