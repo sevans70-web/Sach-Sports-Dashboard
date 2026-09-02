@@ -272,9 +272,26 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
     return updated
 
 
-def sync_history(token: str, rankings_by_category: dict[str, list[dict[str, Any]]], snapshot_date: str | None = None) -> dict[str, Any]:
+def sync_history(
+    token: str,
+    rankings_by_category: dict[str, list[dict[str, Any]]],
+    snapshot_date: str | None = None,
+    *,
+    persist: bool = True,
+    local_history_path: str | None = None,
+) -> dict[str, Any]:
     today = snapshot_date or datetime.now(TORONTO_TIMEZONE).date().isoformat()
-    history, sha = load_history(token)
+    if not persist and local_history_path:
+        try:
+            with open(local_history_path, "r", encoding="utf-8") as handle:
+                history = json.load(handle)
+            if not isinstance(history, dict):
+                history = {"schema_version": 1, "days": {}}
+        except Exception:
+            history = {"schema_version": 1, "days": {}}
+        sha = None
+    else:
+        history, sha = load_history(token)
     history.setdefault("schema_version", 1)
     days = history.setdefault("days", {})
     changed = bool(history.pop("_history_recovered", False))
@@ -324,7 +341,7 @@ def sync_history(token: str, rankings_by_category: dict[str, list[dict[str, Any]
                 categories[category] = resolved
                 changed = True
 
-    if changed:
+    if changed and persist:
         save_history(token, history, sha)
     return history
 
