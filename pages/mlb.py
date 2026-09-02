@@ -3990,3 +3990,25 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB FINAL CARD GEOMETRY — batter and pitcher summaries share the same height contract.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      .gi-card-header{
+        min-height:142px!important;
+        height:142px!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+      }
+      [class*="st-key-show_"][class*="_player_"] > div > [data-testid="stVerticalBlockBorderWrapper"],
+      [class*="st-key-show_"][class*="_top5_player_"] > div > [data-testid="stVerticalBlockBorderWrapper"]{
+        min-height:0!important;
+      }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
