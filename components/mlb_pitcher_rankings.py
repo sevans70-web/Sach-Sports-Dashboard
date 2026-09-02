@@ -1163,3 +1163,21 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB FINAL CARD GEOMETRY — exact mobile summary height shared with batter cards.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      .pitcher-card-main{
+        min-height:142px!important;
+        height:142px!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+      }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)

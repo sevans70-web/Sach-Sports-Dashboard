@@ -450,3 +450,49 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB FINAL MOBILE CONTROL — authoritative five-cell row, appended last.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      div[class*="st-key-mlb_batter_performance_period_radio"] [data-testid="stRadio"] > div,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [data-testid="stRadio"] > div,
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
+        display:flex!important;
+        flex-direction:row!important;
+        flex-wrap:nowrap!important;
+        align-items:stretch!important;
+        width:100%!important;
+        max-width:100%!important;
+        gap:0!important;
+        overflow:visible!important;
+      }
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+        flex:1 1 20%!important;
+        width:20%!important;
+        min-width:0!important;
+        max-width:20%!important;
+        box-sizing:border-box!important;
+        margin:0!important;
+        padding:0 1px!important;
+        min-height:34px!important;
+        justify-content:center!important;
+        overflow:hidden!important;
+      }
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] p,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] p{
+        font-size:.50rem!important;
+        line-height:1!important;
+        letter-spacing:-.02em!important;
+        white-space:nowrap!important;
+        overflow:visible!important;
+      }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
