@@ -257,10 +257,27 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
     for frozen in predictions:
         row = dict(frozen)
         actual = lookup.get(_prediction_key(frozen), {})
-        if actual.get("game_finished"):
-            row["correct"] = actual.get("correct")
-            row["result_label"] = actual.get("result_label", "Final")
-            row["game_finished"] = True
+        if actual.get("game_finished") or actual.get("result_live"):
+            target_met = bool(actual.get("target_met"))
+            is_final = bool(actual.get("game_finished"))
+
+            # A live success is already settled: once a hitter has homered,
+            # recorded a hit, crossed a one-plus threshold, etc., it cannot
+            # turn into a miss later in the game. Live misses stay pending.
+            if is_final:
+                row["correct"] = actual.get("correct")
+            elif target_met:
+                row["correct"] = True
+            else:
+                row["correct"] = None
+
+            row["result_label"] = actual.get(
+                "result_label",
+                "Final" if is_final else "Live",
+            )
+            row["game_finished"] = is_final
+            row["result_live"] = bool(actual.get("result_live"))
+
             for field in (
                 "actual_hits", "actual_home_runs", "actual_total_bases",
                 "actual_runs", "actual_rbis", "actual_walks", "actual_stolen_bases",

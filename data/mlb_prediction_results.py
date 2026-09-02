@@ -934,6 +934,7 @@ def grade_top_25(
                     else None
                 ),
                 "correct": correct,
+                "target_met": bool(threshold_met),
                 "result_label": result_label,
                 "live_contact": live_contact,
                 "live_contact_label": contact_label,
