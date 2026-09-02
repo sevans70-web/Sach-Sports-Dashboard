@@ -25,10 +25,6 @@ from data.mlb_prediction_results import (
     get_yesterday_hr_near_misses,
     grade_top_25,
 )
-from data.mlb_emerging_power import (
-    build_emerging_power_candidates,
-    emerging_power_explanation,
-)
 from data.ranking_history import load_previous_day_snapshot
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
@@ -3202,6 +3198,12 @@ render_html(
 
 
 def render_emerging_power_watch() -> None:
+    # Lazy import avoids Streamlit Community Cloud module-reload races during app startup.
+    from data.mlb_emerging_power import (
+        build_emerging_power_candidates,
+        emerging_power_explanation,
+    )
+
     """Surface low-HR / limited-sample hitters with evidence-backed upside."""
     raw_pool = load_emerging_power_pool()
     candidates = build_emerging_power_candidates(raw_pool, limit=10)
