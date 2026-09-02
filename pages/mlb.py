@@ -15,6 +15,7 @@ from components.mlb_schedule import (
 from components.player_card import render_player_card
 from components.mlb_performance_tracker import render_prediction_performance_tracker
 from components.mlb_pitcher_rankings import render_pitcher_rankings
+from database.mlb_dashboard_reads import load_batter_rankings_from_supabase
 from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
@@ -569,48 +570,10 @@ def load_emerging_power_pool() -> list[dict]:
     return list((result.get("home_runs", {}) or {}).get("rankings", []) or [])
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)
 def load_live_rankings() -> dict:
-    """Load live MLB rankings, falling back only when the live refresh is empty."""
-    schedule_date = datetime.now(TORONTO_TIMEZONE).date()
-
-    rankings = get_all_rankings(
-        schedule_date=schedule_date,
-        recent_days=14,
-        limit=25,
-    )
-
-    has_live_rankings = any(
-        bool(category_result.get("rankings"))
-        for category_result in rankings.values()
-        if isinstance(category_result, dict)
-    )
-
-    if has_live_rankings:
-        return rankings
-
-    # The rankings were intentionally "unfrozen" so they can recalculate
-    # throughout the day.  A temporary MLB/provider failure must not turn every
-    # category blank, though.  Reuse the valid same-day snapshot only when the
-    # live refresh returned no players at all.  If no snapshot exists yet,
-    # get_daily_ranking_snapshot() performs one fresh retry and saves it.
-    fallback_snapshot = get_daily_ranking_snapshot(
-        schedule_date=schedule_date,
-        recent_days=14,
-        limit=25,
-    )
-    fallback_rankings = fallback_snapshot.get("rankings", {})
-
-    has_fallback_rankings = any(
-        bool(category_result.get("rankings"))
-        for category_result in fallback_rankings.values()
-        if isinstance(category_result, dict)
-    )
-
-    if has_fallback_rankings:
-        return fallback_rankings
-
-    return rankings
+    """Read today's completed MLB batter rankings from Supabase."""
+    return load_batter_rankings_from_supabase(limit=25)
 
 def load_previous_rankings() -> dict:
     """Load yesterday's saved MLB rankings when available."""
