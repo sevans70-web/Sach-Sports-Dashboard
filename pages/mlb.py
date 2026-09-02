@@ -407,14 +407,14 @@ def lineup_status_html(player: dict) -> str:
     if player.get("game_finished"):
         return (
             '<span class="gi-lineup-status gi-game-final">'
-            '✓ FINAL'
+            'FINAL'
             '</span>'
         )
 
     if player.get("result_live"):
         return (
             '<span class="gi-lineup-status gi-game-live">'
-            '● LIVE'
+            'LIVE'
             '</span>'
         )
 
