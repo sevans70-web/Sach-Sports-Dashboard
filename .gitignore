@@ -1,0 +1,11 @@
+# Python runtime/cache files — never commit these.
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local-only environment/editor files.
+.DS_Store
+.env
+.venv/
+venv/
+.streamlit/secrets.toml
