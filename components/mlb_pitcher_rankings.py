@@ -69,156 +69,57 @@ def _normalized_rankings(rankings: dict[str, list[dict]]) -> dict[str, list[dict
 
 
 def _attach_persistent_movement(rankings: dict[str, list[dict]]) -> dict[str, list[dict]]:
-    """Use durable snapshots plus live-session movement so pitcher changes stay visible."""
-    session_previous = st.session_state.get("mlb_pitcher_previous_rankings", {})
+    """
+    Attach movement using a runtime-local snapshot only.
 
-    token = _token()
-    if token:
-        try:
-            result = load_compare_and_save(
-                config=GitHubSnapshotConfig(
-                    repository="sevans70-web/Sach-Sports-Dashboard",
-                    token=token,
-                    branch="main",
-                    path="data/intraday_pitcher_rankings.json",
-                ),
-                category_rankings=_normalized_rankings(rankings),
-                captured_at=datetime.now(TORONTO_TIMEZONE),
-            )
-
-            comparisons = result.get("comparisons", {})
-            has_previous = result.get("previous_snapshot") is not None
-
-            for category, rows in rankings.items():
-                lookup = {
-                    str(item.get("player_key")): item.get("movement", {})
-                    for item in comparisons.get(category, {}).get("current", [])
-                }
-                old_positions = {
-                    int(r.get("pitcher_id") or 0): int(r.get("rank") or i + 1)
-                    for i, r in enumerate(session_previous.get(category, []))
-                    if r.get("pitcher_id")
-                }
-
-                for i, row in enumerate(rows):
-                    pid = int(row.get("pitcher_id") or 0)
-                    current = int(row.get("rank") or i + 1)
-                    key = str(pid or str(row.get("pitcher_name") or "").casefold())
-
-                    movement = lookup.get(
-                        key,
-                        {
-                            "status": "unchanged",
-                            "previous": current,
-                            "current": current,
-                        },
-                    ) if has_previous else {
-                        "status": "unchanged",
-                        "previous": current,
-                        "current": current,
-                    }
-
-                    # Live-session safety net: never let a stale durable snapshot
-                    # suppress movement we can prove happened in this session.
-                    if str(movement.get("status") or "").lower() == "unchanged":
-                        old = old_positions.get(pid)
-                        if old is None and session_previous:
-                            movement = {
-                                "status": "new",
-                                "previous": None,
-                                "current": current,
-                            }
-                        elif old is not None and current < old:
-                            movement = {
-                                "status": "up",
-                                "previous": old,
-                                "current": current,
-                            }
-                        elif old is not None and current > old:
-                            movement = {
-                                "status": "down",
-                                "previous": old,
-                                "current": current,
-                            }
-
-                    row["movement"] = movement
-
-            st.session_state["mlb_pitcher_previous_rankings"] = {
-                cat: [dict(row) for row in rows]
-                for cat, rows in rankings.items()
-            }
-            return rankings
-
-        except (ValueError, KeyError, RankingSnapshotError):
-            pass
-
+    Do not write intraday movement files back to GitHub from Streamlit Cloud:
+    each write can trigger a new deployment and interrupt the current session.
+    Supabase will become the durable movement store in the persistence phase.
+    """
+    captured_at = datetime.now(TORONTO_TIMEZONE)
     try:
         result = load_compare_and_save_local(
-            category_rankings=_normalized_rankings(rankings),
-            captured_at=datetime.now(TORONTO_TIMEZONE),
+            category_rankings=rankings,
+            captured_at=captured_at,
             path="/tmp/sach_mlb_pitcher_intraday_rankings.json",
         )
-        comparisons = result.get("comparisons", {})
-        has_previous = result.get("previous_snapshot") is not None
-
-        for category, rows in rankings.items():
-            lookup = {
-                str(item.get("player_key")): item.get("movement", {})
-                for item in comparisons.get(category, {}).get("current", [])
-            }
-            for i, row in enumerate(rows):
-                pid = int(row.get("pitcher_id") or 0)
-                current = int(row.get("rank") or i + 1)
-                key = str(pid or str(row.get("pitcher_name") or "").casefold())
-                row["movement"] = lookup.get(
-                    key,
-                    {
-                        "status": "unchanged",
-                        "previous": current,
-                        "current": current,
-                    },
-                ) if has_previous else {
-                    "status": "unchanged",
-                    "previous": current,
-                    "current": current,
-                }
-
-        st.session_state["mlb_pitcher_previous_rankings"] = {
-            cat: [dict(row) for row in rows]
-            for cat, rows in rankings.items()
-        }
-        return rankings
+        current = result.get("current", {}) or {}
+        previous = result.get("previous", {}) or {}
     except Exception:
-        return _attach_session_fallback(rankings)
+        current = rankings
+        previous = st.session_state.get("mlb_pitcher_previous_rankings", {})
 
-
-def _attach_session_fallback(rankings: dict[str, list[dict]]) -> dict[str, list[dict]]:
-    previous = st.session_state.get("mlb_pitcher_previous_rankings", {})
-    for category, rows in rankings.items():
-        old_positions = {
-            int(r.get("pitcher_id") or 0): int(r.get("rank") or i + 1)
-            for i, r in enumerate(previous.get(category, []))
-            if r.get("pitcher_id")
+    merged: dict[str, list[dict]] = {}
+    for category, rows in current.items():
+        old_rows = previous.get(category, []) if isinstance(previous, dict) else []
+        old_map = {
+            str(row.get("pitcher_id") or row.get("pitcher_name") or ""): int(row.get("rank") or 0)
+            for row in old_rows
+            if isinstance(row, dict)
         }
-        for i, row in enumerate(rows):
-            pid = int(row.get("pitcher_id") or 0)
-            current = int(row.get("rank") or i + 1)
-            old = old_positions.get(pid)
-            if old is None and previous:
-                movement = {"status":"new","previous":None,"current":current}
-            elif old and current < old:
-                movement = {"status":"up","previous":old,"current":current}
-            elif old and current > old:
-                movement = {"status":"down","previous":old,"current":current}
+        category_rows: list[dict] = []
+        for row in rows or []:
+            item = dict(row)
+            key = str(item.get("pitcher_id") or item.get("pitcher_name") or "")
+            current_rank = int(item.get("rank") or 0)
+            previous_rank = old_map.get(key)
+            if previous_rank is None:
+                movement = {"status": "new", "previous": None, "current": current_rank}
+            elif previous_rank > current_rank:
+                movement = {"status": "up", "previous": previous_rank, "current": current_rank}
+            elif previous_rank < current_rank:
+                movement = {"status": "down", "previous": previous_rank, "current": current_rank}
             else:
-                movement = {"status":"unchanged","previous":old or current,"current":current}
-            row["movement"] = movement
+                movement = {"status": "same", "previous": previous_rank, "current": current_rank}
+            item["movement"] = movement
+            category_rows.append(item)
+        merged[category] = category_rows
 
     st.session_state["mlb_pitcher_previous_rankings"] = {
-        cat: [dict(row) for row in rows]
-        for cat, rows in rankings.items()
+        category: [dict(row) for row in rows]
+        for category, rows in merged.items()
     }
-    return rankings
+    return merged
 
 
 def _movement_label(row: dict) -> str:

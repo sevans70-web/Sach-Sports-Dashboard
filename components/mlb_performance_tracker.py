@@ -43,10 +43,15 @@ def _token() -> str | None:
     except Exception:
         return None
 
-@st.cache_data(ttl=30, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _cached_batter_history(_token_value: str, rankings_by_category: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    """Avoid re-reading/re-grading performance history on every UI click."""
-    synced = sync_history(_token_value, rankings_by_category)
+    """Grade in memory without committing runtime data back to GitHub."""
+    synced = sync_history(
+        _token_value,
+        rankings_by_category,
+        persist=False,
+        local_history_path="data/mlb_performance_history.json",
+    )
     return current_day_view(synced, rankings_by_category)
 
 
@@ -56,9 +61,14 @@ def _cached_pitcher_rankings() -> dict[str, Any]:
     return get_pitcher_rankings(limit=25)
 
 
-@st.cache_data(ttl=30, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _cached_pitcher_history(_token_value: str, rankings: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    synced = sync_pitcher_history(_token_value, rankings)
+    synced = sync_pitcher_history(
+        _token_value,
+        rankings,
+        persist=False,
+        local_history_path="data/mlb_pitcher_performance_history.json",
+    )
     return current_pitcher_day_view(synced, rankings)
 
 
