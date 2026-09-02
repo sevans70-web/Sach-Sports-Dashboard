@@ -8,7 +8,6 @@ from typing import Any
 import streamlit as st
 
 from data.mlb_live import get_team_logo_url, get_today_mlb_schedule
-from data.mlb_lineups import get_mlb_lineups
 
 
 
@@ -38,6 +37,9 @@ def load_today_schedule() -> dict[str, Any]:
 
 @st.cache_data(ttl=300, show_spinner=False)
 def load_today_lineups() -> dict[str, Any]:
+    # Lazy import avoids Streamlit Community Cloud module-reload races during app startup.
+    from data.mlb_lineups import get_mlb_lineups
+
     return get_mlb_lineups()
 
 
