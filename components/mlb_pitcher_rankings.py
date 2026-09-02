@@ -428,6 +428,12 @@ def _render_category(category: str, rows: list[dict]) -> None:
             _render_pitcher_card(category, row)
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_pitcher_rankings(limit: int = 25) -> dict:
+    """Keep pitcher ranking/API work out of ordinary Streamlit reruns."""
+    return get_pitcher_rankings(limit=limit)
+
+
 def render_pitcher_rankings() -> None:
     st.markdown(
         """
@@ -727,7 +733,7 @@ def render_pitcher_rankings() -> None:
     )
 
 
-    result = get_pitcher_rankings(limit=25)
+    result = _cached_pitcher_rankings(limit=25)
     if not result.get("success"):
         st.caption("Pitcher rankings are waiting for today's probable-pitcher data.")
         return
