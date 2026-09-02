@@ -347,10 +347,10 @@ def _render_pitcher_card(category: str, row: dict) -> None:
     reason = _compact_pitcher_reason(row, game_phase)
 
     if game_phase == "live":
-        lineup = "● LIVE"
+        lineup = "LIVE"
         lineup_class = "pitch-game-live"
     elif game_phase == "final":
-        lineup = "✓ FINAL"
+        lineup = "FINAL"
         lineup_class = "pitch-game-final"
     elif confirmed:
         lineup = "✓ Confirmed lineup"

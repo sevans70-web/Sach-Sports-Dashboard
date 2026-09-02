@@ -202,11 +202,19 @@ def _period_control(key: str) -> str:
     if current not in options:
         current = "Today"
 
+    display_labels = {
+        "Today": "Today",
+        "Yesterday": "Yday",
+        "7 Days": "7 Days",
+        "Month": "Month",
+        "Season": "Season",
+    }
     selected = st.radio(
         "Performance Period",
         options=options,
         index=options.index(current),
         horizontal=True,
+        format_func=lambda value: display_labels[value],
         key=f"{key}_radio",
     )
     st.session_state[key] = selected
@@ -500,6 +508,48 @@ st.markdown(
         letter-spacing:-.02em!important;
         white-space:nowrap!important;
         overflow:visible!important;
+      }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# MLB PERFORMANCE CONTROL — final mobile one-row lock.
+st.markdown(
+    """
+    <style>
+    @media (max-width:700px) {
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] {
+        display:grid !important;
+        grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+        grid-auto-flow:column !important;
+        width:100% !important;
+        max-width:100% !important;
+        gap:2px !important;
+        flex-wrap:nowrap !important;
+        overflow:hidden !important;
+      }
+
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label {
+        width:auto !important;
+        min-width:0 !important;
+        max-width:none !important;
+        margin:0 !important;
+        padding:0 1px !important;
+        justify-content:center !important;
+        overflow:hidden !important;
+      }
+
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] p,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] p {
+        font-size:.58rem !important;
+        line-height:1 !important;
+        letter-spacing:-.02em !important;
+        white-space:nowrap !important;
+        text-align:center !important;
       }
     }
     </style>
