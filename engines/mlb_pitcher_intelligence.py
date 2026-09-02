@@ -3,7 +3,7 @@ from __future__ import annotations
 from math import exp
 from typing import Any
 
-from data.mlb_lineups import get_mlb_lineups, get_previous_day_lineup_projection
+from data.mlb_lineups import get_mlb_lineups
 from data.mlb_pitchers import get_today_probable_pitchers_with_stats
 
 
@@ -343,40 +343,15 @@ def _reason_for(category: str, row: dict[str, Any]) -> str:
 
 
 def get_pitcher_rankings(limit: int = 25) -> dict[str, Any]:
+    """
+    Build today's pitcher Top 25 without scanning prior-day game feeds.
+
+    Prior-lineup projection used to walk back as many as seven MLB slates and
+    could block the Pitchers tab for minutes. For pitcher rankings we now use
+    today's confirmed lineup when MLB has posted it. Before that, the engine
+    falls back to season/platoon context instead of holding the UI open.
+    """
     lineups = get_mlb_lineups()
-
-    projection = get_previous_day_lineup_projection(
-        current_lineup_data=lineups,
-    )
-    projected_rows = projection.get("projected_hitters", []) if projection.get("success") else []
-
-    by_game_team: dict[tuple[int, int], list[dict[str, Any]]] = {}
-    for player in projected_rows:
-        game_pk = _safe_int(player.get("game_pk"))
-        team_id = _safe_int(player.get("team_id"))
-        if game_pk and team_id:
-            by_game_team.setdefault((game_pk, team_id), []).append(player)
-
-    for game in lineups.get("games", []):
-        game_pk = _safe_int(game.get("game_pk"))
-        for side in ("away", "home"):
-            if bool(game.get(f"{side}_lineup_confirmed")):
-                game[f"{side}_lineup_projected"] = False
-                continue
-
-            team_id = _safe_int(game.get(f"{side}_team_id"))
-            projected = by_game_team.get((game_pk, team_id), [])
-            if projected:
-                game[f"{side}_lineup"] = sorted(
-                    projected,
-                    key=lambda row: _safe_int(
-                        row.get("batting_order") or row.get("projected_batting_order"),
-                        99,
-                    ),
-                )[:9]
-                game[f"{side}_lineup_projected"] = True
-            else:
-                game[f"{side}_lineup_projected"] = False
 
     pitcher_data = get_today_probable_pitchers_with_stats(lineup_data=lineups)
 
