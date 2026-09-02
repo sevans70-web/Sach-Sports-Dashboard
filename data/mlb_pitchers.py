@@ -15,6 +15,7 @@ This file gathers and normalizes data. It does not score hitters.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -26,7 +27,7 @@ from data.mlb_lineups import get_mlb_lineups
 
 MLB_STATS_URL = "https://statsapi.mlb.com/api/v1/stats"
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
-REQUEST_TIMEOUT_SECONDS = 20
+REQUEST_TIMEOUT_SECONDS = 10
 
 
 def _request_json(
@@ -369,11 +370,17 @@ def get_pitching_platoon_splits(
     }
     errors: list[str] = []
 
-    for label, sit_code in split_requests.items():
-        result_label, records, error = _load_one(label, sit_code)
-        split_results[result_label] = records
-        if error:
-            errors.append(error)
+    # Load LHB/RHB splits in parallel. These are independent MLB requests.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [
+            executor.submit(_load_one, label, sit_code)
+            for label, sit_code in split_requests.items()
+        ]
+        for future in futures:
+            result_label, records, error = future.result()
+            split_results[result_label] = records
+            if error:
+                errors.append(error)
 
     by_pitcher_id: dict[
         int,
@@ -427,10 +434,20 @@ def get_today_probable_pitchers_with_stats(
         }
 
     requested_date = date.fromisoformat(str(lineups.get("date")))
-    season_stats = get_bulk_pitching_stats(season=requested_date.year)
-    platoon_stats = get_pitching_platoon_splits(
-        season=requested_date.year,
-    )
+    # The season and platoon calls are independent. Run them together so a
+    # slow MLB Stats API response does not make the Pitchers tab wait on each
+    # request serially.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        season_future = executor.submit(
+            get_bulk_pitching_stats,
+            season=requested_date.year,
+        )
+        platoon_future = executor.submit(
+            get_pitching_platoon_splits,
+            season=requested_date.year,
+        )
+        season_stats = season_future.result()
+        platoon_stats = platoon_future.result()
 
     errors: list[str] = list(lineups.get("errors", []))
 
