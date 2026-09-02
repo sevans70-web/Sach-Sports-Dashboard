@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from engines.mlb_pitcher_intelligence import get_pitcher_rankings
+from database.mlb_dashboard_reads import load_pitcher_rankings_from_supabase
 from data.mlb_pitcher_results import get_pitcher_game_result
 from data.mlb_players import get_player_headshot_url
 from Utils.intraday_rankings import (
@@ -873,27 +874,14 @@ def render_pitcher_rankings() -> None:
     )
 
 
-    # Start expensive MLB work in the background and return control to the UI.
-    _ensure_pitcher_refresh(limit=25)
-    result, refresh_error, refreshing = _collect_pitcher_refresh()
+    # Read the completed Railway worker snapshot from Supabase.
+    result = load_pitcher_rankings_from_supabase(limit=25)
 
-    if result is None:
-        if refresh_error:
-            st.warning(refresh_error)
-        else:
-            st.caption("Loading today's pitcher rankings in the background…")
+    if not result.get("success"):
         st.caption(
-            "You can keep using the dashboard while pitcher data prepares."
+            "Today's pitcher rankings are waiting for the background refresh."
         )
         return
-
-    if refreshing:
-        st.caption("Refreshing pitcher data in the background…")
-    elif refresh_error:
-        st.caption(
-            "Showing the last successful pitcher snapshot while live data "
-            "refresh is unavailable."
-        )
 
     rankings = _attach_persistent_movement(result.get("rankings") or {})
     tabs = st.tabs([CATEGORY_CONFIG[k][0] for k in CATEGORY_CONFIG])
