@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import re
+import json
+import threading
+import time
+from concurrent.futures import Future, ThreadPoolExecutor
 
 from datetime import datetime
 from html import escape
@@ -22,6 +26,7 @@ from Utils.intraday_rankings import (
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
+
 CATEGORY_CONFIG = {
     "strikeouts": ("🎯 Strikeouts", "K"),
     "outs_recorded": ("⏱️ Outs", "outs"),
@@ -29,6 +34,147 @@ CATEGORY_CONFIG = {
     "walks_allowed": ("◉ Walks Allowed", "BB"),
     "earned_runs": ("● Earned Runs", "ER"),
 }
+
+# Pitcher rankings are expensive because MLB schedule, season-stat and platoon
+# feeds all have to be combined. Never make a Streamlit navigation click wait
+# synchronously for those feeds.
+_PITCHER_EXECUTOR = ThreadPoolExecutor(
+    max_workers=1,
+    thread_name_prefix="mlb-pitcher-refresh",
+)
+_PITCHER_LOCK = threading.Lock()
+_PITCHER_FUTURE: Future | None = None
+_PITCHER_FUTURE_STARTED_AT = 0.0
+_PITCHER_SNAPSHOT: dict | None = None
+_PITCHER_SNAPSHOT_AT = 0.0
+_PITCHER_SNAPSHOT_TTL_SECONDS = 300
+_PITCHER_MAX_WAIT_SECONDS = 35
+_PITCHER_SNAPSHOT_PATH = "/tmp/sach_mlb_pitcher_rankings_snapshot.json"
+
+
+def _read_runtime_pitcher_snapshot() -> dict | None:
+    """Reuse the last successful snapshot in this Streamlit process."""
+    global _PITCHER_SNAPSHOT, _PITCHER_SNAPSHOT_AT
+
+    if _PITCHER_SNAPSHOT:
+        return _PITCHER_SNAPSHOT
+
+    try:
+        with open(_PITCHER_SNAPSHOT_PATH, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+        result = payload.get("result") if isinstance(payload, dict) else None
+        saved_at = float(payload.get("saved_at") or 0) if isinstance(payload, dict) else 0
+        if isinstance(result, dict) and result.get("success"):
+            _PITCHER_SNAPSHOT = result
+            _PITCHER_SNAPSHOT_AT = saved_at
+            return result
+    except Exception:
+        pass
+
+    return None
+
+
+def _save_runtime_pitcher_snapshot(result: dict) -> None:
+    """Keep successful pitcher rankings local to the running app."""
+    global _PITCHER_SNAPSHOT, _PITCHER_SNAPSHOT_AT
+
+    now = time.time()
+    _PITCHER_SNAPSHOT = result
+    _PITCHER_SNAPSHOT_AT = now
+
+    try:
+        with open(_PITCHER_SNAPSHOT_PATH, "w", encoding="utf-8") as handle:
+            json.dump(
+                {"saved_at": now, "result": result},
+                handle,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+    except Exception:
+        # Runtime snapshot persistence is an optimization only.
+        pass
+
+
+def _background_pitcher_job(limit: int) -> dict:
+    """Plain Python worker; never calls Streamlit APIs."""
+    return get_pitcher_rankings(limit=limit)
+
+
+def _ensure_pitcher_refresh(limit: int = 25, *, force: bool = False) -> Future | None:
+    """
+    Start one background refresh at most.
+
+    The caller returns immediately. A slow MLB endpoint therefore cannot hold
+    the entire Streamlit page on a white loading screen.
+    """
+    global _PITCHER_FUTURE, _PITCHER_FUTURE_STARTED_AT
+
+    with _PITCHER_LOCK:
+        if _PITCHER_FUTURE is not None and not _PITCHER_FUTURE.done():
+            return _PITCHER_FUTURE
+
+        snapshot = _read_runtime_pitcher_snapshot()
+        snapshot_is_fresh = bool(
+            snapshot
+            and _PITCHER_SNAPSHOT_AT
+            and (time.time() - _PITCHER_SNAPSHOT_AT) < _PITCHER_SNAPSHOT_TTL_SECONDS
+        )
+
+        if snapshot_is_fresh and not force:
+            return None
+
+        _PITCHER_FUTURE = _PITCHER_EXECUTOR.submit(
+            _background_pitcher_job,
+            max(1, int(limit)),
+        )
+        _PITCHER_FUTURE_STARTED_AT = time.time()
+        return _PITCHER_FUTURE
+
+
+def _collect_pitcher_refresh() -> tuple[dict | None, str | None, bool]:
+    """
+    Return (snapshot, error, refreshing) without blocking on Future.result().
+    """
+    global _PITCHER_FUTURE, _PITCHER_FUTURE_STARTED_AT
+
+    snapshot = _read_runtime_pitcher_snapshot()
+    future = _PITCHER_FUTURE
+
+    if future is None:
+        return snapshot, None, False
+
+    if not future.done():
+        waited = max(0.0, time.time() - _PITCHER_FUTURE_STARTED_AT)
+        if waited >= _PITCHER_MAX_WAIT_SECONDS:
+            return (
+                snapshot,
+                "Pitcher data is taking longer than expected. "
+                "The dashboard is still responsive and will keep the last "
+                "successful snapshot instead of blocking the page.",
+                True,
+            )
+        return snapshot, None, True
+
+    try:
+        result = future.result(timeout=0)
+        if isinstance(result, dict) and result.get("success"):
+            _save_runtime_pitcher_snapshot(result)
+            snapshot = result
+            error = None
+        else:
+            messages = result.get("errors", []) if isinstance(result, dict) else []
+            error = (
+                "; ".join(str(item) for item in messages if item)
+                or "Pitcher rankings were unavailable from the MLB data feeds."
+            )
+    except Exception as exc:
+        error = f"Pitcher refresh failed: {exc}"
+    finally:
+        with _PITCHER_LOCK:
+            _PITCHER_FUTURE = None
+            _PITCHER_FUTURE_STARTED_AT = 0.0
+
+    return snapshot, error, False
 
 
 def _render_html(html: str) -> None:
@@ -428,12 +574,6 @@ def _render_category(category: str, rows: list[dict]) -> None:
             _render_pitcher_card(category, row)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def _cached_pitcher_rankings(limit: int = 25) -> dict:
-    """Keep pitcher ranking/API work out of ordinary Streamlit reruns."""
-    return get_pitcher_rankings(limit=limit)
-
-
 def render_pitcher_rankings() -> None:
     st.markdown(
         """
@@ -733,10 +873,27 @@ def render_pitcher_rankings() -> None:
     )
 
 
-    result = _cached_pitcher_rankings(limit=25)
-    if not result.get("success"):
-        st.caption("Pitcher rankings are waiting for today's probable-pitcher data.")
+    # Start expensive MLB work in the background and return control to the UI.
+    _ensure_pitcher_refresh(limit=25)
+    result, refresh_error, refreshing = _collect_pitcher_refresh()
+
+    if result is None:
+        if refresh_error:
+            st.warning(refresh_error)
+        else:
+            st.caption("Loading today's pitcher rankings in the background…")
+        st.caption(
+            "You can keep using the dashboard while pitcher data prepares."
+        )
         return
+
+    if refreshing:
+        st.caption("Refreshing pitcher data in the background…")
+    elif refresh_error:
+        st.caption(
+            "Showing the last successful pitcher snapshot while live data "
+            "refresh is unavailable."
+        )
 
     rankings = _attach_persistent_movement(result.get("rankings") or {})
     tabs = st.tabs([CATEGORY_CONFIG[k][0] for k in CATEGORY_CONFIG])
