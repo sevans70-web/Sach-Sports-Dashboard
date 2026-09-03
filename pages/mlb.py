@@ -4094,3 +4094,54 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB LAST-MILE CLOSEOUT — authoritative batter card geometry.
+st.markdown(
+    """
+    <style>
+    .gi-card-header{
+        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        height:198px!important;
+        min-height:198px!important;
+        max-height:198px!important;
+        padding:8px 2px 8px!important;
+        align-items:start!important;
+        overflow:hidden!important;
+        box-sizing:border-box!important;
+    }
+
+    .gi-native-photo,.gi-native-initials{
+        width:72px!important;height:72px!important;
+        min-width:72px!important;min-height:72px!important;
+        max-width:72px!important;max-height:72px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        display:grid!important;
+        place-items:center!important;
+        padding:0!important;
+        background:#0b0c0d!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+    }
+
+    .gi-native-photo img{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 24%!important;
+        transform:scale(.82)!important;
+        transform-origin:center center!important;
+        border-radius:50%!important;
+        background:#0b0c0d!important;
+    }
+
+    .gi-card-reason{
+        display:-webkit-box!important;
+        -webkit-line-clamp:2!important;
+        -webkit-box-orient:vertical!important;
+        overflow:hidden!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
