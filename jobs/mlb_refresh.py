@@ -29,8 +29,14 @@ from database.mlb_repository import (
 )
 from engines.game_intelligence import get_all_rankings
 from engines.mlb_pitcher_intelligence import get_pitcher_rankings
-from data.mlb_performance_tracker import sync_history as sync_batter_history
-from data.mlb_pitcher_performance_tracker import sync_history as sync_pitcher_history
+from data.mlb_performance_tracker import (
+    sync_history as sync_batter_history,
+    refresh_history_view as refresh_batter_history_view,
+)
+from data.mlb_pitcher_performance_tracker import (
+    sync_history as sync_pitcher_history,
+    refresh_history_view as refresh_pitcher_history_view,
+)
 
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
@@ -96,15 +102,22 @@ def run() -> dict:
 
         pitcher_result = get_pitcher_rankings(limit=25)
 
-        save_source_snapshot(
-            league_id=league_id,
-            source_name="mlb_pitcher_intelligence",
-            source_type="pitcher_rankings",
-            game_date=ranking_date,
-            payload=pitcher_result,
-        )
-
         pitcher_rankings = pitcher_result.get("rankings") or {}
+        pitcher_has_rows = any(
+            bool(pitcher_rankings.get(category))
+            for category in PITCHER_MARKETS
+        )
+        # Never replace a known-good pitcher payload with an empty transient
+        # provider response. This was the cause of the five blank Pitcher tabs.
+        if pitcher_has_rows:
+            save_source_snapshot(
+                league_id=league_id,
+                source_name="mlb_pitcher_intelligence",
+                source_type="pitcher_rankings",
+                game_date=ranking_date,
+                payload=pitcher_result,
+            )
+
         for category in PITCHER_MARKETS:
             rankings = list(pitcher_rankings.get(category) or [])
             if not rankings:
@@ -158,6 +171,9 @@ def run() -> dict:
             persist=False,
             local_history_path=str(batter_seed_path),
         )
+        batter_history = refresh_batter_history_view(
+            batter_history, recent_days=8
+        )
         save_latest_source_snapshot(
             league_id=league_id,
             source_name="mlb_batter_performance_history",
@@ -187,6 +203,9 @@ def run() -> dict:
             snapshot_date=ranking_date.isoformat(),
             persist=False,
             local_history_path=str(pitcher_seed_path),
+        )
+        pitcher_history = refresh_pitcher_history_view(
+            pitcher_history, recent_days=8
         )
         save_latest_source_snapshot(
             league_id=league_id,
