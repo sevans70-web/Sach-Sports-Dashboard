@@ -126,29 +126,54 @@ def _styles():
         border:1px solid #34373c!important;
     }
 
-    /* Keep Today / Yesterday / 7 Days / Month / Season on ONE phone row. */
-    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
-    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
+    /* Match HR Intelligence: one rectangular segmented block, five equal cells. */
+    div[class*="st-key-mlb_batter_performance_period_segmented"] [data-testid="stSegmentedControl"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] [data-testid="stSegmentedControl"]{
+        width:100%!important;
+        max-width:100%!important;
+        margin:.10rem 0 .38rem!important;
+    }
+    div[class*="st-key-mlb_batter_performance_period_segmented"] [data-testid="stSegmentedControl"] > div,
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] [data-testid="stSegmentedControl"] > div,
+    div[class*="st-key-mlb_batter_performance_period_segmented"] [role="radiogroup"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] [role="radiogroup"]{
         display:grid!important;
         grid-template-columns:repeat(5,minmax(0,1fr))!important;
         width:100%!important;
-        gap:2px!important;
-        overflow:visible!important;
+        max-width:100%!important;
+        gap:0!important;
+        flex-wrap:nowrap!important;
+        overflow:hidden!important;
+        border:1px solid #34373c!important;
+        border-radius:9px!important;
+        background:#080909!important;
     }
-    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
-    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
-        min-width:0!important;
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button,
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button{
         width:100%!important;
+        min-width:0!important;
+        max-width:none!important;
+        min-height:34px!important;
+        padding:.18rem .04rem!important;
         margin:0!important;
-        padding:0!important;
-    }
-    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label > div,
-    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label > div{
-        min-width:0!important;
-        width:100%!important;
-        justify-content:center!important;
-        white-space:nowrap!important;
+        border:0!important;
+        border-right:1px solid #34373c!important;
+        border-radius:0!important;
+        background:#080909!important;
+        color:#fff!important;
         font-size:.58rem!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+    }
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button:last-child,
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button:last-child{
+        border-right:0!important;
+    }
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button[aria-pressed="true"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button[aria-pressed="true"]{
+        background:#17140d!important;
+        color:#f6c84c!important;
+        box-shadow:inset 0 -3px 0 #d6b35c!important;
     }
 </style>
     """, unsafe_allow_html=True)
@@ -200,32 +225,24 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """
-    Five fixed mobile cells with no wrapping.
+    """Render the same rectangular segmented control used by HR Intelligence.
 
-    A horizontal radio is used instead of segmented_control because the
-    segmented widget was forcing Season onto a second line on iPhone.
+    Keep all five performance periods on one mobile row while preserving the
+    established MLB design language.
     """
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"
 
-    display_labels = {
-        "Today": "Today",
-        "Yesterday": "Yesterday",
-        "7 Days": "7 Days",
-        "Month": "Month",
-        "Season": "Season",
-    }
-    selected = st.radio(
+    selected = st.segmented_control(
         "Performance Period",
         options=options,
-        index=options.index(current),
-        horizontal=True,
-        format_func=lambda value: display_labels[value],
-        key=f"{key}_radio",
-    )
+        default=current,
+        key=f"{key}_segmented",
+        selection_mode="single",
+        label_visibility="collapsed",
+    ) or current
     st.session_state[key] = selected
     return selected
 
