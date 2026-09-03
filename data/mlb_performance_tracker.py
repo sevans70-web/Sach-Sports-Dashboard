@@ -246,6 +246,34 @@ def _prediction_key(row: dict[str, Any]) -> str:
     return f"name:{_player_name(row).strip().casefold()}"
 
 
+def _canonical_frozen_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Preserve the official first-captured Top 25 and the best graded copy.
+
+    Live ranking movement never deletes a frozen prediction, but it also must not
+    inflate one market/day beyond 25 by appending every later entrant.
+    """
+    by_key: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for raw in rows or []:
+        if not isinstance(raw, dict):
+            continue
+        key = _prediction_key(raw)
+        if not key:
+            continue
+        if key not in by_key:
+            by_key[key] = dict(raw)
+            order.append(key)
+        else:
+            current = by_key[key]
+            raw_settled = isinstance(raw.get("correct"), bool)
+            cur_settled = isinstance(current.get("correct"), bool)
+            raw_actual = any(k.startswith("actual_") for k in raw)
+            cur_actual = any(k.startswith("actual_") for k in current)
+            if (raw_settled, raw_actual) > (cur_settled, cur_actual):
+                by_key[key] = dict(raw)
+    return [by_key[key] for key in order[:25]]
+
+
 def _loose_name(value: Any) -> str:
     text = unicodedata.normalize("NFKD", str(value or ""))
     text = "".join(ch for ch in text if not unicodedata.combining(ch))
@@ -407,23 +435,33 @@ def sync_history(
         if not current_rankings:
             continue
 
-        # Never replace a prediction that was already captured for the day.
-        # Rankings are allowed to move intraday, but historical predictions are
-        # append-only. If a player enters the Top 25 later, add that prediction;
-        # if the player later falls out, keep the original frozen row forever.
-        frozen_rows = today_categories.setdefault(category, [])
-        existing_keys = {_prediction_key(row) for row in frozen_rows}
-        captured_at = datetime.now(TORONTO_TIMEZONE).isoformat()
-
-        for ranking in current_rankings:
-            frozen = _freeze_prediction(ranking, category)
-            key = _prediction_key(frozen)
-            if key in existing_keys:
-                continue
-            frozen["first_seen_at"] = captured_at
-            frozen_rows.append(frozen)
-            existing_keys.add(key)
+        # Freeze one official Top 25 for this market/day. If earlier builds
+        # accidentally appended later entrants, repair the set back to the
+        # first-captured 25 while keeping the best graded copy of each row.
+        frozen_rows = _canonical_frozen_rows(
+            today_categories.setdefault(category, [])
+        )
+        if frozen_rows != today_categories.get(category, []):
+            today_categories[category] = frozen_rows
             changed = True
+
+        # A partial first capture may be completed up to 25, but once 25 exist
+        # later ranking movement can never replace or add another prediction.
+        if len(frozen_rows) < 25:
+            existing_keys = {_prediction_key(row) for row in frozen_rows}
+            captured_at = datetime.now(TORONTO_TIMEZONE).isoformat()
+            for ranking in current_rankings:
+                frozen = _freeze_prediction(ranking, category)
+                key = _prediction_key(frozen)
+                if key in existing_keys:
+                    continue
+                frozen["first_seen_at"] = captured_at
+                frozen_rows.append(frozen)
+                existing_keys.add(key)
+                changed = True
+                if len(frozen_rows) >= 25:
+                    break
+            today_categories[category] = _canonical_frozen_rows(frozen_rows)
 
     yesterday = (
         datetime.fromisoformat(today).date() - timedelta(days=1)
@@ -435,7 +473,7 @@ def sync_history(
 
         categories = day_record.get("categories", {})
         for category in CORE_CATEGORIES:
-            predictions = categories.get(category, [])
+            predictions = _canonical_frozen_rows(categories.get(category, []))
             if not predictions:
                 continue
 
@@ -466,7 +504,7 @@ def current_day_view(history: dict[str, Any], rankings_by_category: dict[str, li
         return merged
     categories = day.get("categories", {})
     for category in CORE_CATEGORIES:
-        frozen = categories.get(category, [])
+        frozen = _canonical_frozen_rows(categories.get(category, []))
         categories[category] = _apply_final_results(frozen, category, today)
     return merged
 
@@ -495,7 +533,7 @@ def refresh_history_view(
         categories = (day_record or {}).get("categories", {}) or {}
         should_reconcile_day = day >= cutoff
         for category in CORE_CATEGORIES:
-            rows = categories.get(category, [])
+            rows = _canonical_frozen_rows(categories.get(category, []))
             if not rows:
                 continue
             unresolved = any(not isinstance(row.get("correct"), bool) for row in rows)

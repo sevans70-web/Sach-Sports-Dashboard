@@ -260,6 +260,34 @@ def _prediction_key(row: dict[str, Any]) -> str:
     return f"{game_pk}:{pitcher_id}"
 
 
+def _canonical_frozen_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Preserve one official first-captured Top 25 per pitcher market/day."""
+    by_key: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for raw in rows or []:
+        if not isinstance(raw, dict):
+            continue
+        key = _prediction_key(raw)
+        if not key:
+            continue
+        if key not in by_key:
+            by_key[key] = dict(raw)
+            order.append(key)
+        else:
+            current = by_key[key]
+            raw_quality = (
+                1 if raw.get("finalized") is True else 0,
+                1 if raw.get("actual") is not None else 0,
+            )
+            cur_quality = (
+                1 if current.get("finalized") is True else 0,
+                1 if current.get("actual") is not None else 0,
+            )
+            if raw_quality > cur_quality:
+                by_key[key] = dict(raw)
+    return [by_key[key] for key in order[:25]]
+
+
 def _apply_final_results(
     predictions: list[dict[str, Any]],
     category: str,
@@ -384,21 +412,30 @@ def sync_history(
         if not current_rankings:
             continue
 
-        # Pitcher history is append-only for the day. A starter that was in the
-        # tracked Top 25 remains part of the historical prediction set even if a
-        # later refresh changes the live ranking order.
-        frozen_rows = today_categories.setdefault(category, [])
-        existing_keys = {_prediction_key(row) for row in frozen_rows}
-        captured_at = datetime.now(TORONTO_TIMEZONE).isoformat()
-        for ranking in current_rankings:
-            frozen = _freeze_prediction(ranking, category)
-            key = _prediction_key(frozen)
-            if key in existing_keys:
-                continue
-            frozen["first_seen_at"] = captured_at
-            frozen_rows.append(frozen)
-            existing_keys.add(key)
+        # Freeze one official Top 25. Repair any previously inflated
+        # append-only set back to the first-captured 25.
+        frozen_rows = _canonical_frozen_rows(
+            today_categories.setdefault(category, [])
+        )
+        if frozen_rows != today_categories.get(category, []):
+            today_categories[category] = frozen_rows
             changed = True
+
+        if len(frozen_rows) < 25:
+            existing_keys = {_prediction_key(row) for row in frozen_rows}
+            captured_at = datetime.now(TORONTO_TIMEZONE).isoformat()
+            for ranking in current_rankings:
+                frozen = _freeze_prediction(ranking, category)
+                key = _prediction_key(frozen)
+                if key in existing_keys:
+                    continue
+                frozen["first_seen_at"] = captured_at
+                frozen_rows.append(frozen)
+                existing_keys.add(key)
+                changed = True
+                if len(frozen_rows) >= 25:
+                    break
+            today_categories[category] = _canonical_frozen_rows(frozen_rows)
 
     for day_key, day_record in days.items():
         if day_key >= today:
@@ -406,7 +443,7 @@ def sync_history(
 
         categories = day_record.get("categories", {})
         for category in PITCHER_CATEGORIES:
-            predictions = categories.get(category, [])
+            predictions = _canonical_frozen_rows(categories.get(category, []))
             if predictions and any(
                 not row.get("finalized")
                 for row in predictions
@@ -442,7 +479,7 @@ def current_day_view(
 
     categories = day.get("categories", {})
     for category in PITCHER_CATEGORIES:
-        frozen = categories.get(category, [])
+        frozen = _canonical_frozen_rows(categories.get(category, []))
         categories[category] = _apply_final_results(
             frozen,
             category,
@@ -470,7 +507,7 @@ def refresh_history_view(
         categories = (day_record or {}).get("categories", {}) or {}
         should_reconcile_day = day >= cutoff
         for category in PITCHER_CATEGORIES:
-            rows = categories.get(category, [])
+            rows = _canonical_frozen_rows(categories.get(category, []))
             if not rows:
                 continue
             unresolved = any(not row.get("finalized") for row in rows)
