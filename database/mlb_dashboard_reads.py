@@ -279,8 +279,61 @@ def _history_day_quality(day_record: dict[str, Any], role: str) -> tuple[int, in
     return settled, total, str((day_record or {}).get("captured_at") or "")
 
 
+def _history_row_key(row: dict[str, Any], role: str) -> str:
+    if role == "pitcher":
+        return f"{row.get('game_pk') or ''}:{row.get('pitcher_id') or row.get('pitcher_name') or ''}".casefold()
+    value = row.get("player_id") or row.get("player_name") or row.get("player") or ""
+    return str(value).strip().casefold()
+
+
+def _row_quality(row: dict[str, Any], role: str) -> tuple[int, int, str]:
+    if role == "pitcher":
+        settled = 1 if row.get("finalized") is True else 0
+        actual = 1 if row.get("actual") is not None else 0
+    else:
+        settled = 1 if isinstance(row.get("correct"), bool) else 0
+        actual = 1 if any(key.startswith("actual_") for key in row) else 0
+    return settled, actual, str(row.get("first_seen_at") or "")
+
+
+def _merge_day_records(primary_day: dict[str, Any], fallback_day: dict[str, Any], role: str) -> dict[str, Any]:
+    """Union each market's frozen rows; never choose one whole day over another.
+
+    A whole-day winner-takes-all merge could discard a player that existed in an
+    earlier Top-25 snapshot. Historical predictions are append-only, so merge at
+    category/player granularity and retain the most completely graded copy of
+    each row.
+    """
+    merged = {
+        "captured_at": max(
+            str((primary_day or {}).get("captured_at") or ""),
+            str((fallback_day or {}).get("captured_at") or ""),
+        ),
+        "categories": {},
+    }
+    a_categories = (primary_day or {}).get("categories", {}) or {}
+    b_categories = (fallback_day or {}).get("categories", {}) or {}
+    for category in sorted(set(a_categories) | set(b_categories)):
+        rows_by_key: dict[str, dict[str, Any]] = {}
+        ordered_keys: list[str] = []
+        for source_rows in (b_categories.get(category, []), a_categories.get(category, [])):
+            for row in source_rows or []:
+                if not isinstance(row, dict):
+                    continue
+                key = _history_row_key(row, role)
+                if not key:
+                    continue
+                if key not in rows_by_key:
+                    rows_by_key[key] = dict(row)
+                    ordered_keys.append(key)
+                elif _row_quality(row, role) >= _row_quality(rows_by_key[key], role):
+                    rows_by_key[key] = dict(row)
+        merged["categories"][category] = [rows_by_key[key] for key in ordered_keys]
+    return merged
+
+
 def _merge_histories(primary: dict[str, Any], fallback: dict[str, Any], role: str) -> dict[str, Any]:
-    """Merge Supabase and bundled history without throwing away older good days."""
+    """Merge Supabase + repository history without losing frozen predictions."""
     merged = {
         "schema_version": max(
             int(primary.get("schema_version") or 1),
@@ -292,16 +345,12 @@ def _merge_histories(primary: dict[str, Any], fallback: dict[str, Any], role: st
     for day_key in sorted(all_days):
         a = (primary.get("days") or {}).get(day_key)
         b = (fallback.get("days") or {}).get(day_key)
-        if not isinstance(a, dict):
-            chosen = b
-        elif not isinstance(b, dict):
-            chosen = a
-        else:
-            # Prefer the day with more settled rows; if tied, prefer the one
-            # with more frozen predictions, then the newest capture time.
-            chosen = a if _history_day_quality(a, role) >= _history_day_quality(b, role) else b
-        if isinstance(chosen, dict):
-            merged["days"][day_key] = chosen
+        if isinstance(a, dict) and isinstance(b, dict):
+            merged["days"][day_key] = _merge_day_records(a, b, role)
+        elif isinstance(a, dict):
+            merged["days"][day_key] = a
+        elif isinstance(b, dict):
+            merged["days"][day_key] = b
     return merged
 
 
