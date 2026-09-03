@@ -574,7 +574,7 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                     <span class="pitcher-reason">{escape(reason)}</span>
                     <div class="pitcher-state-result">
                         <em class="{lineup_class}">{escape(lineup)}</em>
-                        <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or 'Result pending')}</span>
+                        <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or '')}</span>
                     </div>
                 </div>
                 <div class="pitcher-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
@@ -1518,6 +1518,72 @@ st.markdown(
         -webkit-line-clamp:2!important;
         -webkit-box-orient:vertical!important;
         overflow:hidden!important;
+    }
+    .pitcher-result-placeholder{
+        visibility:hidden!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB SEPT 3 FINAL VISUAL POLISH — presentation only.
+st.markdown(
+    """
+    <style>
+    /* Exact shared compact-card geometry with the batter card. */
+    .pitcher-card-main{
+        grid-template-columns:38px 76px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        height:206px!important;
+        min-height:206px!important;
+        max-height:206px!important;
+        padding:8px 2px!important;
+        align-items:start!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+    }
+
+    /* Player-card style headshot: larger face, still enough head/chin room. */
+    .pitcher-photo{
+        width:76px!important;height:76px!important;
+        min-width:76px!important;min-height:76px!important;
+        max-width:76px!important;max-height:76px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        display:grid!important;
+        place-items:center!important;
+        padding:0!important;
+        background:#0b0c0d!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 24%!important;
+        transform:scale(.98)!important;
+        transform-origin:center center!important;
+        border-radius:50%!important;
+        background:#0b0c0d!important;
+        filter:brightness(1.12) contrast(1.04)!important;
+    }
+
+    /* Match batter text density so one role cannot become taller. */
+    .pitcher-copy{
+        min-width:0!important;
+        overflow:hidden!important;
+    }
+    .pitcher-reason{
+        display:-webkit-box!important;
+        -webkit-line-clamp:2!important;
+        -webkit-box-orient:vertical!important;
+        overflow:hidden!important;
+    }
+
+    /* Keep identical vertical reservation, but never show "Result pending". */
+    .pitcher-state-result{
+        min-height:42px!important;
     }
     .pitcher-result-placeholder{
         visibility:hidden!important;
