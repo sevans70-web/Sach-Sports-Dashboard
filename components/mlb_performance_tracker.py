@@ -1,7 +1,6 @@
 """Compact mobile-first MLB Prediction Performance UI."""
 
 from __future__ import annotations
-import os
 from datetime import datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -17,7 +16,10 @@ from data.mlb_pitcher_performance_tracker import (
     summarize_projection_accuracy,
     sync_history as sync_pitcher_history,
 )
-from engines.mlb_pitcher_intelligence import get_pitcher_rankings
+from database.mlb_dashboard_reads import (
+    load_performance_history_from_supabase,
+    load_pitcher_rankings_from_supabase,
+)
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
@@ -33,43 +35,22 @@ PITCHER_CATEGORY_CONFIG = {
     "earned_runs":("● Earned Runs","ER"),
 }
 
-def _token() -> str | None:
-    # Codespaces uses SACH_GITHUB_TOKEN; Streamlit Cloud uses GITHUB_TOKEN.
-    token = os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
-    if token:
-        return token
-    try:
-        return st.secrets["GITHUB_TOKEN"]
-    except Exception:
-        return None
-
-@st.cache_data(ttl=300, show_spinner=False)
-def _cached_batter_history(_token_value: str, rankings_by_category: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    """Grade in memory without committing runtime data back to GitHub."""
-    synced = sync_history(
-        _token_value,
-        rankings_by_category,
-        persist=False,
-        local_history_path="data/mlb_performance_history.json",
-    )
-    return current_day_view(synced, rankings_by_category)
+@st.cache_data(ttl=60, show_spinner=False)
+def _cached_batter_history() -> dict[str, Any]:
+    """Read durable batter performance history from Supabase/local fallback."""
+    return load_performance_history_from_supabase("batter")
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)
 def _cached_pitcher_rankings() -> dict[str, Any]:
-    """Reuse pitcher rankings while the user interacts with the MLB page."""
-    return get_pitcher_rankings(limit=25)
+    """Read the already-computed pitcher Top 25; never run the engine here."""
+    return load_pitcher_rankings_from_supabase(limit=25)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def _cached_pitcher_history(_token_value: str, rankings: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    synced = sync_pitcher_history(
-        _token_value,
-        rankings,
-        persist=False,
-        local_history_path="data/mlb_pitcher_performance_history.json",
-    )
-    return current_pitcher_day_view(synced, rankings)
+@st.cache_data(ttl=60, show_spinner=False)
+def _cached_pitcher_history() -> dict[str, Any]:
+    """Read durable pitcher performance history from Supabase/local fallback."""
+    return load_performance_history_from_supabase("pitcher")
 
 
 def _records(history, category, period):
@@ -231,21 +212,18 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
             "Batter markets show hit rate; pitcher markets measure projection accuracy."
         )
 
-    token = _token()
-    batter_history = {"days":{}}
-    if token:
-        try:
-            batter_history = _cached_batter_history(token, rankings_by_category)
-        except Exception:
-            st.caption("Performance history is temporarily unavailable.")
-    else:
-        st.caption("Performance history is temporarily unavailable.")
+    try:
+        batter_history = _cached_batter_history()
+    except Exception:
+        batter_history = {"schema_version": 1, "days": {}}
+        st.caption("Batter performance history is temporarily unavailable.")
 
     batter_tab, pitcher_tab = st.tabs(["🥎 Batter", "⚾ Pitcher"])
 
     with batter_tab:
         st.markdown("#### 🌐 Overall MLB Batter Performance")
         period = _period_control("mlb_batter_performance_period")
+        _render_overall(batter_history, period)
         tabs = st.tabs([BATTER_CATEGORY_CONFIG[k][0] for k in BATTER_CATEGORY_CONFIG])
         for tab, category in zip(tabs, BATTER_CATEGORY_CONFIG):
             with tab:
@@ -255,14 +233,10 @@ def render_prediction_performance_tracker(rankings_by_category: dict[str,list[di
         st.markdown("#### 🌐 Overall MLB Pitcher Performance")
         period = _period_control("mlb_pitcher_performance_period")
 
-        if not token:
-            st.caption("Pitcher performance history is temporarily unavailable.")
-            return
-
         try:
-            result = _cached_pitcher_rankings()
-            rankings = result.get("rankings",{})
-            history = _cached_pitcher_history(token, rankings)
+            # Read-only calls: the performance tab never invokes either ranking engine.
+            _cached_pitcher_rankings()
+            history = _cached_pitcher_history()
             tabs = st.tabs([PITCHER_CATEGORY_CONFIG[k][0] for k in PITCHER_CATEGORY_CONFIG])
             for tab, category in zip(tabs, PITCHER_CATEGORY_CONFIG):
                 with tab:
@@ -480,6 +454,52 @@ st.markdown(
         white-space:nowrap !important;
         overflow:visible !important;
         text-align:center !important;
+      }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB CLOSEOUT — authoritative five-cell period row.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      div[class*="st-key-mlb_batter_performance_period_radio"] div[data-testid="stRadio"] > div,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] div[data-testid="stRadio"] > div,
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
+        display:grid!important;
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        grid-auto-flow:column!important;
+        grid-template-rows:36px!important;
+        flex-wrap:nowrap!important;
+        width:100%!important;
+        max-width:100%!important;
+        min-width:0!important;
+        gap:0!important;
+        overflow:hidden!important;
+      }
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+        grid-row:1!important;
+        width:auto!important;
+        min-width:0!important;
+        max-width:none!important;
+        margin:0!important;
+        padding:0 1px!important;
+        white-space:nowrap!important;
+        overflow:hidden!important;
+      }
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] p,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] p{
+        font-size:.60rem!important;
+        line-height:1!important;
+        letter-spacing:-.035em!important;
+        white-space:nowrap!important;
+        overflow:visible!important;
       }
     }
     </style>

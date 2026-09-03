@@ -17,6 +17,7 @@ import streamlit as st
 from engines.mlb_pitcher_intelligence import get_pitcher_rankings
 from database.mlb_dashboard_reads import load_pitcher_rankings_from_supabase
 from data.mlb_pitcher_results import get_pitcher_game_result
+from data.mlb_prediction_results import get_scoring_game_states
 from data.mlb_players import get_player_headshot_url
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
@@ -385,11 +386,39 @@ def _cached_pitcher_game_result(game_pk: int, pitcher_id: int) -> dict:
     return get_pitcher_game_result(game_pk=game_pk, pitcher_id=pitcher_id)
 
 
+@st.cache_data(ttl=15, show_spinner=False)
+def _pitcher_game_phase_lookup() -> dict[int, str]:
+    """Use one schedule-status call to avoid opening every pregame live feed."""
+    result = get_scoring_game_states(datetime.now(TORONTO_TIMEZONE).date())
+    lookup: dict[int, str] = {}
+    for game in result.get("games", []) or []:
+        game_pk = int(game.get("game_pk") or 0)
+        if not game_pk:
+            continue
+        if game.get("is_final"):
+            lookup[game_pk] = "final"
+        elif game.get("is_live"):
+            lookup[game_pk] = "live"
+        else:
+            lookup[game_pk] = "pregame"
+    return lookup
+
+
 def _pitcher_result(row: dict) -> dict:
     game_pk = int(row.get("game_pk") or 0)
     pitcher_id = int(row.get("pitcher_id") or 0)
     if not game_pk or not pitcher_id:
         return {"game_phase":"pregame","result_available":False}
+
+    phase = _pitcher_game_phase_lookup().get(game_pk, "pregame")
+    if phase == "pregame":
+        return {
+            "game_phase": "pregame",
+            "game_live": False,
+            "game_finished": False,
+            "result_available": False,
+        }
+
     return _cached_pitcher_game_result(game_pk, pitcher_id)
 
 
@@ -1224,10 +1253,37 @@ st.markdown(
     @media(max-width:700px){
       .pitcher-card-main{
         min-height:142px!important;
-        height:142px!important;
+        height:auto!important;
         box-sizing:border-box!important;
-        overflow:hidden!important;
+        overflow:visible!important;
       }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB FINAL CLOSEOUT — same growable result contract as batter cards.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      .pitcher-card-main{
+        min-height:142px!important;
+        height:auto!important;
+        overflow:visible!important;
+      }
+      .pitcher-copy,.pitcher-state-result{overflow:visible!important;}
+      .pitcher-state-result .pitcher-card-result{
+        display:block!important;
+        visibility:visible!important;
+        position:static!important;
+        min-height:.92rem!important;
+        margin:0 0 7px!important;
+        overflow:visible!important;
+      }
+      .pitcher-result-placeholder{visibility:hidden!important;}
     }
     </style>
     """,
