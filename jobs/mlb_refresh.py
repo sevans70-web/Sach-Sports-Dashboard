@@ -11,6 +11,8 @@ cycle, then stores completed snapshots in Supabase.
 from __future__ import annotations
 
 from datetime import datetime
+import json
+from pathlib import Path
 import traceback
 from zoneinfo import ZoneInfo
 
@@ -19,12 +21,16 @@ from database.mlb_repository import (
     PITCHER_MARKETS,
     ensure_mlb_foundation,
     finish_refresh_run,
+    get_latest_source_payload,
     save_ranking_category,
+    save_latest_source_snapshot,
     save_source_snapshot,
     start_refresh_run,
 )
 from engines.game_intelligence import get_all_rankings
 from engines.mlb_pitcher_intelligence import get_pitcher_rankings
+from data.mlb_performance_tracker import sync_history as sync_batter_history
+from data.mlb_pitcher_performance_tracker import sync_history as sync_pitcher_history
 
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
@@ -121,6 +127,75 @@ def run() -> dict:
             saved_snapshots.append(saved)
             processed += len(rankings)
 
+        # Persist the existing MLB performance history in Supabase as part of
+        # the same worker run.  This is intentionally idempotent at the UI
+        # level: the dashboard always reads the newest history snapshot.
+        # The long-lived JSON files remain in the repository as a recovery
+        # source, so the migration cannot erase the history already collected.
+        batter_rankings_by_category = {
+            category: list((batter_result.get(category) or {}).get("rankings") or [])
+            for category in BATTER_MARKETS
+        }
+        batter_history_seed = get_latest_source_payload(
+            source_name="mlb_batter_performance_history"
+        ).get("payload") or {}
+        if not isinstance(batter_history_seed.get("days"), dict):
+            try:
+                batter_history_seed = json.loads(
+                    Path("data/mlb_performance_history.json").read_text(encoding="utf-8")
+                )
+            except Exception:
+                batter_history_seed = {"schema_version": 1, "days": {}}
+        batter_seed_path = Path("/tmp/sach_mlb_batter_performance_history.json")
+        batter_seed_path.write_text(
+            json.dumps(batter_history_seed, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        batter_history = sync_batter_history(
+            "",
+            batter_rankings_by_category,
+            snapshot_date=ranking_date.isoformat(),
+            persist=False,
+            local_history_path=str(batter_seed_path),
+        )
+        save_latest_source_snapshot(
+            league_id=league_id,
+            source_name="mlb_batter_performance_history",
+            source_type="performance_history",
+            game_date=ranking_date,
+            payload=batter_history,
+        )
+
+        pitcher_history_seed = get_latest_source_payload(
+            source_name="mlb_pitcher_performance_history"
+        ).get("payload") or {}
+        if not isinstance(pitcher_history_seed.get("days"), dict):
+            try:
+                pitcher_history_seed = json.loads(
+                    Path("data/mlb_pitcher_performance_history.json").read_text(encoding="utf-8")
+                )
+            except Exception:
+                pitcher_history_seed = {"schema_version": 1, "days": {}}
+        pitcher_seed_path = Path("/tmp/sach_mlb_pitcher_performance_history.json")
+        pitcher_seed_path.write_text(
+            json.dumps(pitcher_history_seed, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        pitcher_history = sync_pitcher_history(
+            "",
+            pitcher_rankings,
+            snapshot_date=ranking_date.isoformat(),
+            persist=False,
+            local_history_path=str(pitcher_seed_path),
+        )
+        save_latest_source_snapshot(
+            league_id=league_id,
+            source_name="mlb_pitcher_performance_history",
+            source_type="performance_history",
+            game_date=ranking_date,
+            payload=pitcher_history,
+        )
+
         finish_refresh_run(
             run_id=run_id,
             status="success",
@@ -128,6 +203,7 @@ def run() -> dict:
             metadata={
                 "ranking_date": ranking_date.isoformat(),
                 "snapshots": saved_snapshots,
+                "performance_history": ["batter", "pitcher"],
             },
         )
 
@@ -136,6 +212,7 @@ def run() -> dict:
             "ranking_date": ranking_date.isoformat(),
             "records_processed": processed,
             "snapshots": saved_snapshots,
+            "performance_history": ["batter", "pitcher"],
         }
         print(summary)
         return summary
