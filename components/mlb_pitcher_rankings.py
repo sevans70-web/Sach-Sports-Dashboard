@@ -380,12 +380,12 @@ def _projection_text(category: str, row: dict) -> str:
     return f"{float(row.get('projection') or 0):.1f} {CATEGORY_CONFIG[category][1]}"
 
 
-@st.cache_data(ttl=15, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)
 def _cached_pitcher_game_result(game_pk: int, pitcher_id: int) -> dict:
     return get_pitcher_game_result(game_pk=game_pk, pitcher_id=pitcher_id)
 
 
-@st.cache_data(ttl=15, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)
 def _pitcher_game_phase_lookup() -> dict[int, str]:
     """Use one schedule-status call to avoid opening every pregame live feed."""
     result = get_scoring_game_states(datetime.now(TORONTO_TIMEZONE).date())
@@ -437,12 +437,32 @@ def _result_value(category: str, result: dict) -> str:
     return f"{value} {unit}"
 
 
-def _result_line(category: str, result: dict) -> str:
-    """Return the stat only; LIVE / FINAL is displayed in the status pill."""
+def _result_line(category: str, row: dict, result: dict) -> str:
+    """Mirror batter-card grading: LIVE shows the value; FINAL shows ✅/❌."""
     value = _result_value(category, result)
     if not value:
         return ""
-    return f"Result: {value}"
+
+    phase = str(result.get("game_phase") or "").lower()
+    if phase != "final" and not result.get("game_finished"):
+        return f"Result: {value}"
+
+    try:
+        projection = float(row.get("projection") or 0)
+        actual_map = {
+            "strikeouts": result.get("actual_strikeouts"),
+            "outs_recorded": result.get("actual_outs_recorded"),
+            "hits_allowed": result.get("actual_hits_allowed"),
+            "walks_allowed": result.get("actual_walks_allowed"),
+            "earned_runs": result.get("actual_earned_runs"),
+        }
+        actual = float(actual_map.get(category))
+        hit = abs(actual - projection) <= 1.0
+    except (TypeError, ValueError):
+        hit = False
+
+    mark = "✅" if hit else "❌"
+    return f"Result: {mark} {value}"
 
 
 def _render_pitcher_intelligence(category: str, row: dict) -> None:
@@ -518,7 +538,7 @@ def _render_pitcher_card(category: str, row: dict) -> None:
     projected = bool(row.get("lineup_context_projected"))
     game_result = _pitcher_result(row)
     game_phase = str(game_result.get("game_phase") or "").lower()
-    result_line = _result_line(category, game_result)
+    result_line = _result_line(category, row, game_result)
     reason = _compact_pitcher_reason(row, game_phase)
 
     if game_phase == "live":
@@ -1353,6 +1373,54 @@ st.markdown(
         min-height:36px!important;
         border-radius:10px!important;
         margin-top:5px!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB TRUE CLOSEOUT — pitcher card must physically match the batter card.
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
+        min-height:232px!important;
+        border-radius:16px!important;
+        box-sizing:border-box!important;
+    }
+    .pitcher-card-main{
+        grid-template-columns:38px 64px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        min-height:176px!important;
+        padding:8px 2px 8px!important;
+        align-items:start!important;
+        box-sizing:border-box!important;
+    }
+    .pitcher-photo{
+        width:64px!important;height:64px!important;
+        min-width:64px!important;min-height:64px!important;
+        max-width:64px!important;max-height:64px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        display:grid!important;
+        place-items:center!important;
+        padding:0!important;
+        background:#0b0c0d!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 28%!important;
+        transform:scale(.88)!important;
+        transform-origin:center center!important;
+        border-radius:50%!important;
+        background:#0b0c0d!important;
+    }
+    .pitcher-card-result{
+        font-weight:900!important;
+        white-space:nowrap!important;
     }
     </style>
     """,

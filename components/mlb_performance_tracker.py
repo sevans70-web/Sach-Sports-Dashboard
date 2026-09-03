@@ -225,26 +225,29 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """Render the same rectangular segmented control used by HR Intelligence.
-
-    Keep all five performance periods on one mobile row while preserving the
-    established MLB design language.
-    """
+    """Five-cell rectangular period control with an unmistakable active state."""
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"
+        st.session_state[key] = current
 
-    selected = st.segmented_control(
-        "Performance Period",
-        options=options,
-        default=current,
-        key=f"{key}_segmented",
-        selection_mode="single",
-        label_visibility="collapsed",
-    ) or current
-    st.session_state[key] = selected
-    return selected
+    def _choose_period(value: str) -> None:
+        st.session_state[key] = value
+
+    cols = st.columns(5, gap="small")
+    for column, option in zip(cols, options):
+        with column:
+            st.button(
+                option,
+                key=f"{key}_period_btn_{option.lower().replace(' ', '_')}",
+                use_container_width=True,
+                type="primary" if option == current else "secondary",
+                on_click=_choose_period,
+                args=(option,),
+            )
+
+    return st.session_state.get(key, current)
 
 
 def render_prediction_performance_tracker(rankings_by_category: dict[str,list[dict[str,Any]]]) -> None:
@@ -637,6 +640,50 @@ st.markdown(
         div[class*="st-key-mlb_pitcher_performance_period_segmented"] button{
             font-size:.57rem!important;
             min-height:35px!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB TRUE CLOSEOUT — selected performance period must be visually obvious.
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-mlb_batter_performance_period_period_btn_"] button,
+    div[class*="st-key-mlb_pitcher_performance_period_period_btn_"] button{
+        min-height:36px!important;
+        width:100%!important;
+        padding:.18rem .02rem!important;
+        margin:0!important;
+        border:1px solid #34373c!important;
+        border-radius:5px!important;
+        background:#080909!important;
+        color:#f7f1e3!important;
+        font-size:.58rem!important;
+        font-weight:850!important;
+        white-space:nowrap!important;
+        box-shadow:none!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_period_btn_"] button[kind="primary"],
+    div[class*="st-key-mlb_pitcher_performance_period_period_btn_"] button[kind="primary"],
+    div[class*="st-key-mlb_batter_performance_period_period_btn_"] [data-testid="stBaseButton-primary"],
+    div[class*="st-key-mlb_pitcher_performance_period_period_btn_"] [data-testid="stBaseButton-primary"]{
+        background:#292113!important;
+        color:#f6c84c!important;
+        border:2px solid #d6b35c!important;
+        box-shadow:inset 0 -4px 0 #d6b35c!important;
+        font-weight:950!important;
+    }
+
+    @media(max-width:700px){
+        div[class*="st-key-mlb_batter_performance_period_period_btn_"] button,
+        div[class*="st-key-mlb_pitcher_performance_period_period_btn_"] button{
+            min-height:34px!important;
+            font-size:.54rem!important;
         }
     }
     </style>
