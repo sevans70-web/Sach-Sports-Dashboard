@@ -4145,3 +4145,49 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB FINAL ACCEPTANCE — authoritative batter card/photo contract.
+st.markdown(
+    """
+    <style>
+    .gi-card-header{
+        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        min-height:198px!important;
+        height:198px!important;
+        max-height:198px!important;
+        padding:8px 2px!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+        align-items:start!important;
+    }
+    .gi-native-photo,.gi-native-initials{
+        width:72px!important;height:72px!important;
+        min-width:72px!important;min-height:72px!important;
+        max-width:72px!important;max-height:72px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        padding:0!important;
+        display:grid!important;
+        place-items:center!important;
+        background:#0b0c0d!important;
+    }
+    .gi-native-photo img{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 25%!important;
+        transform:scale(.92)!important;
+        transform-origin:center!important;
+        border-radius:50%!important;
+    }
+    .gi-card-reason{
+        display:-webkit-box!important;
+        -webkit-line-clamp:2!important;
+        -webkit-box-orient:vertical!important;
+        overflow:hidden!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
