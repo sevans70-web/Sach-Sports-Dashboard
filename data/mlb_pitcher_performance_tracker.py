@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -41,6 +42,10 @@ ACTUAL_FIELDS = {
     "walks_allowed": "actual_walks_allowed",
     "earned_runs": "actual_earned_runs",
 }
+
+# One pitcher/game final line is shared by every pitcher market.  Keeping this
+# cache at module scope prevents five identical MLB feed calls per pitcher.
+_FINAL_PITCHER_RESULT_CACHE: dict[tuple[int, int], dict[str, Any]] = {}
 
 
 def _headers(token: str) -> dict[str, str]:
@@ -259,25 +264,54 @@ def _apply_final_results(
     predictions: list[dict[str, Any]],
     category: str,
 ) -> list[dict[str, Any]]:
+    """Resolve pitcher results with one shared, parallel fetch per pitcher/game."""
     actual_field = ACTUAL_FIELDS[category]
-    result_cache: dict[str, dict[str, Any]] = {}
-    updated: list[dict[str, Any]] = []
 
+    keys: list[tuple[int, int]] = []
+    for frozen in predictions:
+        if frozen.get("finalized"):
+            continue
+        key = (
+            int(frozen.get("game_pk") or 0),
+            int(frozen.get("pitcher_id") or 0),
+        )
+        if key[0] and key[1] and key not in _FINAL_PITCHER_RESULT_CACHE:
+            keys.append(key)
+
+    unique_keys = list(dict.fromkeys(keys))
+    if unique_keys:
+        with ThreadPoolExecutor(max_workers=min(8, len(unique_keys))) as executor:
+            futures = {
+                executor.submit(
+                    get_pitcher_final_result,
+                    game_pk=game_pk,
+                    pitcher_id=pitcher_id,
+                ): (game_pk, pitcher_id)
+                for game_pk, pitcher_id in unique_keys
+            }
+            for future in as_completed(futures):
+                key = futures[future]
+                try:
+                    _FINAL_PITCHER_RESULT_CACHE[key] = future.result()
+                except Exception as exc:
+                    _FINAL_PITCHER_RESULT_CACHE[key] = {
+                        "game_finished": False,
+                        "result_available": False,
+                        "error": str(exc),
+                    }
+
+    updated: list[dict[str, Any]] = []
     for frozen in predictions:
         row = dict(frozen)
-
         if row.get("finalized"):
             updated.append(row)
             continue
 
-        key = _prediction_key(row)
-        result = result_cache.get(key)
-        if result is None:
-            result = get_pitcher_final_result(
-                game_pk=int(row.get("game_pk") or 0),
-                pitcher_id=int(row.get("pitcher_id") or 0),
-            )
-            result_cache[key] = result
+        key = (
+            int(row.get("game_pk") or 0),
+            int(row.get("pitcher_id") or 0),
+        )
+        result = _FINAL_PITCHER_RESULT_CACHE.get(key, {})
 
         if result.get("game_finished") and result.get("result_available"):
             actual = float(result.get(actual_field) or 0)

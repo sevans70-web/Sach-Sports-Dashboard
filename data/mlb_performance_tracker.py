@@ -249,8 +249,9 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
         rankings=predictions,
         category=category,
         result_date=result_date,
-        # Historical grading must never reuse an earlier partial/live cache.
-        force_refresh=True,
+        # The worker starts with a fresh process. Reuse the completed-date
+        # cache across categories so Yesterday is graded once, not eight times.
+        force_refresh=False,
     ).get("graded", [])
     lookup = {_prediction_key(row): row for row in graded}
     updated: list[dict[str, Any]] = []
