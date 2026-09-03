@@ -893,6 +893,10 @@ for state_key in (
         st.session_state[state_key] = False
 
 
+def _toggle_state_flag(key: str) -> None:
+    st.session_state[key] = not bool(st.session_state.get(key, False))
+
+
 # ============================================================
 # CARD RENDERING
 # ============================================================
@@ -1295,15 +1299,15 @@ def render_ranking_category(
         else "View Full Top 25"
     )
 
-    if st.button(
+    st.button(
         button_label,
         key=button_key,
         use_container_width=True,
-    ):
-        st.session_state[state_key] = not st.session_state[state_key]
-        
+        on_click=_toggle_state_flag,
+        args=(state_key,),
+    )
 
-    if st.session_state[state_key]:
+    if st.session_state.get(state_key, False):
         render_html(
             """
             <div class="gi-full-list-heading">
