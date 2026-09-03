@@ -403,13 +403,27 @@ def sync_history(
 
     today_categories = days[today].setdefault("categories", {})
     for category in CORE_CATEGORIES:
-        if category in today_categories:
-            continue
         current_rankings = rankings_by_category.get(category, [])[:25]
         if not current_rankings:
             continue
-        today_categories[category] = [_freeze_prediction(row, category) for row in current_rankings]
-        changed = True
+
+        # Never replace a prediction that was already captured for the day.
+        # Rankings are allowed to move intraday, but historical predictions are
+        # append-only. If a player enters the Top 25 later, add that prediction;
+        # if the player later falls out, keep the original frozen row forever.
+        frozen_rows = today_categories.setdefault(category, [])
+        existing_keys = {_prediction_key(row) for row in frozen_rows}
+        captured_at = datetime.now(TORONTO_TIMEZONE).isoformat()
+
+        for ranking in current_rankings:
+            frozen = _freeze_prediction(ranking, category)
+            key = _prediction_key(frozen)
+            if key in existing_keys:
+                continue
+            frozen["first_seen_at"] = captured_at
+            frozen_rows.append(frozen)
+            existing_keys.add(key)
+            changed = True
 
     yesterday = (
         datetime.fromisoformat(today).date() - timedelta(days=1)

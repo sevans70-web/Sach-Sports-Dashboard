@@ -380,18 +380,25 @@ def sync_history(
     today_categories = days[today].setdefault("categories", {})
 
     for category in PITCHER_CATEGORIES:
-        if category in today_categories:
-            continue
-
         current_rankings = rankings_by_category.get(category, [])[:25]
         if not current_rankings:
             continue
 
-        today_categories[category] = [
-            _freeze_prediction(row, category)
-            for row in current_rankings
-        ]
-        changed = True
+        # Pitcher history is append-only for the day. A starter that was in the
+        # tracked Top 25 remains part of the historical prediction set even if a
+        # later refresh changes the live ranking order.
+        frozen_rows = today_categories.setdefault(category, [])
+        existing_keys = {_prediction_key(row) for row in frozen_rows}
+        captured_at = datetime.now(TORONTO_TIMEZONE).isoformat()
+        for ranking in current_rankings:
+            frozen = _freeze_prediction(ranking, category)
+            key = _prediction_key(frozen)
+            if key in existing_keys:
+                continue
+            frozen["first_seen_at"] = captured_at
+            frozen_rows.append(frozen)
+            existing_keys.add(key)
+            changed = True
 
     for day_key, day_record in days.items():
         if day_key >= today:
