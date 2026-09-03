@@ -40,7 +40,7 @@ PITCHER_CATEGORY_CONFIG = {
 def _cached_batter_history() -> dict[str, Any]:
     """Read history, then reconcile current/recent results from MLB."""
     history = load_performance_history_from_supabase("batter")
-    return refresh_history_view(history, recent_days=2)
+    return refresh_history_view(history, recent_days=8)
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -53,7 +53,7 @@ def _cached_pitcher_rankings() -> dict[str, Any]:
 def _cached_pitcher_history() -> dict[str, Any]:
     """Read history, then reconcile current/recent pitcher results."""
     history = load_performance_history_from_supabase("pitcher")
-    return refresh_pitcher_history_view(history, recent_days=2)
+    return refresh_pitcher_history_view(history, recent_days=8)
 
 
 def _records(history, category, period):
@@ -577,3 +577,69 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+
+# MLB NIGHT CLOSEOUT — authoritative performance-period selected state.
+# Streamlit versions expose segmented selection through different accessibility
+# attributes, so cover all of them to keep the active period visibly highlighted.
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-mlb_batter_performance_period_segmented"] [role="radiogroup"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] [role="radiogroup"]{
+        display:grid!important;
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        width:100%!important;
+        gap:0!important;
+        border:2px solid #34373c!important;
+        border-radius:10px!important;
+        overflow:hidden!important;
+        background:#080909!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button,
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button{
+        min-width:0!important;
+        width:100%!important;
+        min-height:36px!important;
+        margin:0!important;
+        padding:.22rem .03rem!important;
+        border:0!important;
+        border-right:1px solid #34373c!important;
+        border-radius:0!important;
+        background:#080909!important;
+        color:#f7f1e3!important;
+        font-size:.60rem!important;
+        font-weight:850!important;
+        white-space:nowrap!important;
+        box-shadow:none!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button:last-child,
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button:last-child{
+        border-right:0!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button[aria-pressed="true"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button[aria-pressed="true"],
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button[aria-checked="true"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button[aria-checked="true"],
+    div[class*="st-key-mlb_batter_performance_period_segmented"] button[data-state="checked"],
+    div[class*="st-key-mlb_pitcher_performance_period_segmented"] button[data-state="checked"]{
+        background:#252015!important;
+        color:#f6c84c!important;
+        box-shadow:inset 0 -4px 0 #d6b35c!important;
+        font-weight:950!important;
+    }
+
+    @media(max-width:700px){
+        div[class*="st-key-mlb_batter_performance_period_segmented"] button,
+        div[class*="st-key-mlb_pitcher_performance_period_segmented"] button{
+            font-size:.57rem!important;
+            min-height:35px!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)

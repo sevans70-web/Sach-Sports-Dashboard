@@ -1299,3 +1299,62 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB NIGHT CLOSEOUT — exact physical match to batter cards.
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-pitcher_card_"]{
+        margin-bottom:10px!important;
+        border-radius:16px!important;
+        box-sizing:border-box!important;
+    }
+    div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
+        border-radius:16px!important;
+        overflow:visible!important;
+        box-sizing:border-box!important;
+    }
+    .pitcher-card-main{
+        grid-template-columns:36px 54px minmax(0,1fr) 50px!important;
+        gap:7px!important;
+        min-height:150px!important;
+        height:auto!important;
+        padding:6px 2px 10px!important;
+        align-items:start!important;
+        box-sizing:border-box!important;
+        overflow:visible!important;
+    }
+    .pitcher-photo{
+        width:54px!important;height:54px!important;
+        min-width:54px!important;min-height:54px!important;
+        max-width:54px!important;max-height:54px!important;
+        border-radius:50%!important;
+        border:2px solid rgba(214,179,92,.90)!important;
+        overflow:hidden!important;
+        display:grid!important;
+        place-items:center!important;
+        background:#0b0c0d!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 30%!important;
+        transform:scale(.94)!important;
+        transform-origin:center center!important;
+        border-radius:50%!important;
+        background:#0b0c0d!important;
+    }
+    .pitcher-copy{min-width:0!important;overflow:visible!important}
+    .pitcher-copy>strong{font-size:.90rem!important;line-height:1.08!important}
+    .pitcher-copy span{font-size:.67rem!important;line-height:1.18!important}
+    .pitcher-score{width:50px!important;min-width:50px!important}
+    div[class*="st-key-pitcher_intelligence_"] button{
+        min-height:36px!important;
+        border-radius:10px!important;
+        margin-top:5px!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
