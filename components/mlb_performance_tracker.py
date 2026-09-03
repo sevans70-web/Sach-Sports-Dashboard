@@ -225,29 +225,22 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 def _period_control(key: str) -> str:
-    """Five-cell rectangular period control with an unmistakable active state."""
+    """Render a true five-cell horizontal period selector with visible selection."""
     options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"
-        st.session_state[key] = current
 
-    def _choose_period(value: str) -> None:
-        st.session_state[key] = value
-
-    cols = st.columns(5, gap="small")
-    for column, option in zip(cols, options):
-        with column:
-            st.button(
-                option,
-                key=f"{key}_period_btn_{option.lower().replace(' ', '_')}",
-                use_container_width=True,
-                type="primary" if option == current else "secondary",
-                on_click=_choose_period,
-                args=(option,),
-            )
-
-    return st.session_state.get(key, current)
+    selected = st.radio(
+        "Performance Period",
+        options=options,
+        index=options.index(current),
+        horizontal=True,
+        key=f"{key}_radio",
+        label_visibility="collapsed",
+    )
+    st.session_state[key] = selected
+    return selected
 
 
 def render_prediction_performance_tracker(rankings_by_category: dict[str,list[dict[str,Any]]]) -> None:
@@ -684,6 +677,87 @@ st.markdown(
         div[class*="st-key-mlb_pitcher_performance_period_period_btn_"] button{
             min-height:34px!important;
             font-size:.54rem!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB LAST-MILE CLOSEOUT — true horizontal segmented period control.
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
+        display:grid!important;
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        width:100%!important;
+        gap:0!important;
+        overflow:hidden!important;
+        border:2px solid #34373c!important;
+        border-radius:10px!important;
+        background:#080909!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+        min-width:0!important;
+        width:100%!important;
+        min-height:38px!important;
+        margin:0!important;
+        padding:0!important;
+        border-right:1px solid #34373c!important;
+        border-radius:0!important;
+        background:#080909!important;
+        display:flex!important;
+        align-items:center!important;
+        justify-content:center!important;
+        cursor:pointer!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label:last-child,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label:last-child{
+        border-right:0!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label > div:first-child,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label > div:first-child{
+        display:none!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label p,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label p{
+        margin:0!important;
+        padding:0!important;
+        color:#f7f1e3!important;
+        font-size:.60rem!important;
+        font-weight:850!important;
+        white-space:nowrap!important;
+        text-align:center!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label:has(input:checked),
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label:has(input:checked){
+        background:#292113!important;
+        box-shadow:inset 0 -4px 0 #d6b35c!important;
+    }
+
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label:has(input:checked) p,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label:has(input:checked) p{
+        color:#f6c84c!important;
+        font-weight:950!important;
+    }
+
+    @media(max-width:700px){
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+            min-height:36px!important;
+        }
+        div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label p,
+        div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label p{
+            font-size:.56rem!important;
         }
     }
     </style>
