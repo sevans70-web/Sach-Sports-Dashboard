@@ -19,6 +19,7 @@ from database.mlb_dashboard_reads import load_pitcher_rankings_from_supabase
 from data.mlb_pitcher_results import get_pitcher_game_result
 from data.mlb_prediction_results import get_scoring_game_states
 from data.mlb_players import get_player_headshot_url
+from components.mlb_compact_ranking_card import build_compact_card_html, render_compact_card_css
 from Utils.intraday_rankings import (
     GitHubSnapshotConfig,
     RankingSnapshotError,
@@ -530,6 +531,7 @@ def _compact_pitcher_reason(row: dict, game_phase: str) -> str:
 
 
 def _render_pitcher_card(category: str, row: dict) -> None:
+    """Render pitcher ranking with the exact same shell used by batter cards."""
     rank = int(row.get("rank") or 0)
     name = str(row.get("pitcher_name") or "Pitcher")
     score = float(row.get("gi_score") or 0)
@@ -557,29 +559,37 @@ def _render_pitcher_card(category: str, row: dict) -> None:
         lineup = "○ Opponent lineup unavailable"
         lineup_class = "pitch-lineup-unavailable"
 
+    body_html = (
+        f'<span class="mlb-rank-line mlb-rank-matchup">'
+        f'{_matchup_html(row)}{escape(f" · {hand}HP" if hand else "")}'
+        f'</span>'
+        f'<span class="mlb-rank-line"><b>Projection:</b> {escape(_projection_text(category,row))}</span>'
+        f'<span class="mlb-rank-line mlb-rank-reason">{escape(reason)}</span>'
+        f'<span class="mlb-rank-line mlb-rank-status"><em class="{lineup_class}">{escape(lineup)}</em></span>'
+        + (
+            f'<span class="mlb-rank-result">{escape(result_line)}</span>'
+            if result_line
+            else '<span class="mlb-rank-result mlb-rank-result-empty">Result</span>'
+        )
+    )
+
     state_key = f"pitcher_intelligence_{category}_{row.get('pitcher_id')}_{rank}"
     if state_key not in st.session_state:
         st.session_state[state_key] = False
 
-    with st.container(border=True, key=f"pitcher_card_{category}_{row.get('pitcher_id')}_{rank}"):
+    with st.container(
+        border=True,
+        key=f"pitcher_card_{category}_{row.get('pitcher_id')}_{rank}",
+    ):
         _render_html(
-            f"""
-            <div class="pitcher-card-main">
-                <div class="pitcher-rank"><strong>#{rank}</strong><small>{escape(_movement_label(row))}</small></div>
-                <div class="pitcher-photo">{_headshot_html(row)}</div>
-                <div class="pitcher-copy">
-                    <strong>{escape(name)}</strong>
-                    <span class="pitcher-matchup">{_matchup_html(row)}{escape(f' · {hand}HP' if hand else '')}</span>
-                    <span class="pitcher-projection"><b>Projection:</b> {escape(_projection_text(category,row))}</span>
-                    <span class="pitcher-reason">{escape(reason)}</span>
-                    <div class="pitcher-state-result">
-                        <em class="{lineup_class}">{escape(lineup)}</em>
-                        <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or '')}</span>
-                    </div>
-                </div>
-                <div class="pitcher-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
-            </div>
-            """
+            build_compact_card_html(
+                rank=rank,
+                movement_label=_movement_label(row),
+                player_id=row.get("pitcher_id"),
+                name=name,
+                score=score,
+                body_html=body_html,
+            )
         )
 
         if st.button(
@@ -629,6 +639,7 @@ def _render_category(category: str, rows: list[dict]) -> None:
 
 
 def render_pitcher_rankings() -> None:
+    render_compact_card_css()
     st.markdown(
         """
         <style>
@@ -1468,6 +1479,139 @@ st.markdown(
             height:214px!important;
             min-height:214px!important;
             max-height:214px!important;
+            grid-template-columns:34px 68px minmax(0,1fr) 46px!important;
+            gap:7px!important;
+        }
+        .pitcher-photo{
+            width:68px!important;height:68px!important;
+            min-width:68px!important;min-height:68px!important;
+            max-width:68px!important;max-height:68px!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB PLAYER-DETAIL AVATAR REFERENCE — pitcher compact cards.
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
+        min-height:292px!important;
+        padding:10px!important;
+        border-radius:16px!important;
+        box-sizing:border-box!important;
+    }
+
+    .pitcher-card-main{
+        height:224px!important;
+        min-height:224px!important;
+        max-height:224px!important;
+        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        padding:6px 2px 4px!important;
+        box-sizing:border-box!important;
+        align-items:start!important;
+        overflow:hidden!important;
+    }
+
+    .pitcher-photo{
+        width:72px!important;
+        height:72px!important;
+        min-width:72px!important;
+        min-height:72px!important;
+        max-width:72px!important;
+        max-height:72px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        position:relative!important;
+        display:block!important;
+        margin:0!important;
+        padding:0!important;
+        background:#32363a!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+        box-sizing:border-box!important;
+    }
+    .pitcher-headshot{
+        position:absolute!important;
+        inset:0!important;
+        width:100%!important;
+        height:100%!important;
+        max-width:none!important;
+        object-fit:cover!important;
+        object-position:50% 38%!important;
+        transform:scale(1.14)!important;
+        transform-origin:50% 42%!important;
+        border-radius:50%!important;
+        background:#32363a!important;
+        filter:none!important;
+    }
+
+    .pitcher-rank small{
+        display:block!important;
+        min-height:13px!important;
+        margin-top:5px!important;
+        color:#19d978!important;
+        font-size:.61rem!important;
+        font-weight:900!important;
+        line-height:1.05!important;
+        white-space:nowrap!important;
+        opacity:1!important;
+        visibility:visible!important;
+    }
+
+    .pitcher-copy>strong{
+        font-family:inherit!important;
+        font-size:.90rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+        letter-spacing:0!important;
+    }
+    .pitcher-copy>span,
+    .pitcher-copy .pitcher-matchup,
+    .pitcher-copy .pitcher-projection,
+    .pitcher-copy .pitcher-reason{
+        font-family:inherit!important;
+        font-size:.67rem!important;
+        line-height:1.18!important;
+        font-weight:400!important;
+    }
+    .pitcher-card-result{
+        font-family:inherit!important;
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+    }
+
+    .pitcher-state-result{
+        min-height:42px!important;
+        height:42px!important;
+        max-height:42px!important;
+        overflow:hidden!important;
+        margin-top:4px!important;
+    }
+    .pitcher-result-placeholder{visibility:hidden!important;}
+
+    div[class*="st-key-pitcher_card_"] .stButton>button{
+        min-height:38px!important;
+        height:38px!important;
+        margin:4px 0 0!important;
+        border-radius:10px!important;
+        font-family:inherit!important;
+        box-sizing:border-box!important;
+    }
+
+    @media(max-width:700px){
+        div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
+            min-height:284px!important;
+            padding:8px!important;
+        }
+        .pitcher-card-main{
+            height:218px!important;
+            min-height:218px!important;
+            max-height:218px!important;
             grid-template-columns:34px 68px minmax(0,1fr) 46px!important;
             gap:7px!important;
         }
