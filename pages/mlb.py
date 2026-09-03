@@ -15,6 +15,7 @@ from components.mlb_schedule import (
 from components.player_card import render_player_card
 from components.mlb_performance_tracker import render_prediction_performance_tracker
 from components.mlb_pitcher_rankings import render_pitcher_rankings
+from components.mlb_compact_ranking_card import build_compact_card_html, render_compact_card_css
 from database.mlb_dashboard_reads import load_batter_rankings_from_supabase
 from engines.game_intelligence import (
     get_all_rankings,
@@ -1099,7 +1100,7 @@ def opposing_pitcher_line(player: dict) -> str:
     pitcher = str(player.get("opposing_probable_pitcher") or "Not announced").strip()
     hand = str(player.get("opposing_pitcher_hand") or "").upper()
     hand_text = f" · {hand}HP" if hand else ""
-    return f'<span class="gi-card-pitcher"><b>vs. {escape(pitcher)}</b>{escape(hand_text)}</span>'
+    return f'<span class="mlb-rank-line"><b>vs. {escape(pitcher)}</b>{escape(hand_text)}</span>'
 
 
 def render_featured_player(player: dict) -> None:
@@ -1202,36 +1203,40 @@ def render_full_ranking_row(player: dict) -> None:
 
 
 def render_expandable_ranking_header(player: dict) -> None:
-    """Render the ranking summary inside the interactive Streamlit card."""
+    """Render batter ranking with the one shared MLB compact-card shell."""
     projection_label, projection_value = projection_display(player)
-    photo_html = player_photo_html(
-        player,
-        "gi-native-photo",
-        "gi-native-initials",
+
+    matchup = matchup_html(player)
+    opposing = opposing_pitcher_line(player)
+    status = lineup_status_html(player)
+    result = card_result_html(player, reserve_space=True)
+
+    # Normalize legacy batter HTML into the shared line-height contract.
+    body_html = (
+        f'<span class="mlb-rank-line mlb-rank-matchup">{matchup}</span>'
+        f'{opposing}'
+        f'<span class="mlb-rank-line"><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>'
+        f'<span class="mlb-rank-line mlb-rank-reason">{escape(category_card_reason(player))}</span>'
+        f'<span class="mlb-rank-line mlb-rank-status">{status}</span>'
     )
+
+    # Existing result helper already returns escaped, trusted local HTML.
+    if result:
+        # Convert the old class to the shared class without changing result logic.
+        result = result.replace('class="gi-card-result"', 'class="mlb-rank-result"')
+        body_html += result
+    else:
+        body_html += '<span class="mlb-rank-result mlb-rank-result-empty">Result</span>'
+
     render_html(
-        f"""
-        <div class="gi-card-header">
-            <div class="gi-card-rank">
-                #{player['rank']}
-                <small>{escape(movement_label(player))}</small>
-            </div>
-            {photo_html}
-            <div class="gi-card-player">
-                <strong>{escape(player['player'])}</strong>
-                <span class="gi-card-matchup">{matchup_html(player)}</span>
-                {opposing_pitcher_line(player)}
-                <span><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>
-                <span class="gi-card-reason">{escape(category_card_reason(player))}</span>
-                <span>{lineup_status_html(player)}</span>
-                {card_result_html(player, reserve_space=True)}
-            </div>
-            <div class="gi-card-score">
-                <small>GI SCORE</small>
-                <strong>{player['score']}</strong>
-            </div>
-        </div>
-        """
+        build_compact_card_html(
+            rank=int(player.get("rank") or 0),
+            movement_label=movement_label(player),
+            player_id=player.get("player_id"),
+            name=str(player.get("player") or player.get("player_name") or "Player"),
+            score=float(player.get("score") or player.get("gi_score") or 0),
+            body_html=body_html,
+        )
     )
 
 
@@ -3351,6 +3356,8 @@ render_prediction_performance_tracker(
 )
 
 st.divider()
+
+render_compact_card_css()
 
 render_html(
     """
