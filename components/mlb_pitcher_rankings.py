@@ -574,6 +574,10 @@ def _render_pitcher_card(category: str, row: dict) -> None:
             _render_pitcher_intelligence(category, row)
 
 
+def _toggle_pitcher_list(key: str) -> None:
+    st.session_state[key] = not bool(st.session_state.get(key, False))
+
+
 def _render_category(category: str, rows: list[dict]) -> None:
     st.markdown(f"### {CATEGORY_CONFIG[category][0]}")
     st.caption(
@@ -592,14 +596,15 @@ def _render_category(category: str, rows: list[dict]) -> None:
     if state_key not in st.session_state:
         st.session_state[state_key] = False
 
-    if st.button(
+    st.button(
         "Show Top 5 Only" if st.session_state[state_key] else "View Full Top 25",
         key=f"toggle_pitcher_{category}_25",
         use_container_width=True,
-    ):
-        st.session_state[state_key] = not st.session_state[state_key]
+        on_click=_toggle_pitcher_list,
+        args=(state_key,),
+    )
 
-    if st.session_state[state_key]:
+    if st.session_state.get(state_key, False):
         for row in rows[5:]:
             _render_pitcher_card(category, row)
 
@@ -907,10 +912,16 @@ def render_pitcher_rankings() -> None:
     result = load_pitcher_rankings_from_supabase(limit=25)
 
     if not result.get("success"):
-        st.caption(
-            "Today's pitcher rankings are waiting for the background refresh."
+        st.warning(
+            "Pitcher rankings are unavailable from the completed worker snapshot. "
+            "The worker will preserve the last good snapshot instead of replacing it with blanks."
         )
         return
+
+    if result.get("stale"):
+        st.caption(
+            f"Showing the latest completed pitcher snapshot ({result.get('date')})."
+        )
 
     rankings = _attach_persistent_movement(result.get("rankings") or {})
     tabs = st.tabs([CATEGORY_CONFIG[k][0] for k in CATEGORY_CONFIG])

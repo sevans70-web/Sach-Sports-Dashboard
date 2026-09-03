@@ -8,13 +8,14 @@ import streamlit as st
 
 from data.mlb_performance_tracker import (
     all_records_for_period, current_day_view, records_for_period,
-    summarize, summarize_overall, sync_history,
+    summarize, summarize_overall, sync_history, refresh_history_view,
 )
 from data.mlb_pitcher_performance_tracker import (
     current_day_view as current_pitcher_day_view,
     records_for_period as pitcher_records_for_period,
     summarize_projection_accuracy,
     sync_history as sync_pitcher_history,
+    refresh_history_view as refresh_pitcher_history_view,
 )
 from database.mlb_dashboard_reads import (
     load_performance_history_from_supabase,
@@ -37,8 +38,9 @@ PITCHER_CATEGORY_CONFIG = {
 
 @st.cache_data(ttl=60, show_spinner=False)
 def _cached_batter_history() -> dict[str, Any]:
-    """Read durable batter performance history from Supabase/local fallback."""
-    return load_performance_history_from_supabase("batter")
+    """Read history, then reconcile current/recent results from MLB."""
+    history = load_performance_history_from_supabase("batter")
+    return refresh_history_view(history, recent_days=2)
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -49,8 +51,9 @@ def _cached_pitcher_rankings() -> dict[str, Any]:
 
 @st.cache_data(ttl=60, show_spinner=False)
 def _cached_pitcher_history() -> dict[str, Any]:
-    """Read durable pitcher performance history from Supabase/local fallback."""
-    return load_performance_history_from_supabase("pitcher")
+    """Read history, then reconcile current/recent pitcher results."""
+    history = load_performance_history_from_supabase("pitcher")
+    return refresh_pitcher_history_view(history, recent_days=2)
 
 
 def _records(history, category, period):
@@ -121,6 +124,31 @@ def _styles():
         background:#080909!important;
         color:#f6c84c!important;
         border:1px solid #34373c!important;
+    }
+
+    /* Keep Today / Yesterday / 7 Days / Month / Season on ONE phone row. */
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
+        display:grid!important;
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        width:100%!important;
+        gap:2px!important;
+        overflow:visible!important;
+    }
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+        min-width:0!important;
+        width:100%!important;
+        margin:0!important;
+        padding:0!important;
+    }
+    div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label > div,
+    div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label > div{
+        min-width:0!important;
+        width:100%!important;
+        justify-content:center!important;
+        white-space:nowrap!important;
+        font-size:.58rem!important;
     }
 </style>
     """, unsafe_allow_html=True)
@@ -506,3 +534,29 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# Hard-stop any Streamlit radio wrapping introduced by mobile width changes.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"],
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"]{
+        display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        grid-auto-flow:column!important;width:100%!important;max-width:100%!important;
+        gap:1px!important;flex-wrap:nowrap!important;overflow:visible!important;
+      }
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] > label,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] > label{
+        min-width:0!important;max-width:none!important;width:auto!important;
+      }
+      div[class*="st-key-mlb_batter_performance_period_radio"] [role="radiogroup"] p,
+      div[class*="st-key-mlb_pitcher_performance_period_radio"] [role="radiogroup"] p{
+        white-space:nowrap!important;font-size:.56rem!important;line-height:1!important;
+      }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
