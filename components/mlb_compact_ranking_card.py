@@ -330,6 +330,157 @@ def render_compact_card_css() -> None:
             vertical-align:-3px!important;
         }
 
+
+        /* ==========================================================
+           FINAL OVERLAY-PARITY CONTRACT
+           These rules normalize every visible anchor that can still
+           differ because batter/pitcher status helpers use legacy classes.
+           ========================================================== */
+
+        /* Lock all core anchors to the same vertical origin. */
+        .mlb-rank-number,
+        .mlb-rank-avatar,
+        .mlb-rank-copy,
+        .mlb-rank-score{
+            margin-top:0!important;
+            transform:none!important;
+        }
+
+        .mlb-rank-avatar{
+            align-self:start!important;
+            top:0!important;
+        }
+
+        /* Slightly larger body copy for readability, shared by BOTH roles. */
+        .mlb-rank-line{
+            font-size:.70rem!important;
+            line-height:1.22!important;
+        }
+        .mlb-rank-reason{
+            min-height:34px!important;
+            max-height:34px!important;
+            -webkit-line-clamp:2!important;
+        }
+
+        /* One chip geometry for every card-state bubble.
+           Batter and pitcher legacy class names are deliberately grouped. */
+        .mlb-rank-status{
+            display:flex!important;
+            align-items:center!important;
+            min-height:24px!important;
+            height:24px!important;
+            max-height:24px!important;
+            overflow:visible!important;
+            margin-top:1px!important;
+        }
+
+        .mlb-rank-status .gi-lineup-status,
+        .mlb-rank-status .gi-game-live,
+        .mlb-rank-status .gi-game-final,
+        .mlb-rank-status .gi-lineup-confirmed,
+        .mlb-rank-status .gi-lineup-projected,
+        .mlb-rank-status .gi-lineup-unconfirmed,
+        .mlb-rank-status .pitch-game-live,
+        .mlb-rank-status .pitch-game-final,
+        .mlb-rank-status .pitch-lineup-confirmed,
+        .mlb-rank-status .pitch-lineup-projected,
+        .mlb-rank-status .pitch-lineup-unavailable{
+            display:inline-flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+            width:auto!important;
+            min-width:0!important;
+            height:20px!important;
+            min-height:20px!important;
+            max-height:20px!important;
+            margin:0!important;
+            padding:1px 7px 0!important;
+            border-radius:999px!important;
+            box-sizing:border-box!important;
+            font-family:inherit!important;
+            font-size:.61rem!important;
+            font-style:normal!important;
+            font-weight:800!important;
+            line-height:18px!important;
+            letter-spacing:0!important;
+            text-transform:none!important;
+            white-space:nowrap!important;
+            overflow:visible!important;
+            vertical-align:middle!important;
+        }
+
+        /* Exact shared state colors. */
+        .mlb-rank-status .gi-game-final,
+        .mlb-rank-status .pitch-game-final{
+            color:#f6c84c!important;
+            border:1px solid #bca147!important;
+            background:rgba(188,161,71,.10)!important;
+        }
+        .mlb-rank-status .gi-game-live,
+        .mlb-rank-status .pitch-game-live{
+            color:#19d978!important;
+            border:1px solid #19d978!important;
+            background:rgba(25,217,120,.08)!important;
+        }
+        .mlb-rank-status .gi-lineup-confirmed,
+        .mlb-rank-status .pitch-lineup-confirmed{
+            color:#b8f4d1!important;
+            border:1px solid #19d978!important;
+            background:rgba(25,217,120,.08)!important;
+        }
+        .mlb-rank-status .gi-lineup-projected,
+        .mlb-rank-status .pitch-lineup-projected,
+        .mlb-rank-status .gi-lineup-unconfirmed,
+        .mlb-rank-status .pitch-lineup-unavailable{
+            color:#c6c9ce!important;
+            border:1px solid #5c626b!important;
+            background:rgba(92,98,107,.08)!important;
+        }
+
+        /* Result always starts on its own baseline below the chip.
+           Extra top gap prevents FINAL/LIVE from visually touching/clipping it. */
+        .mlb-rank-result{
+            display:block!important;
+            width:100%!important;
+            min-height:20px!important;
+            height:20px!important;
+            max-height:20px!important;
+            margin-top:3px!important;
+            padding:0!important;
+            overflow:visible!important;
+            font-family:inherit!important;
+            font-size:.74rem!important;
+            font-weight:850!important;
+            line-height:20px!important;
+            white-space:nowrap!important;
+        }
+
+        /* Match score and name baseline exactly across both roles. */
+        .mlb-rank-name{
+            min-height:18px!important;
+            height:18px!important;
+            max-height:18px!important;
+            line-height:18px!important;
+        }
+        .mlb-rank-score{
+            padding-top:3px!important;
+        }
+
+        /* Remove any surviving role-specific offsets on old inner elements. */
+        .mlb-rank-card .gi-lineup-status,
+        .mlb-rank-card .pitch-game-live,
+        .mlb-rank-card .pitch-game-final,
+        .mlb-rank-card .pitch-lineup-confirmed,
+        .mlb-rank-card .pitch-lineup-projected,
+        .mlb-rank-card .pitch-lineup-unavailable{
+            position:static!important;
+            top:auto!important;
+            bottom:auto!important;
+            left:auto!important;
+            right:auto!important;
+            transform:none!important;
+        }
+
         @media(max-width:700px){
             div[class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"],
             div[class*="st-key-pitcher_card_"] [data-testid="stVerticalBlockBorderWrapper"]{
@@ -349,7 +500,27 @@ def render_compact_card_css() -> None:
                 max-width:66px!important;max-height:66px!important;
             }
             .mlb-rank-name{font-size:.84rem!important}
-            .mlb-rank-line{font-size:.63rem!important}
+            .mlb-rank-line{font-size:.67rem!important;line-height:1.20!important}
+            .mlb-rank-reason{min-height:32px!important;max-height:32px!important}
+            .mlb-rank-status{min-height:23px!important;height:23px!important;max-height:23px!important}
+            .mlb-rank-status .gi-lineup-status,
+            .mlb-rank-status .gi-game-live,
+            .mlb-rank-status .gi-game-final,
+            .mlb-rank-status .gi-lineup-confirmed,
+            .mlb-rank-status .gi-lineup-projected,
+            .mlb-rank-status .gi-lineup-unconfirmed,
+            .mlb-rank-status .pitch-game-live,
+            .mlb-rank-status .pitch-game-final,
+            .mlb-rank-status .pitch-lineup-confirmed,
+            .mlb-rank-status .pitch-lineup-projected,
+            .mlb-rank-status .pitch-lineup-unavailable{
+                height:19px!important;min-height:19px!important;max-height:19px!important;
+                padding:1px 6px 0!important;font-size:.59rem!important;line-height:17px!important;
+            }
+            .mlb-rank-result{
+                min-height:19px!important;height:19px!important;max-height:19px!important;
+                margin-top:3px!important;font-size:.72rem!important;line-height:19px!important;
+            }
             .mlb-rank-score{width:45px!important;min-width:45px!important}
         }
         </style>
