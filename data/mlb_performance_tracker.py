@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import base64
 import json
+import re
+import unicodedata
 from datetime import date, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
 import requests
 
-from data.mlb_prediction_results import grade_top_25
+from data.mlb_prediction_results import grade_top_25, get_live_batter_results
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 REPOSITORY = "sevans70-web/Sach-Sports-Dashboard"
@@ -244,6 +246,69 @@ def _prediction_key(row: dict[str, Any]) -> str:
     return f"name:{_player_name(row).strip().casefold()}"
 
 
+def _loose_name(value: Any) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    text = text.replace("’", "'").casefold()
+    text = re.sub(r"[^a-z0-9 ]+", " ", text)
+    parts = [part for part in text.split() if part not in {"jr", "sr", "ii", "iii", "iv"}]
+    return " ".join(parts)
+
+
+def _apply_loose_actual(row: dict[str, Any], actual: dict[str, Any], category: str) -> dict[str, Any]:
+    out = dict(row)
+    if not actual:
+        return out
+    is_final = bool(actual.get("game_finished"))
+    is_live = bool(actual.get("result_live"))
+    if not (is_final or is_live):
+        return out
+
+    hits = int(actual.get("hits") or 0)
+    hrs = int(actual.get("home_runs") or 0)
+    tb = int(actual.get("total_bases") or 0)
+    runs = int(actual.get("runs") or 0)
+    rbis = int(actual.get("rbis") or 0)
+    walks = int(actual.get("walks") or 0)
+    sb = int(actual.get("stolen_bases") or 0)
+    hrr = hits + runs + rbis
+    actuals = {
+        "home_runs": hrs, "hits": hits, "total_bases": tb, "runs": runs,
+        "rbis": rbis, "walks": walks, "stolen_bases": sb,
+        "hits_runs_rbis": hrr,
+    }
+    thresholds = {
+        "home_runs": 1, "hits": 1, "total_bases": 2, "runs": 1,
+        "rbis": 1, "walks": 1, "stolen_bases": 1, "hits_runs_rbis": 2,
+    }
+    value = actuals[category]
+    target_met = value >= thresholds[category]
+    if is_final:
+        out["correct"] = bool(target_met)
+    elif target_met:
+        out["correct"] = True
+    else:
+        out["correct"] = None
+    out["game_finished"] = is_final
+    out["result_live"] = is_live
+    out["target_met"] = bool(target_met)
+    labels = {
+        "home_runs": f"{value} HR", "hits": f"{value} hits",
+        "total_bases": f"{value} total bases", "runs": f"{value} runs",
+        "rbis": f"{value} RBIs", "walks": f"{value} walks",
+        "stolen_bases": f"{value} stolen bases",
+        "hits_runs_rbis": f"{value} H+R+RBI",
+    }
+    prefix = "✅ " if target_met else ("❌ " if is_final else "")
+    out["result_label"] = prefix + labels[category]
+    out.update({
+        "actual_hits": hits, "actual_home_runs": hrs, "actual_total_bases": tb,
+        "actual_runs": runs, "actual_rbis": rbis, "actual_walks": walks,
+        "actual_stolen_bases": sb, "actual_hits_runs_rbis": hrr,
+    })
+    return out
+
+
 def _apply_final_results(predictions: list[dict[str, Any]], category: str, result_date: str) -> list[dict[str, Any]]:
     graded = grade_top_25(
         rankings=predictions,
@@ -254,10 +319,25 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
         force_refresh=False,
     ).get("graded", [])
     lookup = {_prediction_key(row): row for row in graded}
+    live_payload = get_live_batter_results(result_date, force_refresh=False)
+    loose_lookup = {
+        _loose_name(actual.get("player_name")): actual
+        for actual in (live_payload.get("by_player_id") or {}).values()
+        if _loose_name(actual.get("player_name"))
+    }
     updated: list[dict[str, Any]] = []
     for frozen in predictions:
         row = dict(frozen)
         actual = lookup.get(_prediction_key(frozen), {})
+        # Older frozen files sometimes stored a different accent/punctuation
+        # spelling. Recover those rows from MLB's player name instead of
+        # silently counting them as pending/misses.
+        if not (actual.get("game_finished") or actual.get("result_live")):
+            loose_actual = loose_lookup.get(_loose_name(_player_name(frozen)), {})
+            if loose_actual:
+                row = _apply_loose_actual(row, loose_actual, category)
+                updated.append(row)
+                continue
         if actual.get("game_finished") or actual.get("result_live"):
             target_met = bool(actual.get("target_met"))
             is_final = bool(actual.get("game_finished"))
@@ -374,6 +454,39 @@ def current_day_view(history: dict[str, Any], rankings_by_category: dict[str, li
     for category in CORE_CATEGORIES:
         frozen = categories.get(category, [])
         categories[category] = _apply_final_results(frozen, category, today)
+    return merged
+
+
+def refresh_history_view(
+    history: dict[str, Any],
+    *,
+    recent_days: int = 8,
+) -> dict[str, Any]:
+    """Reconcile Today + recent history directly against MLB results.
+
+    This deliberately re-grades recent settled rows as well as pending rows.
+    That repairs old false totals caused by partial box scores, name formatting,
+    or a worker snapshot taken before every game had gone final.
+    """
+    current = datetime.now(TORONTO_TIMEZONE).date()
+    cutoff = current - timedelta(days=max(1, int(recent_days)) - 1)
+    merged = json.loads(json.dumps(history))
+    for day_key, day_record in (merged.get("days") or {}).items():
+        try:
+            day = date.fromisoformat(day_key)
+        except ValueError:
+            continue
+        if day > current:
+            continue
+        categories = (day_record or {}).get("categories", {}) or {}
+        should_reconcile_day = day >= cutoff
+        for category in CORE_CATEGORIES:
+            rows = categories.get(category, [])
+            if not rows:
+                continue
+            unresolved = any(not isinstance(row.get("correct"), bool) for row in rows)
+            if should_reconcile_day or unresolved:
+                categories[category] = _apply_final_results(rows, category, day_key)
     return merged
 
 

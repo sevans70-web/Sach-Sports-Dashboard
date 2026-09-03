@@ -444,6 +444,38 @@ def current_day_view(
     return merged
 
 
+def refresh_history_view(
+    history: dict[str, Any],
+    *,
+    recent_days: int = 8,
+) -> dict[str, Any]:
+    """Reconcile recent pitcher projection rows against final MLB lines."""
+    current = datetime.now(TORONTO_TIMEZONE).date()
+    cutoff = current - timedelta(days=max(1, int(recent_days)) - 1)
+    merged = json.loads(json.dumps(history))
+    for day_key, day_record in (merged.get("days") or {}).items():
+        try:
+            day = date.fromisoformat(day_key)
+        except ValueError:
+            continue
+        if day > current:
+            continue
+        categories = (day_record or {}).get("categories", {}) or {}
+        should_reconcile_day = day >= cutoff
+        for category in PITCHER_CATEGORIES:
+            rows = categories.get(category, [])
+            if not rows:
+                continue
+            unresolved = any(not row.get("finalized") for row in rows)
+            if should_reconcile_day or unresolved:
+                # Clear the finalized flag for recent rows so a partial/incorrect
+                # historical result can be corrected from the authoritative
+                # final pitcher line.
+                candidates = [dict(row, finalized=False) if should_reconcile_day else dict(row) for row in rows]
+                categories[category] = _apply_final_results(candidates, category)
+    return merged
+
+
 def _period_start(period: str, today: date) -> date:
     if period == "Today":
         return today
