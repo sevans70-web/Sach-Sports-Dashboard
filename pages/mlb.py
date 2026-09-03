@@ -205,6 +205,7 @@ def convert_live_rankings(
                 "headshot_url": player.get("headshot_url"),
                 "player_id": player.get("player_id"),
                 "game_pk": player.get("game_pk"),
+                "movement": player.get("movement") or {},
                 "weather": player.get("weather", {}),
                 "park_factor": player.get("park_factor", 1.0),
                 "park_adjustment": player.get("park_adjustment", 0.0),
@@ -316,39 +317,42 @@ def attach_persistent_movement(
     comparison: dict,
     has_previous_snapshot: bool,
 ) -> list[dict]:
-    """Attach persistent Top 25 movement details to the live card records."""
+    """Preserve durable Supabase movement; use local comparison only as fallback."""
     movement_lookup = {
         item["player_key"]: item.get("movement", {})
         for item in comparison.get("current", [])
+        if isinstance(item, dict) and item.get("player_key")
     }
 
+    valid_statuses = {"new", "up", "down", "same", "unchanged"}
+
     for player in rankings:
+        existing = dict(player.get("movement") or {})
+        existing_status = str(existing.get("status") or "").lower()
+
+        if existing_status in valid_statuses:
+            if existing_status == "unchanged":
+                existing["status"] = "same"
+            player["movement"] = existing
+            continue
+
         try:
             key = player_key(player)
         except ValueError:
             key = ""
 
-        movement = movement_lookup.get(
-            key,
-            {
-                "status": "unchanged",
-                "current": player.get("rank"),
-                "previous": player.get("rank"),
-                "change": 0,
-                "label": "—",
-            },
-        )
+        fallback = movement_lookup.get(key) if key else None
+        if isinstance(fallback, dict) and str(fallback.get("status") or "").lower() in valid_statuses:
+            player["movement"] = dict(fallback)
+            continue
 
-        if not has_previous_snapshot:
-            movement = {
-                "status": "unchanged",
-                "current": player.get("rank"),
-                "previous": player.get("rank"),
-                "change": 0,
-                "label": "—",
-            }
-
-        player["movement"] = movement
+        player["movement"] = {
+            "status": "same",
+            "current": player.get("rank"),
+            "previous": player.get("rank"),
+            "change": 0,
+            "label": "—",
+        }
 
     return rankings
 
@@ -3993,256 +3997,155 @@ st.markdown(
 )
 
 
-# MLB NIGHT CLOSEOUT — one authoritative batter card/photo contract.
+
+
+# MLB TRUE CARD SHELL FIX — one final card contract, no stacked overrides.
 st.markdown(
     """
     <style>
-    [class*="st-key-show_"][class*="_player_"],
-    [class*="st-key-show_"][class*="_top5_player_"]{
-        margin-bottom:10px!important;
-        padding:3px 8px 8px!important;
+    /* ---------- OUTER STREAMLIT CARD SHELL ---------- */
+    [class*="st-key-show_"][class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"],
+    [class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"]{
+        min-height:286px!important;
         border-radius:16px!important;
-        box-sizing:border-box!important;
-    }
-    .gi-card-header{
-        grid-template-columns:36px 54px minmax(0,1fr) 50px!important;
-        gap:7px!important;
-        min-height:150px!important;
-        height:auto!important;
-        padding:6px 2px 10px!important;
-        align-items:start!important;
+        padding:10px 10px 9px!important;
         box-sizing:border-box!important;
         overflow:visible!important;
     }
-    .gi-native-photo,.gi-native-initials{
-        width:54px!important;height:54px!important;
-        min-width:54px!important;min-height:54px!important;
-        max-width:54px!important;max-height:54px!important;
-        border-radius:50%!important;
-        border:2px solid rgba(214,179,92,.90)!important;
-        padding:0!important;
-        overflow:hidden!important;
-        display:grid!important;
-        place-items:center!important;
-        background:#0b0c0d!important;
-    }
-    .gi-native-photo img{
-        width:100%!important;height:100%!important;
-        object-fit:contain!important;
-        object-position:center 30%!important;
-        transform:scale(.94)!important;
-        transform-origin:center center!important;
-        border-radius:50%!important;
-        background:#0b0c0d!important;
-    }
-    .gi-card-player{min-width:0!important;overflow:visible!important}
-    .gi-card-player>strong{font-size:.90rem!important;line-height:1.08!important}
-    .gi-card-player>span{font-size:.67rem!important;line-height:1.18!important}
-    .gi-card-score{width:50px!important;min-width:50px!important}
-    [class*="st-key-show_"][class*="_player_"] .stButton>button,
-    [class*="st-key-show_"][class*="_top5_player_"] .stButton>button{
-        min-height:36px!important;
+
+    [class*="st-key-show_"][class*="_top5_player_"] .stButton>button,
+    [class*="st-key-show_"][class*="_player_"] .stButton>button{
+        min-height:38px!important;
+        height:38px!important;
+        margin:4px 0 0!important;
         border-radius:10px!important;
+        box-sizing:border-box!important;
+    }
+
+    /* ---------- SHARED BODY GEOMETRY ---------- */
+    .gi-card-header{
+        display:grid!important;
+        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        align-items:start!important;
+        width:100%!important;
+        height:220px!important;
+        min-height:220px!important;
+        max-height:220px!important;
+        padding:6px 2px 4px!important;
+        margin:0!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+    }
+
+    .gi-card-rank{
+        padding-top:3px!important;
+        font-size:.94rem!important;
+        line-height:1!important;
+    }
+    .gi-card-rank small{
         margin-top:5px!important;
+        font-size:.56rem!important;
+        line-height:1!important;
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+    .gi-card-score{
+        width:50px!important;
+        min-width:50px!important;
+        padding-top:3px!important;
+    }
+    .gi-card-score small{font-size:.50rem!important}
+    .gi-card-score strong{
+        font-size:.90rem!important;
+        margin-top:2px!important;
+    }
 
-
-# MLB TRUE CLOSEOUT — batter card uses the exact same physical contract.
-st.markdown(
-    """
-    <style>
-    [class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"],
-    [class*="st-key-show_"][class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"]{
-        min-height:232px!important;
-        border-radius:16px!important;
-        box-sizing:border-box!important;
-    }
-    .gi-card-header{
-        grid-template-columns:38px 64px minmax(0,1fr) 50px!important;
-        gap:8px!important;
-        min-height:176px!important;
-        padding:8px 2px 8px!important;
-        align-items:start!important;
-        box-sizing:border-box!important;
-    }
+    /* ---------- PHOTO: FILL THE PORTRAIT WELL, DON'T FLOAT INSIDE IT ---------- */
     .gi-native-photo,.gi-native-initials{
-        width:64px!important;height:64px!important;
-        min-width:64px!important;min-height:64px!important;
-        max-width:64px!important;max-height:64px!important;
+        width:72px!important;
+        height:72px!important;
+        min-width:72px!important;
+        min-height:72px!important;
+        max-width:72px!important;
+        max-height:72px!important;
         border-radius:50%!important;
         overflow:hidden!important;
-        display:grid!important;
-        place-items:center!important;
+        display:block!important;
+        position:relative!important;
         padding:0!important;
-        background:#0b0c0d!important;
-        border:2px solid rgba(214,179,92,.92)!important;
+        margin:0!important;
+        background:
+            radial-gradient(circle at 50% 42%, #30343a 0%, #17191c 58%, #0b0c0d 100%)!important;
+        border:2px solid rgba(214,179,92,.90)!important;
+        box-sizing:border-box!important;
     }
     .gi-native-photo img{
-        width:100%!important;height:100%!important;
+        position:absolute!important;
+        left:50%!important;
+        top:50%!important;
+        width:118%!important;
+        height:118%!important;
+        max-width:none!important;
         object-fit:contain!important;
-        object-position:center 28%!important;
-        transform:scale(.88)!important;
+        object-position:center center!important;
+        transform:translate(-50%,-48%) scale(1.20)!important;
         transform-origin:center center!important;
-        border-radius:50%!important;
-        background:#0b0c0d!important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# MLB LAST-MILE CLOSEOUT — authoritative batter card geometry.
-st.markdown(
-    """
-    <style>
-    .gi-card-header{
-        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
-        gap:8px!important;
-        height:198px!important;
-        min-height:198px!important;
-        max-height:198px!important;
-        padding:8px 2px 8px!important;
-        align-items:start!important;
-        overflow:hidden!important;
-        box-sizing:border-box!important;
-    }
-
-    .gi-native-photo,.gi-native-initials{
-        width:72px!important;height:72px!important;
-        min-width:72px!important;min-height:72px!important;
-        max-width:72px!important;max-height:72px!important;
-        border-radius:50%!important;
-        overflow:hidden!important;
-        display:grid!important;
-        place-items:center!important;
-        padding:0!important;
-        background:#0b0c0d!important;
-        border:2px solid rgba(214,179,92,.92)!important;
-    }
-
-    .gi-native-photo img{
-        width:100%!important;height:100%!important;
-        object-fit:contain!important;
-        object-position:center 24%!important;
-        transform:scale(.82)!important;
-        transform-origin:center center!important;
-        border-radius:50%!important;
-        background:#0b0c0d!important;
-    }
-
-    .gi-card-reason{
-        display:-webkit-box!important;
-        -webkit-line-clamp:2!important;
-        -webkit-box-orient:vertical!important;
-        overflow:hidden!important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# MLB FINAL ACCEPTANCE — authoritative batter card/photo contract.
-st.markdown(
-    """
-    <style>
-    .gi-card-header{
-        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
-        gap:8px!important;
-        min-height:198px!important;
-        height:198px!important;
-        max-height:198px!important;
-        padding:8px 2px!important;
-        box-sizing:border-box!important;
-        overflow:hidden!important;
-        align-items:start!important;
-    }
-    .gi-native-photo,.gi-native-initials{
-        width:72px!important;height:72px!important;
-        min-width:72px!important;min-height:72px!important;
-        max-width:72px!important;max-height:72px!important;
-        border-radius:50%!important;
-        overflow:hidden!important;
-        padding:0!important;
-        display:grid!important;
-        place-items:center!important;
-        background:#0b0c0d!important;
-    }
-    .gi-native-photo img{
-        width:100%!important;height:100%!important;
-        object-fit:contain!important;
-        object-position:center 25%!important;
-        transform:scale(.92)!important;
-        transform-origin:center!important;
-        border-radius:50%!important;
-    }
-    .gi-card-reason{
-        display:-webkit-box!important;
-        -webkit-line-clamp:2!important;
-        -webkit-box-orient:vertical!important;
-        overflow:hidden!important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# MLB SEPT 3 FINAL VISUAL POLISH — presentation only.
-st.markdown(
-    """
-    <style>
-    /* Exact shared compact-card geometry with pitcher cards. */
-    .gi-card-header{
-        grid-template-columns:38px 76px minmax(0,1fr) 50px!important;
-        gap:8px!important;
-        height:206px!important;
-        min-height:206px!important;
-        max-height:206px!important;
-        padding:8px 2px!important;
-        align-items:start!important;
-        box-sizing:border-box!important;
-        overflow:hidden!important;
-    }
-
-    /* Match the established player-card photo feel. */
-    .gi-native-photo,.gi-native-initials{
-        width:76px!important;height:76px!important;
-        min-width:76px!important;min-height:76px!important;
-        max-width:76px!important;max-height:76px!important;
-        border-radius:50%!important;
-        overflow:hidden!important;
-        display:grid!important;
-        place-items:center!important;
-        padding:0!important;
-        background:#0b0c0d!important;
-        border:2px solid rgba(214,179,92,.92)!important;
-    }
-    .gi-native-photo img{
-        width:100%!important;height:100%!important;
-        object-fit:contain!important;
-        object-position:center 24%!important;
-        transform:scale(.98)!important;
-        transform-origin:center center!important;
-        border-radius:50%!important;
-        background:#0b0c0d!important;
-        filter:brightness(1.12) contrast(1.04)!important;
+        border-radius:0!important;
+        background:transparent!important;
+        filter:brightness(1.08) contrast(1.03)!important;
     }
 
     .gi-card-player{
+        display:grid!important;
+        gap:2px!important;
         min-width:0!important;
         overflow:hidden!important;
+        align-self:start!important;
+    }
+    .gi-card-player>strong{
+        font-size:.90rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+    }
+    .gi-card-player>span{
+        font-size:.67rem!important;
+        line-height:1.18!important;
     }
     .gi-card-reason{
         display:-webkit-box!important;
         -webkit-line-clamp:2!important;
         -webkit-box-orient:vertical!important;
         overflow:hidden!important;
+        margin-top:3px!important;
+    }
+    .gi-card-result{
+        display:block!important;
+        min-height:.92rem!important;
+        margin:1px 0 0!important;
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+        white-space:nowrap!important;
+    }
+    .gi-card-result-placeholder{visibility:hidden!important;}
+
+    @media(max-width:700px){
+        [class*="st-key-show_"][class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"],
+        [class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"]{
+            min-height:278px!important;
+            padding:8px 8px 8px!important;
+        }
+        .gi-card-header{
+            height:214px!important;
+            min-height:214px!important;
+            max-height:214px!important;
+            grid-template-columns:34px 68px minmax(0,1fr) 46px!important;
+            gap:7px!important;
+        }
+        .gi-native-photo,.gi-native-initials{
+            width:68px!important;height:68px!important;
+            min-width:68px!important;min-height:68px!important;
+            max-width:68px!important;max-height:68px!important;
+        }
     }
     </style>
     """,
