@@ -4151,3 +4151,118 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB PLAYER-DETAIL AVATAR REFERENCE — batter compact cards.
+st.markdown(
+    """
+    <style>
+    [class*="st-key-show_"][class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"],
+    [class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"]{
+        min-height:292px!important;
+        padding:10px!important;
+        border-radius:16px!important;
+        box-sizing:border-box!important;
+    }
+
+    .gi-card-header{
+        height:224px!important;
+        min-height:224px!important;
+        max-height:224px!important;
+        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        padding:6px 2px 4px!important;
+        box-sizing:border-box!important;
+        align-items:start!important;
+        overflow:hidden!important;
+    }
+
+    .gi-native-photo,.gi-native-initials{
+        width:72px!important;
+        height:72px!important;
+        min-width:72px!important;
+        min-height:72px!important;
+        max-width:72px!important;
+        max-height:72px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        position:relative!important;
+        display:block!important;
+        margin:0!important;
+        padding:0!important;
+        background:#32363a!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+        box-sizing:border-box!important;
+    }
+    .gi-native-photo img{
+        position:absolute!important;
+        inset:0!important;
+        width:100%!important;
+        height:100%!important;
+        max-width:none!important;
+        object-fit:cover!important;
+        object-position:50% 38%!important;
+        transform:scale(1.14)!important;
+        transform-origin:50% 42%!important;
+        border-radius:50%!important;
+        background:#32363a!important;
+        filter:none!important;
+    }
+
+    .gi-card-rank small{
+        display:block!important;
+        min-height:13px!important;
+        margin-top:5px!important;
+        color:#19d978!important;
+        font-size:.61rem!important;
+        font-weight:900!important;
+        line-height:1.05!important;
+        white-space:nowrap!important;
+        opacity:1!important;
+        visibility:visible!important;
+    }
+
+    .gi-card-player>strong{
+        font-size:.90rem!important;
+        line-height:1.08!important;
+        font-weight:900!important;
+        letter-spacing:0!important;
+    }
+    .gi-card-player>span,
+    .gi-card-player .gi-matchup,
+    .gi-card-player .gi-card-reason{
+        font-family:inherit!important;
+        font-size:.67rem!important;
+        line-height:1.18!important;
+        font-weight:400!important;
+    }
+    .gi-card-result{
+        font-family:inherit!important;
+        font-size:.76rem!important;
+        line-height:1.16!important;
+        font-weight:800!important;
+    }
+
+    @media(max-width:700px){
+        [class*="st-key-show_"][class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"],
+        [class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"]{
+            min-height:284px!important;
+            padding:8px!important;
+        }
+        .gi-card-header{
+            height:218px!important;
+            min-height:218px!important;
+            max-height:218px!important;
+            grid-template-columns:34px 68px minmax(0,1fr) 46px!important;
+            gap:7px!important;
+        }
+        .gi-native-photo,.gi-native-initials{
+            width:68px!important;height:68px!important;
+            min-width:68px!important;min-height:68px!important;
+            max-width:68px!important;max-height:68px!important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
