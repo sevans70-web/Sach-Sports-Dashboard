@@ -4191,3 +4191,60 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB SEPT 3 FINAL VISUAL POLISH — presentation only.
+st.markdown(
+    """
+    <style>
+    /* Exact shared compact-card geometry with pitcher cards. */
+    .gi-card-header{
+        grid-template-columns:38px 76px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        height:206px!important;
+        min-height:206px!important;
+        max-height:206px!important;
+        padding:8px 2px!important;
+        align-items:start!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+    }
+
+    /* Match the established player-card photo feel. */
+    .gi-native-photo,.gi-native-initials{
+        width:76px!important;height:76px!important;
+        min-width:76px!important;min-height:76px!important;
+        max-width:76px!important;max-height:76px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        display:grid!important;
+        place-items:center!important;
+        padding:0!important;
+        background:#0b0c0d!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+    }
+    .gi-native-photo img{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 24%!important;
+        transform:scale(.98)!important;
+        transform-origin:center center!important;
+        border-radius:50%!important;
+        background:#0b0c0d!important;
+        filter:brightness(1.12) contrast(1.04)!important;
+    }
+
+    .gi-card-player{
+        min-width:0!important;
+        overflow:hidden!important;
+    }
+    .gi-card-reason{
+        display:-webkit-box!important;
+        -webkit-line-clamp:2!important;
+        -webkit-box-orient:vertical!important;
+        overflow:hidden!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
