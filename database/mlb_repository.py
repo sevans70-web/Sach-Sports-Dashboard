@@ -37,6 +37,8 @@ PITCHER_MARKETS = {
     "earned_runs": ("mlb_pitcher_earned_runs", "Pitcher Earned Runs", "earned_runs"),
 }
 
+_FOUNDATION_CACHE: dict[str, Any] | None = None
+
 
 def _json_safe(value: Any) -> Any:
     """Return a JSON-safe copy for jsonb columns."""
@@ -50,7 +52,11 @@ def _first(data: Any) -> dict[str, Any] | None:
 
 
 def ensure_mlb_foundation() -> dict[str, Any]:
-    """Ensure the MLB league and supported ranking markets exist."""
+    """Ensure the MLB league/markets once per process, then reuse them."""
+    global _FOUNDATION_CACHE
+    if _FOUNDATION_CACHE is not None:
+        return dict(_FOUNDATION_CACHE)
+
     sports = (
         supabase.table("sports")
         .select("id,name,slug")
@@ -140,11 +146,12 @@ def ensure_mlb_foundation() -> dict[str, Any]:
             raise RuntimeError(f"Unable to create/read market {code}.")
         market_ids[category] = int(row["id"])
 
-    return {
+    _FOUNDATION_CACHE = {
         "sport_id": sport_id,
         "league_id": league_id,
         "market_ids": market_ids,
     }
+    return dict(_FOUNDATION_CACHE)
 
 
 def _upsert_player(
@@ -379,6 +386,51 @@ def save_source_snapshot(
     ).execute()
 
 
+def save_latest_source_snapshot(
+    *,
+    league_id: int,
+    source_name: str,
+    source_type: str,
+    game_date: date | str,
+    payload: Any,
+) -> None:
+    """Keep one replaceable source snapshot for large durable state payloads."""
+    game_date_text = (
+        game_date.isoformat()
+        if isinstance(game_date, date)
+        else str(game_date)
+    )
+    rows = (
+        supabase.table("source_snapshots")
+        .select("id")
+        .eq("league_id", league_id)
+        .eq("source_name", source_name)
+        .eq("source_type", source_type)
+        .order("created_at", desc=True)
+        .limit(1)
+        .execute()
+        .data
+        or []
+    )
+    row = _first(rows)
+    values = {
+        "game_date": game_date_text,
+        "payload": _json_safe(payload),
+    }
+    if row:
+        supabase.table("source_snapshots").update(values).eq("id", row["id"]).execute()
+        return
+
+    supabase.table("source_snapshots").insert(
+        {
+            "league_id": league_id,
+            "source_name": source_name,
+            "source_type": source_type,
+            **values,
+        }
+    ).execute()
+
+
 def start_refresh_run(*, league_id: int, job_name: str) -> str:
     rows = (
         supabase.table("refresh_runs")
@@ -419,13 +471,71 @@ def finish_refresh_run(
     ).eq("id", run_id).execute()
 
 
+def get_latest_source_payload(
+    *,
+    source_name: str,
+    game_date: date | str | None = None,
+) -> dict[str, Any]:
+    """Read the newest stored source payload for MLB.
+
+    Source snapshots preserve the complete engine payload (photos, team/opponent
+    identity, lineup context and evidence). The normalized ranking tables remain
+    the durable ranking/movement store while this payload is the lossless UI
+    fallback.
+    """
+    foundation = ensure_mlb_foundation()
+    league_id = foundation["league_id"]
+
+    query = (
+        supabase.table("source_snapshots")
+        .select("id,source_name,source_type,game_date,payload,created_at")
+        .eq("league_id", league_id)
+        .eq("source_name", source_name)
+    )
+
+    if game_date is not None:
+        date_text = (
+            game_date.isoformat()
+            if isinstance(game_date, date)
+            else str(game_date)
+        )
+        query = query.eq("game_date", date_text)
+
+    rows = query.order("created_at", desc=True).limit(1).execute().data or []
+    row = _first(rows)
+    if not row:
+        return {
+            "success": False,
+            "payload": {},
+            "error": f"No source snapshot found for {source_name}",
+        }
+
+    return {
+        "success": True,
+        "snapshot": {
+            key: row.get(key)
+            for key in (
+                "id",
+                "source_name",
+                "source_type",
+                "game_date",
+                "created_at",
+            )
+        },
+        "payload": dict(row.get("payload") or {}),
+    }
+
+
 def get_latest_rankings(
     *,
     market_code: str,
     ranking_date: date | str | None = None,
     limit: int = 25,
 ) -> dict[str, Any]:
-    """Read the newest finished ranking snapshot for a market."""
+    """Read the newest finished ranking snapshot for a market.
+
+    Rows are enriched with permanent player identity and movement from Supabase.
+    """
     foundation = ensure_mlb_foundation()
     league_id = foundation["league_id"]
 
@@ -451,17 +561,31 @@ def get_latest_rankings(
     )
 
     if ranking_date is not None:
-        date_text = ranking_date.isoformat() if isinstance(ranking_date, date) else str(ranking_date)
+        date_text = (
+            ranking_date.isoformat()
+            if isinstance(ranking_date, date)
+            else str(ranking_date)
+        )
         query = query.eq("ranking_date", date_text)
 
-    snapshots = query.order("snapshot_time", desc=True).limit(1).execute().data
+    snapshots = (
+        query.order("snapshot_time", desc=True)
+        .limit(1)
+        .execute()
+        .data
+        or []
+    )
     snapshot = _first(snapshots)
     if not snapshot:
-        return {"success": False, "rankings": [], "error": "No finished snapshot yet"}
+        return {
+            "success": False,
+            "rankings": [],
+            "error": "No finished snapshot yet",
+        }
 
     entries = (
         supabase.table("ranking_entries")
-        .select("rank,score,projection,confidence,intelligence")
+        .select("player_id,rank,score,projection,confidence,intelligence")
         .eq("snapshot_id", snapshot["id"])
         .order("rank")
         .limit(max(1, int(limit)))
@@ -470,11 +594,118 @@ def get_latest_rankings(
         or []
     )
 
-    rankings = []
+    player_ids = [
+        int(entry["player_id"])
+        for entry in entries
+        if entry.get("player_id") is not None
+    ]
+
+    player_lookup: dict[int, dict[str, Any]] = {}
+    if player_ids:
+        try:
+            player_rows = (
+                supabase.table("players")
+                .select("id,provider_player_id,name,position,photo_url")
+                .in_("id", player_ids)
+                .execute()
+                .data
+                or []
+            )
+            player_lookup = {
+                int(row["id"]): row
+                for row in player_rows
+                if row.get("id") is not None
+            }
+        except Exception:
+            player_lookup = {}
+
+    movement_lookup: dict[int, dict[str, Any]] = {}
+    try:
+        movement_rows = (
+            supabase.table("ranking_movements")
+            .select(
+                "player_id,previous_rank,current_rank,movement,movement_type"
+            )
+            .eq("snapshot_id", snapshot["id"])
+            .execute()
+            .data
+            or []
+        )
+        movement_lookup = {
+            int(row["player_id"]): row
+            for row in movement_rows
+            if row.get("player_id") is not None
+        }
+    except Exception:
+        movement_lookup = {}
+
+    rankings: list[dict[str, Any]] = []
     for entry in entries:
         payload = dict(entry.get("intelligence") or {})
+        internal_player_id = entry.get("player_id")
+        identity = (
+            player_lookup.get(int(internal_player_id))
+            if internal_player_id is not None
+            else None
+        ) or {}
+
+        provider_player_id = identity.get("provider_player_id")
+        if provider_player_id not in (None, ""):
+            try:
+                provider_player_id = int(provider_player_id)
+            except (TypeError, ValueError):
+                provider_player_id = str(provider_player_id)
+
+        is_pitcher = bool(payload.get("pitcher_id")) or str(
+            payload.get("position")
+            or identity.get("position")
+            or ""
+        ).upper() == "P"
+
+        if is_pitcher:
+            if payload.get("pitcher_id") in (None, ""):
+                payload["pitcher_id"] = provider_player_id
+            if not payload.get("pitcher_name"):
+                payload["pitcher_name"] = identity.get("name")
+        else:
+            if payload.get("player_id") in (None, ""):
+                payload["player_id"] = provider_player_id
+            if not payload.get("player_name"):
+                payload["player_name"] = identity.get("name")
+
+        if not payload.get("headshot_url") and identity.get("photo_url"):
+            payload["headshot_url"] = identity.get("photo_url")
+        if not payload.get("position_abbreviation") and identity.get("position"):
+            payload["position_abbreviation"] = identity.get("position")
+
         payload["rank"] = entry.get("rank")
         payload["gi_score"] = payload.get("gi_score", entry.get("score"))
+        if payload.get("projection") is None and entry.get("projection") is not None:
+            payload["projection"] = entry.get("projection")
+        if (
+            payload.get("benchmark_probability") is None
+            and entry.get("confidence") is not None
+        ):
+            payload["benchmark_probability"] = entry.get("confidence")
+
+        movement_row = (
+            movement_lookup.get(int(internal_player_id))
+            if internal_player_id is not None
+            else None
+        )
+        if movement_row:
+            movement_type = str(
+                movement_row.get("movement_type") or "unchanged"
+            ).lower()
+            if movement_type == "unchanged":
+                movement_type = "same"
+            payload["movement"] = {
+                "status": movement_type,
+                "previous": movement_row.get("previous_rank"),
+                "current": movement_row.get("current_rank"),
+                "change": movement_row.get("movement"),
+            }
+
         rankings.append(payload)
 
     return {
