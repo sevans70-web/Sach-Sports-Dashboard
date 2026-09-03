@@ -539,13 +539,13 @@ def card_result_html(
     ).strip()
 
     result_label = re.sub(
-        r"^(?:🟢|🟡)?\\s*LIVE\\s*·\\s*",
+        r"^(?:🟢|🟡)?\s*LIVE\s*·\s*",
         "",
         raw_label,
         flags=re.IGNORECASE,
     )
     result_label = re.sub(
-        r"^(?:✅|❌)?\\s*FINAL\\s*·\\s*",
+        r"^(?:✅|❌)?\s*FINAL\s*·\s*",
         "",
         result_label,
         flags=re.IGNORECASE,
@@ -3947,14 +3947,41 @@ st.markdown(
     @media(max-width:700px){
       .gi-card-header{
         min-height:142px!important;
-        height:142px!important;
+        height:auto!important;
         box-sizing:border-box!important;
-        overflow:hidden!important;
+        overflow:visible!important;
       }
       [class*="st-key-show_"][class*="_player_"] > div > [data-testid="stVerticalBlockBorderWrapper"],
       [class*="st-key-show_"][class*="_top5_player_"] > div > [data-testid="stVerticalBlockBorderWrapper"]{
         min-height:0!important;
       }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB FINAL CLOSEOUT — results must remain visible and cards must grow together.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+      .gi-card-header{
+        min-height:142px!important;
+        height:auto!important;
+        overflow:visible!important;
+      }
+      .gi-card-player{overflow:visible!important;}
+      .gi-card-result{
+        display:block!important;
+        visibility:visible!important;
+        position:static!important;
+        min-height:.92rem!important;
+        margin:0 0 7px!important;
+        overflow:visible!important;
+      }
+      .gi-card-result-placeholder{visibility:hidden!important;}
     }
     </style>
     """,
