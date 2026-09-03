@@ -91,15 +91,27 @@ def _overlay_durable_fields(
 
 
 def load_batter_rankings_from_supabase(limit: int = 25) -> dict[str, Any]:
-    """Return today's complete batter Top 25 with durable movement."""
+    """Return the newest usable batter Top 25 without a midnight blank window.
+
+    Prefer today's completed snapshots. Before the first worker refresh of a new
+    calendar day, keep serving the newest non-empty completed snapshot and mark it
+    stale. This is the same safety behavior already used for pitcher rankings.
+    """
     ranking_date = _today_text()
-    source = get_latest_source_payload(
+
+    same_day_source = get_latest_source_payload(
         source_name="mlb_game_intelligence",
         game_date=ranking_date,
     )
-    source_payload = source.get("payload") or {}
+    latest_source = get_latest_source_payload(
+        source_name="mlb_game_intelligence"
+    )
+
+    same_day_payload = same_day_source.get("payload") or {}
+    latest_payload = latest_source.get("payload") or {}
 
     result: dict[str, Any] = {}
+
     for category, (market_code, _name, _stat_key) in BATTER_MARKETS.items():
         normalized = get_latest_rankings(
             market_code=market_code,
@@ -108,7 +120,27 @@ def load_batter_rankings_from_supabase(limit: int = 25) -> dict[str, Any]:
         )
         normalized_rows = list(normalized.get("rankings") or [])
 
-        source_category = source_payload.get(category) or {}
+        # At midnight there may be no current-date snapshot yet. Keep the last
+        # completed Top 25 visible until the worker publishes the new slate.
+        if not normalized_rows:
+            latest_normalized = get_latest_rankings(
+                market_code=market_code,
+                ranking_date=None,
+                limit=limit,
+            )
+            if latest_normalized.get("rankings"):
+                normalized = latest_normalized
+                normalized_rows = list(latest_normalized.get("rankings") or [])
+
+        source_category = same_day_payload.get(category) or {}
+        source_used = same_day_source
+
+        if not (source_category.get("rankings") or []):
+            fallback_category = latest_payload.get(category) or {}
+            if fallback_category.get("rankings"):
+                source_category = fallback_category
+                source_used = latest_source
+
         complete_rows = list(source_category.get("rankings") or [])
         rankings = _overlay_durable_fields(
             complete_rows or normalized_rows,
@@ -116,15 +148,25 @@ def load_batter_rankings_from_supabase(limit: int = 25) -> dict[str, Any]:
             pitcher=False,
         )[:limit]
 
-        snapshot_meta = normalized.get("snapshot") or source.get("snapshot") or {}
+        snapshot_meta = normalized.get("snapshot") or source_used.get("snapshot") or {}
+        data_date = (
+            snapshot_meta.get("ranking_date")
+            or (source_used.get("snapshot") or {}).get("game_date")
+            or source_category.get("date")
+            or ranking_date
+        )
+
         result[category] = {
             **({k: v for k, v in source_category.items() if k != "rankings"}),
             "success": bool(rankings),
             "category": category,
-            "date": ranking_date,
+            "date": data_date,
+            "requested_date": ranking_date,
+            "stale": str(data_date) != str(ranking_date),
             "rankings": rankings,
             "ranked_count": len(rankings),
             "player_count": source_category.get("player_count", len(rankings)),
+            "complete_top_25": len(rankings) >= min(25, int(limit)),
             "fetched_at": (
                 source_category.get("fetched_at")
                 or snapshot_meta.get("snapshot_time")
@@ -137,7 +179,7 @@ def load_batter_rankings_from_supabase(limit: int = 25) -> dict[str, Any]:
             "source": "supabase",
             "errors": [] if rankings else [
                 normalized.get("error")
-                or source.get("error")
+                or source_used.get("error")
                 or "No completed snapshot yet"
             ],
         }
@@ -296,6 +338,29 @@ def _row_quality(row: dict[str, Any], role: str) -> tuple[int, int, str]:
     return settled, actual, str(row.get("first_seen_at") or "")
 
 
+def _canonical_history_rows(rows: list[dict[str, Any]], role: str) -> list[dict[str, Any]]:
+    """Return the one official frozen Top 25 for a market/day.
+
+    Intraday live rankings may move, but performance history is not a rolling
+    union of every player who ever entered the Top 25. Preserve first-captured
+    order, keep the best graded copy for duplicates, and cap the official set at 25.
+    """
+    rows_by_key: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for raw in rows or []:
+        if not isinstance(raw, dict):
+            continue
+        key = _history_row_key(raw, role)
+        if not key:
+            continue
+        if key not in rows_by_key:
+            rows_by_key[key] = dict(raw)
+            order.append(key)
+        elif _row_quality(raw, role) > _row_quality(rows_by_key[key], role):
+            rows_by_key[key] = dict(raw)
+    return [rows_by_key[key] for key in order[:25]]
+
+
 def _merge_day_records(primary_day: dict[str, Any], fallback_day: dict[str, Any], role: str) -> dict[str, Any]:
     """Union each market's frozen rows; never choose one whole day over another.
 
@@ -328,7 +393,10 @@ def _merge_day_records(primary_day: dict[str, Any], fallback_day: dict[str, Any]
                     ordered_keys.append(key)
                 elif _row_quality(row, role) >= _row_quality(rows_by_key[key], role):
                     rows_by_key[key] = dict(row)
-        merged["categories"][category] = [rows_by_key[key] for key in ordered_keys]
+        merged["categories"][category] = _canonical_history_rows(
+            [rows_by_key[key] for key in ordered_keys],
+            role,
+        )
     return merged
 
 

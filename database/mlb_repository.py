@@ -202,9 +202,15 @@ def _previous_rank_lookup(
     market_id: int,
     ranking_date: str,
 ) -> dict[int, int]:
-    snapshots = (
+    """Return the comparison baseline for durable movement.
+
+    Prefer the previous snapshot from the same day. If this is the first
+    snapshot after midnight, compare against the newest earlier snapshot so
+    returning players show real movement and only true entrants show NEW.
+    """
+    same_day = (
         supabase.table("ranking_snapshots")
-        .select("id,snapshot_time")
+        .select("id,snapshot_time,ranking_date")
         .eq("league_id", league_id)
         .eq("market_id", market_id)
         .eq("ranking_date", ranking_date)
@@ -212,8 +218,26 @@ def _previous_rank_lookup(
         .limit(1)
         .execute()
         .data
+        or []
     )
-    previous = _first(snapshots)
+    previous = _first(same_day)
+
+    if not previous:
+        earlier = (
+            supabase.table("ranking_snapshots")
+            .select("id,snapshot_time,ranking_date")
+            .eq("league_id", league_id)
+            .eq("market_id", market_id)
+            .lt("ranking_date", ranking_date)
+            .order("ranking_date", desc=True)
+            .order("snapshot_time", desc=True)
+            .limit(1)
+            .execute()
+            .data
+            or []
+        )
+        previous = _first(earlier)
+
     if not previous:
         return {}
 
