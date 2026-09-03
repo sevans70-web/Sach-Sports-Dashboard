@@ -574,7 +574,7 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                     <span class="pitcher-reason">{escape(reason)}</span>
                     <div class="pitcher-state-result">
                         <em class="{lineup_class}">{escape(lineup)}</em>
-                        <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or 'Result: —')}</span>
+                        <span class="pitcher-card-result{'' if result_line else ' pitcher-result-placeholder'}">{escape(result_line or 'Result pending')}</span>
                     </div>
                 </div>
                 <div class="pitcher-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
@@ -1472,6 +1472,55 @@ st.markdown(
         -webkit-line-clamp:2!important;
         -webkit-box-orient:vertical!important;
         overflow:hidden!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# MLB FINAL ACCEPTANCE — authoritative pitcher card/photo contract.
+st.markdown(
+    """
+    <style>
+    .pitcher-card-main{
+        grid-template-columns:38px 72px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        min-height:198px!important;
+        height:198px!important;
+        max-height:198px!important;
+        padding:8px 2px!important;
+        box-sizing:border-box!important;
+        overflow:hidden!important;
+        align-items:start!important;
+    }
+    .pitcher-photo{
+        width:72px!important;height:72px!important;
+        min-width:72px!important;min-height:72px!important;
+        max-width:72px!important;max-height:72px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        padding:0!important;
+        display:grid!important;
+        place-items:center!important;
+        background:#0b0c0d!important;
+    }
+    .pitcher-headshot{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 25%!important;
+        transform:scale(.92)!important;
+        transform-origin:center!important;
+        border-radius:50%!important;
+    }
+    .pitcher-reason{
+        display:-webkit-box!important;
+        -webkit-line-clamp:2!important;
+        -webkit-box-orient:vertical!important;
+        overflow:hidden!important;
+    }
+    .pitcher-result-placeholder{
+        visibility:hidden!important;
     }
     </style>
     """,
