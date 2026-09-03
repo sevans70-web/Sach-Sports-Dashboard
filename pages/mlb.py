@@ -4049,3 +4049,48 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+# MLB TRUE CLOSEOUT — batter card uses the exact same physical contract.
+st.markdown(
+    """
+    <style>
+    [class*="st-key-show_"][class*="_player_"] [data-testid="stVerticalBlockBorderWrapper"],
+    [class*="st-key-show_"][class*="_top5_player_"] [data-testid="stVerticalBlockBorderWrapper"]{
+        min-height:232px!important;
+        border-radius:16px!important;
+        box-sizing:border-box!important;
+    }
+    .gi-card-header{
+        grid-template-columns:38px 64px minmax(0,1fr) 50px!important;
+        gap:8px!important;
+        min-height:176px!important;
+        padding:8px 2px 8px!important;
+        align-items:start!important;
+        box-sizing:border-box!important;
+    }
+    .gi-native-photo,.gi-native-initials{
+        width:64px!important;height:64px!important;
+        min-width:64px!important;min-height:64px!important;
+        max-width:64px!important;max-height:64px!important;
+        border-radius:50%!important;
+        overflow:hidden!important;
+        display:grid!important;
+        place-items:center!important;
+        padding:0!important;
+        background:#0b0c0d!important;
+        border:2px solid rgba(214,179,92,.92)!important;
+    }
+    .gi-native-photo img{
+        width:100%!important;height:100%!important;
+        object-fit:contain!important;
+        object-position:center 28%!important;
+        transform:scale(.88)!important;
+        transform-origin:center center!important;
+        border-radius:50%!important;
+        background:#0b0c0d!important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
