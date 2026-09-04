@@ -1,7 +1,6 @@
 """Weekly NFL slate and game-intelligence drill-down."""
 from __future__ import annotations
 
-from datetime import datetime
 from html import escape
 from zoneinfo import ZoneInfo
 
@@ -10,8 +9,11 @@ import streamlit as st
 
 from data.nfl_roster import load_nfl_roster
 from data.nfl_schedule import load_nfl_schedule
+from data.nfl_team_logos import nfl_team_logo_url
+from engines.nfl_game_intelligence import build_matchup_intelligence
 
 NFL_SEASON = 2026
+BASELINE_SEASON = 2025
 TZ = ZoneInfo("America/Toronto")
 
 
@@ -19,20 +21,29 @@ def _render_html(html: str) -> None:
     st.markdown(" ".join(line.strip() for line in html.splitlines() if line.strip()), unsafe_allow_html=True)
 
 
+def _time_label(value) -> str:
+    kickoff = pd.to_datetime(value, errors="coerce")
+    if pd.isna(kickoff):
+        return "Kickoff TBD"
+    return kickoff.strftime("%I:%M %p ET").lstrip("0")
+
+
 def _css() -> None:
     st.markdown(
         """
         <style>
         .block-container{max-width:1100px;padding-top:.15rem!important}
-        .nfl-games-hero{padding:16px 18px;border:2px solid rgba(255,204,51,.84);border-radius:16px;background:linear-gradient(110deg,rgba(246,200,76,.20),#090b0b 48%,rgba(25,217,120,.18));margin:5px 0 12px}.nfl-games-hero h1{color:#fff;margin:0;font-size:1.65rem}.nfl-games-hero p{color:#c9ccd0;margin:6px 0 0;font-size:.86rem;line-height:1.4}
+        .nfl-games-hero{padding:15px 17px;border:2px solid rgba(255,204,51,.84);border-radius:16px;background:linear-gradient(110deg,rgba(246,200,76,.20),#090b0b 48%,rgba(25,217,120,.18));margin:5px 0 12px}.nfl-games-hero h1{color:#fff;margin:0;font-size:1.55rem}.nfl-games-hero p{color:#c9ccd0;margin:6px 0 0;font-size:.84rem;line-height:1.4}
         .nfl-day-heading{color:#f6c84c;font-size:.84rem;font-weight:900;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em}
         div[class*="st-key-weekly_game_"] button{width:100%!important;min-height:66px!important;text-align:left!important;justify-content:flex-start!important;background:linear-gradient(110deg,#101112,#0c0e0e 72%,rgba(25,217,120,.07))!important;color:#fff!important;border:1.5px solid #34373c!important;border-left:4px solid #19d978!important;border-radius:12px!important;font-weight:850!important;white-space:pre-line!important;line-height:1.3!important;margin-bottom:5px!important}
-        div[class*="st-key-weekly_game_"] button:hover{border-color:#d6b35c!important;border-left-color:#19d978!important}
-        .nfl-game-intel{margin:10px 0 12px;padding:13px;border:1.5px solid rgba(214,179,92,.60);border-radius:13px;background:#0d0f10}.nfl-game-intel h2{margin:0;color:#fff;font-size:1.2rem}.nfl-game-intel p{margin:5px 0 0;color:#b8bdc3;font-size:.76rem;line-height:1.4}.nfl-game-intel b{color:#f6c84c}
-        .nfl-game-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0 12px}.nfl-game-metric{background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:8px}.nfl-game-metric span{display:block;color:#92979e;font-size:.57rem}.nfl-game-metric strong{display:block;color:#fff;font-size:.82rem;margin-top:3px}
+        .nfl-intel-shell{margin:9px 0 14px;padding:13px;border:1.5px solid rgba(214,179,92,.66);border-radius:15px;background:linear-gradient(118deg,#0b0c0d,#101214 72%,rgba(25,217,120,.05));box-shadow:0 8px 24px rgba(0,0,0,.20)}
+        .nfl-matchup-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;padding-bottom:10px;border-bottom:1px solid #292d31}.nfl-team{display:flex;align-items:center;gap:8px;min-width:0}.nfl-team.home{justify-content:flex-end}.nfl-team img{width:42px;height:42px;object-fit:contain}.nfl-team strong{font-size:1.05rem;color:#fff}.nfl-at{color:#888f96;font-size:.72rem;font-weight:900}
+        .nfl-rundown{margin:10px 0 0;color:#d8dadd;font-size:.78rem;line-height:1.48}.nfl-rundown b{color:#f6c84c}
+        .nfl-game-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}.nfl-game-metric{background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:8px;min-width:0}.nfl-game-metric span{display:block;color:#92979e;font-size:.57rem}.nfl-game-metric strong{display:block;color:#fff;font-size:.80rem;margin-top:3px;white-space:normal}
+        .nfl-scout{margin:9px 0 2px;padding:9px 10px;border:1px solid #2d3136;border-radius:10px;background:#0d0f10}.nfl-scout-title{color:#f6c84c;font-size:.72rem;font-weight:950;margin-bottom:6px}.nfl-signal{color:#c9cdd1;font-size:.70rem;line-height:1.42;margin:3px 0}
         div[class*="st-key-game_player_"] button{background:#101112!important;color:#fff!important;border:1px solid #30343a!important;border-radius:9px!important;min-height:42px!important;font-weight:800!important;text-align:left!important;justify-content:flex-start!important}
         div[class*="st-key-back_to_nfl"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
-        @media(max-width:700px){.block-container{padding-left:.85rem!important;padding-right:.85rem!important}.nfl-games-hero{padding:13px 14px}.nfl-games-hero h1{font-size:1.35rem}.nfl-game-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}}
+        @media(max-width:700px){.block-container{padding-left:.85rem!important;padding-right:.85rem!important}.nfl-games-hero{padding:13px 14px}.nfl-games-hero h1{font-size:1.28rem}.nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}}
         </style>
         """,
         unsafe_allow_html=True,
@@ -67,7 +78,6 @@ def _player_buttons(team: str, matchup: str, key_prefix: str) -> None:
         return
     offense = players[players["position"].isin(["QB", "RB", "WR", "TE"])].copy()
     defense = players[players["position"].isin(["DE", "DT", "DL", "NT", "LB", "OLB", "ILB", "CB", "DB", "S", "FS", "SS"])].copy()
-    st.markdown(f"**{team} players**")
     pool = pd.concat([offense, defense.head(10)], ignore_index=True).drop_duplicates("player_id")
     cols = st.columns(2)
     for i, (_, row) in enumerate(pool.iterrows()):
@@ -75,6 +85,43 @@ def _player_buttons(team: str, matchup: str, key_prefix: str) -> None:
             label = f"{row.get('player_name','Player')} · {row.get('position','')}"
             if st.button(label, key=f"game_player_{key_prefix}_{i}_{row.get('player_id')}", use_container_width=True):
                 _open_player(row, matchup)
+
+
+def _render_game_intelligence(game: pd.Series, game_id: str) -> None:
+    away = str(game.get("away_team") or "").upper()
+    home = str(game.get("home_team") or "").upper()
+    when = _time_label(game.get("kickoff_et"))
+    stadium = str(game.get("stadium") or "Venue TBD")
+    roof = str(game.get("roof") or "Environment TBD").replace("outdoors", "Outdoor").replace("dome", "Dome")
+    intel = build_matchup_intelligence(away, home, BASELINE_SEASON)
+    away_logo = nfl_team_logo_url(away)
+    home_logo = nfl_team_logo_url(home)
+    signals = "".join(f'<div class="nfl-signal">• {escape(s)}</div>' for s in intel.get("signals", [])[:4])
+
+    _render_html(
+        f"""
+        <div class="nfl-intel-shell">
+          <div class="nfl-matchup-head">
+            <div class="nfl-team"><img src="{escape(away_logo)}"><strong>{escape(away)}</strong></div>
+            <div class="nfl-at">AT</div>
+            <div class="nfl-team home"><strong>{escape(home)}</strong><img src="{escape(home_logo)}"></div>
+          </div>
+          <div class="nfl-rundown"><b>Game Rundown</b><br>{escape(intel.get('rundown','Matchup context is loading.'))}</div>
+          <div class="nfl-game-metrics">
+            <div class="nfl-game-metric"><span>KICKOFF</span><strong>{escape(when)}</strong></div>
+            <div class="nfl-game-metric"><span>VENUE</span><strong>{escape(stadium)}</strong></div>
+            <div class="nfl-game-metric"><span>ENVIRONMENT</span><strong>{escape(roof)}</strong></div>
+          </div>
+          <div class="nfl-scout"><div class="nfl-scout-title">SCOUT DESK · MATCHUP SIGNALS</div>{signals or '<div class="nfl-signal">More matchup signals will populate as Week 1 data arrives.</div>'}</div>
+        </div>
+        """
+    )
+
+    away_tab, home_tab = st.tabs([away, home])
+    with away_tab:
+        _player_buttons(away, f"{away} @ {home}", f"{game_id}_away")
+    with home_tab:
+        _player_buttons(home, f"{away} @ {home}", f"{game_id}_home")
 
 
 def show() -> None:
@@ -85,7 +132,6 @@ def show() -> None:
     phase = str(st.session_state.get("nfl_active_phase") or "REG")
     week = st.session_state.get("nfl_active_week")
     schedule = _load_phase(phase)
-
     if schedule.empty:
         st.error("The NFL schedule feed is temporarily unavailable. Return to NFL and refresh the page.")
         return
@@ -97,51 +143,33 @@ def show() -> None:
         st.error("No NFL week is available yet.")
         return
 
-    games = schedule[pd.to_numeric(schedule["week"], errors="coerce").eq(int(week))].copy().sort_values("kickoff_et")
-    _render_html(
-        f"""
-        <div class="nfl-games-hero"><h1>🏈 Week {int(week)} NFL Games</h1><p>Open any matchup for Game Intelligence, then open a player card for every tracked prop and player-level signal.</p></div>
-        """
-    )
+    games = schedule[pd.to_numeric(schedule["week"], errors="coerce").eq(int(week))].copy()
+    games = games.sort_values(["kickoff_et", "game_id"], kind="stable")
+    _render_html(f'<div class="nfl-games-hero"><h1>Week {int(week)} NFL Games</h1><p>Open a matchup for the game rundown, environment and matchup signals, then move directly into either team roster.</p></div>')
 
     selected_id = st.session_state.get("nfl_selected_game")
-    for day, day_games in games.groupby(games["kickoff_et"].dt.strftime("%A · %B %d"), dropna=False):
-        _render_html(f'<div class="nfl-day-heading">{escape(str(day or "Kickoff TBD"))}</div>')
+    # Preserve chronological order; groupby's default sorting caused the old Monday→Sunday→Thursday order.
+    games["day_key"] = games["kickoff_et"].dt.normalize()
+    for day_key in games["day_key"].drop_duplicates().tolist():
+        day_games = games[games["day_key"].eq(day_key)].sort_values("kickoff_et", kind="stable")
+        day = pd.to_datetime(day_key, errors="coerce")
+        day_label = day.strftime("%A · %B %-d") if pd.notna(day) else "Kickoff TBD"
+        _render_html(f'<div class="nfl-day-heading">{escape(day_label)}</div>')
         for idx, game in day_games.iterrows():
             away, home = str(game.get("away_team") or "").upper(), str(game.get("home_team") or "").upper()
-            kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
-            when = kickoff.strftime("%I:%M %p ET") if pd.notna(kickoff) else "Kickoff TBD"
+            when = _time_label(game.get("kickoff_et"))
             status = str(game.get("status") or "Scheduled")
             game_id = str(game.get("game_id") or f"{week}-{away}-{home}")
             score = ""
             if pd.notna(game.get("away_score")) and pd.notna(game.get("home_score")):
                 score = f"\n{away} {int(game.get('away_score'))} · {home} {int(game.get('home_score'))}"
-            if st.button(f"🏈 {away} @ {home}\n{when} · {status}{score}", key=f"weekly_game_{game_id}_{idx}", use_container_width=True):
+            status_text = "" if status.lower() == "scheduled" else f" · {status}"
+            if st.button(f"{away} @ {home}\n{when}{status_text}{score}", key=f"weekly_game_{game_id}_{idx}", use_container_width=True):
                 st.session_state["nfl_selected_game"] = game_id
                 selected_id = game_id
                 st.rerun()
-
             if selected_id == game_id:
-                stadium = str(game.get("stadium") or "Venue TBD")
-                roof = str(game.get("roof") or "Environment TBD")
-                _render_html(
-                    f"""
-                    <div class="nfl-game-intel">
-                      <h2>{escape(away)} @ {escape(home)}</h2>
-                      <p><b>Game Intelligence</b> is the matchup hub. Player form, opponent context, role, market signals, injuries and weather feed the individual player cards instead of duplicating another schedule on the main page.</p>
-                    </div>
-                    <div class="nfl-game-metrics">
-                      <div class="nfl-game-metric"><span>KICKOFF</span><strong>{escape(when)}</strong></div>
-                      <div class="nfl-game-metric"><span>VENUE</span><strong>{escape(stadium)}</strong></div>
-                      <div class="nfl-game-metric"><span>ENVIRONMENT</span><strong>{escape(roof)}</strong></div>
-                    </div>
-                    """
-                )
-                away_tab, home_tab = st.tabs([away, home])
-                with away_tab:
-                    _player_buttons(away, f"{away} @ {home}", f"{game_id}_away")
-                with home_tab:
-                    _player_buttons(home, f"{away} @ {home}", f"{game_id}_home")
+                _render_game_intelligence(game, game_id)
 
 
 show()

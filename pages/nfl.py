@@ -9,6 +9,8 @@ import json
 import pandas as pd
 import streamlit as st
 
+from components.nfl_prediction_performance import render_nfl_prediction_performance
+
 from data.nfl_odds import get_nfl_odds_feed_status
 from data.nfl_roster import load_nfl_roster
 from data.nfl_schedule import load_nfl_schedule
@@ -66,7 +68,7 @@ def _inject_nfl_css() -> None:
         .nfl-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:2px 0 9px;white-space:nowrap}
 
         .nfl-hero{margin:.1rem 0 .55rem;padding:22px 30px;border-radius:20px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18)}
-        .nfl-hero-title{margin:0;color:#fff;font-size:2.05rem;font-weight:950;line-height:1.08}
+        .nfl-hero-title{margin:0;color:#fff;font-size:1.72rem;font-weight:950;line-height:1.08}
         .nfl-hero-subtitle{margin:16px 0 0;color:#f0f0f0;font-size:1.03rem;line-height:1.5;max-width:900px}
 
         div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 15px!important;margin:4px 0 10px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
@@ -290,8 +292,7 @@ def _ranking_score(row: pd.Series, prop: str) -> float:
             if key == "model_probability" and numeric <= 1:
                 numeric *= 100
             return min(99.9, max(0.0, numeric))
-    projection = row.get(PROP_CATALOG[prop]["projection"])
-    return 0.0 if projection is None or pd.isna(projection) else min(99.9, max(0.0, float(projection)))
+    return 0.0
 
 
 def _first_numeric(row: pd.Series, keys: list[str]) -> tuple[str, float | None]:
@@ -475,7 +476,7 @@ def _hero_message(games: pd.DataFrame, week: int | None, now: datetime) -> str:
     naive_now = now.replace(tzinfo=None)
     first, last = kickoffs.min(), kickoffs.max()
     if naive_now < first - pd.Timedelta(days=2):
-        return f"Week {week} is building now. Track the strongest early player signals, opening markets and matchup advantages before kickoff."
+        return "Every NFL week tells a different story. We track the matchups, roles and signals shaping it — then surface what matters before kickoff."
     if naive_now < first:
         return f"Week {week} is taking shape. Open each player to see the recent form, matchup context and market signals driving the ranking."
     if naive_now <= last + pd.Timedelta(hours=4):
@@ -530,13 +531,15 @@ def show() -> None:
         <div class="nfl-snapshot-heading">This Week's NFL Snapshot</div>
         <div class="nfl-snapshot-grid">
           <div class="nfl-snapshot-card nfl-snapshot-emerald"><span>GAMES</span><strong>{len(games)}</strong><small>{escape(week_label)}</small></div>
-          <div class="nfl-snapshot-card"><span>TRACKED PROPS</span><strong>{len(PROP_CATALOG)}</strong><small>{escape(market_status)}</small></div>
+          <div class="nfl-snapshot-card"><span>LINEUPS</span><strong>—</strong><small>Active status pending</small></div>
           <div class="nfl-snapshot-card nfl-snapshot-gold"><span>ALERTS</span><strong>{alert_count}</strong><small>No active alerts</small></div>
         </div>
         """
     )
 
     _render_rankings(schedule, week)
+
+    render_nfl_prediction_performance()
 
     st.divider()
     st.caption("Sach Sports Dashboard · NFL Intelligence")
