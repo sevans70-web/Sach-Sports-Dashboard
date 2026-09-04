@@ -15,11 +15,27 @@ def load_nfl_weekly_player_stats(season=2025):
         df["interceptions"]=df["passing_interceptions"]
     if "team" in df.columns and "recent_team" not in df.columns:
         df["recent_team"]=df["team"]
-    cols=["player_id","player_display_name","position","recent_team","opponent_team","season","week","season_type","completions","attempts","passing_yards","passing_tds","interceptions","carries","rushing_yards","rushing_tds","targets","receptions","receiving_yards","receiving_tds"]
+    # nflverse defensive-stat field names have changed across releases; normalize
+    # the common aliases without inventing values when a field is unavailable.
+    alias_map = {
+        "def_sacks": "sacks",
+        "tackles_with_assists": "tackles_assists",
+        "tackles_with_assist": "tackles_assists",
+        "tackle_with_assist": "tackles_assists",
+        "def_tackles_solo": "tackles_solo",
+    }
+    for source, target in alias_map.items():
+        if source in df.columns and target not in df.columns:
+            df[target] = df[source]
+    if "tackles_total" not in df.columns and ("tackles_solo" in df.columns or "tackles_assists" in df.columns):
+        solo = pd.to_numeric(df["tackles_solo"], errors="coerce").fillna(0) if "tackles_solo" in df.columns else pd.Series(0, index=df.index, dtype=float)
+        assists = pd.to_numeric(df["tackles_assists"], errors="coerce").fillna(0) if "tackles_assists" in df.columns else pd.Series(0, index=df.index, dtype=float)
+        df["tackles_total"] = solo + assists
+    cols=["player_id","player_display_name","position","recent_team","opponent_team","season","week","season_type","completions","attempts","passing_yards","passing_tds","interceptions","carries","rushing_yards","rushing_tds","targets","receptions","receiving_yards","receiving_tds","sacks","tackles_solo","tackles_assists","tackles_total"]
     df=df[[c for c in cols if c in df.columns]].copy()
     if "season_type" in df.columns:
         df=df[df["season_type"].astype(str).str.upper()=="REG"].copy()
-    nums=["week","completions","attempts","passing_yards","passing_tds","interceptions","carries","rushing_yards","rushing_tds","targets","receptions","receiving_yards","receiving_tds"]
+    nums=["week","completions","attempts","passing_yards","passing_tds","interceptions","carries","rushing_yards","rushing_tds","targets","receptions","receiving_yards","receiving_tds","sacks","tackles_solo","tackles_assists","tackles_total"]
     for c in nums:
         if c in df.columns:
             df[c]=pd.to_numeric(df[c],errors="coerce").fillna(0)
@@ -32,7 +48,7 @@ def load_nfl_season_baseline(season=2025):
         return weekly
 
     ids=[c for c in ["player_id","player_display_name","position"] if c in weekly.columns]
-    stats=[c for c in ["completions","attempts","passing_yards","passing_tds","interceptions","carries","rushing_yards","rushing_tds","targets","receptions","receiving_yards","receiving_tds"] if c in weekly.columns]
+    stats=[c for c in ["completions","attempts","passing_yards","passing_tds","interceptions","carries","rushing_yards","rushing_tds","targets","receptions","receiving_yards","receiving_tds","sacks","tackles_solo","tackles_assists","tackles_total"] if c in weekly.columns]
 
     latest_team=(weekly.sort_values(["player_id","week"])
                  .groupby("player_id",as_index=False).tail(1)[["player_id","recent_team"]])
