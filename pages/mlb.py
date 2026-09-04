@@ -1203,30 +1203,9 @@ def render_full_ranking_row(player: dict) -> None:
 
 
 def render_expandable_ranking_header(player: dict) -> None:
-    """Render batter ranking with the one shared MLB compact-card shell."""
+    """Render batter through the exact shared six-slot MLB card grid."""
     projection_label, projection_value = projection_display(player)
-
-    matchup = matchup_html(player)
-    opposing = opposing_pitcher_line(player)
-    status = lineup_status_html(player)
     result = card_result_html(player, reserve_space=True)
-
-    # Normalize legacy batter HTML into the shared line-height contract.
-    body_html = (
-        f'<span class="mlb-rank-line mlb-rank-matchup">{matchup}</span>'
-        f'{opposing}'
-        f'<span class="mlb-rank-line"><b>{escape(projection_label)}:</b> {escape(projection_value)}</span>'
-        f'<span class="mlb-rank-line mlb-rank-reason">{escape(category_card_reason(player))}</span>'
-        f'<span class="mlb-rank-line mlb-rank-status">{status}</span>'
-    )
-
-    # Existing result helper already returns escaped, trusted local HTML.
-    if result:
-        # Convert the old class to the shared class without changing result logic.
-        result = result.replace('class="gi-card-result"', 'class="mlb-rank-result"')
-        body_html += result
-    else:
-        body_html += '<span class="mlb-rank-result mlb-rank-result-empty">Result</span>'
 
     render_html(
         build_compact_card_html(
@@ -1235,7 +1214,14 @@ def render_expandable_ranking_header(player: dict) -> None:
             player_id=player.get("player_id"),
             name=str(player.get("player") or player.get("player_name") or "Player"),
             score=float(player.get("score") or player.get("gi_score") or 0),
-            body_html=body_html,
+            matchup_html=matchup_html(player),
+            secondary_html=opposing_pitcher_line(player),
+            projection_html=(
+                f'<b>{escape(projection_label)}:</b> {escape(projection_value)}'
+            ),
+            reason_html=escape(category_card_reason(player)),
+            status_html=lineup_status_html(player),
+            result_html=result or "",
         )
     )
 
