@@ -2,3 +2,5 @@ streamlit==1.63.0
 pandas
 requests
 supabase
+
+altair
