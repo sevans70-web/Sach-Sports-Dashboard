@@ -187,6 +187,10 @@ pages = {
         st.Page("pages/wnba.py", title="WNBA", icon="🏀"),
         st.Page("pages/soccer.py", title="SOCCER", icon="⚽"),
         st.Page("pages/nfl.py", title="NFL", icon="🏈"),
+        # Internal NFL drill-down pages. Registered for st.switch_page only.
+        st.Page("pages/nfl_games.py", title="NFL GAMES", icon="🏈"),
+        st.Page("pages/nfl_player.py", title="NFL PLAYER", icon="🏈"),
+        st.Page("pages/player_search.py", title="PLAYER SEARCH", icon="🔎"),
         st.Page("pages/cfb.py", title="CFB", icon="🏈"),
         st.Page("pages/nba.py", title="NBA", icon="🏀"),
         st.Page("pages/nhl.py", title="NHL", icon="🏒"),
@@ -200,6 +204,9 @@ navigation = st.navigation(pages, position="hidden")
 # Render directly instead of inside temporary columns so it does not shift
 # or disappear while the page is hydrating.
 with st.popover("▦", use_container_width=False):
+    # Player Search lives at the top of the hub without redesigning the menu yet.
+    if st.button("🔎", key="open_platform_player_search", help="Search players", use_container_width=False):
+        st.switch_page("pages/player_search.py")
     st.markdown("**SPORT HUB**")
     left, right = st.columns(2)
     with left:
