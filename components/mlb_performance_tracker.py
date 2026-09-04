@@ -21,6 +21,8 @@ from data.mlb_pitcher_performance_tracker import (
     refresh_history_view as refresh_pitcher_history_view,
 )
 from database.mlb_dashboard_reads import load_performance_history_from_supabase
+from database.mlb_repository import get_latest_source_payload
+from data.mlb_emerging_power_tracker import records_for_period as emerging_records_for_period, summarize as summarize_emerging
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
@@ -50,6 +52,15 @@ def _cached_batter_history() -> dict[str, Any]:
         load_performance_history_from_supabase("batter"),
         recent_days=8,
     )
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def _cached_emerging_history() -> dict[str, Any]:
+    stored = get_latest_source_payload(source_name="mlb_emerging_power_history")
+    payload = stored.get("payload") or {}
+    if isinstance(payload, dict) and isinstance(payload.get("days"), dict):
+        return payload
+    return {"schema_version": 1, "days": {}}
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -263,6 +274,39 @@ def _render_pitcher_market(history, category, period):
         st.caption("Results will appear after games are graded.")
 
 
+def _render_emerging_power(history: dict[str, Any], period: str) -> None:
+    rows = emerging_records_for_period(history, period)
+    summary = summarize_emerging(rows)
+
+    st.markdown(
+        f"<div class='perf-summary-row perf-batter-four'>"
+        f"<div class='perf-summary-item'><span class='perf-label'>HR Hits / Tracked</span><strong>{summary['wins']} / {summary['tracked']}</strong></div>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Pending</span><strong>{summary['pending']}</strong></div>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Settled</span><strong>{summary['graded']}</strong></div>"
+        f"<div class='perf-summary-item'><span class='perf-label'>Hit Rate</span><strong>{summary['hit_rate']:.1f}%</strong></div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.caption(
+        "Emerging Power is tracked separately from the official HR Top 25. "
+        "The first daily candidate list is frozen so later ranking changes cannot rewrite its results."
+    )
+
+    if rows:
+        with st.expander("Tracked Emerging Power candidates", expanded=False):
+            for row in rows[-30:]:
+                name = str(row.get("player_name") or row.get("player") or "Player")
+                day = str(row.get("tracking_date") or "")
+                hrs = int(row.get("actual_home_runs") or 0)
+                correct = row.get("correct")
+                mark = "✅" if correct is True else "❌" if correct is False else "⏳"
+                score = float(row.get("emerging_score") or 0)
+                st.write(f"{mark} {day} · {name} · Emerging {score:.1f} · {hrs} HR")
+    else:
+        st.caption("Tracking will populate after the next MLB worker refresh.")
+
+
 def render_prediction_performance_tracker(
     rankings_by_category: dict[str, list[dict[str, Any]]]
 ) -> None:
@@ -281,7 +325,7 @@ def render_prediction_performance_tracker(
         batter_history = {"schema_version": 1, "days": {}}
         st.caption("Batter performance history is temporarily unavailable.")
 
-    batter_tab, pitcher_tab = st.tabs(["🥎 Batter", "⚾ Pitcher"])
+    batter_tab, pitcher_tab, emerging_tab = st.tabs(["🥎 Batter", "⚾ Pitcher", "🔥 Emerging Power"])
 
     with batter_tab:
         st.markdown("#### 🌐 Overall MLB Batter Performance")
@@ -307,3 +351,13 @@ def render_prediction_performance_tracker(
                     _render_pitcher_market(pitcher_history, category, period)
         except Exception:
             st.caption("Pitcher performance history is temporarily unavailable.")
+
+    with emerging_tab:
+        st.markdown("#### 🔥 Emerging Power Performance")
+        emerging_period = _period_control("mlb_emerging_power_period")
+        try:
+            emerging_history = _cached_emerging_history()
+            _render_emerging_power(emerging_history, emerging_period)
+        except Exception:
+            st.caption("Emerging Power performance history is temporarily unavailable.")
+

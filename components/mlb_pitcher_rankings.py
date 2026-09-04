@@ -531,7 +531,7 @@ def _compact_pitcher_reason(row: dict, game_phase: str) -> str:
 
 
 def _render_pitcher_card(category: str, row: dict) -> None:
-    """Render pitcher ranking with the exact same shell used by batter cards."""
+    """Render pitcher through the exact shared six-slot MLB card grid."""
     rank = int(row.get("rank") or 0)
     name = str(row.get("pitcher_name") or "Pitcher")
     score = float(row.get("gi_score") or 0)
@@ -559,20 +559,6 @@ def _render_pitcher_card(category: str, row: dict) -> None:
         lineup = "○ Opponent lineup unavailable"
         lineup_class = "pitch-lineup-unavailable"
 
-    body_html = (
-        f'<span class="mlb-rank-line mlb-rank-matchup">'
-        f'{_matchup_html(row)}{escape(f" · {hand}HP" if hand else "")}'
-        f'</span>'
-        f'<span class="mlb-rank-line"><b>Projection:</b> {escape(_projection_text(category,row))}</span>'
-        f'<span class="mlb-rank-line mlb-rank-reason">{escape(reason)}</span>'
-        f'<span class="mlb-rank-line mlb-rank-status"><em class="{lineup_class}">{escape(lineup)}</em></span>'
-        + (
-            f'<span class="mlb-rank-result">{escape(result_line)}</span>'
-            if result_line
-            else '<span class="mlb-rank-result mlb-rank-result-empty">Result</span>'
-        )
-    )
-
     state_key = f"pitcher_intelligence_{category}_{row.get('pitcher_id')}_{rank}"
     if state_key not in st.session_state:
         st.session_state[state_key] = False
@@ -588,7 +574,17 @@ def _render_pitcher_card(category: str, row: dict) -> None:
                 player_id=row.get("pitcher_id"),
                 name=name,
                 score=score,
-                body_html=body_html,
+                matchup_html=(
+                    f'{_matchup_html(row)}{escape(f" · {hand}HP" if hand else "")}'
+                ),
+                secondary_html="",  # reserved row = batter opposing-pitcher row
+                projection_html=f'<b>Projection:</b> {escape(_projection_text(category,row))}',
+                reason_html=escape(reason),
+                status_html=f'<em class="{lineup_class}">{escape(lineup)}</em>',
+                result_html=(
+                    f'<span class="pitcher-card-result">{escape(result_line)}</span>'
+                    if result_line else ""
+                ),
             )
         )
 
