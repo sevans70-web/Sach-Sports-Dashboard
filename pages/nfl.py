@@ -34,17 +34,17 @@ TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 NFL_MOVEMENT_FILE = Path("/tmp/sach_nfl_rank_movement.json")
 
 PROP_CATALOG = {
-    "Passing Yards": {"builder": "passing", "projection": "passing_yards_projection_matchup", "unit": "yards"},
-    "Passing TDs": {"builder": build_passing_tds_top25, "projection": "passing_tds_projection", "unit": "TDs"},
-    "Passing + Rushing Yards": {"builder": build_passing_rushing_yards_top25, "projection": "passing_rushing_projection", "unit": "yards"},
-    "Rushing Yards": {"builder": build_rushing_yards_top25, "projection": "rushing_projection", "unit": "yards"},
-    "Rushing + Receiving Yards": {"builder": build_rushing_receiving_yards_top25, "projection": "rushing_receiving_projection", "unit": "yards"},
-    "Receiving Yards": {"builder": build_receiving_yards_top25, "projection": "receiving_projection", "unit": "yards"},
-    "Receptions": {"builder": build_receptions_top25, "projection": "receptions_projection", "unit": "receptions"},
-    "Anytime TD": {"builder": build_anytime_td_top25, "projection": "model_probability", "unit": "%"},
-    "First TD": {"builder": build_first_td_top25, "projection": "model_probability", "unit": "%"},
-    "Sacks": {"builder": build_sacks_top25, "projection": "sacks_projection", "unit": "sacks"},
-    "Tackles + Assists": {"builder": build_tackles_top25, "projection": "tackles_projection", "unit": "tackles"},
+    "Passing Yards": {"builder": "passing", "projection": "passing_yards_projection_matchup", "unit": "yards", "icon": "🏈"},
+    "Passing TDs": {"builder": build_passing_tds_top25, "projection": "passing_tds_projection", "unit": "TDs", "icon": "🎯"},
+    "Pass + Rush Yds": {"builder": build_passing_rushing_yards_top25, "projection": "passing_rushing_projection", "unit": "yards", "icon": "⚡"},
+    "Rushing Yards": {"builder": build_rushing_yards_top25, "projection": "rushing_projection", "unit": "yards", "icon": "🏃"},
+    "Rush + Rec Yds": {"builder": build_rushing_receiving_yards_top25, "projection": "rushing_receiving_projection", "unit": "yards", "icon": "🔀"},
+    "Receiving Yards": {"builder": build_receiving_yards_top25, "projection": "receiving_projection", "unit": "yards", "icon": "🙌"},
+    "Receptions": {"builder": build_receptions_top25, "projection": "receptions_projection", "unit": "receptions", "icon": "🧤"},
+    "Anytime TD": {"builder": build_anytime_td_top25, "projection": "model_probability", "unit": "%", "icon": "🔥"},
+    "First TD": {"builder": build_first_td_top25, "projection": "model_probability", "unit": "%", "icon": "1️⃣"},
+    "Sacks": {"builder": build_sacks_top25, "projection": "sacks_projection", "unit": "sacks", "icon": "💥"},
+    "Tackles + Assists": {"builder": build_tackles_top25, "projection": "tackles_projection", "unit": "tackles", "icon": "🛡️"},
 }
 
 
@@ -57,64 +57,63 @@ def _inject_nfl_css() -> None:
     st.markdown(
         """
         <style>
-        /* =========================================================
-           NFL visual contract: MLB sibling, football content.
-           ========================================================= */
-        .block-container{max-width:1180px;padding-top:.45rem!important;padding-bottom:2.5rem!important}
-        .nfl-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:0 0 10px 0;white-space:nowrap}
+        .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important}
 
-        div[class*="st-key-nfl_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:100%!important;margin:2px 0 4px!important}
+        /* Pull the NFL refresh control into the same utility row as the Sport Hub. */
+        div[class*="st-key-nfl_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:100%!important;margin:-45px 0 4px!important;position:relative!important;z-index:20!important}
         div[class*="st-key-nfl_page_refresh"]>div{width:auto!important}
-        div[class*="st-key-nfl_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;margin:0!important;background:#090a0b!important;color:#d6b35c!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;box-shadow:0 0 0 1px rgba(214,179,92,.10)!important;font-size:.74rem!important;font-weight:900!important;letter-spacing:.025em!important;line-height:1!important;white-space:nowrap!important}
-        div[class*="st-key-nfl_page_refresh"] button:hover{background:#111312!important;color:#f6c84c!important;border-color:#f6c84c!important;box-shadow:0 0 0 2px rgba(214,179,92,.14)!important}
+        div[class*="st-key-nfl_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d6b35c!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;letter-spacing:.025em!important;white-space:nowrap!important}
+        .nfl-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:2px 0 9px;white-space:nowrap}
 
-        .nfl-hero{margin:.35rem 0 .55rem!important;padding:22px 30px!important;border-radius:20px!important;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%)!important;border:2px solid rgba(255,204,51,.88)!important;box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18)!important}
-        .nfl-hero-title{margin:0!important;color:#fff!important;font-size:2.05rem!important;font-weight:950!important;line-height:1.08!important}
-        .nfl-hero-subtitle{margin:16px 0 0!important;color:#f0f0f0!important;font-size:1.03rem!important;line-height:1.5!important;max-width:900px}
+        .nfl-hero{margin:.1rem 0 .55rem;padding:22px 30px;border-radius:20px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18)}
+        .nfl-hero-title{margin:0;color:#fff;font-size:2.05rem;font-weight:950;line-height:1.08}
+        .nfl-hero-subtitle{margin:16px 0 0;color:#f0f0f0;font-size:1.03rem;line-height:1.5;max-width:900px}
 
-        div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:82px!important;padding:12px 15px!important;margin:4px 0 10px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;white-space:pre-line!important;line-height:1.28!important}
-        div[class*="st-key-nfl_games_entry"] button:hover{border-color:#f6c84c!important;border-left-color:#19d978!important;box-shadow:inset 0 0 0 1px rgba(25,217,120,.15)!important}
+        div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 15px!important;margin:4px 0 10px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
+        div[class*="st-key-nfl_games_entry"] button:after{content:'›';margin-left:auto;font-size:1.4rem;color:#cfd3d6}
         div[class*="st-key-nfl_games_entry"] button p{margin:0!important;font-size:.84rem!important;line-height:1.32!important}
 
-        .nfl-snapshot-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:18px 0 9px}
-        .nfl-snapshot-heading strong{color:#fff;font-size:1.08rem}
-        .nfl-snapshot-heading span{color:#19d978;font-size:.70rem;font-weight:750;text-align:right}
+        .nfl-snapshot-heading{margin:18px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
         .nfl-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-        .nfl-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center}
+        .nfl-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center;min-width:0}
         .nfl-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
         .nfl-snapshot-card strong{color:#fff;font-size:1.45rem;line-height:1.1;margin:5px 0}
         .nfl-snapshot-card small{color:#fff;font-size:.68rem;font-weight:650;line-height:1.15}
-        .nfl-snapshot-emerald{border-color:rgba(25,217,120,.92);box-shadow:inset 0 0 24px rgba(25,217,120,.09),0 0 0 1px rgba(25,217,120,.10)}
-        .nfl-snapshot-emerald strong{color:#19d978}
-        .nfl-snapshot-gold{border-color:rgba(255,204,51,.92);box-shadow:inset 0 0 24px rgba(255,204,51,.08),0 0 0 1px rgba(255,204,51,.10)}
-        .nfl-snapshot-gold strong{color:#ffcc33}
+        .nfl-snapshot-emerald{border-color:rgba(25,217,120,.92)} .nfl-snapshot-emerald strong{color:#19d978}
+        .nfl-snapshot-gold{border-color:rgba(255,204,51,.92)} .nfl-snapshot-gold strong{color:#ffcc33}
 
-        .nfl-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:22px 0 10px}
-        .nfl-section-title{color:#fff;font-size:1.28rem;font-weight:950;line-height:1.1}
-        .nfl-section-subtitle{color:#c4c7cc;font-size:.82rem;line-height:1.35;margin-top:4px}
-        .nfl-section-count{color:#000;background:#ffcc33;border:2px solid #ffe06a;border-radius:999px;padding:5px 9px;font-size:.68rem;font-weight:950;white-space:nowrap}
+        .nfl-rankings-heading{margin:24px 0 8px}.nfl-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.nfl-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
 
-        .nfl-market-tabs [data-baseweb="tab-list"]{gap:0!important}
-        .nfl-market-tabs button[role="tab"]{background:#111315!important;color:#fff!important;border:1px solid #3a3d42!important;padding:.45rem .8rem!important}
+        /* MLB-style horizontal market rail. */
+        div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
+        div[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar{display:none!important}
+        div[data-testid="stTabs"] button[role="tab"]{flex:0 0 auto!important;white-space:nowrap!important;background:#0d0f10!important;color:#fff!important;border:1px solid #34373c!important;padding:.45rem .78rem!important;min-height:40px!important}
+        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#f6c84c!important;border-color:#d6b35c!important;background:#15130d!important}
 
-        .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 58px;gap:9px;align-items:start;width:100%;min-height:154px;margin:0 0 8px;padding:11px 9px;border:1.5px solid #34383d;border-left:4px solid #19d978;border-radius:15px;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 58px;gap:9px;align-items:start;width:100%;min-height:118px;padding:11px 9px;border-left:4px solid #19d978;background:#0d0f10;color:#fff;box-sizing:border-box}
         .nfl-rank-number{text-align:center;padding-top:2px}.nfl-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}.nfl-rank-movement{display:block;margin-top:7px;color:#19d978;font-size:.58rem;font-weight:900;white-space:nowrap}
         .nfl-rank-avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;font-weight:900;color:#fff}
-        .nfl-rank-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-        .nfl-rank-copy{min-width:0}.nfl-rank-name{display:block;color:#fff;font-size:.94rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nfl-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.nfl-rank-proj{color:#f6c84c;font-size:.76rem;font-weight:850;margin-top:4px}.nfl-rank-why{color:#c4c7cc;font-size:.72rem;line-height:1.35;margin-top:5px}.nfl-rank-score{text-align:right;padding-top:1px}.nfl-rank-score small{display:block;color:#b8bbc1;font-size:.54rem;font-weight:900;letter-spacing:.06em}.nfl-rank-score strong{display:block;color:#ffcc33;font-size:1.05rem;font-weight:950;margin-top:3px}
+        .nfl-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
+        .nfl-rank-copy{min-width:0}.nfl-rank-name{display:block;color:#fff;font-size:.94rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nfl-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.nfl-rank-proj{color:#f6c84c;font-size:.76rem;font-weight:850;margin-top:4px}.nfl-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
+        .nfl-rank-score{text-align:right;padding-top:1px}.nfl-rank-score small{display:block;color:#b8bbc1;font-size:.54rem;font-weight:900;letter-spacing:.06em}.nfl-rank-score strong{display:block;color:#ffcc33;font-size:1.05rem;font-weight:950;margin-top:3px}
 
-        div[data-testid="stExpander"]{background:#080909!important;border:1.5px solid #3a3d42!important;border-radius:12px!important;overflow:hidden!important}
-        div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary{background:#080909!important;color:#fff!important}
-        div[data-testid="stAlert"],div[data-testid="stAlert"]>div,div[role="alert"]{background:#090b0a!important;color:#fff!important;border-radius:14px!important}
+        div[class*="st-key-nfl_rank_wrap_"]{background:#0d0f10!important;border:1.5px solid #34383d!important;border-radius:15px!important;overflow:hidden!important;margin:0 0 9px!important;padding:0!important}
+        div[class*="st-key-nfl_rank_wrap_"] [data-testid="stVerticalBlock"]{gap:.25rem!important}
+        div[class*="st-key-nfl_rank_wrap_"] button{background:#080909!important;color:#fff!important;border:0!important;border-top:1px solid #2c3034!important;border-radius:0!important;min-height:38px!important;font-weight:850!important}
+        .nfl-intel-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:2px 10px 8px}
+        .nfl-intel-metric{background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:8px;padding:7px 6px;min-width:0}.nfl-intel-metric span{display:block;color:#92979e;font-size:.57rem}.nfl-intel-metric strong{display:block;color:#fff;font-size:.82rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .nfl-why{margin:0 10px 9px;padding:9px 10px;border:1px solid rgba(214,179,92,.48);border-radius:9px;background:#101112;color:#d9dbde;font-size:.72rem;line-height:1.4}.nfl-why b{color:#f6c84c}
+
+        div[class*="st-key-nfl_full_top25_"] button{width:100%!important;background:#080909!important;color:#fff!important;border:1.5px solid #34373c!important;border-radius:10px!important;min-height:43px!important;font-weight:850!important;margin-top:2px!important}
+        div[class*="st-key-nfl_open_player_"] button{background:#111315!important;color:#19d978!important;border:1px solid #30343a!important;border-radius:8px!important;min-height:35px!important;font-weight:850!important;margin:0 10px 9px!important;width:calc(100% - 20px)!important}
 
         @media(max-width:700px){
-            .block-container{padding-top:0!important;padding-left:.85rem!important;padding-right:.85rem!important}
-            .nfl-page-refresh-time{font-size:.84rem;margin-bottom:10px}
-            .nfl-hero{padding:16px 15px!important;border-radius:15px!important;margin-top:.35rem!important;margin-bottom:.45rem!important}
-            .nfl-hero-title{font-size:1.82rem!important}.nfl-hero-subtitle{font-size:.92rem!important;margin-top:10px!important}
-            div[class*="st-key-nfl_games_entry"] button{min-height:78px!important;padding:11px 13px!important}div[class*="st-key-nfl_games_entry"] button p{font-size:.80rem!important}
-            .nfl-snapshot-grid{gap:6px}.nfl-snapshot-card{min-height:88px;padding:10px 7px}.nfl-snapshot-card span{font-size:.70rem}.nfl-snapshot-card strong{font-size:1.42rem}.nfl-snapshot-card small{font-size:.70rem}
-            .nfl-section-title{font-size:1.03rem}.nfl-section-subtitle{font-size:.82rem}.nfl-rank-card{grid-template-columns:34px 52px minmax(0,1fr) 50px;gap:7px;min-height:150px;padding:9px 7px}.nfl-rank-avatar{width:52px;height:52px}.nfl-rank-name{font-size:.90rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.72rem}.nfl-rank-why{font-size:.70rem}.nfl-rank-score strong{font-size:.95rem}
+          .block-container{padding-left:.85rem!important;padding-right:.85rem!important;padding-top:0!important}
+          div[class*="st-key-nfl_page_refresh"]{margin-top:-43px!important;margin-bottom:4px!important}
+          .nfl-page-refresh-time{font-size:.84rem;margin-bottom:8px}
+          .nfl-hero{padding:16px 15px;border-radius:15px;margin-top:.05rem}.nfl-hero-title{font-size:1.55rem}.nfl-hero-subtitle{font-size:.91rem;line-height:1.45;margin-top:12px}
+          .nfl-snapshot-heading{font-size:1.02rem}.nfl-snapshot-card{min-height:92px;padding:10px 7px}.nfl-snapshot-card span{font-size:.61rem}.nfl-snapshot-card strong{font-size:1.28rem}.nfl-snapshot-card small{font-size:.60rem}
+          .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 48px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.92rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
         }
         </style>
         """,
@@ -157,8 +156,7 @@ def _week_games(schedule: pd.DataFrame, week: int | None) -> pd.DataFrame:
     if schedule is None or schedule.empty or week is None:
         return pd.DataFrame()
     week_series = pd.to_numeric(schedule["week"], errors="coerce")
-    games = schedule[week_series == int(week)].copy()
-    return games.sort_values("kickoff_et", na_position="last").reset_index(drop=True)
+    return schedule[week_series == int(week)].copy().sort_values("kickoff_et", na_position="last").reset_index(drop=True)
 
 
 def _matchup_map(schedule: pd.DataFrame, week: int | None) -> dict[str, str]:
@@ -193,13 +191,7 @@ def _build_passing_top25(schedule: pd.DataFrame, week: int | None) -> pd.DataFra
         try:
             away_qbs = build_passing_yards_projection(home, NFL_SEASON, NFL_BASELINE_SEASON)
             home_qbs = build_passing_yards_projection(away, NFL_SEASON, NFL_BASELINE_SEASON)
-            qbs = pd.concat(
-                [
-                    away_qbs[away_qbs["team"] == away],
-                    home_qbs[home_qbs["team"] == home],
-                ],
-                ignore_index=True,
-            )
+            qbs = pd.concat([away_qbs[away_qbs["team"] == away], home_qbs[home_qbs["team"] == home]], ignore_index=True)
             if qbs.empty:
                 continue
             qbs["attempts"] = pd.to_numeric(qbs.get("attempts"), errors="coerce")
@@ -215,44 +207,6 @@ def _build_passing_top25(schedule: pd.DataFrame, week: int | None) -> pd.DataFra
     return rank_passing_yards_top25(pd.concat(candidates, ignore_index=True), limit=25)
 
 
-def _build_prop(prop: str, schedule: pd.DataFrame, week: int | None) -> pd.DataFrame:
-    config = PROP_CATALOG[prop]
-    try:
-        if config["builder"] == "passing":
-            df = _build_passing_top25(schedule, week)
-        else:
-            df = config["builder"](NFL_SEASON, NFL_BASELINE_SEASON)
-    except TypeError:
-        df = config["builder"]()
-    except Exception:
-        return pd.DataFrame()
-
-    if df is None or df.empty:
-        return pd.DataFrame()
-
-    df = df.copy()
-    if "player_name" not in df.columns and "player" in df.columns:
-        df["player_name"] = df["player"]
-    if "team" not in df.columns:
-        for candidate in ["recent_team", "team_abbreviation", "team_name"]:
-            if candidate in df.columns:
-                df["team"] = df[candidate]
-                break
-    if "team" not in df.columns:
-        df["team"] = ""
-
-    matchups = _matchup_map(schedule, week)
-    df["game"] = df["team"].astype(str).str.upper().map(matchups).fillna(df.get("game", ""))
-    shots = _headshot_map()
-    if "headshot_url" not in df.columns:
-        df["headshot_url"] = ""
-    if "player_id" in df.columns:
-        df["headshot_url"] = df.apply(lambda r: r.get("headshot_url") or shots.get(str(r.get("player_id")), ""), axis=1)
-
-    df = _apply_movement(df, prop)
-    return df.head(25).reset_index(drop=True)
-
-
 def _load_movement_state() -> dict:
     try:
         return json.loads(NFL_MOVEMENT_FILE.read_text()) if NFL_MOVEMENT_FILE.exists() else {}
@@ -265,11 +219,10 @@ def _apply_movement(df: pd.DataFrame, prop: str) -> pd.DataFrame:
         return df
     state = _load_movement_state()
     previous = state.get(prop, {})
-    current = {}
-    labels = []
-    for _, row in df.iterrows():
+    current, labels = {}, []
+    for i, (_, row) in enumerate(df.iterrows(), start=1):
         key = str(row.get("player_id") or f"{row.get('player_name')}|{row.get('team')}")
-        rank = int(row.get("rank", len(current) + 1))
+        rank = int(row.get("rank") or i)
         current[key] = rank
         old = previous.get(key)
         labels.append("NEW" if old is None else f"↑ {int(old)-rank}" if int(old) > rank else f"↓ {rank-int(old)}" if int(old) < rank else "—")
@@ -283,6 +236,36 @@ def _apply_movement(df: pd.DataFrame, prop: str) -> pd.DataFrame:
     return result
 
 
+def _build_prop(prop: str, schedule: pd.DataFrame, week: int | None) -> pd.DataFrame:
+    config = PROP_CATALOG[prop]
+    try:
+        df = _build_passing_top25(schedule, week) if config["builder"] == "passing" else config["builder"](NFL_SEASON, NFL_BASELINE_SEASON)
+    except TypeError:
+        df = config["builder"]()
+    except Exception:
+        return pd.DataFrame()
+    if df is None or df.empty:
+        return pd.DataFrame()
+    df = df.copy()
+    if "player_name" not in df.columns and "player" in df.columns:
+        df["player_name"] = df["player"]
+    if "team" not in df.columns:
+        for candidate in ["recent_team", "team_abbreviation", "team_name"]:
+            if candidate in df.columns:
+                df["team"] = df[candidate]
+                break
+    if "team" not in df.columns:
+        df["team"] = ""
+    matchups = _matchup_map(schedule, week)
+    df["game"] = df["team"].astype(str).str.upper().map(matchups).fillna(df.get("game", ""))
+    shots = _headshot_map()
+    if "headshot_url" not in df.columns:
+        df["headshot_url"] = ""
+    if "player_id" in df.columns:
+        df["headshot_url"] = df.apply(lambda r: r.get("headshot_url") or shots.get(str(r.get("player_id")), ""), axis=1)
+    return _apply_movement(df, prop).head(25).reset_index(drop=True)
+
+
 def _format_projection(row: pd.Series, prop: str) -> str:
     config = PROP_CATALOG[prop]
     value = row.get(config["projection"])
@@ -294,40 +277,91 @@ def _format_projection(row: pd.Series, prop: str) -> str:
         if numeric <= 1:
             numeric *= 100
         return f"Model probability {numeric:.1f}%"
-    if unit == "TDs" or unit == "sacks":
+    if unit in {"TDs", "sacks"}:
         return f"Projection {float(value):.2f} {unit}"
     return f"Projection {float(value):.1f} {unit}"
 
 
-def _why(row: pd.Series, prop: str) -> str:
+def _ranking_score(row: pd.Series, prop: str) -> float:
+    for key in ["gi_score", "score", "model_probability"]:
+        value = row.get(key)
+        if value is not None and not pd.isna(value):
+            numeric = float(value)
+            if key == "model_probability" and numeric <= 1:
+                numeric *= 100
+            return min(99.9, max(0.0, numeric))
+    projection = row.get(PROP_CATALOG[prop]["projection"])
+    return 0.0 if projection is None or pd.isna(projection) else min(99.9, max(0.0, float(projection)))
+
+
+def _first_numeric(row: pd.Series, keys: list[str]) -> tuple[str, float | None]:
+    for key in keys:
+        value = row.get(key)
+        if value is not None and not pd.isna(value):
+            try:
+                return key, float(value)
+            except (TypeError, ValueError):
+                continue
+    return "", None
+
+
+def _detail_metrics(row: pd.Series, prop: str) -> list[tuple[str, str]]:
+    _, l5 = _first_numeric(row, [k for k in row.index if str(k).startswith("last_5_")])
+    _, l3 = _first_numeric(row, [k for k in row.index if str(k).startswith("last_3_")])
+    _, season = _first_numeric(row, [
+        "passing_yards_per_game", "rushing_yards_per_game", "receiving_yards_per_game",
+        "receptions_per_game", "passing_tds_per_game", "passing_rushing_yards_per_game",
+        "rushing_receiving_yards_per_game", "sacks_per_game", "tackles_per_game",
+    ])
+    line = row.get("consensus_line")
+    mode = str(row.get("ranking_mode") or "Foundation")
+    fmt = lambda v: "—" if v is None else f"{v:.1f}"
+    return [
+        ("LAST 5", fmt(l5)),
+        ("LAST 3", fmt(l3)),
+        ("SEASON AVG", fmt(season)),
+        ("MARKET", f"{float(line):.1f}" if line is not None and not pd.isna(line) else mode),
+    ]
+
+
+def _why_engine(row: pd.Series, prop: str) -> str:
+    parts = []
+    matchup_label = str(row.get("passing_matchup_label") or "").strip()
+    matchup_index = row.get("passing_matchup_index")
+    if matchup_label and matchup_label.lower() not in {"nan", "none", "unknown"}:
+        text = f"{matchup_label} opponent matchup"
+        if matchup_index is not None and not pd.isna(matchup_index):
+            text += f" ({float(matchup_index):.0f} index)"
+        parts.append(text)
+
+    metrics = _detail_metrics(row, prop)
+    values = {label: value for label, value in metrics}
+    if values.get("LAST 5") not in {None, "—"} and values.get("SEASON AVG") not in {None, "—"}:
+        try:
+            l5, season = float(values["LAST 5"]), float(values["SEASON AVG"])
+            if l5 > season * 1.08:
+                parts.append("recent form is running above the season baseline")
+            elif l5 < season * 0.92:
+                parts.append("recent form is below the season baseline")
+            else:
+                parts.append("recent form is tracking close to the season baseline")
+        except Exception:
+            pass
+
     line = row.get("consensus_line")
     side = str(row.get("model_side") or "").strip()
-    mode = str(row.get("ranking_mode") or "Foundation")
-    parts = []
-    if pd.notna(line):
-        parts.append(f"Live line {float(line):.1f}")
-    if side and side not in {"FOUNDATION", "nan", "None"}:
-        parts.append(f"Model side {side}")
-    if mode:
-        parts.append(mode)
+    if line is not None and not pd.isna(line):
+        market_text = f"live line {float(line):.1f}"
+        if side and side.lower() not in {"nan", "none", "foundation"}:
+            market_text += f" with the model leaning {side}"
+        parts.append(market_text)
+
     if not parts:
-        parts.append("Recent form and prior-season production")
-    return " · ".join(parts)
+        parts.append("the current ranking blends prior-season production, recent form and this week's role/matchup data that is available")
+    return "; ".join(parts[:3]) + "."
 
 
-def _ranking_score(row: pd.Series, prop: str) -> float:
-    probability = row.get("model_probability")
-    if probability is not None and not pd.isna(probability):
-        value = float(probability)
-        return value * 100 if value <= 1 else value
-    projection_col = PROP_CATALOG[prop]["projection"]
-    projection = row.get(projection_col)
-    if projection is None or pd.isna(projection):
-        return 0.0
-    return min(99.9, max(0.0, float(projection)))
-
-
-def _render_rank_card(row: pd.Series, prop: str) -> None:
+def _render_rank_header(row: pd.Series, prop: str) -> None:
     name = str(row.get("player_name") or "Player")
     team = str(row.get("team") or "")
     game = str(row.get("game") or "Matchup pending")
@@ -336,8 +370,8 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
     rank = int(row.get("rank") or 0)
     movement = str(row.get("rank_movement") or "—")
     projection = _format_projection(row, prop)
-    why = _why(row, prop)
     score = _ranking_score(row, prop)
+    market_mode = str(row.get("ranking_mode") or "Foundation")
     _render_html(
         f"""
         <div class="nfl-rank-card">
@@ -347,7 +381,7 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
             <strong class="nfl-rank-name">{escape(name)}</strong>
             <div class="nfl-rank-meta"><b>{escape(team)}</b> · {escape(game)}</div>
             <div class="nfl-rank-proj">{escape(projection)}</div>
-            <div class="nfl-rank-why">{escape(why)}</div>
+            <div class="nfl-rank-market">{escape(market_mode)}</div>
           </div>
           <div class="nfl-rank-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
         </div>
@@ -355,90 +389,98 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
     )
 
 
-def _render_rankings(schedule: pd.DataFrame, week: int | None) -> None:
-    _render_html(
-        """
-        <div class="nfl-section-heading">
-          <div><div class="nfl-section-title">🏆 Player Rankings</div><div class="nfl-section-subtitle">Start with the strongest five. Open the full Top 25 only when you need more depth.</div></div>
-          <div class="nfl-section-count">25 ranked</div>
-        </div>
-        """
+def _open_player(row: pd.Series, prop: str) -> None:
+    player = row.to_dict()
+    player["selected_prop"] = prop
+    st.session_state["nfl_selected_player"] = player
+    st.switch_page("pages/nfl_player.py")
+
+
+def _render_player_intelligence(row: pd.Series, prop: str, key_prefix: str) -> None:
+    metrics = _detail_metrics(row, prop)
+    metric_html = "".join(
+        f'<div class="nfl-intel-metric"><span>{escape(label)}</span><strong>{escape(value)}</strong></div>'
+        for label, value in metrics
     )
-    prop = st.selectbox("Select NFL market", list(PROP_CATALOG.keys()), key="nfl_market_selector")
-    rankings = _build_prop(prop, schedule, week)
+    _render_html(f'<div class="nfl-intel-grid">{metric_html}</div>')
+    _render_html(f'<div class="nfl-why"><b>Why Engine:</b> {escape(_why_engine(row, prop))}</div>')
+    if st.button("Open full player card", key=f"nfl_open_player_{key_prefix}", use_container_width=True):
+        _open_player(row, prop)
+
+
+def _render_ranking_list(rankings: pd.DataFrame, prop: str) -> None:
     if rankings.empty:
         st.info(f"{prop} rankings are temporarily unavailable while the data feed fills in.")
         return
 
-    for _, row in rankings.head(5).iterrows():
-        _render_rank_card(row, prop)
+    state_key = "nfl_full_" + prop.lower().replace(" ", "_").replace("+", "plus")
+    show_full = bool(st.session_state.get(state_key, False))
+    rows = rankings if show_full else rankings.head(5)
+
+    for idx, row in rows.iterrows():
+        player_key = str(row.get("player_id") or idx).replace("-", "_")
+        intel_key = f"nfl_intel_{state_key}_{player_key}_{int(row.get('rank') or idx + 1)}"
+        with st.container(border=True, key=f"nfl_rank_wrap_{state_key}_{player_key}_{idx}"):
+            _render_rank_header(row, prop)
+            if st.button(
+                "ⓘ Hide Intelligence" if st.session_state.get(intel_key, False) else "ⓘ View Intelligence",
+                key=f"{intel_key}_toggle",
+                use_container_width=True,
+            ):
+                st.session_state[intel_key] = not st.session_state.get(intel_key, False)
+                st.rerun()
+            if st.session_state.get(intel_key, False):
+                _render_player_intelligence(row, prop, f"{state_key}_{player_key}_{idx}")
 
     if len(rankings) > 5:
-        with st.expander(f"View Full Top 25 · {prop}"):
-            for _, row in rankings.iloc[5:].iterrows():
-                _render_rank_card(row, prop)
+        label = "Show Top 5 Only" if show_full else f"View Full Top 25 · {prop}"
+        if st.button(label, key=f"nfl_full_top25_{state_key}", use_container_width=True):
+            st.session_state[state_key] = not show_full
+            st.rerun()
 
 
-def _render_matchup_intelligence(games: pd.DataFrame) -> None:
+def _render_rankings(schedule: pd.DataFrame, week: int | None) -> None:
     _render_html(
         """
-        <div class="nfl-section-heading">
-          <div><div class="nfl-section-title">🔥 Matchup Intelligence</div><div class="nfl-section-subtitle">Weekly matchup context replaces MLB's daily yesterday/power-watch rhythm.</div></div>
+        <div class="nfl-rankings-heading">
+          <strong>🏆 Player Rankings</strong>
+          <span>Market-specific intelligence · Top 5 first · swipe the markets for more</span>
         </div>
         """
     )
+    labels = [f"{cfg['icon']} {prop}" for prop, cfg in PROP_CATALOG.items()]
+    tabs = st.tabs(labels)
+    for tab, prop in zip(tabs, PROP_CATALOG.keys()):
+        with tab:
+            rankings = _build_prop(prop, schedule, week)
+            _render_ranking_list(rankings, prop)
+
+
+def _friendly_market_status(feed: dict | None) -> str:
+    if not isinstance(feed, dict):
+        return "Foundation"
+    text = " ".join(str(feed.get(k) or "") for k in ["mode", "provider", "status", "message"]).lower()
+    if any(token in text for token in ["live", "sportsbook", "the odds api", "sportsgameodds"]):
+        if "not_configured" not in text and "not configured" not in text:
+            return "Live"
+    return "Foundation"
+
+
+def _hero_message(games: pd.DataFrame, week: int | None, now: datetime) -> str:
     if games.empty:
-        st.info("Weekly matchup intelligence will populate when the slate is available.")
-        return
-    labels = [f"{str(g.get('away_team','')).upper()} @ {str(g.get('home_team','')).upper()}" for _, g in games.iterrows()]
-    selected = st.selectbox("Select matchup", labels, key="nfl_matchup_intelligence")
-    game = games.iloc[labels.index(selected)]
-    kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
-    kickoff_text = kickoff.strftime("%a %b %d · %I:%M %p ET") if pd.notna(kickoff) else "Kickoff TBD"
-    st.markdown(f"**{selected}**")
-    st.caption(f"{kickoff_text} · {game.get('status','Scheduled')}")
-    st.caption("Player-level Last 5, Last 10, opponent history, defensive matchup, role, injuries and weather will feed the Why Engine as those live data layers are connected.")
-
-
-def _render_player_search(schedule: pd.DataFrame, week: int | None) -> None:
-    _render_html(
-        """
-        <div class="nfl-section-heading">
-          <div><div class="nfl-section-title">🔎 Player Search</div><div class="nfl-section-subtitle">Search a player without needing to remember the team. Their tracked markets appear together.</div></div>
-        </div>
-        """
-    )
-    query = st.text_input("Search NFL player", placeholder="Type a player name…", key="nfl_player_search")
-    if len(query.strip()) < 2:
-        return
-    q = query.strip().lower()
-    matches = []
-    for prop in PROP_CATALOG:
-        df = _build_prop(prop, schedule, week)
-        if df.empty:
-            continue
-        mask = df["player_name"].astype(str).str.lower().str.contains(q, na=False)
-        for _, row in df[mask].head(4).iterrows():
-            matches.append((prop, row))
-    if not matches:
-        st.info("No tracked player matched that search yet.")
-        return
-    names = []
-    seen = set()
-    for _, row in matches:
-        name = str(row.get("player_name") or "")
-        if name and name not in seen:
-            seen.add(name); names.append(name)
-    chosen = st.selectbox("Player", names, key="nfl_player_search_result")
-    chosen_rows = [(prop, row) for prop, row in matches if str(row.get("player_name")) == chosen]
-    st.markdown(f"### {chosen}")
-    if chosen_rows:
-        st.caption(f"{chosen_rows[0][1].get('team','')} · {chosen_rows[0][1].get('game','')}")
-    cols = st.columns(2)
-    for i, (prop, row) in enumerate(chosen_rows):
-        with cols[i % 2]:
-            st.markdown(f"**{prop}**")
-            st.caption(_format_projection(row, prop))
+        return "Build the week from the strongest player signals, then open each ranking to see what is driving the board."
+    kickoffs = pd.to_datetime(games.get("kickoff_et"), errors="coerce").dropna()
+    if kickoffs.empty:
+        return "Build the week from the strongest player signals, then open each ranking to see what is driving the board."
+    naive_now = now.replace(tzinfo=None)
+    first, last = kickoffs.min(), kickoffs.max()
+    if naive_now < first - pd.Timedelta(days=2):
+        return f"Week {week} is building now. Track the strongest early player signals, opening markets and matchup advantages before kickoff."
+    if naive_now < first:
+        return f"Week {week} is taking shape. Open each player to see the recent form, matchup context and market signals driving the ranking."
+    if naive_now <= last + pd.Timedelta(hours=4):
+        return f"Week {week} is live. Follow the board as player signals, markets and matchup context change across the slate."
+    return f"Week {week} is complete. The board is ready to be graded against what actually happened before the next slate takes over."
 
 
 def show() -> None:
@@ -450,9 +492,6 @@ def show() -> None:
     if st.button("⟳  REFRESH", key="nfl_page_refresh", help="Refresh NFL data"):
         try:
             load_nfl_schedule.clear()
-        except Exception:
-            pass
-        try:
             _headshot_map.clear()
         except Exception:
             pass
@@ -464,10 +503,10 @@ def show() -> None:
     )
 
     _render_html(
-        """
+        f"""
         <section class="nfl-hero">
           <h1 class="nfl-hero-title">NFL Intelligence Center</h1>
-          <p class="nfl-hero-subtitle">Start with the strongest players in each market, review the reason behind every ranking, and open the full Top 25 only when you need more depth.</p>
+          <p class="nfl-hero-subtitle">{escape(_hero_message(games, week, now))}</p>
         </section>
         """
     )
@@ -484,22 +523,20 @@ def show() -> None:
         st.switch_page("pages/nfl_games.py")
 
     feed = get_nfl_odds_feed_status()
-    mode = str(feed.get("mode") or feed.get("status") or "Foundation") if isinstance(feed, dict) else "Foundation"
+    market_status = _friendly_market_status(feed)
     alert_count = 0
     _render_html(
         f"""
-        <div class="nfl-snapshot-heading"><strong>This Week's NFL Snapshot</strong><span>Weekly slate · markets can open days before kickoff</span></div>
+        <div class="nfl-snapshot-heading">This Week's NFL Snapshot</div>
         <div class="nfl-snapshot-grid">
-          <div class="nfl-snapshot-card nfl-snapshot-emerald"><span>GAMES</span><strong>{len(games)}</strong><small>{escape(week_label)} · {escape(phase)}</small></div>
-          <div class="nfl-snapshot-card"><span>PROP MARKETS</span><strong>{len(PROP_CATALOG)}</strong><small>{escape(mode)}</small></div>
-          <div class="nfl-snapshot-card nfl-snapshot-gold"><span>ALERTS</span><strong>{alert_count}</strong><small>Weather / injury layer</small></div>
+          <div class="nfl-snapshot-card nfl-snapshot-emerald"><span>GAMES</span><strong>{len(games)}</strong><small>{escape(week_label)}</small></div>
+          <div class="nfl-snapshot-card"><span>TRACKED PROPS</span><strong>{len(PROP_CATALOG)}</strong><small>{escape(market_status)}</small></div>
+          <div class="nfl-snapshot-card nfl-snapshot-gold"><span>ALERTS</span><strong>{alert_count}</strong><small>No active alerts</small></div>
         </div>
         """
     )
 
-    _render_matchup_intelligence(games)
     _render_rankings(schedule, week)
-    _render_player_search(schedule, week)
 
     st.divider()
     st.caption("Sach Sports Dashboard · NFL Intelligence")
