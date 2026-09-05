@@ -32,7 +32,7 @@ def _css() -> None:
         """
         <style>
         .block-container{max-width:1100px;padding-top:.15rem!important}
-        .nfl-games-hero{padding:15px 17px;border:2px solid rgba(255,204,51,.84);border-radius:16px;background:linear-gradient(110deg,rgba(246,200,76,.20),#090b0b 48%,rgba(25,217,120,.18));margin:5px 0 12px}
+        .nfl-games-hero{padding:13px 15px;border:2px solid rgba(255,204,51,.84);border-radius:16px;background:linear-gradient(110deg,rgba(246,200,76,.20),#090b0b 48%,rgba(25,217,120,.18));margin:3px 0 10px}
         .nfl-games-hero h1{color:#fff;margin:0;font-size:1.55rem}
         .nfl-games-hero p{color:#c9ccd0;margin:10px 0 0;font-size:.84rem;line-height:1.45}
         .nfl-day-heading{color:#f6c84c;font-size:.84rem;font-weight:900;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em}
@@ -65,8 +65,8 @@ def _css() -> None:
         div[class*="st-key-back_to_nfl"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-          div[class*="st-key-back_to_nfl"]{margin-top:-2.1rem!important}
-          .nfl-games-hero{padding:13px 14px}.nfl-games-hero h1{font-size:1.28rem}
+          div[class*="st-key-back_to_nfl"]{margin-top:-4.25rem!important;margin-bottom:2px!important}
+          .nfl-games-hero{padding:12px 13px;margin-top:2px}.nfl-games-hero h1{font-size:1.24rem}.nfl-games-hero p{margin-top:7px;font-size:.79rem}
           .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}
           .nfl-game-row{padding:9px 10px}.nfl-game-team img{width:30px;height:30px}.nfl-game-middle{min-width:86px}
           .nfl-scout{padding:8px}.nfl-signal{padding:6px 0;margin:0;border-bottom:1px solid #272b30;font-size:.68rem}.nfl-signal:last-child{border-bottom:0}

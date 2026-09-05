@@ -133,13 +133,16 @@ def _why(row: pd.Series) -> str:
     reasons = row.get("gi_reasons")
     if isinstance(reasons, list) and reasons: return "; ".join(str(x) for x in reasons[:3]) + "."
     parts = []
-    label = str(row.get("passing_matchup_label") or "").strip()
+    raw_label = row.get("passing_matchup_label")
+    label = "" if raw_label is None or pd.isna(raw_label) else str(raw_label).strip()
     if label and label.lower() not in {"unknown", "nan", "none"}: parts.append(f"{label} opponent matchup")
     l5_keys = [k for k in row.index if str(k).startswith("last_5_")]
     if l5_keys:
         value = row.get(l5_keys[0])
         if value is not None and not pd.isna(value): parts.append(f"recent five-game signal {float(value):.1f}")
-    line = row.get("consensus_line") or row.get("prop_line")
+    line = row.get("consensus_line")
+    if line is None or pd.isna(line):
+        line = row.get("prop_line")
     if line is not None and not pd.isna(line): parts.append(f"current market line {float(line):.1f}")
     if not parts: parts.append("prior-season production, recent role and this week's available matchup context")
     return "; ".join(parts[:3]) + "."
@@ -167,12 +170,18 @@ st.markdown("""
 .nfl-history-empty b{color:#f6c84c;font-size:.82rem}
 div[class*="st-key-back_nfl_player"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
 div[data-testid="stSegmentedControl"] button[aria-pressed="true"]{color:#19d978!important;border-color:#19d978!important;background:#0b1711!important}
+div[data-testid="stSegmentedControl"] button[aria-pressed="true"] p,
+div[data-testid="stSegmentedControl"] button[aria-pressed="true"] span{color:#19d978!important}
 .nfl-trend-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0 10px}
 .nfl-trend-summary>div{background:#101112;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:7px 6px;min-width:0}
 .nfl-trend-summary span{display:block;color:#92979e;font-size:.54rem}.nfl-trend-summary strong{display:block;color:#fff;font-size:.80rem;margin-top:3px}
+/* Keep useful chart tools (data table + full screen), but remove download. */
+div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] button[aria-label*="Download" i],
+div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] button[title*="Download" i],
+div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] button:nth-of-type(2){display:none!important}
 @media(max-width:700px){
   .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-  div[class*="st-key-back_nfl_player"]{margin-top:-2.1rem!important}
+  div[class*="st-key-back_nfl_player"]{margin-top:-4.25rem!important;margin-bottom:2px!important}
   .nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
   .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
   .nfl-player-copy h2{font-size:1.1rem}
@@ -243,7 +252,9 @@ selected = st.segmented_control("Player market", available, default=default, key
 row = row_lookup.get(selected)
 line = None
 if row is not None:
-    line = row.get("consensus_line") if row.get("consensus_line") is not None else row.get("prop_line")
+    line = row.get("consensus_line")
+    if line is None or pd.isna(line):
+        line = row.get("prop_line")
 
 render_nfl_player_trend(player_id, selected, line, player_name=name)
 
