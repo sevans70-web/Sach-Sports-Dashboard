@@ -24,10 +24,12 @@ from engines.nfl_receptions import build_receptions_top25
 from engines.nfl_touchdowns import build_anytime_td_top25, build_first_td_top25
 from engines.nfl_additional_props import (
     build_passing_tds_top25,
+    build_interceptions_top25,
     build_passing_rushing_yards_top25,
     build_rushing_receiving_yards_top25,
     build_sacks_top25,
     build_tackles_top25,
+    build_tackles_assists_top25,
 )
 
 NFL_SEASON = 2026
@@ -38,15 +40,17 @@ NFL_MOVEMENT_FILE = Path("/tmp/sach_nfl_rank_movement.json")
 PROP_CATALOG = {
     "Passing Yards": {"builder": "passing", "projection": "passing_yards_projection_matchup", "unit": "yards", "icon": "🏈"},
     "Passing TDs": {"builder": build_passing_tds_top25, "projection": "passing_tds_projection", "unit": "TDs", "icon": "🎯"},
-    "Pass + Rush Yds": {"builder": build_passing_rushing_yards_top25, "projection": "passing_rushing_projection", "unit": "yards", "icon": "⚡"},
-    "Rushing Yards": {"builder": build_rushing_yards_top25, "projection": "rushing_projection", "unit": "yards", "icon": "🏃"},
-    "Rush + Rec Yds": {"builder": build_rushing_receiving_yards_top25, "projection": "rushing_receiving_projection", "unit": "yards", "icon": "🔀"},
-    "Receiving Yards": {"builder": build_receiving_yards_top25, "projection": "receiving_projection", "unit": "yards", "icon": "🙌"},
-    "Receptions": {"builder": build_receptions_top25, "projection": "receptions_projection", "unit": "receptions", "icon": "🧤"},
+    "Pass + Rush Yards": {"builder": build_passing_rushing_yards_top25, "projection": "passing_rushing_projection", "unit": "yards", "icon": "⚡"},
+    "Interceptions": {"builder": build_interceptions_top25, "projection": "interceptions_projection", "unit": "interceptions", "icon": "🚫"},
     "Anytime TD": {"builder": build_anytime_td_top25, "projection": "model_probability", "unit": "%", "icon": "🔥"},
     "First TD": {"builder": build_first_td_top25, "projection": "model_probability", "unit": "%", "icon": "1️⃣"},
+    "Receiving Yards": {"builder": build_receiving_yards_top25, "projection": "receiving_projection", "unit": "yards", "icon": "🙌"},
+    "Receptions": {"builder": build_receptions_top25, "projection": "receptions_projection", "unit": "receptions", "icon": "🧤"},
+    "Rushing Yards": {"builder": build_rushing_yards_top25, "projection": "rushing_projection", "unit": "yards", "icon": "🏃"},
+    "Rush + Receiving Yards": {"builder": build_rushing_receiving_yards_top25, "projection": "rushing_receiving_projection", "unit": "yards", "icon": "🔀"},
     "Sacks": {"builder": build_sacks_top25, "projection": "sacks_projection", "unit": "sacks", "icon": "💥"},
-    "Tackles + Assists": {"builder": build_tackles_top25, "projection": "tackles_projection", "unit": "tackles", "icon": "🛡️"},
+    "Tackles": {"builder": build_tackles_top25, "projection": "solo_tackles_projection", "unit": "tackles", "icon": "🛡️"},
+    "Tackles + Assists": {"builder": build_tackles_assists_top25, "projection": "tackles_projection", "unit": "tackles", "icon": "🛡️"},
 }
 
 
@@ -62,7 +66,7 @@ def _inject_nfl_css() -> None:
         .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
         /* Pull the NFL refresh control into the same utility row as the Sport Hub. */
-        div[class*="st-key-nfl_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:.1rem!important;right:0!important;z-index:20!important}
+        div[class*="st-key-nfl_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:14px!important;right:0!important;z-index:20!important}
         div[class*="st-key-nfl_page_refresh"]>div{width:auto!important}
         div[class*="st-key-nfl_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d6b35c!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;letter-spacing:.025em!important;white-space:nowrap!important}
         .nfl-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:43px 0 8px;white-space:nowrap}
@@ -90,7 +94,8 @@ def _inject_nfl_css() -> None:
         div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
         div[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar{display:none!important}
         div[data-testid="stTabs"] button[role="tab"]{flex:0 0 auto!important;white-space:nowrap!important;background:#0d0f10!important;color:#fff!important;border:1px solid #34373c!important;padding:.45rem .78rem!important;min-height:40px!important}
-        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#f6c84c!important;border-color:#d6b35c!important;background:#15130d!important}
+        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#19d978!important;border-color:#19d978!important;background:#0b1711!important}
+        div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
 
         .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 58px;gap:9px;align-items:start;width:100%;min-height:118px;padding:11px 9px;border-left:4px solid #19d978;background:#0d0f10;color:#fff;box-sizing:border-box}
         .nfl-rank-number{text-align:center;padding-top:2px}.nfl-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}.nfl-rank-movement{display:block;margin-top:7px;color:#19d978;font-size:.58rem;font-weight:900;white-space:nowrap}
@@ -284,7 +289,7 @@ def _format_projection(row: pd.Series, prop: str) -> str:
     return f"Projection {float(value):.1f} {unit}"
 
 
-def _ranking_score(row: pd.Series, prop: str) -> float:
+def _ranking_score(row: pd.Series, prop: str) -> float | None:
     for key in ["gi_score", "score", "model_probability"]:
         value = row.get(key)
         if value is not None and not pd.isna(value):
@@ -292,7 +297,7 @@ def _ranking_score(row: pd.Series, prop: str) -> float:
             if key == "model_probability" and numeric <= 1:
                 numeric *= 100
             return min(99.9, max(0.0, numeric))
-    return 0.0
+    return None
 
 
 def _first_numeric(row: pd.Series, keys: list[str]) -> tuple[str, float | None]:
@@ -372,6 +377,7 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
     movement = str(row.get("rank_movement") or "—")
     projection = _format_projection(row, prop)
     score = _ranking_score(row, prop)
+    score_text = "PENDING" if score is None else f"{score:.1f}"
     market_mode = str(row.get("ranking_mode") or "Foundation")
     _render_html(
         f"""
@@ -384,7 +390,7 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
             <div class="nfl-rank-proj">{escape(projection)}</div>
             <div class="nfl-rank-market">{escape(market_mode)}</div>
           </div>
-          <div class="nfl-rank-score"><small>GI SCORE</small><strong>{score:.1f}</strong></div>
+          <div class="nfl-rank-score"><small>GI SCORE</small><strong>{score_text}</strong></div>
         </div>
         """
     )
@@ -537,12 +543,9 @@ def show() -> None:
         """
     )
 
-    _render_rankings(schedule, week)
-
     render_nfl_prediction_performance()
 
-    st.divider()
-    st.caption("Sach Sports Dashboard · NFL Intelligence")
+    _render_rankings(schedule, week)
 
 
 show()

@@ -21,7 +21,8 @@ from engines.nfl_receptions import build_receptions_top25
 from engines.nfl_touchdowns import build_anytime_td_top25, build_first_td_top25
 from engines.nfl_additional_props import (
     build_passing_tds_top25, build_passing_rushing_yards_top25,
-    build_rushing_receiving_yards_top25, build_sacks_top25, build_tackles_top25,
+    build_interceptions_top25, build_rushing_receiving_yards_top25,
+    build_sacks_top25, build_tackles_top25, build_tackles_assists_top25,
 )
 
 NFL_SEASON = 2026
@@ -31,15 +32,17 @@ TZ = ZoneInfo("America/Toronto")
 PROP_CATALOG = {
     "Passing Yards": ("passing", "passing_yards_projection_matchup", "yards"),
     "Passing TDs": (build_passing_tds_top25, "passing_tds_projection", "TDs"),
-    "Pass + Rush Yds": (build_passing_rushing_yards_top25, "passing_rushing_projection", "yards"),
-    "Rushing Yards": (build_rushing_yards_top25, "rushing_projection", "yards"),
-    "Rush + Rec Yds": (build_rushing_receiving_yards_top25, "rushing_receiving_projection", "yards"),
-    "Receiving Yards": (build_receiving_yards_top25, "receiving_projection", "yards"),
-    "Receptions": (build_receptions_top25, "receptions_projection", "receptions"),
+    "Pass + Rush Yards": (build_passing_rushing_yards_top25, "passing_rushing_projection", "yards"),
+    "Interceptions": (build_interceptions_top25, "interceptions_projection", "interceptions"),
     "Anytime TD": (build_anytime_td_top25, "model_probability", "%"),
     "First TD": (build_first_td_top25, "model_probability", "%"),
+    "Receiving Yards": (build_receiving_yards_top25, "receiving_projection", "yards"),
+    "Receptions": (build_receptions_top25, "receptions_projection", "receptions"),
+    "Rushing Yards": (build_rushing_yards_top25, "rushing_projection", "yards"),
+    "Rush + Receiving Yards": (build_rushing_receiving_yards_top25, "rushing_receiving_projection", "yards"),
     "Sacks": (build_sacks_top25, "sacks_projection", "sacks"),
-    "Tackles + Assists": (build_tackles_top25, "tackles_projection", "tackles"),
+    "Tackles": (build_tackles_top25, "solo_tackles_projection", "tackles"),
+    "Tackles + Assists": (build_tackles_assists_top25, "tackles_projection", "tackles"),
 }
 
 
@@ -163,8 +166,13 @@ st.markdown("""
 .nfl-history-empty{padding:12px;border:1px solid #30343a;border-left:4px solid #d6b35c;border-radius:11px;background:#101112;color:#d7dade;font-size:.78rem;line-height:1.42}
 .nfl-history-empty b{color:#f6c84c;font-size:.82rem}
 div[class*="st-key-back_nfl_player"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
+div[data-testid="stSegmentedControl"] button[aria-pressed="true"]{color:#19d978!important;border-color:#19d978!important;background:#0b1711!important}
+.nfl-trend-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0 10px}
+.nfl-trend-summary>div{background:#101112;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:7px 6px;min-width:0}
+.nfl-trend-summary span{display:block;color:#92979e;font-size:.54rem}.nfl-trend-summary strong{display:block;color:#fff;font-size:.80rem;margin-top:3px}
 @media(max-width:700px){
   .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
+  div[class*="st-key-back_nfl_player"]{margin-top:-2.1rem!important}
   .nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
   .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
   .nfl-player-copy h2{font-size:1.1rem}
@@ -205,12 +213,12 @@ for prop in PROP_CATALOG:
         market_rows.append((prop, match.iloc[0]))
 
 position_markets = {
-    "QB": ["Passing Yards", "Passing TDs", "Pass + Rush Yds"],
-    "RB": ["Rushing Yards", "Rush + Rec Yds", "Anytime TD"],
+    "QB": ["Passing Yards", "Passing TDs", "Pass + Rush Yards", "Interceptions"],
+    "RB": ["Rushing Yards", "Rush + Receiving Yards", "Anytime TD"],
     "WR": ["Receiving Yards", "Receptions", "Anytime TD"],
     "TE": ["Receiving Yards", "Receptions", "Anytime TD"],
 }
-available = [prop for prop, _ in market_rows] or position_markets.get(pos, ["Sacks", "Tackles + Assists"])
+available = [prop for prop, _ in market_rows] or position_markets.get(pos, ["Sacks", "Tackles", "Tackles + Assists"])
 selected_prop = str(player.get("selected_prop") or "")
 default = selected_prop if selected_prop in available else available[0]
 row_lookup = {prop: row for prop, row in market_rows}
@@ -220,7 +228,7 @@ for prop in available:
     row = row_lookup.get(prop)
     if row is None:
         cards.append(
-            f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>Profile</span><small>History and live market data will populate here when available.</small></div>'
+            f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>Building NFL baseline</span><small>Rank and projection will activate when verified NFL data is available.</small></div>'
         )
     else:
         score = _score(row)
