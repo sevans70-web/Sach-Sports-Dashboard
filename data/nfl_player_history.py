@@ -1,4 +1,4 @@
-"""NFL player game-log history for trend charts."""
+"""NFL player game-log history for Sach player intelligence charts."""
 from __future__ import annotations
 
 import pandas as pd
@@ -6,6 +6,9 @@ import streamlit as st
 
 from data.nfl_schedule import load_nfl_schedule
 from data.nfl_stats import load_nfl_weekly_player_stats
+
+NFL_SEASON = 2026
+BASELINE_SEASON = 2025
 
 MARKET_COLUMNS = {
     "Passing Yards": "passing_yards",
@@ -22,50 +25,99 @@ MARKET_COLUMNS = {
 }
 
 
+def _numeric(df: pd.DataFrame, column: str) -> pd.Series:
+    if column not in df.columns:
+        return pd.Series(0.0, index=df.index, dtype=float)
+    return pd.to_numeric(df[column], errors="coerce").fillna(0.0)
+
+
 def _market_value(df: pd.DataFrame, market: str) -> pd.Series:
     if market == "Pass + Rush Yds":
-        return pd.to_numeric(df.get("passing_yards", 0), errors="coerce").fillna(0) + pd.to_numeric(df.get("rushing_yards", 0), errors="coerce").fillna(0)
+        return _numeric(df, "passing_yards") + _numeric(df, "rushing_yards")
     if market == "Rush + Rec Yds":
-        return pd.to_numeric(df.get("rushing_yards", 0), errors="coerce").fillna(0) + pd.to_numeric(df.get("receiving_yards", 0), errors="coerce").fillna(0)
+        return _numeric(df, "rushing_yards") + _numeric(df, "receiving_yards")
     if market in {"Anytime TD", "First TD"}:
-        return (
-            pd.to_numeric(df.get("passing_tds", 0), errors="coerce").fillna(0)
-            + pd.to_numeric(df.get("rushing_tds", 0), errors="coerce").fillna(0)
-            + pd.to_numeric(df.get("receiving_tds", 0), errors="coerce").fillna(0)
-        ).clip(upper=1)
+        return (_numeric(df, "rushing_tds") + _numeric(df, "receiving_tds")).clip(upper=1)
     col = MARKET_COLUMNS.get(market)
-    if col and col in df.columns:
-        return pd.to_numeric(df[col], errors="coerce").fillna(0)
-    return pd.Series(0.0, index=df.index)
+    return _numeric(df, col) if col else pd.Series(0.0, index=df.index, dtype=float)
 
 
-@st.cache_data(ttl=21600, show_spinner=False)
-def player_last_games(player_id: str, market: str, baseline_season: int = 2025, limit: int = 10) -> pd.DataFrame:
-    weekly = load_nfl_weekly_player_stats(baseline_season).copy()
+def _season_player_rows(player_id: str, season: int, market: str) -> pd.DataFrame:
+    try:
+        weekly = load_nfl_weekly_player_stats(season).copy()
+    except Exception:
+        return pd.DataFrame()
     if weekly.empty or "player_id" not in weekly.columns:
         return pd.DataFrame()
     player = weekly[weekly["player_id"].astype(str).eq(str(player_id))].copy()
     if player.empty:
         return pd.DataFrame()
+
     player["value"] = _market_value(player, market)
+    player["season"] = season
 
     try:
-        schedule = load_nfl_schedule(baseline_season, "REG").copy()
+        schedule = load_nfl_schedule(season, "REG").copy()
         schedule["week"] = pd.to_numeric(schedule["week"], errors="coerce")
-        date_map = {}
-        for _, g in schedule.iterrows():
-            wk = int(g["week"]) if pd.notna(g["week"]) else None
-            if wk is None: continue
-            day = pd.to_datetime(g.get("gameday"), errors="coerce")
-            date_map[(wk, str(g.get("away_team") or "").upper())] = day
-            date_map[(wk, str(g.get("home_team") or "").upper())] = day
-        player["game_date"] = player.apply(lambda r: date_map.get((int(r["week"]), str(r.get("recent_team") or "").upper())), axis=1)
+        schedule["kickoff_et"] = pd.to_datetime(schedule.get("kickoff_et"), errors="coerce")
+        game_map = {}
+        for _, game in schedule.iterrows():
+            if pd.isna(game.get("week")):
+                continue
+            wk = int(game["week"])
+            away = str(game.get("away_team") or "").upper()
+            home = str(game.get("home_team") or "").upper()
+            kickoff = game.get("kickoff_et")
+            if away:
+                game_map[(wk, away)] = (kickoff, home)
+            if home:
+                game_map[(wk, home)] = (kickoff, away)
+
+        mapped = []
+        for _, row in player.iterrows():
+            if pd.isna(row.get("week")):
+                mapped.append((pd.NaT, str(row.get("opponent_team") or "").upper()))
+                continue
+            key = (int(row["week"]), str(row.get("recent_team") or "").upper())
+            mapped.append(game_map.get(key, (pd.NaT, str(row.get("opponent_team") or "").upper())))
+        player["game_date"] = [x[0] for x in mapped]
+        player["schedule_opponent"] = [x[1] for x in mapped]
     except Exception:
         player["game_date"] = pd.NaT
+        player["schedule_opponent"] = ""
 
-    player = player.sort_values(["week"]).tail(limit).copy()
-    player["opponent"] = player.get("opponent_team", "").astype(str).str.upper()
-    player["date_label"] = pd.to_datetime(player["game_date"], errors="coerce").dt.strftime("%b %-d")
-    player["date_label"] = player["date_label"].fillna(player["week"].map(lambda x: f"Wk {int(x)}"))
-    player["chart_label"] = player["date_label"] + " · " + player["opponent"]
-    return player[[c for c in ["week","game_date","date_label","chart_label","opponent","value"] if c in player.columns]].reset_index(drop=True)
+    opp = player.get("opponent_team", pd.Series("", index=player.index)).astype(str).str.upper()
+    sched_opp = player.get("schedule_opponent", pd.Series("", index=player.index)).astype(str).str.upper()
+    player["opponent"] = opp.where(opp.str.len() > 0, sched_opp)
+    player["game_date"] = pd.to_datetime(player["game_date"], errors="coerce")
+    return player
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def player_last_games(player_id: str, market: str, limit: int = 10) -> pd.DataFrame:
+    """Return up to 10 real NFL regular-season games, current season first."""
+    frames = []
+    for season in (NFL_SEASON, BASELINE_SEASON):
+        frame = _season_player_rows(player_id, season, market)
+        if not frame.empty:
+            frames.append(frame)
+    if not frames:
+        return pd.DataFrame()
+
+    player = pd.concat(frames, ignore_index=True, sort=False)
+    player["week"] = pd.to_numeric(player["week"], errors="coerce")
+    player["game_date"] = pd.to_datetime(player["game_date"], errors="coerce")
+    player = player.sort_values(["season", "week"], kind="stable").tail(limit).copy()
+
+    def date_label(row):
+        dt = row.get("game_date")
+        if pd.notna(dt):
+            return f"{dt.strftime('%b')} {dt.day}"
+        wk = row.get("week")
+        return f"Wk {int(wk)}" if pd.notna(wk) else "Game"
+
+    player["date_label"] = player.apply(date_label, axis=1)
+    player["opponent"] = player["opponent"].fillna("").astype(str).str.upper()
+    player["chart_label"] = player.apply(lambda r: f"{r['opponent'] or 'OPP'}\n{r['date_label']}", axis=1)
+    keep = ["season", "week", "game_date", "date_label", "chart_label", "opponent", "value"]
+    return player[[c for c in keep if c in player.columns]].reset_index(drop=True)
