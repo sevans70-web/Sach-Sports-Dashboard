@@ -9,7 +9,7 @@ from data.nfl_player_history import player_last_games
 
 
 def _fmt_value(value: float, market: str) -> str:
-    if market in {"Passing TDs", "Receptions", "Sacks", "Tackles + Assists", "Anytime TD", "First TD"}:
+    if market in {"Passing TDs", "Interceptions", "Receptions", "Sacks", "Tackles", "Tackles + Assists", "Anytime TD", "First TD"}:
         return f"{value:.0f}" if float(value).is_integer() else f"{value:.1f}"
     return f"{value:.0f}"
 
@@ -23,7 +23,7 @@ def render_nfl_player_trend(
     history = player_last_games(
         player_id,
         market,
-        limit=10,
+        limit=22,
         player_name=player_name,
     )
     st.markdown(
@@ -44,7 +44,10 @@ def render_nfl_player_trend(
         )
         return False
 
-    plot = history.copy()
+    full_history = history.copy()
+    full_history["show_in_chart"] = False
+    full_history.loc[full_history.tail(10).index, "show_in_chart"] = True
+    plot = full_history[full_history["show_in_chart"]].copy()
     plot["value"] = pd.to_numeric(plot["value"], errors="coerce")
     plot = plot.dropna(subset=["value"]).reset_index(drop=True)
     plot["value_label"] = plot["value"].map(lambda x: _fmt_value(float(x), market))
@@ -59,7 +62,13 @@ def render_nfl_player_trend(
         domain=["Cleared line", "Below line", "Game result"],
         range=["#19d978", "#ff6675", "#d6b35c"],
     )
-    bars = alt.Chart(plot).mark_bar(cornerRadiusTopLeft=5, cornerRadiusTopRight=5).encode(
+    source = full_history.copy()
+    source["value"] = pd.to_numeric(source["value"], errors="coerce")
+    source["value_label"] = source["value"].map(lambda x: _fmt_value(float(x), market))
+    source["result"] = "Game result"
+    if has_line:
+        source["result"] = source["value"].map(lambda x: "Cleared line" if x > line_value else "Below line")
+    bars = alt.Chart(source).transform_filter(alt.datum.show_in_chart).mark_bar(cornerRadiusTopLeft=5, cornerRadiusTopRight=5).encode(
         x=alt.X("chart_label:N", sort=None, title=None, axis=alt.Axis(labelAngle=0, labelLimit=70, labelLineHeight=12, labelPadding=8)),
         y=alt.Y("value:Q", title=None, scale=alt.Scale(zero=True)),
         color=alt.Color("result:N", legend=None, scale=color_scale),
@@ -69,7 +78,7 @@ def render_nfl_player_trend(
             alt.Tooltip("value:Q", title=market, format=".1f"),
         ],
     )
-    labels = alt.Chart(plot).mark_text(dy=-9, fontWeight="bold", color="#ffffff", fontSize=12).encode(
+    labels = alt.Chart(source).transform_filter(alt.datum.show_in_chart).mark_text(dy=-9, fontWeight="bold", color="#ffffff", fontSize=12).encode(
         x=alt.X("chart_label:N", sort=None), y="value:Q", text="value_label:N"
     )
     chart = bars + labels
@@ -83,17 +92,19 @@ def render_nfl_player_trend(
     )
 
     values = plot["value"].dropna()
-    c1, c2, c3, c4 = st.columns(4)
     season_total = values.sum() if not values.empty else None
     l5_avg = values.tail(5).mean() if not values.empty else None
     l10_avg = values.tail(10).mean() if not values.empty else None
-    with c1: st.metric("10-GAME TOTAL", "—" if season_total is None else f"{season_total:.1f}")
-    with c2: st.metric("L5", "—" if l5_avg is None else f"{l5_avg:.1f}")
-    with c3: st.metric("L10", "—" if l10_avg is None else f"{l10_avg:.1f}")
-    with c4:
-        if has_line:
-            hits = int((values.tail(10) > line_value).sum())
-            st.metric("L10 HIT", f"{hits}/{min(10, len(values))}")
-        else:
-            st.metric("GAMES", str(len(values)))
+    fourth_label, fourth_value = "GAMES", str(len(values))
+    if has_line:
+        hits = int((values.tail(10) > line_value).sum())
+        fourth_label, fourth_value = "L10 HIT", f"{hits}/{min(10, len(values))}"
+    st.markdown(
+        '<div class="nfl-trend-summary">'
+        f'<div><span>10-GAME TOTAL</span><strong>{"—" if season_total is None else f"{season_total:.1f}"}</strong></div>'
+        f'<div><span>L5</span><strong>{"—" if l5_avg is None else f"{l5_avg:.1f}"}</strong></div>'
+        f'<div><span>L10</span><strong>{"—" if l10_avg is None else f"{l10_avg:.1f}"}</strong></div>'
+        f'<div><span>{fourth_label}</span><strong>{fourth_value}</strong></div>'
+        '</div>', unsafe_allow_html=True,
+    )
     return True
