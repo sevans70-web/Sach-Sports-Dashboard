@@ -1,6 +1,9 @@
 """NFL player game-log history for Sach player intelligence charts."""
 from __future__ import annotations
 
+import re
+import unicodedata
+
 import pandas as pd
 import streamlit as st
 
@@ -36,13 +39,25 @@ def _market_value(df: pd.DataFrame, market: str) -> pd.Series:
         return _numeric(df, "passing_yards") + _numeric(df, "rushing_yards")
     if market == "Rush + Rec Yds":
         return _numeric(df, "rushing_yards") + _numeric(df, "receiving_yards")
-    if market in {"Anytime TD", "First TD"}:
+    if market == "Anytime TD":
         return (_numeric(df, "rushing_tds") + _numeric(df, "receiving_tds")).clip(upper=1)
+    if market == "First TD":
+        # Weekly box scores identify touchdown scorers, but not who scored first.
+        # Do not display anytime-TD results as if they were first-TD results.
+        return pd.Series(pd.NA, index=df.index, dtype="Float64")
     col = MARKET_COLUMNS.get(market)
     return _numeric(df, col) if col else pd.Series(0.0, index=df.index, dtype=float)
 
 
-def _season_player_rows(player_id: str, season: int, market: str) -> pd.DataFrame:
+def _name_key(value: object) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(char for char in text if not unicodedata.combining(char)).lower()
+    text = re.sub(r"[^a-z0-9 ]", " ", text)
+    text = re.sub(r"\b(jr|sr|ii|iii|iv)\b", " ", text)
+    return " ".join(text.split())
+
+
+def _season_player_rows(player_id: str, player_name: str, season: int, market: str) -> pd.DataFrame:
     try:
         weekly = load_nfl_weekly_player_stats(season).copy()
     except Exception:
@@ -50,6 +65,11 @@ def _season_player_rows(player_id: str, season: int, market: str) -> pd.DataFram
     if weekly.empty or "player_id" not in weekly.columns:
         return pd.DataFrame()
     player = weekly[weekly["player_id"].astype(str).eq(str(player_id))].copy()
+    if player.empty and player_name and "player_display_name" in weekly.columns:
+        wanted_name = _name_key(player_name)
+        player = weekly[
+            weekly["player_display_name"].map(_name_key).eq(wanted_name)
+        ].copy()
     if player.empty:
         return pd.DataFrame()
 
@@ -94,11 +114,16 @@ def _season_player_rows(player_id: str, season: int, market: str) -> pd.DataFram
 
 
 @st.cache_data(ttl=21600, show_spinner=False)
-def player_last_games(player_id: str, market: str, limit: int = 10) -> pd.DataFrame:
+def player_last_games(
+    player_id: str,
+    market: str,
+    limit: int = 10,
+    player_name: str = "",
+) -> pd.DataFrame:
     """Return up to 10 real NFL regular-season games, current season first."""
     frames = []
     for season in (NFL_SEASON, BASELINE_SEASON):
-        frame = _season_player_rows(player_id, season, market)
+        frame = _season_player_rows(player_id, player_name, season, market)
         if not frame.empty:
             frames.append(frame)
     if not frames:
@@ -107,6 +132,7 @@ def player_last_games(player_id: str, market: str, limit: int = 10) -> pd.DataFr
     player = pd.concat(frames, ignore_index=True, sort=False)
     player["week"] = pd.to_numeric(player["week"], errors="coerce")
     player["game_date"] = pd.to_datetime(player["game_date"], errors="coerce")
+    player = player.dropna(subset=["value"])
     player = player.sort_values(["season", "week"], kind="stable").tail(limit).copy()
 
     def date_label(row):
