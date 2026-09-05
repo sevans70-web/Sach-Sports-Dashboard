@@ -144,56 +144,101 @@ def _why(row: pd.Series) -> str:
 
 st.markdown("""
 <style>
-.block-container{max-width:950px;padding-top:.05rem!important}.nfl-player-head{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;padding:12px;background:linear-gradient(118deg,#101112,#111315 68%,rgba(25,217,120,.07));border:1.5px solid #30343a;border-radius:14px;margin:3px 0 9px}.nfl-player-photo,.nfl-player-fallback{width:72px;height:72px;border-radius:50%;overflow:hidden;background:#080909;border:2px solid rgba(214,179,92,.86)}.nfl-player-photo img{width:100%;height:100%;object-fit:cover;object-position:center 24%}.nfl-player-fallback{display:flex;align-items:center;justify-content:center;color:#f6c84c;font-weight:900}.nfl-player-copy h2{margin:0;color:#fff;font-size:1.32rem}.nfl-player-copy p{margin:3px 0;color:#a7abb2;font-size:.78rem}.nfl-player-copy strong{color:#f6c84c;font-size:.76rem}.nfl-market-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0}.nfl-market-card{background:#0d0f10;border:1px solid #30343a;border-left:3px solid #19d978;border-radius:10px;padding:9px}.nfl-market-card b{display:block;color:#fff;font-size:.78rem}.nfl-market-card span{display:block;color:#f6c84c;font-size:.72rem;font-weight:850;margin-top:3px}.nfl-market-card small{display:block;color:#9da2aa;font-size:.65rem;margin-top:3px}.nfl-intel{padding:10px;border:1px solid rgba(214,179,92,.52);border-radius:10px;background:#101112;color:#d9dbde;font-size:.75rem;line-height:1.45;margin-top:8px}.nfl-intel b{color:#f6c84c}div[class*="st-key-back_nfl_player"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}@media(max-width:700px){.block-container{padding-left:.85rem!important;padding-right:.85rem!important}.nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}.nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}.nfl-player-copy h2{font-size:1.1rem}}
+.block-container{max-width:950px;padding-top:.05rem!important}
+.nfl-player-head{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;padding:12px;background:linear-gradient(118deg,#101112,#111315 68%,rgba(25,217,120,.07));border:1.5px solid #30343a;border-radius:14px;margin:3px 0 9px}
+.nfl-player-photo,.nfl-player-fallback{width:72px;height:72px;border-radius:50%;overflow:hidden;background:#080909;border:2px solid rgba(214,179,92,.86)}
+.nfl-player-photo img{width:100%;height:100%;object-fit:cover;object-position:center 24%}
+.nfl-player-fallback{display:flex;align-items:center;justify-content:center;color:#f6c84c;font-weight:900}
+.nfl-player-copy h2{margin:0;color:#fff;font-size:1.32rem}
+.nfl-player-copy p{margin:3px 0;color:#a7abb2;font-size:.78rem}
+.nfl-player-copy strong{color:#f6c84c;font-size:.76rem}
+.nfl-market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:9px 0 12px}
+.nfl-market-card{background:#0d0f10;border:1px solid #30343a;border-left:3px solid #19d978;border-radius:10px;padding:9px;min-height:72px}
+.nfl-market-card b{display:block;color:#fff;font-size:.76rem}
+.nfl-market-card span{display:block;color:#f6c84c;font-size:.70rem;font-weight:850;margin-top:4px}
+.nfl-market-card small{display:block;color:#9da2aa;font-size:.64rem;margin-top:3px;line-height:1.25}
+.nfl-intel{padding:11px;border:1px solid rgba(214,179,92,.52);border-radius:10px;background:#101112;color:#d9dbde;font-size:.75rem;line-height:1.45;margin-top:10px}
+.nfl-intel b{color:#f6c84c}
+div[class*="st-key-back_nfl_player"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
+@media(max-width:700px){
+  .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
+  .nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
+  .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
+  .nfl-player-copy h2{font-size:1.1rem}
+  .nfl-market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 """, unsafe_allow_html=True)
 
-if st.button("← Back", key="back_nfl_player"): st.switch_page("pages/nfl.py")
+if st.button("← Back", key="back_nfl_player"):
+    if st.session_state.get("nfl_selected_game"):
+        st.switch_page("pages/nfl_games.py")
+    st.switch_page("pages/nfl.py")
+
 player = st.session_state.get("nfl_selected_player")
 if not isinstance(player, dict) or not player.get("player_id"):
-    st.warning("Choose an NFL player from Player Search, a ranking, or a weekly game first."); st.stop()
+    st.warning("Choose an NFL player from Player Search, a ranking, or a weekly game first.")
+    st.stop()
 
-player_id = str(player.get("player_id")); name = str(player.get("player_name") or "NFL Player")
-team = str(player.get("team") or ""); pos = str(player.get("position") or ""); photo = str(player.get("headshot_url") or ""); matchup = str(player.get("game") or "")
+player_id = str(player.get("player_id"))
+name = str(player.get("player_name") or "NFL Player")
+team = str(player.get("team") or "")
+pos = str(player.get("position") or "")
+photo = str(player.get("headshot_url") or "")
+matchup = str(player.get("game") or "")
 img = f'<div class="nfl-player-photo"><img src="{escape(photo)}" alt="{escape(name)}"></div>' if photo else '<div class="nfl-player-fallback">NFL</div>'
 _html(f'<div class="nfl-player-head">{img}<div class="nfl-player-copy"><h2>{escape(name)}</h2><p>{escape(team)} · {escape(pos)}</p><strong>{escape(matchup or "Weekly matchup context")}</strong></div></div>')
 
-schedule, week = _active_schedule(); market_rows = []
+schedule, week = _active_schedule()
+market_rows = []
 for prop in PROP_CATALOG:
     df = _build_market(prop, schedule, week)
-    if df.empty or "player_id" not in df.columns: continue
+    if df.empty or "player_id" not in df.columns:
+        continue
     match = df[df["player_id"].astype(str).eq(player_id)]
-    if not match.empty: market_rows.append((prop, match.iloc[0]))
+    if not match.empty:
+        market_rows.append((prop, match.iloc[0]))
 
+position_markets = {
+    "QB": ["Passing Yards", "Passing TDs", "Pass + Rush Yds"],
+    "RB": ["Rushing Yards", "Rush + Rec Yds", "Anytime TD"],
+    "WR": ["Receiving Yards", "Receptions", "Anytime TD"],
+    "TE": ["Receiving Yards", "Receptions", "Anytime TD"],
+}
+available = [prop for prop, _ in market_rows] or position_markets.get(pos, ["Sacks", "Tackles + Assists"])
 selected_prop = str(player.get("selected_prop") or "")
-if market_rows:
-    cards = []
-    for prop, row in market_rows:
-        score = _score(row); rank = int(row.get("rank") or 0)
+default = selected_prop if selected_prop in available else available[0]
+row_lookup = {prop: row for prop, row in market_rows}
+
+cards = []
+for prop in available:
+    row = row_lookup.get(prop)
+    if row is None:
+        cards.append(
+            f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>Profile</span><small>History and live market data will populate here when available.</small></div>'
+        )
+    else:
+        score = _score(row)
+        rank = int(row.get("rank") or 0)
         score_text = "GI pending" if score is None else f"GI {score:.1f}"
-        cards.append(f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>#{rank} · {score_text}</span><small>{escape(_projection(row, prop))}</small></div>')
-    _html('<div class="nfl-market-grid">' + ''.join(cards) + '</div>')
-    names = [prop for prop, _ in market_rows]
-    default = selected_prop if selected_prop in names else names[0]
-    selected = st.segmented_control("Player market", names, default=default, key="nfl_player_market") or default
-    row = next(row for prop, row in market_rows if prop == selected)
+        cards.append(
+            f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>#{rank} · {score_text}</span><small>{escape(_projection(row, prop))}</small></div>'
+        )
+_html('<div class="nfl-market-grid">' + ''.join(cards) + '</div>')
+
+selected = st.segmented_control("Player market", available, default=default, key="nfl_player_market") or default
+row = row_lookup.get(selected)
+line = None
+if row is not None:
     line = row.get("consensus_line") if row.get("consensus_line") is not None else row.get("prop_line")
-    render_nfl_player_trend(player_id, selected, line)
+
+render_nfl_player_trend(player_id, selected, line)
+
+if row is not None:
     _html(f'<div class="nfl-intel"><b>Why Sach · {escape(selected)}</b><br>{escape(_why(row))}</div>')
 else:
-    # A roster profile remains useful even when the player is outside the Top 25; no qualification warning.
-    position_markets = {"QB":["Passing Yards","Passing TDs","Pass + Rush Yds"], "RB":["Rushing Yards","Rush + Rec Yds","Anytime TD"], "WR":["Receiving Yards","Receptions","Anytime TD"], "TE":["Receiving Yards","Receptions","Anytime TD"]}
-    available = position_markets.get(pos, ["Sacks","Tackles + Assists"])
-    selected = st.segmented_control("Player market", available, default=available[0], key="nfl_player_history_market") or available[0]
-    render_nfl_player_trend(player_id, selected, None)
-
-try:
-    baseline = build_nfl_player_baseline(NFL_SEASON, BASELINE_SEASON); base = baseline[baseline["player_id"].astype(str).eq(player_id)]
-except Exception: base = pd.DataFrame()
-if not base.empty:
-    row = base.iloc[0]
-    st.markdown("### Season Profile")
-    cols = st.columns(4)
-    metrics = [("Games", row.get("games_played")), ("Pass yds", row.get("passing_yards")), ("Rush yds", row.get("rushing_yards")), ("Rec yds", row.get("receiving_yards"))]
-    for col, (label, value) in zip(cols, metrics):
-        with col: st.metric(label, "—" if value is None or pd.isna(value) else f"{float(value):.0f}")
+    _html(
+        f'<div class="nfl-intel"><b>Why Sach · {escape(selected)}</b><br>'
+        'There is not enough NFL market history yet to issue a ranked signal for this player. '
+        'The profile remains available and will fill with real NFL game results as they are played.</div>'
+    )

@@ -59,16 +59,16 @@ def _inject_nfl_css() -> None:
     st.markdown(
         """
         <style>
-        .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important}
+        .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
         /* Pull the NFL refresh control into the same utility row as the Sport Hub. */
-        div[class*="st-key-nfl_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:100%!important;margin:-45px 0 4px!important;position:relative!important;z-index:20!important}
+        div[class*="st-key-nfl_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:.1rem!important;right:0!important;z-index:20!important}
         div[class*="st-key-nfl_page_refresh"]>div{width:auto!important}
         div[class*="st-key-nfl_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d6b35c!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;letter-spacing:.025em!important;white-space:nowrap!important}
-        .nfl-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:2px 0 9px;white-space:nowrap}
+        .nfl-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:47px 0 8px;white-space:nowrap}
 
         .nfl-hero{margin:.1rem 0 .55rem;padding:22px 30px;border-radius:20px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18)}
-        .nfl-hero-title{margin:0;color:#fff;font-size:1.72rem;font-weight:950;line-height:1.08}
+        .nfl-hero-title{margin:0;color:#fff;font-size:1.56rem;font-weight:950;line-height:1.08;white-space:nowrap}
         .nfl-hero-subtitle{margin:16px 0 0;color:#f0f0f0;font-size:1.03rem;line-height:1.5;max-width:900px}
 
         div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 15px!important;margin:4px 0 10px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
@@ -111,9 +111,9 @@ def _inject_nfl_css() -> None:
 
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important;padding-top:0!important}
-          div[class*="st-key-nfl_page_refresh"]{margin-top:-43px!important;margin-bottom:4px!important}
+          div[class*="st-key-nfl_page_refresh"]{top:.05rem!important;right:0!important;margin:0!important}
           .nfl-page-refresh-time{font-size:.84rem;margin-bottom:8px}
-          .nfl-hero{padding:16px 15px;border-radius:15px;margin-top:.05rem}.nfl-hero-title{font-size:1.55rem}.nfl-hero-subtitle{font-size:.91rem;line-height:1.45;margin-top:12px}
+          .nfl-hero{padding:16px 15px;border-radius:15px;margin-top:.05rem}.nfl-hero-title{font-size:1.22rem;white-space:nowrap}.nfl-hero-subtitle{font-size:.91rem;line-height:1.45;margin-top:12px}
           .nfl-snapshot-heading{font-size:1.02rem}.nfl-snapshot-card{min-height:92px;padding:10px 7px}.nfl-snapshot-card span{font-size:.61rem}.nfl-snapshot-card strong{font-size:1.28rem}.nfl-snapshot-card small{font-size:.60rem}
           .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 48px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.92rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
         }
@@ -531,7 +531,7 @@ def show() -> None:
         <div class="nfl-snapshot-heading">This Week's NFL Snapshot</div>
         <div class="nfl-snapshot-grid">
           <div class="nfl-snapshot-card nfl-snapshot-emerald"><span>GAMES</span><strong>{len(games)}</strong><small>{escape(week_label)}</small></div>
-          <div class="nfl-snapshot-card"><span>LINEUPS</span><strong>—</strong><small>Active status pending</small></div>
+          <div class="nfl-snapshot-card"><span>LINEUPS</span><strong>—</strong></div>
           <div class="nfl-snapshot-card nfl-snapshot-gold"><span>ALERTS</span><strong>{alert_count}</strong><small>No active alerts</small></div>
         </div>
         """
