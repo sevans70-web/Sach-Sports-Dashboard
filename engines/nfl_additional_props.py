@@ -75,6 +75,21 @@ def build_passing_tds_top25(roster_season: int = ROSTER_SEASON, baseline_season:
 
 
 @st.cache_data(ttl=21600, show_spinner=False)
+def build_interceptions_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
+    base = build_nfl_player_baseline(roster_season, baseline_season).copy()
+    base = base[base["position"].eq("QB")].copy()
+    weekly = load_nfl_weekly_player_stats(baseline_season).copy()
+    recent = _recent_means(weekly, ["interceptions"])
+    base = base.merge(recent, on="player_id", how="left")
+    games = pd.to_numeric(base.get("games_played"), errors="coerce").replace(0, pd.NA)
+    base["interceptions_per_game"] = pd.to_numeric(base.get("interceptions"), errors="coerce") / games
+    base["interceptions_projection"] = base.apply(
+        lambda r: _weighted_projection(r.get("interceptions_per_game"), r.get("last_5_interceptions"), r.get("last_3_interceptions"), 2), axis=1
+    )
+    return _rank(base, "interceptions_projection", "Interceptions")
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
 def build_passing_rushing_yards_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
     base = build_nfl_player_baseline(roster_season, baseline_season).copy()
     base = base[base["position"].eq("QB")].copy()
@@ -140,7 +155,7 @@ def build_sacks_top25(roster_season: int = ROSTER_SEASON, baseline_season: int =
 
 
 @st.cache_data(ttl=21600, show_spinner=False)
-def build_tackles_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
+def build_tackles_assists_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
     base, weekly = _defensive_foundation(roster_season, baseline_season)
     if base.empty:
         return pd.DataFrame()
@@ -159,3 +174,18 @@ def build_tackles_top25(roster_season: int = ROSTER_SEASON, baseline_season: int
     base["tackles_per_game"] = pd.to_numeric(base.get("tackles_total"), errors="coerce") / games
     base["tackles_projection"] = base.apply(lambda r: _weighted_projection(r.get("tackles_per_game"), r.get("last_5_tackles_total"), r.get("last_3_tackles_total")), axis=1)
     return _rank(base, "tackles_projection", "Tackles + Assists")
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def build_tackles_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
+    base, weekly = _defensive_foundation(roster_season, baseline_season)
+    if base.empty or "tackles_solo" not in weekly.columns:
+        return pd.DataFrame()
+    recent = _recent_means(weekly, ["tackles_solo"])
+    base = base.merge(recent, on="player_id", how="left")
+    games = pd.to_numeric(base.get("games_played"), errors="coerce").replace(0, pd.NA)
+    base["solo_tackles_per_game"] = pd.to_numeric(base.get("tackles_solo"), errors="coerce") / games
+    base["solo_tackles_projection"] = base.apply(
+        lambda r: _weighted_projection(r.get("solo_tackles_per_game"), r.get("last_5_tackles_solo"), r.get("last_3_tackles_solo")), axis=1
+    )
+    return _rank(base, "solo_tackles_projection", "Tackles")
