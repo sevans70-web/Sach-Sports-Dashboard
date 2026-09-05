@@ -196,10 +196,10 @@ def show() -> None:
             href = f"?nfl_game={quote(game_id, safe='')}"
             _render_html(
                 f"""
-                <a class="nfl-game-row" href="{href}">
-                  <div class="nfl-game-team"><img src="{escape(away_logo)}" alt="{escape(away)}"><strong>{escape(away)}</strong></div>
-                  <div class="nfl-game-middle"><b>@</b><span>{escape(when)}</span></div>
-                  <div class="nfl-game-team home"><img src="{escape(home_logo)}" alt="{escape(home)}"><strong>{escape(home)}</strong></div>
+                <a class="nfl-game-row" href="{href}" target="_self">
+                  <span class="nfl-game-team"><img src="{escape(away_logo)}" alt="{escape(away)}"><strong>{escape(away)}</strong></span>
+                  <span class="nfl-game-middle"><b>@</b><span>{escape(when)}</span></span>
+                  <span class="nfl-game-team home"><strong>{escape(home)}</strong><img src="{escape(home_logo)}" alt="{escape(home)}"></span>
                 </a>
                 """
             )

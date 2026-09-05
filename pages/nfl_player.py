@@ -159,12 +159,17 @@ st.markdown("""
 .nfl-market-card small{display:block;color:#9da2aa;font-size:.64rem;margin-top:3px;line-height:1.25}
 .nfl-intel{padding:11px;border:1px solid rgba(214,179,92,.52);border-radius:10px;background:#101112;color:#d9dbde;font-size:.75rem;line-height:1.45;margin-top:10px}
 .nfl-intel b{color:#f6c84c}
+.nfl-trend-title{margin:13px 0 5px;color:#fff;font-size:.94rem;font-weight:900;line-height:1.2}
+.nfl-history-empty{padding:12px;border:1px solid #30343a;border-left:4px solid #d6b35c;border-radius:11px;background:#101112;color:#d7dade;font-size:.78rem;line-height:1.42}
+.nfl-history-empty b{color:#f6c84c;font-size:.82rem}
 div[class*="st-key-back_nfl_player"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
 @media(max-width:700px){
   .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
   .nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
   .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
   .nfl-player-copy h2{font-size:1.1rem}
+  .nfl-trend-title{font-size:.92rem!important;margin-top:11px}
+  .nfl-history-empty{font-size:.75rem;padding:10px}
   .nfl-market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 </style>
@@ -232,13 +237,13 @@ line = None
 if row is not None:
     line = row.get("consensus_line") if row.get("consensus_line") is not None else row.get("prop_line")
 
-render_nfl_player_trend(player_id, selected, line)
+render_nfl_player_trend(player_id, selected, line, player_name=name)
 
 if row is not None:
-    _html(f'<div class="nfl-intel"><b>Why Sach · {escape(selected)}</b><br>{escape(_why(row))}</div>')
+    _html(f'<div class="nfl-intel"><b>Why This Player · {escape(selected)}</b><br>{escape(_why(row))}</div>')
 else:
     _html(
-        f'<div class="nfl-intel"><b>Why Sach · {escape(selected)}</b><br>'
+        f'<div class="nfl-intel"><b>Why This Player · {escape(selected)}</b><br>'
         'There is not enough NFL market history yet to issue a ranked signal for this player. '
         'The profile remains available and will fill with real NFL game results as they are played.</div>'
     )
