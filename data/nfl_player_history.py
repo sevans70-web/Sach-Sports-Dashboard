@@ -16,14 +16,16 @@ BASELINE_SEASON = 2025
 MARKET_COLUMNS = {
     "Passing Yards": "passing_yards",
     "Passing TDs": "passing_tds",
-    "Pass + Rush Yds": None,
+    "Interceptions": "interceptions",
+    "Pass + Rush Yards": None,
     "Rushing Yards": "rushing_yards",
-    "Rush + Rec Yds": None,
+    "Rush + Receiving Yards": None,
     "Receiving Yards": "receiving_yards",
     "Receptions": "receptions",
     "Anytime TD": None,
     "First TD": None,
     "Sacks": "sacks",
+    "Tackles": "tackles_solo",
     "Tackles + Assists": "tackles_total",
 }
 
@@ -35,9 +37,9 @@ def _numeric(df: pd.DataFrame, column: str) -> pd.Series:
 
 
 def _market_value(df: pd.DataFrame, market: str) -> pd.Series:
-    if market == "Pass + Rush Yds":
+    if market == "Pass + Rush Yards":
         return _numeric(df, "passing_yards") + _numeric(df, "rushing_yards")
-    if market == "Rush + Rec Yds":
+    if market == "Rush + Receiving Yards":
         return _numeric(df, "rushing_yards") + _numeric(df, "receiving_yards")
     if market == "Anytime TD":
         return (_numeric(df, "rushing_tds") + _numeric(df, "receiving_tds")).clip(upper=1)
@@ -117,7 +119,7 @@ def _season_player_rows(player_id: str, player_name: str, season: int, market: s
 def player_last_games(
     player_id: str,
     market: str,
-    limit: int = 10,
+    limit: int | None = 10,
     player_name: str = "",
 ) -> pd.DataFrame:
     """Return up to 10 real NFL regular-season games, current season first."""
@@ -133,7 +135,10 @@ def player_last_games(
     player["week"] = pd.to_numeric(player["week"], errors="coerce")
     player["game_date"] = pd.to_datetime(player["game_date"], errors="coerce")
     player = player.dropna(subset=["value"])
-    player = player.sort_values(["season", "week"], kind="stable").tail(limit).copy()
+    player = player.sort_values(["season", "week"], kind="stable")
+    if limit is not None:
+        player = player.tail(limit)
+    player = player.copy()
 
     def date_label(row):
         dt = row.get("game_date")

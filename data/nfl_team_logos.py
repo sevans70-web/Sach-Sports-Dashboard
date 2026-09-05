@@ -4,7 +4,7 @@ ESPN_TEAM_CODES = {
     "ARI":"ari","ATL":"atl","BAL":"bal","BUF":"buf","CAR":"car","CHI":"chi",
     "CIN":"cin","CLE":"cle","DAL":"dal","DEN":"den","DET":"det","GB":"gb",
     "HOU":"hou","IND":"ind","JAX":"jax","JAC":"jax","KC":"kc","LV":"lv",
-    "LAC":"lac","LAR":"lar","MIA":"mia","MIN":"min","NE":"ne","NO":"no",
+    "LAC":"lac","LAR":"lar","LA":"lar","MIA":"mia","MIN":"min","NE":"ne","NO":"no",
     "NYG":"nyg","NYJ":"nyj","PHI":"phi","PIT":"pit","SEA":"sea","SF":"sf",
     "TB":"tb","TEN":"ten","WAS":"wsh","WSH":"wsh",
 }
