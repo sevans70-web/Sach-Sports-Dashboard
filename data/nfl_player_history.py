@@ -143,12 +143,13 @@ def player_last_games(
     def date_label(row):
         dt = row.get("game_date")
         if pd.notna(dt):
-            return f"{dt.strftime('%b')} {dt.day}"
+            return dt.strftime("%m/%d/%y")
         wk = row.get("week")
         return f"Wk {int(wk)}" if pd.notna(wk) else "Game"
 
     player["date_label"] = player.apply(date_label, axis=1)
     player["opponent"] = player["opponent"].fillna("").astype(str).str.upper()
-    player["chart_label"] = player.apply(lambda r: f"{r['opponent'] or 'OPP'}\n{r['date_label']}", axis=1)
+    # The pipe is split by Vega into a reliable two-line mobile axis label.
+    player["chart_label"] = player.apply(lambda r: f"{r['opponent'] or 'OPP'}|{r['date_label']}", axis=1)
     keep = ["season", "week", "game_date", "date_label", "chart_label", "opponent", "value"]
     return player[[c for c in keep if c in player.columns]].reset_index(drop=True)
