@@ -69,11 +69,11 @@ def render_nfl_player_trend(
     if has_line:
         source["result"] = source["value"].map(lambda x: "Cleared line" if x > line_value else "Below line")
     bars = alt.Chart(source).transform_filter(alt.datum.show_in_chart).mark_bar(cornerRadiusTopLeft=5, cornerRadiusTopRight=5).encode(
-        x=alt.X("chart_label:N", sort=None, title=None, axis=alt.Axis(labelAngle=0, labelLimit=70, labelLineHeight=12, labelPadding=8)),
+        x=alt.X("chart_label:N", sort=None, title=None, axis=alt.Axis(labelAngle=0, labelLimit=74, labelLineHeight=12, labelPadding=8, labelExpr="split(datum.label, '|')")),
         y=alt.Y("value:Q", title=None, scale=alt.Scale(zero=True)),
         color=alt.Color("result:N", legend=None, scale=color_scale),
         tooltip=[
-            alt.Tooltip("date_label:N", title="Date"),
+            alt.Tooltip("game_date:T", title="Date", format="%B %-d, %Y"),
             alt.Tooltip("opponent:N", title="Opponent"),
             alt.Tooltip("value:Q", title=market, format=".1f"),
         ],
@@ -86,10 +86,11 @@ def render_nfl_player_trend(
         rule = alt.Chart(pd.DataFrame({"line": [line_value]})).mark_rule(stroke="#c7cbd0", strokeDash=[6, 5], size=2).encode(y="line:Q")
         chart = chart + rule
 
-    st.altair_chart(
-        chart.properties(height=280).configure_view(strokeOpacity=0).configure_axis(grid=False, domain=False, labelColor="#bfc3c8"),
-        use_container_width=True,
-    )
+    with st.container(key="nfl_player_trend_chart"):
+        st.altair_chart(
+            chart.properties(height=280).configure_view(strokeOpacity=0).configure_axis(grid=False, domain=False, labelColor="#bfc3c8"),
+            use_container_width=True,
+        )
 
     values = plot["value"].dropna()
     season_total = values.sum() if not values.empty else None
