@@ -14,16 +14,30 @@ def _fmt_value(value: float, market: str) -> str:
     return f"{value:.0f}"
 
 
-def render_nfl_player_trend(player_id: str, market: str, current_line: float | None = None) -> bool:
-    history = player_last_games(player_id, market, limit=10)
-    st.markdown("### Last 10 · Game-by-Game")
+def render_nfl_player_trend(
+    player_id: str,
+    market: str,
+    current_line: float | None = None,
+    player_name: str = "",
+) -> bool:
+    history = player_last_games(
+        player_id,
+        market,
+        limit=10,
+        player_name=player_name,
+    )
+    st.markdown(
+        '<div class="nfl-trend-title">Last 10 Games · '
+        f'{market}</div>',
+        unsafe_allow_html=True,
+    )
 
     if history.empty:
         st.markdown(
             """
-            <div style="padding:14px;border:1px solid #30343a;border-left:4px solid #d6b35c;border-radius:12px;background:#101112;color:#d7dade;line-height:1.45">
-              <b style="color:#f6c84c">NFL history starts here.</b><br>
-              This player does not yet have NFL regular-season game history to plot. The chart will begin filling with real game results once those games are played.
+            <div class="nfl-history-empty">
+              <b>Game history unavailable.</b><br>
+              Regular-season results could not be loaded for this player and market.
             </div>
             """,
             unsafe_allow_html=True,
@@ -70,10 +84,10 @@ def render_nfl_player_trend(player_id: str, market: str, current_line: float | N
 
     values = plot["value"].dropna()
     c1, c2, c3, c4 = st.columns(4)
-    season_avg = values.mean() if not values.empty else None
+    season_total = values.sum() if not values.empty else None
     l5_avg = values.tail(5).mean() if not values.empty else None
     l10_avg = values.tail(10).mean() if not values.empty else None
-    with c1: st.metric("SEASON", "—" if season_avg is None else f"{season_avg:.1f}")
+    with c1: st.metric("10-GAME TOTAL", "—" if season_total is None else f"{season_total:.1f}")
     with c2: st.metric("L5", "—" if l5_avg is None else f"{l5_avg:.1f}")
     with c3: st.metric("L10", "—" if l10_avg is None else f"{l10_avg:.1f}")
     with c4:
