@@ -151,10 +151,11 @@ def _why(row: pd.Series) -> str:
 st.markdown("""
 <style>
 .block-container{max-width:950px;padding-top:.05rem!important}
-.nfl-player-head{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;padding:12px;background:linear-gradient(118deg,#101112,#111315 68%,rgba(25,217,120,.07));border:1.5px solid #30343a;border-radius:14px;margin:3px 0 9px}
+.nfl-player-head{display:grid;grid-template-columns:76px minmax(0,1fr) 54px;gap:12px;align-items:center;padding:12px;background:linear-gradient(118deg,#101112,#111315 68%,rgba(25,217,120,.07));border:1.5px solid #30343a;border-radius:14px;margin:3px 0 9px}
 .nfl-player-photo,.nfl-player-fallback{width:72px;height:72px;border-radius:50%;overflow:hidden;background:#080909;border:2px solid rgba(214,179,92,.86)}
 .nfl-player-photo img{width:100%;height:100%;object-fit:cover;object-position:center 24%}
 .nfl-player-fallback{display:flex;align-items:center;justify-content:center;color:#f6c84c;font-weight:900}
+.nfl-player-team-logo{width:52px;height:52px;object-fit:contain;justify-self:end;filter:drop-shadow(0 3px 8px rgba(0,0,0,.45))}
 .nfl-player-copy h2{margin:0;color:#fff;font-size:1.32rem}
 .nfl-player-copy p{margin:3px 0;color:#a7abb2;font-size:.78rem}
 .nfl-player-copy strong{color:#f6c84c;font-size:.76rem}
@@ -173,7 +174,9 @@ div[data-testid="stSegmentedControl"] button[aria-pressed="true"]{color:#19d978!
 div[data-testid="stSegmentedControl"] button[aria-pressed="true"] p,
 div[data-testid="stSegmentedControl"] button[aria-pressed="true"] span{color:#19d978!important}
 .nfl-trend-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0 10px}
-.nfl-trend-summary>div{background:#101112;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:7px 6px;min-width:0}
+.nfl-trend-summary>div{background:#101112;border:1px solid #30343a;border-radius:9px;padding:7px 6px;min-width:0}
+.nfl-trend-summary>div:nth-child(odd){border-left:3px solid #19d978;border-bottom:2px solid rgba(25,217,120,.60)}
+.nfl-trend-summary>div:nth-child(even){border-left:3px solid #d6b35c;border-bottom:2px solid rgba(214,179,92,.68)}
 .nfl-trend-summary span{display:block;color:#92979e;font-size:.54rem}.nfl-trend-summary strong{display:block;color:#fff;font-size:.80rem;margin-top:3px}
 /* Keep useful chart tools (data table + full screen), but remove download. */
 div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] button[aria-label*="Download" i],
@@ -181,9 +184,10 @@ div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] but
 div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] button:nth-of-type(2){display:none!important}
 @media(max-width:700px){
   .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-  div[class*="st-key-back_nfl_player"]{margin-top:-4.25rem!important;margin-bottom:2px!important}
-  .nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
+  div[class*="st-key-back_nfl_player"]{width:max-content!important;margin-top:-4.25rem!important;margin-left:6.25rem!important;margin-bottom:7px!important}
+  .nfl-player-head{grid-template-columns:64px minmax(0,1fr) 42px;gap:10px;padding:10px}
   .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
+  .nfl-player-team-logo{width:40px;height:40px}
   .nfl-player-copy h2{font-size:1.1rem}
   .nfl-trend-title{font-size:.92rem!important;margin-top:11px}
   .nfl-history-empty{font-size:.75rem;padding:10px}
@@ -209,7 +213,13 @@ pos = str(player.get("position") or "")
 photo = str(player.get("headshot_url") or "")
 matchup = str(player.get("game") or "")
 img = f'<div class="nfl-player-photo"><img src="{escape(photo)}" alt="{escape(name)}"></div>' if photo else '<div class="nfl-player-fallback">NFL</div>'
-_html(f'<div class="nfl-player-head">{img}<div class="nfl-player-copy"><h2>{escape(name)}</h2><p>{escape(team)} · {escape(pos)}</p><strong>{escape(matchup or "Weekly matchup context")}</strong></div></div>')
+logo_team = {"LA": "lar", "WSH": "wsh"}.get(team.upper(), team.lower())
+team_logo = (
+    f'<img class="nfl-player-team-logo" src="https://a.espncdn.com/i/teamlogos/nfl/500/{escape(logo_team)}.png" '
+    f'alt="{escape(team)} team logo">'
+    if logo_team else ""
+)
+_html(f'<div class="nfl-player-head">{img}<div class="nfl-player-copy"><h2>{escape(name)}</h2><p>{escape(team)} · {escape(pos)}</p><strong>{escape(matchup or "Weekly matchup context")}</strong></div>{team_logo}</div>')
 
 schedule, week = _active_schedule()
 market_rows = []

@@ -50,7 +50,7 @@ PROP_CATALOG = {
     "Rush + Receiving Yards": {"builder": build_rushing_receiving_yards_top25, "projection": "rushing_receiving_projection", "unit": "yards", "icon": "🔀"},
     "Sacks": {"builder": build_sacks_top25, "projection": "sacks_projection", "unit": "sacks", "icon": "💥"},
     "Tackles": {"builder": build_tackles_top25, "projection": "solo_tackles_projection", "unit": "tackles", "icon": "🛡️"},
-    "Tackles + Assists": {"builder": build_tackles_assists_top25, "projection": "tackles_projection", "unit": "tackles", "icon": "🛡️"},
+    "Tackles + Assists": {"builder": build_tackles_assists_top25, "projection": "tackles_projection", "unit": "tackles", "icon": "🤝"},
 }
 
 
@@ -75,11 +75,13 @@ def _inject_nfl_css() -> None:
         .nfl-hero-title{margin:0!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
         .nfl-hero-subtitle{margin:9px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
 
-        div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 15px!important;margin:4px 0 10px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
+        div[class*="st-key-nfl_games_entry"]{margin-bottom:-.20rem!important}
+        div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 10px!important;margin:4px 0 7px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
         div[class*="st-key-nfl_games_entry"] button:after{content:'›';margin-left:auto;font-size:1.4rem;color:#cfd3d6}
-        div[class*="st-key-nfl_games_entry"] button p{margin:0!important;font-size:.84rem!important;line-height:1.32!important;white-space:pre-line!important}
+        div[class*="st-key-nfl_games_entry"] button [data-testid="stMarkdownContainer"]{width:100%!important;text-align:left!important}
+        div[class*="st-key-nfl_games_entry"] button p{width:100%!important;margin:0!important;text-align:left!important;font-size:.84rem!important;line-height:1.32!important;white-space:pre-line!important}
 
-        .nfl-snapshot-heading{margin:18px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
+        .nfl-snapshot-heading{margin:13px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
         .nfl-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
         .nfl-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center;min-width:0}
         .nfl-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
@@ -104,14 +106,18 @@ def _inject_nfl_css() -> None:
         .nfl-rank-avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;font-weight:900;color:#fff}
         .nfl-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
         .nfl-rank-copy{min-width:0}.nfl-rank-name{display:block;color:#fff;font-size:.94rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nfl-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.nfl-rank-proj{color:#f6c84c;font-size:.76rem;font-weight:850;margin-top:4px}.nfl-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
-        .nfl-rank-score{text-align:right;padding-top:3px}.nfl-rank-score strong{display:inline-block;color:#ffcc33;font-size:.68rem;font-weight:950;white-space:nowrap;letter-spacing:.02em;padding:5px 6px;border:1px solid rgba(255,204,51,.48);border-radius:999px;background:rgba(255,204,51,.06)}
+        .nfl-rank-score{text-align:right;padding-top:3px}.nfl-rank-score small{display:block;color:#9fa4aa;font-size:.51rem;font-weight:900;letter-spacing:.04em;white-space:nowrap}.nfl-rank-score strong{display:block;color:#ffcc33;font-size:.72rem;font-weight:950;white-space:nowrap;letter-spacing:.01em;margin-top:3px}
+        .nfl-lineup-status{display:inline-block;margin-top:6px;padding:3px 7px;border-radius:999px;font-size:.57rem;font-weight:900;line-height:1.08;white-space:nowrap}
+        .nfl-lineup-confirmed{color:#d8ffe8;background:rgba(25,217,120,.14);border:1px solid rgba(25,217,120,.62)}
+        .nfl-lineup-projected{color:#ffe7a3;background:rgba(214,179,92,.10);border:1px solid rgba(214,179,92,.58)}
 
         div[class*="st-key-nfl_rank_wrap_"]{background:#0d0f10!important;border:1.5px solid #34383d!important;border-radius:15px!important;overflow:hidden!important;margin:0 0 9px!important;padding:0!important}
         div[class*="st-key-nfl_rank_wrap_"] [data-testid="stVerticalBlock"]{gap:.25rem!important}
-        div[class*="st-key-nfl_rank_wrap_"] button{background:#080909!important;color:#fff!important;border:0!important;border-top:1px solid #2c3034!important;border-radius:0!important;min-height:38px!important;font-weight:850!important}
+        div[class*="st-key-nfl_rank_wrap_"] button{width:calc(100% - 20px)!important;margin:5px 10px 4px!important;background:#080909!important;color:#fff!important;border:2px solid rgba(25,217,120,.72)!important;border-radius:9px!important;min-height:38px!important;font-weight:850!important;justify-content:center!important;text-align:center!important}
+        div[class*="st-key-nfl_rank_wrap_"] button:hover{border-color:#ffcc33!important;color:#ffcc33!important}
         .nfl-intel-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:2px 10px 8px}
-        .nfl-intel-metric{background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:8px;padding:7px 6px;min-width:0}.nfl-intel-metric span{display:block;color:#92979e;font-size:.57rem}.nfl-intel-metric strong{display:block;color:#fff;font-size:.82rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .nfl-why{margin:0 10px 9px;padding:9px 10px;border:1px solid rgba(214,179,92,.48);border-radius:9px;background:#101112;color:#d9dbde;font-size:.72rem;line-height:1.4}.nfl-why b{color:#f6c84c}
+        .nfl-intel-metric{background:#111315;border:1px solid #30343a;border-radius:8px;padding:7px 6px;min-width:0}.nfl-intel-metric:nth-child(odd){border-left:3px solid #19d978;border-bottom:2px solid rgba(25,217,120,.60)}.nfl-intel-metric:nth-child(even){border-left:3px solid #d6b35c;border-bottom:2px solid rgba(214,179,92,.68)}.nfl-intel-metric span{display:block;color:#92979e;font-size:.57rem}.nfl-intel-metric strong{display:block;color:#fff;font-size:.82rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .nfl-why{margin:0 10px 9px;padding:9px 10px;border:1px solid rgba(214,179,92,.48);border-radius:9px;background:#101112;color:#d9dbde;font-size:.72rem;line-height:1.4}.nfl-why b{display:block;color:#f6c84c;margin-bottom:3px}
 
         div[class*="st-key-nfl_full_top25_"] button{width:100%!important;background:#080909!important;color:#fff!important;border:1.5px solid #34373c!important;border-radius:10px!important;min-height:43px!important;font-weight:850!important;margin-top:2px!important}
         div[class*="st-key-nfl_open_player_"] button{background:#111315!important;color:#19d978!important;border:1px solid #30343a!important;border-radius:8px!important;min-height:35px!important;font-weight:850!important;margin:0 10px 9px!important;width:calc(100% - 20px)!important}
@@ -374,6 +380,18 @@ def _why_engine(row: pd.Series, prop: str) -> str:
     return "; ".join(parts[:3]) + "."
 
 
+def _lineup_status_html(row: pd.Series) -> str:
+    """Keep NFL role status separate from the GI score state."""
+    raw_status = row.get("starter_status")
+    status = "" if raw_status is None or pd.isna(raw_status) else str(raw_status).strip().lower()
+    confirmed = row.get("starter_confirmed")
+    if confirmed is not None and not pd.isna(confirmed) and bool(confirmed):
+        return '<span class="nfl-lineup-status nfl-lineup-confirmed">✓ Confirmed</span>'
+    if "confirmed" in status and "unconfirmed" not in status:
+        return '<span class="nfl-lineup-status nfl-lineup-confirmed">✓ Confirmed</span>'
+    return '<span class="nfl-lineup-status nfl-lineup-projected">◌ Projected</span>'
+
+
 def _render_rank_header(row: pd.Series, prop: str) -> None:
     name = str(row.get("player_name") or "Player")
     team = str(row.get("team") or "")
@@ -384,7 +402,8 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
     movement = str(row.get("rank_movement") or "—")
     projection = _format_projection(row, prop)
     score = _ranking_score(row, prop)
-    score_text = "GI PENDING" if score is None else f"GI {score:.1f}"
+    score_text = "PENDING" if score is None else f"{score:.1f}"
+    lineup_status = _lineup_status_html(row)
     line = row.get("consensus_line")
     if line is None or pd.isna(line):
         line = row.get("prop_line")
@@ -403,8 +422,9 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
             <div class="nfl-rank-meta"><b>{escape(team)}</b> · {escape(game)}</div>
             <div class="nfl-rank-proj">{escape(projection)}</div>
             <div class="nfl-rank-market">{escape(market_mode)}</div>
+            {lineup_status}
           </div>
-          <div class="nfl-rank-score"><strong>{score_text}</strong></div>
+          <div class="nfl-rank-score"><small>GI SCORE</small><strong>{score_text}</strong></div>
         </div>
         """
     )
@@ -424,7 +444,7 @@ def _render_player_intelligence(row: pd.Series, prop: str, key_prefix: str) -> N
         for label, value in metrics
     )
     _render_html(f'<div class="nfl-intel-grid">{metric_html}</div>')
-    _render_html(f'<div class="nfl-why"><b>Why Engine:</b> {escape(_why_engine(row, prop))}</div>')
+    _render_html(f'<div class="nfl-why"><b>Why This Player Ranks Here</b>{escape(_why_engine(row, prop))}</div>')
     if st.button("Open full player card", key=f"nfl_open_player_{key_prefix}", use_container_width=True):
         _open_player(row, prop)
 
