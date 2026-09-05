@@ -11,7 +11,7 @@ MARKETS = {
     "Passing Yards": "🏈", "Passing TDs": "🎯", "Pass + Rush Yards": "⚡", "Interceptions": "🚫",
     "Anytime TD": "🔥", "First TD": "1️⃣", "Receiving Yards": "🙌", "Receptions": "🧤",
     "Rushing Yards": "🏃", "Rush + Receiving Yards": "🔀", "Sacks": "💥",
-    "Tackles": "🛡️", "Tackles + Assists": "🛡️",
+    "Tackles": "🛡️", "Tackles + Assists": "🤝",
 }
 
 
@@ -53,7 +53,7 @@ def _render_market(history: dict, market: str, period: str) -> None:
                 name = escape(str(row.get("player_name") or row.get("player") or "Player"))
                 st.markdown(f"{mark} {row.get('date') or ''} · #{int(row.get('rank') or 0)} {name}")
     else:
-        st.caption(f"{market} results will appear here after verified, frozen predictions settle.")
+        st.caption(f"{market} results will appear here after completed games are graded.")
 
 
 def render_nfl_prediction_performance() -> None:
@@ -72,7 +72,7 @@ def render_nfl_prediction_performance() -> None:
         @media(max-width:700px){.nfl-performance-title{margin-top:16px}.nfl-performance-copy{font-size:.70rem}.nfl-performance-metric strong{font-size:.78rem}}
         </style>
         <div class="nfl-performance-title">📈 Prediction Performance</div>
-        <div class="nfl-performance-copy">Each market is graded separately after its pregame ranking is frozen and the game is final.</div>
+        <div class="nfl-performance-copy">Each market is tracked separately, with results added after completed games are graded.</div>
         """, unsafe_allow_html=True,
     )
     history = load_history()
