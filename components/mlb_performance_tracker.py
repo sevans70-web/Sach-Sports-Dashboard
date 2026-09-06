@@ -59,10 +59,25 @@ def _cached_batter_history() -> dict[str, Any]:
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def _cached_emerging_history() -> dict[str, Any]:
+def _cached_emerging_history(
+    displayed_candidates: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     stored = get_latest_source_payload(source_name="mlb_emerging_power_history")
     payload = stored.get("payload") or {}
-    if isinstance(payload, dict) and isinstance(payload.get("days"), dict):
+    if not isinstance(payload, dict) or not isinstance(payload.get("days"), dict):
+        payload = {"schema_version": 1, "days": {}}
+
+    # The dashboard and tracker must use the exact same daily ten.  Passing the
+    # list that is already on screen also repairs an early 4/7-player worker
+    # capture immediately, without waiting for another background refresh.
+    if displayed_candidates:
+        payload = sync_emerging_history(
+            payload,
+            list(displayed_candidates)[:10],
+            snapshot_date=datetime.now(TORONTO_TIMEZONE).date().isoformat(),
+        )
+
+    if isinstance(payload.get("days"), dict):
         # Repair any recent partial frozen list from its matching wide daily
         # ranking source. This also fixes older 4/7-player captures after the
         # calendar rolls over; merely refreshing today's candidates cannot.
@@ -98,7 +113,7 @@ def _cached_emerging_history() -> dict[str, Any]:
                     snapshot_date=day_key,
                 )
         return refresh_history_view(payload, recent_days=8)
-    return {"schema_version": 1, "days": {}}
+    return payload
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -227,7 +242,10 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"] button,
             div[class*="st-key-mlb_pitcher_performance_period"] button,
             div[class*="st-key-mlb_emerging_power_period"] button{
-                font-size:.56rem!important;
+                font-size:.52rem!important;
+                padding-left:1px!important;
+                padding-right:1px!important;
+                letter-spacing:-.02em!important;
                 min-height:34px!important;
             }
         }
@@ -352,7 +370,8 @@ def _render_emerging_power(history: dict[str, Any], period: str) -> None:
 
 @st.fragment
 def render_prediction_performance_tracker(
-    rankings_by_category: dict[str, list[dict[str, Any]]]
+    rankings_by_category: dict[str, list[dict[str, Any]]],
+    emerging_candidates: list[dict[str, Any]] | None = None,
 ) -> None:
     _styles()
     st.subheader("📊 Prediction Performance")
@@ -400,7 +419,7 @@ def render_prediction_performance_tracker(
         st.markdown("#### 🔥 Emerging Power Performance")
         emerging_period = _period_control("mlb_emerging_power_period")
         try:
-            emerging_history = _cached_emerging_history()
+            emerging_history = _cached_emerging_history(emerging_candidates)
             _render_emerging_power(emerging_history, emerging_period)
         except Exception:
             st.caption("Emerging Power performance history is temporarily unavailable.")
