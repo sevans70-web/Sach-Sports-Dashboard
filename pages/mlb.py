@@ -593,15 +593,26 @@ def card_result_html(
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def load_emerging_power_pool() -> list[dict]:
-    """Load a wider HR-ranked pool only when Emerging Power is opened."""
-    schedule_date = datetime.now(TORONTO_TIMEZONE).date()
+def load_emerging_power_pool(schedule_date: str) -> list[dict]:
+    """Load the current date's wider HR-ranked pool."""
     result = get_all_rankings(
         schedule_date=schedule_date,
         recent_days=14,
         limit=125,
     )
     return list((result.get("home_runs", {}) or {}).get("rankings", []) or [])
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def load_emerging_power_candidates(schedule_date: str) -> list[dict]:
+    """Build one shared ten-player list for the watch and its tracker."""
+    from data.mlb_emerging_power import build_emerging_power_candidates
+
+    return build_emerging_power_candidates(
+        load_emerging_power_pool(schedule_date),
+        limit=10,
+        enrich_profiles=False,
+    )
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -3194,6 +3205,8 @@ st.markdown(
 if st.button("⟳  REFRESH", key="mlb_page_refresh", help="Refresh MLB data"):
     load_today_schedule.clear()
     load_today_lineups.clear()
+    load_emerging_power_pool.clear()
+    load_emerging_power_candidates.clear()
     st.rerun()
 
 st.markdown(
@@ -3218,17 +3231,13 @@ render_html(
 )
 
 
-def render_emerging_power_watch() -> list[dict]:
+def render_emerging_power_watch(candidates: list[dict]) -> None:
     # Lazy import avoids Streamlit Community Cloud module-reload races during app startup.
     from data.mlb_emerging_power import (
-        build_emerging_power_candidates,
         emerging_power_explanation,
     )
 
     """Surface low-HR / limited-sample hitters with evidence-backed upside."""
-    raw_pool = load_emerging_power_pool()
-    candidates = build_emerging_power_candidates(raw_pool, limit=10)
-
     st.markdown("**Emerging Power · low-HR & limited-sample hitters**")
     st.caption(
         "This view looks for players whose low season HR total may hide stronger underlying "
@@ -3237,7 +3246,7 @@ def render_emerging_power_watch() -> list[dict]:
 
     if not candidates:
         st.info("No evidence-backed emerging-power signals qualify right now.")
-        return []
+        return
 
     def render_rows(rows: list[dict]) -> None:
         html_rows = []
@@ -3283,7 +3292,6 @@ def render_emerging_power_watch() -> list[dict]:
     if len(candidates) > 4:
         with st.expander(f"Show {len(candidates) - 4} more emerging-power signals"):
             render_rows(candidates[4:])
-    return candidates
 
 
 
@@ -3396,20 +3404,16 @@ hr_intel_view = st.segmented_control(
     label_visibility="collapsed",
 ) or "Live HR"
 
-emerging_candidates: list[dict] = []
-if st.session_state.get("mlb_current_emerging_candidates_date") == toronto_now.date().isoformat():
-    emerging_candidates = list(
-        st.session_state.get("mlb_current_emerging_candidates") or []
-    )
+emerging_candidates = load_emerging_power_candidates(
+    toronto_now.date().isoformat()
+)
 
 if hr_intel_view == "Live HR":
     render_live_hr_intelligence(HOME_RUN_RANKINGS)
 elif hr_intel_view == "Yesterday":
     render_yesterday_power_watch(HOME_RUN_RANKINGS)
 else:
-    emerging_candidates = render_emerging_power_watch()
-    st.session_state["mlb_current_emerging_candidates"] = emerging_candidates
-    st.session_state["mlb_current_emerging_candidates_date"] = toronto_now.date().isoformat()
+    render_emerging_power_watch(emerging_candidates)
 
 st.divider()
 
