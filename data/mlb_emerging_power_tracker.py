@@ -89,13 +89,21 @@ def sync_history(
     categories = day_record.setdefault("categories", {})
     frozen = _canonical(categories.setdefault(CATEGORY, []))
 
-    # Once the daily set exists it does not roll with intraday ranking changes.
-    if not frozen:
-        frozen = [
-            _freeze(row, index)
-            for index, row in enumerate((candidates or [])[:10], start=1)
-        ]
-        categories[CATEGORY] = frozen
+    # Freeze the first complete daily set. Early worker runs can legitimately
+    # find only a few qualifiers before every lineup is available; keep those
+    # rows and fill the remaining slots later instead of permanently tracking
+    # only the four-player preview shown by the UI.
+    if len(frozen) < 10:
+        existing = {_key(row) for row in frozen}
+        for candidate in (candidates or [])[:10]:
+            key = _key(candidate)
+            if not key or key in existing:
+                continue
+            frozen.append(_freeze(candidate, len(frozen) + 1))
+            existing.add(key)
+            if len(frozen) >= 10:
+                break
+        categories[CATEGORY] = _canonical(frozen)
 
     graded = grade_top_25(
         rankings=frozen,
