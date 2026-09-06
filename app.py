@@ -192,6 +192,8 @@ pages = {
         st.Page("pages/nfl_player.py", title="NFL PLAYER", icon="🏈"),
         st.Page("pages/player_search.py", title="PLAYER SEARCH", icon="🔎"),
         st.Page("pages/cfb.py", title="CFB", icon="🏈"),
+        # Internal CFB drill-down page. Registered for st.switch_page only.
+        st.Page("pages/cfb_games.py", title="CFB GAMES", icon="🏈"),
         st.Page("pages/nba.py", title="NBA", icon="🏀"),
         st.Page("pages/nhl.py", title="NHL", icon="🏒"),
     ]
