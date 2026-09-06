@@ -65,7 +65,7 @@ def _css() -> None:
         div[class*="st-key-back_to_nfl"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-          div[class*="st-key-back_to_nfl"]{margin-top:-4.25rem!important;margin-bottom:2px!important}
+          div[class*="st-key-back_to_nfl"]{width:max-content!important;margin-top:0!important;margin-left:0!important;margin-bottom:8px!important}
           .nfl-games-hero{padding:12px 13px;margin-top:2px}.nfl-games-hero h1{font-size:1.24rem}.nfl-games-hero p{margin-top:7px;font-size:.79rem}
           .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}
           .nfl-game-row{padding:9px 10px}.nfl-game-team img{width:30px;height:30px}.nfl-game-middle{min-width:86px}

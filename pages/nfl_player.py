@@ -148,6 +148,69 @@ def _why(row: pd.Series) -> str:
     return "; ".join(parts[:3]) + "."
 
 
+def _number_or_none(value) -> float | None:
+    if value is None or pd.isna(value):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _explicit_false(value) -> bool:
+    """Return true only for a present scalar false flag."""
+    if value is None or pd.isna(value):
+        return False
+    try:
+        return not bool(value)
+    except (TypeError, ValueError):
+        return False
+
+
+def _history_profile(player: dict, player_id: str) -> str:
+    """Classify missing history without treating every unavailable feed as a rookie."""
+    years_exp = _number_or_none(player.get("years_exp"))
+    rookie_year = _number_or_none(player.get("rookie_year"))
+    if years_exp == 0 or rookie_year == NFL_SEASON:
+        return "rookie"
+
+    baseline_flag = player.get("has_previous_season_stats")
+    if _explicit_false(baseline_flag):
+        return "no_prior_history"
+
+    try:
+        baseline = build_nfl_player_baseline(NFL_SEASON, BASELINE_SEASON)
+        match = baseline[baseline["player_id"].astype(str).eq(str(player_id))]
+        if not match.empty:
+            row = match.iloc[0]
+            years_exp = _number_or_none(row.get("years_exp"))
+            rookie_year = _number_or_none(row.get("rookie_year"))
+            if years_exp == 0 or rookie_year == NFL_SEASON:
+                return "rookie"
+            if _explicit_false(row.get("has_previous_season_stats")):
+                return "no_prior_history"
+    except Exception:
+        pass
+    return "standard"
+
+
+def _missing_history_copy(profile: str, market: str) -> str:
+    if profile == "rookie":
+        return (
+            f"Rookie profile. This player does not yet have NFL regular-season {market.lower()} "
+            "history. Results and trends will populate as NFL games are played."
+        )
+    if profile == "no_prior_history":
+        return (
+            f"No prior NFL regular-season {market.lower()} history is available for this player. "
+            "Results and trends will populate as qualifying games are played."
+        )
+    return (
+        f"Verified NFL regular-season {market.lower()} history is not currently available for this player. "
+        "The profile will update when qualifying game results are available."
+    )
+
+
 st.markdown("""
 <style>
 .block-container{max-width:950px;padding-top:.05rem!important}
@@ -173,6 +236,8 @@ div[class*="st-key-back_nfl_player"] button{background:#080909!important;color:#
 div[data-testid="stSegmentedControl"] button[aria-pressed="true"]{color:#19d978!important;border-color:#19d978!important;background:#0b1711!important}
 div[data-testid="stSegmentedControl"] button[aria-pressed="true"] p,
 div[data-testid="stSegmentedControl"] button[aria-pressed="true"] span{color:#19d978!important}
+div[class*="st-key-nfl_history_range_"] [data-testid="stSegmentedControl"]>div{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important}
+div[class*="st-key-nfl_history_range_"] [data-testid="stSegmentedControl"] button{width:100%!important;min-width:0!important;justify-content:center!important}
 .nfl-trend-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0 10px}
 .nfl-trend-summary>div{background:#101112;border:1px solid #30343a;border-radius:9px;padding:7px 6px;min-width:0}
 .nfl-trend-summary>div:nth-child(odd){border-left:3px solid #19d978;border-bottom:2px solid rgba(25,217,120,.60)}
@@ -184,7 +249,7 @@ div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] but
 div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] button:nth-of-type(2){display:none!important}
 @media(max-width:700px){
   .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-  div[class*="st-key-back_nfl_player"]{width:max-content!important;margin-top:-4.25rem!important;margin-left:6.25rem!important;margin-bottom:7px!important}
+  div[class*="st-key-back_nfl_player"]{width:max-content!important;margin-top:0!important;margin-left:0!important;margin-bottom:8px!important}
   .nfl-player-head{grid-template-columns:64px minmax(0,1fr) 42px;gap:10px;padding:10px}
   .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
   .nfl-player-team-logo{width:40px;height:40px}
@@ -212,6 +277,7 @@ team = str(player.get("team") or "")
 pos = str(player.get("position") or "")
 photo = str(player.get("headshot_url") or "")
 matchup = str(player.get("game") or "")
+history_profile = _history_profile(player, player_id)
 img = f'<div class="nfl-player-photo"><img src="{escape(photo)}" alt="{escape(name)}"></div>' if photo else '<div class="nfl-player-fallback">NFL</div>'
 logo_team = {"LA": "lar", "WSH": "wsh"}.get(team.upper(), team.lower())
 team_logo = (
@@ -246,8 +312,17 @@ cards = []
 for prop in available:
     row = row_lookup.get(prop)
     if row is None:
+        if history_profile == "rookie":
+            card_status = "Rookie profile"
+            card_copy = "Rank and projection will activate as NFL game history is established."
+        elif history_profile == "no_prior_history":
+            card_status = "No prior NFL baseline"
+            card_copy = "Rank and projection will activate as qualifying games are played."
+        else:
+            card_status = "Building NFL baseline"
+            card_copy = "Rank and projection will activate when verified NFL data is available."
         cards.append(
-            f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>Building NFL baseline</span><small>Rank and projection will activate when verified NFL data is available.</small></div>'
+            f'<div class="nfl-market-card"><b>{escape(prop)}</b><span>{escape(card_status)}</span><small>{escape(card_copy)}</small></div>'
         )
     else:
         score = _score(row)
@@ -266,13 +341,18 @@ if row is not None:
     if line is None or pd.isna(line):
         line = row.get("prop_line")
 
-render_nfl_player_trend(player_id, selected, line, player_name=name)
+render_nfl_player_trend(
+    player_id,
+    selected,
+    line,
+    player_name=name,
+    history_profile=history_profile,
+)
 
 if row is not None:
     _html(f'<div class="nfl-intel"><b>Why This Player · {escape(selected)}</b><br>{escape(_why(row))}</div>')
 else:
     _html(
         f'<div class="nfl-intel"><b>Why This Player · {escape(selected)}</b><br>'
-        'There is not enough NFL market history yet to issue a ranked signal for this player. '
-        'The profile remains available and will fill with real NFL game results as they are played.</div>'
+        f'{escape(_missing_history_copy(history_profile, selected))}</div>'
     )
