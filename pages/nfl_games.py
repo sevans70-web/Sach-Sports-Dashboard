@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from html import escape
-from urllib.parse import quote
 
 import pandas as pd
 import streamlit as st
@@ -36,15 +35,10 @@ def _css() -> None:
         .nfl-games-hero h1{color:#fff;margin:0;font-size:1.55rem}
         .nfl-games-hero p{color:#c9ccd0;margin:10px 0 0;font-size:.84rem;line-height:1.45}
         .nfl-day-heading{color:#f6c84c;font-size:.84rem;font-weight:900;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em}
-        .nfl-game-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;width:100%;min-height:68px;padding:10px 14px;margin:0 0 8px;box-sizing:border-box;text-decoration:none!important;background:linear-gradient(110deg,#101112,#0c0e0e 72%,rgba(25,217,120,.07));border:1.5px solid #34373c;border-left:4px solid #19d978;border-radius:12px;color:#fff!important}
-        .nfl-game-row:hover{border-color:#19d978}
-        .nfl-game-team{display:flex;align-items:center;gap:8px;min-width:0}
-        .nfl-game-team.home{justify-content:flex-end}
-        .nfl-game-team img{width:34px;height:34px;object-fit:contain}
-        .nfl-game-team strong{font-size:.90rem;color:#fff}
-        .nfl-game-middle{text-align:center;min-width:92px}
-        .nfl-game-middle b{display:block;color:#fff;font-size:.78rem}
-        .nfl-game-middle span{display:block;color:#d9dcdf;font-size:.72rem;margin-top:3px;white-space:nowrap}
+        div[class*="st-key-nfl_game_select_"]{margin:0 0 8px!important}
+        div[class*="st-key-nfl_game_select_"] button{position:relative!important;width:100%!important;min-height:68px!important;padding:10px 54px!important;box-sizing:border-box!important;background:linear-gradient(110deg,#101112,#0c0e0e 72%,rgba(25,217,120,.07))!important;border:1.5px solid #34373c!important;border-left:4px solid #19d978!important;border-radius:12px!important;color:#fff!important}
+        div[class*="st-key-nfl_game_select_"] button:hover{border-color:#19d978!important}
+        div[class*="st-key-nfl_game_select_"] button p{width:100%!important;margin:0!important;text-align:center!important;white-space:pre-line!important;color:#fff!important;font-size:.82rem!important;font-weight:850!important;line-height:1.35!important}
         .nfl-intel-shell{margin:9px 0 14px;padding:13px;border:1.5px solid rgba(214,179,92,.66);border-radius:15px;background:linear-gradient(118deg,#0b0c0d,#101214 72%,rgba(25,217,120,.05));box-shadow:0 8px 24px rgba(0,0,0,.20)}
         .nfl-matchup-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;padding-bottom:10px;border-bottom:1px solid #292d31}
         .nfl-team{display:flex;align-items:center;gap:8px;min-width:0}
@@ -68,7 +62,8 @@ def _css() -> None:
           div[class*="st-key-back_to_nfl"]{width:max-content!important;margin-top:0!important;margin-left:0!important;margin-bottom:8px!important}
           .nfl-games-hero{padding:12px 13px;margin-top:2px}.nfl-games-hero h1{font-size:1.24rem}.nfl-games-hero p{margin-top:7px;font-size:.79rem}
           .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}
-          .nfl-game-row{padding:9px 10px}.nfl-game-team img{width:30px;height:30px}.nfl-game-middle{min-width:86px}
+          div[class*="st-key-nfl_game_select_"] button{min-height:64px!important;padding:9px 47px!important}
+          div[class*="st-key-nfl_game_select_"] button p{font-size:.76rem!important}
           .nfl-scout{padding:8px}.nfl-signal{padding:6px 0;margin:0;border-bottom:1px solid #272b30;font-size:.68rem}.nfl-signal:last-child{border-bottom:0}
         }
         </style>
@@ -92,6 +87,54 @@ def _open_player(row: pd.Series, matchup: str) -> None:
     player["game"] = matchup
     st.session_state["nfl_selected_player"] = player
     st.switch_page("pages/nfl_player.py")
+
+
+def _select_game(game_id: str) -> None:
+    """Select a matchup without a browser-level page navigation."""
+    st.session_state["nfl_selected_game"] = str(game_id)
+    if st.query_params.get("nfl_game"):
+        st.query_params.clear()
+
+
+def _game_button(
+    game_id: str,
+    away: str,
+    home: str,
+    when: str,
+    away_logo: str,
+    home_logo: str,
+    key: str,
+    selected: bool,
+) -> None:
+    selected_border = "#19d978" if selected else "#34373c"
+    st.markdown(
+        f"""
+        <style>
+        div[class*="st-key-{key}"] button{{border-color:{selected_border}!important}}
+        div[class*="st-key-{key}"] button:before,
+        div[class*="st-key-{key}"] button:after{{
+          content:"";position:absolute;top:50%;transform:translateY(-50%);
+          width:34px;height:34px;background-repeat:no-repeat;background-position:center;background-size:contain
+        }}
+        div[class*="st-key-{key}"] button:before{{left:12px;background-image:url('{escape(away_logo, quote=True)}')}}
+        div[class*="st-key-{key}"] button:after{{right:12px;background-image:url('{escape(home_logo, quote=True)}')}}
+        @media(max-width:700px){{
+          div[class*="st-key-{key}"] button:before,
+          div[class*="st-key-{key}"] button:after{{width:30px;height:30px}}
+          div[class*="st-key-{key}"] button:before{{left:9px}}
+          div[class*="st-key-{key}"] button:after{{right:9px}}
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.button(
+        f"{away}     @     {home}\n{when}",
+        key=key,
+        use_container_width=True,
+        on_click=_select_game,
+        args=(game_id,),
+    )
 
 
 def _player_buttons(team: str, matchup: str, key_prefix: str) -> None:
@@ -182,28 +225,29 @@ def show() -> None:
     selected_id = st.session_state.get("nfl_selected_game")
 
     games["day_key"] = games["kickoff_et"].dt.normalize()
-    for day_key in games["day_key"].drop_duplicates().tolist():
+    for day_index, day_key in enumerate(games["day_key"].drop_duplicates().tolist()):
         day_games = games[games["day_key"].eq(day_key)].sort_values("kickoff_et", kind="stable")
         day = pd.to_datetime(day_key, errors="coerce")
         day_label = f"{day.strftime('%A')} · {day.strftime('%B')} {day.day}" if pd.notna(day) else "Kickoff TBD"
         _render_html(f'<div class="nfl-day-heading">{escape(day_label)}</div>')
 
-        for _, game in day_games.iterrows():
+        for game_index, (_, game) in enumerate(day_games.iterrows()):
             away = str(game.get("away_team") or "").upper()
             home = str(game.get("home_team") or "").upper()
             when = _time_label(game.get("kickoff_et"))
             game_id = str(game.get("game_id") or f"{week}-{away}-{home}")
             away_logo = nfl_team_logo_url(away)
             home_logo = nfl_team_logo_url(home)
-            href = f"?nfl_game={quote(game_id, safe='')}"
-            _render_html(
-                f"""
-                <a class="nfl-game-row" href="{href}" target="_self">
-                  <span class="nfl-game-team"><img src="{escape(away_logo)}" alt="{escape(away)}"><strong>{escape(away)}</strong></span>
-                  <span class="nfl-game-middle"><b>@</b><span>{escape(when)}</span></span>
-                  <span class="nfl-game-team home"><strong>{escape(home)}</strong><img src="{escape(home_logo)}" alt="{escape(home)}"></span>
-                </a>
-                """
+            button_key = f"nfl_game_select_{day_index}_{game_index}"
+            _game_button(
+                game_id,
+                away,
+                home,
+                when,
+                away_logo,
+                home_logo,
+                button_key,
+                str(selected_id) == game_id,
             )
             if str(selected_id) == game_id:
                 _render_game_intelligence(game, game_id)
