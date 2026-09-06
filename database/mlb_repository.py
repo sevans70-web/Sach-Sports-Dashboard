@@ -201,7 +201,7 @@ def _previous_rank_lookup(
     league_id: int,
     market_id: int,
     ranking_date: str,
-) -> dict[int, int]:
+) -> tuple[dict[int, int], Any]:
     """Return the comparison baseline for durable movement.
 
     Prefer the previous snapshot from the same day. If this is the first
@@ -239,7 +239,7 @@ def _previous_rank_lookup(
         previous = _first(earlier)
 
     if not previous:
-        return {}
+        return {}, None
 
     entries = (
         supabase.table("ranking_entries")
@@ -250,11 +250,11 @@ def _previous_rank_lookup(
         or []
     )
 
-    return {
+    return ({
         int(entry["player_id"]): int(entry["rank"])
         for entry in entries
         if entry.get("player_id") is not None and entry.get("rank") is not None
-    }
+    }, previous.get("id"))
 
 
 def save_ranking_category(
@@ -273,7 +273,7 @@ def save_ranking_category(
         ranking_date.isoformat() if isinstance(ranking_date, date) else str(ranking_date)
     )
 
-    previous_ranks = _previous_rank_lookup(
+    previous_ranks, previous_snapshot_id = _previous_rank_lookup(
         league_id=league_id,
         market_id=market_id,
         ranking_date=ranking_date_text,
@@ -378,6 +378,35 @@ def save_ranking_category(
                 "snapshot_id": snapshot_id,
             }
         )
+
+    # Do not erase meaningful movement on the next worker refresh when the
+    # ranking order itself has not changed. Carry the prior display forward
+    # until another material Top-25 change produces a new comparison.
+    if (
+        movement_rows
+        and previous_snapshot_id
+        and previous_ranks
+        and all(row.get("movement_type") == "unchanged" for row in movement_rows)
+    ):
+        prior_rows = (
+            supabase.table("ranking_movements")
+            .select("player_id,previous_rank,current_rank,movement,movement_type")
+            .eq("snapshot_id", previous_snapshot_id)
+            .execute()
+            .data
+            or []
+        )
+        prior_lookup = {
+            int(row["player_id"]): row
+            for row in prior_rows
+            if row.get("player_id") is not None
+        }
+        for row in movement_rows:
+            prior = prior_lookup.get(int(row["player_id"]))
+            if prior and str(prior.get("movement_type") or "") in {"new", "up", "down"}:
+                row["previous_rank"] = prior.get("previous_rank")
+                row["movement"] = prior.get("movement")
+                row["movement_type"] = prior.get("movement_type")
 
     if movement_rows:
         supabase.table("ranking_movements").insert(movement_rows).execute()
