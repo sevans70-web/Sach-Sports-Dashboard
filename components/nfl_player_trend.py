@@ -1,4 +1,4 @@
-"""Sach NFL Last-10 market performance chart."""
+"""Sach NFL selectable recent-game market performance chart."""
 from __future__ import annotations
 
 import altair as alt
@@ -19,6 +19,7 @@ def render_nfl_player_trend(
     market: str,
     current_line: float | None = None,
     player_name: str = "",
+    history_profile: str = "standard",
 ) -> bool:
     history = player_last_games(
         player_id,
@@ -26,18 +27,44 @@ def render_nfl_player_trend(
         limit=22,
         player_name=player_name,
     )
+    safe_key = "".join(char if char.isalnum() else "_" for char in f"{player_id}_{market}")
+    range_label = st.segmented_control(
+        "Game-history range",
+        ["Last 5", "Last 10", "Last 20"],
+        default="Last 10",
+        key=f"nfl_history_range_{safe_key}",
+        label_visibility="collapsed",
+    ) or "Last 10"
+    game_limit = {"Last 5": 5, "Last 10": 10, "Last 20": 20}[range_label]
     st.markdown(
-        '<div class="nfl-trend-title">Last 10 Games · '
-        f'{market}</div>',
+        f'<div class="nfl-trend-title">{range_label} Games · {market}</div>',
         unsafe_allow_html=True,
     )
 
     if history.empty:
+        if history_profile == "rookie":
+            heading = "Rookie profile."
+            detail = (
+                f"This player does not yet have NFL regular-season {market.lower()} history. "
+                "The chart will populate as NFL games are played."
+            )
+        elif history_profile == "no_prior_history":
+            heading = "No prior NFL history."
+            detail = (
+                f"No prior NFL regular-season {market.lower()} results are available for this player. "
+                "The chart will populate as qualifying games are played."
+            )
+        else:
+            heading = "Game history unavailable."
+            detail = (
+                f"Verified NFL regular-season {market.lower()} results are not currently available "
+                "for this player."
+            )
         st.markdown(
-            """
+            f"""
             <div class="nfl-history-empty">
-              <b>Game history unavailable.</b><br>
-              Regular-season results could not be loaded for this player and market.
+              <b>{heading}</b><br>
+              {detail}
             </div>
             """,
             unsafe_allow_html=True,
@@ -46,7 +73,7 @@ def render_nfl_player_trend(
 
     full_history = history.copy()
     full_history["show_in_chart"] = False
-    full_history.loc[full_history.tail(10).index, "show_in_chart"] = True
+    full_history.loc[full_history.tail(game_limit).index, "show_in_chart"] = True
     plot = full_history[full_history["show_in_chart"]].copy()
     plot["value"] = pd.to_numeric(plot["value"], errors="coerce")
     plot = plot.dropna(subset=["value"]).reset_index(drop=True)
@@ -89,20 +116,27 @@ def render_nfl_player_trend(
     with st.container(key="nfl_player_trend_chart"):
         st.altair_chart(
             chart.properties(height=280).configure_view(strokeOpacity=0).configure_axis(grid=False, domain=False, labelColor="#bfc3c8"),
-            use_container_width=True,
+            width="stretch",
+        )
+
+    if len(plot) < game_limit:
+        st.caption(
+            f"{len(plot)} qualifying game{'s' if len(plot) != 1 else ''} available "
+            f"for this player and market."
         )
 
     values = plot["value"].dropna()
-    season_total = values.sum() if not values.empty else None
-    l5_avg = values.tail(5).mean() if not values.empty else None
-    l10_avg = values.tail(10).mean() if not values.empty else None
+    selected_total = values.sum() if not values.empty else None
+    all_values = pd.to_numeric(full_history["value"], errors="coerce").dropna()
+    l5_avg = all_values.tail(5).mean() if not all_values.empty else None
+    l10_avg = all_values.tail(10).mean() if not all_values.empty else None
     fourth_label, fourth_value = "GAMES", str(len(values))
     if has_line:
-        hits = int((values.tail(10) > line_value).sum())
-        fourth_label, fourth_value = "L10 HIT", f"{hits}/{min(10, len(values))}"
+        hits = int((values > line_value).sum())
+        fourth_label, fourth_value = f"L{game_limit} HIT", f"{hits}/{len(values)}"
     st.markdown(
         '<div class="nfl-trend-summary">'
-        f'<div><span>10-GAME TOTAL</span><strong>{"—" if season_total is None else f"{season_total:.1f}"}</strong></div>'
+        f'<div><span>{game_limit}-GAME TOTAL</span><strong>{"—" if selected_total is None else f"{selected_total:.1f}"}</strong></div>'
         f'<div><span>L5</span><strong>{"—" if l5_avg is None else f"{l5_avg:.1f}"}</strong></div>'
         f'<div><span>L10</span><strong>{"—" if l10_avg is None else f"{l10_avg:.1f}"}</strong></div>'
         f'<div><span>{fourth_label}</span><strong>{fourth_value}</strong></div>'
