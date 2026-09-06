@@ -59,7 +59,11 @@ def _cached_emerging_history() -> dict[str, Any]:
     stored = get_latest_source_payload(source_name="mlb_emerging_power_history")
     payload = stored.get("payload") or {}
     if isinstance(payload, dict) and isinstance(payload.get("days"), dict):
-        return payload
+        # Reconcile live and recently completed games on the page as well as in
+        # the worker. This prevents a successful HR from remaining pending until
+        # another background refresh happens.
+        from data.mlb_emerging_power_tracker import refresh_history_view
+        return refresh_history_view(payload, recent_days=8)
     return {"schema_version": 1, "days": {}}
 
 
@@ -139,14 +143,17 @@ def _styles() -> None:
            Only force one-row sizing; do not overwrite native selected-state
            colors, so the active period remains obvious. */
         div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"],
-        div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"]{
+        div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"],
+        div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"]{
             width:100%!important;
             max-width:100%!important;
         }
         div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"] > div,
         div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"] > div,
+        div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"] > div,
         div[class*="st-key-mlb_batter_performance_period"] [role="radiogroup"],
-        div[class*="st-key-mlb_pitcher_performance_period"] [role="radiogroup"]{
+        div[class*="st-key-mlb_pitcher_performance_period"] [role="radiogroup"],
+        div[class*="st-key-mlb_emerging_power_period"] [role="radiogroup"]{
             display:grid!important;
             grid-template-columns:repeat(5,minmax(0,1fr))!important;
             width:100%!important;
@@ -154,7 +161,8 @@ def _styles() -> None:
             flex-wrap:nowrap!important;
         }
         div[class*="st-key-mlb_batter_performance_period"] button,
-        div[class*="st-key-mlb_pitcher_performance_period"] button{
+        div[class*="st-key-mlb_pitcher_performance_period"] button,
+        div[class*="st-key-mlb_emerging_power_period"] button{
             min-width:0!important;
             width:100%!important;
             white-space:nowrap!important;
@@ -183,7 +191,8 @@ def _styles() -> None:
                 font-size:.82rem!important;
             }
             div[class*="st-key-mlb_batter_performance_period"] button,
-            div[class*="st-key-mlb_pitcher_performance_period"] button{
+            div[class*="st-key-mlb_pitcher_performance_period"] button,
+            div[class*="st-key-mlb_emerging_power_period"] button{
                 font-size:.56rem!important;
                 min-height:34px!important;
             }
@@ -360,4 +369,3 @@ def render_prediction_performance_tracker(
             _render_emerging_power(emerging_history, emerging_period)
         except Exception:
             st.caption("Emerging Power performance history is temporarily unavailable.")
-
