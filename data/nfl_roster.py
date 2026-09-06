@@ -32,6 +32,8 @@ def load_nfl_roster(season: int = 2026) -> pd.DataFrame:
         "depth_chart_position": "depth_chart_position",
         "status": "status",
         "headshot_url": "headshot_url",
+        "years_exp": "years_exp",
+        "rookie_year": "rookie_year",
     }
 
     available = {
@@ -65,6 +67,8 @@ def load_nfl_roster(season: int = 2026) -> pd.DataFrame:
         "depth_chart_position",
         "status",
         "headshot_url",
+        "years_exp",
+        "rookie_year",
     ]
 
     for column in optional:
