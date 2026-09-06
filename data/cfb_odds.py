@@ -32,9 +32,24 @@ PROP_MAP = {
         "odds_market": "player_pass_yds",
         "side": "over",
     },
+    "Passing Attempts": {
+        "sgo_stat": "passing_attempts",
+        "odds_market": "player_pass_attempts",
+        "side": "over",
+    },
+    "Completions": {
+        "sgo_stat": "completions",
+        "odds_market": "player_pass_completions",
+        "side": "over",
+    },
     "Rushing Yards": {
         "sgo_stat": "rushing_yards",
         "odds_market": "player_rush_yds",
+        "side": "over",
+    },
+    "Rushing Attempts": {
+        "sgo_stat": "rushing_attempts",
+        "odds_market": "player_rush_attempts",
         "side": "over",
     },
     "Receiving Yards": {

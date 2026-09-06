@@ -25,7 +25,10 @@ FOUNDATION_SEASON = 2025
 
 PROP_STAT_KEYS = {
     "Passing Yards": ("passingYards", "passing_yards", "passYards", "YDS"),
+    "Passing Attempts": ("passingAttempts", "passing_attempts", "passAttempts", "ATT"),
+    "Completions": ("completions", "passingCompletions", "CMP"),
     "Rushing Yards": ("rushingYards", "rushing_yards", "rushYards", "YDS"),
+    "Rushing Attempts": ("rushingAttempts", "rushing_attempts", "carries", "CAR"),
     "Receiving Yards": ("receivingYards", "receiving_yards", "recYards", "YDS"),
     "Receptions": ("receptions", "receivingReceptions", "REC"),
     "Anytime TD": ("rushingTouchdowns", "receivingTouchdowns", "totalTouchdowns", "TD"),
