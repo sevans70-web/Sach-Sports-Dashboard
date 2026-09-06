@@ -206,6 +206,37 @@ def run() -> dict:
         if not isinstance(emerging_seed.get("days"), dict):
             emerging_seed = {"schema_version": 1, "days": {}}
 
+        # Permanently backfill recent partial Emerging Power days from the
+        # lossless wide ranking snapshot saved for that exact game date.
+        for day_key, day_record in list(emerging_seed.get("days", {}).items()):
+            frozen = (
+                (day_record or {}).get("categories", {}).get("emerging_power", [])
+                or []
+            )
+            if not (0 < len(frozen) < 10):
+                continue
+            historical_source = get_latest_source_payload(
+                source_name="mlb_game_intelligence",
+                game_date=day_key,
+            )
+            historical_pool = list(
+                ((historical_source.get("payload") or {}).get("home_runs") or {}).get(
+                    "rankings", []
+                )
+                or []
+            )
+            historical_candidates = build_emerging_power_candidates(
+                historical_pool,
+                limit=10,
+                enrich_profiles=False,
+            )
+            if historical_candidates:
+                emerging_seed = sync_emerging_history(
+                    emerging_seed,
+                    historical_candidates,
+                    snapshot_date=day_key,
+                )
+
         emerging_history = sync_emerging_history(
             emerging_seed,
             emerging_candidates,
