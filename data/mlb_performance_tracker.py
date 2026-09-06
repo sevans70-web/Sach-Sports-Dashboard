@@ -311,12 +311,10 @@ def _apply_loose_actual(row: dict[str, Any], actual: dict[str, Any], category: s
     }
     value = actuals[category]
     target_met = value >= thresholds[category]
-    if is_final:
-        out["correct"] = bool(target_met)
-    elif target_met:
-        out["correct"] = True
-    else:
-        out["correct"] = None
+    # Performance is settled only after MLB marks the game final.  A live
+    # player may already have reached the target, but counting that as settled
+    # makes Today's overall card show a misleading partial 100% result.
+    out["correct"] = bool(target_met) if is_final else None
     out["game_finished"] = is_final
     out["result_live"] = is_live
     out["target_met"] = bool(target_met)
@@ -370,15 +368,10 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
             target_met = bool(actual.get("target_met"))
             is_final = bool(actual.get("game_finished"))
 
-            # A live success is already settled: once a hitter has homered,
-            # recorded a hit, crossed a one-plus threshold, etc., it cannot
-            # turn into a miss later in the game. Live misses stay pending.
-            if is_final:
-                row["correct"] = actual.get("correct")
-            elif target_met:
-                row["correct"] = True
-            else:
-                row["correct"] = None
+            # Keep every live result pending.  The live cards can still show
+            # what the player has done, but Prediction Performance should only
+            # use completed games in its settled count and hit rate.
+            row["correct"] = actual.get("correct") if is_final else None
 
             row["result_label"] = actual.get(
                 "result_label",
