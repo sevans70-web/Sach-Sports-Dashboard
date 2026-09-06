@@ -3179,9 +3179,12 @@ st.markdown(
       div[class*="st-key-mlb_page_refresh"] {
         position:relative!important;
         inset:auto!important;
-        margin:-48px 0 8px auto!important;
+        /* The Sport Hub popover reserves a taller mobile block than its
+           visible button. Pull Refresh into that same visual row while
+           keeping it in normal page flow so it scrolls away naturally. */
+        margin:-80px 0 8px auto!important;
       }
-      .mlb-page-refresh-time { font-size:.78rem;margin:1px 0 7px; }
+      .mlb-page-refresh-time { font-size:.78rem;margin:0 0 7px; }
     }
     </style>
     """,
@@ -3215,7 +3218,7 @@ render_html(
 )
 
 
-def render_emerging_power_watch() -> None:
+def render_emerging_power_watch() -> list[dict]:
     # Lazy import avoids Streamlit Community Cloud module-reload races during app startup.
     from data.mlb_emerging_power import (
         build_emerging_power_candidates,
@@ -3234,7 +3237,7 @@ def render_emerging_power_watch() -> None:
 
     if not candidates:
         st.info("No evidence-backed emerging-power signals qualify right now.")
-        return
+        return []
 
     def render_rows(rows: list[dict]) -> None:
         html_rows = []
@@ -3280,6 +3283,7 @@ def render_emerging_power_watch() -> None:
     if len(candidates) > 4:
         with st.expander(f"Show {len(candidates) - 4} more emerging-power signals"):
             render_rows(candidates[4:])
+    return candidates
 
 
 
@@ -3392,12 +3396,20 @@ hr_intel_view = st.segmented_control(
     label_visibility="collapsed",
 ) or "Live HR"
 
+emerging_candidates: list[dict] = []
+if st.session_state.get("mlb_current_emerging_candidates_date") == toronto_now.date().isoformat():
+    emerging_candidates = list(
+        st.session_state.get("mlb_current_emerging_candidates") or []
+    )
+
 if hr_intel_view == "Live HR":
     render_live_hr_intelligence(HOME_RUN_RANKINGS)
 elif hr_intel_view == "Yesterday":
     render_yesterday_power_watch(HOME_RUN_RANKINGS)
 else:
-    render_emerging_power_watch()
+    emerging_candidates = render_emerging_power_watch()
+    st.session_state["mlb_current_emerging_candidates"] = emerging_candidates
+    st.session_state["mlb_current_emerging_candidates_date"] = toronto_now.date().isoformat()
 
 st.divider()
 
@@ -3411,7 +3423,8 @@ render_prediction_performance_tracker(
         "walks": WALK_RANKINGS,
         "stolen_bases": STOLEN_BASE_RANKINGS,
         "hits_runs_rbis": HITS_RUNS_RBIS_RANKINGS,
-    }
+    },
+    emerging_candidates=emerging_candidates,
 )
 
 st.divider()

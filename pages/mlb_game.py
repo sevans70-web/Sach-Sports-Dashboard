@@ -180,14 +180,15 @@ st.markdown(
       border-radius:10px!important;min-height:38px!important;font-weight:800!important;
     }
     div[class*="st-key-back_to_mlb_from_game"]{
-      position:absolute!important;top:14px!important;right:0!important;width:auto!important;
-      margin:0!important;z-index:20!important;
+      display:flex!important;justify-content:flex-end!important;align-items:center!important;
+      position:relative!important;inset:auto!important;width:auto!important;
+      margin:-48px 0 10px auto!important;z-index:2!important;
     }
     div[class*="st-key-back_to_mlb_from_game"] button:hover{
       border-color:#d6b35c!important;color:#f6c84c!important;
     }
     @media(max-width:700px){
-      div[class*="st-key-back_to_mlb_from_game"]{top:1.20rem!important;right:0!important;margin:0!important}
+      div[class*="st-key-back_to_mlb_from_game"]{margin:-80px 0 10px auto!important}
     }
     </style>
     """,
