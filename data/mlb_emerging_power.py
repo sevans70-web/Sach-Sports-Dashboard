@@ -61,6 +61,8 @@ def _candidate_score(player: dict[str, Any]) -> float:
 def build_emerging_power_candidates(
     raw_home_run_rankings: list[dict[str, Any]],
     limit: int = 10,
+    *,
+    enrich_profiles: bool = True,
 ) -> list[dict[str, Any]]:
     """
     Find overlooked low-HR / limited-sample hitters without using a 'due' heuristic.
@@ -104,7 +106,7 @@ def build_emerging_power_candidates(
     enriched = []
     current_year = datetime.now(TORONTO_TIMEZONE).year
     for row in candidates[: max(limit * 2, 12)]:
-        if row.get("limited_sample"):
+        if enrich_profiles and row.get("limited_sample"):
             player_id = int(row.get("player_id") or 0)
             if player_id:
                 bio = get_player_bio(player_id)
