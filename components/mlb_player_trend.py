@@ -1,4 +1,4 @@
-"""MLB last-10 market chart matching the NFL player-profile experience."""
+"""Interactive MLB recent-game market chart for dedicated player profiles."""
 
 from __future__ import annotations
 
@@ -25,13 +25,28 @@ def _market_value(row: dict, field: str) -> float:
     return float(row.get(field) or 0)
 
 
-def render_mlb_player_trend(game_log: list[dict], category: str) -> bool:
+@st.fragment
+def render_mlb_player_trend(
+    game_log: list[dict],
+    category: str,
+    *,
+    player_id: int | str = 0,
+) -> bool:
     field, label, threshold = MARKET_FIELDS.get(
         str(category or "Home Runs"), MARKET_FIELDS["Home Runs"]
     )
-    rows = list(game_log or [])[-10:]
+    range_label = st.segmented_control(
+        "Recent-game range",
+        options=["Last 5", "Last 10", "Last 20"],
+        default="Last 10",
+        key=f"mlb_player_trend_range_{player_id}",
+        selection_mode="single",
+        label_visibility="collapsed",
+    ) or "Last 10"
+    game_limit = {"Last 5": 5, "Last 10": 10, "Last 20": 20}[range_label]
+    rows = list(game_log or [])[-game_limit:]
     st.markdown(
-        f'<div class="mlb-trend-title">Last 10 Games · {label}</div>',
+        f'<div class="mlb-trend-title">{range_label} Games · {label}</div>',
         unsafe_allow_html=True,
     )
     if not rows:
@@ -39,13 +54,18 @@ def render_mlb_player_trend(game_log: list[dict], category: str) -> bool:
         return False
 
     data = []
-    for row in rows:
+    for game_index, row in enumerate(rows, start=1):
         value = _market_value(row, field)
         opponent = str(row.get("opponent") or "Opponent")
+        game_date = str(row.get("date") or "")
+        short_date = game_date[5:].replace("-", "/") if len(game_date) >= 10 else game_date
         data.append(
             {
-                "game_date": row.get("date"),
-                "chart_label": opponent,
+                "game_index": game_index,
+                # A date suffix keeps repeat opponents as separate games instead
+                # of letting Vega collapse them into one categorical bar.
+                "chart_label": f"{opponent[:8]} · {short_date}",
+                "game_date": game_date,
                 "opponent": opponent,
                 "value": value,
                 "value_label": f"{value:.0f}",
@@ -61,7 +81,16 @@ def render_mlb_player_trend(game_log: list[dict], category: str) -> bool:
     bars = alt.Chart(source).mark_bar(
         cornerRadiusTopLeft=5, cornerRadiusTopRight=5
     ).encode(
-        x=alt.X("chart_label:N", sort=None, title=None, axis=alt.Axis(labelAngle=0, labelLimit=70, labelPadding=8)),
+        x=alt.X(
+            "chart_label:N",
+            sort=alt.SortField(field="game_index", order="ascending"),
+            title=None,
+            axis=alt.Axis(
+                labelAngle=-35 if game_limit > 10 else 0,
+                labelLimit=72,
+                labelPadding=8,
+            ),
+        ),
         y=alt.Y("value:Q", title=None, scale=alt.Scale(zero=True)),
         color=alt.Color("result:N", legend=None, scale=color_scale),
         tooltip=[
@@ -72,14 +101,21 @@ def render_mlb_player_trend(game_log: list[dict], category: str) -> bool:
     )
     labels = alt.Chart(source).mark_text(
         dy=-9, fontWeight="bold", color="#ffffff", fontSize=12
-    ).encode(x=alt.X("chart_label:N", sort=None), y="value:Q", text="value_label:N")
+    ).encode(
+        x=alt.X(
+            "chart_label:N",
+            sort=alt.SortField(field="game_index", order="ascending"),
+        ),
+        y="value:Q",
+        text="value_label:N",
+    )
     rule = alt.Chart(pd.DataFrame({"line": [threshold]})).mark_rule(
         stroke="#c7cbd0", strokeDash=[6, 5], size=2
     ).encode(y="line:Q")
 
     with st.container(key="mlb_player_trend_chart"):
         st.altair_chart(
-            (bars + labels + rule).properties(height=280).configure_view(strokeOpacity=0).configure_axis(
+            (bars + labels + rule).properties(height=290).configure_view(strokeOpacity=0).configure_axis(
                 grid=False, domain=False, labelColor="#bfc3c8"
             ),
             use_container_width=True,
@@ -89,10 +125,10 @@ def render_mlb_player_trend(game_log: list[dict], category: str) -> bool:
     hits = int((values > threshold).sum())
     st.markdown(
         '<div class="mlb-trend-summary">'
-        f'<div><span>10-GAME TOTAL</span><strong>{values.sum():.0f}</strong></div>'
+        f'<div><span>{game_limit}-GAME TOTAL</span><strong>{values.sum():.0f}</strong></div>'
         f'<div><span>L5 AVG</span><strong>{values.tail(5).mean():.1f}</strong></div>'
-        f'<div><span>L10 AVG</span><strong>{values.mean():.1f}</strong></div>'
-        f'<div><span>L10 HIT</span><strong>{hits}/{len(values)}</strong></div>'
+        f'<div><span>L{game_limit} AVG</span><strong>{values.mean():.1f}</strong></div>'
+        f'<div><span>L{game_limit} HIT</span><strong>{hits}/{len(values)}</strong></div>'
         '</div>',
         unsafe_allow_html=True,
     )

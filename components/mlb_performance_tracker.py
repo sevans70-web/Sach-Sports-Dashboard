@@ -22,7 +22,11 @@ from data.mlb_pitcher_performance_tracker import (
 )
 from database.mlb_dashboard_reads import load_performance_history_from_supabase
 from database.mlb_repository import get_latest_source_payload
-from data.mlb_emerging_power_tracker import records_for_period as emerging_records_for_period, summarize as summarize_emerging
+from data.mlb_emerging_power_tracker import (
+    records_for_period as emerging_records_for_period,
+    summarize as summarize_emerging,
+    sync_history as sync_emerging_history,
+)
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 
@@ -46,7 +50,7 @@ PITCHER_CATEGORY_CONFIG = {
 }
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _cached_batter_history() -> dict[str, Any]:
     return refresh_history_view(
         load_performance_history_from_supabase("batter"),
@@ -54,20 +58,50 @@ def _cached_batter_history() -> dict[str, Any]:
     )
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _cached_emerging_history() -> dict[str, Any]:
     stored = get_latest_source_payload(source_name="mlb_emerging_power_history")
     payload = stored.get("payload") or {}
     if isinstance(payload, dict) and isinstance(payload.get("days"), dict):
-        # Reconcile live and recently completed games on the page as well as in
-        # the worker. This prevents a successful HR from remaining pending until
-        # another background refresh happens.
+        # Repair any recent partial frozen list from its matching wide daily
+        # ranking source. This also fixes older 4/7-player captures after the
+        # calendar rolls over; merely refreshing today's candidates cannot.
+        from data.mlb_emerging_power import build_emerging_power_candidates
         from data.mlb_emerging_power_tracker import refresh_history_view
+
+        for day_key, day_record in list(payload.get("days", {}).items()):
+            frozen = (
+                (day_record or {}).get("categories", {}).get("emerging_power", [])
+                or []
+            )
+            if not (0 < len(frozen) < 10):
+                continue
+            source = get_latest_source_payload(
+                source_name="mlb_game_intelligence",
+                game_date=day_key,
+            )
+            raw_pool = list(
+                ((source.get("payload") or {}).get("home_runs") or {}).get(
+                    "rankings", []
+                )
+                or []
+            )
+            candidates = build_emerging_power_candidates(
+                raw_pool,
+                limit=10,
+                enrich_profiles=False,
+            )
+            if candidates:
+                payload = sync_emerging_history(
+                    payload,
+                    candidates,
+                    snapshot_date=day_key,
+                )
         return refresh_history_view(payload, recent_days=8)
     return {"schema_version": 1, "days": {}}
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _cached_pitcher_history() -> dict[str, Any]:
     return refresh_pitcher_history_view(
         load_performance_history_from_supabase("pitcher"),
@@ -316,6 +350,7 @@ def _render_emerging_power(history: dict[str, Any], period: str) -> None:
         st.caption("Tracking will populate after the next MLB worker refresh.")
 
 
+@st.fragment
 def render_prediction_performance_tracker(
     rankings_by_category: dict[str, list[dict[str, Any]]]
 ) -> None:
