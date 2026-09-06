@@ -11,6 +11,7 @@ import streamlit as st
 from data.nfl_player_baseline import build_nfl_player_baseline
 from data.nfl_roster import load_nfl_roster
 from data.nfl_stats import load_nfl_weekly_player_stats
+from data.nfl_odds import load_nfl_prop_markets
 
 ROSTER_SEASON = 2026
 BASELINE_SEASON = 2025
@@ -121,6 +122,80 @@ def build_rushing_receiving_yards_top25(roster_season: int = ROSTER_SEASON, base
         lambda r: _weighted_projection(r.get("rushing_receiving_yards_per_game"), r.get("last_5_rushing_receiving_yards"), r.get("last_3_rushing_receiving_yards")), axis=1
     )
     return _rank(base, "rushing_receiving_projection", "Rushing + Receiving Yards")
+
+
+
+def _attach_market_by_name(df: pd.DataFrame, stat_id: str, prop_label: str) -> pd.DataFrame:
+    """Attach the live over/under line when the sportsbook exposes this market."""
+    if df is None or df.empty:
+        return df
+    try:
+        market = load_nfl_prop_markets(stat_id, prop_label)
+    except Exception:
+        return df
+    if market is None or market.empty:
+        return df
+
+    left = df.copy()
+    right = market.copy()
+    left["_market_name_key"] = left["player_name"].astype(str).str.lower().str.replace(r"[^a-z0-9]", "", regex=True)
+    right["_market_name_key"] = right["player_name"].astype(str).str.lower().str.replace(r"[^a-z0-9]", "", regex=True)
+
+    keep = [c for c in [
+        "_market_name_key", "consensus_line", "best_over_line", "best_over_book",
+        "best_over_odds", "books_available", "provider", "matchup"
+    ] if c in right.columns]
+    right = right[keep].drop_duplicates("_market_name_key")
+    merged = left.merge(right, on="_market_name_key", how="left", suffixes=("", "_market"))
+    return merged.drop(columns=["_market_name_key"], errors="ignore")
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def build_passing_attempts_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
+    base = build_nfl_player_baseline(roster_season, baseline_season).copy()
+    base = base[base["position"].eq("QB")].copy()
+    weekly = load_nfl_weekly_player_stats(baseline_season).copy()
+    recent = _recent_means(weekly, ["attempts"])
+    base = base.merge(recent, on="player_id", how="left")
+    games = pd.to_numeric(base.get("games_played"), errors="coerce").replace(0, pd.NA)
+    base["passing_attempts_per_game"] = pd.to_numeric(base.get("attempts"), errors="coerce") / games
+    base["passing_attempts_projection"] = base.apply(
+        lambda r: _weighted_projection(r.get("passing_attempts_per_game"), r.get("last_5_attempts"), r.get("last_3_attempts")), axis=1
+    )
+    result = _rank(base, "passing_attempts_projection", "Passing Attempts")
+    return _attach_market_by_name(result, "passing_attempts", "Passing Attempts")
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def build_completions_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
+    base = build_nfl_player_baseline(roster_season, baseline_season).copy()
+    base = base[base["position"].eq("QB")].copy()
+    weekly = load_nfl_weekly_player_stats(baseline_season).copy()
+    recent = _recent_means(weekly, ["completions"])
+    base = base.merge(recent, on="player_id", how="left")
+    games = pd.to_numeric(base.get("games_played"), errors="coerce").replace(0, pd.NA)
+    base["completions_per_game"] = pd.to_numeric(base.get("completions"), errors="coerce") / games
+    base["completions_projection"] = base.apply(
+        lambda r: _weighted_projection(r.get("completions_per_game"), r.get("last_5_completions"), r.get("last_3_completions")), axis=1
+    )
+    result = _rank(base, "completions_projection", "Completions")
+    return _attach_market_by_name(result, "completions", "Completions")
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def build_rushing_attempts_top25(roster_season: int = ROSTER_SEASON, baseline_season: int = BASELINE_SEASON) -> pd.DataFrame:
+    base = build_nfl_player_baseline(roster_season, baseline_season).copy()
+    base = base[base["position"].isin(["QB", "RB"])].copy()
+    weekly = load_nfl_weekly_player_stats(baseline_season).copy()
+    recent = _recent_means(weekly, ["carries"])
+    base = base.merge(recent, on="player_id", how="left")
+    games = pd.to_numeric(base.get("games_played"), errors="coerce").replace(0, pd.NA)
+    base["rushing_attempts_per_game"] = pd.to_numeric(base.get("carries"), errors="coerce") / games
+    base["rushing_attempts_projection"] = base.apply(
+        lambda r: _weighted_projection(r.get("rushing_attempts_per_game"), r.get("last_5_carries"), r.get("last_3_carries")), axis=1
+    )
+    result = _rank(base, "rushing_attempts_projection", "Rushing Attempts")
+    return _attach_market_by_name(result, "rushing_attempts", "Rushing Attempts")
 
 
 def _defensive_foundation(roster_season: int, baseline_season: int) -> tuple[pd.DataFrame, pd.DataFrame]:
