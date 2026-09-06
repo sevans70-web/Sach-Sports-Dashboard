@@ -1,4 +1,8 @@
-"""College Football workspace for Sach Sports Dashboard."""
+from __future__ import annotations
+
+from datetime import datetime
+from html import escape
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
@@ -8,17 +12,36 @@ from data.cfb_intelligence import build_cfb_rankings
 from data.cfb_odds import get_cfb_odds_feed_status
 
 CFB_SEASON = 2026
+TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
+
+PROP_CATALOG = [
+    ("Passing Yards", "🏈"),
+    ("Passing Attempts", "🔁"),
+    ("Completions", "✅"),
+    ("Rushing Yards", "🏃"),
+    ("Rushing Attempts", "💨"),
+    ("Receiving Yards", "🙌"),
+    ("Receptions", "🧤"),
+    ("Anytime TD", "🔥"),
+    ("First TD", "1️⃣"),
+]
+
+
+def _render_html(html: str) -> None:
+    clean = " ".join(line.strip() for line in html.splitlines() if line.strip())
+    st.markdown(clean, unsafe_allow_html=True)
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def _load_scoreboard():
+def _load_scoreboard() -> pd.DataFrame:
     response = requests.get(
         ESPN_SCOREBOARD,
-        params={"limit": 100, "groups": 80},
+        params={"limit": 150, "groups": 80},
         timeout=20,
     )
     response.raise_for_status()
+
     rows = []
     for event in response.json().get("events", []):
         competitions = event.get("competitions") or []
@@ -29,157 +52,265 @@ def _load_scoreboard():
         home = next((c for c in competitors if c.get("homeAway") == "home"), {})
         away = next((c for c in competitors if c.get("homeAway") == "away"), {})
         status = (event.get("status") or {}).get("type") or {}
-        rows.append({
-            "game_id": event.get("id"),
-            "kickoff": pd.to_datetime(event.get("date"), errors="coerce", utc=True),
-            "away_team": (away.get("team") or {}).get("displayName", "Away"),
-            "home_team": (home.get("team") or {}).get("displayName", "Home"),
-            "away_score": away.get("score"),
-            "home_score": home.get("score"),
-            "status": status.get("shortDetail") or status.get("description") or "Scheduled",
-            "completed": bool(status.get("completed")),
-        })
-    return pd.DataFrame(rows)
+        venue = competition.get("venue") or {}
+
+        rows.append(
+            {
+                "game_id": event.get("id"),
+                "kickoff": pd.to_datetime(event.get("date"), errors="coerce", utc=True),
+                "away_team": (away.get("team") or {}).get("displayName", "Away"),
+                "home_team": (home.get("team") or {}).get("displayName", "Home"),
+                "away_score": away.get("score"),
+                "home_score": home.get("score"),
+                "status": status.get("shortDetail") or status.get("description") or "Scheduled",
+                "completed": bool(status.get("completed")),
+                "venue": venue.get("fullName") or "Venue TBD",
+            }
+        )
+    frame = pd.DataFrame(rows)
+    if not frame.empty:
+        frame = frame.sort_values(["kickoff", "game_id"], kind="stable").reset_index(drop=True)
+    return frame
 
 
-def _inject_cfb_mobile_css():
-    st.markdown("""
-    <style>
-    :root{--cfb-panel:#201a2d;--cfb-panel-2:#342447;--cfb-border:#6f4d88;--cfb-accent:#d8b35f;--cfb-soft:#c9bfd3}
-    .cfb-hero{border:1px solid var(--cfb-border);border-radius:18px;padding:1rem 1.05rem;
-    background:linear-gradient(135deg,var(--cfb-panel) 0%,var(--cfb-panel-2) 100%);margin-bottom:.85rem}
-    .cfb-hero-title{font-size:1.3rem;font-weight:800;color:#fff}.cfb-soft{color:var(--cfb-soft);font-size:.9rem}
-    .cfb-kicker,.cfb-rank{color:var(--cfb-accent);font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-    .cfb-game{border-left:3px solid var(--cfb-accent);padding:.45rem .75rem;margin:.55rem 0 .8rem}
-    .cfb-prop-card{border:1px solid var(--cfb-border);border-radius:16px;padding:.8rem .9rem;margin:.7rem 0;
-    background:linear-gradient(135deg,rgba(32,26,45,.88),rgba(52,36,71,.72))}
-    .cfb-verified{font-size:.75rem;color:#d8b35f;margin-top:.25rem}
-    @media(max-width:700px){
-      .block-container{padding-left:.85rem;padding-right:.85rem}.cfb-hero{padding:.85rem;border-radius:15px}
-      .cfb-hero-title{font-size:1.14rem}.cfb-prop-card{padding:.7rem;border-radius:14px}
-      .stTabs [data-baseweb="tab-list"]{gap:.15rem;overflow-x:auto}.stTabs [data-baseweb="tab"]{padding-left:.55rem;padding-right:.55rem;white-space:nowrap}
-      div[data-testid="stMetric"]{padding:.3rem .35rem}div[data-testid="stMetricLabel"]{font-size:.72rem}div[data-testid="stMetricValue"]{font-size:1rem}
-    }
-    </style>""", unsafe_allow_html=True)
+def _inject_css() -> None:
+    st.markdown(
+        """
+        <style>
+        .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
+
+        div[class*="st-key-cfb_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:14px!important;right:0!important;z-index:20!important}
+        div[class*="st-key-cfb_page_refresh"]>div{width:auto!important}
+        div[class*="st-key-cfb_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d8b35f!important;border:1.5px solid #8c64aa!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;white-space:nowrap!important}
+        .cfb-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:4px 0 8px;white-space:nowrap}
+
+        .cfb-hero{margin:0 0 10px;padding:14px;border-radius:15px;background:linear-gradient(105deg,rgba(216,179,95,.20) 0%,rgba(4,5,4,.98) 43%,rgba(91,54,119,.58) 100%);border:2px solid rgba(140,100,170,.92);box-shadow:inset 0 0 24px rgba(128,79,161,.12),0 0 0 1px rgba(216,179,95,.16);overflow:hidden}
+        .cfb-hero-title{margin:0!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
+        .cfb-hero-subtitle{margin:9px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
+
+        div[class*="st-key-cfb_games_entry"]{margin-bottom:-.20rem!important}
+        div[class*="st-key-cfb_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 10px!important;margin:4px 0 7px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(140,100,170,.80)!important;border-left:5px solid #d8b35f!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(216,179,95,.12) 0%,#0d0f10 36%,#0b0d0e 66%,rgba(91,54,119,.24) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
+        div[class*="st-key-cfb_games_entry"] button:after{content:'›';margin-left:auto;font-size:1.4rem;color:#cfd3d6}
+
+        .cfb-snapshot-heading{margin:13px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
+        .cfb-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+        .cfb-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center;min-width:0}
+        .cfb-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
+        .cfb-snapshot-card strong{color:#fff;font-size:1.45rem;line-height:1.1;margin:5px 0}
+        .cfb-snapshot-card small{color:#fff;font-size:.68rem;font-weight:650;line-height:1.15}
+        .cfb-snapshot-purple{border-color:#8c64aa}.cfb-snapshot-purple strong{color:#b98bd6}
+        .cfb-snapshot-gold{border-color:#d8b35f}.cfb-snapshot-gold strong{color:#d8b35f}
+
+        .cfb-performance{margin:18px 0 6px;padding:13px;border:1px solid #34373c;border-radius:14px;background:#0d0f10}
+        .cfb-performance strong{display:block;font-size:1.08rem;color:#fff}
+        .cfb-performance span{display:block;margin-top:5px;color:#aeb3ba;font-size:.78rem;line-height:1.35}
+
+        .cfb-rankings-heading{margin:24px 0 8px}.cfb-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.cfb-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
+        div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
+        div[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar{display:none!important}
+        div[data-testid="stTabs"] button[role="tab"]{flex:0 0 auto!important;white-space:nowrap!important;background:#0d0f10!important;color:#fff!important;border:1px solid #34373c!important;padding:.45rem .78rem!important;min-height:40px!important}
+        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#d8b35f!important;border-color:#8c64aa!important;background:#1b1221!important}
+        div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#d8b35f!important}
+
+        .cfb-rank-card{display:grid;grid-template-columns:40px minmax(0,1fr) 78px;gap:10px;align-items:start;width:100%;min-height:108px;padding:12px 10px;border-left:4px solid #d8b35f;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .cfb-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}
+        .cfb-rank-name{display:block;color:#fff;font-size:.96rem;font-weight:950}
+        .cfb-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}
+        .cfb-rank-proj{color:#d8b35f;font-size:.77rem;font-weight:850;margin-top:4px}
+        .cfb-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
+        .cfb-rank-score{text-align:right;padding-top:3px}.cfb-rank-score small{display:block;color:#9fa4aa;font-size:.51rem;font-weight:900}.cfb-rank-score strong{display:block;color:#b98bd6;font-size:1.03rem;font-weight:950;margin-top:3px}
+        .cfb-intel-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px 0}
+        .cfb-intel-metric{background:#111315;border:1px solid #2c3034;border-radius:10px;padding:8px 7px}.cfb-intel-metric span{display:block;color:#9fa4aa;font-size:.56rem;font-weight:900}.cfb-intel-metric strong{display:block;color:#fff;font-size:.78rem;margin-top:3px}
+        .cfb-why{margin:8px 0 4px;padding:10px;border-left:3px solid #8c64aa;background:#131016;color:#d6d9dd;font-size:.74rem;line-height:1.4}.cfb-why b{display:block;color:#d8b35f;margin-bottom:4px}
+
+        @media(max-width:700px){
+            .block-container{padding-left:.78rem!important;padding-right:.78rem!important}
+            .cfb-hero-title{font-size:1.28rem!important}.cfb-hero-subtitle{font-size:.82rem!important}
+            .cfb-snapshot-card{min-height:90px;padding:10px 8px}.cfb-snapshot-card strong{font-size:1.18rem}
+            .cfb-rank-card{grid-template-columns:35px minmax(0,1fr) 64px;gap:7px;padding:10px 8px}
+            .cfb-intel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+            div[class*="st-key-cfb_page_refresh"]{top:9px!important;right:0!important}
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
-def _hero():
-    st.markdown("""<div class="cfb-hero"><div class="cfb-kicker">College Football</div>
-    <div class="cfb-hero-title">🏈 CFB Intelligence Center</div>
-    <div class="cfb-soft">Active slate • matchup intelligence • player-prop workspace • results</div></div>""",
-    unsafe_allow_html=True)
+def _when(value) -> str:
+    stamp = pd.to_datetime(value, errors="coerce", utc=True)
+    if pd.isna(stamp):
+        return "Kickoff TBD"
+    return stamp.tz_convert(TORONTO_TIMEZONE).strftime("%a %b %d · %I:%M %p ET")
 
 
-def _intelligence():
-    _hero()
+def _snapshot(games: pd.DataFrame) -> tuple[int, int, int]:
+    if games.empty:
+        return 0, 0, 0
+    now = pd.Timestamp.now(tz="UTC")
+    upcoming = int((games["kickoff"].notna() & (games["kickoff"] >= now) & ~games["completed"]).sum())
+    final = int(games["completed"].sum())
+    live = int((~games["completed"] & games["status"].astype(str).str.contains("Q|Halftime|OT", case=False, regex=True)).sum())
+    return upcoming, live, final
+
+
+def _render_rank_card(row: pd.Series, prop: str) -> None:
+    rank = int(row.get("rank") or 0)
+    name = str(row.get("player_name") or "Player")
+    matchup = str(row.get("matchup") or "Matchup pending")
+    line = row.get("consensus_line")
+    model = row.get("model_probability")
+    market = row.get("sportsbook_implied_probability")
+    gi = row.get("gi_score")
+    mode = str(row.get("ranking_mode") or "Market Foundation")
+
+    projection = "Projection pending"
+    if model is not None and not pd.isna(model):
+        projection = f"Model probability {float(model):.1f}%"
+
+    market_text = mode
+    if line is not None and not pd.isna(line):
+        market_text = f"Market line {float(line):.1f}"
+
+    gi_text = "—" if gi is None or pd.isna(gi) else f"{float(gi):.1f}"
+
+    _render_html(
+        f"""
+        <div class="cfb-rank-card">
+          <div class="cfb-rank-number"><strong>#{rank}</strong></div>
+          <div>
+            <strong class="cfb-rank-name">{escape(name)}</strong>
+            <div class="cfb-rank-meta">{escape(matchup)}</div>
+            <div class="cfb-rank-proj">{escape(projection)}</div>
+            <div class="cfb-rank-market">{escape(market_text)}</div>
+          </div>
+          <div class="cfb-rank-score"><small>GI SCORE</small><strong>{gi_text}</strong></div>
+        </div>
+        """
+    )
+
+    detail_key = f"cfb_intel_{prop}_{rank}_{name}".replace(" ", "_").replace("+", "plus")
+    if st.button(
+        "ⓘ Hide Intelligence" if st.session_state.get(detail_key) else "ⓘ View Intelligence",
+        key=f"{detail_key}_button",
+        use_container_width=True,
+    ):
+        st.session_state[detail_key] = not st.session_state.get(detail_key, False)
+        st.rerun()
+
+    if st.session_state.get(detail_key):
+        per_game = row.get("per_game")
+        stats_year = row.get("stats_season")
+        verified = bool(row.get("stats_verified", False))
+        metrics = [
+            ("MODEL", f"{float(model):.1f}%" if model is not None and not pd.isna(model) else "—"),
+            ("MARKET", f"{float(market):.1f}%" if market is not None and not pd.isna(market) else "—"),
+            ("PER GAME", f"{float(per_game):.1f}" if per_game is not None and not pd.isna(per_game) else "—"),
+            ("DATA", f"{int(stats_year)}" if verified and stats_year else "Market"),
+        ]
+        metric_html = "".join(
+            f'<div class="cfb-intel-metric"><span>{escape(label)}</span><strong>{escape(value)}</strong></div>'
+            for label, value in metrics
+        )
+        _render_html(f'<div class="cfb-intel-grid">{metric_html}</div>')
+        why = str(row.get("why_engine") or "Current ranking uses the verified CFB data that is available.")
+        _render_html(f'<div class="cfb-why"><b>Why This Player Ranks Here</b>{escape(why)}</div>')
+
+
+def _render_rankings() -> None:
+    _render_html(
+        """
+        <div class="cfb-rankings-heading">
+          <strong>🏆 Player Rankings</strong>
+          <span>Market-specific intelligence · Top players first · swipe the markets for more</span>
+        </div>
+        """
+    )
+
+    labels = [f"{icon} {prop}" for prop, icon in PROP_CATALOG]
+    tabs = st.tabs(labels)
+
+    for tab, (prop, _) in zip(tabs, PROP_CATALOG):
+        with tab:
+            rankings = build_cfb_rankings(prop)
+            if rankings is None or rankings.empty:
+                feed = get_cfb_odds_feed_status()
+                st.info(feed.get("message") or f"No {prop} markets are available right now.")
+                continue
+
+            state_key = "cfb_full_" + prop.lower().replace(" ", "_").replace("+", "plus")
+            show_full = bool(st.session_state.get(state_key, False))
+            rows = rankings if show_full else rankings.head(5)
+
+            for _, row in rows.iterrows():
+                with st.container(border=True):
+                    _render_rank_card(row, prop)
+
+            if len(rankings) > 5:
+                label = "Show Top 5 Only" if show_full else f"View Full Rankings · {prop}"
+                if st.button(label, key=f"{state_key}_toggle", use_container_width=True):
+                    st.session_state[state_key] = not show_full
+                    st.rerun()
+
+
+def show() -> None:
+    _inject_css()
+
+    with st.container(key="cfb_page_refresh"):
+        if st.button("↻ REFRESH", key="cfb_refresh_button"):
+            st.cache_data.clear()
+            st.rerun()
+
+    _render_html(
+        f'<div class="cfb-page-refresh-time">Updated {datetime.now(TORONTO_TIMEZONE).strftime("%I:%M %p ET")}</div>'
+    )
+
+    _render_html(
+        """
+        <div class="cfb-hero">
+          <h1 class="cfb-hero-title">🏈 CFB Intelligence Center</h1>
+          <p class="cfb-hero-subtitle">College football game intelligence, player-prop rankings and matchup context — built in the same workflow as NFL, with CFB-specific market depth.</p>
+        </div>
+        """
+    )
+
+    if st.button(
+        "🏈 THIS WEEK'S CFB GAMES\nOpen the college football slate, then tap a matchup for game intelligence.",
+        key="cfb_games_entry",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/cfb_games.py")
+
     try:
         games = _load_scoreboard()
-        feed = get_cfb_odds_feed_status()
-        c1,c2,c3=st.columns(3)
-        c1.metric("Season",CFB_SEASON); c2.metric("Games",len(games))
-        c3.metric("Prop Mode","Live" if feed.get("status") in {"live","stale"} else "Foundation")
-        if games.empty:
-            st.info("No current college-football games are being returned by the live scoreboard.")
-            return
-
-        st.markdown("### 🔥 Matchup Intelligence")
-        labels=[f"{r.away_team} @ {r.home_team}" for r in games.itertuples()]
-        selected=st.selectbox("Select Matchup",labels,key="cfb_matchup")
-        row=games.iloc[labels.index(selected)]
-        kickoff=row["kickoff"]
-        when=kickoff.tz_convert("America/Toronto").strftime("%a %b %d • %I:%M %p ET") if pd.notna(kickoff) else "Time TBD"
-        st.markdown(f"**{row['away_team']} @ {row['home_team']}**"); st.caption(f"{when} • {row['status']}")
-
-        st.markdown("### 🎯 Intelligence Pulse")
-        passing=build_cfb_rankings("Passing Yards")
-        if passing.empty:
-            st.caption(feed.get("message") or "No passing-yard markets are posted yet.")
-        else:
-            for r in passing.head(3).itertuples():
-                st.markdown(f"**#{r.rank} {r.player_name}**")
-                st.caption(f"{r.matchup} • GI {r.gi_score:.1f} • Model {r.model_probability:.1f}%")
-
-        st.markdown("### 📅 Active Slate")
-        for g in games.itertuples():
-            when=g.kickoff.tz_convert("America/Toronto").strftime("%a %b %d • %I:%M %p ET") if pd.notna(g.kickoff) else "Time TBD"
-            st.markdown(f'<div class="cfb-game"><strong>{g.away_team} @ {g.home_team}</strong><br><span class="cfb-soft">{when} • {g.status}</span></div>',unsafe_allow_html=True)
-    except Exception as exc:
-        st.warning("CFB Intelligence Center is temporarily unavailable."); st.caption(str(exc))
-
-
-def _fmt(value, digits=1):
-    try:
-        if pd.isna(value): return "—"
-        return f"{float(value):.{digits}f}"
     except Exception:
-        return "—"
+        games = pd.DataFrame()
 
+    upcoming, live, final = _snapshot(games)
+    feed = get_cfb_odds_feed_status()
+    feed_label = "LIVE" if feed.get("status") in {"live", "stale"} else "WAITING"
 
-def _render_prop_card(row, prop):
-    mode=row.get("ranking_mode","Market Foundation")
-    verified=bool(row.get("stats_verified",False))
-    st.markdown(f"""<div class="cfb-prop-card">
-      <div class="cfb-rank">#{int(row.get('rank',0))} • {mode}</div>
-      <strong>{row.get('player_name','Unknown')}</strong><br>
-      <span class="cfb-soft">{row.get('matchup','')}</span>
-      <div class="cfb-verified">{"✓ ESPN statistical foundation verified" if verified else "Market data only • player stats not verified"}</div>
-    </div>""",unsafe_allow_html=True)
+    _render_html(
+        f"""
+        <div class="cfb-snapshot-heading">This Week's CFB Snapshot</div>
+        <div class="cfb-snapshot-grid">
+          <div class="cfb-snapshot-card cfb-snapshot-purple"><span>UPCOMING</span><strong>{upcoming}</strong><small>games in current feed</small></div>
+          <div class="cfb-snapshot-card cfb-snapshot-gold"><span>LIVE</span><strong>{live}</strong><small>games in progress</small></div>
+          <div class="cfb-snapshot-card"><span>PROP DATA</span><strong>{feed_label}</strong><small>{escape(str(feed.get("provider") or "provider pending"))}</small></div>
+        </div>
+        """
+    )
 
-    c1,c2=st.columns(2)
-    with c1:
-        st.metric("GI Score",_fmt(row.get("gi_score")))
-        st.metric("Model Probability",f"{_fmt(row.get('model_probability'))}%")
-        if prop not in {"Anytime TD","First TD"}:
-            st.metric("Sportsbook Line",_fmt(row.get("consensus_line")))
-    with c2:
-        st.metric("Market Probability",f"{_fmt(row.get('sportsbook_implied_probability'))}%")
-        st.metric("Consensus Odds",str(row.get("consensus_odds")) if pd.notna(row.get("consensus_odds")) else "—")
-        if verified:
-            st.metric("2025 Per Game",_fmt(row.get("per_game")))
+    _render_html(
+        """
+        <div class="cfb-performance">
+          <strong>📊 Prediction Performance</strong>
+          <span>CFB grading will populate as model-backed prop predictions are recorded and games finish. No placeholder win rate is shown.</span>
+        </div>
+        """
+    )
 
-    st.caption(f"Why Engine • {row.get('why_engine','')}")
+    _render_rankings()
 
-
-def _props():
-    st.subheader("Player Props")
-    prop=st.selectbox("Select Prop",["Passing Yards","Rushing Yards","Receiving Yards","Receptions","Anytime TD","First TD"],key="cfb_prop_selector")
-    st.markdown(f"### Top {prop}")
-
-    feed=get_cfb_odds_feed_status()
-    rankings=build_cfb_rankings(prop)
-    if rankings.empty:
-        st.info(feed.get("message") or f"No {prop} markets are posted for the current NCAAF slate yet.")
-        return
-
-    verified=int(rankings["stats_verified"].fillna(False).sum()) if "stats_verified" in rankings else 0
-    st.caption(f"{feed.get('provider','Sportsbook')} • {len(rankings)} ranked players • {verified} statistical profiles verified")
-
-    for _,row in rankings.iterrows():
-        _render_prop_card(row,prop)
-
-
-def _results():
-    st.subheader("Games / Results")
-    try:
-        games=_load_scoreboard()
-        if games.empty: st.info("No current college-football games are available."); return
-        for g in games.itertuples():
-            when=g.kickoff.tz_convert("America/Toronto").strftime("%a %b %d • %I:%M %p ET") if pd.notna(g.kickoff) else "Time TBD"
-            st.markdown(f"### {g.away_team} @ {g.home_team}")
-            if g.completed and g.away_score is not None and g.home_score is not None:
-                st.metric("Final",f"{g.away_team} {g.away_score} — {g.home_team} {g.home_score}")
-            st.caption(f"{when} • {g.status}"); st.divider()
-    except Exception as exc:
-        st.warning("CFB Games / Results is temporarily unavailable."); st.caption(str(exc))
-
-
-def show():
-    _inject_cfb_mobile_css()
-    st.title("🏈 College Football")
-    st.caption("Intelligence Center • Player Props • Games & Results")
-    tabs=st.tabs(["🏈 Intelligence Center","🎯 Player Props","🎮 Games / Results"])
-    with tabs[0]: _intelligence()
-    with tabs[1]: _props()
-    with tabs[2]: _results()
 
 show()

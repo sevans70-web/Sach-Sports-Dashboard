@@ -24,9 +24,12 @@ from engines.nfl_receptions import build_receptions_top25
 from engines.nfl_touchdowns import build_anytime_td_top25, build_first_td_top25
 from engines.nfl_additional_props import (
     build_passing_tds_top25,
+    build_passing_attempts_top25,
+    build_completions_top25,
     build_interceptions_top25,
     build_passing_rushing_yards_top25,
     build_rushing_receiving_yards_top25,
+    build_rushing_attempts_top25,
     build_sacks_top25,
     build_tackles_top25,
     build_tackles_assists_top25,
@@ -40,6 +43,8 @@ NFL_MOVEMENT_FILE = Path("/tmp/sach_nfl_rank_movement.json")
 PROP_CATALOG = {
     "Passing Yards": {"builder": "passing", "projection": "passing_yards_projection_matchup", "unit": "yards", "icon": "🏈"},
     "Passing TDs": {"builder": build_passing_tds_top25, "projection": "passing_tds_projection", "unit": "TDs", "icon": "🎯"},
+    "Passing Attempts": {"builder": build_passing_attempts_top25, "projection": "passing_attempts_projection", "unit": "attempts", "icon": "🔁"},
+    "Completions": {"builder": build_completions_top25, "projection": "completions_projection", "unit": "completions", "icon": "✅"},
     "Pass + Rush Yards": {"builder": build_passing_rushing_yards_top25, "projection": "passing_rushing_projection", "unit": "yards", "icon": "⚡"},
     "Interceptions": {"builder": build_interceptions_top25, "projection": "interceptions_projection", "unit": "interceptions", "icon": "🚫"},
     "Anytime TD": {"builder": build_anytime_td_top25, "projection": "model_probability", "unit": "%", "icon": "🔥"},
@@ -47,6 +52,7 @@ PROP_CATALOG = {
     "Receiving Yards": {"builder": build_receiving_yards_top25, "projection": "receiving_projection", "unit": "yards", "icon": "🙌"},
     "Receptions": {"builder": build_receptions_top25, "projection": "receptions_projection", "unit": "receptions", "icon": "🧤"},
     "Rushing Yards": {"builder": build_rushing_yards_top25, "projection": "rushing_projection", "unit": "yards", "icon": "🏃"},
+    "Rushing Attempts": {"builder": build_rushing_attempts_top25, "projection": "rushing_attempts_projection", "unit": "attempts", "icon": "💨"},
     "Rush + Receiving Yards": {"builder": build_rushing_receiving_yards_top25, "projection": "rushing_receiving_projection", "unit": "yards", "icon": "🔀"},
     "Sacks": {"builder": build_sacks_top25, "projection": "sacks_projection", "unit": "sacks", "icon": "💥"},
     "Tackles": {"builder": build_tackles_top25, "projection": "solo_tackles_projection", "unit": "tackles", "icon": "🛡️"},
@@ -324,7 +330,7 @@ def _detail_metrics(row: pd.Series, prop: str) -> list[tuple[str, str]]:
     _, l3 = _first_numeric(row, [k for k in row.index if str(k).startswith("last_3_")])
     _, season = _first_numeric(row, [
         "passing_yards_per_game", "rushing_yards_per_game", "receiving_yards_per_game",
-        "receptions_per_game", "passing_tds_per_game", "passing_rushing_yards_per_game",
+        "receptions_per_game", "passing_tds_per_game", "passing_attempts_per_game", "completions_per_game", "rushing_attempts_per_game", "passing_rushing_yards_per_game",
         "rushing_receiving_yards_per_game", "sacks_per_game", "tackles_per_game",
     ])
     line = row.get("consensus_line")
