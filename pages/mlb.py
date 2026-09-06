@@ -1255,6 +1255,7 @@ def render_expandable_ranking_header(player: dict) -> None:
     )
 
 
+@st.fragment
 def render_ranking_category(
     title: str,
     icon: str,
@@ -1401,6 +1402,11 @@ st.markdown(
             --gi-green: #2fbf71;
             --gi-yellow: #d6b35c;
             --gi-orange: #c99445;
+        }
+
+        /* Fragment updates should not fade the entire MLB dashboard. */
+        .stApp [data-stale="true"] {
+            opacity: 1 !important;
         }
 
         .stApp {
@@ -3126,11 +3132,10 @@ st.markdown(
       justify-content:flex-end!important;
       align-items:center!important;
       width:auto!important;
-      margin:0!important;
-      position:absolute!important;
-      top:14px!important;
-      right:0!important;
-      z-index:20!important;
+      margin:-48px 0 8px auto!important;
+      position:relative!important;
+      inset:auto!important;
+      z-index:2!important;
     }
     div[class*="st-key-mlb_page_refresh"] > div {
       width:auto!important;
@@ -3171,7 +3176,11 @@ st.markdown(
       white-space:nowrap;
     }
     @media(max-width:700px){
-      div[class*="st-key-mlb_page_refresh"] { top:1.20rem!important;right:0!important;margin:0!important; }
+      div[class*="st-key-mlb_page_refresh"] {
+        position:relative!important;
+        inset:auto!important;
+        margin:-48px 0 8px auto!important;
+      }
       .mlb-page-refresh-time { font-size:.78rem;margin:1px 0 7px; }
     }
     </style>

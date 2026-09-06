@@ -271,7 +271,11 @@ _market_context_grid(player)
 game_log = get_player_game_log(int(player["player_id"]))
 ranking = player.get("ranking") if isinstance(player.get("ranking"), dict) else {}
 selected_category = str(ranking.get("category") or "Home Runs")
-render_mlb_player_trend(game_log, selected_category)
+render_mlb_player_trend(
+    game_log,
+    selected_category,
+    player_id=int(player["player_id"]),
+)
 summary = summarize_game_log(game_log, "Season")
 
 if not game_log:
