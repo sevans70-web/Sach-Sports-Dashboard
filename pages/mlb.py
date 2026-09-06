@@ -497,6 +497,35 @@ def render_recent_movement(changes: list[str]) -> None:
 
     for change in changes:
         st.write(change)
+
+
+def open_ranked_player_profile(player: dict) -> None:
+    """Open a batter ranking directly in the full MLB player profile."""
+    player_id = int(player.get("player_id") or 0)
+    if not player_id:
+        return
+
+    context = dict(player)
+    context["player_id"] = player_id
+    context["player_name"] = str(
+        player.get("player_name") or player.get("player") or "MLB Player"
+    )
+    context["team_name"] = str(
+        player.get("team_name") or player.get("team") or ""
+    )
+    context["opponent_name"] = str(
+        player.get("opponent_name") or player.get("opponent") or ""
+    )
+    context["ranking"] = dict(player)
+    context["market_context"] = list(
+        st.session_state.get("mlb_player_market_context", {}).get(player_id, [])
+        or []
+    )
+    st.session_state["mlb_selected_player"] = context
+    st.session_state["mlb_player_return_page"] = "pages/mlb.py"
+    st.switch_page("pages/mlb_player.py")
+
+
 @st.cache_data(ttl=180, show_spinner=False)
 def attach_results_to_rankings(
     rankings: list[dict],
@@ -1251,7 +1280,6 @@ def render_ranking_category(
                 </div>
             </div>
 
-            <div class="gi-section-count">25 ranked</div>
         </div>
         """
     )
@@ -1287,6 +1315,12 @@ def render_ranking_category(
 
             if st.session_state[intelligence_key]:
                 render_player_card(player)
+                if st.button(
+                    "Open full player card",
+                    key=f"{intelligence_key}_profile",
+                    use_container_width=True,
+                ):
+                    open_ranked_player_profile(player)
 
     button_label = (
         "Show Top 5 Only"
@@ -1339,6 +1373,12 @@ def render_ranking_category(
 
                 if st.session_state[intelligence_key]:
                     render_player_card(player)
+                    if st.button(
+                        "Open full player card",
+                        key=f"{intelligence_key}_profile",
+                        use_container_width=True,
+                    ):
+                        open_ranked_player_profile(player)
                 
 
 
@@ -2284,6 +2324,25 @@ def render_hr_signal_legend() -> None:
         )
 
 
+def render_hr_selection_guide() -> None:
+    """Teach users how to combine HR signals instead of chasing one stat."""
+    with st.expander("ⓘ What should I look for in an HR pick?", expanded=False):
+        st.markdown(
+            """
+            **Start with barrel rate:** below 7% is low, 7–9.9% is average,
+            10–14.9% is strong, and 15%+ is elite HR contact.
+
+            **Then confirm the full picture:** strong xSLG and recent barrels,
+            a vulnerable opposing pitcher, a favourable handedness matchup,
+            a hitter-friendly park or weather edge, and a confirmed top-five
+            lineup position.
+
+            A strong barrel rate improves the quality of the power signal, but
+            no single statistic guarantees a home run. Use the signals together.
+            """
+        )
+
+
 def render_live_hr_intelligence(rankings: list[dict]) -> None:
     """Show hard-contact signals for every hitter in live MLB games."""
     live_data = get_live_hr_contact_signals()
@@ -2321,6 +2380,7 @@ def render_live_hr_intelligence(rankings: list[dict]) -> None:
     )
 
     render_hr_signal_legend()
+    render_hr_selection_guide()
 
     if not signals:
         if int(live_data.get("live_game_count") or 0) > 0:
@@ -3060,13 +3120,17 @@ refreshed_time = toronto_now.strftime("%B %d, %Y at %I:%M %p ET")
 st.markdown(
     """
     <style>
-    /* Refresh and Updated are one right-aligned utility block above the hero. */
+    /* Match NFL: Sport Hub left, refresh right, one compact utility row. */
     div[class*="st-key-mlb_page_refresh"] {
       display:flex!important;
       justify-content:flex-end!important;
       align-items:center!important;
-      width:100%!important;
-      margin:2px 0 4px!important;
+      width:auto!important;
+      margin:0!important;
+      position:absolute!important;
+      top:14px!important;
+      right:0!important;
+      z-index:20!important;
     }
     div[class*="st-key-mlb_page_refresh"] > div {
       width:auto!important;
@@ -3107,8 +3171,8 @@ st.markdown(
       white-space:nowrap;
     }
     @media(max-width:700px){
-      div[class*="st-key-mlb_page_refresh"] { margin-top:2px!important; }
-      .mlb-page-refresh-time { font-size:.84rem; margin-bottom:10px; }
+      div[class*="st-key-mlb_page_refresh"] { top:1.20rem!important;right:0!important;margin:0!important; }
+      .mlb-page-refresh-time { font-size:.78rem;margin:1px 0 7px; }
     }
     </style>
     """,
@@ -3482,9 +3546,8 @@ st.markdown(
     .gi-rankings-heading strong{display:block!important;color:#fff!important;font-size:1.35rem!important;font-weight:900!important}
     .gi-rankings-heading span{display:block!important;color:#b8b09f!important;font-size:.70rem!important;margin-top:1px!important}
 
-    /* 25 ranked badge must never touch first card. */
+    /* Ranking headings stay compact; the redundant 25-ranked badge is gone. */
     .gi-section-heading{margin:5px 0 12px!important;align-items:flex-start!important}
-    .gi-section-count{font-size:.66rem!important;padding:4px 7px!important;margin:0 0 6px!important}
 
     /* Confirmed/projected lineup pill must clear View Intelligence. */
     .gi-lineup-status{display:inline-block!important;margin:5px 0 9px!important}

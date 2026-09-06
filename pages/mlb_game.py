@@ -80,6 +80,7 @@ def _open_player(player: dict[str, Any], game: dict[str, Any]) -> None:
         context["ranking"] = ranked
 
     st.session_state["mlb_selected_player"] = context
+    st.session_state["mlb_player_return_page"] = "pages/mlb_game.py"
     st.switch_page("pages/mlb_player.py")
 
 
@@ -178,11 +179,15 @@ st.markdown(
       background:#080909!important;color:#fff!important;border:1.5px solid #34373c!important;
       border-radius:10px!important;min-height:38px!important;font-weight:800!important;
     }
+    div[class*="st-key-back_to_mlb_from_game"]{
+      position:absolute!important;top:14px!important;right:0!important;width:auto!important;
+      margin:0!important;z-index:20!important;
+    }
     div[class*="st-key-back_to_mlb_from_game"] button:hover{
       border-color:#d6b35c!important;color:#f6c84c!important;
     }
     @media(max-width:700px){
-      div[class*="st-key-back_to_mlb_from_game"]{margin-top:-2.15rem!important;margin-bottom:.2rem!important}
+      div[class*="st-key-back_to_mlb_from_game"]{top:1.20rem!important;right:0!important;margin:0!important}
     }
     </style>
     """,

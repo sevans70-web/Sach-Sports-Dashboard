@@ -15,6 +15,7 @@ from data.mlb_player_profile import (
     summarize_game_log,
 )
 from data.mlb_players import get_player_headshot_url
+from components.mlb_player_trend import render_mlb_player_trend
 
 
 def _fmt_rate(value: Any) -> str:
@@ -176,6 +177,11 @@ st.markdown(
     .player-market-chip strong{display:block;color:#fff;font-size:.72rem;line-height:1.15}
     .player-market-chip span{display:block;color:#19d978;font-size:.67rem;font-weight:850;margin-top:3px}
     .player-window-note{color:#a7abb2;font-size:.70rem;margin:1px 0 7px}
+    .mlb-trend-title{color:#fff;font-size:.92rem;font-weight:900;margin:12px 0 5px}
+    .mlb-trend-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0 11px}
+    .mlb-trend-summary>div{min-width:0;background:#101112;border:1.5px solid #30343a;border-bottom:3px solid #19d978;border-radius:9px;padding:7px 5px;text-align:center}
+    .mlb-trend-summary span{display:block;color:#9da2aa;font-size:.52rem;font-weight:800}
+    .mlb-trend-summary strong{display:block;color:#fff;font-size:.84rem;margin-top:3px}
     .player-profile-grid{
       display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0;
     }
@@ -227,9 +233,13 @@ st.markdown(
       background:#080909!important;color:#fff!important;border:1.5px solid #34373c!important;
       border-radius:10px!important;min-height:38px!important;
     }
+    div[class*="st-key-back_to_mlb_game"]{
+      position:absolute!important;top:14px!important;right:0!important;width:auto!important;
+      margin:0!important;z-index:20!important;
+    }
 
     @media(max-width:700px){
-      div[class*="st-key-back_to_mlb_game"]{margin-top:-2.15rem!important;margin-bottom:.15rem!important}
+      div[class*="st-key-back_to_mlb_game"]{top:1.20rem!important;right:0!important;margin:0!important}
       .player-profile-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
       .player-profile-photo,.player-profile-photo-fallback{width:60px;height:60px}
       .player-profile-copy h2{font-size:1.12rem}
@@ -243,8 +253,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-if st.button("← Back to game", key="back_to_mlb_game"):
-    st.switch_page("pages/mlb_game.py")
+return_page = st.session_state.get("mlb_player_return_page", "pages/mlb_game.py")
+return_label = "← Back to MLB" if return_page == "pages/mlb.py" else "← Back to game"
+if st.button(return_label, key="back_to_mlb_game"):
+    st.switch_page(return_page)
 
 player = st.session_state.get("mlb_selected_player")
 if not isinstance(player, dict) or not player.get("player_id"):
@@ -256,16 +268,11 @@ _player_header(player)
 _ranking_strip(player)
 _market_context_grid(player)
 
-window = st.segmented_control(
-    "Recent form",
-    options=["L5", "L10", "L20", "Season"],
-    default="L5",
-    key="mlb_player_window",
-    selection_mode="single",
-) or "L5"
-
 game_log = get_player_game_log(int(player["player_id"]))
-summary = summarize_game_log(game_log, window)
+ranking = player.get("ranking") if isinstance(player.get("ranking"), dict) else {}
+selected_category = str(ranking.get("category") or "Home Runs")
+render_mlb_player_trend(game_log, selected_category)
+summary = summarize_game_log(game_log, "Season")
 
 if not game_log:
     st.caption("Recent MLB game-log data is temporarily unavailable.")
@@ -334,7 +341,6 @@ else:
 # Build educational Today's Intelligence.
 l5 = summarize_game_log(game_log, "L5") if game_log else {}
 l10 = summarize_game_log(game_log, "L10") if game_log else {}
-ranking = player.get("ranking") if isinstance(player.get("ranking"), dict) else {}
 bio = get_player_bio(int(player["player_id"]))
 spring = {}
 season_pa = int((summarize_game_log(game_log, "Season") if game_log else {}).get("plate_appearances") or 0)
@@ -402,4 +408,3 @@ st.markdown(
     + "</div>",
     unsafe_allow_html=True,
 )
-
