@@ -204,7 +204,7 @@ def _styles() -> None:
         div[class*="st-key-mlb_pitcher_performance_period"] [role="radiogroup"],
         div[class*="st-key-mlb_emerging_power_period"] [role="radiogroup"]{
             display:grid!important;
-            grid-template-columns:repeat(5,minmax(0,1fr))!important;
+            grid-template-columns:.92fr 1.18fr .92fr .92fr .92fr!important;
             width:100%!important;
             gap:0!important;
             flex-wrap:nowrap!important;
@@ -247,6 +247,17 @@ def _styles() -> None:
                 padding-right:1px!important;
                 letter-spacing:-.02em!important;
                 min-height:34px!important;
+            }
+            div[class*="st-key-mlb_batter_performance_period"] button p,
+            div[class*="st-key-mlb_pitcher_performance_period"] button p,
+            div[class*="st-key-mlb_emerging_power_period"] button p,
+            div[class*="st-key-mlb_batter_performance_period"] button span,
+            div[class*="st-key-mlb_pitcher_performance_period"] button span,
+            div[class*="st-key-mlb_emerging_power_period"] button span{
+                font-size:.52rem!important;
+                letter-spacing:-.02em!important;
+                overflow:visible!important;
+                text-overflow:clip!important;
             }
         }
         </style>
@@ -300,17 +311,16 @@ def _render_batter_market(history, category, period):
 
 def _render_overall(history, period):
     summary = summarize_overall(_all_records(history, period))
-    if not summary["graded"]:
-        st.caption("Overall performance will populate as tracked predictions settle.")
-        return
     st.markdown(
         f"<div class='perf-kpi-grid'>"
         f"<div class='perf-kpi'><span>Hit Rate</span><strong>{summary['hit_rate']:.1f}%</strong></div>"
-        f"<div class='perf-kpi'><span>Settled</span><strong>{summary['wins']} / {summary['graded']}</strong></div>"
+        f"<div class='perf-kpi'><span>Correct / Settled</span><strong>{summary['wins']} / {summary['graded']}</strong></div>"
         f"<div class='perf-kpi'><span>Pending</span><strong>{summary['pending']}</strong></div>"
         f"</div>",
         unsafe_allow_html=True,
     )
+    if not summary["graded"]:
+        st.caption("Today's hit rate will populate after completed games are graded.")
 
 
 def _render_pitcher_market(history, category, period):
@@ -354,17 +364,7 @@ def _render_emerging_power(history: dict[str, Any], period: str) -> None:
         "The first daily candidate list is frozen so later ranking changes cannot rewrite its results."
     )
 
-    if rows:
-        with st.expander("Tracked Emerging Power candidates", expanded=False):
-            for row in rows[-30:]:
-                name = str(row.get("player_name") or row.get("player") or "Player")
-                day = str(row.get("tracking_date") or "")
-                hrs = int(row.get("actual_home_runs") or 0)
-                correct = row.get("correct")
-                mark = "✅" if correct is True else "❌" if correct is False else "⏳"
-                score = float(row.get("emerging_score") or 0)
-                st.write(f"{mark} {day} · {name} · Emerging {score:.1f} · {hrs} HR")
-    else:
+    if not rows:
         st.caption("Tracking will populate after the next MLB worker refresh.")
 
 
