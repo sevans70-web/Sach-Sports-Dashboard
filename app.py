@@ -239,35 +239,23 @@ pages = {
 # Register all pages before rendering custom page links.
 navigation = st.navigation(pages, position="hidden")
 
-# One shared utility row for every sport page: menu left, refresh right.
-# Keeping both controls in the SAME Streamlit row avoids CSS positioning drift.
-menu_col, spacer_col, refresh_col = st.columns([1.0, 5.8, 2.15], vertical_alignment="center")
-with menu_col:
-    with st.popover("▦", use_container_width=False):
-        if st.button("🔎", key="open_platform_player_search", help="Search players", use_container_width=False):
-            st.switch_page("pages/player_search.py")
-        st.markdown("**SPORT HUB**")
-        left, right = st.columns(2)
-        with left:
-            st.page_link("pages/home.py", label="HOME", icon="🏠")
-            st.page_link("pages/mlb.py", label="MLB", icon="⚾")
-            st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
-            st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
-        with right:
-            st.page_link("pages/nfl.py", label="NFL", icon="🏈")
-            st.page_link("pages/cfb.py", label="CFB", icon="🏈")
-            st.page_link("pages/nba.py", label="NBA", icon="🏀")
-            st.page_link("pages/nhl.py", label="NHL", icon="🏒")
-with refresh_col:
-    if st.button("⟳ REFRESH", key="global_sport_refresh", use_container_width=True, help="Refresh dashboard data"):
-        st.cache_data.clear()
-        st.rerun()
-
-header_now = datetime.now(ZoneInfo("America/Toronto"))
-st.markdown(
-    f'<div class="ssd-updated-time">Updated {header_now.strftime("%A · %I:%M %p ET")}</div>',
-    unsafe_allow_html=True,
-)
+# Shared mobile-first Sport Hub. Refresh was intentionally removed; page freshness
+# is communicated by each page's Updated timestamp immediately below its hero.
+with st.popover("▦", use_container_width=False):
+    if st.button("🔎", key="open_platform_player_search", help="Search players", use_container_width=False):
+        st.switch_page("pages/player_search.py")
+    st.markdown("**SPORT HUB**")
+    left, right = st.columns(2)
+    with left:
+        st.page_link("pages/home.py", label="HOME", icon="🏠")
+        st.page_link("pages/mlb.py", label="MLB", icon="⚾")
+        st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
+        st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
+    with right:
+        st.page_link("pages/nfl.py", label="NFL", icon="🏈")
+        st.page_link("pages/cfb.py", label="CFB", icon="🏈")
+        st.page_link("pages/nba.py", label="NBA", icon="🏀")
+        st.page_link("pages/nhl.py", label="NHL", icon="🏒")
 
 st.markdown(
     """
