@@ -326,9 +326,7 @@ def _sgo_event_odds(event):
 
 
 def _sgo_matchup(event):
-    teams = event.get("teams") or {}
-    away = event.get("awayTeamName") or event.get("awayTeam") or (teams.get("away") or {}).get("name")
-    home = event.get("homeTeamName") or event.get("homeTeam") or (teams.get("home") or {}).get("name")
+    away, home = _event_team_names(event)
     if away and home:
         return f"{away} @ {home}"
     return str(event.get("name") or event.get("eventName") or "")
@@ -461,17 +459,38 @@ def _team_match_key(value):
 
 
 def _event_team_names(event):
+    """Extract sportsbook team names from either SportsGameOdds or The Odds API."""
     teams = event.get("teams") or {}
+
+    def _nested_name(side):
+        item = teams.get(side) or {}
+        if not isinstance(item, dict):
+            return ""
+        names = item.get("names") or {}
+        if isinstance(names, dict):
+            for key in ("long", "medium", "short"):
+                if names.get(key):
+                    return str(names.get(key)).strip()
+        for key in ("name", "displayName", "teamName"):
+            if item.get(key):
+                return str(item.get(key)).strip()
+        return ""
+
     away = (
-        event.get("awayTeamName") or event.get("awayTeam")
-        or (teams.get("away") or {}).get("name")
-        or event.get("away_team")
+        event.get("awayTeamName") or event.get("away_team")
+        or _nested_name("away")
     )
     home = (
-        event.get("homeTeamName") or event.get("homeTeam")
-        or (teams.get("home") or {}).get("name")
-        or event.get("home_team")
+        event.get("homeTeamName") or event.get("home_team")
+        or _nested_name("home")
     )
+
+    # Some provider payloads expose awayTeam/homeTeam as objects rather than strings.
+    if isinstance(event.get("awayTeam"), str) and not away:
+        away = event.get("awayTeam")
+    if isinstance(event.get("homeTeam"), str) and not home:
+        home = event.get("homeTeam")
+
     return str(away or "").strip(), str(home or "").strip()
 
 
