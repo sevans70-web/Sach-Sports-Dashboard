@@ -300,6 +300,60 @@ st.markdown(
   html, body, .stApp, [data-testid="stAppViewContainer"] { font-size: 17px !important; }
   p, li, label, [data-testid="stMarkdownContainer"] p { font-size: .94rem; line-height: 1.42; }
   [data-testid="stCaptionContainer"], small { font-size: .78rem !important; }
+
+  /* TASK 1 — TOP SPACING ONLY. */
+  [data-testid="stAppViewBlockContainer"],
+  [data-testid="stAppViewContainer"] .block-container,
+  .main .block-container,
+  .block-container {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+  }
+
+  /* Move the actual Streamlit element that contains the menu upward. */
+  div[data-testid="stElementContainer"]:has(div[data-testid="stPopover"]),
+  div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stPopover"]) {
+      margin-top: -1.65rem !important;
+      margin-bottom: -3.15rem !important;
+      position: relative !important;
+      z-index: 20 !important;
+  }
+
+  div[data-testid="stPopover"] {
+      margin: 0 !important;
+      position: relative !important;
+      z-index: 20 !important;
+  }
+
+  /* Pull the three sport heroes up and make the card itself tighter. */
+  .gi-hero,
+  .nfl-hero,
+  .cfb-hero {
+      margin-top: -1.05rem !important;
+      margin-bottom: .28rem !important;
+      padding: 11px 12px 12px !important;
+      min-height: 0 !important;
+      height: auto !important;
+      display: block !important;
+      align-items: initial !important;
+      justify-content: initial !important;
+  }
+
+  .gi-hero-title,
+  .nfl-hero-title,
+  .cfb-hero-title {
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1.08 !important;
+  }
+
+  .gi-hero-subtitle,
+  .nfl-hero-subtitle,
+  .cfb-hero-subtitle {
+      margin: 7px 0 0 !important;
+      padding: 0 !important;
+      line-height: 1.38 !important;
+  }
 }
 </style>
     """,
