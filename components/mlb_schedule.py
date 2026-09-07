@@ -121,7 +121,7 @@ def _render_game_card(
         f'<div class="mlb-slate-card{live_class}">'
         f'<div class="mlb-slate-top">'
         f'<span class="mlb-slate-status">{_status_label(game)}</span>'
-        f'<span>{escape(str(game.get("venue") or "Venue TBA"))}</span>'
+        f'<span>{escape(str(game.get("venue") or "Venue TBA"))} · {escape(str(game.get("start_time") or "Time TBA"))}</span>'
         f'</div>'
         f'<div class="mlb-slate-team">'
         f'{_logo(game.get("away_team_id"), away)}'

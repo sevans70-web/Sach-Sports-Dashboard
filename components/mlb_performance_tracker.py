@@ -204,7 +204,7 @@ def _styles() -> None:
         div[class*="st-key-mlb_pitcher_performance_period"] [role="radiogroup"],
         div[class*="st-key-mlb_emerging_power_period"] [role="radiogroup"]{
             display:grid!important;
-            grid-template-columns:.92fr 1.18fr .92fr .92fr .92fr!important;
+            grid-template-columns:repeat(5,minmax(0,1fr))!important;
             width:100%!important;
             gap:0!important;
             flex-wrap:nowrap!important;
@@ -242,10 +242,10 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"] button,
             div[class*="st-key-mlb_pitcher_performance_period"] button,
             div[class*="st-key-mlb_emerging_power_period"] button{
-                font-size:.52rem!important;
-                padding-left:1px!important;
-                padding-right:1px!important;
-                letter-spacing:-.02em!important;
+                font-size:.64rem!important;
+                padding-left:2px!important;
+                padding-right:2px!important;
+                letter-spacing:-.01em!important;
                 min-height:34px!important;
             }
             div[class*="st-key-mlb_batter_performance_period"] button p,
@@ -254,8 +254,8 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"] button span,
             div[class*="st-key-mlb_pitcher_performance_period"] button span,
             div[class*="st-key-mlb_emerging_power_period"] button span{
-                font-size:.52rem!important;
-                letter-spacing:-.02em!important;
+                font-size:.64rem!important;
+                letter-spacing:-.01em!important;
                 overflow:visible!important;
                 text-overflow:clip!important;
             }

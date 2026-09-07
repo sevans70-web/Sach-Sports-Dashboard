@@ -16,7 +16,7 @@ MARKETS = {
 
 
 def _period() -> str:
-    options = ["Week", "Month", "Season"]
+    options = ["Today", "Week", "Month", "Season"]
     current = st.session_state.get("nfl_performance_period", "Week")
     if current not in options:
         current = "Week"
@@ -66,7 +66,7 @@ def render_nfl_prediction_performance() -> None:
         .nfl-performance-metric{min-width:0;background:#0d0f10;border:1px solid #30343a;border-bottom:2px solid #d6b35c;border-radius:9px;padding:7px 5px}
         .nfl-performance-metric span{display:block;color:#969ba2;font-size:.50rem;white-space:nowrap}.nfl-performance-metric strong{display:block;color:#fff;font-size:.82rem;margin-top:3px}
         div[class*="st-key-nfl_performance_markets"]{border:1.5px solid #34373c!important;border-left:4px solid #19d978!important;border-radius:12px!important;background:#101112!important;padding:8px!important}
-        div[class*="st-key-nfl_performance_period"] [role="radiogroup"]{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important;gap:0!important}
+        div[class*="st-key-nfl_performance_period"] [role="radiogroup"]{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:0!important}
         div[class*="st-key-nfl_performance_period"] button{width:100%!important;min-width:0!important}
         div[class*="st-key-nfl_performance_period"] button[aria-pressed="true"],div[class*="st-key-nfl_performance_period"] button[aria-pressed="true"] p{color:#19d978!important;border-color:#19d978!important;background:#0b1711!important}
         @media(max-width:700px){.nfl-performance-title{margin-top:16px}.nfl-performance-copy{font-size:.70rem}.nfl-performance-metric strong{font-size:.78rem}}
