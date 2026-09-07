@@ -81,16 +81,16 @@ def _inject_css() -> None:
         <style>
         .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
-        .cfb-hero{margin:0 0 10px;padding:14px;border-radius:15px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18);overflow:hidden}
+        .cfb-hero{margin:0 0 6px;padding:10px 12px;border-radius:15px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18);overflow:hidden}
         .cfb-hero-title{margin:0!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
-        .cfb-hero-subtitle{margin:9px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
+        .cfb-hero-subtitle{margin:6px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
 
         div[class*="st-key-cfb_games_entry"]{margin-bottom:-.20rem!important}
-        div[class*="st-key-cfb_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 10px!important;margin:4px 0 7px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
+        div[class*="st-key-cfb_games_entry"] button{width:100%!important;min-height:74px!important;padding:10px 10px!important;margin:2px 0 6px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
         div[class*="st-key-cfb_games_entry"] button:after{content:'›';margin-left:auto;font-size:1.4rem;color:#cfd3d6}
 
-        .cfb-snapshot-heading{margin:13px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
-        .cfb-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+        .cfb-snapshot-heading{margin:8px 0 6px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
+        .cfb-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
         .cfb-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center;min-width:0}
         .cfb-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
         .cfb-snapshot-card strong{color:#fff;font-size:1.45rem;line-height:1.1;margin:5px 0}
@@ -102,7 +102,7 @@ def _inject_css() -> None:
         .cfb-performance strong{display:block;font-size:1.08rem;color:#fff}
         .cfb-performance span{display:block;margin-top:5px;color:#aeb3ba;font-size:.78rem;line-height:1.35}
 
-        .cfb-rankings-heading{margin:24px 0 8px}.cfb-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.cfb-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
+        .cfb-rankings-heading{margin:14px 0 7px}.cfb-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.cfb-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
         div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
         div[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar{display:none!important}
         div[data-testid="stTabs"] button[role="tab"]{flex:0 0 auto!important;white-space:nowrap!important;background:#0d0f10!important;color:#fff!important;border:1px solid #34373c!important;padding:.45rem .78rem!important;min-height:40px!important}

@@ -2690,12 +2690,12 @@ st.markdown(
     }
 
     .gi-snapshot-heading {
-        display:flex; align-items:end; justify-content:space-between; gap:8px; margin:10px 0 7px;
+        display:flex; align-items:end; justify-content:space-between; gap:8px; margin:7px 0 6px;
     }
     .gi-snapshot-heading strong { color:#ffffff; font-size:1.08rem; }
     .gi-snapshot-heading span { color:#19d978; font-size:.70rem; font-weight:750; }
     .gi-snapshot-grid {
-        display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-bottom:14px;
+        display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-bottom:10px;
     }
     .gi-snapshot-card {
         min-width:0; aspect-ratio:1.25/1; padding:10px 8px; border-radius:12px;
@@ -3095,9 +3095,9 @@ st.markdown(
             margin-top:0 !important;
         }
         .gi-hero {
-            margin-top:.35rem !important;
-            margin-bottom:.45rem !important;
-            padding:14px 14px !important;
+            margin-top:.10rem !important;
+            margin-bottom:.30rem !important;
+            padding:10px 12px !important;
         }
 
         /* Compact player imagery and spacing. */
@@ -3338,8 +3338,6 @@ elif hr_intel_view == "Yesterday":
     render_yesterday_power_watch(HOME_RUN_RANKINGS)
 else:
     render_emerging_power_watch(emerging_candidates)
-
-st.divider()
 
 render_prediction_performance_tracker(
     {

@@ -71,19 +71,19 @@ def _inject_nfl_css() -> None:
         <style>
         .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
-        .nfl-hero{margin:0 0 10px;padding:14px;border-radius:15px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18);overflow:hidden}
+        .nfl-hero{margin:0 0 6px;padding:10px 12px;border-radius:15px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18);overflow:hidden}
         .nfl-hero-title{margin:0!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
-        .nfl-hero-subtitle{margin:9px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
+        .nfl-hero-subtitle{margin:6px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
 
         div[class*="st-key-nfl_games_entry"]{margin-bottom:-.20rem!important}
-        div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:82px!important;padding:12px 15px!important;margin:4px 0 10px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;white-space:pre-line!important;line-height:1.28!important}
+        div[class*="st-key-nfl_games_entry"] button{width:100%!important;min-height:78px!important;padding:10px 13px!important;margin:2px 0 7px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;white-space:pre-line!important;line-height:1.28!important}
         div[class*="st-key-nfl_games_entry"] button:hover{border-color:#f6c84c!important;border-left-color:#19d978!important;box-shadow:inset 0 0 0 1px rgba(25,217,120,.15)!important}
         div[class*="st-key-nfl_games_entry"] button p{margin:0!important;font-size:.84rem!important;line-height:1.32!important}
         div[class*="st-key-nfl_games_entry"] button [data-testid="stMarkdownContainer"]{width:100%!important;text-align:left!important;margin:0!important;padding:0!important}
         div[class*="st-key-nfl_games_entry"] button p{width:100%!important;margin:0!important;padding:0!important;text-align:left!important;font-size:.84rem!important;line-height:1.32!important;white-space:pre-line!important}
 
-        .nfl-snapshot-heading{margin:13px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
-        .nfl-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+        .nfl-snapshot-heading{margin:8px 0 6px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
+        .nfl-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
         .nfl-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center;min-width:0}
         .nfl-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
         .nfl-snapshot-card strong{color:#fff;font-size:1.45rem;line-height:1.1;margin:5px 0}
@@ -91,7 +91,7 @@ def _inject_nfl_css() -> None:
         .nfl-snapshot-emerald{border-color:rgba(25,217,120,.92)} .nfl-snapshot-emerald strong{color:#19d978}
         .nfl-snapshot-gold{border-color:rgba(255,204,51,.92)} .nfl-snapshot-gold strong{color:#ffcc33}
 
-        .nfl-rankings-heading{margin:24px 0 8px}.nfl-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.nfl-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
+        .nfl-rankings-heading{margin:14px 0 7px}.nfl-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.nfl-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
 
         /* MLB-style horizontal market rail. */
         div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
@@ -125,7 +125,7 @@ def _inject_nfl_css() -> None:
 
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important;padding-top:0!important}
-          .nfl-hero{padding:12px 13px!important;border-radius:15px!important;margin-top:0!important}.nfl-hero-title{font-size:1.38rem!important;white-space:normal!important}.nfl-hero-subtitle{font-size:.90rem!important;line-height:1.42!important;margin-top:8px!important}
+          .nfl-hero{padding:10px 12px!important;border-radius:15px!important;margin-top:0!important}.nfl-hero-title{font-size:1.38rem!important;white-space:normal!important}.nfl-hero-subtitle{font-size:.90rem!important;line-height:1.42!important;margin-top:8px!important}
           .nfl-snapshot-heading{font-size:1.02rem}.nfl-snapshot-card{min-height:92px;padding:10px 7px}.nfl-snapshot-card span{font-size:.61rem}.nfl-snapshot-card strong{font-size:1.28rem}.nfl-snapshot-card small{font-size:.60rem}
           .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 70px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.78rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
         }
