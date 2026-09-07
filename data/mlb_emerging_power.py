@@ -43,7 +43,7 @@ def _recent_hr(player: dict[str, Any]) -> int:
     return int(_num(recent.get("home_runs") or recent.get("homeRuns")))
 
 
-def _candidate_score(player: dict[str, Any]) -> float:
+def _candidate_score(player: dict[str, Any], repeat_count: int = 0) -> float:
     """Rank developing power using GI + current power evidence, not low-HR totals alone."""
     gi = _num(player.get("gi_score"))
     probability = _num(player.get("home_run_probability"))
@@ -62,20 +62,32 @@ def _candidate_score(player: dict[str, Any]) -> float:
     score += min(max(hard_hit - 38.0, 0.0), 18.0) * 0.22
     score += min(max(xslg - 0.400, 0.0), 0.250) * 18.0
 
-    # Limited samples can still emerge, but this is a modest context bonus rather
-    # than the dominant reason a player qualifies.
-    if 0 < pa <= 130:
-        score += 1.5
+    # Emerging Power is intentionally biased toward developing/overlooked bats.
+    if 0 < pa <= 175:
+        score += 5.0
+    elif 0 < pa <= 325:
+        score += 2.5
 
-    # Encourage genuinely overlooked candidates without banning Top-25 overlap.
-    if hr_rank and hr_rank > 25:
-        score += 3.0
-    elif 1 <= hr_rank <= 10:
-        score -= 1.5
-
-    # Season HR is only a light discovery signal now.
+    # Reward low-HR profiles and strongly de-emphasize established sluggers.
     if season_hr <= 5:
+        score += 5.0
+    elif season_hr <= 10:
+        score += 3.0
+    elif season_hr <= 15:
         score += 1.0
+
+    # Players already prominent in the normal HR rankings should not dominate
+    # the discovery feature.
+    if hr_rank and hr_rank > 25:
+        score += 4.0
+    elif 1 <= hr_rank <= 10:
+        score -= 8.0
+    elif 11 <= hr_rank <= 25:
+        score -= 4.0
+
+    # Rotate the watch list. Repetition is allowed only when the signal remains
+    # clearly strong; each recent appearance carries a meaningful penalty.
+    score -= max(0, int(repeat_count)) * 6.0
     return score
 
 def build_emerging_power_candidates(
@@ -83,6 +95,7 @@ def build_emerging_power_candidates(
     limit: int = 10,
     *,
     enrich_profiles: bool = True,
+    recent_appearances: dict[str, int] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Find overlooked low-HR / limited-sample hitters without using a 'due' heuristic.
@@ -92,6 +105,7 @@ def build_emerging_power_candidates(
     context when MLB exposes it.
     """
     candidates: list[dict[str, Any]] = []
+    recent_appearances = recent_appearances or {}
 
     for player in raw_home_run_rankings:
         season_hr = _season_hr(player)
@@ -105,11 +119,24 @@ def build_emerging_power_candidates(
         recent_hr = _recent_hr(player)
         why = [str(x) for x in (player.get("why") or []) if str(x).strip()]
 
-        # Evidence-first gate: GI/probability, recent HR activity, Statcast quality,
-        # or a specific model reason can qualify a player. No "due" heuristic.
+        # Hard identity gate: this feature is for overlooked/developing power,
+        # not the players already being surfaced in the normal Top 25.
+        hr_rank = int(_num(player.get("rank") or player.get("hr_rank")))
+        if 1 <= hr_rank <= 25:
+            continue
+
+        # Established sluggers do not belong here. Keep a low-HR pool, with a
+        # small allowance for developing/limited-sample hitters.
+        if season_hr > 18:
+            continue
+        if season_hr > 15 and not (0 < pa <= 325):
+            continue
+
+        # Evidence-first gate: require actual upside evidence from the existing
+        # model/contact signals. No "due" heuristic.
         has_power_evidence = (
-            gi >= 48
-            or probability >= 8
+            gi >= 52
+            or probability >= 10
             or recent_hr >= 1
             or barrel >= 9
             or hard_hit >= 42
@@ -117,15 +144,26 @@ def build_emerging_power_candidates(
         )
         if not has_power_evidence:
             continue
-        # Keep the feature truly "emerging" without restricting it to tiny HR totals.
-        if season_hr > 14 and recent_hr < 2 and gi < 58 and probability < 14:
+
+        player_key = str(
+            player.get("player_id")
+            or player.get("player_name")
+            or player.get("player")
+            or ""
+        ).strip().casefold()
+        repeat_count = int(recent_appearances.get(player_key, 0) or 0)
+
+        # If a player has already appeared on two or more recent Emerging Power
+        # lists, require a stronger current signal before allowing another repeat.
+        if repeat_count >= 2 and gi < 62 and probability < 15 and recent_hr < 2:
             continue
 
         row = dict(player)
         row["season_home_runs"] = season_hr
         row["season_plate_appearances"] = pa
-        row["emerging_score"] = _candidate_score(player)
-        row["limited_sample"] = bool(0 < pa <= 130)
+        row["recent_emerging_appearances"] = repeat_count
+        row["emerging_score"] = _candidate_score(player, repeat_count=repeat_count)
+        row["limited_sample"] = bool(0 < pa <= 325)
         candidates.append(row)
 
     candidates.sort(
@@ -161,10 +199,19 @@ def emerging_power_explanation(player: dict[str, Any]) -> list[str]:
     gi = _num(player.get("gi_score"))
     probability = _num(player.get("home_run_probability"))
 
+    if player.get("current_year_debut"):
+        profile = "current-year rookie/debut"
+    elif player.get("limited_sample"):
+        profile = "developing/limited MLB sample"
+    elif season_hr <= 10:
+        profile = "low-HR overlooked bat"
+    else:
+        profile = "under-the-radar power profile"
+
     evidence.append(
-        f"Emerging score is driven by today's GI profile ({gi:.1f})"
-        + (f" across a {pa}-PA season sample" if pa else "")
-        + f"; season HR ({season_hr}) is context, not the reason for inclusion."
+        f"{profile.capitalize()}: {season_hr} season HR, GI {gi:.1f}"
+        + (f" across {pa} PA" if pa else "")
+        + ". Surfaced because current matchup/contact evidence is stronger than the season-HR total alone suggests."
     )
 
     if probability:
