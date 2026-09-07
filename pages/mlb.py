@@ -3387,9 +3387,9 @@ render_html(
             <small>{lineup_note}</small>
         </div>
         <div class="gi-snapshot-card gi-snapshot-gold">
-            <span>WEATHER</span>
+            <span>ALERTS</span>
             <strong>{weather_count}</strong>
-            <small>{weather_short}</small>
+            <small>{"No active alerts" if weather_count == 0 else weather_short}</small>
         </div>
     </div>
     """

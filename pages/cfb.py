@@ -66,6 +66,7 @@ def _load_scoreboard() -> pd.DataFrame:
                 "status": status.get("shortDetail") or status.get("description") or "Scheduled",
                 "completed": bool(status.get("completed")),
                 "venue": venue.get("fullName") or "Venue TBD",
+                "week": (event.get("week") or {}).get("number"),
             }
         )
     frame = pd.DataFrame(rows)
@@ -80,17 +81,17 @@ def _inject_css() -> None:
         <style>
         .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
-        div[class*="st-key-cfb_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:14px!important;right:0!important;z-index:20!important}
+        div[class*="st-key-cfb_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0 0 8px auto!important;position:relative!important;z-index:20!important}
         div[class*="st-key-cfb_page_refresh"]>div{width:auto!important}
-        div[class*="st-key-cfb_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d8b35f!important;border:1.5px solid #8c64aa!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;white-space:nowrap!important}
-        .cfb-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:4px 0 8px;white-space:nowrap}
+        div[class*="st-key-cfb_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d8b35f!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;white-space:nowrap!important}
+        .cfb-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:0 0 8px;white-space:nowrap}
 
-        .cfb-hero{margin:0 0 10px;padding:14px;border-radius:15px;background:linear-gradient(105deg,rgba(216,179,95,.20) 0%,rgba(4,5,4,.98) 43%,rgba(91,54,119,.58) 100%);border:2px solid rgba(140,100,170,.92);box-shadow:inset 0 0 24px rgba(128,79,161,.12),0 0 0 1px rgba(216,179,95,.16);overflow:hidden}
+        .cfb-hero{margin:0 0 10px;padding:14px;border-radius:15px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18);overflow:hidden}
         .cfb-hero-title{margin:0!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
         .cfb-hero-subtitle{margin:9px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
 
         div[class*="st-key-cfb_games_entry"]{margin-bottom:-.20rem!important}
-        div[class*="st-key-cfb_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 10px!important;margin:4px 0 7px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(140,100,170,.80)!important;border-left:5px solid #d8b35f!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(216,179,95,.12) 0%,#0d0f10 36%,#0b0d0e 66%,rgba(91,54,119,.24) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
+        div[class*="st-key-cfb_games_entry"] button{width:100%!important;min-height:76px!important;padding:12px 10px!important;margin:4px 0 7px!important;text-align:left!important;justify-content:flex-start!important;border:1.5px solid rgba(214,179,92,.68)!important;border-left:5px solid #19d978!important;border-radius:13px!important;background:linear-gradient(112deg,rgba(246,200,76,.12) 0%,#0d0f10 36%,#0b0d0e 68%,rgba(25,217,120,.10) 100%)!important;color:#fff!important;font-weight:900!important;line-height:1.28!important}
         div[class*="st-key-cfb_games_entry"] button:after{content:'›';margin-left:auto;font-size:1.4rem;color:#cfd3d6}
 
         .cfb-snapshot-heading{margin:13px 0 9px;color:#fff;font-size:1.08rem;font-weight:950;white-space:nowrap}
@@ -99,7 +100,7 @@ def _inject_css() -> None:
         .cfb-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
         .cfb-snapshot-card strong{color:#fff;font-size:1.45rem;line-height:1.1;margin:5px 0}
         .cfb-snapshot-card small{color:#fff;font-size:.68rem;font-weight:650;line-height:1.15}
-        .cfb-snapshot-purple{border-color:#8c64aa}.cfb-snapshot-purple strong{color:#b98bd6}
+        .cfb-snapshot-emerald{border-color:rgba(25,217,120,.92)}.cfb-snapshot-emerald strong{color:#19d978}
         .cfb-snapshot-gold{border-color:#d8b35f}.cfb-snapshot-gold strong{color:#d8b35f}
 
         .cfb-performance{margin:18px 0 6px;padding:13px;border:1px solid #34373c;border-radius:14px;background:#0d0f10}
@@ -130,7 +131,7 @@ def _inject_css() -> None:
             .cfb-snapshot-card{min-height:90px;padding:10px 8px}.cfb-snapshot-card strong{font-size:1.18rem}
             .cfb-rank-card{grid-template-columns:35px minmax(0,1fr) 64px;gap:7px;padding:10px 8px}
             .cfb-intel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-            div[class*="st-key-cfb_page_refresh"]{top:9px!important;right:0!important}
+            div[class*="st-key-cfb_page_refresh"]{position:relative!important;inset:auto!important;margin:-80px 0 8px auto!important}
         }
         </style>
         """,
@@ -269,7 +270,7 @@ def show() -> None:
     _render_html(
         """
         <div class="cfb-hero">
-          <h1 class="cfb-hero-title">🏈 CFB Intelligence Center</h1>
+          <h1 class="cfb-hero-title">CFB Intelligence Center</h1>
           <p class="cfb-hero-subtitle">College football game intelligence, player-prop rankings and matchup context — built in the same workflow as NFL, with CFB-specific market depth.</p>
         </div>
         """
@@ -288,16 +289,19 @@ def show() -> None:
         games = pd.DataFrame()
 
     upcoming, live, final = _snapshot(games)
-    feed = get_cfb_odds_feed_status()
-    feed_label = "LIVE" if feed.get("status") in {"live", "stale"} else "WAITING"
+    game_count = int(len(games))
+    week_values = pd.to_numeric(games.get("week"), errors="coerce").dropna() if not games.empty and "week" in games.columns else pd.Series(dtype=float)
+    week_label = f"Week {int(week_values.mode().iloc[0])}" if not week_values.empty else "Current week"
+    lineup_count = "—"
+    alert_count = 0
 
     _render_html(
         f"""
         <div class="cfb-snapshot-heading">This Week's CFB Snapshot</div>
         <div class="cfb-snapshot-grid">
-          <div class="cfb-snapshot-card cfb-snapshot-purple"><span>UPCOMING</span><strong>{upcoming}</strong><small>games in current feed</small></div>
-          <div class="cfb-snapshot-card cfb-snapshot-gold"><span>LIVE</span><strong>{live}</strong><small>games in progress</small></div>
-          <div class="cfb-snapshot-card"><span>PROP DATA</span><strong>{feed_label}</strong><small>{escape(str(feed.get("provider") or "provider pending"))}</small></div>
+          <div class="cfb-snapshot-card cfb-snapshot-emerald"><span>GAMES</span><strong>{game_count}</strong><small>{escape(week_label)}</small></div>
+          <div class="cfb-snapshot-card"><span>LINEUPS</span><strong>{lineup_count}</strong><small>Pending</small></div>
+          <div class="cfb-snapshot-card cfb-snapshot-gold"><span>ALERTS</span><strong>{alert_count}</strong><small>No active alerts</small></div>
         </div>
         """
     )
