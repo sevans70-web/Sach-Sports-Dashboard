@@ -24,6 +24,8 @@ def load_history() -> dict[str, Any]:
 
 
 def _start(period: str, today: date) -> date:
+    if period == "Today":
+        return today
     if period == "Week":
         return today - timedelta(days=6)
     if period == "Month":
