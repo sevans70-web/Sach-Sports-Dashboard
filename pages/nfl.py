@@ -107,7 +107,7 @@ def _inject_nfl_css() -> None:
         .nfl-rank-avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;font-weight:900;color:#fff}
         .nfl-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
         .nfl-rank-copy{min-width:0}.nfl-rank-name{display:block;color:#fff;font-size:.94rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nfl-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.nfl-rank-proj{color:#f6c84c;font-size:.76rem;font-weight:850;margin-top:4px}.nfl-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
-        .nfl-rank-score{text-align:right;padding-top:3px}.nfl-rank-score small{display:block;color:#9fa4aa;font-size:.51rem;font-weight:900;letter-spacing:.04em;white-space:nowrap}.nfl-rank-score strong{display:block;color:#ffcc33;font-size:.72rem;font-weight:950;white-space:nowrap;letter-spacing:.01em;margin-top:3px}
+        .nfl-rank-score{text-align:right;padding-top:3px}.nfl-rank-score small{display:block;color:#8f959d;font-size:.47rem;font-weight:800;letter-spacing:0;white-space:nowrap}.nfl-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:900;white-space:nowrap;letter-spacing:0;margin-top:4px}
         .nfl-lineup-status{display:inline-block;margin-top:6px;padding:3px 7px;border-radius:999px;font-size:.57rem;font-weight:900;line-height:1.08;white-space:nowrap}
         .nfl-lineup-confirmed{color:#d8ffe8;background:rgba(25,217,120,.14);border:1px solid rgba(25,217,120,.62)}
         .nfl-lineup-projected{color:#ffe7a3;background:rgba(214,179,92,.10);border:1px solid rgba(214,179,92,.58)}
@@ -127,7 +127,7 @@ def _inject_nfl_css() -> None:
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important;padding-top:0!important}
           .nfl-hero{padding:12px 13px!important;border-radius:15px!important;margin-top:0!important}.nfl-hero-title{font-size:1.38rem!important;white-space:normal!important}.nfl-hero-subtitle{font-size:.90rem!important;line-height:1.42!important;margin-top:8px!important}
           .nfl-snapshot-heading{font-size:1.02rem}.nfl-snapshot-card{min-height:92px;padding:10px 7px}.nfl-snapshot-card span{font-size:.61rem}.nfl-snapshot-card strong{font-size:1.28rem}.nfl-snapshot-card small{font-size:.60rem}
-          .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 70px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.62rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
+          .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 70px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.78rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
         }
         </style>
         """,
@@ -320,7 +320,7 @@ def _first_numeric(row: pd.Series, keys: list[str]) -> tuple[str, float | None]:
 
 def _detail_metrics(row: pd.Series, prop: str) -> list[tuple[str, str]]:
     _, l5 = _first_numeric(row, [k for k in row.index if str(k).startswith("last_5_")])
-    _, l3 = _first_numeric(row, [k for k in row.index if str(k).startswith("last_3_")])
+    _, l10 = _first_numeric(row, [k for k in row.index if str(k).startswith("last_10_")])
     _, season = _first_numeric(row, [
         "passing_yards_per_game", "rushing_yards_per_game", "receiving_yards_per_game",
         "receptions_per_game", "passing_tds_per_game", "passing_attempts_per_game", "completions_per_game", "rushing_attempts_per_game", "passing_rushing_yards_per_game",
@@ -334,7 +334,7 @@ def _detail_metrics(row: pd.Series, prop: str) -> list[tuple[str, str]]:
     fmt = lambda v: "—" if v is None else f"{v:.1f}"
     return [
         ("LAST 5", fmt(l5)),
-        ("LAST 3", fmt(l3)),
+        ("LAST 10", fmt(l10)),
         ("SEASON AVG", fmt(season)),
         ("MARKET", f"{float(line):.1f}" if line is not None and not pd.isna(line) else mode),
     ]
@@ -539,6 +539,7 @@ def show() -> None:
         </section>
         """
     )
+    _render_html(f'<div class="ssd-updated-time">Updated {now.strftime("%A · %I:%M %p ET")}</div>')
 
     week_label = f"Week {week}" if week is not None else "NFL Week"
     if st.button(

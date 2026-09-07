@@ -567,7 +567,7 @@ st.markdown(
     f"""
     <div class="gi-status-strip">
         <div class="gi-status-title">Today's command center is ready.</div>
-        <div class="gi-status-time">Last refreshed: {updated_time}</div>
+        <div class="gi-status-time">Updated {toronto_now.strftime("%A · %I:%M %p ET")}</div>
     </div>
     """,
     unsafe_allow_html=True,

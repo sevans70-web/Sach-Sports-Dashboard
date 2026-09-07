@@ -3150,6 +3150,9 @@ render_html(
     </section>
     """
 )
+render_html(
+    f'<div class="ssd-updated-time">Updated {get_toronto_now().strftime("%A · %I:%M %p ET")}</div>'
+)
 
 
 def render_emerging_power_watch(candidates: list[dict]) -> None:

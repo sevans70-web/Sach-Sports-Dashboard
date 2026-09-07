@@ -106,8 +106,8 @@ def _inject_css() -> None:
         div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
         div[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar{display:none!important}
         div[data-testid="stTabs"] button[role="tab"]{flex:0 0 auto!important;white-space:nowrap!important;background:#0d0f10!important;color:#fff!important;border:1px solid #34373c!important;padding:.45rem .78rem!important;min-height:40px!important}
-        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#d8b35f!important;border-color:#8c64aa!important;background:#1b1221!important}
-        div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#d8b35f!important}
+        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#d8b35f!important;border-color:#19d978!important;background:#0b1711!important}
+        div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
 
         .cfb-rank-card{display:grid;grid-template-columns:40px minmax(0,1fr) 78px;gap:10px;align-items:start;width:100%;min-height:108px;padding:12px 10px;border-left:4px solid #d8b35f;background:#0d0f10;color:#fff;box-sizing:border-box}
         .cfb-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}
@@ -115,10 +115,10 @@ def _inject_css() -> None:
         .cfb-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}
         .cfb-rank-proj{color:#d8b35f;font-size:.77rem;font-weight:850;margin-top:4px}
         .cfb-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
-        .cfb-rank-score{text-align:right;padding-top:3px}.cfb-rank-score small{display:block;color:#9fa4aa;font-size:.51rem;font-weight:900}.cfb-rank-score strong{display:block;color:#b98bd6;font-size:1.03rem;font-weight:950;margin-top:3px}
+        .cfb-rank-score{text-align:right;padding-top:3px}.cfb-rank-score small{display:block;color:#9fa4aa;font-size:.51rem;font-weight:900}.cfb-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:950;margin-top:3px}
         .cfb-intel-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px 0}
         .cfb-intel-metric{background:#111315;border:1px solid #2c3034;border-radius:10px;padding:8px 7px}.cfb-intel-metric span{display:block;color:#9fa4aa;font-size:.56rem;font-weight:900}.cfb-intel-metric strong{display:block;color:#fff;font-size:.78rem;margin-top:3px}
-        .cfb-why{margin:8px 0 4px;padding:10px;border-left:3px solid #8c64aa;background:#131016;color:#d6d9dd;font-size:.74rem;line-height:1.4}.cfb-why b{display:block;color:#d8b35f;margin-bottom:4px}
+        .cfb-why{margin:8px 0 4px;padding:10px;border-left:3px solid #19d978;background:#131016;color:#d6d9dd;font-size:.74rem;line-height:1.4}.cfb-why b{display:block;color:#d8b35f;margin-bottom:4px}
 
         @media(max-width:700px){
             .block-container{padding-left:.78rem!important;padding-right:.78rem!important}
@@ -262,6 +262,7 @@ def show() -> None:
         </div>
         """
     )
+    _render_html(f'<div class="ssd-updated-time">Updated {datetime.now(TORONTO_TIMEZONE).strftime("%A · %I:%M %p ET")}</div>')
 
     if st.button(
         "🏈 THIS WEEK'S CFB GAMES\nOpen the college football slate, then tap a matchup for game intelligence.",
