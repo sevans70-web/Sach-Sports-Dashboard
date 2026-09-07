@@ -4,6 +4,7 @@ from __future__ import annotations
 from html import escape
 
 import pandas as pd
+import requests
 import streamlit as st
 
 from data.nfl_roster import load_nfl_roster
@@ -13,6 +14,7 @@ from engines.nfl_game_intelligence import build_matchup_intelligence
 
 NFL_SEASON = 2026
 BASELINE_SEASON = 2025
+NFL_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 TEAM_NAMES = {
     "ARI":"Arizona Cardinals","ATL":"Atlanta Falcons","BAL":"Baltimore Ravens","BUF":"Buffalo Bills",
@@ -25,6 +27,56 @@ TEAM_NAMES = {
     "SF":"San Francisco 49ers","TB":"Tampa Bay Buccaneers","TEN":"Tennessee Titans","WAS":"Washington Commanders",
 }
 
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def _live_game_states() -> dict[tuple[str, str], dict]:
+    """Live ESPN game state keyed by (away abbreviation, home abbreviation)."""
+    try:
+        response = requests.get(NFL_SCOREBOARD, params={"limit": 50}, timeout=12)
+        response.raise_for_status()
+    except Exception:
+        return {}
+
+    states = {}
+    alias = {"WSH": "WAS", "LA": "LAR"}
+    for event in response.json().get("events", []) or []:
+        competition = (event.get("competitions") or [{}])[0]
+        competitors = competition.get("competitors") or []
+        away = next((x for x in competitors if x.get("homeAway") == "away"), {})
+        home = next((x for x in competitors if x.get("homeAway") == "home"), {})
+        away_team = away.get("team") or {}
+        home_team = home.get("team") or {}
+        away_abbr = alias.get(str(away_team.get("abbreviation") or "").upper(), str(away_team.get("abbreviation") or "").upper())
+        home_abbr = alias.get(str(home_team.get("abbreviation") or "").upper(), str(home_team.get("abbreviation") or "").upper())
+        if not away_abbr or not home_abbr:
+            continue
+        status = event.get("status") or {}
+        stype = status.get("type") or {}
+        detail = str(stype.get("shortDetail") or stype.get("detail") or stype.get("description") or "Scheduled")
+        state = str(stype.get("state") or "pre").lower()
+        clock = str(status.get("displayClock") or "").strip()
+        period = int(status.get("period") or 0)
+        if state == "in":
+            if "half" in detail.lower():
+                label = "HALFTIME"
+            elif period:
+                label = f"Q{period}" + (f" · {clock}" if clock else "")
+            else:
+                label = detail.upper()
+        elif state == "post" or bool(stype.get("completed")):
+            label = "FINAL"
+        else:
+            label = "SCHEDULED"
+        states[(away_abbr, home_abbr)] = {
+            "label": label,
+            "is_live": state == "in",
+            "is_final": state == "post" or bool(stype.get("completed")),
+            "away_score": away.get("score"),
+            "home_score": home.get("score"),
+            "venue": ((competition.get("venue") or {}).get("fullName") or ""),
+        }
+    return states
 
 def _render_html(html: str) -> None:
     st.markdown(" ".join(line.strip() for line in html.splitlines() if line.strip()), unsafe_allow_html=True)
@@ -48,7 +100,7 @@ def _css() -> None:
         .nfl-day-heading{color:#f6c84c;font-size:.84rem;font-weight:900;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em}
 
         .nfl-slate-card{background:linear-gradient(118deg,#101112 0%,#111315 68%,rgba(25,217,120,.055) 100%);border:1.5px solid #30343a;border-radius:13px;padding:10px 11px 8px;margin:8px 0 4px}
-        .nfl-slate-card.selected{border-color:#19d978;box-shadow:inset 0 0 0 1px rgba(25,217,120,.18)}
+        .nfl-slate-card.selected,.nfl-slate-card.live{border-color:#19d978;box-shadow:0 0 0 1px rgba(25,217,120,.18),0 0 18px rgba(25,217,120,.08)}
         .nfl-slate-top{display:flex;justify-content:space-between;gap:8px;color:#8f949c;font-size:.68rem;font-weight:750;padding-bottom:7px;border-bottom:1px solid #292c31}
         .nfl-slate-status{color:#19d978!important;font-weight:900!important}
         .nfl-slate-team{display:grid;grid-template-columns:42px minmax(0,1fr) 44px;align-items:center;gap:9px;padding:8px 0 3px}
@@ -71,7 +123,7 @@ def _css() -> None:
         div[class*="st-key-back_to_nfl"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-          div[class*="st-key-back_to_nfl"]{display:flex!important;justify-content:flex-end!important;width:auto!important;margin:-48px 0 8px auto!important}
+          div[class*="st-key-back_to_nfl"]{display:flex!important;justify-content:flex-end!important;width:auto!important;margin:0 0 8px auto!important}
           .nfl-games-hero{margin-top:.2rem!important}
           .nfl-slate-card{padding:9px 10px 7px}.nfl-slate-team{grid-template-columns:38px minmax(0,1fr) 36px;gap:8px}.nfl-slate-logo{width:34px;height:34px}.nfl-slate-team-main strong{font-size:.88rem}.nfl-slate-team-main span{font-size:.67rem}
           .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}.nfl-scout{padding:8px}.nfl-signal{padding:6px 0;margin:0;border-bottom:1px solid #272b30;font-size:.68rem}.nfl-signal:last-child{border-bottom:0}
@@ -134,14 +186,30 @@ def _render_game_card(game: pd.Series, roster: pd.DataFrame, selected: bool, key
     away_name = TEAM_NAMES.get(away, away); home_name = TEAM_NAMES.get(home, home)
     away_logo = nfl_team_logo_url(away); home_logo = nfl_team_logo_url(home)
     when = _time_label(game.get("kickoff_et")); stadium = str(game.get("stadium") or "Venue TBD")
-    status = _status(game)
-    show_score = status == "FINAL"
-    selected_class = " selected" if selected else ""
+
+    live_state = _live_game_states().get((away, home), {})
+    status = str(live_state.get("label") or _status(game))
+    is_live = bool(live_state.get("is_live"))
+    is_final = bool(live_state.get("is_final")) or status == "FINAL"
+    if live_state.get("venue"):
+        stadium = str(live_state["venue"])
+
+    away_score = live_state.get("away_score")
+    home_score = live_state.get("home_score")
+    if away_score in (None, "") and is_final:
+        away_score = _score(game, "away")
+    if home_score in (None, "") and is_final:
+        home_score = _score(game, "home")
+
+    classes = []
+    if selected: classes.append("selected")
+    if is_live: classes.append("live")
+    class_attr = (" " + " ".join(classes)) if classes else ""
     card = f'''
-    <div class="nfl-slate-card{selected_class}">
+    <div class="nfl-slate-card{class_attr}">
       <div class="nfl-slate-top"><span class="nfl-slate-status">{escape(status)}</span><span>{escape(stadium)} · {escape(when)}</span></div>
-      <div class="nfl-slate-team"><img class="nfl-slate-logo" src="{escape(away_logo)}"><div class="nfl-slate-team-main"><strong>{escape(away_name)}</strong><span>QB · {escape(_starting_qb(away, roster))}</span></div><b>{escape(_score(game,"away") if show_score else "")}</b></div>
-      <div class="nfl-slate-team"><img class="nfl-slate-logo" src="{escape(home_logo)}"><div class="nfl-slate-team-main"><strong>{escape(home_name)}</strong><span>QB · {escape(_starting_qb(home, roster))}</span></div><b>{escape(_score(game,"home") if show_score else "")}</b></div>
+      <div class="nfl-slate-team"><img class="nfl-slate-logo" src="{escape(away_logo)}"><div class="nfl-slate-team-main"><strong>{escape(away_name)}</strong><span>QB · {escape(_starting_qb(away, roster))}</span></div><b>{escape(str(away_score or "") if (is_live or is_final) else "")}</b></div>
+      <div class="nfl-slate-team"><img class="nfl-slate-logo" src="{escape(home_logo)}"><div class="nfl-slate-team-main"><strong>{escape(home_name)}</strong><span>QB · {escape(_starting_qb(home, roster))}</span></div><b>{escape(str(home_score or "") if (is_live or is_final) else "")}</b></div>
     </div>'''
     st.html(card)
     st.button("Hide Game Intelligence" if selected else f"View {away} @ {home}  →", key=key, use_container_width=True, on_click=_select_game, args=(str(game.get("game_id")),))

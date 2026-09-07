@@ -6,6 +6,7 @@ from html import escape
 from zoneinfo import ZoneInfo
 
 import pandas as pd
+import requests
 import streamlit as st
 
 from components.nfl_player_trend import render_nfl_player_trend
@@ -28,6 +29,7 @@ from engines.nfl_additional_props import (
 NFL_SEASON = 2026
 BASELINE_SEASON = 2025
 TZ = ZoneInfo("America/Toronto")
+NFL_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 PROP_CATALOG = {
     "Passing Yards": ("passing", "passing_yards_projection_matchup", "yards"),
@@ -49,6 +51,47 @@ PROP_CATALOG = {
 def _html(value: str) -> None:
     st.markdown(" ".join(line.strip() for line in value.splitlines() if line.strip()), unsafe_allow_html=True)
 
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def _nfl_live_state_for_matchup(matchup: str) -> dict:
+    parts = [x.strip().upper() for x in str(matchup or "").replace(" AT ", " @ ").split(" @ ")]
+    if len(parts) != 2:
+        return {}
+    away_wanted, home_wanted = parts
+    alias = {"WSH": "WAS", "LA": "LAR"}
+    try:
+        response = requests.get(NFL_SCOREBOARD, params={"limit": 50}, timeout=12)
+        response.raise_for_status()
+    except Exception:
+        return {}
+    for event in response.json().get("events", []) or []:
+        competition = (event.get("competitions") or [{}])[0]
+        competitors = competition.get("competitors") or []
+        away = next((x for x in competitors if x.get("homeAway") == "away"), {})
+        home = next((x for x in competitors if x.get("homeAway") == "home"), {})
+        away_abbr = alias.get(str((away.get("team") or {}).get("abbreviation") or "").upper(), str((away.get("team") or {}).get("abbreviation") or "").upper())
+        home_abbr = alias.get(str((home.get("team") or {}).get("abbreviation") or "").upper(), str((home.get("team") or {}).get("abbreviation") or "").upper())
+        if (away_abbr, home_abbr) != (away_wanted, home_wanted):
+            continue
+        status = event.get("status") or {}
+        stype = status.get("type") or {}
+        state = str(stype.get("state") or "pre").lower()
+        clock = str(status.get("displayClock") or "").strip()
+        period = int(status.get("period") or 0)
+        detail = str(stype.get("shortDetail") or stype.get("description") or "Scheduled")
+        if state == "in":
+            label = "HALFTIME" if "half" in detail.lower() else (f"LIVE · Q{period}" + (f" · {clock}" if clock else "") if period else f"LIVE · {detail}")
+            css_class = "live"
+        elif state == "post" or bool(stype.get("completed")):
+            label = "FINAL"
+            css_class = "final"
+        else:
+            label = detail
+            css_class = ""
+        venue = ((competition.get("venue") or {}).get("fullName") or "")
+        return {"label": label, "class": css_class, "venue": venue}
+    return {}
 
 def _active_schedule() -> tuple[pd.DataFrame, int | None]:
     now = datetime.now(TZ).replace(tzinfo=None)
@@ -222,6 +265,10 @@ st.markdown("""
 .nfl-player-copy h2{margin:0;color:#fff;font-size:1.32rem}
 .nfl-player-copy p{margin:3px 0;color:#a7abb2;font-size:.78rem}
 .nfl-player-copy strong{color:#f6c84c;font-size:.76rem}
+.nfl-player-game-state{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 9px;padding:7px 10px;border:1px solid #34373c;border-radius:9px;background:#0b0d0e;color:#c8ccd1;font-size:.72rem;font-weight:850}
+.nfl-player-game-state.live{border-color:#19d978;box-shadow:0 0 14px rgba(25,217,120,.08)}
+.nfl-player-game-state.live strong{color:#19d978}.nfl-player-game-state.final strong{color:#f6c84c}
+.nfl-player-game-state span{color:#a7abb2;text-align:right}
 .nfl-market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:9px 0 12px}
 .nfl-market-card{background:#0d0f10;border:1px solid #30343a;border-left:3px solid #19d978;border-radius:10px;padding:9px;min-height:72px}
 .nfl-market-card b{display:block;color:#fff;font-size:.76rem}
@@ -286,6 +333,14 @@ team_logo = (
     if logo_team else ""
 )
 _html(f'<div class="nfl-player-head">{img}<div class="nfl-player-copy"><h2>{escape(name)}</h2><p>{escape(team)} · {escape(pos)}</p><strong>{escape(matchup or "Weekly matchup context")}</strong></div>{team_logo}</div>')
+
+live_state = _nfl_live_state_for_matchup(matchup)
+if live_state:
+    _html(
+        f'<div class="nfl-player-game-state {escape(str(live_state.get("class") or ""))}">'
+        f'<strong>{escape(str(live_state.get("label") or "Scheduled"))}</strong>'
+        f'<span>{escape(str(live_state.get("venue") or ""))}</span></div>'
+    )
 
 schedule, week = _active_schedule()
 market_rows = []

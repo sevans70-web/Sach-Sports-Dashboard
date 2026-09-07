@@ -161,6 +161,14 @@ st.markdown(
     .player-profile-copy h2{margin:0;color:#fff;font-size:1.35rem}
     .player-profile-copy p{margin:3px 0;color:#a7abb2;font-size:.78rem}
     .player-profile-copy strong{display:block;color:#f6c84c;font-size:.76rem;line-height:1.25}
+    .player-game-state{
+      display:flex;justify-content:space-between;align-items:center;gap:8px;
+      margin:0 0 9px;padding:7px 10px;border:1px solid #34373c;border-radius:9px;
+      background:#0b0d0e;color:#c8ccd1;font-size:.72rem;font-weight:850;
+    }
+    .player-game-state.live{border-color:#19d978;box-shadow:0 0 14px rgba(25,217,120,.08)}
+    .player-game-state.live strong{color:#19d978}.player-game-state.final strong{color:#f6c84c}
+    .player-game-state span{color:#a7abb2;text-align:right}
     .player-ranking-strip{
       display:flex;justify-content:space-between;gap:8px;align-items:center;
       background:#0c0e0f;border:1px solid rgba(25,217,120,.55);border-radius:10px;
@@ -236,11 +244,11 @@ st.markdown(
     div[class*="st-key-back_to_mlb_game"]{
       display:flex!important;justify-content:flex-end!important;align-items:center!important;
       position:relative!important;inset:auto!important;width:auto!important;
-      margin:-48px 0 10px auto!important;z-index:2!important;
+      margin:0 0 10px auto!important;z-index:2!important;
     }
 
     @media(max-width:700px){
-      div[class*="st-key-back_to_mlb_game"]{margin:-80px 0 10px auto!important}
+      div[class*="st-key-back_to_mlb_game"]{margin:0 0 10px auto!important}
       .player-profile-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
       .player-profile-photo,.player-profile-photo-fallback{width:60px;height:60px}
       .player-profile-copy h2{font-size:1.12rem}
@@ -266,6 +274,25 @@ if not isinstance(player, dict) or not player.get("player_id"):
     st.stop()
 
 _player_header(player)
+
+game_state = player.get("game") if isinstance(player.get("game"), dict) else {}
+if game_state:
+    group = str(game_state.get("status_group") or "").lower()
+    if group == "live":
+        label = f"LIVE · {str(game_state.get('status') or 'In progress')}"
+        state_class = "live"
+    elif group == "final":
+        label = "FINAL"
+        state_class = "final"
+    else:
+        label = str(game_state.get("start_time") or "Scheduled")
+        state_class = ""
+    venue_label = str(game_state.get("venue") or "")
+    st.markdown(
+        f'<div class="player-game-state {state_class}"><strong>{escape(label)}</strong><span>{escape(venue_label)}</span></div>',
+        unsafe_allow_html=True,
+    )
+
 _ranking_strip(player)
 _market_context_grid(player)
 
