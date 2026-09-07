@@ -81,11 +81,6 @@ def _inject_css() -> None:
         <style>
         .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
-        div[class*="st-key-cfb_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:.55rem!important;right:.78rem!important;z-index:20!important}
-        div[class*="st-key-cfb_page_refresh"]>div{width:auto!important}
-        div[class*="st-key-cfb_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d8b35f!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;white-space:nowrap!important}
-        .cfb-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:0 0 8px;white-space:nowrap}
-
         .cfb-hero{margin:0 0 10px;padding:14px;border-radius:15px;background:linear-gradient(105deg,rgba(255,204,51,.28) 0%,rgba(4,5,4,.98) 44%,rgba(25,217,120,.28) 100%);border:2px solid rgba(255,204,51,.88);box-shadow:inset 0 0 24px rgba(25,217,120,.08),0 0 0 1px rgba(25,217,120,.18);overflow:hidden}
         .cfb-hero-title{margin:0!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important;line-height:1.08!important;white-space:normal!important;overflow-wrap:anywhere}
         .cfb-hero-subtitle{margin:9px 0 0!important;color:#f0f0f0!important;font-size:.95rem!important;line-height:1.45!important;max-width:900px}
@@ -131,7 +126,6 @@ def _inject_css() -> None:
             .cfb-snapshot-card{min-height:90px;padding:10px 8px}.cfb-snapshot-card strong{font-size:1.18rem}
             .cfb-rank-card{grid-template-columns:35px minmax(0,1fr) 64px;gap:7px;padding:10px 8px}
             .cfb-intel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-            div[class*="st-key-cfb_page_refresh"]{position:absolute!important;top:.55rem!important;right:.78rem!important;inset:auto .78rem auto auto!important;margin:0!important}
         }
         </style>
         """,
@@ -258,14 +252,7 @@ def _render_rankings() -> None:
 def show() -> None:
     _inject_css()
 
-    with st.container(key="cfb_page_refresh"):
-        if st.button("↻ REFRESH", key="cfb_refresh_button"):
-            st.cache_data.clear()
-            st.rerun()
-
-    _render_html(
-        f'<div class="cfb-page-refresh-time">Updated {datetime.now(TORONTO_TIMEZONE).strftime("%I:%M %p ET")}</div>'
-    )
+    # Shared menu / refresh / timestamp are rendered by app.py.
 
     _render_html(
         """
