@@ -159,7 +159,7 @@ st.markdown(
         .block-container {
             padding-left: .78rem !important;
             padding-right: .78rem !important;
-            padding-top: 4.55rem !important;
+            padding-top: .45rem !important;
             position: relative !important;
         }
         /* Header controls now share one real Streamlit row.
@@ -201,7 +201,7 @@ st.markdown(
         align-items:center!important; margin:0!important; gap:.35rem!important;
     }
     @media(max-width:700px){
-        .block-container{padding-top:1.0rem!important;}
+        .block-container{padding-top:.45rem!important;}
         div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-global_sport_refresh"]) {
             min-height:42px!important; margin:0!important;
         }
