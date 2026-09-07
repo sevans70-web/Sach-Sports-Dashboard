@@ -310,28 +310,38 @@ st.markdown(
       margin-top: 0 !important;
   }
 
-  /* Move the actual Streamlit element that contains the menu upward. */
+  /* Shared mobile menu position — smaller and higher on every sport page. */
   div[data-testid="stElementContainer"]:has(div[data-testid="stPopover"]),
   div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stPopover"]) {
-      margin-top: -1.65rem !important;
-      margin-bottom: -3.15rem !important;
+      margin-top: -1.85rem !important;
+      margin-bottom: -2.70rem !important;
       position: relative !important;
-      z-index: 20 !important;
+      z-index: 30 !important;
   }
 
   div[data-testid="stPopover"] {
       margin: 0 !important;
       position: relative !important;
-      z-index: 20 !important;
+      z-index: 30 !important;
   }
 
-  /* Pull the three sport heroes up and make the card itself tighter. */
+  div[data-testid="stPopover"] > button,
+  div[data-testid="stPopover"] button {
+      width: 40px !important;
+      min-width: 40px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      padding: 0 !important;
+      border-radius: 12px !important;
+  }
+
+  /* CFB is the mobile reference: force MLB/NFL/CFB to the same hero geometry. */
   .gi-hero,
   .nfl-hero,
   .cfb-hero {
-      margin-top: -1.05rem !important;
-      margin-bottom: .28rem !important;
-      padding: 11px 12px 12px !important;
+      margin-top: 0 !important;
+      margin-bottom: .25rem !important;
+      padding: 12px 13px 12px !important;
       min-height: 0 !important;
       height: auto !important;
       display: block !important;
