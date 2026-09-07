@@ -157,14 +157,28 @@ st.markdown(
         .block-container {
             padding-left: .78rem !important;
             padding-right: .78rem !important;
-            padding-top: .35rem !important;
+            padding-top: 4.55rem !important;
+            position: relative !important;
+        }
+        /* Pull the Sport Hub out of document flow so it cannot create the
+           large blank band above the sport-page refresh control. */
+        div[data-testid="stElementContainer"]:has(> div[data-testid="stPopover"]),
+        div[data-testid="stElementContainer"]:has(div[data-testid="stPopover"]) {
+            position: absolute !important;
+            top: .55rem !important;
+            left: .78rem !important;
+            width: auto !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            margin: 0 !important;
+            z-index: 10000 !important;
+        }
+        div[data-testid="stPopover"] {
+            margin: 0 !important;
         }
         .ssd-shell {
             min-height: 36px;
-            margin-bottom: 5px;
-        }
-        div[data-testid="stPopover"] {
-            margin-top: 2px !important;
+            margin-bottom: 0;
         }
         .ssd-shell-brand {
             font-size: .68rem;
