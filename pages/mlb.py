@@ -3143,9 +3143,11 @@ st.markdown(
       justify-content:flex-end!important;
       align-items:center!important;
       width:auto!important;
-      margin:-48px 0 8px auto!important;
-      position:relative!important;
-      inset:auto!important;
+      margin:0!important;
+      position:absolute!important;
+      top:.55rem!important;
+      right:.78rem!important;
+      inset:auto .78rem auto auto!important;
       z-index:2!important;
     }
     div[class*="st-key-mlb_page_refresh"] > div {
@@ -3188,12 +3190,11 @@ st.markdown(
     }
     @media(max-width:700px){
       div[class*="st-key-mlb_page_refresh"] {
-        position:relative!important;
-        inset:auto!important;
-        /* The Sport Hub popover reserves a taller mobile block than its
-           visible button. Pull Refresh into that same visual row while
-           keeping it in normal page flow so it scrolls away naturally. */
-        margin:-80px 0 8px auto!important;
+        position:absolute!important;
+        top:.55rem!important;
+        right:.78rem!important;
+        inset:auto .78rem auto auto!important;
+        margin:0!important;
       }
       .mlb-page-refresh-time { font-size:.78rem;margin:0 0 7px; }
     }

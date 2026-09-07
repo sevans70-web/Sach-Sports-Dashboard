@@ -81,7 +81,7 @@ def _inject_css() -> None:
         <style>
         .block-container{max-width:1180px;padding-top:0!important;padding-bottom:2.5rem!important;position:relative!important}
 
-        div[class*="st-key-cfb_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0 0 8px auto!important;position:relative!important;z-index:20!important}
+        div[class*="st-key-cfb_page_refresh"]{display:flex!important;justify-content:flex-end!important;align-items:center!important;width:auto!important;margin:0!important;position:absolute!important;top:.55rem!important;right:.78rem!important;z-index:20!important}
         div[class*="st-key-cfb_page_refresh"]>div{width:auto!important}
         div[class*="st-key-cfb_page_refresh"] button{width:auto!important;min-width:108px!important;height:40px!important;min-height:40px!important;padding:0 13px!important;background:#090a0b!important;color:#d8b35f!important;border:1.5px solid #d6b35c!important;border-radius:9px!important;font-size:.74rem!important;font-weight:900!important;white-space:nowrap!important}
         .cfb-page-refresh-time{width:100%;text-align:right;color:#c2c5ca;font-size:.82rem;font-weight:700;line-height:1.25;margin:0 0 8px;white-space:nowrap}
@@ -99,7 +99,7 @@ def _inject_css() -> None:
         .cfb-snapshot-card{min-height:98px;padding:12px 10px;border:2px solid #3a3d42;border-radius:16px;background:#111315;display:flex;flex-direction:column;justify-content:center;min-width:0}
         .cfb-snapshot-card span{color:#fff;font-size:.70rem;font-weight:900;letter-spacing:.08em}
         .cfb-snapshot-card strong{color:#fff;font-size:1.45rem;line-height:1.1;margin:5px 0}
-        .cfb-snapshot-card small{color:#fff;font-size:.68rem;font-weight:650;line-height:1.15}
+        .cfb-snapshot-card small{color:#fff;font-size:.66rem;font-weight:650;line-height:1.15;white-space:nowrap}
         .cfb-snapshot-emerald{border-color:rgba(25,217,120,.92)}.cfb-snapshot-emerald strong{color:#19d978}
         .cfb-snapshot-gold{border-color:#d8b35f}.cfb-snapshot-gold strong{color:#d8b35f}
 
@@ -131,7 +131,7 @@ def _inject_css() -> None:
             .cfb-snapshot-card{min-height:90px;padding:10px 8px}.cfb-snapshot-card strong{font-size:1.18rem}
             .cfb-rank-card{grid-template-columns:35px minmax(0,1fr) 64px;gap:7px;padding:10px 8px}
             .cfb-intel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-            div[class*="st-key-cfb_page_refresh"]{position:relative!important;inset:auto!important;margin:-80px 0 8px auto!important}
+            div[class*="st-key-cfb_page_refresh"]{position:absolute!important;top:.55rem!important;right:.78rem!important;inset:auto .78rem auto auto!important;margin:0!important}
         }
         </style>
         """,
