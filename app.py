@@ -1,4 +1,6 @@
 import streamlit as st
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 st.set_page_config(
     page_title="Game Intelligence",
@@ -160,22 +162,9 @@ st.markdown(
             padding-top: 4.55rem !important;
             position: relative !important;
         }
-        /* Pull the Sport Hub out of document flow so it cannot create the
-           large blank band above the sport-page refresh control. */
-        div[data-testid="stElementContainer"]:has(> div[data-testid="stPopover"]),
-        div[data-testid="stElementContainer"]:has(div[data-testid="stPopover"]) {
-            position: absolute !important;
-            top: .55rem !important;
-            left: .78rem !important;
-            width: auto !important;
-            height: 40px !important;
-            min-height: 40px !important;
-            margin: 0 !important;
-            z-index: 10000 !important;
-        }
-        div[data-testid="stPopover"] {
-            margin: 0 !important;
-        }
+        /* Header controls now share one real Streamlit row.
+           Do not absolutely position either control on mobile. */
+        div[data-testid="stPopover"] { margin: 0 !important; }
         .ssd-shell {
             min-height: 36px;
             margin-bottom: 0;
@@ -183,6 +172,40 @@ st.markdown(
         .ssd-shell-brand {
             font-size: .68rem;
         }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <style>
+    /* Shared menu + refresh header: same row, same visual height. */
+    div[class*="st-key-global_sport_refresh"] button {
+        height:42px!important; min-height:42px!important;
+        padding:0 14px!important; margin:0!important;
+        background:#090a0b!important; color:#d6b35c!important;
+        border:1.5px solid #d6b35c!important; border-radius:10px!important;
+        font-size:.78rem!important; font-weight:900!important; white-space:nowrap!important;
+    }
+    div[data-testid="stPopover"] > button,
+    div[data-testid="stPopover"] button { height:42px!important; min-height:42px!important; }
+    .ssd-updated-time {
+        width:100%; text-align:right; color:#c2c5ca;
+        font-size:.82rem; font-weight:700; line-height:1.2;
+        margin:3px 0 8px 0; white-space:nowrap;
+    }
+    /* Keep the header row compact. */
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-global_sport_refresh"]) {
+        align-items:center!important; margin:0!important; gap:.35rem!important;
+    }
+    @media(max-width:700px){
+        .block-container{padding-top:1.0rem!important;}
+        div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-global_sport_refresh"]) {
+            min-height:42px!important; margin:0!important;
+        }
+        .ssd-updated-time{font-size:.78rem!important;margin:3px 0 7px 0!important;}
     }
     </style>
     """,
@@ -216,26 +239,35 @@ pages = {
 # Register all pages before rendering custom page links.
 navigation = st.navigation(pages, position="hidden")
 
-# Compact square-grid Sport Hub in the upper-left.
-# Render directly instead of inside temporary columns so it does not shift
-# or disappear while the page is hydrating.
-with st.popover("▦", use_container_width=False):
-    # Player Search lives at the top of the hub without redesigning the menu yet.
-    if st.button("🔎", key="open_platform_player_search", help="Search players", use_container_width=False):
-        st.switch_page("pages/player_search.py")
-    st.markdown("**SPORT HUB**")
-    left, right = st.columns(2)
-    with left:
-        st.page_link("pages/home.py", label="HOME", icon="🏠")
-        st.page_link("pages/mlb.py", label="MLB", icon="⚾")
-        st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
-        st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
-    with right:
-        st.page_link("pages/nfl.py", label="NFL", icon="🏈")
-        st.page_link("pages/cfb.py", label="CFB", icon="🏈")
-        st.page_link("pages/nba.py", label="NBA", icon="🏀")
-        st.page_link("pages/nhl.py", label="NHL", icon="🏒")
+# One shared utility row for every sport page: menu left, refresh right.
+# Keeping both controls in the SAME Streamlit row avoids CSS positioning drift.
+menu_col, spacer_col, refresh_col = st.columns([1.0, 5.8, 2.15], vertical_alignment="center")
+with menu_col:
+    with st.popover("▦", use_container_width=False):
+        if st.button("🔎", key="open_platform_player_search", help="Search players", use_container_width=False):
+            st.switch_page("pages/player_search.py")
+        st.markdown("**SPORT HUB**")
+        left, right = st.columns(2)
+        with left:
+            st.page_link("pages/home.py", label="HOME", icon="🏠")
+            st.page_link("pages/mlb.py", label="MLB", icon="⚾")
+            st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
+            st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
+        with right:
+            st.page_link("pages/nfl.py", label="NFL", icon="🏈")
+            st.page_link("pages/cfb.py", label="CFB", icon="🏈")
+            st.page_link("pages/nba.py", label="NBA", icon="🏀")
+            st.page_link("pages/nhl.py", label="NHL", icon="🏒")
+with refresh_col:
+    if st.button("⟳ REFRESH", key="global_sport_refresh", use_container_width=True, help="Refresh dashboard data"):
+        st.cache_data.clear()
+        st.rerun()
 
+header_now = datetime.now(ZoneInfo("America/Toronto"))
+st.markdown(
+    f'<div class="ssd-updated-time">Updated {header_now.strftime("%A · %I:%M %p ET")}</div>',
+    unsafe_allow_html=True,
+)
 
 st.markdown(
     """
