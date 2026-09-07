@@ -199,18 +199,13 @@ def _styles() -> None:
            colors, so the active period remains obvious. */
         div[class*="st-key-mlb_batter_performance_period"],
         div[class*="st-key-mlb_pitcher_performance_period"],
-        div[class*="st-key-mlb_emerging_power_period"],
-        div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"],
-        div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"],
-        div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"]{
+        div[class*="st-key-mlb_emerging_power_period"]{
             width:100%!important;
             max-width:none!important;
         }
-        div[class*="st-key-mlb_batter_performance_period"] [data-baseweb="button-group"],
-        div[class*="st-key-mlb_pitcher_performance_period"] [data-baseweb="button-group"],
-        div[class*="st-key-mlb_emerging_power_period"] [data-baseweb="button-group"]{
-            display:grid!important;
-            grid-template-columns:repeat(5,minmax(0,1fr))!important;
+        div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"],
+        div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"],
+        div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"]{
             width:100%!important;
             max-width:none!important;
         }
@@ -232,11 +227,9 @@ def _styles() -> None:
             min-width:0!important;
             width:100%!important;
             white-space:nowrap!important;
-            padding-left:4px!important;
-            padding-right:4px!important;
-            font-size:.84rem!important;
-            min-height:46px!important;
-            flex:1 1 20%!important;
+            padding-left:3px!important;
+            padding-right:3px!important;
+            font-size:.72rem!important;
         }
 
         @media(max-width:700px){
@@ -258,14 +251,26 @@ def _styles() -> None:
             .perf-summary-row.perf-batter-four .perf-summary-item strong{
                 font-size:.82rem!important;
             }
+            div[class*="st-key-mlb_batter_performance_period"],
+            div[class*="st-key-mlb_pitcher_performance_period"],
+            div[class*="st-key-mlb_emerging_power_period"]{
+                width:calc(100vw - 28px)!important;
+                max-width:calc(100vw - 28px)!important;
+            }
+            div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"],
+            div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"],
+            div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"]{
+                width:100%!important;
+                max-width:100%!important;
+            }
             div[class*="st-key-mlb_batter_performance_period"] button,
             div[class*="st-key-mlb_pitcher_performance_period"] button,
             div[class*="st-key-mlb_emerging_power_period"] button{
-                font-size:.80rem!important;
-                padding-left:2px!important;
-                padding-right:2px!important;
-                letter-spacing:-.02em!important;
-                min-height:46px!important;
+                font-size:.78rem!important;
+                padding-left:4px!important;
+                padding-right:4px!important;
+                letter-spacing:-.01em!important;
+                min-height:44px!important;
             }
             div[class*="st-key-mlb_batter_performance_period"] button p,
             div[class*="st-key-mlb_pitcher_performance_period"] button p,
@@ -273,8 +278,8 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"] button span,
             div[class*="st-key-mlb_pitcher_performance_period"] button span,
             div[class*="st-key-mlb_emerging_power_period"] button span{
-                font-size:.80rem!important;
-                letter-spacing:-.02em!important;
+                font-size:.78rem!important;
+                letter-spacing:-.01em!important;
                 overflow:visible!important;
                 text-overflow:clip!important;
             }
