@@ -441,6 +441,111 @@ def _normalize_odds_api(events, prop_label):
     return pd.DataFrame(rows)
 
 
+
+def _team_match_key(value):
+    """Loose team-name key used only to join sportsbook events to ESPN schedule rows."""
+    text = re.sub(r"[^a-z0-9]+", " ", str(value or "").lower()).strip()
+    stop = {
+        "university", "college", "state", "the", "football",
+        "wildcats", "tigers", "bulldogs", "eagles", "bears", "cougars",
+        "cardinals", "huskies", "mustangs", "rebels", "aggies", "trojans",
+        "panthers", "knights", "warriors", "broncos", "hawks", "owls",
+        "rams", "wolves", "cowboys", "mountaineers", "spartans", "gators",
+        "seminoles", "hurricanes", "longhorns", "sooners", "volunteers",
+        "nittany", "lions", "hoosiers", "buckeyes", "wolverines", "utes",
+        "vandals", "miners", "mean", "green", "paladins", "red", "raiders",
+        "jayhawks", "fighting", "irish", "badgers", "beavers", "ducks",
+    }
+    words = [w for w in text.split() if w not in stop]
+    return " ".join(words) or text
+
+
+def _event_team_names(event):
+    teams = event.get("teams") or {}
+    away = (
+        event.get("awayTeamName") or event.get("awayTeam")
+        or (teams.get("away") or {}).get("name")
+        or event.get("away_team")
+    )
+    home = (
+        event.get("homeTeamName") or event.get("homeTeam")
+        or (teams.get("home") or {}).get("name")
+        or event.get("home_team")
+    )
+    return str(away or "").strip(), str(home or "").strip()
+
+
+def _sgo_event_has_supported_player_prop(event):
+    supported = {str(v["sgo_stat"]).lower() for v in PROP_MAP.values()}
+    for odd in _sgo_event_odds(event):
+        stat_id = str(odd.get("statID") or odd.get("statId") or "").lower()
+        if stat_id not in supported:
+            continue
+        entity = str(odd.get("statEntityID") or "").strip().lower()
+        if entity in {"", "all", "home", "away"}:
+            continue
+        # Require an actual posted line/price/book record, not only an event shell.
+        if (
+            odd.get("bookOdds") is not None
+            or odd.get("fairOdds") is not None
+            or odd.get("bookOverUnder") is not None
+            or bool(odd.get("byBookmaker"))
+        ):
+            return True
+    return False
+
+
+def _odds_api_event_has_supported_player_prop(event):
+    supported = {v["odds_market"] for v in PROP_MAP.values()}
+    for bookmaker in event.get("bookmakers") or []:
+        for market in bookmaker.get("markets") or []:
+            if market.get("key") not in supported:
+                continue
+            if any((outcome.get("description") or outcome.get("name")) for outcome in market.get("outcomes") or []):
+                return True
+    return False
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def load_cfb_prop_eligible_games():
+    """Return sportsbook CFB matchups that currently have supported player props."""
+    shared = load_shared_cfb_events()
+    provider = shared.get("provider")
+    eligible = []
+    for event in shared.get("data") or []:
+        has_props = (
+            _odds_api_event_has_supported_player_prop(event)
+            if provider == "The Odds API"
+            else _sgo_event_has_supported_player_prop(event)
+        )
+        if not has_props:
+            continue
+        away, home = _event_team_names(event)
+        if away and home:
+            eligible.append({
+                "event_id": str(event.get("eventID") or event.get("id") or ""),
+                "away_team": away,
+                "home_team": home,
+                "away_key": _team_match_key(away),
+                "home_key": _team_match_key(home),
+            })
+    return eligible
+
+
+def cfb_game_has_player_props(away_team, home_team, eligible_games=None):
+    """True only when the sportsbook feed has a supported player prop for this matchup."""
+    eligible_games = load_cfb_prop_eligible_games() if eligible_games is None else eligible_games
+    away_key = _team_match_key(away_team)
+    home_key = _team_match_key(home_team)
+    for item in eligible_games:
+        ea = item.get("away_key") or ""
+        eh = item.get("home_key") or ""
+        away_ok = away_key == ea or (away_key and ea and (away_key in ea or ea in away_key))
+        home_ok = home_key == eh or (home_key and eh and (home_key in eh or eh in home_key))
+        if away_ok and home_ok:
+            return True
+    return False
+
 @st.cache_data(ttl=600, show_spinner=False)
 def load_cfb_prop_markets(prop_label):
     if prop_label not in PROP_MAP:
