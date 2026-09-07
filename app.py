@@ -369,3 +369,62 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# Final mobile spacing normalization — CFB is the reference layout.
+st.markdown(
+    """
+<style>
+@media (max-width:700px){
+  /* Same compact menu on every sport page. */
+  div[data-testid="stPopover"] > button,
+  div[data-testid="stPopover"] button {
+      width:38px !important;
+      min-width:38px !important;
+      height:38px !important;
+      min-height:38px !important;
+      border-radius:11px !important;
+  }
+
+  /* Pull the shared menu slightly higher without changing CFB's content rhythm. */
+  div[data-testid="stElementContainer"]:has(div[data-testid="stPopover"]) {
+      transform:translateY(-6px) !important;
+  }
+
+  /* MLB is the outlier: remove the dead space between the menu and hero. */
+  div[data-testid="stElementContainer"]:has(.gi-hero) {
+      margin-top:-4.35rem !important;
+  }
+
+  /* Keep all three heroes on the same compact CFB geometry. */
+  .gi-hero,
+  .nfl-hero,
+  .cfb-hero {
+      padding:12px 13px !important;
+      margin-bottom:.25rem !important;
+      min-height:0 !important;
+  }
+  .gi-hero-subtitle,
+  .nfl-hero-subtitle,
+  .cfb-hero-subtitle {
+      margin-top:7px !important;
+      line-height:1.38 !important;
+  }
+
+  /* NFL: match CFB's section spacing below the slate button and snapshot. */
+  div[data-testid="stElementContainer"]:has(.nfl-snapshot-heading) {
+      margin-top:-.45rem !important;
+  }
+  .nfl-snapshot-heading {
+      margin-top:8px !important;
+  }
+  div[data-testid="stElementContainer"]:has(.nfl-performance-title) {
+      margin-top:-.55rem !important;
+  }
+  .nfl-performance-title {
+      margin-top:18px !important;
+  }
+}
+</style>
+    """,
+    unsafe_allow_html=True,
+)
