@@ -409,16 +409,16 @@ def render_compact_card_css() -> None:
                 min-height:266px!important;
             }
             .mlb-rank-card{
-                grid-template-columns:32px 66px minmax(0,1fr) 45px!important;
+                grid-template-columns:32px 58px minmax(0,1fr) 45px!important;
                 gap:7px!important;
                 height:210px!important;
                 min-height:210px!important;
                 max-height:210px!important;
             }
             .mlb-rank-avatar{
-                width:66px!important;height:66px!important;
-                min-width:66px!important;min-height:66px!important;
-                max-width:66px!important;max-height:66px!important;
+                width:58px!important;height:58px!important;
+                min-width:58px!important;min-height:58px!important;
+                max-width:58px!important;max-height:58px!important;
             }
             .mlb-rank-copy{
                 grid-template-rows:18px 17px 17px 17px 34px 23px 19px!important;
