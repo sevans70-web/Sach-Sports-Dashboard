@@ -31,8 +31,8 @@ def _rows(data, market, period):
 
 def render_cfb_prediction_performance():
     st.markdown('''<style>
-    .cfb-perf-title{margin:18px 0 4px;color:#fff;font-size:1.10rem;font-weight:950}.cfb-perf-copy{color:#a7abb2;font-size:.74rem;margin-bottom:7px}
-    .cfb-perf-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0}.cfb-perf-m{background:#0d0f10;border:1px solid #30343a;border-bottom:2px solid #d8b35f;border-radius:9px;padding:7px 5px}.cfb-perf-m span{display:block;color:#969ba2;font-size:.50rem}.cfb-perf-m strong{display:block;color:#fff;font-size:.82rem;margin-top:3px}
+    .cfb-perf-title{margin:10px 0 4px;color:#fff;font-size:1.10rem;font-weight:950}.cfb-perf-copy{color:#a7abb2;font-size:.74rem;margin-bottom:7px}
+    .cfb-perf-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:5px 0 4px}.cfb-perf-m{min-height:68px;background:#101112;border:2px solid #34373c;border-radius:11px;padding:7px 5px;display:flex;flex-direction:column;justify-content:center}.cfb-perf-m:first-child{border-color:rgba(25,217,120,.78)}.cfb-perf-m:nth-child(3){border-color:rgba(255,204,51,.72)}.cfb-perf-m span{display:block;color:#a7abb2;font-size:.55rem;line-height:1.15}.cfb-perf-m strong{display:block;color:#fff;font-size:.82rem;line-height:1.05;margin-top:3px}
     div[class*="st-key-cfb_performance_period"] [role="radiogroup"]{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:0!important}div[class*="st-key-cfb_performance_period"] button{width:100%!important;min-width:0!important}
     </style><div class="cfb-perf-title">📊 Prediction Performance</div><div class="cfb-perf-copy">Each market is tracked separately. Results appear only after saved model predictions are graded.</div>''',unsafe_allow_html=True)
     period=st.segmented_control("CFB performance period",["Today","Week","Month","Season"],default="Today",key="cfb_performance_period",label_visibility="collapsed") or "Today"
@@ -40,5 +40,5 @@ def render_cfb_prediction_performance():
     for tab,market in zip(tabs,MARKETS):
         with tab:
             rows=_rows(data,market,period); settled=[r for r in rows if isinstance(r.get("correct"),bool)]; wins=sum(r.get("correct") is True for r in settled); losses=len(settled)-wins; rate=f"{100*wins/len(settled):.1f}%" if settled else "—"
-            st.markdown(f'<div class="cfb-perf-grid"><div class="cfb-perf-m"><span>RECORD</span><strong>{wins}-{losses}</strong></div><div class="cfb-perf-m"><span>SETTLED</span><strong>{len(settled)}</strong></div><div class="cfb-perf-m"><span>HIT RATE</span><strong>{rate}</strong></div><div class="cfb-perf-m"><span>PENDING</span><strong>{len(rows)-len(settled)}</strong></div></div>',unsafe_allow_html=True)
-            if not rows: st.caption(f"{market} results will appear here after model-backed predictions are saved and graded.")
+            st.markdown(f'<div class="cfb-perf-grid"><div class="cfb-perf-m"><span>Hits / Predictions</span><strong>{wins} / {len(rows)}</strong></div><div class="cfb-perf-m"><span>Pending</span><strong>{len(rows)-len(settled)}</strong></div><div class="cfb-perf-m"><span>Settled</span><strong>{len(settled)}</strong></div><div class="cfb-perf-m"><span>Hit Rate</span><strong>{rate}</strong></div></div>',unsafe_allow_html=True)
+            if not rows: st.caption("Results will appear after games are graded.")

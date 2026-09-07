@@ -125,6 +125,8 @@ def _cached_pitcher_history() -> dict[str, Any]:
 
 
 def _records(history, category, period):
+    if period == "Week":
+        period = "7 Days"
     if period == "Yesterday":
         yesterday = datetime.now(TORONTO_TIMEZONE).date() - timedelta(days=1)
         return records_for_period(history, category, "Today", today=yesterday)
@@ -132,6 +134,8 @@ def _records(history, category, period):
 
 
 def _all_records(history, period):
+    if period == "Week":
+        period = "7 Days"
     if period == "Yesterday":
         yesterday = datetime.now(TORONTO_TIMEZONE).date() - timedelta(days=1)
         return all_records_for_period(history, "Today", today=yesterday)
@@ -139,6 +143,8 @@ def _all_records(history, period):
 
 
 def _pitcher_records(history, category, period):
+    if period == "Week":
+        period = "7 Days"
     if period == "Yesterday":
         yesterday = datetime.now(TORONTO_TIMEZONE).date() - timedelta(days=1)
         return pitcher_records_for_period(history, category, "Today", today=yesterday)
@@ -268,7 +274,7 @@ def _styles() -> None:
 
 def _period_control(key: str) -> str:
     """Exactly the same control type used by HR Intelligence."""
-    options = ["Today", "Yesterday", "7 Days", "Month", "Season"]
+    options = ["Today", "Yesterday", "Week", "Month", "Season"]
     current = st.session_state.get(key, "Today")
     if current not in options:
         current = "Today"

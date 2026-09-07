@@ -32,10 +32,10 @@ def _render_market(history: dict, market: str, period: str) -> None:
     rate = f"{result['hit_rate']:.1f}%" if result["settled"] else "—"
     st.markdown(
         '<div class="nfl-performance-grid">'
-        f'<div class="nfl-performance-metric"><span>RECORD</span><strong>{result["wins"]}-{result["losses"]}</strong></div>'
-        f'<div class="nfl-performance-metric"><span>SETTLED</span><strong>{result["settled"]}</strong></div>'
-        f'<div class="nfl-performance-metric"><span>HIT RATE</span><strong>{rate}</strong></div>'
-        f'<div class="nfl-performance-metric"><span>PENDING</span><strong>{result["pending"]}</strong></div>'
+        f'<div class="nfl-performance-metric"><span>Hits / Predictions</span><strong>{result["wins"]} / {result["settled"] + result["pending"]}</strong></div>'
+        f'<div class="nfl-performance-metric"><span>Pending</span><strong>{result["pending"]}</strong></div>'
+        f'<div class="nfl-performance-metric"><span>Settled</span><strong>{result["settled"]}</strong></div>'
+        f'<div class="nfl-performance-metric"><span>Hit Rate</span><strong>{rate}</strong></div>'
         '</div>', unsafe_allow_html=True,
     )
     if result["settled"]:
@@ -53,18 +53,18 @@ def _render_market(history: dict, market: str, period: str) -> None:
                 name = escape(str(row.get("player_name") or row.get("player") or "Player"))
                 st.markdown(f"{mark} {row.get('date') or ''} · #{int(row.get('rank') or 0)} {name}")
     else:
-        st.caption(f"{market} results will appear here after completed games are graded.")
+        st.caption("Results will appear after games are graded.")
 
 
 def render_nfl_prediction_performance() -> None:
     st.markdown(
         """
         <style>
-        .nfl-performance-title{margin:19px 0 4px;color:#fff;font-size:1.10rem;font-weight:950}
+        .nfl-performance-title{margin:10px 0 4px;color:#fff;font-size:1.10rem;font-weight:950}
         .nfl-performance-copy{color:#a7abb2;font-size:.74rem;line-height:1.38;margin-bottom:7px}
-        .nfl-performance-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:4px 0 3px}
-        .nfl-performance-metric{min-width:0;background:#0d0f10;border:1px solid #30343a;border-bottom:2px solid #d6b35c;border-radius:9px;padding:7px 5px}
-        .nfl-performance-metric span{display:block;color:#969ba2;font-size:.50rem;white-space:nowrap}.nfl-performance-metric strong{display:block;color:#fff;font-size:.82rem;margin-top:3px}
+        .nfl-performance-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:5px 0 4px}
+        .nfl-performance-metric{min-width:0;min-height:68px;background:#101112;border:2px solid #34373c;border-radius:11px;padding:7px 5px;display:flex;flex-direction:column;justify-content:center}.nfl-performance-metric:first-child{border-color:rgba(25,217,120,.78)}.nfl-performance-metric:nth-child(3){border-color:rgba(255,204,51,.72)}
+        .nfl-performance-metric span{display:block;color:#a7abb2;font-size:.55rem;line-height:1.15;white-space:normal}.nfl-performance-metric strong{display:block;color:#fff;font-size:.82rem;line-height:1.05;margin-top:3px}
         div[class*="st-key-nfl_performance_markets"]{border:1.5px solid #34373c!important;border-left:4px solid #19d978!important;border-radius:12px!important;background:#101112!important;padding:8px!important}
         div[class*="st-key-nfl_performance_period"] [role="radiogroup"]{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:0!important}
         div[class*="st-key-nfl_performance_period"] button{width:100%!important;min-width:0!important}
