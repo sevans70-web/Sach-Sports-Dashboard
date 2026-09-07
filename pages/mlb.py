@@ -17,6 +17,7 @@ from components.mlb_performance_tracker import render_prediction_performance_tra
 from components.mlb_pitcher_rankings import render_pitcher_rankings
 from components.mlb_compact_ranking_card import build_compact_card_html, render_compact_card_css
 from database.mlb_dashboard_reads import load_batter_rankings_from_supabase
+from database.mlb_repository import get_latest_source_payload
 from engines.game_intelligence import (
     get_all_rankings,
     get_daily_ranking_snapshot,
@@ -605,13 +606,43 @@ def load_emerging_power_pool(schedule_date: str) -> list[dict]:
 
 @st.cache_data(ttl=600, show_spinner=False)
 def load_emerging_power_candidates(schedule_date: str) -> list[dict]:
-    """Build one shared ten-player list for the watch and its tracker."""
+    """Build today's discovery list with recent-repeat suppression."""
+    from datetime import date, timedelta
     from data.mlb_emerging_power import build_emerging_power_candidates
+
+    recent_appearances: dict[str, int] = {}
+    try:
+        stored = get_latest_source_payload(source_name="mlb_emerging_power_history")
+        history = stored.get("payload") or {}
+        today = date.fromisoformat(schedule_date)
+        recent_days = {
+            (today - timedelta(days=offset)).isoformat()
+            for offset in range(1, 4)
+        }
+        for day_key, day_record in (history.get("days") or {}).items():
+            if str(day_key) not in recent_days:
+                continue
+            rows = (
+                (day_record or {}).get("categories", {}).get("emerging_power", [])
+                or []
+            )
+            for row in rows:
+                key = str(
+                    row.get("player_id")
+                    or row.get("player_name")
+                    or row.get("player")
+                    or ""
+                ).strip().casefold()
+                if key:
+                    recent_appearances[key] = recent_appearances.get(key, 0) + 1
+    except Exception:
+        recent_appearances = {}
 
     return build_emerging_power_candidates(
         load_emerging_power_pool(schedule_date),
         limit=10,
         enrich_profiles=False,
+        recent_appearances=recent_appearances,
     )
 
 
