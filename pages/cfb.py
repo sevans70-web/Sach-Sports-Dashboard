@@ -9,7 +9,7 @@ import requests
 import streamlit as st
 
 from data.cfb_intelligence import build_cfb_rankings
-from data.cfb_odds import get_cfb_odds_feed_status
+from data.cfb_odds import get_cfb_odds_feed_status, load_cfb_prop_eligible_games, cfb_game_has_player_props
 from components.cfb_prediction_performance import render_cfb_prediction_performance
 
 CFB_SEASON = 2026
@@ -272,6 +272,16 @@ def show() -> None:
 
     try:
         games = _load_scoreboard()
+        eligible = load_cfb_prop_eligible_games()
+        if not games.empty:
+            games = games[
+                games.apply(
+                    lambda row: cfb_game_has_player_props(
+                        row.get("away_team"), row.get("home_team"), eligible
+                    ),
+                    axis=1,
+                )
+            ].copy()
     except Exception:
         games = pd.DataFrame()
 

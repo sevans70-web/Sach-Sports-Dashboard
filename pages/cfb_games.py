@@ -5,6 +5,8 @@ import pandas as pd
 import requests
 import streamlit as st
 
+from data.cfb_odds import load_cfb_prop_eligible_games, cfb_game_has_player_props
+
 TZ=ZoneInfo("America/Toronto")
 SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
 ROSTER="https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/{team_id}/roster"
@@ -54,19 +56,36 @@ def team_roster(team_id):
 
 def css():
     st.markdown('''<style>
-    .block-container{max-width:1100px;padding-top:.15rem!important}.cfb-hero{padding:12px 14px;border:2px solid #8c64aa;border-radius:15px;background:linear-gradient(110deg,rgba(216,179,95,.15),#0b0c0d 48%,rgba(91,54,119,.26));margin:3px 0 11px}.cfb-hero h1{margin:0;color:#fff;font-size:1.4rem}.cfb-hero p{margin:6px 0 0;color:#c7c9ce;font-size:.78rem}.day{color:#d8b35f;font-size:.84rem;font-weight:950;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em}
-    .cfb-card{background:linear-gradient(118deg,#101112,#111315 68%,rgba(140,100,170,.08));border:1.5px solid #30343a;border-left:4px solid #8c64aa;border-radius:13px;padding:9px 11px;margin:7px 0 4px}.top{display:flex;justify-content:space-between;gap:8px;color:#92979f;font-size:.67rem;font-weight:800;padding-bottom:7px;border-bottom:1px solid #292c31}.status{color:#d8b35f}.team{display:grid;grid-template-columns:42px minmax(0,1fr) 38px;align-items:center;gap:9px;padding:7px 0 2px}.team img{width:38px;height:38px;object-fit:contain}.team b{color:#fff;font-size:.88rem}.team span{display:block;color:#a7abb2;font-size:.67rem;margin-top:2px}.score{text-align:right!important;font-size:1rem!important}.intel{margin:7px 0 10px;padding:11px;border:1px solid #43364e;border-radius:12px;background:#131016}.intel b{color:#d8b35f}.intel p{color:#d6d9dd;font-size:.75rem;line-height:1.45}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.metric{padding:7px;background:#101214;border:1px solid #30343a;border-bottom:2px solid #8c64aa;border-radius:8px}.metric small{display:block;color:#92979e;font-size:.52rem}.metric strong{color:#fff;font-size:.72rem}.cfb-player{display:flex;align-items:center;gap:9px;background:#101112;border:1px solid #30343a;border-radius:9px;padding:7px;margin:5px 0}.cfb-player img,.cfb-player>span{width:34px;height:34px;object-fit:cover;border-radius:50%;display:flex;align-items:center;justify-content:center}.cfb-player b{display:block;color:#fff;font-size:.75rem}.cfb-player small{display:block;color:#a7abb2;font-size:.62rem}
-    div[class*="st-key-cfb_game_select_"] button{background:#080909!important;color:#d8b35f!important;border:1px solid rgba(216,179,95,.58)!important;border-radius:9px!important;min-height:34px!important}.block-container div[class*="st-key-back_to_cfb"]{display:flex!important;justify-content:flex-end!important;margin:-48px 0 9px auto!important;width:auto!important}div[class*="st-key-back_to_cfb"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
-    @media(max-width:700px){.block-container{padding-left:.85rem!important;padding-right:.85rem!important}.team{grid-template-columns:38px minmax(0,1fr) 34px}.team img{width:34px;height:34px}.block-container div[class*="st-key-back_to_cfb"]{margin:-78px 0 9px auto!important}}
+    .block-container{max-width:1100px;padding-top:.15rem!important}
+    .cfb-hero{margin:4px 0 10px;padding:11px 12px;border-radius:13px;border:1.5px solid rgba(25,217,120,.58);background:linear-gradient(115deg,#101112,#111315 68%,rgba(246,200,76,.07))}
+    .cfb-hero h1{margin:0;color:#fff;font-size:1.25rem;font-weight:950}
+    .cfb-hero p{margin:4px 0 0;color:#a7abb2;font-size:.74rem;line-height:1.3}
+    .day{color:#f6c84c;font-size:.84rem;font-weight:950;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em}
+    .cfb-card{background:linear-gradient(118deg,#101112 0%,#111315 68%,rgba(25,217,120,.055) 100%);border:1.5px solid #30343a;border-radius:13px;padding:10px 11px 8px;margin:8px 0 4px}
+    .cfb-card.selected{border-color:#19d978;box-shadow:inset 0 0 0 1px rgba(25,217,120,.18)}
+    .top{display:flex;justify-content:space-between;gap:8px;color:#8f949c;font-size:.68rem;font-weight:750;padding-bottom:7px;border-bottom:1px solid #292c31}
+    .status{color:#19d978!important;font-weight:900!important}
+    .team{display:grid;grid-template-columns:42px minmax(0,1fr) 44px;align-items:center;gap:9px;padding:8px 0 3px}
+    .team + .team{padding-top:6px}.team img{width:38px;height:38px;object-fit:contain;display:block}.team b{color:#fff;font-size:.92rem;line-height:1.12;font-weight:900}.team span{display:block;color:#a7abb2;font-size:.70rem;line-height:1.2;margin-top:2px}.score{text-align:right!important;font-size:1rem!important;font-weight:950!important}
+    .intel{margin:9px 0 14px;padding:13px;border:1.5px solid rgba(214,179,92,.66);border-radius:15px;background:linear-gradient(118deg,#0b0c0d,#101214 72%,rgba(25,217,120,.05));box-shadow:0 8px 24px rgba(0,0,0,.20)}.intel b{color:#f6c84c}.intel p{color:#d6d9dd;font-size:.75rem;line-height:1.45}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.metric{padding:7px;background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:8px}.metric small{display:block;color:#92979e;font-size:.52rem}.metric strong{color:#fff;font-size:.72rem}.cfb-player{display:flex;align-items:center;gap:9px;background:#101112;border:1px solid #30343a;border-radius:9px;padding:7px;margin:5px 0}.cfb-player img,.cfb-player>span{width:34px;height:34px;object-fit:cover;border-radius:50%;display:flex;align-items:center;justify-content:center}.cfb-player b{display:block;color:#fff;font-size:.75rem}.cfb-player small{display:block;color:#a7abb2;font-size:.62rem}
+    div[class*="st-key-cfb_game_select_"]{margin:0 0 7px!important}div[class*="st-key-cfb_game_select_"] button{min-height:34px!important;padding:.18rem .55rem!important;background:#080909!important;color:#f6c84c!important;border:1px solid rgba(214,179,92,.58)!important;border-radius:9px!important;font-size:.72rem!important;font-weight:850!important}
+    .block-container div[class*="st-key-back_to_cfb"]{display:flex!important;justify-content:flex-end!important;margin:-48px 0 9px auto!important;width:auto!important}div[class*="st-key-back_to_cfb"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
+    @media(max-width:700px){.block-container{padding-left:.85rem!important;padding-right:.85rem!important}.cfb-hero{margin-top:.2rem!important}.team{grid-template-columns:38px minmax(0,1fr) 36px;gap:8px}.team img{width:34px;height:34px}.team b{font-size:.88rem}.team span{font-size:.67rem}.block-container div[class*="st-key-back_to_cfb"]{margin:-78px 0 9px auto!important}}
     </style>''',unsafe_allow_html=True)
 
 def show():
     css()
     if st.button("← Back to CFB",key="back_to_cfb"): st.switch_page("pages/cfb.py")
     html('<div class="cfb-hero"><h1>🏈 College Football Games</h1><p>Choose a matchup for live game context, Game Intelligence and either team roster.</p></div>')
-    try: df=games()
-    except Exception: st.error("The CFB schedule feed is temporarily unavailable."); return
-    if df.empty: st.info("No CFB games remain on the current slate."); return
+    try:
+        df=games()
+        eligible=load_cfb_prop_eligible_games()
+        if not df.empty:
+            df=df[df.apply(lambda row: cfb_game_has_player_props(row.get("away_team"),row.get("home_team"),eligible),axis=1)].copy()
+    except Exception:
+        st.error("The CFB schedule or player-prop feed is temporarily unavailable."); return
+    if df.empty:
+        st.info("No CFB games with supported player props are currently posted."); return
     selected=st.session_state.get("cfb_selected_game")
     df["day"]=df["kickoff"].dt.tz_convert(TZ).dt.normalize()
     for di,d in enumerate(df["day"].drop_duplicates()):
@@ -76,8 +95,11 @@ def show():
             def row(side):
                 name=str(g[f"{side}_team"]); logo=str(g[f"{side}_logo"]); score=g[f"{side}_score"] if (g["completed"] or live) else ""; starter=qb(g[f"{side}_id"])
                 return f'<div class="team"><img src="{escape(logo)}"><div><b>{escape(name)}</b><span>QB · {escape(starter)}</span></div><b class="score">{escape(str(score or ""))}</b></div>'
-            html(f'<div class="cfb-card"><div class="top"><span class="status">{escape(status)}</span><span>{escape(str(g["venue"]))} · {escape(when(g["kickoff"]))}</span></div>{row("away")}{row("home")}</div>')
-            if st.button("Hide Game Intelligence" if selected==gid else "View Game Intelligence",key=f"cfb_game_select_{di}_{gi}_{gid}",use_container_width=True): st.session_state["cfb_selected_game"]=None if selected==gid else gid; st.rerun()
+            selected_now=st.session_state.get("cfb_selected_game")==gid
+            html(f'<div class="cfb-card{" selected" if selected_now else ""}"><div class="top"><span class="status">{escape(status.upper())}</span><span>{escape(str(g["venue"]))} · {escape(when(g["kickoff"]))}</span></div>{row("away")}{row("home")}</div>')
+            abbr_away="".join(word[0] for word in str(g["away_team"]).split()[:3]).upper() or "AWAY"
+            abbr_home="".join(word[0] for word in str(g["home_team"]).split()[:3]).upper() or "HOME"
+            if st.button("Hide Game Intelligence" if selected_now else f"View {abbr_away} @ {abbr_home}  →",key=f"cfb_game_select_{di}_{gi}_{gid}",use_container_width=True): st.session_state["cfb_selected_game"]=None if selected_now else gid; st.rerun()
             if st.session_state.get("cfb_selected_game")==gid:
                 env="Indoor" if g["indoor"] else "Outdoor"
                 html(f'<div class="intel"><b>🔥 Game Intelligence</b><p>{escape(str(g["away_team"]))} at {escape(str(g["home_team"]))}. Live status, starting-quarterback context and team rosters are shown from the current ESPN game feed.</p><div class="metrics"><div class="metric"><small>KICKOFF</small><strong>{escape(when(g["kickoff"]))}</strong></div><div class="metric"><small>VENUE</small><strong>{escape(str(g["venue"]))}</strong></div><div class="metric"><small>ENVIRONMENT</small><strong>{env}</strong></div></div></div>')
