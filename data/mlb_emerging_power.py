@@ -44,19 +44,39 @@ def _recent_hr(player: dict[str, Any]) -> int:
 
 
 def _candidate_score(player: dict[str, Any]) -> float:
-    """Use the existing GI engine as the base, then reward low-HR hidden upside."""
+    """Rank developing power using GI + current power evidence, not low-HR totals alone."""
     gi = _num(player.get("gi_score"))
     probability = _num(player.get("home_run_probability"))
     season_hr = _season_hr(player)
     recent_hr = _recent_hr(player)
     pa = _season_pa(player)
+    statcast = player.get("statcast", {}) or {}
+    barrel = _num(statcast.get("barrel_rate"))
+    hard_hit = _num(statcast.get("hard_hit_rate"))
+    xslg = _num(statcast.get("xslg"))
+    hr_rank = int(_num(player.get("rank") or player.get("hr_rank")))
 
-    low_hr_bonus = max(0.0, 8.0 - min(season_hr, 8)) * 0.7
-    limited_sample_bonus = 3.0 if 0 < pa <= 130 else 0.0
-    recent_power_bonus = min(recent_hr, 3) * 1.8
+    score = gi + probability * 0.22
+    score += min(recent_hr, 4) * 2.2
+    score += min(max(barrel - 7.0, 0.0), 10.0) * 0.65
+    score += min(max(hard_hit - 38.0, 0.0), 18.0) * 0.22
+    score += min(max(xslg - 0.400, 0.0), 0.250) * 18.0
 
-    return gi + (probability * 0.18) + low_hr_bonus + limited_sample_bonus + recent_power_bonus
+    # Limited samples can still emerge, but this is a modest context bonus rather
+    # than the dominant reason a player qualifies.
+    if 0 < pa <= 130:
+        score += 1.5
 
+    # Encourage genuinely overlooked candidates without banning Top-25 overlap.
+    if hr_rank and hr_rank > 25:
+        score += 3.0
+    elif 1 <= hr_rank <= 10:
+        score -= 1.5
+
+    # Season HR is only a light discovery signal now.
+    if season_hr <= 5:
+        score += 1.0
+    return score
 
 def build_emerging_power_candidates(
     raw_home_run_rankings: list[dict[str, Any]],
@@ -67,8 +87,8 @@ def build_emerging_power_candidates(
     """
     Find overlooked low-HR / limited-sample hitters without using a 'due' heuristic.
 
-    Candidate must have <= 8 season HR and still grade positively in the existing
-    GI home-run engine. Rookie/limited-sample hitters can receive Spring Training
+    Candidate must show current power/matchup evidence in the existing GI home-run engine.
+    Season HR is context, not the primary gate. Rookie/limited-sample hitters can receive Spring Training
     context when MLB exposes it.
     """
     candidates: list[dict[str, Any]] = []
@@ -79,13 +99,26 @@ def build_emerging_power_candidates(
         gi = _num(player.get("gi_score"))
         probability = _num(player.get("home_run_probability"))
 
-        if season_hr > 8:
-            continue
-
-        # Keep the hook evidence-driven: no one is included simply because
-        # their HR total is low.
+        statcast = player.get("statcast", {}) or {}
+        barrel = _num(statcast.get("barrel_rate"))
+        hard_hit = _num(statcast.get("hard_hit_rate"))
+        recent_hr = _recent_hr(player)
         why = [str(x) for x in (player.get("why") or []) if str(x).strip()]
-        if gi < 50 and probability < 8 and not why:
+
+        # Evidence-first gate: GI/probability, recent HR activity, Statcast quality,
+        # or a specific model reason can qualify a player. No "due" heuristic.
+        has_power_evidence = (
+            gi >= 48
+            or probability >= 8
+            or recent_hr >= 1
+            or barrel >= 9
+            or hard_hit >= 42
+            or bool(why)
+        )
+        if not has_power_evidence:
+            continue
+        # Keep the feature truly "emerging" without restricting it to tiny HR totals.
+        if season_hr > 14 and recent_hr < 2 and gi < 58 and probability < 14:
             continue
 
         row = dict(player)
@@ -129,9 +162,9 @@ def emerging_power_explanation(player: dict[str, Any]) -> list[str]:
     probability = _num(player.get("home_run_probability"))
 
     evidence.append(
-        f"Only {season_hr} season HR"
-        + (f" in {pa} PA" if pa else "")
-        + f", but today's GI profile is {gi:.1f}."
+        f"Emerging score is driven by today's GI profile ({gi:.1f})"
+        + (f" across a {pa}-PA season sample" if pa else "")
+        + f"; season HR ({season_hr}) is context, not the reason for inclusion."
     )
 
     if probability:
@@ -144,6 +177,18 @@ def emerging_power_explanation(player: dict[str, Any]) -> list[str]:
         clean = str(reason).strip()
         if clean:
             evidence.append(clean)
+
+
+    statcast = player.get("statcast", {}) or {}
+    barrel = _num(statcast.get("barrel_rate"))
+    hard_hit = _num(statcast.get("hard_hit_rate"))
+    if barrel or hard_hit:
+        pieces = []
+        if barrel:
+            pieces.append(f"{barrel:.1f}% barrel rate")
+        if hard_hit:
+            pieces.append(f"{hard_hit:.1f}% hard-hit rate")
+        evidence.append("Contact quality: " + " · ".join(pieces) + ".")
 
     spring = player.get("spring_training", {}) or {}
     if spring.get("at_bats"):

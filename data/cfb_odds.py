@@ -83,14 +83,38 @@ ODDS_SNAPSHOT = Path("/tmp/sach_cfb_odds_api_events.json")
 
 
 def _secret(name):
-    try:
-        value = st.secrets.get(name)
+    aliases = [name]
+    if name == "SPORTSGAMEODDS_API_KEY":
+        aliases += ["SPORTS_GAME_ODDS_API_KEY", "SPORTSGAMEODDS_KEY", "SGO_API_KEY"]
+    elif name == "THE_ODDS_API_KEY":
+        aliases += ["ODDS_API_KEY", "THEODDSAPI_KEY"]
+
+    for key in aliases:
+        try:
+            value = st.secrets.get(key)
+            if value:
+                return str(value).strip()
+        except Exception:
+            pass
+        value = os.getenv(key)
         if value:
             return str(value).strip()
+
+    # Also support grouped Streamlit secrets such as [sportsgameodds] api_key=...
+    try:
+        groups = {
+            "SPORTSGAMEODDS_API_KEY": ["sportsgameodds", "sports_game_odds", "sgo"],
+            "THE_ODDS_API_KEY": ["the_odds_api", "odds_api"],
+        }.get(name, [])
+        for group in groups:
+            section = st.secrets.get(group)
+            if section:
+                value = section.get("api_key") or section.get("key")
+                if value:
+                    return str(value).strip()
     except Exception:
         pass
-    value = os.getenv(name)
-    return str(value).strip() if value else None
+    return None
 
 
 def _read_json(path):
@@ -503,13 +527,12 @@ def _sgo_event_has_supported_player_prop(event):
         entity = str(odd.get("statEntityID") or "").strip().lower()
         if entity in {"", "all", "home", "away"}:
             continue
-        # Require an actual posted line/price/book record, not only an event shell.
-        if (
-            odd.get("bookOdds") is not None
-            or odd.get("fairOdds") is not None
-            or odd.get("bookOverUnder") is not None
-            or bool(odd.get("byBookmaker"))
-        ):
+        # Require a real player odd. SportsGameOdds payloads vary by plan/version,
+        # so accept any recognized pricing/line/bookmaker container rather than one exact shape.
+        if any(
+            odd.get(key) is not None
+            for key in ("bookOdds", "fairOdds", "bookOverUnder", "overUnder", "line", "price", "odds")
+        ) or bool(odd.get("byBookmaker")) or bool(odd.get("bookmakers")) or bool(odd.get("oddID")):
             return True
     return False
 
