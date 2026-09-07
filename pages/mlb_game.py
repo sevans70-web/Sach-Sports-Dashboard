@@ -188,7 +188,7 @@ st.markdown(
       border-color:#d6b35c!important;color:#f6c84c!important;
     }
     @media(max-width:700px){
-      div[class*="st-key-back_to_mlb_from_game"]{margin:-80px 0 10px auto!important}
+      div[class*="st-key-back_to_mlb_from_game"]{margin:-48px 0 10px auto!important}
     }
     </style>
     """,
@@ -268,21 +268,13 @@ home_players = (
     else home_projected
 )
 
-away_col, home_col = st.columns(2, gap="small")
-with away_col:
-    _roster_column(
-        str(lineup_game.get("away_team") or game.get("away_team") or "Away"),
-        away_players,
-        game,
-        confirmed=away_confirmed,
-    )
-with home_col:
-    _roster_column(
-        str(lineup_game.get("home_team") or game.get("home_team") or "Home"),
-        home_players,
-        game,
-        confirmed=home_confirmed,
-    )
+away_name = str(lineup_game.get("away_team") or game.get("away_team") or "Away")
+home_name = str(lineup_game.get("home_team") or game.get("home_team") or "Home")
+away_tab, home_tab = st.tabs([away_name, home_name])
+with away_tab:
+    _roster_column(away_name, away_players, game, confirmed=away_confirmed)
+with home_tab:
+    _roster_column(home_name, home_players, game, confirmed=home_confirmed)
 
 st.caption(
     "Confirmed lineups replace projections automatically. "

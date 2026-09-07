@@ -59,7 +59,7 @@ def _css() -> None:
         div[class*="st-key-back_to_nfl"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-          div[class*="st-key-back_to_nfl"]{width:max-content!important;margin-top:0!important;margin-left:0!important;margin-bottom:8px!important}
+          div[class*="st-key-back_to_nfl"]{display:flex!important;justify-content:flex-end!important;width:auto!important;margin:-48px 0 8px auto!important}
           .nfl-games-hero{padding:12px 13px;margin-top:2px}.nfl-games-hero h1{font-size:1.24rem}.nfl-games-hero p{margin-top:7px;font-size:.79rem}
           .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}
           div[class*="st-key-nfl_game_select_"] button{min-height:64px!important;padding:9px 47px!important}
@@ -144,6 +144,9 @@ def _player_buttons(team: str, matchup: str, key_prefix: str) -> None:
         st.info("Player roster is temporarily unavailable.")
         return
     players = roster[roster["team"].astype(str).str.upper().eq(team.upper())].copy()
+    pos_order = {"QB":0,"RB":1,"WR":2,"TE":3,"DE":4,"DT":4,"DL":4,"NT":4,"LB":5,"OLB":5,"ILB":5,"CB":6,"DB":6,"S":7,"FS":7,"SS":7}
+    players["_pos_order"] = players["position"].map(pos_order).fillna(50)
+    players = players.sort_values(["_pos_order","player_name"], kind="stable")
     if players.empty:
         return
     offense = players[players["position"].isin(["QB", "RB", "WR", "TE"])].copy()
@@ -196,7 +199,7 @@ def _render_game_intelligence(game: pd.Series, game_id: str) -> None:
 
 def show() -> None:
     _css()
-    if st.button("← NFL Intelligence Center", key="back_to_nfl"):
+    if st.button("← Back to NFL", key="back_to_nfl"):
         st.switch_page("pages/nfl.py")
 
     phase = str(st.session_state.get("nfl_active_phase") or "REG")

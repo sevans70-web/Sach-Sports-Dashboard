@@ -34,7 +34,7 @@ st.markdown(
       border-color:#d6b35c!important;color:#f6c84c!important;
     }
     @media(max-width:700px){
-      div[class*="st-key-back_to_mlb_from_slate"]{margin:-80px 0 10px auto!important}
+      div[class*="st-key-back_to_mlb_from_slate"]{margin:-48px 0 10px auto!important}
       .mlb-slate-page-head{margin-top:.2rem!important}
     }
     </style>

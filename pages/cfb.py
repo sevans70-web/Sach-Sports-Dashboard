@@ -10,6 +10,7 @@ import streamlit as st
 
 from data.cfb_intelligence import build_cfb_rankings
 from data.cfb_odds import get_cfb_odds_feed_status
+from components.cfb_prediction_performance import render_cfb_prediction_performance
 
 CFB_SEASON = 2026
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
@@ -301,14 +302,7 @@ def show() -> None:
         """
     )
 
-    _render_html(
-        """
-        <div class="cfb-performance">
-          <strong>📊 Prediction Performance</strong>
-          <span>CFB grading will populate as model-backed prop predictions are recorded and games finish. No placeholder win rate is shown.</span>
-        </div>
-        """
-    )
+    render_cfb_prediction_performance()
 
     _render_rankings()
 
