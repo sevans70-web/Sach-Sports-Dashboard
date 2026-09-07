@@ -197,11 +197,22 @@ def _styles() -> None:
         /* Use the same native Streamlit segmented control as HR Intelligence.
            Only force one-row sizing; do not overwrite native selected-state
            colors, so the active period remains obvious. */
+        div[class*="st-key-mlb_batter_performance_period"],
+        div[class*="st-key-mlb_pitcher_performance_period"],
+        div[class*="st-key-mlb_emerging_power_period"],
         div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"],
         div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"],
         div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"]{
             width:100%!important;
-            max-width:100%!important;
+            max-width:none!important;
+        }
+        div[class*="st-key-mlb_batter_performance_period"] [data-baseweb="button-group"],
+        div[class*="st-key-mlb_pitcher_performance_period"] [data-baseweb="button-group"],
+        div[class*="st-key-mlb_emerging_power_period"] [data-baseweb="button-group"]{
+            display:grid!important;
+            grid-template-columns:repeat(5,minmax(0,1fr))!important;
+            width:100%!important;
+            max-width:none!important;
         }
         div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"] > div,
         div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"] > div,
@@ -221,9 +232,11 @@ def _styles() -> None:
             min-width:0!important;
             width:100%!important;
             white-space:nowrap!important;
-            padding-left:3px!important;
-            padding-right:3px!important;
-            font-size:.72rem!important;
+            padding-left:4px!important;
+            padding-right:4px!important;
+            font-size:.84rem!important;
+            min-height:46px!important;
+            flex:1 1 20%!important;
         }
 
         @media(max-width:700px){
@@ -248,11 +261,11 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"] button,
             div[class*="st-key-mlb_pitcher_performance_period"] button,
             div[class*="st-key-mlb_emerging_power_period"] button{
-                font-size:.72rem!important;
+                font-size:.80rem!important;
                 padding-left:2px!important;
                 padding-right:2px!important;
-                letter-spacing:-.015em!important;
-                min-height:42px!important;
+                letter-spacing:-.02em!important;
+                min-height:46px!important;
             }
             div[class*="st-key-mlb_batter_performance_period"] button p,
             div[class*="st-key-mlb_pitcher_performance_period"] button p,
@@ -260,8 +273,8 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"] button span,
             div[class*="st-key-mlb_pitcher_performance_period"] button span,
             div[class*="st-key-mlb_emerging_power_period"] button span{
-                font-size:.72rem!important;
-                letter-spacing:-.015em!important;
+                font-size:.80rem!important;
+                letter-spacing:-.02em!important;
                 overflow:visible!important;
                 text-overflow:clip!important;
             }
