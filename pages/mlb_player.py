@@ -262,6 +262,9 @@ st.markdown(
 [data-testid="stElementToolbar"] button[aria-label*="download" i],
 [data-testid="stElementToolbar"] button[title*="download" i],
 [data-testid="stElementToolbar"] button:nth-child(2){display:none!important}
+
+/* Hide the chart download action. Streamlit's chart toolbar is table, download, fullscreen. */
+[data-testid="stElementToolbar"] button:nth-of-type(2){display:none!important;}
 </style>
     """,
     unsafe_allow_html=True,

@@ -12,7 +12,7 @@ ROSTER="https://site.api.espn.com/apis/site/v2/sports/football/college-football/
 
 def html(x): st.markdown(" ".join(line.strip() for line in x.splitlines() if line.strip()),unsafe_allow_html=True)
 
-@st.cache_data(ttl=300,show_spinner=False)
+@st.cache_data(ttl=900,show_spinner=False)
 def games():
     # ESPN defaults can collapse to the current day. Ask explicitly for the
     # upcoming two-week window so Thursday/Saturday and next-week games remain visible.
@@ -40,7 +40,7 @@ def games():
         df=df[local>=today].copy().sort_values(["kickoff","game_id"],kind="stable")
     return df
 
-@st.cache_data(ttl=900,show_spinner=False)
+@st.cache_data(ttl=3600,show_spinner=False)
 def roster(team_id):
     if not team_id:return []
     try:
@@ -103,10 +103,17 @@ def _matchup_intelligence(g) -> str:
         ranking_note=f" {home} enters as the ranked side and also owns the home-field setting."
     elif ar and hr:
         ranking_note=f" This is a ranked matchup: No. {int(ar)} versus No. {int(hr)}."
-    qb_note=f" The listed quarterback matchup is {aq} for {away} against {hq} for {home}."
+    qb_note=f" Quarterback watch: {aq} ({away}) versus {hq} ({home})."
     state=str(g.get("state") or "pre").lower()
-    timing=" The game has not started, so the read is pregame context rather than live-game analysis." if state=="pre" else (" The game is live, so score and game-state context should be weighed with the pregame matchup." if state=="in" else " The game is final; use the completed result when reviewing the prediction record.")
-    return f"{away_label} travels to {home_label} at {g.get('venue') or 'the listed venue'}.{ranking_note}{qb_note}{timing}"
+    if ar and hr:
+        matchup_read=f"The ranking gap is {abs(int(ar)-int(hr))} spots, so neither side should be treated as a routine matchup on ranking alone."
+    elif ar or hr:
+        ranked_team=away if ar else home
+        matchup_read=f"{ranked_team} is the ranked side; the key pregame question is whether that ranking edge holds once quarterback play and home field are accounted for."
+    else:
+        matchup_read="Neither team carries a current Top-25 marker in this feed, so quarterback execution, turnover control and home field carry more weight than national ranking."
+    timing=" Pregame: use this as matchup context until live possession and score information exists." if state=="pre" else (" Live: weigh the current score/clock with the pregame matchup rather than treating the pregame read as static." if state=="in" else " Final: use the completed result when grading the prediction record.")
+    return f"{away_label} at {home_label}, {g.get('venue') or 'venue TBD'}.{ranking_note}{qb_note} {matchup_read}{timing}"
 
 def show():
     css()

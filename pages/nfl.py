@@ -102,12 +102,12 @@ def _inject_nfl_css() -> None:
         div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] span{color:#19d978!important}
         div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
 
-        .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 48px;gap:9px;align-items:start;width:100%;min-height:118px;padding:11px 9px;border-left:4px solid #19d978;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 56px;gap:9px;align-items:start;width:100%;min-height:118px;padding:11px 9px;border-left:4px solid #19d978;background:#0d0f10;color:#fff;box-sizing:border-box}
         .nfl-rank-number{text-align:center;padding-top:2px}.nfl-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}.nfl-rank-movement{display:block;margin-top:7px;color:#19d978;font-size:.58rem;font-weight:900;white-space:nowrap}
         .nfl-rank-avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;font-weight:900;color:#fff}
         .nfl-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
-        .nfl-rank-copy{min-width:0}.nfl-rank-name{display:block;color:#fff;font-size:.94rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nfl-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.nfl-rank-proj{color:#f6c84c;font-size:.76rem;font-weight:850;margin-top:4px}.nfl-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
-        .nfl-rank-score{text-align:right;padding-top:3px}.nfl-rank-score small{display:block;color:#8f959d;font-size:.47rem;font-weight:800;letter-spacing:0;white-space:nowrap}.nfl-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:900;white-space:nowrap;letter-spacing:0;margin-top:4px}
+        .nfl-team-logo{width:15px;height:15px;object-fit:contain;vertical-align:-3px;margin-right:4px}.nfl-rank-copy{min-width:0}.nfl-rank-name{display:block;color:#fff;font-size:.94rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nfl-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.nfl-rank-proj{color:#f6c84c;font-size:.76rem;font-weight:850;margin-top:4px}.nfl-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
+        .nfl-rank-score{width:56px;min-width:56px;text-align:right;padding-top:3px;line-height:1}.nfl-rank-score small{display:block;color:#8f959d;font-size:.47rem;font-weight:800;letter-spacing:0;white-space:nowrap;line-height:1}.nfl-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:900;white-space:nowrap;letter-spacing:0;margin-top:4px;line-height:1}
         .nfl-lineup-status{display:inline-block;margin-top:6px;padding:3px 7px;border-radius:999px;font-size:.57rem;font-weight:900;line-height:1.08;white-space:nowrap}
         .nfl-lineup-confirmed{color:#d8ffe8;background:rgba(25,217,120,.14);border:1px solid rgba(25,217,120,.62)}
         .nfl-lineup-projected{color:#ffe7a3;background:rgba(214,179,92,.10);border:1px solid rgba(214,179,92,.58)}
@@ -271,6 +271,7 @@ def _apply_movement(df: pd.DataFrame, prop: str) -> pd.DataFrame:
     return result
 
 
+@st.cache_data(ttl=900, show_spinner=False)
 def _build_prop(prop: str, schedule: pd.DataFrame, week: int | None) -> pd.DataFrame:
     config = PROP_CATALOG[prop]
     try:
@@ -423,6 +424,13 @@ def _lineup_status_html(row: pd.Series) -> str:
     return '<span class="nfl-lineup-status nfl-lineup-projected">◌ Projected</span>'
 
 
+def _nfl_logo_url(team: str) -> str:
+    code = str(team or "").strip().upper()
+    mapping = {"WAS":"wsh", "WSH":"wsh", "LAR":"lar", "LA":"lar", "LV":"lv", "JAX":"jax"}
+    slug = mapping.get(code, code.lower())
+    return f"https://a.espncdn.com/i/teamlogos/nfl/500/{slug}.png" if slug else ""
+
+
 def _render_rank_header(row: pd.Series, prop: str) -> None:
     name = str(row.get("player_name") or "Player")
     team = str(row.get("team") or "")
@@ -451,7 +459,7 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
           <div class="nfl-rank-avatar">{avatar}</div>
           <div class="nfl-rank-copy">
             <strong class="nfl-rank-name">{escape(name)}</strong>
-            <div class="nfl-rank-meta"><b>{escape(team)}</b> · {escape(game)}</div>
+            <div class="nfl-rank-meta"><img class="nfl-team-logo" src="{escape(_nfl_logo_url(team))}" alt="{escape(team)} logo"><b>{escape(team)}</b> · {escape(game)}</div>
             <div class="nfl-rank-market">🕒 {escape(kickoff)}</div>
             <div class="nfl-rank-proj">{escape(projection)}</div>
             <div class="nfl-rank-market">{escape(market_mode)}</div>

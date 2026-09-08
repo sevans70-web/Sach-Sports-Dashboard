@@ -527,7 +527,7 @@ def open_ranked_player_profile(player: dict) -> None:
     st.switch_page("pages/mlb_player.py")
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def attach_results_to_rankings(
     rankings: list[dict],
     category: str,
@@ -646,7 +646,7 @@ def load_emerging_power_candidates(schedule_date: str) -> list[dict]:
     )
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def load_live_rankings() -> dict:
     """Read today's completed MLB batter rankings from Supabase."""
     return load_batter_rankings_from_supabase(limit=25)
@@ -3153,6 +3153,20 @@ st.markdown(
     }
 
 </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# Final MLB-only mobile geometry. Keep the shared menu position, but restore
+# the same breathing room above the hero that NFL/CFB have.
+st.markdown(
+    """
+    <style>
+    @media(max-width:700px){
+        .gi-hero{margin-top:1.35rem!important;}
+    }
+    </style>
     """,
     unsafe_allow_html=True,
 )

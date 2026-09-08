@@ -32,7 +32,7 @@ def _render_html(html: str) -> None:
     st.markdown(clean, unsafe_allow_html=True)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=900, show_spinner=False)
 def _load_scoreboard() -> pd.DataFrame:
     start = datetime.now(TORONTO_TIMEZONE).date()
     end = start + timedelta(days=14)
@@ -116,7 +116,7 @@ def _inject_css() -> None:
         div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#d8b35f!important;border-color:#19d978!important;background:#0b1711!important}
         div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
 
-        .cfb-rank-card{display:grid;grid-template-columns:36px 58px minmax(0,1fr) 48px;gap:8px;align-items:start;width:100%;min-height:118px;padding:10px 8px;border-left:4px solid #d8b35f;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .cfb-rank-card{display:grid;grid-template-columns:36px 58px minmax(0,1fr) 56px;gap:8px;align-items:start;width:100%;min-height:118px;padding:10px 8px;border-left:4px solid #d8b35f;background:#0d0f10;color:#fff;box-sizing:border-box}
         .cfb-rank-avatar{width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;color:#fff;font-weight:900}
         .cfb-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
         .cfb-team-logo{width:15px;height:15px;object-fit:contain;vertical-align:-3px;margin-right:4px}
@@ -125,7 +125,7 @@ def _inject_css() -> None:
         .cfb-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.cfb-rank-kickoff{color:#a7abb2;font-size:.67rem;margin-top:3px}
         .cfb-rank-proj{color:#d8b35f;font-size:.77rem;font-weight:850;margin-top:4px}
         .cfb-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
-        .cfb-rank-score{width:48px;min-width:48px;text-align:right;padding-top:3px;line-height:1}.cfb-rank-score small{display:block;color:#8f959d;font-size:.47rem;font-weight:800;white-space:nowrap}.cfb-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:900;margin-top:4px;line-height:1}
+        .cfb-rank-score{width:56px;min-width:56px;text-align:right;padding-top:3px;line-height:1}.cfb-rank-score small{display:block;color:#8f959d;font-size:.47rem;font-weight:800;white-space:nowrap}.cfb-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:900;margin-top:4px;line-height:1}
         .cfb-intel-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px 0}
         .cfb-intel-metric{background:#111315;border:1px solid #2c3034;border-radius:10px;padding:8px 7px}.cfb-intel-metric span{display:block;color:#9fa4aa;font-size:.56rem;font-weight:900}.cfb-intel-metric strong{display:block;color:#fff;font-size:.78rem;margin-top:3px}
         .cfb-why{margin:8px 0 4px;padding:10px;border-left:3px solid #19d978;background:#131016;color:#d6d9dd;font-size:.74rem;line-height:1.4}.cfb-why b{display:block;color:#d8b35f;margin-bottom:4px}
@@ -134,7 +134,7 @@ def _inject_css() -> None:
             .block-container{padding-left:.78rem!important;padding-right:.78rem!important}
             .cfb-hero-title{font-size:1.28rem!important}.cfb-hero-subtitle{font-size:.82rem!important}
             .cfb-snapshot-card{min-height:90px;padding:10px 8px}.cfb-snapshot-card strong{font-size:1.18rem}
-            .cfb-rank-card{grid-template-columns:32px 54px minmax(0,1fr) 45px;gap:7px;padding:10px 7px}.cfb-rank-avatar{width:54px;height:54px}.cfb-rank-score{width:45px;min-width:45px}
+            .cfb-rank-card{grid-template-columns:32px 54px minmax(0,1fr) 45px;gap:7px;padding:10px 7px}.cfb-rank-avatar{width:54px;height:54px}.cfb-rank-score{width:56px;min-width:56px}
             .cfb-intel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
         }
         </style>
@@ -235,18 +235,18 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
         st.session_state[detail_key] = not st.session_state.get(detail_key, False)
         st.rerun()
 
-    if st.button("Open full player card", key=f"{detail_key}_open", use_container_width=True):
-        _open_cfb_player(row, prop)
-
     if st.session_state.get(detail_key):
+        if st.button("Open full player card", key=f"{detail_key}_open", use_container_width=True):
+            _open_cfb_player(row, prop)
         per_game = row.get("per_game")
         stats_year = row.get("stats_season")
+        games_played = row.get("games_played")
         verified = bool(row.get("stats_verified", False))
         metrics = [
             ("MODEL", f"{float(model):.1f}%" if model is not None and not pd.isna(model) else "—"),
-            ("SOURCE", "ESPN Model" if str(row.get("line_type") or "market") == "projection" else (f"Market {float(market):.1f}%" if market is not None and not pd.isna(market) else "Market")),
             ("PER GAME", f"{float(per_game):.1f}" if per_game is not None and not pd.isna(per_game) else "—"),
-            ("DATA", f"{int(stats_year)}" if verified and stats_year else "Market"),
+            ("GAMES", f"{int(float(games_played))}" if games_played is not None and not pd.isna(games_played) else "—"),
+            ("SEASON", f"{int(stats_year)}" if verified and stats_year else "—"),
         ]
         metric_html = "".join(
             f'<div class="cfb-intel-metric"><span>{escape(label)}</span><strong>{escape(value)}</strong></div>'

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from html import escape
+import re
 from zoneinfo import ZoneInfo
 import pandas as pd
+import requests
 import streamlit as st
 
 TZ = ZoneInfo("America/Toronto")
@@ -11,6 +13,73 @@ TZ = ZoneInfo("America/Toronto")
 def _html(value: str) -> None:
     st.markdown(" ".join(line.strip() for line in value.splitlines() if line.strip()), unsafe_allow_html=True)
 
+
+
+TEAM_SCHEDULE = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/{team_id}/schedule"
+GAME_SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary"
+
+
+def _prop_from_boxscore(summary: dict, athlete_id: str, prop: str):
+    for team_block in ((summary.get("boxscore") or {}).get("players") or []):
+        for stat_group in team_block.get("statistics") or []:
+            labels = [str(x) for x in (stat_group.get("labels") or [])]
+            norm = [x.upper().replace(" ", "") for x in labels]
+            for athlete_row in stat_group.get("athletes") or []:
+                athlete = athlete_row.get("athlete") or {}
+                if str(athlete.get("id") or "") != str(athlete_id or ""):
+                    continue
+                vals = athlete_row.get("stats") or []
+                data = {norm[i]: vals[i] for i in range(min(len(norm), len(vals)))}
+                def num(key):
+                    try: return float(str(data.get(key, "")).replace(",", ""))
+                    except Exception: return None
+                if prop == "Passing Yards": return num("YDS") if "C/ATT" in data or "CMP/ATT" in data else None
+                if prop == "Pass Incompletions":
+                    pair = data.get("C/ATT") or data.get("CMP/ATT")
+                    m = re.search(r"(\d+)\s*/\s*(\d+)", str(pair or ""))
+                    return float(m.group(2))-float(m.group(1)) if m else None
+                if prop == "Rushing Yards" and "CAR" in data: return num("YDS")
+                if prop == "Receiving Yards" and "REC" in data: return num("YDS")
+                if prop == "Receptions" and "REC" in data: return num("REC")
+                if prop in {"Anytime TD", "First TD"}:
+                    td = num("TD")
+                    return td
+    return None
+
+
+@st.cache_data(ttl=21600, show_spinner=False)
+def _cfb_recent_games(team_id: str, athlete_id: str, prop: str, season: int) -> list[dict]:
+    if not team_id or not athlete_id:
+        return []
+    try:
+        r = requests.get(TEAM_SCHEDULE.format(team_id=team_id), params={"season": season}, timeout=12)
+        r.raise_for_status()
+        events = r.json().get("events") or []
+    except Exception:
+        return []
+    completed=[]
+    for e in events:
+        stype=(e.get("status") or {}).get("type") or {}
+        if not (stype.get("completed") or str(stype.get("state") or "").lower()=="post"):
+            continue
+        completed.append(e)
+    completed=completed[-10:]
+    rows=[]
+    for e in completed:
+        event_id=str(e.get("id") or "")
+        if not event_id: continue
+        try:
+            r=requests.get(GAME_SUMMARY, params={"event":event_id}, timeout=12); r.raise_for_status(); payload=r.json()
+            value=_prop_from_boxscore(payload, athlete_id, prop)
+        except Exception:
+            value=None
+        if value is None: continue
+        date=pd.to_datetime(e.get("date"), errors="coerce", utc=True)
+        comp=(e.get("competitions") or [{}])[0]; competitors=comp.get("competitors") or []
+        names=[str((x.get("team") or {}).get("abbreviation") or (x.get("team") or {}).get("shortDisplayName") or "") for x in competitors]
+        opponent=" vs ".join([x for x in names if x])
+        rows.append({"date":date, "opponent":opponent, "value":float(value)})
+    return rows
 
 def _kickoff(value) -> str:
     stamp = pd.to_datetime(value, errors="coerce", utc=True)
@@ -34,6 +103,9 @@ st.markdown(
 .cfb-intel{padding:11px;border:1px solid rgba(214,179,92,.52);border-radius:10px;background:#101112;color:#d9dbde;font-size:.76rem;line-height:1.45;margin-top:10px}.cfb-intel b{color:#f6c84c}
 div[class*="st-key-back_cfb_player"]{width:max-content!important;margin-bottom:8px!important}div[class*="st-key-back_cfb_player"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
 @media(max-width:700px){.block-container{padding-left:.85rem!important;padding-right:.85rem!important}.cfb-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}.cfb-player-photo,.cfb-player-fallback{width:60px;height:60px}.cfb-player-copy h2{font-size:1.1rem}.cfb-inline-logo{width:22px;height:22px}.cfb-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Hide the chart download action. Streamlit's chart toolbar is table, download, fullscreen. */
+[data-testid="stElementToolbar"] button:nth-of-type(2){display:none!important;}
 </style>
 """,
     unsafe_allow_html=True,
@@ -86,4 +158,18 @@ metrics = [
 ]
 _html('<div class="cfb-metrics">'+''.join(f'<div class="cfb-metric"><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k,v in metrics)+'</div>')
 _html(f'<div class="cfb-intel"><b>Why This Player Ranks Here</b><br>{escape(why)}</div>')
-st.caption("Game-by-game CFB trend history will appear here when verified player game logs are available; no history is fabricated.")
+trend_window = st.segmented_control(
+    "CFB history", ["Last 5", "Last 10"], default="Last 5", key=f"cfb_history_{name}_{prop}", label_visibility="collapsed"
+) or "Last 5"
+rows = _cfb_recent_games(str(player.get("team_id") or ""), str(player.get("espn_athlete_id") or player.get("player_id") or ""), prop, int(stats_year or 2026))
+limit = 5 if trend_window == "Last 5" else 10
+rows = rows[-limit:]
+if rows:
+    st.markdown(f"**{trend_window} Games · {escape(prop)}**")
+    chart = pd.DataFrame({
+        "Game": [r["date"].tz_convert(TZ).strftime("%m/%d/%y") if pd.notna(r["date"]) else "—" for r in rows],
+        prop: [r["value"] for r in rows],
+    }).set_index("Game")
+    st.bar_chart(chart, use_container_width=True)
+else:
+    st.caption("Verified game-by-game history is not available for this player/market yet.")
