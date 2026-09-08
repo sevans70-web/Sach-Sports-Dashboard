@@ -287,7 +287,21 @@ def _styles() -> None:
                 text-overflow:clip!important;
             }
         }
-        </style>
+        
+        .mlb-overall-title{
+            color:#fff;font-weight:950;font-size:1.35rem;line-height:1.12;
+            margin:.35rem 0 .45rem;white-space:nowrap;
+        }
+        @media(max-width:700px){
+            .mlb-overall-title{font-size:1.08rem!important;white-space:nowrap!important;letter-spacing:-.01em!important;}
+            div[class*="st-key-mlb_batter_performance_period"] [role="radiogroup"]{
+                display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;width:100%!important;max-width:100%!important;
+            }
+            div[class*="st-key-mlb_batter_performance_period"] button{
+                width:100%!important;min-width:0!important;padding:.40rem .22rem!important;
+            }
+        }
+</style>
         """,
         unsafe_allow_html=True,
     )
@@ -420,7 +434,7 @@ def render_prediction_performance_tracker(
     batter_tab, pitcher_tab, emerging_tab = st.tabs(["🥎 Batter", "⚾ Pitcher", "🔥 Emerging Power"])
 
     with batter_tab:
-        st.markdown("#### 🌐 Overall MLB Batter Performance")
+        st.markdown('<div class="mlb-overall-title">🌐 Overall MLB Batter Performance</div>', unsafe_allow_html=True)
         period = _period_control("mlb_batter_performance_period")
         _render_overall(batter_history, period)
         tabs = st.tabs(

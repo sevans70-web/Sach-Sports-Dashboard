@@ -17,7 +17,7 @@ def _avatar_url(player_id: Any, size: int = 180) -> str:
         return ""
     return (
         "https://img.mlbstatic.com/mlb-photos/image/upload/"
-        f"c_thumb,g_face,w_{size},h_{size},b_rgb:30343a,q_auto:best/"
+        f"c_fill,g_center,w_{size},h_{size},b_rgb:30343a,q_auto:best/"
         "d_people:generic:headshot:67:current.png/"
         f"v1/people/{pid}/headshot/67/current"
     )
@@ -139,7 +139,7 @@ def render_compact_card_css() -> None:
 
         .mlb-rank-card{
             display:grid!important;
-            grid-template-columns:36px 72px minmax(0,1fr) 48px!important;
+            grid-template-columns:36px 64px minmax(0,1fr) 52px!important;
             gap:8px!important;
             align-items:start!important;
             width:100%!important;
@@ -183,9 +183,9 @@ def render_compact_card_css() -> None:
         .mlb-rank-avatar{
             position:relative!important;
             display:block!important;
-            width:72px!important;height:72px!important;
-            min-width:72px!important;min-height:72px!important;
-            max-width:72px!important;max-height:72px!important;
+            width:64px!important;height:64px!important;
+            min-width:64px!important;min-height:64px!important;
+            max-width:64px!important;max-height:64px!important;
             margin:0!important;padding:0!important;
             border-radius:50%!important;
             overflow:hidden!important;
@@ -430,7 +430,7 @@ def render_compact_card_css() -> None:
             .mlb-rank-slot-reason{height:34px!important;line-height:16px!important}
             .mlb-rank-slot-status{height:23px!important}
             .mlb-rank-slot-result{height:19px!important;line-height:19px!important;font-size:.72rem!important}
-            .mlb-rank-score{width:45px!important;min-width:45px!important}
+            .mlb-rank-score{width:52px!important;min-width:52px!important}
         }
         </style>
         """,
