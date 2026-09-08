@@ -25,8 +25,7 @@ FOUNDATION_SEASON = 2025
 
 PROP_STAT_KEYS = {
     "Passing Yards": ("passingYards", "passing_yards", "passYards", "YDS"),
-    "Passing Attempts": ("passingAttempts", "passing_attempts", "passAttempts", "ATT"),
-    "Completions": ("completions", "passingCompletions", "CMP"),
+    "Pass Incompletions": ("passingIncompletions", "passIncompletions", "incompletions", "INC"),
     "Rushing Yards": ("rushingYards", "rushing_yards", "rushYards", "YDS"),
     "Rushing Attempts": ("rushingAttempts", "rushing_attempts", "carries", "CAR"),
     "Receiving Yards": ("receivingYards", "receiving_yards", "recYards", "YDS"),
@@ -37,8 +36,7 @@ PROP_STAT_KEYS = {
 
 LEADER_ALIASES = {
     "Passing Yards": ("passingYards",),
-    "Passing Attempts": ("passingAttempts", "passAttempts"),
-    "Completions": ("passingCompletions", "completions"),
+    "Pass Incompletions": ("passingIncompletions", "passIncompletions", "incompletions"),
     "Rushing Yards": ("rushingYards",),
     "Rushing Attempts": ("rushingAttempts", "carries"),
     "Receiving Yards": ("receivingYards",),
@@ -52,8 +50,7 @@ LEADER_ALIASES = {
 # from each athlete's ESPN season statistics.
 FALLBACK_LEADER_POOLS = {
     "Passing Yards": ("Passing Yards",),
-    "Passing Attempts": ("Passing Yards",),
-    "Completions": ("Passing Yards",),
+    "Pass Incompletions": ("Passing Yards",),
     "Rushing Yards": ("Rushing Yards",),
     "Rushing Attempts": ("Rushing Yards",),
     "Receiving Yards": ("Receiving Yards",),
@@ -257,6 +254,15 @@ def _extract_named_stat(payload, wanted_keys):
 
 
 def _extract_prop_total(payload, prop):
+    if prop == "Pass Incompletions":
+        direct = _extract_named_stat(payload, PROP_STAT_KEYS[prop])
+        if direct is not None:
+            return direct
+        attempts = _extract_named_stat(payload, ("passingAttempts", "passing_attempts", "passAttempts", "ATT"))
+        completions = _extract_named_stat(payload, ("completions", "passingCompletions", "CMP"))
+        if attempts is not None and completions is not None and attempts >= completions:
+            return attempts - completions
+        return None
     if prop in {"Anytime TD", "First TD"}:
         total = _extract_named_stat(payload, ("totalTouchdowns", "total_tds", "TD"))
         rush = _extract_named_stat(payload, ("rushingTouchdowns", "rushTD", "rushing_tds"))
@@ -314,8 +320,8 @@ def _why_market(prop, verified, season, total, games, per_game, line, model_prob
 def _leader_candidates(prop):
     """Build model-only candidates from ESPN stats when sportsbook markets are unavailable.
 
-    Secondary props (attempts, completions, receptions, carries) intentionally use
-    the matching yardage leader pool to discover players, then pull the requested
+    Secondary props (pass incompletions and receptions) intentionally use
+    the matching yardage leader pool to discover players, then pull or derive the requested
     stat from the athlete's ESPN season stat page. This avoids empty tabs when ESPN
     does not expose a national leader category for that secondary stat.
     """
