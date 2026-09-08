@@ -222,6 +222,9 @@ pages = {
         st.Page("pages/mlb_game.py", title="MLB GAME", icon="⚾"),
         st.Page("pages/mlb_player.py", title="MLB PLAYER", icon="⚾"),
         st.Page("pages/wnba.py", title="WNBA", icon="🏀"),
+        # Internal WNBA drill-down pages. Registered for st.switch_page only.
+        st.Page("pages/wnba_games.py", title="WNBA GAMES", icon="🏀"),
+        st.Page("pages/wnba_player.py", title="WNBA PLAYER", icon="🏀"),
         st.Page("pages/soccer.py", title="SOCCER", icon="⚽"),
         st.Page("pages/nfl.py", title="NFL", icon="🏈"),
         # Internal NFL drill-down pages. Registered for st.switch_page only.
