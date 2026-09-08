@@ -375,6 +375,15 @@ st.markdown(
     """
 <style>
 @media (max-width:700px){
+  /* CSS-only markdown blocks must not create visible vertical gaps. */
+  div[data-testid="stElementContainer"]:has(style) {
+      margin:0 !important;
+      padding:0 !important;
+      min-height:0 !important;
+      height:0 !important;
+      overflow:visible !important;
+  }
+
   /* Same compact menu on every sport page. */
   div[data-testid="stPopover"] > button,
   div[data-testid="stPopover"] button {
@@ -390,10 +399,10 @@ st.markdown(
       transform:translateY(-6px) !important;
   }
 
-  /* CFB is the reference. Pull only MLB + NFL up to the same mobile start line. */
+  /* Do not pull heroes with negative margins. CFB's natural flow is the reference. */
   div[data-testid="stElementContainer"]:has(.gi-hero),
   div[data-testid="stElementContainer"]:has(.nfl-hero) {
-      margin-top:-8.25rem !important;
+      margin-top:0 !important;
   }
 
   /* Keep all three heroes on the same compact CFB geometry. */
