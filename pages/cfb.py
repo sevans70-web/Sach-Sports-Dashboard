@@ -9,7 +9,7 @@ import requests
 import streamlit as st
 
 from data.cfb_intelligence import build_cfb_rankings
-from data.cfb_odds import get_cfb_odds_feed_status, load_cfb_prop_eligible_games, cfb_game_has_player_props
+from data.cfb_odds import get_cfb_odds_feed_status
 from components.cfb_prediction_performance import render_cfb_prediction_performance
 
 CFB_SEASON = 2026
@@ -272,17 +272,9 @@ def show() -> None:
         st.switch_page("pages/cfb_games.py")
 
     try:
+        # The CFB schedule is an ESPN feature and must remain available even when
+        # the sportsbook player-prop feed is empty or rate-limited.
         games = _load_scoreboard()
-        eligible = load_cfb_prop_eligible_games()
-        if not games.empty:
-            games = games[
-                games.apply(
-                    lambda row: cfb_game_has_player_props(
-                        row.get("away_team"), row.get("home_team"), eligible
-                    ),
-                    axis=1,
-                )
-            ].copy()
     except Exception:
         games = pd.DataFrame()
 

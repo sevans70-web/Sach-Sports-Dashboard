@@ -5,8 +5,6 @@ import pandas as pd
 import requests
 import streamlit as st
 
-from data.cfb_odds import load_cfb_prop_eligible_games, cfb_game_has_player_props
-
 TZ=ZoneInfo("America/Toronto")
 SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
 ROSTER="https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/{team_id}/roster"
@@ -78,14 +76,13 @@ def show():
     if st.button("← Back to CFB",key="back_to_cfb"): st.switch_page("pages/cfb.py")
     html('<div class="cfb-hero"><h1>🏈 College Football Games</h1><p>Choose a matchup for live game context, Game Intelligence and either team roster.</p></div>')
     try:
+        # Keep the game slate independent from sportsbook availability.
+        # SportsGameOdds powers player props; ESPN powers games, live status and rosters.
         df=games()
-        eligible=load_cfb_prop_eligible_games()
-        if not df.empty:
-            df=df[df.apply(lambda row: cfb_game_has_player_props(row.get("away_team"),row.get("home_team"),eligible),axis=1)].copy()
     except Exception:
-        st.error("The CFB schedule or player-prop feed is temporarily unavailable."); return
+        st.error("The CFB schedule is temporarily unavailable."); return
     if df.empty:
-        st.info("No CFB games with supported player props are currently posted."); return
+        st.info("No upcoming CFB games are currently listed."); return
     selected=st.session_state.get("cfb_selected_game")
     df["day"]=df["kickoff"].dt.tz_convert(TZ).dt.normalize()
     for di,d in enumerate(df["day"].drop_duplicates()):
