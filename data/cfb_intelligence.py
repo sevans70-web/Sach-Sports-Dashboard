@@ -47,6 +47,21 @@ LEADER_ALIASES = {
     "First TD": ("totalTouchdowns", "rushingTouchdowns", "receivingTouchdowns"),
 }
 
+# ESPN does not publish a standalone national leader category for every prop.
+# Use a verified position-appropriate leader pool, then read the requested stat
+# from each athlete's ESPN season statistics.
+FALLBACK_LEADER_POOLS = {
+    "Passing Yards": ("Passing Yards",),
+    "Passing Attempts": ("Passing Yards",),
+    "Completions": ("Passing Yards",),
+    "Rushing Yards": ("Rushing Yards",),
+    "Rushing Attempts": ("Rushing Yards",),
+    "Receiving Yards": ("Receiving Yards",),
+    "Receptions": ("Receiving Yards",),
+    "Anytime TD": ("Anytime TD", "Rushing Yards", "Receiving Yards"),
+    "First TD": ("Anytime TD", "Rushing Yards", "Receiving Yards"),
+}
+
 
 def _norm(value):
     text = unicodedata.normalize("NFKD", str(value or ""))
@@ -136,7 +151,7 @@ def _athlete_identity(athlete_id, season):
 @st.cache_data(ttl=1800, show_spinner=False)
 def _upcoming_team_map():
     now = datetime.now(timezone.utc)
-    end = now + timedelta(days=9)
+    end = now + timedelta(days=14)
     try:
         r = requests.get(
             ESPN_SCOREBOARD,
@@ -167,6 +182,39 @@ def _upcoming_team_map():
         if aid:
             out[aid] = {"matchup": matchup, "kickoff": kickoff, "opponent_id": hid}
     return out
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def _completed_team_games_map(season):
+    """Count completed regular-season games for each FBS team in one ESPN call."""
+    now = datetime.now(timezone.utc)
+    start = datetime(season, 8, 1, tzinfo=timezone.utc)
+    try:
+        r = requests.get(
+            ESPN_SCOREBOARD,
+            params={
+                "groups": 80,
+                "limit": 1000,
+                "dates": f"{start.strftime('%Y%m%d')}-{now.strftime('%Y%m%d')}",
+            },
+            timeout=25,
+        )
+        r.raise_for_status()
+        payload = r.json() or {}
+    except Exception:
+        return {}
+
+    counts = {}
+    for event in payload.get("events", []) or []:
+        status_type = ((event.get("status") or {}).get("type") or {})
+        if not status_type.get("completed"):
+            continue
+        comp = (event.get("competitions") or [{}])[0]
+        for competitor in comp.get("competitors") or []:
+            team_id = str(((competitor.get("team") or {}).get("id") or ""))
+            if team_id:
+                counts[team_id] = counts.get(team_id, 0) + 1
+    return counts
 
 
 @st.cache_data(ttl=21600, show_spinner=False)
@@ -264,51 +312,86 @@ def _why_market(prop, verified, season, total, games, per_game, line, model_prob
 
 
 def _leader_candidates(prop):
-    """Build model-only prop candidates from ESPN leaders for teams playing soon."""
+    """Build model-only candidates from ESPN stats when sportsbook markets are unavailable.
+
+    Secondary props (attempts, completions, receptions, carries) intentionally use
+    the matching yardage leader pool to discover players, then pull the requested
+    stat from the athlete's ESPN season stat page. This avoids empty tabs when ESPN
+    does not expose a national leader category for that secondary stat.
+    """
     team_map = _upcoming_team_map()
     if not team_map:
         return pd.DataFrame()
 
     chosen_season = CURRENT_SEASON
-    payload = _season_leaders(chosen_season)
-    categories = payload.get("categories") or []
-    aliases = {_norm(x) for x in LEADER_ALIASES[prop]}
-    selected = []
-    for cat in categories:
-        cat_norm = _norm(cat.get("name") or cat.get("displayName"))
-        if cat_norm in aliases or any(a in cat_norm or cat_norm in a for a in aliases):
-            selected.extend(cat.get("leaders") or [])
+    games_by_team = _completed_team_games_map(chosen_season)
 
+    def collect(season):
+        payload = _season_leaders(season)
+        categories = payload.get("categories") or []
+        wanted_props = FALLBACK_LEADER_POOLS.get(prop, (prop,))
+        wanted_alias_sets = []
+        for source_prop in wanted_props:
+            aliases = {_norm(x) for x in LEADER_ALIASES.get(source_prop, ())}
+            wanted_alias_sets.append((source_prop, aliases))
+
+        found = []
+        for cat in categories:
+            cat_norm = _norm(cat.get("name") or cat.get("displayName"))
+            for source_prop, aliases in wanted_alias_sets:
+                if cat_norm in aliases or any(a in cat_norm or cat_norm in a for a in aliases):
+                    for leader in cat.get("leaders") or []:
+                        found.append((leader, source_prop))
+                    break
+        return found
+
+    selected = collect(chosen_season)
     if not selected:
         chosen_season = FOUNDATION_SEASON
-        payload = _season_leaders(chosen_season)
-        for cat in payload.get("categories") or []:
-            cat_norm = _norm(cat.get("name") or cat.get("displayName"))
-            if cat_norm in aliases or any(a in cat_norm or cat_norm in a for a in aliases):
-                selected.extend(cat.get("leaders") or [])
+        games_by_team = _completed_team_games_map(chosen_season)
+        selected = collect(chosen_season)
 
     rows, seen = [], set()
-    for leader in selected:
+    for leader, source_prop in selected:
         athlete_ref = ((leader.get("athlete") or {}).get("$ref") or "")
         team_ref = ((leader.get("team") or {}).get("$ref") or "")
         athlete_id = _ref_id(athlete_ref, "athletes")
         team_id = _ref_id(team_ref, "teams")
-        if not athlete_id or athlete_id in seen:
+        if not athlete_id:
             continue
+
         identity = _athlete_identity(athlete_id, chosen_season)
         team_id = team_id or identity.get("team_id")
         if not team_id or str(team_id) not in team_map:
             continue
-        seen.add(athlete_id)
+
+        dedupe_key = (athlete_id, prop)
+        if dedupe_key in seen:
+            continue
+
         stats = _espn_stats_payload(athlete_id, chosen_season)
-        total = _extract_prop_total(stats, prop)
-        if total is None:
+        total = _extract_prop_total(stats, prop) if stats else None
+
+        # Only use the leader value directly when that leader category is the same
+        # stat we are ranking. Never treat passing yards as passing attempts, etc.
+        if total is None and source_prop == prop:
             total = _number(leader.get("value"))
-        games = _extract_games(stats)
-        per_game = _expected_per_game(prop, total, games) if games else None
+        if total is None:
+            continue
+
+        games = _extract_games(stats) if stats else None
+        if not games and chosen_season == CURRENT_SEASON:
+            games = games_by_team.get(str(team_id))
+        if not games or games <= 0:
+            # A season total without a game count must not be displayed as a per-game
+            # projection. Skip it rather than inventing a denominator.
+            continue
+
+        per_game = _expected_per_game(prop, total, games)
         if per_game is None:
-            # Keep verified ESPN leader evidence visible even if GP is omitted by the endpoint.
-            per_game = _number(leader.get("value"))
+            continue
+
+        seen.add(dedupe_key)
         rows.append({
             "event_id": None,
             "matchup": team_map[str(team_id)]["matchup"],
@@ -332,25 +415,44 @@ def _leader_candidates(prop):
 
     if not rows:
         return pd.DataFrame()
+
     df = pd.DataFrame(rows)
     df["projection_value"] = pd.to_numeric(df["per_game"], errors="coerce")
-    df = df.sort_values(["projection_value", "season_total"], ascending=[False, False], na_position="last").head(25).reset_index(drop=True)
+    df = df.sort_values(
+        ["projection_value", "season_total"],
+        ascending=[False, False],
+        na_position="last",
+    ).head(25).reset_index(drop=True)
     n = max(len(df), 1)
-    # Confidence is deliberately not presented as sportsbook probability.
-    df["model_probability"] = [round(max(52.0, 72.0 - (i * 16.0 / max(1, n - 1))), 1) for i in range(n)]
-    df["gi_score"] = [round(max(55.0, 88.0 - (i * 24.0 / max(1, n - 1))), 1) for i in range(n)]
+
+    # Confidence is a model-ranking confidence, not a sportsbook probability.
+    df["model_probability"] = [
+        round(max(52.0, 72.0 - (i * 16.0 / max(1, n - 1))), 1) for i in range(n)
+    ]
+    df["gi_score"] = [
+        round(max(55.0, 88.0 - (i * 24.0 / max(1, n - 1))), 1) for i in range(n)
+    ]
     df["line_edge"] = pd.NA
     df["ranking_mode"] = "Model Projection"
     df["line_type"] = "projection"
     df["rank"] = range(1, n + 1)
+
     def why(row):
-        gp = row.get("games_played")
-        pg = row.get("per_game")
-        total = row.get("season_total")
-        sample = f" across {int(gp)} games" if gp is not None and not pd.isna(gp) else ""
-        projection = f"{float(pg):.1f}" if pg is not None and not pd.isna(pg) else "available ESPN leader production"
-        first_td = " First-touchdown ordering is model-only until a sportsbook line is available." if prop == "First TD" else ""
-        return f"Sportsbook data is unavailable, so this ranking uses verified {int(row['stats_season'])} ESPN production{sample}. Model projection: {projection}. No sportsbook line or odds were invented.{first_td}"
+        gp = int(row.get("games_played") or 0)
+        pg = float(row.get("per_game"))
+        total = float(row.get("season_total"))
+        unit = "TDs" if prop in {"Anytime TD", "First TD"} else prop.lower()
+        first_td = (
+            " First-touchdown ordering is model-only until a sportsbook line is available."
+            if prop == "First TD"
+            else ""
+        )
+        return (
+            f"Sportsbook data is unavailable, so this ranking uses verified {int(row['stats_season'])} "
+            f"ESPN production: {total:.0f} {unit} across {gp} games ({pg:.1f}/game). "
+            f"No sportsbook line or odds were invented.{first_td}"
+        )
+
     df["why_engine"] = df.apply(why, axis=1)
     return df
 
