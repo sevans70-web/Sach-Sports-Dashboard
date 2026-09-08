@@ -14,6 +14,7 @@ import streamlit as st
 from data.wnba_schedule import current_wnba_window, load_wnba_scoreboard
 from data.wnba_stats import WNBA_BASELINE_SEASON, wnba_headshot_url
 from engines.wnba_rankings import build_wnba_baseline_top25
+from components.wnba_prediction_performance import render_wnba_prediction_performance
 
 WNBA_SEASON = "2026"
 TORONTO_TZ = ZoneInfo("America/Toronto")
@@ -38,21 +39,21 @@ def _inject_wnba_mobile_css() -> None:
         """
         <style>
         :root {
-            --wnba-panel: #111a2d;
-            --wnba-panel-2: #1b2450;
-            --wnba-border: #315a72;
-            --wnba-accent: #20d9d2;
-            --wnba-accent-2: #8a7dff;
-            --wnba-soft: #b9c7d8;
+            --wnba-panel: #0d0f10;
+            --wnba-panel-2: #111315;
+            --wnba-border: #34383d;
+            --wnba-accent: #19d978;
+            --wnba-gold: #d6b35c;
+            --wnba-soft: #a7abb2;
         }
 
         .wnba-hero {
-            border: 1px solid var(--wnba-border);
-            border-radius: 18px;
-            padding: 1rem 1.05rem;
-            background: linear-gradient(135deg, var(--wnba-panel) 0%, var(--wnba-panel-2) 100%);
-            margin-bottom: 0.9rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+            border: 2px solid rgba(214,179,92,.88);
+            border-radius: 15px;
+            padding: 10px 12px;
+            background: linear-gradient(105deg, rgba(214,179,92,.24) 0%, rgba(4,5,4,.98) 44%, rgba(25,217,120,.25) 100%);
+            margin: 0 0 6px;
+            box-shadow: inset 0 0 24px rgba(25,217,120,.08), 0 0 0 1px rgba(25,217,120,.16);
         }
         .wnba-kicker {
             color: var(--wnba-accent);
@@ -63,8 +64,8 @@ def _inject_wnba_mobile_css() -> None:
             margin-bottom: .2rem;
         }
         .wnba-hero-title {
-            font-size: 1.32rem;
-            font-weight: 850;
+            font-size: 1.55rem;
+            font-weight: 950;
             color: #fff;
             margin-bottom: .2rem;
         }
@@ -75,18 +76,18 @@ def _inject_wnba_mobile_css() -> None:
             margin: 1rem 0 .45rem 0;
         }
         .wnba-game {
-            border: 1px solid var(--wnba-border);
-            border-left: 3px solid var(--wnba-accent);
+            border: 1.5px solid var(--wnba-border);
+            border-left: 4px solid var(--wnba-accent);
             border-radius: 14px;
             padding: .75rem .85rem;
             margin: .55rem 0;
-            background: linear-gradient(135deg, rgba(17,26,45,.82), rgba(27,36,80,.62));
+            background: linear-gradient(135deg, #101112, #0d0f10);
         }
         .wnba-prop-shell {
             border: 1px solid var(--wnba-border);
             border-radius: 16px;
             padding: .9rem;
-            background: linear-gradient(135deg, rgba(17,26,45,.88), rgba(27,36,80,.70));
+            background: linear-gradient(135deg, #101112, #0d0f10);
             margin-top: .7rem;
         }
         .wnba-prop-name {
@@ -109,11 +110,11 @@ def _inject_wnba_mobile_css() -> None:
             grid-template-columns: 92px minmax(0, 1fr);
             gap: .85rem;
             align-items: center;
-            border: 1px solid rgba(49, 90, 114, .75);
+            border: 1.5px solid #34383d;
             border-radius: 16px;
             padding: .78rem;
             margin: .58rem 0;
-            background: linear-gradient(135deg, rgba(17,26,45,.88), rgba(27,36,80,.58));
+            background: linear-gradient(135deg, #101112, #0d0f10);
         }
         .wnba-player-photo {
             width: 92px;
@@ -140,10 +141,10 @@ def _inject_wnba_mobile_css() -> None:
             gap: .4rem;
         }
         .wnba-stat-box {
-            border: 1px solid rgba(49, 90, 114, .55);
+            border: 1px solid #34383d;
             border-radius: 10px;
             padding: .42rem .5rem;
-            background: rgba(8, 14, 27, .30);
+            background: #111315;
         }
         .wnba-stat-label {
             color: var(--wnba-soft);
@@ -162,10 +163,19 @@ def _inject_wnba_mobile_css() -> None:
             margin-top: .45rem;
         }
 
+        /* Match MLB/NFL navigation accents: emerald + gold, never the default red. */
+        [data-testid="stTabs"] [data-baseweb="tab-highlight"],
+        [data-baseweb="tab-highlight"] { background:#d6b35c !important; background-color:#d6b35c !important; }
+        [data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+        button[data-baseweb="tab"][aria-selected="true"] { color:#fff !important; border-bottom-color:#d6b35c !important; box-shadow:inset 0 -3px 0 #d6b35c !important; }
+        .wnba-updated-time{color:#a7abb2;font-size:.68rem;font-weight:750;text-align:right;margin:2px 0 6px;}
+
         @media (max-width: 700px) {
-            .block-container { padding-left: .82rem; padding-right: .82rem; }
-            .wnba-hero { padding: .82rem; border-radius: 15px; }
-            .wnba-hero-title { font-size: 1.14rem; }
+            [data-testid="stAppViewBlockContainer"], [data-testid="stAppViewContainer"] .block-container, .main .block-container, .block-container { padding-top:0 !important; margin-top:0 !important; }
+            .block-container { padding-left: .85rem !important; padding-right: .85rem !important; }
+            .wnba-hero { padding:10px 12px !important; border-radius:15px !important; margin-top:0 !important; margin-bottom:6px !important; }
+            .wnba-hero-title { font-size:1.38rem !important; line-height:1.08 !important; }
+            .wnba-soft { font-size:.82rem; line-height:1.42; }
             .wnba-game, .wnba-prop-shell { border-radius: 13px; padding: .72rem; }
             .stTabs [data-baseweb="tab-list"] {
                 gap: .12rem;
@@ -211,8 +221,8 @@ def _hero() -> None:
         """
         <div class="wnba-hero">
             <div class="wnba-kicker">WNBA</div>
-            <div class="wnba-hero-title">🏀 WNBA Intelligence Center</div>
-            <div class="wnba-soft">Slate intelligence • matchup context • player props • model performance</div>
+            <div class="wnba-hero-title">WNBA Intelligence Center</div>
+            <div class="wnba-soft">Daily slate intelligence, player-prop rankings and prediction performance in one place.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -261,7 +271,6 @@ def _load_current_games() -> pd.DataFrame:
 
 
 def _render_intelligence() -> None:
-    _hero()
     games = _load_current_games()
     upcoming = pd.DataFrame()
     live = pd.DataFrame()
@@ -464,50 +473,25 @@ def _render_player_props() -> None:
 
 
 def _render_results_performance() -> None:
-    st.subheader("Results / Performance")
-    st.caption(
-        "Completed games now; prediction grading and model performance will live here as WNBA predictions are recorded."
-    )
-
-    today = datetime.now(TORONTO_TZ).date()
-    try:
-        games = load_wnba_scoreboard(
-            (today - timedelta(days=14)).isoformat(),
-            today.isoformat(),
-        )
-    except Exception as exc:
-        st.warning("WNBA results data is temporarily unavailable.")
-        st.caption(str(exc))
-        return
-
-    completed = (
-        games[games["completed"].fillna(False)].copy()
-        if not games.empty
-        else pd.DataFrame()
-    )
-
-    if completed.empty:
-        st.info("No completed WNBA games are available in the last 14 days.")
-    else:
-        for _, game in completed.sort_values("tipoff_et", ascending=False).iterrows():
-            _render_game_card(game, show_score=True)
-
-    st.markdown("### 📈 Model Performance")
-    st.caption(
-        "Prop-level hit rate, category performance, calibration and prediction history will populate here once WNBA predictions begin being saved and graded."
-    )
-
+    render_wnba_prediction_performance()
 
 def show() -> None:
     _inject_wnba_mobile_css()
-    st.title("🏀 WNBA")
+
+    # Shared menu is rendered by app.py. Hero sits directly beneath it, matching NFL spacing.
+    _hero()
+    now = datetime.now(TORONTO_TZ)
+    st.markdown(
+        f'<div class="wnba-updated-time">Updated {now.strftime("%A · %I:%M %p ET")}</div>',
+        unsafe_allow_html=True,
+    )
 
     tabs = st.tabs(
         [
             "🧠 Intelligence",
             "📅 Games / Schedule",
             "🎯 Player Props",
-            "📈 Results / Performance",
+            "📈 Prediction Performance",
         ]
     )
 
