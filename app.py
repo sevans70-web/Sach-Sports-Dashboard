@@ -231,6 +231,7 @@ pages = {
         st.Page("pages/cfb.py", title="CFB", icon="🏈"),
         # Internal CFB drill-down page. Registered for st.switch_page only.
         st.Page("pages/cfb_games.py", title="CFB GAMES", icon="🏈"),
+        st.Page("pages/cfb_player.py", title="CFB PLAYER", icon="🏈"),
         st.Page("pages/nba.py", title="NBA", icon="🏀"),
         st.Page("pages/nhl.py", title="NHL", icon="🏒"),
     ]
@@ -375,15 +376,6 @@ st.markdown(
     """
 <style>
 @media (max-width:700px){
-  /* CSS-only markdown blocks must not create visible vertical gaps. */
-  div[data-testid="stElementContainer"]:has(style) {
-      margin:0 !important;
-      padding:0 !important;
-      min-height:0 !important;
-      height:0 !important;
-      overflow:visible !important;
-  }
-
   /* Same compact menu on every sport page. */
   div[data-testid="stPopover"] > button,
   div[data-testid="stPopover"] button {
@@ -420,19 +412,6 @@ st.markdown(
       line-height:1.38 !important;
   }
 
-  /* NFL: match CFB's section spacing below the slate button and snapshot. */
-  div[data-testid="stElementContainer"]:has(.nfl-snapshot-heading) {
-      margin-top:-.45rem !important;
-  }
-  .nfl-snapshot-heading {
-      margin-top:8px !important;
-  }
-  div[data-testid="stElementContainer"]:has(.nfl-performance-title) {
-      margin-top:-.55rem !important;
-  }
-  .nfl-performance-title {
-      margin-top:18px !important;
-  }
 }
 </style>
     """,
