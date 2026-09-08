@@ -18,10 +18,8 @@ ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/colleg
 
 PROP_CATALOG = [
     ("Passing Yards", "🏈"),
-    ("Passing Attempts", "🔁"),
-    ("Completions", "✅"),
+    ("Pass Incompletions", "❌"),
     ("Rushing Yards", "🏃"),
-    ("Rushing Attempts", "💨"),
     ("Receiving Yards", "🙌"),
     ("Receptions", "🧤"),
     ("Anytime TD", "🔥"),
@@ -109,6 +107,9 @@ def _inject_css() -> None:
         .cfb-performance span{display:block;margin-top:5px;color:#aeb3ba;font-size:.78rem;line-height:1.35}
 
         .cfb-rankings-heading{margin:14px 0 7px}.cfb-rankings-heading strong{display:block;color:#fff;font-size:1.28rem;font-weight:950}.cfb-rankings-heading span{display:block;color:#c4c7cc;font-size:.80rem;line-height:1.35;margin-top:4px}
+        div[class*="st-key-cfb_ranking_market"] [role="radiogroup"]{display:flex!important;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;width:100%!important;gap:0!important;scrollbar-width:none!important}
+        div[class*="st-key-cfb_ranking_market"] [role="radiogroup"]::-webkit-scrollbar{display:none!important}
+        div[class*="st-key-cfb_ranking_market"] button{flex:0 0 auto!important;min-width:max-content!important;white-space:nowrap!important;padding:.45rem .78rem!important}
         div[data-testid="stTabs"] [data-baseweb="tab-list"]{overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;scrollbar-width:none!important;gap:0!important;padding-bottom:2px!important}
         div[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar{display:none!important}
         div[data-testid="stTabs"] button[role="tab"]{flex:0 0 auto!important;white-space:nowrap!important;background:#0d0f10!important;color:#fff!important;border:1px solid #34373c!important;padding:.45rem .78rem!important;min-height:40px!important}
@@ -238,30 +239,37 @@ def _render_rankings() -> None:
         """
     )
 
-    labels = [f"{icon} {prop}" for prop, icon in PROP_CATALOG]
-    tabs = st.tabs(labels)
+    prop_names = [prop for prop, _ in PROP_CATALOG]
+    icon_map = {prop: icon for prop, icon in PROP_CATALOG}
+    active_prop = st.segmented_control(
+        "CFB ranking market",
+        options=prop_names,
+        default=st.session_state.get("cfb_ranking_market", prop_names[0]),
+        format_func=lambda prop: f"{icon_map[prop]} {prop}",
+        key="cfb_ranking_market",
+        selection_mode="single",
+        label_visibility="collapsed",
+    ) or prop_names[0]
 
-    for tab, (prop, _) in zip(tabs, PROP_CATALOG):
-        with tab:
-            rankings = build_cfb_rankings(prop)
-            if rankings is None or rankings.empty:
-                feed = get_cfb_odds_feed_status()
-                st.info(feed.get("message") or f"No {prop} markets are available right now.")
-                continue
+    rankings = build_cfb_rankings(active_prop)
+    if rankings is None or rankings.empty:
+        feed = get_cfb_odds_feed_status()
+        st.info(feed.get("message") or f"No {active_prop} markets are available right now.")
+        return
 
-            state_key = "cfb_full_" + prop.lower().replace(" ", "_").replace("+", "plus")
-            show_full = bool(st.session_state.get(state_key, False))
-            rows = rankings if show_full else rankings.head(5)
+    state_key = "cfb_full_" + active_prop.lower().replace(" ", "_").replace("+", "plus")
+    show_full = bool(st.session_state.get(state_key, False))
+    rows = rankings if show_full else rankings.head(5)
 
-            for _, row in rows.iterrows():
-                with st.container(border=True):
-                    _render_rank_card(row, prop)
+    for _, row in rows.iterrows():
+        with st.container(border=True):
+            _render_rank_card(row, active_prop)
 
-            if len(rankings) > 5:
-                label = "Show Top 5 Only" if show_full else f"View Full Rankings · {prop}"
-                if st.button(label, key=f"{state_key}_toggle", use_container_width=True):
-                    st.session_state[state_key] = not show_full
-                    st.rerun()
+    if len(rankings) > 5:
+        label = "Show Top 5 Only" if show_full else f"View Full Rankings · {active_prop}"
+        if st.button(label, key=f"{state_key}_toggle", use_container_width=True):
+            st.session_state[state_key] = not show_full
+            st.rerun()
 
 
 def show() -> None:

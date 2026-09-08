@@ -488,12 +488,18 @@ def _render_rankings(schedule: pd.DataFrame, week: int | None) -> None:
         </div>
         """
     )
-    labels = [f"{cfg['icon']} {prop}" for prop, cfg in PROP_CATALOG.items()]
-    tabs = st.tabs(labels)
-    for tab, prop in zip(tabs, PROP_CATALOG.keys()):
-        with tab:
-            rankings = _build_prop(prop, schedule, week)
-            _render_ranking_list(rankings, prop)
+    props = list(PROP_CATALOG.keys())
+    active_prop = st.segmented_control(
+        "NFL ranking market",
+        options=props,
+        default=st.session_state.get("nfl_ranking_market", props[0]),
+        format_func=lambda prop: f"{PROP_CATALOG[prop]['icon']} {prop}",
+        key="nfl_ranking_market",
+        selection_mode="single",
+        label_visibility="collapsed",
+    ) or props[0]
+    rankings = _build_prop(active_prop, schedule, week)
+    _render_ranking_list(rankings, active_prop)
 
 
 def _friendly_market_status(feed: dict | None) -> str:
