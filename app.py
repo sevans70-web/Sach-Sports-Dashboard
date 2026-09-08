@@ -390,9 +390,10 @@ st.markdown(
       transform:translateY(-6px) !important;
   }
 
-  /* MLB is the outlier: remove the dead space between the menu and hero. */
-  div[data-testid="stElementContainer"]:has(.gi-hero) {
-      margin-top:-4.35rem !important;
+  /* CFB is the reference. Pull only MLB + NFL up to the same mobile start line. */
+  div[data-testid="stElementContainer"]:has(.gi-hero),
+  div[data-testid="stElementContainer"]:has(.nfl-hero) {
+      margin-top:-8.25rem !important;
   }
 
   /* Keep all three heroes on the same compact CFB geometry. */
