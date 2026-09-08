@@ -257,11 +257,11 @@ def _missing_history_copy(profile: str, market: str) -> str:
 st.markdown("""
 <style>
 .block-container{max-width:950px;padding-top:.05rem!important}
-.nfl-player-head{display:grid;grid-template-columns:76px minmax(0,1fr) 54px;gap:12px;align-items:center;padding:12px;background:linear-gradient(118deg,#101112,#111315 68%,rgba(25,217,120,.07));border:1.5px solid #30343a;border-radius:14px;margin:3px 0 9px}
+.nfl-player-head{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;padding:12px;background:linear-gradient(118deg,#101112,#111315 68%,rgba(25,217,120,.07));border:1.5px solid #30343a;border-radius:14px;margin:3px 0 9px}
 .nfl-player-photo,.nfl-player-fallback{width:72px;height:72px;border-radius:50%;overflow:hidden;background:#080909;border:2px solid rgba(214,179,92,.86)}
 .nfl-player-photo img{width:100%;height:100%;object-fit:cover;object-position:center 24%}
 .nfl-player-fallback{display:flex;align-items:center;justify-content:center;color:#f6c84c;font-weight:900}
-.nfl-player-team-logo{width:52px;height:52px;object-fit:contain;justify-self:end;filter:drop-shadow(0 3px 8px rgba(0,0,0,.45))}
+.nfl-player-team-logo{width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-right:6px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45))}
 .nfl-player-copy h2{margin:0;color:#fff;font-size:1.32rem}
 .nfl-player-copy p{margin:3px 0;color:#a7abb2;font-size:.78rem}
 .nfl-player-copy strong{color:#f6c84c;font-size:.76rem}
@@ -297,14 +297,19 @@ div[class*="st-key-nfl_player_trend_chart"] [data-testid="stElementToolbar"] but
 @media(max-width:700px){
   .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
   div[class*="st-key-back_nfl_player"]{width:max-content!important;margin-top:0!important;margin-left:0!important;margin-bottom:8px!important}
-  .nfl-player-head{grid-template-columns:64px minmax(0,1fr) 42px;gap:10px;padding:10px}
+  .nfl-player-head{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
   .nfl-player-photo,.nfl-player-fallback{width:60px;height:60px}
-  .nfl-player-team-logo{width:40px;height:40px}
+  .nfl-player-team-logo{width:22px;height:22px}
   .nfl-player-copy h2{font-size:1.1rem}
   .nfl-trend-title{font-size:.92rem!important;margin-top:11px}
   .nfl-history-empty{font-size:.75rem;padding:10px}
   .nfl-market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Remove chart download action; keep table and fullscreen tools. */
+[data-testid="stElementToolbar"] button[aria-label*="download" i],
+[data-testid="stElementToolbar"] button[title*="download" i],
+[data-testid="stElementToolbar"] button:nth-child(2){display:none!important}
 </style>
 """, unsafe_allow_html=True)
 
@@ -332,7 +337,7 @@ team_logo = (
     f'alt="{escape(team)} team logo">'
     if logo_team else ""
 )
-_html(f'<div class="nfl-player-head">{img}<div class="nfl-player-copy"><h2>{escape(name)}</h2><p>{escape(team)} · {escape(pos)}</p><strong>{escape(matchup or "Weekly matchup context")}</strong></div>{team_logo}</div>')
+_html(f'<div class="nfl-player-head">{img}<div class="nfl-player-copy"><h2>{escape(name)}</h2><p>{team_logo}{escape(team)} · {escape(pos)}</p><strong>{escape(matchup or "Weekly matchup context")}</strong></div></div>')
 
 live_state = _nfl_live_state_for_matchup(matchup)
 if live_state:

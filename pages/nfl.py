@@ -102,7 +102,7 @@ def _inject_nfl_css() -> None:
         div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] span{color:#19d978!important}
         div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
 
-        .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 78px;gap:9px;align-items:start;width:100%;min-height:118px;padding:11px 9px;border-left:4px solid #19d978;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .nfl-rank-card{display:grid;grid-template-columns:38px 64px minmax(0,1fr) 48px;gap:9px;align-items:start;width:100%;min-height:118px;padding:11px 9px;border-left:4px solid #19d978;background:#0d0f10;color:#fff;box-sizing:border-box}
         .nfl-rank-number{text-align:center;padding-top:2px}.nfl-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}.nfl-rank-movement{display:block;margin-top:7px;color:#19d978;font-size:.58rem;font-weight:900;white-space:nowrap}
         .nfl-rank-avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;font-weight:900;color:#fff}
         .nfl-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
@@ -127,7 +127,7 @@ def _inject_nfl_css() -> None:
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important;padding-top:0!important}
           .nfl-hero{padding:10px 12px!important;border-radius:15px!important;margin-top:0!important}.nfl-hero-title{font-size:1.38rem!important;white-space:normal!important}.nfl-hero-subtitle{font-size:.90rem!important;line-height:1.42!important;margin-top:8px!important}
           .nfl-snapshot-heading{font-size:1.02rem}.nfl-snapshot-card{min-height:92px;padding:10px 7px}.nfl-snapshot-card span{font-size:.61rem}.nfl-snapshot-card strong{font-size:1.28rem}.nfl-snapshot-card small{font-size:.60rem}
-          .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 70px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.78rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
+          .nfl-rank-card{grid-template-columns:32px 58px minmax(0,1fr) 45px;gap:7px;padding:10px 7px;min-height:112px}.nfl-rank-avatar{width:58px;height:58px}.nfl-rank-name{font-size:.87rem}.nfl-rank-meta,.nfl-rank-proj{font-size:.69rem}.nfl-rank-score strong{font-size:.86rem}.nfl-intel-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nfl-intel-metric{padding:6px 4px}.nfl-intel-metric span{font-size:.50rem}.nfl-intel-metric strong{font-size:.72rem}
         }
         </style>
         """,
@@ -184,6 +184,26 @@ def _matchup_map(schedule: pd.DataFrame, week: int | None) -> dict[str, str]:
     return result
 
 
+def _kickoff_map(schedule: pd.DataFrame, week: int | None) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for _, game in _week_games(schedule, week).iterrows():
+        away = str(game.get("away_team", "")).upper()
+        home = str(game.get("home_team", "")).upper()
+        kickoff = game.get("kickoff_et")
+        if away:
+            result[away] = kickoff
+        if home:
+            result[home] = kickoff
+    return result
+
+
+def _format_kickoff(value) -> str:
+    stamp = pd.to_datetime(value, errors="coerce")
+    if pd.isna(stamp):
+        return "Kickoff TBD"
+    return stamp.strftime("%a %b %d · %I:%M %p ET").replace(" 0", " ")
+
+
 @st.cache_data(ttl=21600, show_spinner=False)
 def _headshot_map() -> dict[str, str]:
     try:
@@ -213,6 +233,7 @@ def _build_passing_top25(schedule: pd.DataFrame, week: int | None) -> pd.DataFra
             qbs = attach_live_passing_yards_lines(qbs)
             qbs = attach_passing_yards_probabilities(qbs)
             qbs["game"] = f"{away} @ {home}"
+            qbs["kickoff"] = game.get("kickoff_et")
             candidates.append(qbs)
         except Exception:
             continue
@@ -271,7 +292,10 @@ def _build_prop(prop: str, schedule: pd.DataFrame, week: int | None) -> pd.DataF
     if "team" not in df.columns:
         df["team"] = ""
     matchups = _matchup_map(schedule, week)
+    kickoffs = _kickoff_map(schedule, week)
     df["game"] = df["team"].astype(str).str.upper().map(matchups).fillna(df.get("game", ""))
+    if "kickoff" not in df.columns:
+        df["kickoff"] = df["team"].astype(str).str.upper().map(kickoffs)
     shots = _headshot_map()
     if "headshot_url" not in df.columns:
         df["headshot_url"] = ""
@@ -297,13 +321,21 @@ def _format_projection(row: pd.Series, prop: str) -> str:
 
 
 def _ranking_score(row: pd.Series, prop: str) -> float | None:
-    for key in ["gi_score", "score", "model_probability"]:
+    for key in ["gi_score", "score", "model_probability", "passing_baseline_score"]:
         value = row.get(key)
         if value is not None and not pd.isna(value):
             numeric = float(value)
             if key == "model_probability" and numeric <= 1:
                 numeric *= 100
+            if key == "passing_baseline_score":
+                # Passing baseline is a yardage baseline, not a 0-100 score.
+                # Convert it to a conservative model-strength band only when no
+                # explicit GI/probability exists.
+                numeric = 55.0 + min(30.0, max(0.0, (numeric - 180.0) / 5.0))
             return min(99.9, max(0.0, numeric))
+    rank = row.get("rank")
+    if rank is not None and not pd.isna(rank):
+        return max(55.0, 88.0 - (float(rank) - 1.0) * 1.15)
     return None
 
 
@@ -395,6 +427,7 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
     name = str(row.get("player_name") or "Player")
     team = str(row.get("team") or "")
     game = str(row.get("game") or "Matchup pending")
+    kickoff = _format_kickoff(row.get("kickoff"))
     photo = str(row.get("headshot_url") or "").strip()
     avatar = f'<img src="{escape(photo)}" alt="{escape(name)} headshot">' if photo else escape("".join(part[0] for part in name.split()[:2]).upper() or "NFL")
     rank = int(row.get("rank") or 0)
@@ -419,6 +452,7 @@ def _render_rank_header(row: pd.Series, prop: str) -> None:
           <div class="nfl-rank-copy">
             <strong class="nfl-rank-name">{escape(name)}</strong>
             <div class="nfl-rank-meta"><b>{escape(team)}</b> · {escape(game)}</div>
+            <div class="nfl-rank-market">🕒 {escape(kickoff)}</div>
             <div class="nfl-rank-proj">{escape(projection)}</div>
             <div class="nfl-rank-market">{escape(market_mode)}</div>
             {lineup_status}
@@ -497,6 +531,8 @@ def _render_rankings(schedule: pd.DataFrame, week: int | None) -> None:
         key="nfl_ranking_market",
         selection_mode="single",
         label_visibility="collapsed",
+        width="stretch",
+        wrap=False,
     ) or props[0]
     rankings = _build_prop(active_prop, schedule, week)
     _render_ranking_list(rankings, active_prop)

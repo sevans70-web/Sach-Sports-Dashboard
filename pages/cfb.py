@@ -116,13 +116,16 @@ def _inject_css() -> None:
         div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{color:#d8b35f!important;border-color:#19d978!important;background:#0b1711!important}
         div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{background:#19d978!important}
 
-        .cfb-rank-card{display:grid;grid-template-columns:40px minmax(0,1fr) 78px;gap:10px;align-items:start;width:100%;min-height:108px;padding:12px 10px;border-left:4px solid #d8b35f;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .cfb-rank-card{display:grid;grid-template-columns:36px 58px minmax(0,1fr) 48px;gap:8px;align-items:start;width:100%;min-height:118px;padding:10px 8px;border-left:4px solid #d8b35f;background:#0d0f10;color:#fff;box-sizing:border-box}
+        .cfb-rank-avatar{width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid #bca147;background:#30343a;display:grid;place-items:center;color:#fff;font-weight:900}
+        .cfb-rank-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 24%;display:block}
+        .cfb-team-logo{width:15px;height:15px;object-fit:contain;vertical-align:-3px;margin-right:4px}
         .cfb-rank-number strong{display:block;color:#fff;font-size:.92rem;font-weight:950}
         .cfb-rank-name{display:block;color:#fff;font-size:.96rem;font-weight:950}
-        .cfb-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}
+        .cfb-rank-meta{color:#e4e6e8;font-size:.75rem;margin-top:4px}.cfb-rank-kickoff{color:#a7abb2;font-size:.67rem;margin-top:3px}
         .cfb-rank-proj{color:#d8b35f;font-size:.77rem;font-weight:850;margin-top:4px}
         .cfb-rank-market{color:#9fa4aa;font-size:.68rem;margin-top:3px}
-        .cfb-rank-score{text-align:right;padding-top:3px}.cfb-rank-score small{display:block;color:#9fa4aa;font-size:.51rem;font-weight:900}.cfb-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:950;margin-top:3px}
+        .cfb-rank-score{width:48px;min-width:48px;text-align:right;padding-top:3px;line-height:1}.cfb-rank-score small{display:block;color:#8f959d;font-size:.47rem;font-weight:800;white-space:nowrap}.cfb-rank-score strong{display:block;color:#f6c84c;font-size:.86rem;font-weight:900;margin-top:4px;line-height:1}
         .cfb-intel-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px 0}
         .cfb-intel-metric{background:#111315;border:1px solid #2c3034;border-radius:10px;padding:8px 7px}.cfb-intel-metric span{display:block;color:#9fa4aa;font-size:.56rem;font-weight:900}.cfb-intel-metric strong{display:block;color:#fff;font-size:.78rem;margin-top:3px}
         .cfb-why{margin:8px 0 4px;padding:10px;border-left:3px solid #19d978;background:#131016;color:#d6d9dd;font-size:.74rem;line-height:1.4}.cfb-why b{display:block;color:#d8b35f;margin-bottom:4px}
@@ -131,7 +134,7 @@ def _inject_css() -> None:
             .block-container{padding-left:.78rem!important;padding-right:.78rem!important}
             .cfb-hero-title{font-size:1.28rem!important}.cfb-hero-subtitle{font-size:.82rem!important}
             .cfb-snapshot-card{min-height:90px;padding:10px 8px}.cfb-snapshot-card strong{font-size:1.18rem}
-            .cfb-rank-card{grid-template-columns:35px minmax(0,1fr) 64px;gap:7px;padding:10px 8px}
+            .cfb-rank-card{grid-template-columns:32px 54px minmax(0,1fr) 45px;gap:7px;padding:10px 7px}.cfb-rank-avatar{width:54px;height:54px}.cfb-rank-score{width:45px;min-width:45px}
             .cfb-intel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
         }
         </style>
@@ -147,6 +150,21 @@ def _when(value) -> str:
     return stamp.tz_convert(TORONTO_TIMEZONE).strftime("%a %b %d · %I:%M %p ET")
 
 
+
+
+def _rank_kickoff(value) -> str:
+    stamp = pd.to_datetime(value, errors="coerce", utc=True)
+    if pd.isna(stamp):
+        return "Kickoff TBD"
+    return stamp.tz_convert(TORONTO_TIMEZONE).strftime("%a %b %d · %I:%M %p ET").replace(" 0", " ")
+
+
+def _open_cfb_player(row: pd.Series, prop: str) -> None:
+    player = row.to_dict()
+    player["selected_prop"] = prop
+    st.session_state["cfb_selected_player"] = player
+    st.switch_page("pages/cfb_player.py")
+
 def _snapshot(games: pd.DataFrame) -> tuple[int, int, int]:
     if games.empty:
         return 0, 0, 0
@@ -161,6 +179,10 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
     rank = int(row.get("rank") or 0)
     name = str(row.get("player_name") or "Player")
     matchup = str(row.get("matchup") or "Matchup pending")
+    team = str(row.get("team") or "")
+    team_logo = str(row.get("team_logo") or "").strip()
+    headshot = str(row.get("headshot") or "").strip()
+    kickoff = _rank_kickoff(row.get("kickoff"))
     line = row.get("consensus_line")
     model = row.get("model_probability")
     market = row.get("sportsbook_implied_probability")
@@ -190,9 +212,12 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
         f"""
         <div class="cfb-rank-card">
           <div class="cfb-rank-number"><strong>#{rank}</strong></div>
+          <div class="cfb-rank-avatar">{f'<img src="{escape(headshot)}" alt="{escape(name)}">' if headshot else 'CFB'}</div>
           <div>
             <strong class="cfb-rank-name">{escape(name)}</strong>
+            <div class="cfb-rank-meta">{f'<img class="cfb-team-logo" src="{escape(team_logo)}" alt="{escape(team)} logo">' if team_logo else ''}{escape(team) if team else escape(matchup)}</div>
             <div class="cfb-rank-meta">{escape(matchup)}</div>
+            <div class="cfb-rank-kickoff">🕒 {escape(kickoff)}</div>
             <div class="cfb-rank-proj">{escape(projection)}</div>
             <div class="cfb-rank-market">{escape(market_text)}</div>
           </div>
@@ -209,6 +234,9 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
     ):
         st.session_state[detail_key] = not st.session_state.get(detail_key, False)
         st.rerun()
+
+    if st.button("Open full player card", key=f"{detail_key}_open", use_container_width=True):
+        _open_cfb_player(row, prop)
 
     if st.session_state.get(detail_key):
         per_game = row.get("per_game")
@@ -249,6 +277,8 @@ def _render_rankings() -> None:
         key="cfb_ranking_market",
         selection_mode="single",
         label_visibility="collapsed",
+        width="stretch",
+        wrap=False,
     ) or prop_names[0]
 
     rankings = build_cfb_rankings(active_prop)

@@ -257,7 +257,12 @@ st.markdown(
       .player-profile-metric span{font-size:.54rem}
       .player-profile-metric strong{font-size:.82rem}
     }
-    </style>
+    
+/* Remove chart download action; keep table and fullscreen tools. */
+[data-testid="stElementToolbar"] button[aria-label*="download" i],
+[data-testid="stElementToolbar"] button[title*="download" i],
+[data-testid="stElementToolbar"] button:nth-child(2){display:none!important}
+</style>
     """,
     unsafe_allow_html=True,
 )

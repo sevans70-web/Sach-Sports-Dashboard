@@ -3126,7 +3126,7 @@ st.markdown(
             margin-top:0 !important;
         }
         .gi-hero {
-            margin-top:.10rem !important;
+            margin-top:.65rem !important;
             margin-bottom:.30rem !important;
             padding:10px 12px !important;
         }
