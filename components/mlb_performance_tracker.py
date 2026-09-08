@@ -307,6 +307,8 @@ def _period_control(key: str) -> str:
         key=key,
         selection_mode="single",
         label_visibility="collapsed",
+        width="stretch",
+        wrap=False,
     )
     return selected or current
 

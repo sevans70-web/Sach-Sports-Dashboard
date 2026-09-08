@@ -35,7 +35,7 @@ def render_cfb_prediction_performance():
     .cfb-perf-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:5px 0 4px}.cfb-perf-m{min-height:68px;background:#101112;border:2px solid #34373c;border-radius:11px;padding:7px 5px;display:flex;flex-direction:column;justify-content:center}.cfb-perf-m:first-child{border-color:rgba(25,217,120,.78)}.cfb-perf-m:nth-child(3){border-color:rgba(255,204,51,.72)}.cfb-perf-m span{display:block;color:#a7abb2;font-size:.55rem;line-height:1.15}.cfb-perf-m strong{display:block;color:#fff;font-size:.82rem;line-height:1.05;margin-top:3px}
     div[class*="st-key-cfb_performance_period"] [role="radiogroup"]{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:0!important}div[class*="st-key-cfb_performance_period"] button{width:100%!important;min-width:0!important}
     </style><div class="cfb-perf-title">📊 Prediction Performance</div><div class="cfb-perf-copy">Each market is tracked separately. Results appear only after saved model predictions are graded.</div>''',unsafe_allow_html=True)
-    period=st.segmented_control("CFB performance period",["Today","Week","Month","Season"],default="Today",key="cfb_performance_period",label_visibility="collapsed") or "Today"
+    period=st.segmented_control("CFB performance period",["Today","Week","Month","Season"],default="Today",key="cfb_performance_period",label_visibility="collapsed",width="stretch",wrap=False) or "Today"
     data=_load(); tabs=st.tabs([f"{ICONS[m]} {m}" for m in MARKETS])
     for tab,market in zip(tabs,MARKETS):
         with tab:

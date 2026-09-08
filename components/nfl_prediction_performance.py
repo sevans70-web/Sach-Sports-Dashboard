@@ -23,6 +23,7 @@ def _period() -> str:
     return st.segmented_control(
         "Performance period", options, default=current,
         key="nfl_performance_period", label_visibility="collapsed",
+        width="stretch", wrap=False,
     ) or current
 
 
