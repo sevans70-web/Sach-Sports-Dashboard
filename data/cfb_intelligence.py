@@ -175,9 +175,17 @@ def _upcoming_team_map():
         matchup = f"{at.get('displayName') or 'Away'} @ {ht.get('displayName') or 'Home'}"
         kickoff = event.get("date")
         if hid:
-            out[hid] = {"matchup": matchup, "kickoff": kickoff, "opponent_id": aid}
+            out[hid] = {
+                "matchup": matchup, "kickoff": kickoff, "opponent_id": aid,
+                "team_name": ht.get("displayName") or ht.get("shortDisplayName") or "",
+                "team_logo": ht.get("logo") or "",
+            }
         if aid:
-            out[aid] = {"matchup": matchup, "kickoff": kickoff, "opponent_id": hid}
+            out[aid] = {
+                "matchup": matchup, "kickoff": kickoff, "opponent_id": hid,
+                "team_name": at.get("displayName") or at.get("shortDisplayName") or "",
+                "team_logo": at.get("logo") or "",
+            }
     return out
 
 
@@ -402,6 +410,9 @@ def _leader_candidates(prop):
             "event_id": None,
             "matchup": team_map[str(team_id)]["matchup"],
             "kickoff": team_map[str(team_id)].get("kickoff"),
+            "team": team_map[str(team_id)].get("team_name") or "",
+            "team_id": str(team_id),
+            "team_logo": team_map[str(team_id)].get("team_logo") or "",
             "player_name": identity.get("player_name") or f"Player {athlete_id}",
             "market_player_id": athlete_id,
             "espn_athlete_id": athlete_id,
@@ -474,6 +485,10 @@ def build_cfb_rankings(prop):
         player_name = market.get("player_name")
         search = _espn_player_search(player_name)
         athlete_id = search.get("id") if search else None
+        identity = _athlete_identity(athlete_id, CURRENT_SEASON) if athlete_id else {}
+        team_map = _upcoming_team_map()
+        team_id = str(identity.get("team_id") or "")
+        team_context = team_map.get(team_id, {})
         payload = _espn_stats_payload(athlete_id, FOUNDATION_SEASON) if athlete_id else {}
         total = _extract_prop_total(payload, prop) if payload else None
         games = _extract_games(payload) if payload else None
@@ -487,6 +502,14 @@ def build_cfb_rankings(prop):
         row = market.to_dict()
         row.update({
             "espn_athlete_id": athlete_id,
+            "player_id": athlete_id or market.get("market_player_id"),
+            "team_id": team_id or market.get("team_id"),
+            "team": market.get("team") or team_context.get("team_name") or "",
+            "team_logo": market.get("team_logo") or team_context.get("team_logo") or "",
+            "headshot": market.get("headshot") or identity.get("headshot") or "",
+            "kickoff": market.get("kickoff") or team_context.get("kickoff"),
+            "matchup": market.get("matchup") or team_context.get("matchup") or "Matchup pending",
+            "position": market.get("position") or identity.get("position") or "",
             "stats_verified": verified,
             "stats_season": FOUNDATION_SEASON if verified else None,
             "season_total": total,
