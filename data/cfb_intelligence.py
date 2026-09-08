@@ -261,6 +261,23 @@ def _extract_named_stat(payload, wanted_keys):
     return max(found) if found else None
 
 
+
+def _extract_completion_attempt_pair(payload):
+    """Find ESPN C/ATT-style values such as 25/36 anywhere in the athlete payload."""
+    for node in _walk(payload):
+        if not isinstance(node, dict):
+            continue
+        label = _norm(node.get("name") or node.get("displayName") or node.get("abbreviation") or node.get("label"))
+        values = [node.get("displayValue"), node.get("value"), node.get("statValue")]
+        if label in {"catt", "cmpatt", "completionsattempts", "completionattempts", "passingcompletionsattempts"} or ("completion" in label and "attempt" in label):
+            for raw in values:
+                m = re.search(r"(\d+)\s*/\s*(\d+)", str(raw or ""))
+                if m:
+                    comp, att = float(m.group(1)), float(m.group(2))
+                    if att >= comp:
+                        return comp, att
+    return None, None
+
 def _extract_prop_total(payload, prop):
     if prop == "Pass Incompletions":
         direct = _extract_named_stat(payload, PROP_STAT_KEYS[prop])
@@ -268,6 +285,10 @@ def _extract_prop_total(payload, prop):
             return direct
         attempts = _extract_named_stat(payload, ("passingAttempts", "passing_attempts", "passAttempts", "ATT"))
         completions = _extract_named_stat(payload, ("completions", "passingCompletions", "CMP"))
+        if attempts is None or completions is None:
+            pair_comp, pair_att = _extract_completion_attempt_pair(payload)
+            completions = completions if completions is not None else pair_comp
+            attempts = attempts if attempts is not None else pair_att
         if attempts is not None and completions is not None and attempts >= completions:
             return attempts - completions
         return None
@@ -474,7 +495,7 @@ def _leader_candidates(prop):
     return df
 
 
-@st.cache_data(ttl=1800, show_spinner=False)
+@st.cache_data(ttl=3600, show_spinner=False)
 def build_cfb_rankings(prop):
     markets = load_cfb_prop_markets(prop)
     if markets is None or markets.empty:

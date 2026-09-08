@@ -29,38 +29,48 @@ ODDS_API_REGION = "us"
 
 PROP_MAP = {
     "Passing Yards": {
-        "sgo_stat": ("passing_yards",),
-        "odds_market": ("player_pass_yds",),
+        "sgo_stat": "passing_yards",
+        "odds_market": "player_pass_yds",
         "side": "over",
     },
-    "Pass Incompletions": {
-        "sgo_stat": ("passing_incompletions", "pass_incompletions", "incompletions"),
-        "odds_market": ("player_pass_incompletions",),
+    "Passing Attempts": {
+        "sgo_stat": "passing_attempts",
+        "odds_market": "player_pass_attempts",
+        "side": "over",
+    },
+    "Completions": {
+        "sgo_stat": "completions",
+        "odds_market": "player_pass_completions",
         "side": "over",
     },
     "Rushing Yards": {
-        "sgo_stat": ("rushing_yards",),
-        "odds_market": ("player_rush_yds",),
+        "sgo_stat": "rushing_yards",
+        "odds_market": "player_rush_yds",
+        "side": "over",
+    },
+    "Rushing Attempts": {
+        "sgo_stat": "rushing_attempts",
+        "odds_market": "player_rush_attempts",
         "side": "over",
     },
     "Receiving Yards": {
-        "sgo_stat": ("receiving_yards",),
-        "odds_market": ("player_reception_yds",),
+        "sgo_stat": "receiving_yards",
+        "odds_market": "player_reception_yds",
         "side": "over",
     },
     "Receptions": {
-        "sgo_stat": ("receptions",),
-        "odds_market": ("player_receptions",),
+        "sgo_stat": "receptions",
+        "odds_market": "player_receptions",
         "side": "over",
     },
     "Anytime TD": {
-        "sgo_stat": ("touchdowns",),
-        "odds_market": ("player_anytime_td",),
+        "sgo_stat": "touchdowns",
+        "odds_market": "player_anytime_td",
         "side": None,
     },
     "First TD": {
-        "sgo_stat": ("firstTouchdown", "first_touchdown"),
-        "odds_market": ("player_1st_td",),
+        "sgo_stat": "firstTouchdown",
+        "odds_market": "player_1st_td",
         "side": None,
     },
 }
@@ -131,7 +141,7 @@ def _state():
 
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=1800, show_spinner=False)
 def _load_sgo_usage():
     """Read SportsGameOdds allowance information without consuming the events quota."""
     key = _secret("SPORTSGAMEODDS_API_KEY")
@@ -364,7 +374,7 @@ def _load_odds_api():
             if now - timedelta(hours=6) <= commence <= cutoff:
                 upcoming.append(event)
 
-        markets = ",".join(sorted({m for v in PROP_MAP.values() for m in v["odds_market"]}))
+        markets = ",".join(sorted({v["odds_market"] for v in PROP_MAP.values()}))
         collected = []
         credits_remaining = None
 
@@ -476,7 +486,7 @@ def _normalize_sgo(events, prop_label):
         matchup = _sgo_matchup(event)
         for odd in _sgo_event_odds(event):
             stat_id = str(odd.get("statID") or odd.get("statId") or "").lower()
-            if stat_id not in {str(x).lower() for x in config["sgo_stat"]}:
+            if stat_id != config["sgo_stat"].lower():
                 continue
 
             entity = str(odd.get("statEntityID") or "")
@@ -518,14 +528,14 @@ def _normalize_sgo(events, prop_label):
 
 
 def _normalize_odds_api(events, prop_label):
-    market_keys = set(PROP_MAP[prop_label]["odds_market"])
+    market_key = PROP_MAP[prop_label]["odds_market"]
     raw_rows = []
 
     for event in events:
         matchup = f"{event.get('away_team', '')} @ {event.get('home_team', '')}".strip()
         for bookmaker in event.get("bookmakers") or []:
             for market in bookmaker.get("markets") or []:
-                if market.get("key") not in market_keys:
+                if market.get("key") != market_key:
                     continue
                 for outcome in market.get("outcomes") or []:
                     outcome_name = str(outcome.get("name") or "")
@@ -632,7 +642,7 @@ def _event_team_names(event):
 
 
 def _sgo_event_has_supported_player_prop(event):
-    supported = {str(x).lower() for v in PROP_MAP.values() for x in v["sgo_stat"]}
+    supported = {str(v["sgo_stat"]).lower() for v in PROP_MAP.values()}
     for odd in _sgo_event_odds(event):
         stat_id = str(odd.get("statID") or odd.get("statId") or "").lower()
         if stat_id not in supported:
@@ -651,7 +661,7 @@ def _sgo_event_has_supported_player_prop(event):
 
 
 def _odds_api_event_has_supported_player_prop(event):
-    supported = {x for v in PROP_MAP.values() for x in v["odds_market"]}
+    supported = {v["odds_market"] for v in PROP_MAP.values()}
     for bookmaker in event.get("bookmakers") or []:
         for market in bookmaker.get("markets") or []:
             if market.get("key") not in supported:
