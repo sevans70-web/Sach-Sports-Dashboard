@@ -241,16 +241,48 @@ def _clean_player_name(text, prop_label):
 
 
 @st.cache_data(ttl=SGO_TTL, show_spinner=False)
-def _load_sgo():
+def _load_sgo(force_live=False):
+    """Load CFB sportsbook events with durable Supabase-first caching.
+
+    A fresh stored snapshot is shared by every dashboard visitor. Only when the
+    shared snapshot is stale/missing do we make one filtered provider request.
+    """
+    try:
+        from database.cfb_prop_repository import load_cfb_prop_snapshot, save_cfb_prop_snapshot
+    except Exception:
+        load_cfb_prop_snapshot = lambda: None
+        save_cfb_prop_snapshot = lambda payload: False
+
+    durable = load_cfb_prop_snapshot()
+    durable_events = []
+    durable_fresh = False
+    if durable:
+        payload = durable.get("payload") or {}
+        durable_events = payload.get("data") or []
+        created = pd.to_datetime(durable.get("created_at"), errors="coerce", utc=True)
+        if not pd.isna(created):
+            durable_fresh = (pd.Timestamp.now(tz="UTC") - created) < pd.Timedelta(hours=6)
+        if durable_events and durable_fresh and not force_live:
+            return {
+                "status": "cached",
+                "provider": "SportsGameOdds",
+                "data": durable_events,
+                "message": "CFB sportsbook markets loaded from the shared cache.",
+            }
+
     key = _secret("SPORTSGAMEODDS_API_KEY")
     if not key:
+        if durable_events:
+            return {"status": "stale", "provider": "SportsGameOdds", "data": durable_events, "message": "Using the last saved CFB sportsbook snapshot."}
         return {"status": "not_configured", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds is not configured."}
 
     state = _state()
-    if time.time() < state["sgo_retry"]:
+    if time.time() < state["sgo_retry"] and not force_live:
+        if durable_events:
+            return {"status": "stale", "provider": "SportsGameOdds", "data": durable_events, "message": "Using the last saved CFB sportsbook snapshot while the provider cools down."}
         stale = _read_json(SGO_SNAPSHOT)
         if stale:
-            return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "Using the last successful SportsGameOdds CFB snapshot."}
+            return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "Using the last successful local SportsGameOdds CFB snapshot."}
         return {"status": "rate_limited", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds is cooling down after a rate limit."}
 
     now = datetime.now(timezone.utc)
@@ -272,23 +304,41 @@ def _load_sgo():
             except Exception:
                 wait = RATE_LIMIT_COOLDOWN
             state["sgo_retry"] = time.time() + wait
+            if durable_events:
+                return {"status": "stale", "provider": "SportsGameOdds", "data": durable_events, "message": "SportsGameOdds allowance is unavailable; using the last saved sportsbook snapshot."}
             stale = _read_json(SGO_SNAPSHOT)
             if stale:
-                return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is rate-limited; using the last successful CFB snapshot."}
+                return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is rate-limited; using the last successful local CFB snapshot."}
             return {"status": "rate_limited", "provider": "SportsGameOdds", "data": [], "message": _sgo_429_message()}
 
         response.raise_for_status()
         payload = response.json()
         events = payload.get("data") or []
         if events:
-            _write_json(SGO_SNAPSHOT, {"data": events})
-            return {"status": "live", "provider": "SportsGameOdds", "data": events, "message": "Live CFB markets connected via SportsGameOdds."}
+            snapshot = {"data": events, "fetched_at": now.isoformat()}
+            _write_json(SGO_SNAPSHOT, snapshot)
+            save_cfb_prop_snapshot(snapshot)
+            return {"status": "live", "provider": "SportsGameOdds", "data": events, "message": "Live CFB markets connected via SportsGameOdds and saved for reuse."}
+        if durable_events:
+            return {"status": "stale", "provider": "SportsGameOdds", "data": durable_events, "message": "No fresh markets were returned; using the last saved CFB sportsbook snapshot."}
         return {"status": "empty", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds has no current CFB prop markets."}
     except Exception as exc:
+        if durable_events:
+            return {"status": "stale", "provider": "SportsGameOdds", "data": durable_events, "message": "SportsGameOdds is unavailable; using the last saved CFB sportsbook snapshot."}
         stale = _read_json(SGO_SNAPSHOT)
         if stale:
-            return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is unavailable; using the last successful CFB snapshot."}
+            return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is unavailable; using the last successful local CFB snapshot."}
         return {"status": "error", "provider": "SportsGameOdds", "data": [], "message": f"SportsGameOdds CFB error: {exc}"}
+
+
+def refresh_cfb_sportsbook_cache(force=False):
+    """Entry point for the Railway refresh job."""
+    if force:
+        try:
+            _load_sgo.clear()
+        except Exception:
+            pass
+    return _load_sgo(force_live=bool(force))
 
 
 @st.cache_data(ttl=ODDS_TTL, show_spinner=False)
