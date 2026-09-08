@@ -20,6 +20,7 @@ import streamlit as st
 
 
 SGO_EVENTS_URL = "https://api.sportsgameodds.com/v2/events"
+SGO_USAGE_URL = "https://api.sportsgameodds.com/v2/account/usage"
 SGO_LEAGUE_ID = "NCAAF"
 
 ODDS_API_BASE = "https://api.the-odds-api.com/v4"
@@ -74,9 +75,9 @@ PROP_MAP = {
     },
 }
 
-SGO_TTL = 600
+SGO_TTL = 21600
 ODDS_TTL = 21600
-RATE_LIMIT_COOLDOWN = 65
+RATE_LIMIT_COOLDOWN = 90
 
 SGO_SNAPSHOT = Path("/tmp/sach_cfb_sgo_events.json")
 ODDS_SNAPSHOT = Path("/tmp/sach_cfb_odds_api_events.json")
@@ -138,6 +139,80 @@ def _state():
     return {"sgo_retry": 0.0, "odds_retry": 0.0}
 
 
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def _load_sgo_usage():
+    """Read SportsGameOdds allowance information without consuming the events quota."""
+    key = _secret("SPORTSGAMEODDS_API_KEY")
+    if not key:
+        return {}
+    try:
+        response = requests.get(
+            SGO_USAGE_URL,
+            headers={"x-api-key": key},
+            timeout=15,
+        )
+        if not response.ok:
+            return {}
+        payload = response.json() or {}
+        return payload.get("data") or {}
+    except Exception:
+        return {}
+
+
+def _limit_pair(bucket):
+    if not isinstance(bucket, dict):
+        return None, None
+    maximum = (
+        bucket.get("max-requests")
+        or bucket.get("maxRequestsPerInterval")
+        or bucket.get("max-entities")
+        or bucket.get("maxEntitiesPerInterval")
+    )
+    current = (
+        bucket.get("current-requests")
+        or bucket.get("currentIntervalRequests")
+        or bucket.get("current-entities")
+        or bucket.get("currentIntervalEntities")
+    )
+    try:
+        maximum = float(maximum)
+        current = float(current)
+    except Exception:
+        return None, None
+    return maximum, current
+
+
+def _sgo_429_message():
+    usage = _load_sgo_usage()
+    limits = usage.get("rateLimits") or {}
+
+    # Monthly object exhaustion will not clear after a one-minute cooldown.
+    monthly = limits.get("per-month") or limits.get("monthly") or {}
+    max_month = monthly.get("max-entities") or monthly.get("maxEntitiesPerInterval")
+    cur_month = monthly.get("current-entities") or monthly.get("currentIntervalEntities")
+    try:
+        if str(max_month).lower() != "unlimited" and float(cur_month) >= float(max_month):
+            return (
+                "SportsGameOdds has reached the current plan's monthly data allowance. "
+                "CFB games and rosters remain available; player-prop rankings will resume when the provider allowance resets."
+            )
+    except Exception:
+        pass
+
+    minute = limits.get("per-minute") or limits.get("minute") or {}
+    max_min = minute.get("max-requests") or minute.get("maxRequestsPerInterval")
+    cur_min = minute.get("current-requests") or minute.get("currentIntervalRequests")
+    try:
+        if str(max_min).lower() != "unlimited" and float(cur_min) >= float(max_min):
+            return "SportsGameOdds hit its short-term request limit. Cached CFB data will be used until the limit resets."
+    except Exception:
+        pass
+
+    return "SportsGameOdds is temporarily rate-limited. Cached CFB data will be used until the provider resets the limit."
+
+
 def _american_to_probability(value):
     try:
         number = float(str(value).replace("+", "").strip())
@@ -186,10 +261,8 @@ def _load_sgo():
             params={
                 "leagueID": SGO_LEAGUE_ID,
                 "oddsAvailable": "true",
-                "finalized": "false",
-                "startsAfter": (now - timedelta(hours=6)).isoformat().replace("+00:00", "Z"),
-                "startsBefore": (now + timedelta(days=10)).isoformat().replace("+00:00", "Z"),
-                "limit": 100,
+                "startsBefore": (now + timedelta(days=8)).isoformat().replace("+00:00", "Z"),
+                "limit": 35,
             },
             timeout=30,
         )
@@ -202,7 +275,7 @@ def _load_sgo():
             stale = _read_json(SGO_SNAPSHOT)
             if stale:
                 return {"status": "stale", "provider": "SportsGameOdds", "data": stale.get("data", []), "message": "SportsGameOdds is rate-limited; using the last successful CFB snapshot."}
-            return {"status": "rate_limited", "provider": "SportsGameOdds", "data": [], "message": "SportsGameOdds is temporarily rate-limited."}
+            return {"status": "rate_limited", "provider": "SportsGameOdds", "data": [], "message": _sgo_429_message()}
 
         response.raise_for_status()
         payload = response.json()
