@@ -8,8 +8,8 @@ import streamlit as st
 
 TZ = ZoneInfo("America/Toronto")
 HISTORY = Path(__file__).parents[1] / "data" / "cfb_prediction_performance_history.json"
-MARKETS = ["Passing Yards","Passing Attempts","Completions","Rushing Yards","Rushing Attempts","Receiving Yards","Receptions","Anytime TD","First TD"]
-ICONS = {"Passing Yards":"🏈","Passing Attempts":"🔁","Completions":"✅","Rushing Yards":"🏃","Rushing Attempts":"💨","Receiving Yards":"🙌","Receptions":"🧤","Anytime TD":"🔥","First TD":"1️⃣"}
+MARKETS = ["Passing Yards","Pass Incompletions","Rushing Yards","Receiving Yards","Receptions","Anytime TD","First TD"]
+ICONS = {"Passing Yards":"🏈","Pass Incompletions":"❌","Rushing Yards":"🏃","Receiving Yards":"🙌","Receptions":"🧤","Anytime TD":"🔥","First TD":"1️⃣"}
 
 def _load():
     try: data=json.loads(HISTORY.read_text(encoding="utf-8"))

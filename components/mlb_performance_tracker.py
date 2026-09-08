@@ -254,16 +254,17 @@ def _styles() -> None:
             div[class*="st-key-mlb_batter_performance_period"],
             div[class*="st-key-mlb_pitcher_performance_period"],
             div[class*="st-key-mlb_emerging_power_period"]{
-                width:calc(100vw - 18px)!important;
-                max-width:calc(100vw - 18px)!important;
-                overflow:visible!important;
+                width:100%!important;
+                max-width:100%!important;
+                min-width:0!important;
+                overflow:hidden!important;
             }
             div[class*="st-key-mlb_batter_performance_period"] [data-testid="stSegmentedControl"],
             div[class*="st-key-mlb_pitcher_performance_period"] [data-testid="stSegmentedControl"],
             div[class*="st-key-mlb_emerging_power_period"] [data-testid="stSegmentedControl"]{
-                width:108%!important;
-                max-width:none!important;
-                transform-origin:left center!important;
+                width:100%!important;
+                max-width:100%!important;
+                min-width:0!important;
             }
             div[class*="st-key-mlb_batter_performance_period"] button,
             div[class*="st-key-mlb_pitcher_performance_period"] button,
