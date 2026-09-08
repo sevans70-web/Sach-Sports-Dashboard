@@ -1,6 +1,7 @@
 from __future__ import annotations
 from html import escape
 from zoneinfo import ZoneInfo
+from datetime import datetime, timedelta
 import pandas as pd
 import requests
 import streamlit as st
@@ -11,9 +12,14 @@ ROSTER="https://site.api.espn.com/apis/site/v2/sports/football/college-football/
 
 def html(x): st.markdown(" ".join(line.strip() for line in x.splitlines() if line.strip()),unsafe_allow_html=True)
 
-@st.cache_data(ttl=180,show_spinner=False)
+@st.cache_data(ttl=300,show_spinner=False)
 def games():
-    r=requests.get(SCOREBOARD,params={"limit":150,"groups":80},timeout=20); r.raise_for_status(); rows=[]
+    # ESPN defaults can collapse to the current day. Ask explicitly for the
+    # upcoming two-week window so Thursday/Saturday and next-week games remain visible.
+    start=pd.Timestamp.now(tz=TZ).date()
+    end=start+timedelta(days=14)
+    date_range=f"{start.strftime('%Y%m%d')}-{end.strftime('%Y%m%d')}"
+    r=requests.get(SCOREBOARD,params={"limit":300,"groups":80,"dates":date_range},timeout=20); r.raise_for_status(); rows=[]
     for e in r.json().get("events",[]):
         c=(e.get("competitions") or [{}])[0]; comps=c.get("competitors") or []; h=next((x for x in comps if x.get("homeAway")=="home"),{}); a=next((x for x in comps if x.get("homeAway")=="away"),{}); stt=(e.get("status") or {}).get("type") or {}; v=c.get("venue") or {}
         def team(x): return x.get("team") or {}

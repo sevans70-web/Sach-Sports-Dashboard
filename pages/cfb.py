@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from html import escape
 from zoneinfo import ZoneInfo
 
@@ -36,9 +36,15 @@ def _render_html(html: str) -> None:
 
 @st.cache_data(ttl=300, show_spinner=False)
 def _load_scoreboard() -> pd.DataFrame:
+    start = datetime.now(TORONTO_TIMEZONE).date()
+    end = start + timedelta(days=14)
     response = requests.get(
         ESPN_SCOREBOARD,
-        params={"limit": 150, "groups": 80},
+        params={
+            "limit": 300,
+            "groups": 80,
+            "dates": f"{start.strftime('%Y%m%d')}-{end.strftime('%Y%m%d')}",
+        },
         timeout=20,
     )
     response.raise_for_status()
@@ -160,13 +166,22 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
     gi = row.get("gi_score")
     mode = str(row.get("ranking_mode") or "Market Foundation")
 
+    line_type = str(row.get("line_type") or "market")
     projection = "Projection pending"
     if model is not None and not pd.isna(model):
-        projection = f"Model probability {float(model):.1f}%"
+        projection = (
+            f"Model confidence {float(model):.1f}%"
+            if line_type == "projection"
+            else f"Model probability {float(model):.1f}%"
+        )
 
     market_text = mode
     if line is not None and not pd.isna(line):
-        market_text = f"Market line {float(line):.1f}"
+        market_text = (
+            f"Model projection {float(line):.1f}"
+            if line_type == "projection"
+            else f"Market line {float(line):.1f}"
+        )
 
     gi_text = "—" if gi is None or pd.isna(gi) else f"{float(gi):.1f}"
 
@@ -200,7 +215,7 @@ def _render_rank_card(row: pd.Series, prop: str) -> None:
         verified = bool(row.get("stats_verified", False))
         metrics = [
             ("MODEL", f"{float(model):.1f}%" if model is not None and not pd.isna(model) else "—"),
-            ("MARKET", f"{float(market):.1f}%" if market is not None and not pd.isna(market) else "—"),
+            ("SOURCE", "ESPN Model" if str(row.get("line_type") or "market") == "projection" else (f"Market {float(market):.1f}%" if market is not None and not pd.isna(market) else "Market")),
             ("PER GAME", f"{float(per_game):.1f}" if per_game is not None and not pd.isna(per_game) else "—"),
             ("DATA", f"{int(stats_year)}" if verified and stats_year else "Market"),
         ]
@@ -218,7 +233,7 @@ def _render_rankings() -> None:
         """
         <div class="cfb-rankings-heading">
           <strong>🏆 Player Rankings</strong>
-          <span>Market-specific intelligence · Top players first · swipe the markets for more</span>
+          <span>Sportsbook-backed when available · ESPN model fallback when unavailable · swipe the markets for more</span>
         </div>
         """
     )
