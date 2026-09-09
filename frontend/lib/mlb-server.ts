@@ -4,6 +4,7 @@ import type { MlbGame, RankingRow } from "./mlb";
 
 const MLB_SCHEDULE = "https://statsapi.mlb.com/api/v1/schedule";
 const MLB_FEED = "https://statsapi.mlb.com/api/v1.1/game";
+const MLB_API = "https://statsapi.mlb.com/api/v1";
 const TORONTO = "America/Toronto";
 
 function safe(obj: unknown, path: string[], fallback: unknown = null): any {
