@@ -1,0 +1,27 @@
+:root{
+  --black:#050a12;
+  --panel:#0b1724;
+  --panel2:#102238;
+  --line:#27435b;
+  --white:#f7f9ff;
+  --muted:#a7b6c8;
+  --green:#27d7c4;
+  --gold:#9b8afb;
+}
+body{
+  background:
+    radial-gradient(circle at 82% 0,rgba(155,138,251,.15),transparent 30rem),
+    radial-gradient(circle at 0 35%,rgba(39,215,196,.08),transparent 28rem),
+    var(--black);
+}
+.sportCard,.rankingCard{box-shadow:0 14px 34px rgba(0,0,0,.2)}
+.tabBar button.selected,.marketSelector button.active{
+  background:linear-gradient(135deg,#27d7c4,#65e2aa);
+  color:#03131a;
+}
+.migrationStatus,.performanceNotice{
+  border-color:rgba(39,215,196,.44);
+  background:linear-gradient(135deg,rgba(39,215,196,.08),rgba(155,138,251,.06));
+}
+.dataWarning{border-color:#6d63bd;background:#15142b;color:#c9c1ff}
+.playerPhoto,.playerPanelHead img{border-color:var(--gold)}
