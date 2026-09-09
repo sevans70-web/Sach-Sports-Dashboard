@@ -65,7 +65,11 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
     const feeds = await Promise.all(games.map(async g => {
       try { return await getGameFeed(String(g.gamePk)); } catch { return null; }
     }));
-    lineupsConfirmed = feeds.reduce((n, f) => n + ((f?.away?.lineup?.length ?? 0) >= 9 ? 1 : 0) + ((f?.home?.lineup?.length ?? 0) >= 9 ? 1 : 0), 0);
+    lineupsConfirmed = feeds.reduce((n, f) => {
+      const awayCount = Array.isArray(f?.away?.lineup) ? f.away.lineup.length : 0;
+      const homeCount = Array.isArray(f?.home?.lineup) ? f.home.lineup.length : 0;
+      return n + (awayCount >= 9 ? 1 : 0) + (homeCount >= 9 ? 1 : 0);
+    }, 0);
   } catch {}
   return { games, fetchedAt: new Date().toISOString(), date: requestedDate, lineupsConfirmed };
 }
