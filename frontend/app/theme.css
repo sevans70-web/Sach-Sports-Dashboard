@@ -1,27 +1,35 @@
 :root{
-  --black:#050706;
-  --panel:#0e1210;
-  --panel2:#151a17;
-  --line:#303a34;
-  --white:#f7f8f7;
-  --muted:#a7afa9;
-  --green:#20df7f;
-  --gold:#d9b85d;
+  --black:#000000;
+  --panel:#101112;
+  --panel2:#0d0f10;
+  --line:#34383d;
+  --white:#ffffff;
+  --muted:#a7abb2;
+  --green:#19d978;
+  --gold:#d6b35c;
 }
 body{
-  background:
-    radial-gradient(circle at 82% 0,rgba(32,223,127,.09),transparent 30rem),
-    radial-gradient(circle at 0 38%,rgba(217,184,93,.055),transparent 26rem),
-    var(--black);
+  background:#000000;
 }
-.sportCard,.rankingCard{box-shadow:0 14px 34px rgba(0,0,0,.26)}
+.platformHeader{background:#000000;border-bottom-color:#34383d}
+.sportCard,.rankingCard{box-shadow:none}
+.sportCard,.rankingCard,.gameCard{background:linear-gradient(135deg,#101112,#0d0f10);border-color:#34383d}
 .tabBar button.selected,.marketSelector button.active{
-  background:linear-gradient(135deg,#20df7f,#65e59e);
-  color:#031008;
+  background:#19d978;
+  color:#020805;
 }
 .migrationStatus,.performanceNotice{
-  border-color:rgba(32,223,127,.44);
-  background:linear-gradient(135deg,rgba(32,223,127,.075),rgba(217,184,93,.045));
+  border-color:rgba(25,217,120,.58);
+  background:linear-gradient(115deg,#101112,#111315 68%,rgba(214,179,92,.07));
 }
-.dataWarning{border-color:#8b7337;background:#19160d;color:#e5cd88}
+.dataWarning{border-color:#d6b35c;background:#101112;color:#e6d29b}
 .playerPhoto,.playerPanelHead img{border-color:var(--gold)}
+.wnbaSnapshot>span{background:#101112;border:2px solid #34383d}
+.wnbaSnapshot>span:first-child{border-color:#19d978}
+.wnbaSnapshot>span:last-child{border-color:#d6b35c}
+.wnbaSnapshot>span:last-child b{color:#f0c43f}
+.rankingCard{border-left-color:#19d978}
+.rankingCopy strong,.playerPanelHead strong,.intelligenceCopy h3{color:#d6b35c}
+.rankingMetrics span,.playerStatGrid span,.intelligenceCopy{background:#101112;border-color:#34383d}
+.intelligenceButton,.showRankings{background:#080909;border-color:#19d978;color:#ffffff}
+.playerPanel{background:#080909;border-color:#19d978}
