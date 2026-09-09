@@ -9,23 +9,37 @@ type PerformanceResponse = { success:boolean; connected:boolean; batter:any; pit
 
 function useJson<T>(url:string,fallback:T){const[data,setData]=useState<T>(fallback);const[loading,setLoading]=useState(true);useEffect(()=>{let live=true;const load=()=>fetch(url,{cache:"no-store"}).then(r=>r.json()).then(v=>live&&setData(v)).catch(()=>{}).finally(()=>live&&setLoading(false));load();const id=setInterval(load,30000);return()=>{live=false;clearInterval(id)}},[url]);return{data,loading}}
 function historyRows(payload:any){return Object.entries(payload?.days||{}).sort(([a],[b])=>String(b).localeCompare(String(a)))}
-function aggregate(payload:any,period:string){const rows=historyRows(payload);const now=new Date();let settled=0,correct=0,pending=0;for(const[date,day]of rows as any[]){const diff=Math.floor((+now-+new Date(`${date}T12:00:00`))/86400000);const include=period==="Today"?diff===0:period==="Yesterday"?diff===1:period==="Week"?diff>=0&&diff<7:period==="Month"?diff>=0&&diff<31:true;if(!include)continue;for(const cat of Object.values(day?.categories||{}) as any[])for(const row of(Array.isArray(cat)?cat:[])){const boolCorrect=typeof row?.correct==="boolean"?row.correct:null;const finalized=row?.finalized===true;const label=String(row?.result_label||row?.status||row?.result||"").toLowerCase();const isSettled=boolCorrect!==null||finalized||/hit|miss|win|loss|won|lost|correct|incorrect/.test(label);if(!isSettled){pending++;continue}settled++;if(boolCorrect===true||/hit|win|won|correct/.test(label))correct++;}}return{settled,correct,pending,hitRate:settled?(correct/settled*100).toFixed(1):"0.0"}}
+function aggregate(payload:any,period:string){const rows=historyRows(payload);const now=new Date();let settled=0,correct=0,pending=0;for(const[date,day]of rows as any[]){const diff=Math.floor((+now-+new Date(`${date}T12:00:00`))/86400000);const include=period==="Today"?diff===0:period==="Yesterday"?diff===1:period==="Week"?diff>=0&&diff<7:period==="Month"?diff>=0&&diff<31:true;if(!include)continue;for(const cat of Object.values(day?.categories||{}) as any[])for(const row of(Array.isArray(cat)?cat:[])){if(typeof row?.correct==="boolean"){settled++;if(row.correct)correct++;continue}if(row?.finalized===true&&typeof row?.absolute_error==="number"){settled++;if(row.absolute_error<=1)correct++;continue}pending++;}}return{settled,correct,pending,hitRate:settled?(correct/settled*100).toFixed(1):"0.0"}}
 
 function RankingCard({row,pitcher=false}:{row:RankingRow;pitcher?:boolean}){
+  const [open,setOpen]=useState(false);
   const id=rankingPlayerId(row),name=rankingName(row),image=String(row.headshot_url||playerHeadshot(id));
   const gi=numberValue(row.gi_score,1), team=String(row.team_abbreviation||row.team_name||"MLB"),opp=String(row.opponent_abbreviation||row.opponent_name||"");
+  const teamId=Number((row as any).team_id||(row as any).teamId||0);
+  const logo=teamId?`https://www.mlbstatic.com/team-logos/${teamId}.svg`:String((row as any).team_logo_url||"");
   const probability=percentValue(row.hr_probability??row.probability),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
   const confirmed=row.lineup_confirmed!==false;
-  return <article className={`origRankCard ${pitcher?"pitcher":"batter"}`}>
+  const summary=String((row as any).summary||(row as any).reason||(row as any).intelligence_summary||(pitcher?"Ranked by workload, season rates, matchup and sample reliability.":"GI score blends performance, matchup, lineup position, park/weather and sample reliability."));
+  const evidence=String((row as any).performance_evidence||(row as any).market_evidence||(row as any).recent_form||summary);
+  const why=String((row as any).why_this_player||(row as any).ranking_reason||(row as any).why_ranked||summary);
+  const statcast=String((row as any).statcast_summary||(row as any).contact_quality||(row as any).contact_summary||"");
+  return <article className={`origRankCard ${pitcher?"pitcher":"batter"} ${open?"expanded":""}`}>
     <div className="origRank">#{Number(row.rank||0)||"—"}<span>−</span></div>
-    <img className="origHeadshot" src={image} alt=""/>
+    <div className="origPhotoWrap"><img className="origHeadshot" src={image} alt=""/>{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>
       {pitcher?<><div className="origProp"><b>Projection:</b> {projection} K</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
-      <p>{String((row as any).summary||(row as any).reason||(row as any).intelligence_summary||(pitcher?"Ranked by workload, season rates, matchup and sample reliability.":"GI score blends performance, matchup, lineup position, park/weather and sample reliability."))}</p>
+      <p>{summary}</p>
       <span className="confirmed">✓ {confirmed?"Confirmed lineup":"Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>
     </div>
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
-    {id?<Link className="origIntel" href={`/mlb/player/${id}`}>ⓘ View Intelligence</Link>:<button className="origIntel" disabled>ⓘ View Intelligence</button>}
+    <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>
+    {open?<div className="origInlineIntel">
+      <div className="intelKpis"><article><span>GI Score</span><strong>{gi}</strong></article><article><span>{pitcher?"Projection":"Probability"}</span><strong>{pitcher?`${projection} K`:probability}</strong></article><article><span>Lineup</span><strong>{confirmed?"Confirmed":"Pending"}</strong></article></div>
+      <details><summary>› Market Performance Evidence</summary><p>{evidence}</p></details>
+      {!pitcher&&statcast?<details><summary>› Statcast Contact Quality</summary><p>{statcast}</p></details>:null}
+      <details><summary>› Why This {pitcher?"Pitcher":"Player"} Ranks Here</summary><p>{why}</p></details>
+      {id?<Link className="openFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}`}>Open full player card</Link>:null}
+    </div>:null}
   </article>
 }
 
