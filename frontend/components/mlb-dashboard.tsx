@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BATTER_MARKETS, PITCHER_MARKETS, playerHeadshot, rankingName, rankingPlayerId, numberValue, percentValue, type RankingRow } from "@/lib/mlb";
 
 type ScheduleResponse = { success:boolean; games:any[]; fetchedAt?:string; lineupsConfirmed?:number; error?:string };
-type RankingResponse = { success:boolean; batter:Record<string,RankingRow[]>; pitcher:Record<string,RankingRow[]>; connected:boolean; errors?:string[]; updatedAt?:string; dataDate?:string };
+type RankingResponse = { success:boolean; batter:Record<string,RankingRow[]>; pitcher:Record<string,RankingRow[]>; connected:boolean; errors?:string[]; updatedAt?:string; dataDate?:string; batterDataDate?:string|null; pitcherDataDate?:string|null; requestedDate?:string; stale?:boolean; batterStale?:boolean; pitcherStale?:boolean };
 type PerformanceResponse = { success:boolean; connected:boolean; batter:any; pitcher:any; emerging:any; hrIntelligence?:{live?:any[];yesterdayWatch?:any[];yesterday?:any[];emergingToday?:any[]}; errors?:string[] };
 
 function useJson<T>(url:string,fallback:T){const[data,setData]=useState<T>(fallback);const[loading,setLoading]=useState(true);useEffect(()=>{let live=true;const load=()=>fetch(url,{cache:"no-store"}).then(r=>r.json()).then(v=>live&&setData(v)).catch(()=>{}).finally(()=>live&&setLoading(false));load();const id=setInterval(load,30000);return()=>{live=false;clearInterval(id)}},[url]);return{data,loading}}
@@ -132,6 +132,7 @@ export function MlbDashboard(){
 
     <section className="origSection rankings"><div className="origRankingsHeader"><h2>Player Rankings</h2><p>Market-specific intelligence · live matchup context</p></div>
       {!rankings.loading&&!rankings.data.connected?<div className="origDataNote"><b>Data connection required:</b> add the existing Supabase variables to this Railway service. The page will populate automatically after redeploy.</div>:null}
+      {!rankings.loading&&rankings.data.stale?<div className="origDataNote"><b>Ranking refresh pending:</b> showing the latest saved MLB Top 25 from {rankings.data.dataDate||"the previous slate"}. Today&apos;s rankings will replace it automatically when the dated snapshot is available.</div>:null}
       <div className="origTabs two"><button className={role==="Batter"?"active":""} onClick={()=>setRole("Batter")}>🥎 Batter</button><button className={role==="Pitcher"?"active":""} onClick={()=>setRole("Pitcher")}>⚾ Pitcher</button></div>
       <div className="origTabs markets">{marketList.map(([key,icon,label])=><button key={key} className={market===key?"active":""} onClick={()=>setMarket(key)}>{icon} {label}</button>)}</div>
       <div className="origMarketHead"><h2>{activeMarket[1]} {activeMarket[2]}{role==="Batter"?" Rankings":""}</h2><p>{role==="Batter"?"Ranked by GI Score. Probability is one component of the score, alongside player performance, matchup, lineup position, ballpark, weather, and sample reliability.":"Ranked by pitcher GI score using workload, season rates, sample reliability, matchup and opponent handedness."}</p></div>
