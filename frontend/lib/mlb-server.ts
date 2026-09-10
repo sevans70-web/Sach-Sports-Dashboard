@@ -213,8 +213,8 @@ async function finalStatusMap(gamePks:string[]){
 }
 function freezeBatter(row:any,category:string,index:number){return{...row,category,rank:Number(row?.rank||index+1),player_id:row?.player_id,player_name:row?.player_name||row?.player,game_pk:row?.game_pk||row?.gamePk||row?.game_id,gi_score:Number(row?.gi_score||row?.score||0),first_seen_at:new Date().toISOString(),correct:typeof row?.correct==="boolean"?row.correct:null}}
 function freezePitcher(row:any,category:string,index:number){return{...row,category,rank:Number(row?.rank||index+1),pitcher_id:row?.pitcher_id||row?.player_id,pitcher_name:row?.pitcher_name||row?.player_name,game_pk:row?.game_pk||row?.gamePk||row?.game_id,projection:Number(row?.projection||0),first_seen_at:new Date().toISOString(),finalized:row?.finalized===true}}
-function ensureTodayHistory(history:any,rankings:Record<string,RankingRow[]>,pitcher=false){
-  const out=structuredClone(history||{schema_version:1,days:{}});out.days=out.days||{};const day=torontoDay();out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};
+function ensureHistoryForDay(history:any,rankings:Record<string,RankingRow[]>,day:string,pitcher=false){
+  const out=structuredClone(history||{schema_version:1,days:{}});out.days=out.days||{};out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};
   for(const cat of (pitcher?PITCHER_CATEGORIES:BATTER_CATEGORIES)){
     const existing=canonicalRows(out.days[day].categories[cat]||[],pitcher,25);const source=Array.isArray(rankings?.[cat])?rankings[cat]:[];
     const seen=new Set(existing.map((r:any)=>historyRowKey(r,pitcher)));const filled=[...existing];
@@ -230,8 +230,8 @@ function buildEmergingCandidates(raw:any[]){
   }).map((r:any)=>({...r,season_home_runs:numAny(r?.season_home_runs||r?.season_stats?.home_runs||r?.season_stats?.homeRuns)}));
   candidates.sort((a:any,b:any)=>numAny(b?.gi_score||b?.score)-numAny(a?.gi_score||a?.score));return candidates.slice(0,10);
 }
-function ensureEmergingToday(history:any,rawHomeRuns:any[]){
-  const out=structuredClone(history&&typeof history==="object"?history:{schema_version:1,days:{}});out.days=out.days||{};const day=torontoDay();out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};let rows=canonicalRows(out.days[day].categories.emerging_power||[],false,10);if(rows.length<10){const seen=new Set(rows.map((r:any)=>historyRowKey(r,false)));for(const r of buildEmergingCandidates(rawHomeRuns)){const x={...freezeBatter(r,"home_runs",rows.length),tracking_source:"emerging_power",emerging_rank:rows.length+1};const k=historyRowKey(x,false);if(k&&!seen.has(k)){rows.push(x);seen.add(k)}if(rows.length>=10)break}}out.days[day].categories.emerging_power=rows;return out;
+function ensureEmergingForDay(history:any,rawHomeRuns:any[],day:string){
+  const out=structuredClone(history&&typeof history==="object"?history:{schema_version:1,days:{}});out.days=out.days||{};out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};let rows=canonicalRows(out.days[day].categories.emerging_power||[],false,10);if(rows.length<10){const seen=new Set(rows.map((r:any)=>historyRowKey(r,false)));for(const r of buildEmergingCandidates(rawHomeRuns)){const x={...freezeBatter(r,"home_runs",rows.length),tracking_source:"emerging_power",emerging_rank:rows.length+1};const k=historyRowKey(x,false);if(k&&!seen.has(k)){rows.push(x);seen.add(k)}if(rows.length>=10)break}}out.days[day].categories.emerging_power=rows;return out;
 }
 async function dailyPlayerResults(dayKey:string){
   const scheduleUrl=new URL(MLB_SCHEDULE);scheduleUrl.searchParams.set("sportId","1");scheduleUrl.searchParams.set("date",dayKey);
@@ -340,17 +340,25 @@ function emergingExplanation(r:any){
 export async function getPerformance(){
   const [batter,pitcher,emerging,rankingData]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings()]);
   let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
-  mergedBatter=ensureTodayHistory(mergedBatter,rankingData.batter,false);mergedPitcher=ensureTodayHistory(mergedPitcher,rankingData.pitcher,true);
-  let emergingHistory=ensureEmergingToday(emerging.payload||{},rankingData.batter?.home_runs||[]);
+  const today=torontoDay();
+  // Freeze rankings under the date carried by the source snapshot, not blindly
+  // under the current Toronto date. This matters at midnight: a Sep 9 ranking
+  // snapshot can still be the latest source after the clock turns to Sep 10.
+  // Saving that slate as Sep 10 would erase Sep 9 from Yesterday and corrupt
+  // Week / Month / Season totals.
+  const sourceDay=/^\d{4}-\d{2}-\d{2}$/.test(String(rankingData.dataDate||""))?String(rankingData.dataDate):today;
+  mergedBatter=ensureHistoryForDay(mergedBatter,rankingData.batter,sourceDay,false);
+  mergedPitcher=ensureHistoryForDay(mergedPitcher,rankingData.pitcher,sourceDay,true);
+  let emergingHistory=ensureEmergingForDay(emerging.payload||{},rankingData.batter?.home_runs||[],sourceDay);
   const [batterRefreshed,pitcherRefreshed,emergingRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher),refreshBatterHistory(emergingHistory)]);
-  const yesterday=torontoDay(-1);const today=torontoDay();const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);
+  const yesterday=torontoDay(-1);const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);
   const emergingToday=(emergingRefreshed?.days?.[today]?.categories?.emerging_power||[]).slice(0,10).map((r:any)=>({...r,explanation:emergingExplanation(r)}));
   let archiveSaved=false;
   if(Date.now()-lastPerformanceArchiveAt>=5*60*1000){
     const saved=await Promise.all([savePerformanceArchive("mlb_batter_performance_history",batterRefreshed,today),savePerformanceArchive("mlb_pitcher_performance_history",pitcherRefreshed,today),savePerformanceArchive("mlb_emerging_power_history",emergingRefreshed,today)]);
     archiveSaved=saved.every(Boolean);if(archiveSaved)lastPerformanceArchiveAt=Date.now();
   } else archiveSaved=true;
-  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
+  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
 }
 
 export async function getGameFeed(gamePk: string) {
