@@ -126,70 +126,104 @@ export async function getRankings() {
   };
 }
 
-function dayQuality(day:any, pitcher=false) {
-  let settled=0,total=0; for(const rows of Object.values(day?.categories||{}) as any[]){if(!Array.isArray(rows))continue;total+=rows.length;for(const r of rows){if(pitcher?(r?.finalized===true&&typeof r?.absolute_error==="number"):typeof r?.correct==="boolean")settled++;}}
-  return [settled,total,String(day?.captured_at||"")] as const;
+
+const BATTER_CATEGORIES = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"] as const;
+const PITCHER_CATEGORIES = ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"] as const;
+
+function torontoDay(offsetDays=0){
+  const now=new Date(Date.now()+offsetDays*86400000);
+  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:TORONTO,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(now);
+  const get=(t:string)=>parts.find(x=>x.type===t)?.value||"";
+  return `${get("year")}-${get("month")}-${get("day")}`;
 }
-function betterDay(a:any,b:any,pitcher=false){if(!a)return b;if(!b)return a;const qa=dayQuality(a,pitcher),qb=dayQuality(b,pitcher);return qb[0]>qa[0]||qb[0]===qa[0]&&qb[1]>qa[1]||qb[0]===qa[0]&&qb[1]===qa[1]&&qb[2]>qa[2]?b:a}
-function mergeHistory(stored:any,local:any,pitcher=false){const out:any={schema_version:Math.max(Number(stored?.schema_version||1),Number(local?.schema_version||1)),days:{}};const keys=new Set([...Object.keys(local?.days||{}),...Object.keys(stored?.days||{})]);for(const k of keys)out.days[k]=betterDay(local?.days?.[k],stored?.days?.[k],pitcher);return out}
+function historyRowKey(r:any,pitcher=false){
+  const person=pitcher?(r?.pitcher_id||r?.player_id||r?.pitcher_name||r?.player_name):(r?.player_id||r?.batter_id||r?.player_name||r?.player);
+  const personKey=String(person||"").trim().toLowerCase();
+  return pitcher?`${rowGamePk(r)}:${personKey}`:personKey;
+}
+function rowQuality(r:any,pitcher=false){
+  const settled=pitcher?(r?.finalized===true&&r?.actual!=null):(typeof r?.correct==="boolean");
+  const actual=pitcher?(r?.actual!=null):Object.keys(r||{}).some(k=>k.startsWith("actual_"))||r?.actual!=null;
+  return [settled?1:0,actual?1:0,String(r?.first_seen_at||"")] as const;
+}
+function canonicalRows(rows:any[],pitcher=false,limit=25){
+  const by=new Map<string,any>(),order:string[]=[];
+  for(const raw of Array.isArray(rows)?rows:[]){
+    if(!raw||typeof raw!=="object")continue;
+    const key=historyRowKey(raw,pitcher); if(!key||key.endsWith(":"))continue;
+    if(!by.has(key)){by.set(key,{...raw});order.push(key);continue;}
+    const a=rowQuality(raw,pitcher),b=rowQuality(by.get(key),pitcher);
+    if(a[0]>b[0]||(a[0]===b[0]&&a[1]>b[1])||(a[0]===b[0]&&a[1]===b[1]&&a[2]>b[2]))by.set(key,{...raw});
+  }
+  return order.slice(0,limit).map(k=>by.get(k));
+}
+function mergeDay(primary:any,fallback:any,pitcher=false){
+  const out:any={captured_at:[String(primary?.captured_at||""),String(fallback?.captured_at||"")].sort().pop()||"",categories:{}};
+  const a=primary?.categories||{},b=fallback?.categories||{};
+  for(const cat of new Set([...Object.keys(a),...Object.keys(b)])){
+    const all=[...(Array.isArray(b[cat])?b[cat]:[]),...(Array.isArray(a[cat])?a[cat]:[])];
+    out.categories[cat]=canonicalRows(all,pitcher,cat==="emerging_power"?10:25);
+  }
+  return out;
+}
+function mergeHistory(stored:any,local:any,pitcher=false){
+  const out:any={schema_version:Math.max(Number(stored?.schema_version||1),Number(local?.schema_version||1)),days:{}};
+  const keys=new Set([...Object.keys(local?.days||{}),...Object.keys(stored?.days||{})]);
+  for(const k of [...keys].sort()){
+    const a=stored?.days?.[k],b=local?.days?.[k];
+    out.days[k]=a&&b?mergeDay(a,b,pitcher):(a||b);
+  }
+  return out;
+}
 function rowGamePk(r:any){return String(r?.game_pk||r?.gamePk||r?.game_id||"")}
 function rowPlayerId(r:any,pitcher=false){return String(pitcher?(r?.pitcher_id||r?.player_id||""):(r?.player_id||r?.batter_id||""))}
 async function getBoxscore(gamePk:string){if(!gamePk)return null;try{const r=await fetch(`${MLB_API}/game/${gamePk}/boxscore`,{next:{revalidate:30}});return r.ok?await r.json():null}catch{return null}}
 function playerStats(box:any,id:string,sideStat:"batting"|"pitching"){for(const side of ["away","home"]){const p=box?.teams?.[side]?.players?.[`ID${id}`];if(p?.stats?.[sideStat])return p.stats[sideStat]}return null}
 async function finalStatusMap(gamePks:string[]){
   const map=new Map<string,boolean>();
-  await Promise.all(gamePks.map(async g=>{
-    try{
-      const sched=await fetch(`${MLB_API}/schedule?sportId=1&gamePk=${encodeURIComponent(g)}`,{next:{revalidate:30}}).then(x=>x.ok?x.json():null);
-      const status=String(sched?.dates?.[0]?.games?.[0]?.status?.abstractGameState||sched?.dates?.[0]?.games?.[0]?.status?.detailedState||"");
-      map.set(g,/final|game over|completed/i.test(status));
-    }catch{map.set(g,false)}
-  }));
+  await Promise.all(gamePks.map(async g=>{try{const sched=await fetch(`${MLB_API}/schedule?sportId=1&gamePk=${encodeURIComponent(g)}`,{next:{revalidate:30}}).then(x=>x.ok?x.json():null);const status=String(sched?.dates?.[0]?.games?.[0]?.status?.abstractGameState||sched?.dates?.[0]?.games?.[0]?.status?.detailedState||"");map.set(g,/final|game over|completed/i.test(status))}catch{map.set(g,false)}}));
   return map;
 }
-async function refreshBatterHistory(history:any){
-  const copy=structuredClone(history||{days:{}}),need=new Set<string>();
-  for(const day of Object.values(copy.days||{}) as any[]) for(const rows of Object.values(day?.categories||{}) as any[]) for(const r of Array.isArray(rows)?rows:[]) if(typeof r?.correct!=="boolean"&&rowGamePk(r)) need.add(rowGamePk(r));
-  const ids=[...need],boxes=new Map<string,any>(),finals=await finalStatusMap(ids);
-  await Promise.all(ids.map(async g=>{if(finals.get(g))boxes.set(g,await getBoxscore(g))}));
-  const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2};
-  for(const day of Object.values(copy.days||{}) as any[]) for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){
-    if(!Array.isArray(rows)||!(cat in thresholds))continue;
-    for(const r of rows){
-      if(typeof r?.correct==="boolean")continue;
-      const gamePk=rowGamePk(r); if(!finals.get(gamePk))continue;
-      const stat=playerStats(boxes.get(gamePk),rowPlayerId(r,false),"batting"); if(!stat)continue;
-      const actual:any={home_runs:Number(stat.homeRuns||0),hits:Number(stat.hits||0),total_bases:Number(stat.totalBases||0),runs:Number(stat.runs||0),rbis:Number(stat.rbi||0),walks:Number(stat.baseOnBalls||0),stolen_bases:Number(stat.stolenBases||0)};
-      actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;
-      r.correct=actual[cat]>=thresholds[cat]; r.game_finished=true; r.actual=actual[cat]; r.result_label=r.correct?"Hit":"Miss";
-    }
+function freezeBatter(row:any,category:string,index:number){return{...row,category,rank:Number(row?.rank||index+1),player_id:row?.player_id,player_name:row?.player_name||row?.player,game_pk:row?.game_pk||row?.gamePk||row?.game_id,gi_score:Number(row?.gi_score||row?.score||0),first_seen_at:new Date().toISOString(),correct:typeof row?.correct==="boolean"?row.correct:null}}
+function freezePitcher(row:any,category:string,index:number){return{...row,category,rank:Number(row?.rank||index+1),pitcher_id:row?.pitcher_id||row?.player_id,pitcher_name:row?.pitcher_name||row?.player_name,game_pk:row?.game_pk||row?.gamePk||row?.game_id,projection:Number(row?.projection||0),first_seen_at:new Date().toISOString(),finalized:row?.finalized===true}}
+function ensureTodayHistory(history:any,rankings:Record<string,RankingRow[]>,pitcher=false){
+  const out=structuredClone(history||{schema_version:1,days:{}});out.days=out.days||{};const day=torontoDay();out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};
+  for(const cat of (pitcher?PITCHER_CATEGORIES:BATTER_CATEGORIES)){
+    const existing=canonicalRows(out.days[day].categories[cat]||[],pitcher,25);const source=Array.isArray(rankings?.[cat])?rankings[cat]:[];
+    const seen=new Set(existing.map((r:any)=>historyRowKey(r,pitcher)));const filled=[...existing];
+    for(let i=0;i<source.length&&filled.length<25;i++){const row=pitcher?freezePitcher(source[i],cat,i):freezeBatter(source[i],cat,i);const key=historyRowKey(row,pitcher);if(key&&!seen.has(key)){filled.push(row);seen.add(key)}}
+    out.days[day].categories[cat]=filled.slice(0,25);
   }
+  return out;
+}
+function numAny(v:any){const n=Number(v);return Number.isFinite(n)?n:0}
+function buildEmergingCandidates(raw:any[]){
+  const candidates=(Array.isArray(raw)?raw:[]).filter((r:any)=>{
+    const rank=numAny(r?.rank||r?.hr_rank),season=r?.season_stats||{};const hr=numAny(r?.season_home_runs||season?.home_runs||season?.homeRuns);const pa=numAny(r?.season_plate_appearances||season?.plate_appearances||season?.plateAppearances||season?.pa);const gi=numAny(r?.gi_score||r?.score);const prob=numAny(r?.home_run_probability||r?.hr_probability||r?.probability);const stat=r?.statcast||{};const barrel=numAny(stat?.barrel_rate),hard=numAny(stat?.hard_hit_rate);return !(rank>=1&&rank<=25)&&hr<=18&&(hr<=15||(pa>0&&pa<=325))&&(gi>=52||prob>=10||barrel>=9||hard>=42||Array.isArray(r?.why)&&r.why.length>0)
+  }).map((r:any)=>({...r,season_home_runs:numAny(r?.season_home_runs||r?.season_stats?.home_runs||r?.season_stats?.homeRuns)}));
+  candidates.sort((a:any,b:any)=>numAny(b?.gi_score||b?.score)-numAny(a?.gi_score||a?.score));return candidates.slice(0,10);
+}
+function ensureEmergingToday(history:any,rawHomeRuns:any[]){
+  const out=structuredClone(history&&typeof history==="object"?history:{schema_version:1,days:{}});out.days=out.days||{};const day=torontoDay();out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};let rows=canonicalRows(out.days[day].categories.emerging_power||[],false,10);if(rows.length<10){const seen=new Set(rows.map((r:any)=>historyRowKey(r,false)));for(const r of buildEmergingCandidates(rawHomeRuns)){const x={...freezeBatter(r,"home_runs",rows.length),tracking_source:"emerging_power",emerging_rank:rows.length+1};const k=historyRowKey(x,false);if(k&&!seen.has(k)){rows.push(x);seen.add(k)}if(rows.length>=10)break}}out.days[day].categories.emerging_power=rows;return out;
+}
+async function refreshBatterHistory(history:any){
+  const copy=structuredClone(history||{days:{}}),targetDays=new Set([torontoDay(),torontoDay(-1)]),need=new Set<string>();
+  for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const rows of Object.values(day?.categories||{}) as any[])for(const r of Array.isArray(rows)?rows:[])if(rowGamePk(r))need.add(rowGamePk(r));
+  const ids=[...need],boxes=new Map<string,any>(),finals=await finalStatusMap(ids);await Promise.all(ids.map(async g=>{if(finals.get(g))boxes.set(g,await getBoxscore(g))}));
+  const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2,emerging_power:1};
+  for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in thresholds))continue;for(const r of rows){const gamePk=rowGamePk(r);if(!finals.get(gamePk))continue;const stat=playerStats(boxes.get(gamePk),rowPlayerId(r,false),"batting");if(!stat)continue;const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases)};actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;const key=cat==="emerging_power"?"home_runs":cat;r.correct=actual[key]>=thresholds[cat];r.game_finished=true;r.actual=actual[key];r.actual_home_runs=actual.home_runs;r.result_label=r.correct?"✅ Hit":"❌ Miss"}}
   return copy;
 }
 async function refreshPitcherHistory(history:any){
-  const copy=structuredClone(history||{days:{}}),need=new Set<string>();
-  for(const day of Object.values(copy.days||{}) as any[]) for(const rows of Object.values(day?.categories||{}) as any[]) for(const r of Array.isArray(rows)?rows:[]) if(!(r?.finalized===true&&typeof r?.absolute_error==="number")&&rowGamePk(r)) need.add(rowGamePk(r));
-  const ids=[...need],boxes=new Map<string,any>(),finals=await finalStatusMap(ids);
-  await Promise.all(ids.map(async g=>{if(finals.get(g))boxes.set(g,await getBoxscore(g))}));
-  const fields:any={strikeouts:"strikeOuts",outs_recorded:"outs",hits_allowed:"hits",walks_allowed:"baseOnBalls",earned_runs:"earnedRuns"};
-  for(const day of Object.values(copy.days||{}) as any[]) for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){
-    if(!Array.isArray(rows)||!(cat in fields))continue;
-    for(const r of rows){
-      if(r?.finalized===true&&typeof r?.absolute_error==="number")continue;
-      const gamePk=rowGamePk(r); if(!finals.get(gamePk))continue;
-      const stat=playerStats(boxes.get(gamePk),rowPlayerId(r,true),"pitching"); if(!stat)continue;
-      const actual=Number(stat[fields[cat]]||0),proj=Number(r?.projection??r?.[`projected_${cat}`]??0);
-      r.actual=actual; r.absolute_error=Math.abs(actual-proj); r.finalized=true; r.result_label=r.absolute_error<=1?"Within 1":"Outside 1";
-    }
-  }
-  return copy;
+  const copy=structuredClone(history||{days:{}}),targetDays=new Set([torontoDay(),torontoDay(-1)]),need=new Set<string>();for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const rows of Object.values(day?.categories||{}) as any[])for(const r of Array.isArray(rows)?rows:[])if(rowGamePk(r))need.add(rowGamePk(r));const ids=[...need],boxes=new Map<string,any>(),finals=await finalStatusMap(ids);await Promise.all(ids.map(async g=>{if(finals.get(g))boxes.set(g,await getBoxscore(g))}));const fields:any={strikeouts:"strikeOuts",outs_recorded:"outs",hits_allowed:"hits",walks_allowed:"baseOnBalls",earned_runs:"earnedRuns"};for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in fields))continue;for(const r of rows){const gamePk=rowGamePk(r);if(!finals.get(gamePk))continue;const stat=playerStats(boxes.get(gamePk),rowPlayerId(r,true),"pitching");if(!stat)continue;const actual=numAny(stat[fields[cat]]),proj=numAny(r?.projection??r?.[`projected_${cat}`]);r.actual=actual;r.absolute_error=Math.abs(actual-proj);r.finalized=true;r.result_label=r.absolute_error<=1?"Within 1":"Outside 1"}}return copy;
 }
 
 export async function getPerformance(){
-  const [batter,pitcher,emerging]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history")]);
-  const mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
-  const [batterRefreshed,pitcherRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher)]);
-  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emerging.payload||{},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
+  const [batter,pitcher,emerging,rankingData]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings()]);
+  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);mergedBatter=ensureTodayHistory(mergedBatter,rankingData.batter,false);mergedPitcher=ensureTodayHistory(mergedPitcher,rankingData.pitcher,true);let emergingHistory=ensureEmergingToday(emerging.payload||{},rankingData.batter?.home_runs||[]);
+  const [batterRefreshed,pitcherRefreshed,emergingRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher),refreshBatterHistory(emergingHistory)]);
+  const yesterday=torontoDay(-1);const today=torontoDay();
+  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,hrIntelligence:{yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday:(emergingRefreshed?.days?.[today]?.categories?.emerging_power||[]).slice(0,10)},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
 }
 
 export async function getGameFeed(gamePk: string) {
