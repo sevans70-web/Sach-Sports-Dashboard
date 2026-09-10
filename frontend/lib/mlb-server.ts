@@ -93,6 +93,33 @@ async function supabaseRows(path: string) {
   }
 }
 
+function supabaseWriteConfig() {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "";
+  return { url: url.replace(/\/$/, ""), key };
+}
+
+let lastPerformanceArchiveAt = 0;
+async function savePerformanceArchive(sourceName:string, payload:any, gameDate:string) {
+  // Keep one durable source_snapshots row per source/day. The route polls every
+  // 30 seconds, so throttle writes while still refreshing the current day.
+  if (Date.now() - lastPerformanceArchiveAt < 5 * 60 * 1000) return true;
+  const {url,key}=supabaseWriteConfig();
+  if(!url||!key)return false;
+  const headers:any={apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Accept:"application/json",Prefer:"return=minimal"};
+  try {
+    const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
+    const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
+    if(!existing.ok)return false;
+    const rows=await existing.json();
+    const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
+    const res=Array.isArray(rows)&&rows[0]?.id
+      ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
+      : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
+    return res.ok;
+  } catch { return false; }
+}
+
 export async function getSourceSnapshot(sourceName: string) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=1`);
   const row = result.rows?.[0] || null;
@@ -206,18 +233,57 @@ function buildEmergingCandidates(raw:any[]){
 function ensureEmergingToday(history:any,rawHomeRuns:any[]){
   const out=structuredClone(history&&typeof history==="object"?history:{schema_version:1,days:{}});out.days=out.days||{};const day=torontoDay();out.days[day]=out.days[day]||{captured_at:new Date().toISOString(),categories:{}};out.days[day].categories=out.days[day].categories||{};let rows=canonicalRows(out.days[day].categories.emerging_power||[],false,10);if(rows.length<10){const seen=new Set(rows.map((r:any)=>historyRowKey(r,false)));for(const r of buildEmergingCandidates(rawHomeRuns)){const x={...freezeBatter(r,"home_runs",rows.length),tracking_source:"emerging_power",emerging_rank:rows.length+1};const k=historyRowKey(x,false);if(k&&!seen.has(k)){rows.push(x);seen.add(k)}if(rows.length>=10)break}}out.days[day].categories.emerging_power=rows;return out;
 }
-async function refreshBatterHistory(history:any){
-  const copy=structuredClone(history||{days:{}}),targetDays=new Set([torontoDay(),torontoDay(-1)]),need=new Set<string>();
-  for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const rows of Object.values(day?.categories||{}) as any[])for(const r of Array.isArray(rows)?rows:[])if(rowGamePk(r))need.add(rowGamePk(r));
-  const ids=[...need],boxes=new Map<string,any>(),finals=await finalStatusMap(ids);await Promise.all(ids.map(async g=>{if(finals.get(g))boxes.set(g,await getBoxscore(g))}));
-  const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2,emerging_power:1};
-  for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in thresholds))continue;for(const r of rows){const gamePk=rowGamePk(r);if(!finals.get(gamePk))continue;const stat=playerStats(boxes.get(gamePk),rowPlayerId(r,false),"batting");if(!stat)continue;const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases)};actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;const key=cat==="emerging_power"?"home_runs":cat;r.correct=actual[key]>=thresholds[cat];r.game_finished=true;r.actual=actual[key];r.actual_home_runs=actual.home_runs;r.result_label=r.correct?"✅ Hit":"❌ Miss"}}
-  return copy;
-}
-async function refreshPitcherHistory(history:any){
-  const copy=structuredClone(history||{days:{}}),targetDays=new Set([torontoDay(),torontoDay(-1)]),need=new Set<string>();for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const rows of Object.values(day?.categories||{}) as any[])for(const r of Array.isArray(rows)?rows:[])if(rowGamePk(r))need.add(rowGamePk(r));const ids=[...need],boxes=new Map<string,any>(),finals=await finalStatusMap(ids);await Promise.all(ids.map(async g=>{if(finals.get(g))boxes.set(g,await getBoxscore(g))}));const fields:any={strikeouts:"strikeOuts",outs_recorded:"outs",hits_allowed:"hits",walks_allowed:"baseOnBalls",earned_runs:"earnedRuns"};for(const [dk,day] of Object.entries(copy.days||{}) as any[])if(targetDays.has(dk))for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in fields))continue;for(const r of rows){const gamePk=rowGamePk(r);if(!finals.get(gamePk))continue;const stat=playerStats(boxes.get(gamePk),rowPlayerId(r,true),"pitching");if(!stat)continue;const actual=numAny(stat[fields[cat]]),proj=numAny(r?.projection??r?.[`projected_${cat}`]);r.actual=actual;r.absolute_error=Math.abs(actual-proj);r.finalized=true;r.result_label=r.absolute_error<=1?"Within 1":"Outside 1"}}return copy;
+async function dailyPlayerResults(dayKey:string){
+  const scheduleUrl=new URL(MLB_SCHEDULE);scheduleUrl.searchParams.set("sportId","1");scheduleUrl.searchParams.set("date",dayKey);
+  let schedule:any=null;
+  try {
+    const response=await fetch(scheduleUrl,{next:{revalidate:dayKey===torontoDay()?30:3600}});
+    if(response.ok)schedule=await response.json();
+  } catch {}
+  const games:any[]=(schedule?.dates?.flatMap((d:any)=>d.games||[])||[]).filter((g:any)=>/final|game over|completed/i.test(String(g?.status?.abstractGameState||g?.status?.detailedState||"")));
+  const byId=new Map<string,any>(),byName=new Map<string,any>();
+  const norm=(v:any)=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase();
+  await Promise.all(games.map(async (g:any)=>{try{
+    const box=await getBoxscore(String(g.gamePk));
+    for(const side of ["away","home"]){for(const p of Object.values(box?.teams?.[side]?.players||{}) as any[]){
+      const id=String(p?.person?.id||"");const name=String(p?.person?.fullName||"");
+      const batting=p?.stats?.batting;const pitching=p?.stats?.pitching;
+      const row={id,name,batting,pitching,game_finished:true,game_pk:String(g.gamePk)};
+      if(id)byId.set(id,row);const nk=norm(name);if(nk)byName.set(nk,row);
+    }}
+  }catch{}}));
+  return {byId,byName,norm,finalGames:games.length};
 }
 
+async function refreshBatterHistory(history:any){
+  const copy=structuredClone(history||{days:{}});const today=torontoDay();
+  const dayKeys=Object.keys(copy.days||{}).filter(k=>{const diff=(new Date(`${today}T12:00:00Z`).getTime()-new Date(`${k}T12:00:00Z`).getTime())/86400000;return diff>=0&&diff<8});
+  const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2,emerging_power:1};
+  for(const dk of dayKeys){const results=await dailyPlayerResults(dk);const day=copy.days?.[dk];if(!day)continue;
+    for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in thresholds))continue;
+      for(const r of rows){const id=rowPlayerId(r,false);const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.player_name||r?.player));if(!actualRow?.batting)continue;
+        const stat=actualRow.batting;const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases)};actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;
+        const key=cat==="emerging_power"?"home_runs":cat;r.correct=actual[key]>=thresholds[cat];r.game_finished=true;r.result_live=false;r.game_pk=r.game_pk||actualRow.game_pk;r.actual=actual[key];r.actual_hits=actual.hits;r.actual_home_runs=actual.home_runs;r.actual_total_bases=actual.total_bases;r.actual_runs=actual.runs;r.actual_rbis=actual.rbis;r.actual_walks=actual.walks;r.actual_stolen_bases=actual.stolen_bases;r.actual_hits_runs_rbis=actual.hits_runs_rbis;r.result_label=r.correct?"✅ Hit":"❌ Miss";
+      }
+    }
+  }
+  return copy;
+}
+
+async function refreshPitcherHistory(history:any){
+  const copy=structuredClone(history||{days:{}});const today=torontoDay();
+  const dayKeys=Object.keys(copy.days||{}).filter(k=>{const diff=(new Date(`${today}T12:00:00Z`).getTime()-new Date(`${k}T12:00:00Z`).getTime())/86400000;return diff>=0&&diff<8});
+  const fields:any={strikeouts:"strikeOuts",outs_recorded:"outs",hits_allowed:"hits",walks_allowed:"baseOnBalls",earned_runs:"earnedRuns"};
+  for(const dk of dayKeys){const results=await dailyPlayerResults(dk);const day=copy.days?.[dk];if(!day)continue;
+    for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in fields))continue;
+      for(const r of rows){const id=rowPlayerId(r,true);const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.pitcher_name||r?.player_name));if(!actualRow?.pitching)continue;
+        const stat=actualRow.pitching;let actual=numAny(stat[fields[cat]]);if(cat==="outs_recorded"&&typeof stat.outs==="undefined"){const ip=String(stat.inningsPitched||"0");const [whole,frac]=ip.split(".");actual=numAny(whole)*3+numAny(frac)}
+        const proj=numAny(r?.projection??r?.[`projected_${cat}`]);r.actual=actual;r.absolute_error=Math.abs(actual-proj);r.finalized=true;r.game_finished=true;r.game_pk=r.game_pk||actualRow.game_pk;r.result_label=r.absolute_error<=1?"Within 1":"Outside 1";
+      }
+    }
+  }
+  return copy;
+}
 
 function isStatcastBarrel(exitVelocity:number, launchAngle:number|null){
   if(!Number.isFinite(exitVelocity)||exitVelocity<98||launchAngle==null||!Number.isFinite(launchAngle)) return false;
@@ -273,12 +339,18 @@ function emergingExplanation(r:any){
 
 export async function getPerformance(){
   const [batter,pitcher,emerging,rankingData]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings()]);
-  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);mergedBatter=ensureTodayHistory(mergedBatter,rankingData.batter,false);mergedPitcher=ensureTodayHistory(mergedPitcher,rankingData.pitcher,true);let emergingHistory=ensureEmergingToday(emerging.payload||{},rankingData.batter?.home_runs||[]);
+  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
+  mergedBatter=ensureTodayHistory(mergedBatter,rankingData.batter,false);mergedPitcher=ensureTodayHistory(mergedPitcher,rankingData.pitcher,true);
+  let emergingHistory=ensureEmergingToday(emerging.payload||{},rankingData.batter?.home_runs||[]);
   const [batterRefreshed,pitcherRefreshed,emergingRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher),refreshBatterHistory(emergingHistory)]);
-  const yesterday=torontoDay(-1);const today=torontoDay();
-  const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);
+  const yesterday=torontoDay(-1);const today=torontoDay();const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);
   const emergingToday=(emergingRefreshed?.days?.[today]?.categories?.emerging_power||[]).slice(0,10).map((r:any)=>({...r,explanation:emergingExplanation(r)}));
-  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
+  let archiveSaved=false;
+  if(Date.now()-lastPerformanceArchiveAt>=5*60*1000){
+    const saved=await Promise.all([savePerformanceArchive("mlb_batter_performance_history",batterRefreshed,today),savePerformanceArchive("mlb_pitcher_performance_history",pitcherRefreshed,today),savePerformanceArchive("mlb_emerging_power_history",emergingRefreshed,today)]);
+    archiveSaved=saved.every(Boolean);if(archiveSaved)lastPerformanceArchiveAt=Date.now();
+  } else archiveSaved=true;
+  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
 }
 
 export async function getGameFeed(gamePk: string) {
