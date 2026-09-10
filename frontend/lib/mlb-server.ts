@@ -132,6 +132,61 @@ async function getSourceSnapshotForDay(sourceName:string, gameDate:string) {
   return { connected: result.connected, error: result.error, row, payload: row?.payload || {} };
 }
 
+async function getRecentSourceSnapshots(sourceName:string, limit=24) {
+  const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=${limit}`);
+  return { connected: result.connected, error: result.error, rows: Array.isArray(result.rows)?result.rows:[] };
+}
+
+async function officialGameDayFromRankings(rankings:Record<string,RankingRow[]>, fallback:string) {
+  const pks:string[]=[];
+  for(const rows of Object.values(rankings||{})){
+    for(const row of Array.isArray(rows)?rows:[]){
+      const pk=String((row as any)?.game_pk||(row as any)?.gamePk||(row as any)?.game_id||"");
+      if(pk&&!pks.includes(pk))pks.push(pk);
+      if(pks.length>=6)break;
+    }
+    if(pks.length>=6)break;
+  }
+  if(!pks.length)return fallback;
+  const dates:string[]=[];
+  await Promise.all(pks.map(async pk=>{
+    try{
+      const r=await fetch(`${MLB_API}/schedule?sportId=1&gamePk=${encodeURIComponent(pk)}`,{next:{revalidate:300}});
+      if(!r.ok)return;
+      const payload=await r.json();
+      const d=String(payload?.dates?.[0]?.date||"");
+      if(/^\d{4}-\d{2}-\d{2}$/.test(d))dates.push(d);
+    }catch{}
+  }));
+  if(!dates.length)return fallback;
+  const counts=new Map<string,number>();
+  for(const d of dates)counts.set(d,(counts.get(d)||0)+1);
+  return [...counts.entries()].sort((a,b)=>b[1]-a[1])[0]?.[0]||fallback;
+}
+
+async function findRankingsSnapshotForDay(sourceName:string, day:string, pitcher=false) {
+  const exact=await getSourceSnapshotForDay(sourceName,day);
+  if(exact.row){
+    const parsed=rankingsFromSnapshots(
+      pitcher?{payload:{}}:exact,
+      pitcher?exact:{payload:{}}
+    );
+    return {found:true, rankings:pitcher?parsed.pitcher:parsed.batter};
+  }
+  const recent=await getRecentSourceSnapshots(sourceName,24);
+  for(const row of recent.rows){
+    const wrapped={payload:row?.payload||{}};
+    const parsed=rankingsFromSnapshots(
+      pitcher?{payload:{}}:wrapped,
+      pitcher?wrapped:{payload:{}}
+    );
+    const rankings=pitcher?parsed.pitcher:parsed.batter;
+    const resolved=await officialGameDayFromRankings(rankings,String(row?.game_date||""));
+    if(resolved===day)return {found:true,rankings};
+  }
+  return {found:false,rankings:{} as Record<string,RankingRow[]>};
+}
+
 function rankingsFromSnapshots(batters:any,pitchers:any){
   const batter:Record<string,RankingRow[]>={};
   for(const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) batter[key]=rowsFrom(batters?.payload,key);
@@ -142,9 +197,11 @@ function rankingsFromSnapshots(batters:any,pitchers:any){
 }
 
 async function getRankingsForDay(day:string){
-  const [batters,pitchers]=await Promise.all([getSourceSnapshotForDay("mlb_game_intelligence",day),getSourceSnapshotForDay("mlb_pitcher_intelligence",day)]);
-  const parsed=rankingsFromSnapshots(batters,pitchers);
-  return {...parsed,batterFound:Boolean(batters.row),pitcherFound:Boolean(pitchers.row)};
+  const [batters,pitchers]=await Promise.all([
+    findRankingsSnapshotForDay("mlb_game_intelligence",day,false),
+    findRankingsSnapshotForDay("mlb_pitcher_intelligence",day,true)
+  ]);
+  return {batter:batters.rankings,pitcher:pitchers.rankings,batterFound:batters.found,pitcherFound:pitchers.found};
 }
 
 function rowsFrom(payload: any, key: string): RankingRow[] {
@@ -260,10 +317,16 @@ async function dailyPlayerResults(dayKey:string){
   const scheduleUrl=new URL(MLB_SCHEDULE);scheduleUrl.searchParams.set("sportId","1");scheduleUrl.searchParams.set("date",dayKey);
   let schedule:any=null;
   try {
-    const response=await fetch(scheduleUrl,{next:{revalidate:dayKey===torontoDay()?30:3600}});
+    const response=await fetch(scheduleUrl,{next:{revalidate:dayKey===torontoDay()?20:3600}});
     if(response.ok)schedule=await response.json();
   } catch {}
-  const games:any[]=(schedule?.dates?.flatMap((d:any)=>d.games||[])||[]).filter((g:any)=>/final|game over|completed/i.test(String(g?.status?.abstractGameState||g?.status?.detailedState||"")));
+  const allGames:any[]=(schedule?.dates?.flatMap((d:any)=>d.games||[])||[]);
+  const games=allGames.map((g:any)=>{
+    const abstract=String(g?.status?.abstractGameState||"");
+    const detailed=String(g?.status?.detailedState||"");
+    const group=statusGroup(abstract,detailed);
+    return {...g,__isFinal:group==="final",__isLive:group==="live"};
+  }).filter((g:any)=>g.__isFinal||g.__isLive);
   const byId=new Map<string,any>(),byName=new Map<string,any>();
   const norm=(v:any)=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase();
   await Promise.all(games.map(async (g:any)=>{try{
@@ -271,11 +334,11 @@ async function dailyPlayerResults(dayKey:string){
     for(const side of ["away","home"]){for(const p of Object.values(box?.teams?.[side]?.players||{}) as any[]){
       const id=String(p?.person?.id||"");const name=String(p?.person?.fullName||"");
       const batting=p?.stats?.batting;const pitching=p?.stats?.pitching;
-      const row={id,name,batting,pitching,game_finished:true,game_pk:String(g.gamePk)};
+      const row={id,name,batting,pitching,game_finished:Boolean(g.__isFinal),result_live:Boolean(g.__isLive),game_pk:String(g.gamePk)};
       if(id)byId.set(id,row);const nk=norm(name);if(nk)byName.set(nk,row);
     }}
   }catch{}}));
-  return {byId,byName,norm,finalGames:games.length};
+  return {byId,byName,norm,finalGames:games.filter((g:any)=>g.__isFinal).length,liveGames:games.filter((g:any)=>g.__isLive).length};
 }
 
 async function refreshBatterHistory(history:any){
@@ -284,9 +347,30 @@ async function refreshBatterHistory(history:any){
   const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2,emerging_power:1};
   for(const dk of dayKeys){const results=await dailyPlayerResults(dk);const day=copy.days?.[dk];if(!day)continue;
     for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in thresholds))continue;
-      for(const r of rows){const id=rowPlayerId(r,false);const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.player_name||r?.player));if(!actualRow?.batting)continue;
-        const stat=actualRow.batting;const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases)};actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;
-        const key=cat==="emerging_power"?"home_runs":cat;r.correct=actual[key]>=thresholds[cat];r.game_finished=true;r.result_live=false;r.game_pk=r.game_pk||actualRow.game_pk;r.actual=actual[key];r.actual_hits=actual.hits;r.actual_home_runs=actual.home_runs;r.actual_total_bases=actual.total_bases;r.actual_runs=actual.runs;r.actual_rbis=actual.rbis;r.actual_walks=actual.walks;r.actual_stolen_bases=actual.stolen_bases;r.actual_hits_runs_rbis=actual.hits_runs_rbis;r.result_label=r.correct?"✅ Hit":"❌ Miss";
+      for(const r of rows){
+        const id=rowPlayerId(r,false);
+        const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.player_name||r?.player));
+        if(!actualRow?.batting)continue;
+        const stat=actualRow.batting;
+        const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases)};
+        actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;
+        const key=cat==="emerging_power"?"home_runs":cat;
+        const reached=actual[key]>=thresholds[cat];
+        r.game_pk=r.game_pk||actualRow.game_pk;
+        r.actual=actual[key];r.actual_hits=actual.hits;r.actual_home_runs=actual.home_runs;r.actual_total_bases=actual.total_bases;r.actual_runs=actual.runs;r.actual_rbis=actual.rbis;r.actual_walks=actual.walks;r.actual_stolen_bases=actual.stolen_bases;r.actual_hits_runs_rbis=actual.hits_runs_rbis;
+        r.result_live=Boolean(actualRow.result_live&&!actualRow.game_finished);
+        r.live_hit=Boolean(r.result_live&&reached);
+        if(actualRow.game_finished){
+          r.correct=reached;
+          r.game_finished=true;
+          r.result_live=false;
+          r.live_hit=false;
+          r.result_label=r.correct?"✅ Hit":"❌ Miss";
+        }else{
+          r.correct=null;
+          r.game_finished=false;
+          r.result_label=reached?"✅ Hit":"Pending";
+        }
       }
     }
   }
@@ -299,9 +383,19 @@ async function refreshPitcherHistory(history:any){
   const fields:any={strikeouts:"strikeOuts",outs_recorded:"outs",hits_allowed:"hits",walks_allowed:"baseOnBalls",earned_runs:"earnedRuns"};
   for(const dk of dayKeys){const results=await dailyPlayerResults(dk);const day=copy.days?.[dk];if(!day)continue;
     for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in fields))continue;
-      for(const r of rows){const id=rowPlayerId(r,true);const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.pitcher_name||r?.player_name));if(!actualRow?.pitching)continue;
-        const stat=actualRow.pitching;let actual=numAny(stat[fields[cat]]);if(cat==="outs_recorded"&&typeof stat.outs==="undefined"){const ip=String(stat.inningsPitched||"0");const [whole,frac]=ip.split(".");actual=numAny(whole)*3+numAny(frac)}
-        const proj=numAny(r?.projection??r?.[`projected_${cat}`]);r.actual=actual;r.absolute_error=Math.abs(actual-proj);r.finalized=true;r.game_finished=true;r.game_pk=r.game_pk||actualRow.game_pk;r.result_label=r.absolute_error<=1?"Within 1":"Outside 1";
+      for(const r of rows){
+        const id=rowPlayerId(r,true);
+        const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.pitcher_name||r?.player_name));
+        if(!actualRow?.pitching)continue;
+        const stat=actualRow.pitching;let actual=numAny(stat[fields[cat]]);
+        if(cat==="outs_recorded"&&typeof stat.outs==="undefined"){const ip=String(stat.inningsPitched||"0");const [whole,frac]=ip.split(".");actual=numAny(whole)*3+numAny(frac)}
+        const proj=numAny(r?.projection??r?.[`projected_${cat}`]);
+        r.actual=actual;r.absolute_error=Math.abs(actual-proj);r.game_pk=r.game_pk||actualRow.game_pk;r.result_live=Boolean(actualRow.result_live&&!actualRow.game_finished);
+        if(actualRow.game_finished){
+          r.finalized=true;r.game_finished=true;r.result_live=false;r.result_label=r.absolute_error<=1?"Within 1":"Outside 1";
+        }else{
+          r.finalized=false;r.game_finished=false;r.result_label="Live";
+        }
       }
     }
   }
@@ -375,8 +469,12 @@ export async function getPerformance(){
 
   // Batter and pitcher intelligence are separate sources and can roll over at
   // different times. Never use the batter snapshot date for pitcher history.
-  const batterSourceDay=/^\d{4}-\d{2}-\d{2}$/.test(String(rankingData.batterDataDate||""))?String(rankingData.batterDataDate):today;
-  const pitcherSourceDay=/^\d{4}-\d{2}-\d{2}$/.test(String(rankingData.pitcherDataDate||""))?String(rankingData.pitcherDataDate):today;
+  const batterHint=/^\d{4}-\d{2}-\d{2}$/.test(String(rankingData.batterDataDate||""))?String(rankingData.batterDataDate):today;
+  const pitcherHint=/^\d{4}-\d{2}-\d{2}$/.test(String(rankingData.pitcherDataDate||""))?String(rankingData.pitcherDataDate):today;
+  const [batterSourceDay,pitcherSourceDay]=await Promise.all([
+    officialGameDayFromRankings(rankingData.batter,batterHint),
+    officialGameDayFromRankings(rankingData.pitcher,pitcherHint)
+  ]);
   mergedBatter=ensureHistoryForDay(mergedBatter,rankingData.batter,batterSourceDay,false);
   mergedPitcher=ensureHistoryForDay(mergedPitcher,rankingData.pitcher,pitcherSourceDay,true);
   let emergingHistory=ensureEmergingForDay(emerging.payload||{},rankingData.batter?.home_runs||[],batterSourceDay);

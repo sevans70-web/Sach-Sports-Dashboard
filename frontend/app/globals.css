@@ -38,3 +38,15 @@
 .perfTierLine{margin:6px 0 0;color:#f4f4f4;font-size:.9rem;white-space:nowrap}
 .perfTierLine strong{font-weight:900}
 @media(max-width:700px){.perfStatGrid{gap:5px}.perfStatGrid article{padding:10px 7px;min-height:86px}.perfStatGrid span{font-size:.63rem}.perfStatGrid strong{font-size:.92rem}.perfTierLine{font-size:.78rem;letter-spacing:-.01em}}
+
+/* MLB live/final result row on ranking cards */
+.origResultBlock{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:8px}
+.resultStatus{display:inline-flex;align-items:center;border:2px solid #d8b536;border-radius:999px;padding:4px 10px;color:#f6c84c;font-weight:900;font-size:.76rem;line-height:1}
+.resultStatus.live{border-color:#19d978;color:#19d978}
+.resultLine{display:block;color:#fff;font-size:.96rem;line-height:1.25}
+.resultLine.pending{color:#aeb3b9}
+@media(max-width:700px){
+  .origResultBlock{gap:6px;margin-top:6px}
+  .resultStatus{font-size:.68rem;padding:4px 9px}
+  .resultLine{font-size:.86rem}
+}

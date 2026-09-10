@@ -14,12 +14,44 @@ function includeDate(date:string,period:string){const today=torontoDate(),yester
 function aggregate(payload:any,period:string,category?:string){let settled=0,correct=0,pending=0,total=0,absError=0;for(const[date,day]of historyRows(payload) as any[]){if(!includeDate(String(date),period))continue;const cats=day?.categories||{};const lists=category?[cats?.[category]]:Object.values(cats);for(const cat of lists as any[])for(const row of(Array.isArray(cat)?cat:[])){total++;if(typeof row?.correct==="boolean"){settled++;if(row.correct)correct++;continue}if(row?.finalized===true&&typeof row?.absolute_error==="number"){settled++;absError+=Number(row.absolute_error||0);if(Number(row.absolute_error)<=1)correct++;continue}pending++;}}return{settled,correct,pending,total,hitRate:settled?(correct/settled*100).toFixed(1):"0.0",avgError:settled?(absError/settled).toFixed(2):"0.00"}}
 function rankTierRate(payload:any,period:string,category:string,start:number,end:number){let settled=0,correct=0;for(const[date,day]of historyRows(payload) as any[]){if(!includeDate(String(date),period))continue;const rows=day?.categories?.[category];for(const row of(Array.isArray(rows)?rows:[])){const rank=Number(row?.rank||row?.ranking||0);if(rank<start||rank>end)continue;if(typeof row?.correct==="boolean"){settled++;if(row.correct)correct++;}}}return settled?(correct/settled*100).toFixed(1):"0.0"}
 
+function normalizeName(v:any){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase()}
+function currentResultRow(payload:any,category:string,row:any,pitcher=false){
+  const day=payload?.days?.[torontoDate()];
+  const rows=day?.categories?.[category];
+  if(!Array.isArray(rows))return null;
+  const id=String(pitcher?(row?.pitcher_id||row?.player_id||""):(row?.player_id||row?.batter_id||""));
+  const name=normalizeName(pitcher?(row?.pitcher_name||row?.player_name):(row?.player_name||row?.player));
+  return rows.find((r:any)=>{
+    const rid=String(pitcher?(r?.pitcher_id||r?.player_id||""):(r?.player_id||r?.batter_id||""));
+    const rname=normalizeName(pitcher?(r?.pitcher_name||r?.player_name):(r?.player_name||r?.player));
+    return (id&&rid===id)||(name&&rname===name);
+  })||null;
+}
+function batterActualLabel(result:any,category:string){
+  const values:any={
+    home_runs:[result?.actual_home_runs??result?.actual,"HR"],
+    hits:[result?.actual_hits??result?.actual,"H"],
+    total_bases:[result?.actual_total_bases??result?.actual,"TB"],
+    runs:[result?.actual_runs??result?.actual,"R"],
+    rbis:[result?.actual_rbis??result?.actual,"RBI"],
+    walks:[result?.actual_walks??result?.actual,"BB"],
+    stolen_bases:[result?.actual_stolen_bases??result?.actual,"SB"],
+    hits_runs_rbis:[result?.actual_hits_runs_rbis??result?.actual,"H+R+RBI"]
+  };
+  const [value,label]=values[category]||[result?.actual,""];
+  return value==null?"":`${Number(value)} ${label}`.trim();
+}
+function pitcherActualLabel(result:any,category:string){
+  const labels:any={strikeouts:"K",outs_recorded:"Outs",hits_allowed:"Hits Allowed",walks_allowed:"Walks Allowed",earned_runs:"ER"};
+  return result?.actual==null?"":`${Number(result.actual)} ${labels[category]||""}`.trim();
+}
+
 
 function teamShort(name:string){const m:any={"Arizona Diamondbacks":"ARI","Atlanta Braves":"ATL","Baltimore Orioles":"BAL","Boston Red Sox":"BOS","Chicago Cubs":"CHC","Chicago White Sox":"CWS","Cincinnati Reds":"CIN","Cleveland Guardians":"CLE","Colorado Rockies":"COL","Detroit Tigers":"DET","Houston Astros":"HOU","Kansas City Royals":"KC","Los Angeles Angels":"LAA","Los Angeles Dodgers":"LAD","Miami Marlins":"MIA","Milwaukee Brewers":"MIL","Minnesota Twins":"MIN","New York Mets":"NYM","New York Yankees":"NYY","Athletics":"ATH","Philadelphia Phillies":"PHI","Pittsburgh Pirates":"PIT","San Diego Padres":"SD","San Francisco Giants":"SF","Seattle Mariners":"SEA","St. Louis Cardinals":"STL","Tampa Bay Rays":"TB","Texas Rangers":"TEX","Toronto Blue Jays":"TOR","Washington Nationals":"WSH"};return m[name]||name}
 function contactText(r:any){const barrel=Number(r?.barrel_count||0),hard=Number(r?.hard_hit_count||0),ev=Number(r?.best_exit_velocity||0),ang=r?.best_launch_angle;const lead=barrel>0?`🔥 ${barrel} Barrel${barrel===1?"":"s"}`:`💥 ${hard} Hard Hit${hard===1?"":"s"}`;return `${lead} · Best ${ev?ev.toFixed(1):"—"} mph${ang==null?"":` · ${Number(ang).toFixed(0)}°`}`}
 function HrSignalRows({rows,showRank=false,prefix=""}:{rows:any[];showRank?:boolean;prefix?:string}){return <div className="hrSignalRows">{rows.map((r:any,i:number)=><div className="hrSignalRow" key={`${r.player_id||r.player_name}-${i}`}><strong>{r.player_name||"Player"}</strong><span> · {prefix}{teamShort(String(r.away_team_name||"Away"))} @ {teamShort(String(r.home_team_name||"Home"))}{showRank&&r.hr_rank?` · HR #${r.hr_rank}`:""}</span><span> | {contactText(r)}</span></div>)}</div>}
 
-function RankingCard({row,pitcher=false}:{row:RankingRow;pitcher?:boolean}){
+function RankingCard({row,pitcher=false,resultRow=null,marketKey=""}:{row:RankingRow;pitcher?:boolean;resultRow?:any;marketKey?:string}){
   const [open,setOpen]=useState(false);
   const id=rankingPlayerId(row),name=rankingName(row),image=String(row.headshot_url||playerHeadshot(id));
   const gi=numberValue(row.gi_score,1), team=String(row.team_abbreviation||row.team_name||"MLB"),opp=String(row.opponent_abbreviation||row.opponent_name||"");
@@ -31,13 +63,21 @@ function RankingCard({row,pitcher=false}:{row:RankingRow;pitcher?:boolean}){
   const evidence=String((row as any).performance_evidence||(row as any).market_evidence||(row as any).recent_form||summary);
   const why=String((row as any).why_this_player||(row as any).ranking_reason||(row as any).why_ranked||summary);
   const statcast=String((row as any).statcast_summary||(row as any).contact_quality||(row as any).contact_summary||"");
+  const isFinal=pitcher?resultRow?.finalized===true:(resultRow?.game_finished===true&&typeof resultRow?.correct==="boolean");
+  const isLive=resultRow?.result_live===true&&!isFinal;
+  const liveHit=!pitcher&&resultRow?.live_hit===true;
+  const didHit=!pitcher&&resultRow?.correct===true;
+  const actualLabel=pitcher?pitcherActualLabel(resultRow,marketKey):batterActualLabel(resultRow,marketKey);
   return <article className={`origRankCard ${pitcher?"pitcher":"batter"} ${open?"expanded":""}`}>
     <div className="origRank">#{Number(row.rank||0)||"—"}<span>−</span></div>
     <div className="origPhotoWrap"><img className="origHeadshot" src={image} alt=""/>{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>
       {pitcher?<><div className="origProp"><b>Projection:</b> {projection} K</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
       <p>{summary}</p>
-      <span className="confirmed">✓ {confirmed?"Confirmed lineup":"Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>
+      {isFinal||isLive?<div className="origResultBlock">
+        <span className={`resultStatus ${isLive?"live":""}`}>{isLive?"LIVE":"FINAL"}</span>
+        {pitcher?<strong className="resultLine">Result: {actualLabel||"—"}</strong>:isFinal?<strong className="resultLine">Result: {didHit?"✅":"❌"} {actualLabel||"—"}</strong>:liveHit?<strong className="resultLine">Result: ✅ {actualLabel}</strong>:<strong className="resultLine pending">Result: Pending</strong>}
+      </div>:<span className="confirmed">✓ {confirmed?"Confirmed lineup":"Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>}
     </div>
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
     <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>
@@ -65,6 +105,7 @@ export function MlbDashboard(){
   useEffect(()=>{setPerfMarket(perfRole==="Pitcher"?"strikeouts":"home_runs")},[perfRole]);
   useEffect(()=>setShowFull(false),[role,market]);
   const rows=(role==="Batter"?rankings.data.batter?.[market]:rankings.data.pitcher?.[market])||[],activeMarket=marketList.find(x=>x[0]===market)||marketList[0];
+  const cardResultPayload=role==="Pitcher"?performance.data.pitcher:performance.data.batter;
   const updated=rankings.data.updatedAt?new Date(rankings.data.updatedAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"Live";
 
   return <div className="origMlb">
@@ -85,7 +126,7 @@ export function MlbDashboard(){
     <section className="origSection performance"><h2>📊 Prediction Performance</h2><details><summary>ⓘ How performance is measured</summary><div className="origExplain"><p>Settled predictions are graded against the recorded MLB result. Pending predictions are excluded from hit rate until they settle.</p></div></details>
       <div className="origTabs three">{(["Batter","Pitcher","Emerging Power"] as const).map(x=><button key={x} className={perfRole===x?"active":""} onClick={()=>setPerfRole(x)}>{x==="Batter"?"🥎 ":x==="Pitcher"?"⚾ ":"🔥 "}{x}</button>)}</div>
       <h3>🌐 Overall MLB {perfRole} Performance</h3><div className="origPeriods">{["Today","Yesterday","Week","Month","Season"].map(x=><button key={x} className={period===x?"active":""} onClick={()=>setPeriod(x)}>{x}</button>)}</div>
-      <div className="origMetrics"><article className="green"><span>{"Hit Rate"}</span><strong>{perf.hitRate}%</strong></article><article><span>{perfRole==="Pitcher"?"Within 1 / Graded":"Correct / Settled"}</span><strong>{perf.correct} / {perf.settled}</strong></article><article className="gold"><span>Pending</span><strong>{perf.pending}</strong></article></div>
+      <div className="origMetrics"><article className="green"><span>Hit Rate</span><strong>{perf.hitRate}%</strong></article><article><span>{perfRole==="Pitcher"?"Within 1 / Graded":"Correct / Settled"}</span><strong>{perf.correct} / {perf.settled}</strong></article><article className="gold"><span>Pending</span><strong>{perf.pending}</strong></article></div>
       {perfRole!=="Emerging Power"?<><div className="origTabs markets perfMarkets">{(perfRole==="Pitcher"?PITCHER_MARKETS:BATTER_MARKETS).map(([key,icon,label])=><button key={key} className={perfMarket===key?"active":""} onClick={()=>setPerfMarket(key)}>{icon} {label}</button>)}</div><div className="perfStatGrid"><article className="green"><span>{perfRole==="Pitcher"?"Within 1 / Graded":"Hits / Predictions"}</span><strong>{perfMarketSummary.correct} / {perfMarketSummary.total}</strong></article><article><span>Pending</span><strong>{perfMarketSummary.pending}</strong></article><article className="gold"><span>{perfRole==="Pitcher"?"Graded":"Settled"}</span><strong>{perfMarketSummary.settled}</strong></article><article><span>{perfRole==="Pitcher"?"Within 1 Rate":"Hit Rate"}</span><strong>{perfMarketSummary.hitRate}%</strong></article></div>{perfRole==="Batter"?<div className="perfTierLine"><strong>Top 5:</strong> {rankTierRate(perfPayload,period,perfMarket,1,5)}% · <strong>#6–10:</strong> {rankTierRate(perfPayload,period,perfMarket,6,10)}% · <strong>#11–25:</strong> {rankTierRate(perfPayload,period,perfMarket,11,25)}%</div>:null}</>:null}
     </section>
 
@@ -94,7 +135,7 @@ export function MlbDashboard(){
       <div className="origTabs two"><button className={role==="Batter"?"active":""} onClick={()=>setRole("Batter")}>🥎 Batter</button><button className={role==="Pitcher"?"active":""} onClick={()=>setRole("Pitcher")}>⚾ Pitcher</button></div>
       <div className="origTabs markets">{marketList.map(([key,icon,label])=><button key={key} className={market===key?"active":""} onClick={()=>setMarket(key)}>{icon} {label}</button>)}</div>
       <div className="origMarketHead"><h2>{activeMarket[1]} {activeMarket[2]}{role==="Batter"?" Rankings":""}</h2><p>{role==="Batter"?"Ranked by GI Score. Probability is one component of the score, alongside player performance, matchup, lineup position, ballpark, weather, and sample reliability.":"Ranked by pitcher GI score using workload, season rates, sample reliability, matchup and opponent handedness."}</p></div>
-      <div className="origCards">{rows.slice(0,showFull?25:5).map((row,i)=><RankingCard key={`${rankingPlayerId(row)}-${i}`} row={row} pitcher={role==="Pitcher"}/>)}{!rankings.loading&&rows.length===0?<div className="origEmpty">No completed {activeMarket[2]} snapshot is available yet.</div>:null}</div>{rows.length>5?<button className="viewFullTop25" onClick={()=>setShowFull(v=>!v)}>{showFull?"Show Top 5 Only":"View Full Top 25"}</button>:null}
+      <div className="origCards">{rows.slice(0,showFull?25:5).map((row,i)=><RankingCard key={`${rankingPlayerId(row)}-${i}`} row={row} pitcher={role==="Pitcher"} marketKey={market} resultRow={currentResultRow(cardResultPayload,market,row,role==="Pitcher")}/>)}{!rankings.loading&&rows.length===0?<div className="origEmpty">No completed {activeMarket[2]} snapshot is available yet.</div>:null}</div>{rows.length>5?<button className="viewFullTop25" onClick={()=>setShowFull(v=>!v)}>{showFull?"Show Top 5 Only":"View Full Top 25"}</button>:null}
     </section>
   </div>
 }
