@@ -196,6 +196,59 @@ function rankingsFromSnapshots(batters:any,pitchers:any){
   return {batter,pitcher};
 }
 
+
+async function filterRankingsForDay(rankings:Record<string,RankingRow[]>, day:string){
+  const out:Record<string,RankingRow[]>={};
+  const dateByPk=new Map<string,string>();
+  const pks:string[]=[];
+  for(const rows of Object.values(rankings||{})){
+    for(const row of Array.isArray(rows)?rows:[]){
+      const pk=String((row as any)?.game_pk||(row as any)?.gamePk||(row as any)?.game_id||"");
+      if(pk&&!pks.includes(pk))pks.push(pk);
+    }
+  }
+  await Promise.all(pks.map(async pk=>{
+    try{
+      const r=await fetch(`${MLB_API}/schedule?sportId=1&gamePk=${encodeURIComponent(pk)}`,{next:{revalidate:60}});
+      if(!r.ok)return;
+      const payload=await r.json();
+      const d=String(payload?.dates?.[0]?.date||"");
+      if(/^\d{4}-\d{2}-\d{2}$/.test(d))dateByPk.set(pk,d);
+    }catch{}
+  }));
+
+  // Fallback for older ranking rows that were saved without gamePk. We use the
+  // official schedule for the requested day and match by team id/name.
+  const scheduledTeamIds=new Set<string>();
+  const scheduledTeamNames=new Set<string>();
+  const normTeam=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  try{
+    const r=await fetch(`${MLB_API}/schedule?sportId=1&date=${encodeURIComponent(day)}&hydrate=team`,{next:{revalidate:60}});
+    if(r.ok){
+      const payload=await r.json();
+      for(const g of payload?.dates?.flatMap((d:any)=>d.games||[])||[]){
+        for(const side of ["away","home"]){
+          const team=g?.teams?.[side]?.team||{};
+          if(team?.id)scheduledTeamIds.add(String(team.id));
+          if(team?.name)scheduledTeamNames.add(normTeam(team.name));
+        }
+      }
+    }
+  }catch{}
+
+  for(const [cat,rows] of Object.entries(rankings||{})){
+    out[cat]=(Array.isArray(rows)?rows:[]).filter((row:any)=>{
+      const pk=String(row?.game_pk||row?.gamePk||row?.game_id||"");
+      if(pk&&dateByPk.has(pk)) return dateByPk.get(pk)===day;
+      const teamId=String(row?.team_id||row?.teamId||"");
+      if(teamId&&scheduledTeamIds.has(teamId)) return true;
+      const teamName=normTeam(row?.team_name||row?.team||"");
+      return Boolean(teamName&&scheduledTeamNames.has(teamName));
+    }).slice(0,25);
+  }
+  return out;
+}
+
 async function getRankingsForDay(day:string){
   const [batters,pitchers]=await Promise.all([
     findRankingsSnapshotForDay("mlb_game_intelligence",day,false),
@@ -216,11 +269,16 @@ export async function getRankings() {
     getSourceSnapshot("mlb_game_intelligence"),
     getSourceSnapshot("mlb_pitcher_intelligence"),
   ]);
-  const batter: Record<string, RankingRow[]> = {};
-  for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) batter[key] = rowsFrom(batters.payload, key);
+  const rawBatter: Record<string, RankingRow[]> = {};
+  for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) rawBatter[key] = rowsFrom(batters.payload, key);
   const pitcherRoot = pitchers.payload?.rankings || pitchers.payload || {};
-  const pitcher: Record<string, RankingRow[]> = {};
-  for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) pitcher[key] = rowsFrom(pitcherRoot, key);
+  const rawPitcher: Record<string, RankingRow[]> = {};
+  for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) rawPitcher[key] = rowsFrom(pitcherRoot, key);
+  const today=torontoDate();
+  const [batter,pitcher]=await Promise.all([
+    filterRankingsForDay(rawBatter,today),
+    filterRankingsForDay(rawPitcher,today)
+  ]);
   return {
     batter, pitcher,
     connected: batters.connected || pitchers.connected,
@@ -460,6 +518,18 @@ export async function getPerformance(){
   const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
   let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
 
+  // The latest intelligence snapshot can carry a stale game_date even when the
+  // rows themselves belong to today's MLB games. Resolve each row by gamePk and
+  // freeze ONLY rows whose official MLB game date matches the requested day.
+  const [todayBatterRankings,todayPitcherRankings]=await Promise.all([
+    filterRankingsForDay(rankingData.batter,today),
+    filterRankingsForDay(rankingData.pitcher,today)
+  ]);
+  const todayBatterCount=Object.values(todayBatterRankings).reduce((n:any,rows:any)=>n+(Array.isArray(rows)?rows.length:0),0);
+  const todayPitcherCount=Object.values(todayPitcherRankings).reduce((n:any,rows:any)=>n+(Array.isArray(rows)?rows.length:0),0);
+  if(todayBatterCount>0) mergedBatter=ensureHistoryForDay(mergedBatter,todayBatterRankings,today,false);
+  if(todayPitcherCount>0) mergedPitcher=ensureHistoryForDay(mergedPitcher,todayPitcherRankings,today,true);
+
   // Backfill Yesterday from its own archived intelligence snapshots before using
   // the newest rankings. This prevents the midnight rollover from leaving the
   // previous day's Batter/Pitcher performance empty when a new-day snapshot has
@@ -475,9 +545,11 @@ export async function getPerformance(){
     officialGameDayFromRankings(rankingData.batter,batterHint),
     officialGameDayFromRankings(rankingData.pitcher,pitcherHint)
   ]);
-  mergedBatter=ensureHistoryForDay(mergedBatter,rankingData.batter,batterSourceDay,false);
-  mergedPitcher=ensureHistoryForDay(mergedPitcher,rankingData.pitcher,pitcherSourceDay,true);
-  let emergingHistory=ensureEmergingForDay(emerging.payload||{},rankingData.batter?.home_runs||[],batterSourceDay);
+  // Only use the source-day fallback when no official today rows were found.
+  // This keeps yesterday's snapshot from being copied into today's history.
+  if(todayBatterCount===0) mergedBatter=ensureHistoryForDay(mergedBatter,rankingData.batter,batterSourceDay,false);
+  if(todayPitcherCount===0) mergedPitcher=ensureHistoryForDay(mergedPitcher,rankingData.pitcher,pitcherSourceDay,true);
+  let emergingHistory=ensureEmergingForDay(emerging.payload||{},todayBatterCount>0?(todayBatterRankings?.home_runs||[]):(rankingData.batter?.home_runs||[]),todayBatterCount>0?today:batterSourceDay);
   if(yesterdayRankings.batterFound) emergingHistory=ensureEmergingForDay(emergingHistory,yesterdayRankings.batter?.home_runs||[],yesterday);
   const [batterRefreshed,pitcherRefreshed,emergingRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher),refreshBatterHistory(emergingHistory)]);
   const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);
@@ -487,7 +559,7 @@ export async function getPerformance(){
     const saved=await Promise.all([savePerformanceArchive("mlb_batter_performance_history",batterRefreshed,today),savePerformanceArchive("mlb_pitcher_performance_history",pitcherRefreshed,today),savePerformanceArchive("mlb_emerging_power_history",emergingRefreshed,today)]);
     archiveSaved=saved.every(Boolean);if(archiveSaved)lastPerformanceArchiveAt=Date.now();
   } else archiveSaved=true;
-  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay:batterSourceDay,pitcherSourceDay,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
+  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay:batterSourceDay,pitcherSourceDay,todayBatterRows:todayBatterCount,todayPitcherRows:todayPitcherCount,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
 }
 
 export async function getGameFeed(gamePk: string) {
