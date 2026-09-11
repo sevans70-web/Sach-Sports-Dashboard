@@ -5,6 +5,7 @@ from html import escape
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import json
+import os
 
 import pandas as pd
 import streamlit as st
@@ -14,6 +15,8 @@ from components.nfl_prediction_performance import render_nfl_prediction_performa
 from data.nfl_odds import get_nfl_odds_feed_status
 from data.nfl_roster import load_nfl_roster
 from data.nfl_schedule import clear_nfl_schedule_cache, load_nfl_schedule
+from data.nfl_prediction_performance import sync_history
+from data.nfl_stats import load_nfl_weekly_player_stats
 from engines.nfl_passing_market_join import attach_live_passing_yards_lines
 from engines.nfl_passing_probability import attach_passing_yards_probabilities
 from engines.nfl_passing_projection import build_passing_yards_projection
@@ -112,6 +115,9 @@ def _inject_nfl_css() -> None:
         .nfl-lineup-projected{color:#ffe7a3;background:rgba(214,179,92,.10);border:1px solid rgba(214,179,92,.58)}
         .nfl-game-live{color:#d8ffe8;background:rgba(25,217,120,.18);border:1px solid #19d978}
         .nfl-game-final{color:#e4e6e8;background:rgba(159,164,170,.12);border:1px solid #646a72}
+        .nfl-result-hit{color:#d8ffe8;background:rgba(25,217,120,.18);border:1px solid #19d978}
+        .nfl-result-miss{color:#ffd8dc;background:rgba(255,102,117,.13);border:1px solid #ff6675}
+        .nfl-result-push{color:#fff0bb;background:rgba(214,179,92,.12);border:1px solid #d6b35c}
 
         div[class*="st-key-nfl_rank_wrap_"]{background:#0d0f10!important;border:1.5px solid #34383d!important;border-radius:15px!important;overflow:hidden!important;margin:0 0 9px!important;padding:0!important}
         div[class*="st-key-nfl_rank_wrap_"] [data-testid="stVerticalBlock"]{gap:.25rem!important}
@@ -196,6 +202,12 @@ def _game_context_map(schedule: pd.DataFrame, week: int | None) -> dict[str, dic
             continue
         context = {
             "game": f"{away} @ {home}",
+            "game_id": str(game.get("game_id") or ""),
+            "espn_event_id": str(game.get("espn_event_id") or ""),
+            "game_season": int(game.get("season") or NFL_SEASON),
+            "game_week": int(game.get("week") or week or 0),
+            "game_kickoff": game.get("kickoff_et"),
+            "game_date": pd.to_datetime(game.get("kickoff_et"), errors="coerce").strftime("%Y-%m-%d") if pd.notna(pd.to_datetime(game.get("kickoff_et"), errors="coerce")) else "",
             "game_status": str(game.get("status") or "Scheduled"),
             "game_status_group": str(game.get("status_group") or "scheduled").lower(),
             "game_status_detail": str(game.get("status_detail") or game.get("status") or "Scheduled"),
@@ -300,6 +312,7 @@ def _build_prop(prop: str, schedule: pd.DataFrame, week: int | None) -> pd.DataF
     matchups = {team: context["game"] for team, context in contexts.items()}
     df["game"] = teams.map(matchups).fillna(df.get("game", ""))
     for column in [
+        "game_id", "espn_event_id", "game_season", "game_week", "game_kickoff", "game_date",
         "game_status", "game_status_group", "game_status_detail",
         "game_live", "game_final", "away_score", "home_score",
     ]:
@@ -414,6 +427,15 @@ def _why_engine(row: pd.Series, prop: str) -> str:
 
 def _lineup_status_html(row: pd.Series) -> str:
     """Keep NFL role status separate from the GI score state."""
+    result_label = row.get("prediction_result_label")
+    if result_label is not None and not pd.isna(result_label):
+        result_text = str(result_label).strip()
+        if result_text.startswith("✅"):
+            return f'<span class="nfl-lineup-status nfl-result-hit">{escape(result_text)}</span>'
+        if result_text.startswith("❌"):
+            return f'<span class="nfl-lineup-status nfl-result-miss">{escape(result_text)}</span>'
+        if result_text.startswith("➖"):
+            return f'<span class="nfl-lineup-status nfl-result-push">{escape(result_text)}</span>'
     status_group = str(row.get("game_status_group") or "").strip().lower()
     raw_live = row.get("game_live", False)
     raw_final = row.get("game_final", False)
@@ -425,7 +447,7 @@ def _lineup_status_html(row: pd.Series) -> str:
             detail = f"LIVE · {detail}"
         return f'<span class="nfl-lineup-status nfl-game-live">● {escape(detail)}</span>'
     if status_group == "final" or game_final:
-        return '<span class="nfl-lineup-status nfl-game-final">FINAL</span>'
+        return '<span class="nfl-lineup-status nfl-game-final">FINAL · Results updating</span>'
     raw_status = row.get("starter_status")
     status = "" if raw_status is None or pd.isna(raw_status) else str(raw_status).strip().lower()
     confirmed = row.get("starter_confirmed")
@@ -524,7 +546,38 @@ def _render_ranking_list(rankings: pd.DataFrame, prop: str) -> None:
             st.rerun()
 
 
-def _render_rankings(schedule: pd.DataFrame, week: int | None) -> None:
+def _build_all_rankings(schedule: pd.DataFrame, week: int | None) -> dict[str, pd.DataFrame]:
+    rankings = {prop: _build_prop(prop, schedule, week) for prop in PROP_CATALOG}
+
+    # The combined QB market must use the same calibrated passing forecast as
+    # Passing Yards, then add the quarterback's rushing baseline. Building the
+    # two props independently can otherwise make Pass + Rush lower than Passing.
+    passing = rankings.get("Passing Yards", pd.DataFrame())
+    combined = rankings.get("Pass + Rush Yards", pd.DataFrame())
+    if not passing.empty and not combined.empty and "player_id" in passing.columns:
+        passing_lookup = dict(zip(
+            passing["player_id"].astype(str),
+            pd.to_numeric(passing["passing_yards_projection_matchup"], errors="coerce"),
+        ))
+        revised = combined.copy()
+        values = []
+        for _, row in revised.iterrows():
+            passing_value = passing_lookup.get(str(row.get("player_id")))
+            rushing_value = pd.to_numeric(
+                pd.Series([row.get("rushing_yards_per_game")]), errors="coerce"
+            ).iloc[0]
+            if passing_value is None or pd.isna(passing_value):
+                values.append(row.get("passing_rushing_projection"))
+            else:
+                values.append(round(float(passing_value) + (0.0 if pd.isna(rushing_value) else float(rushing_value)), 1))
+        revised["passing_rushing_projection"] = values
+        revised = revised.sort_values("passing_rushing_projection", ascending=False).reset_index(drop=True)
+        revised["rank"] = revised.index + 1
+        rankings["Pass + Rush Yards"] = revised
+    return rankings
+
+
+def _render_rankings(rankings_by_market: dict[str, pd.DataFrame]) -> None:
     _render_html(
         """
         <div class="nfl-rankings-heading">
@@ -537,8 +590,18 @@ def _render_rankings(schedule: pd.DataFrame, week: int | None) -> None:
     tabs = st.tabs(labels)
     for tab, prop in zip(tabs, PROP_CATALOG.keys()):
         with tab:
-            rankings = _build_prop(prop, schedule, week)
+            rankings = rankings_by_market.get(prop, pd.DataFrame())
             _render_ranking_list(rankings, prop)
+
+
+def _github_token() -> str | None:
+    token = os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if token:
+        return token
+    try:
+        return st.secrets.get("SACH_GITHUB_TOKEN") or st.secrets.get("GITHUB_TOKEN")
+    except Exception:
+        return None
 
 
 def _friendly_market_status(feed: dict | None) -> str:
@@ -577,6 +640,7 @@ def show() -> None:
     if st.button("⟳  REFRESH", key="nfl_page_refresh", help="Refresh NFL data"):
         try:
             clear_nfl_schedule_cache()
+            load_nfl_weekly_player_stats.clear()
             _headshot_map.clear()
         except Exception:
             pass
@@ -621,9 +685,15 @@ def show() -> None:
         """
     )
 
-    render_nfl_prediction_performance()
+    rankings_by_market = _build_all_rankings(schedule, week)
+    performance_history, rankings_by_market = sync_history(
+        rankings_by_market,
+        token=_github_token(),
+        schedule=schedule,
+    )
+    render_nfl_prediction_performance(performance_history)
 
-    _render_rankings(schedule, week)
+    _render_rankings(rankings_by_market)
 
 
 show()
