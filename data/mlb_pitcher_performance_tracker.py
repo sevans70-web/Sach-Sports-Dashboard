@@ -183,11 +183,11 @@ def load_history(token: str) -> tuple[dict[str, Any], str | None]:
         history.setdefault("schema_version", 1)
         history.setdefault("days", {})
 
-    # Git-history recovery is a disaster-recovery path, not a normal navigation step.
-    # Once the repository has a real history window, avoid dozens of GitHub requests
-    # on ordinary Streamlit reruns. Empty/near-empty history still self-recovers.
     current_days = history.get("days") or {}
-    should_recover = len(current_days) < 2
+    today = datetime.now(TORONTO_TIMEZONE).date()
+    recent_expected = {(today - timedelta(days=i)).isoformat() for i in range(1, 8)}
+    recent_present = recent_expected.intersection(current_days)
+    should_recover = len(current_days) < 2 or len(recent_present) < 5 or (today - timedelta(days=1)).isoformat() not in current_days
     if should_recover:
         history, recovered = _recover_days_from_git_history(token, history)
         if recovered:
@@ -371,6 +371,89 @@ def _apply_final_results(
     return updated
 
 
+def _backfill_recent_days_from_source_snapshots(
+    history: dict[str, Any],
+    *,
+    current_day: date,
+    lookback_days: int = 14,
+) -> tuple[dict[str, Any], bool]:
+    """Recover missing recent pitcher days from exact-date source snapshots."""
+    try:
+        from database.mlb_repository import get_latest_source_payload
+    except Exception:
+        return history, False
+
+    merged = json.loads(json.dumps(history or {"schema_version": 1, "days": {}}))
+    merged.setdefault("schema_version", 1)
+    days = merged.setdefault("days", {})
+    changed = False
+    start = current_day - timedelta(days=max(1, int(lookback_days)) - 1)
+
+    for offset in range((current_day - start).days + 1):
+        day = start + timedelta(days=offset)
+        day_key = day.isoformat()
+        existing_day = days.get(day_key) or {}
+        existing_categories = existing_day.get("categories", {}) or {}
+        if all(len(existing_categories.get(category, []) or []) >= 25 for category in PITCHER_CATEGORIES):
+            continue
+
+        source = get_latest_source_payload(
+            source_name="mlb_pitcher_intelligence",
+            game_date=day_key,
+        )
+        payload = source.get("payload") or {}
+        rankings_payload = payload.get("rankings") or {} if isinstance(payload, dict) else {}
+        if not isinstance(rankings_payload, dict):
+            continue
+
+        existed = day_key in days
+        day_record = days.setdefault(
+            day_key,
+            {
+                "captured_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
+                "categories": {},
+            },
+        )
+        categories = day_record.setdefault("categories", {})
+        day_added = False
+
+        for category in PITCHER_CATEGORIES:
+            existing = _canonical_frozen_rows(categories.get(category, []))
+            if len(existing) >= 25:
+                continue
+            source_rows = list(rankings_payload.get(category) or [])[:25]
+            if not source_rows:
+                continue
+            existing_keys = {_prediction_key(row) for row in existing}
+            rebuilt = list(existing)
+            captured_at = str(
+                ((source.get("snapshot") or {}).get("created_at"))
+                or day_record.get("captured_at")
+                or datetime.now(TORONTO_TIMEZONE).isoformat()
+            )
+            for ranking in source_rows:
+                frozen = _freeze_prediction(ranking, category)
+                key = _prediction_key(frozen)
+                if key in existing_keys:
+                    continue
+                frozen["first_seen_at"] = captured_at
+                frozen["recovered_from_source_snapshot"] = True
+                rebuilt.append(frozen)
+                existing_keys.add(key)
+                if len(rebuilt) >= 25:
+                    break
+            rebuilt = _canonical_frozen_rows(rebuilt)
+            if rebuilt != existing:
+                categories[category] = rebuilt
+                changed = True
+                day_added = True
+
+        if not existed and not day_added and not categories:
+            days.pop(day_key, None)
+
+    return merged, changed
+
+
 def sync_history(
     token: str,
     rankings_by_category: dict[str, list[dict[str, Any]]],
@@ -397,6 +480,14 @@ def sync_history(
     history.setdefault("schema_version", 1)
     days = history.setdefault("days", {})
     changed = bool(history.pop("_history_recovered", False))
+
+    history, source_recovered = _backfill_recent_days_from_source_snapshots(
+        history,
+        current_day=datetime.fromisoformat(today).date(),
+        lookback_days=14,
+    )
+    days = history.setdefault("days", {})
+    changed = changed or source_recovered
 
     if today not in days:
         days[today] = {
@@ -497,6 +588,11 @@ def refresh_history_view(
     current = datetime.now(TORONTO_TIMEZONE).date()
     cutoff = current - timedelta(days=max(1, int(recent_days)) - 1)
     merged = json.loads(json.dumps(history))
+    merged, _ = _backfill_recent_days_from_source_snapshots(
+        merged,
+        current_day=current,
+        lookback_days=max(14, int(recent_days)),
+    )
     for day_key, day_record in (merged.get("days") or {}).items():
         try:
             day = date.fromisoformat(day_key)
@@ -609,9 +705,17 @@ def summarize_projection_accuracy(
     within_half = sum(1 for error in errors if error <= 0.5)
     within_one = sum(1 for error in errors if error <= 1.0)
 
+    real_today = datetime.now(TORONTO_TIMEZONE).date().isoformat()
+    active_pending = sum(
+        1
+        for row in rows
+        if not row.get("finalized")
+        and str(row.get("date") or "") == real_today
+    )
+
     return {
         "graded": count,
-        "pending": len(rows) - count,
+        "pending": active_pending,
         "mean_absolute_error": (
             sum(errors) / count
             if count

@@ -184,11 +184,14 @@ def load_history(token: str) -> tuple[dict[str, Any], str | None]:
         history.setdefault("schema_version", 1)
         history.setdefault("days", {})
 
-    # Git-history recovery is a disaster-recovery path, not a normal navigation step.
-    # Once the repository has a real history window, avoid dozens of GitHub requests
-    # on ordinary Streamlit reruns. Empty/near-empty history still self-recovers.
+    # Recover when the recent window has holes, not only when the entire file is
+    # nearly empty. A deploy can preserve old season history while dropping the
+    # newest several dates (which is exactly what makes Yesterday show 0/0).
     current_days = history.get("days") or {}
-    should_recover = len(current_days) < 2
+    today = datetime.now(TORONTO_TIMEZONE).date()
+    recent_expected = {(today - timedelta(days=i)).isoformat() for i in range(1, 8)}
+    recent_present = recent_expected.intersection(current_days)
+    should_recover = len(current_days) < 2 or len(recent_present) < 5 or (today - timedelta(days=1)).isoformat() not in current_days
     if should_recover:
         history, recovered = _recover_days_from_git_history(token, history)
         if recovered:
@@ -391,6 +394,97 @@ def _apply_final_results(predictions: list[dict[str, Any]], category: str, resul
     return updated
 
 
+def _backfill_recent_days_from_source_snapshots(
+    history: dict[str, Any],
+    *,
+    current_day: date,
+    lookback_days: int = 14,
+) -> tuple[dict[str, Any], bool]:
+    """Recover missing/partial recent days from exact-date ranking snapshots.
+
+    The performance snapshot itself is replaceable in Supabase, but the daily
+    MLB intelligence snapshots are date-keyed.  Rebuild any missing recent
+    frozen Top 25 from those exact-date sources, then normal grading can settle
+    them. Existing rows are never replaced by a weaker reconstruction.
+    """
+    try:
+        from database.mlb_repository import get_latest_source_payload
+    except Exception:
+        return history, False
+
+    merged = json.loads(json.dumps(history or {"schema_version": 1, "days": {}}))
+    merged.setdefault("schema_version", 1)
+    days = merged.setdefault("days", {})
+    changed = False
+
+    start = current_day - timedelta(days=max(1, int(lookback_days)) - 1)
+    for offset in range((current_day - start).days + 1):
+        day = start + timedelta(days=offset)
+        day_key = day.isoformat()
+        existing_day = days.get(day_key) or {}
+        existing_categories = existing_day.get("categories", {}) or {}
+        if all(len(existing_categories.get(category, []) or []) >= 25 for category in CORE_CATEGORIES):
+            continue
+
+        source = get_latest_source_payload(
+            source_name="mlb_game_intelligence",
+            game_date=day_key,
+        )
+        payload = source.get("payload") or {}
+        if not isinstance(payload, dict):
+            continue
+
+        day_record = days.setdefault(
+            day_key,
+            {
+                "captured_at": datetime.now(TORONTO_TIMEZONE).isoformat(),
+                "categories": {},
+            },
+        )
+        categories = day_record.setdefault("categories", {})
+        day_added = False
+
+        for category in CORE_CATEGORIES:
+            existing = _canonical_frozen_rows(categories.get(category, []))
+            if len(existing) >= 25:
+                continue
+
+            source_rows = list(((payload.get(category) or {}).get("rankings") or []))[:25]
+            if not source_rows:
+                continue
+
+            existing_keys = {_prediction_key(row) for row in existing}
+            rebuilt = list(existing)
+            captured_at = str(
+                ((source.get("snapshot") or {}).get("created_at"))
+                or day_record.get("captured_at")
+                or datetime.now(TORONTO_TIMEZONE).isoformat()
+            )
+            for ranking in source_rows:
+                frozen = _freeze_prediction(ranking, category)
+                key = _prediction_key(frozen)
+                if key in existing_keys:
+                    continue
+                frozen["first_seen_at"] = captured_at
+                frozen["recovered_from_source_snapshot"] = True
+                rebuilt.append(frozen)
+                existing_keys.add(key)
+                if len(rebuilt) >= 25:
+                    break
+
+            rebuilt = _canonical_frozen_rows(rebuilt)
+            if rebuilt != existing:
+                categories[category] = rebuilt
+                changed = True
+                day_added = True
+
+        # Do not leave an empty synthetic day behind if no exact-date source existed.
+        if not day_added and not categories and day_key not in (history.get("days") or {}):
+            days.pop(day_key, None)
+
+    return merged, changed
+
+
 def sync_history(
     token: str,
     rankings_by_category: dict[str, list[dict[str, Any]]],
@@ -414,6 +508,16 @@ def sync_history(
     history.setdefault("schema_version", 1)
     days = history.setdefault("days", {})
     changed = bool(history.pop("_history_recovered", False))
+
+    # Self-heal missing recent dates from the exact-date MLB intelligence
+    # snapshots before freezing/grading the current slate.
+    history, source_recovered = _backfill_recent_days_from_source_snapshots(
+        history,
+        current_day=datetime.fromisoformat(today).date(),
+        lookback_days=14,
+    )
+    days = history.setdefault("days", {})
+    changed = changed or source_recovered
 
     if today not in days:
         days[today] = {
@@ -516,6 +620,11 @@ def refresh_history_view(
     current = datetime.now(TORONTO_TIMEZONE).date()
     cutoff = current - timedelta(days=max(1, int(recent_days)) - 1)
     merged = json.loads(json.dumps(history))
+    merged, _ = _backfill_recent_days_from_source_snapshots(
+        merged,
+        current_day=current,
+        lookback_days=max(14, int(recent_days)),
+    )
     for day_key, day_record in (merged.get("days") or {}).items():
         try:
             day = date.fromisoformat(day_key)
@@ -583,9 +692,19 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
     winner_scores = [float(row.get("gi_score") or 0) for row in graded if row.get("correct")]
     miss_scores = [float(row.get("gi_score") or 0) for row in graded if row.get("correct") is False]
 
+    real_today = datetime.now(TORONTO_TIMEZONE).date().isoformat()
+    active_pending = sum(
+        1
+        for row in rows
+        if not isinstance(row.get("correct"), bool)
+        and str(row.get("date") or "") == real_today
+    )
+
     return {
         "wins": wins, "losses": losses, "graded": total,
-        "pending": len(rows) - total, "hit_rate": hit_rate,
+        # "Pending" means active/unsettled games today. Historical rows that
+        # could not be graded are not allowed to inflate Week/Month/Season.
+        "pending": active_pending, "hit_rate": hit_rate,
         "top_5": tier(1, 5), "six_to_ten": tier(6, 10), "eleven_to_25": tier(11, 25),
         "avg_gi_wins": sum(winner_scores) / len(winner_scores) if winner_scores else 0.0,
         "avg_gi_misses": sum(miss_scores) / len(miss_scores) if miss_scores else 0.0,
