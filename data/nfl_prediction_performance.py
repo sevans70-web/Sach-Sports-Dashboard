@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import requests
 
-from data.nfl_stats import load_nfl_weekly_player_stats
+from data.nfl_stats import load_nfl_espn_game_player_stats, load_nfl_weekly_player_stats
 
 TORONTO_TIMEZONE = ZoneInfo("America/Toronto")
 HISTORY_PATH = Path(__file__).with_name("nfl_prediction_performance_history.json")
@@ -60,7 +60,26 @@ def _normalize_history(payload: object) -> dict[str, Any]:
     return history
 
 
+def _load_supabase_history() -> dict[str, Any] | None:
+    try:
+        from database.nfl_repository import load_nfl_prediction_history
+        stored = load_nfl_prediction_history()
+        return _normalize_history(stored) if stored is not None else None
+    except Exception:
+        return None
+
+
+def _save_supabase_history(history: dict[str, Any]) -> bool:
+    try:
+        from database.nfl_repository import save_nfl_prediction_history
+        save_nfl_prediction_history(history)
+        return True
+    except Exception:
+        return False
+
+
 def _load_history_with_sha(token: str | None = None) -> tuple[dict[str, Any], str | None]:
+    durable = _load_supabase_history()
     if token:
         try:
             response = requests.get(
@@ -71,13 +90,19 @@ def _load_history_with_sha(token: str | None = None) -> tuple[dict[str, Any], st
             response.raise_for_status()
             payload = response.json()
             raw = base64.b64decode(payload.get("content", "")).decode("utf-8")
-            return _normalize_history(json.loads(raw) if raw.strip() else {}), payload.get("sha")
+            fallback = _normalize_history(json.loads(raw) if raw.strip() else {})
+            if durable and durable.get("days"):
+                fallback["days"].update(durable["days"])
+            return fallback, payload.get("sha")
         except Exception:
             pass
     try:
-        return _normalize_history(json.loads(HISTORY_PATH.read_text(encoding="utf-8"))), None
+        fallback = _normalize_history(json.loads(HISTORY_PATH.read_text(encoding="utf-8")))
+        if durable and durable.get("days"):
+            fallback["days"].update(durable["days"])
+        return fallback, None
     except (OSError, json.JSONDecodeError):
-        return _empty_history(), None
+        return durable or _empty_history(), None
 
 
 def load_history(token: str | None = None) -> dict[str, Any]:
@@ -86,6 +111,8 @@ def load_history(token: str | None = None) -> dict[str, Any]:
 
 def _save_history(history: dict[str, Any], token: str | None, sha: str | None) -> None:
     content = json.dumps(history, indent=2, sort_keys=True)
+    if _save_supabase_history(history):
+        return
     if token:
         body: dict[str, Any] = {
             "message": "Update NFL prediction performance history",
@@ -164,6 +191,7 @@ def _freeze(row: dict[str, Any], market: str) -> dict[str, Any]:
         "opponent": _text(row.get("opponent")).upper(),
         "game": _text(row.get("game")),
         "game_id": _text(row.get("game_id")),
+        "espn_event_id": _text(row.get("espn_event_id")),
         "season": int(row.get("game_season") or 0),
         "week": int(row.get("game_week") or 0),
         "game_date": game_date,
@@ -188,7 +216,7 @@ def _market_actual(player: pd.Series, market: str) -> float | None:
     if market == "Pass + Rush Yards": return stat("passing_yards") + stat("rushing_yards")
     if market == "Interceptions": return stat("interceptions")
     if market == "Anytime TD": return stat("rushing_tds") + stat("receiving_tds")
-    if market == "First TD": return None
+    if market == "First TD": return stat("first_td")
     if market == "Receiving Yards": return stat("receiving_yards")
     if market == "Receptions": return stat("receptions")
     if market == "Rushing Yards": return stat("rushing_yards")
@@ -271,6 +299,12 @@ def sync_history(
                 market_rows.append(frozen)
                 existing = market_rows[-1]
                 changed = True
+            # Older frozen rows may predate the live box-score connection.
+            # Backfill safe game metadata without changing the frozen pick.
+            for field in ("espn_event_id", "game_id", "season", "week", "game_date"):
+                if not existing.get(field) and frozen.get(field):
+                    existing[field] = frozen[field]
+                    changed = True
             raw_finished = row.get("game_final", False)
             finished = pd.notna(raw_finished) and bool(raw_finished)
             if finished and not bool(existing.get("game_finished")):
@@ -278,6 +312,7 @@ def sync_history(
                 changed = True
 
     stats_cache: dict[tuple[int, int], pd.DataFrame] = {}
+    espn_stats_cache: dict[str, pd.DataFrame] = {}
     for day_record in days.values():
         for market, rows in (day_record.get("markets") or {}).items():
             for index, stored in enumerate(rows if isinstance(rows, list) else []):
@@ -286,17 +321,30 @@ def sync_history(
                     changed = True
                 if not stored.get("game_finished") or isinstance(stored.get("correct"), bool) or stored.get("push"):
                     continue
-                season, week = int(stored.get("season") or 0), int(stored.get("week") or 0)
-                if not season or not week:
-                    continue
-                cache_key = (season, week)
-                if cache_key not in stats_cache:
-                    try:
-                        all_stats = load_nfl_weekly_player_stats(season).copy()
-                        stats_cache[cache_key] = all_stats[pd.to_numeric(all_stats.get("week"), errors="coerce").eq(week)].copy()
-                    except Exception:
-                        stats_cache[cache_key] = pd.DataFrame()
-                graded = _grade(stored, stats_cache[cache_key])
+                game_stats = pd.DataFrame()
+                espn_event_id = _text(stored.get("espn_event_id"))
+                if espn_event_id:
+                    if espn_event_id not in espn_stats_cache:
+                        try:
+                            espn_stats_cache[espn_event_id] = load_nfl_espn_game_player_stats(espn_event_id)
+                        except Exception:
+                            espn_stats_cache[espn_event_id] = pd.DataFrame()
+                    game_stats = espn_stats_cache[espn_event_id]
+
+                # nflverse remains the fallback for older games or a temporary
+                # ESPN box-score failure.
+                if game_stats.empty:
+                    season, week = int(stored.get("season") or 0), int(stored.get("week") or 0)
+                    if season and week:
+                        cache_key = (season, week)
+                        if cache_key not in stats_cache:
+                            try:
+                                all_stats = load_nfl_weekly_player_stats(season).copy()
+                                stats_cache[cache_key] = all_stats[pd.to_numeric(all_stats.get("week"), errors="coerce").eq(week)].copy()
+                            except Exception:
+                                stats_cache[cache_key] = pd.DataFrame()
+                        game_stats = stats_cache[cache_key]
+                graded = _grade(stored, game_stats)
                 if graded != stored:
                     rows[index] = graded
                     changed = True
@@ -333,6 +381,7 @@ def sync_history(
 
 def _start(period: str, today: date) -> date:
     if period == "Today": return today
+    if period == "Yesterday": return today - timedelta(days=1)
     if period == "Week": return today - timedelta(days=6)
     if period == "Month": return today.replace(day=1)
     return today.replace(month=1, day=1)
@@ -347,7 +396,8 @@ def records_for_period(history: dict[str, Any], market: str, period: str) -> lis
             day = date.fromisoformat(day_key)
         except ValueError:
             continue
-        if not start <= day <= today:
+        end = today - timedelta(days=1) if period == "Yesterday" else today
+        if not start <= day <= end:
             continue
         market_rows = (day_record or {}).get("markets", {}).get(market, [])
         for row in market_rows if isinstance(market_rows, list) else []:

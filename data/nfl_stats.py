@@ -5,6 +5,7 @@ import requests
 import streamlit as st
 
 PLAYER_STATS_URL = "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{season}.parquet"
+ESPN_NFL_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary"
 
 @st.cache_data(ttl=300, show_spinner=False)
 def load_nfl_weekly_player_stats(season=2025):
@@ -23,6 +24,7 @@ def load_nfl_weekly_player_stats(season=2025):
         "tackles_with_assist": "tackles_assists",
         "tackle_with_assist": "tackles_assists",
         "def_tackles_solo": "tackles_solo",
+        "def_tackle_assists": "tackles_assists",
     }
     for source, target in alias_map.items():
         if source in df.columns and target not in df.columns:
@@ -40,6 +42,119 @@ def load_nfl_weekly_player_stats(season=2025):
         if c in df.columns:
             df[c]=pd.to_numeric(df[c],errors="coerce").fillna(0)
     return df.reset_index(drop=True)
+
+
+def _espn_number(value):
+    """Convert an ESPN box-score value such as ``12`` or ``3.5`` to a number."""
+    try:
+        return float(str(value).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return 0.0
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def load_nfl_espn_game_player_stats(event_id: str) -> pd.DataFrame:
+    """Return normalized player results directly from one ESPN game box score."""
+    if not str(event_id or "").strip():
+        return pd.DataFrame()
+
+    response = requests.get(
+        ESPN_NFL_SUMMARY_URL,
+        params={"event": str(event_id).strip()},
+        timeout=20,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    rows = {}
+
+    category_columns = {
+        "passing": {
+            "YDS": "passing_yards",
+            "TD": "passing_tds",
+            "INT": "interceptions",
+        },
+        "rushing": {
+            "CAR": "carries",
+            "YDS": "rushing_yards",
+            "TD": "rushing_tds",
+        },
+        "receiving": {
+            "REC": "receptions",
+            "TGTS": "targets",
+            "YDS": "receiving_yards",
+            "TD": "receiving_tds",
+        },
+        "defensive": {
+            "SOLO": "tackles_solo",
+            "SACKS": "sacks",
+            "TOT": "tackles_total",
+        },
+    }
+
+    for team_box in (payload.get("boxscore") or {}).get("players") or []:
+        team = str((team_box.get("team") or {}).get("abbreviation") or "").upper()
+        for category in team_box.get("statistics") or []:
+            name = str(category.get("name") or "").lower()
+            mapping = category_columns.get(name)
+            if not mapping:
+                continue
+            labels = [str(label).upper() for label in category.get("labels") or []]
+            for entry in category.get("athletes") or []:
+                athlete = entry.get("athlete") or {}
+                player_id = str(athlete.get("id") or "")
+                display_name = str(athlete.get("displayName") or athlete.get("shortName") or "")
+                key = player_id or display_name.lower()
+                if not key:
+                    continue
+                row = rows.setdefault(
+                    key,
+                    {
+                        "player_id": player_id,
+                        "player_display_name": display_name,
+                        "recent_team": team,
+                    },
+                )
+                stats = entry.get("stats") or []
+                for index, label in enumerate(labels):
+                    column = mapping.get(label)
+                    if column and index < len(stats):
+                        row[column] = _espn_number(stats[index])
+
+    # Identify the scorer of the game's first touchdown for First TD grading.
+    first_td_player_id = ""
+    for play in payload.get("scoringPlays") or []:
+        play_type = str((play.get("type") or {}).get("text") or "")
+        text = str(play.get("text") or play.get("shortText") or "")
+        if "touchdown" not in f"{play_type} {text}".lower():
+            continue
+        participants = play.get("participants") or []
+        for participant in participants:
+            athlete = participant.get("athlete") or {}
+            candidate = str(athlete.get("id") or "")
+            if candidate:
+                first_td_player_id = candidate
+                break
+        break
+
+    frame = pd.DataFrame(rows.values())
+    numeric = [
+        "passing_yards", "passing_tds", "interceptions", "carries",
+        "rushing_yards", "rushing_tds", "targets", "receptions",
+        "receiving_yards", "receiving_tds", "sacks", "tackles_solo",
+        "tackles_total",
+        "first_td",
+    ]
+    for column in numeric:
+        if column not in frame.columns:
+            frame[column] = 0.0
+        frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0.0)
+    if first_td_player_id and "player_id" in frame.columns:
+        frame["first_td"] = frame["player_id"].astype(str).eq(first_td_player_id).astype(float)
+    if "tackles_assists" not in frame.columns:
+        frame["tackles_assists"] = (
+            frame["tackles_total"] - frame["tackles_solo"]
+        ).clip(lower=0)
+    return frame.reset_index(drop=True)
 
 @st.cache_data(ttl=21600, show_spinner=False)
 def load_nfl_season_baseline(season=2025):
