@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+import os
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -14,6 +15,7 @@ from data.mlb_performance_tracker import (
     summarize,
     summarize_overall,
     refresh_history_view,
+    sync_history as sync_batter_history,
 )
 from data.mlb_pitcher_performance_tracker import (
     records_for_period as pitcher_records_for_period,
@@ -50,8 +52,44 @@ PITCHER_CATEGORY_CONFIG = {
 }
 
 
+def _github_token() -> str | None:
+    token = os.getenv("SACH_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
+    if token:
+        return str(token).strip() or None
+    try:
+        token = st.secrets.get("SACH_GITHUB_TOKEN") or st.secrets.get("GITHUB_TOKEN")
+    except Exception:
+        token = None
+    return str(token).strip() if token else None
+
+
 @st.cache_data(ttl=300, show_spinner=False)
-def _cached_batter_history() -> dict[str, Any]:
+def _cached_batter_history(
+    rankings_by_category: dict[str, list[dict[str, Any]]],
+) -> dict[str, Any]:
+    """Load durable history and make the page itself keep it current.
+
+    The background worker is preferred, but the Streamlit dashboard must not
+    stop collecting performance when that worker/Supabase path is unavailable.
+    When a GitHub token is configured, use the existing proven tracker to freeze
+    today's exact Top 25 and re-grade yesterday, then persist the repaired history.
+    Supabase remains the fallback read path.
+    """
+    token = _github_token()
+    if token:
+        try:
+            history = sync_batter_history(
+                token,
+                rankings_by_category,
+                snapshot_date=datetime.now(TORONTO_TIMEZONE).date().isoformat(),
+                persist=True,
+            )
+            return refresh_history_view(history, recent_days=8)
+        except Exception:
+            # Do not let GitHub/network trouble blank the tracker. Fall through
+            # to the durable Supabase/local recovery path below.
+            pass
+
     return refresh_history_view(
         load_performance_history_from_supabase("batter"),
         recent_days=8,
@@ -426,7 +464,7 @@ def render_prediction_performance_tracker(
         )
 
     try:
-        batter_history = _cached_batter_history()
+        batter_history = _cached_batter_history(rankings_by_category)
     except Exception:
         batter_history = {"schema_version": 1, "days": {}}
         st.caption("Batter performance history is temporarily unavailable.")
