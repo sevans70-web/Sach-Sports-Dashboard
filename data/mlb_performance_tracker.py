@@ -432,7 +432,19 @@ def _backfill_recent_days_from_source_snapshots(
         )
         payload = source.get("payload") or {}
         if not isinstance(payload, dict):
-            continue
+            payload = {}
+
+        # Some historical days were displayed by the live engine before the
+        # lossless source snapshot was written.  The normalized ranking store
+        # is date-keyed separately and may still contain the exact frozen Top 25.
+        # Use it as a second authoritative recovery source before giving up on
+        # Yesterday.  This is especially important after a deploy/restart, when
+        # an in-memory/local ranking snapshot no longer exists.
+        try:
+            from database.mlb_repository import BATTER_MARKETS, get_latest_rankings
+        except Exception:
+            BATTER_MARKETS = {}
+            get_latest_rankings = None
 
         day_record = days.setdefault(
             day_key,
@@ -450,6 +462,24 @@ def _backfill_recent_days_from_source_snapshots(
                 continue
 
             source_rows = list(((payload.get(category) or {}).get("rankings") or []))[:25]
+
+            # Exact-date normalized fallback.  Do not use the newest snapshot
+            # from another date: historical performance must always be rebuilt
+            # from the requested day's actual prediction set.
+            if not source_rows and get_latest_rankings is not None:
+                market = BATTER_MARKETS.get(category)
+                market_code = market[0] if market else None
+                if market_code:
+                    try:
+                        normalized = get_latest_rankings(
+                            market_code=market_code,
+                            ranking_date=day_key,
+                            limit=25,
+                        )
+                        source_rows = list(normalized.get("rankings") or [])[:25]
+                    except Exception:
+                        source_rows = []
+
             if not source_rows:
                 continue
 
