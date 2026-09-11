@@ -4,7 +4,6 @@ from __future__ import annotations
 from html import escape
 
 import pandas as pd
-import requests
 import streamlit as st
 
 from data.nfl_roster import load_nfl_roster
@@ -14,69 +13,7 @@ from engines.nfl_game_intelligence import build_matchup_intelligence
 
 NFL_SEASON = 2026
 BASELINE_SEASON = 2025
-NFL_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
-TEAM_NAMES = {
-    "ARI":"Arizona Cardinals","ATL":"Atlanta Falcons","BAL":"Baltimore Ravens","BUF":"Buffalo Bills",
-    "CAR":"Carolina Panthers","CHI":"Chicago Bears","CIN":"Cincinnati Bengals","CLE":"Cleveland Browns",
-    "DAL":"Dallas Cowboys","DEN":"Denver Broncos","DET":"Detroit Lions","GB":"Green Bay Packers",
-    "HOU":"Houston Texans","IND":"Indianapolis Colts","JAX":"Jacksonville Jaguars","KC":"Kansas City Chiefs",
-    "LAC":"Los Angeles Chargers","LAR":"Los Angeles Rams","LV":"Las Vegas Raiders","MIA":"Miami Dolphins",
-    "MIN":"Minnesota Vikings","NE":"New England Patriots","NO":"New Orleans Saints","NYG":"New York Giants",
-    "NYJ":"New York Jets","PHI":"Philadelphia Eagles","PIT":"Pittsburgh Steelers","SEA":"Seattle Seahawks",
-    "SF":"San Francisco 49ers","TB":"Tampa Bay Buccaneers","TEN":"Tennessee Titans","WAS":"Washington Commanders",
-}
-
-
-
-@st.cache_data(ttl=30, show_spinner=False)
-def _live_game_states() -> dict[tuple[str, str], dict]:
-    """Live ESPN game state keyed by (away abbreviation, home abbreviation)."""
-    try:
-        response = requests.get(NFL_SCOREBOARD, params={"limit": 50}, timeout=12)
-        response.raise_for_status()
-    except Exception:
-        return {}
-
-    states = {}
-    alias = {"WSH": "WAS", "LA": "LAR"}
-    for event in response.json().get("events", []) or []:
-        competition = (event.get("competitions") or [{}])[0]
-        competitors = competition.get("competitors") or []
-        away = next((x for x in competitors if x.get("homeAway") == "away"), {})
-        home = next((x for x in competitors if x.get("homeAway") == "home"), {})
-        away_team = away.get("team") or {}
-        home_team = home.get("team") or {}
-        away_abbr = alias.get(str(away_team.get("abbreviation") or "").upper(), str(away_team.get("abbreviation") or "").upper())
-        home_abbr = alias.get(str(home_team.get("abbreviation") or "").upper(), str(home_team.get("abbreviation") or "").upper())
-        if not away_abbr or not home_abbr:
-            continue
-        status = event.get("status") or {}
-        stype = status.get("type") or {}
-        detail = str(stype.get("shortDetail") or stype.get("detail") or stype.get("description") or "Scheduled")
-        state = str(stype.get("state") or "pre").lower()
-        clock = str(status.get("displayClock") or "").strip()
-        period = int(status.get("period") or 0)
-        if state == "in":
-            if "half" in detail.lower():
-                label = "HALFTIME"
-            elif period:
-                label = f"Q{period}" + (f" · {clock}" if clock else "")
-            else:
-                label = detail.upper()
-        elif state == "post" or bool(stype.get("completed")):
-            label = "FINAL"
-        else:
-            label = "SCHEDULED"
-        states[(away_abbr, home_abbr)] = {
-            "label": label,
-            "is_live": state == "in",
-            "is_final": state == "post" or bool(stype.get("completed")),
-            "away_score": away.get("score"),
-            "home_score": home.get("score"),
-            "venue": ((competition.get("venue") or {}).get("fullName") or ""),
-        }
-    return states
 
 def _render_html(html: str) -> None:
     st.markdown(" ".join(line.strip() for line in html.splitlines() if line.strip()), unsafe_allow_html=True)
@@ -89,44 +26,63 @@ def _time_label(value) -> str:
     return kickoff.strftime("%I:%M %p ET").lstrip("0")
 
 
+def _game_state_label(game: pd.Series) -> str:
+    group = str(game.get("status_group") or "scheduled").lower()
+    if group == "live":
+        detail = str(game.get("status_detail") or "LIVE")
+        away_score = game.get("away_score")
+        home_score = game.get("home_score")
+        if pd.notna(away_score) and pd.notna(home_score):
+            return f"{int(float(away_score))}  ·  {detail}  ·  {int(float(home_score))}"
+        return detail
+    if group == "final":
+        away_score = game.get("away_score")
+        home_score = game.get("home_score")
+        if pd.notna(away_score) and pd.notna(home_score):
+            return f"{int(float(away_score))}  ·  FINAL  ·  {int(float(home_score))}"
+        return "FINAL"
+    return _time_label(game.get("kickoff_et"))
+
+
 def _css() -> None:
     st.markdown(
         """
         <style>
         .block-container{max-width:1100px;padding-top:.15rem!important}
-        .nfl-games-hero{margin:4px 0 10px;padding:11px 12px;border-radius:13px;border:1.5px solid rgba(25,217,120,.58);background:linear-gradient(115deg,#101112,#111315 68%,rgba(246,200,76,.07))}
-        .nfl-games-hero h1{margin:0;color:#fff;font-size:1.25rem;font-weight:950}
-        .nfl-games-hero p{margin:4px 0 0;color:#a7abb2;font-size:.74rem;line-height:1.3}
+        .nfl-games-hero{padding:13px 15px;border:2px solid rgba(255,204,51,.84);border-radius:16px;background:linear-gradient(110deg,rgba(246,200,76,.20),#090b0b 48%,rgba(25,217,120,.18));margin:3px 0 10px}
+        .nfl-games-hero h1{color:#fff;margin:0;font-size:1.55rem}
+        .nfl-games-hero p{color:#c9ccd0;margin:10px 0 0;font-size:.84rem;line-height:1.45}
         .nfl-day-heading{color:#f6c84c;font-size:.84rem;font-weight:900;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em}
-
-        .nfl-slate-card{background:linear-gradient(118deg,#101112 0%,#111315 68%,rgba(25,217,120,.055) 100%);border:1.5px solid #30343a;border-radius:13px;padding:10px 11px 8px;margin:8px 0 4px}
-        .nfl-slate-card.selected,.nfl-slate-card.live{border-color:#19d978;box-shadow:0 0 0 1px rgba(25,217,120,.18),0 0 18px rgba(25,217,120,.08)}
-        .nfl-slate-top{display:flex;justify-content:space-between;gap:8px;color:#8f949c;font-size:.68rem;font-weight:750;padding-bottom:7px;border-bottom:1px solid #292c31}
-        .nfl-slate-status{color:#19d978!important;font-weight:900!important}
-        .nfl-slate-team{display:grid;grid-template-columns:42px minmax(0,1fr) 44px;align-items:center;gap:9px;padding:8px 0 3px}
-        .nfl-slate-team + .nfl-slate-team{padding-top:6px}
-        .nfl-slate-logo{width:38px;height:38px;object-fit:contain;display:block}
-        .nfl-slate-team-main{min-width:0}
-        .nfl-slate-team-main strong{display:block;color:#fff;font-size:.92rem;line-height:1.12;font-weight:900}
-        .nfl-slate-team-main span{display:block;color:#a7abb2;font-size:.70rem;line-height:1.2;margin-top:2px}
-        .nfl-slate-team>b{color:#fff;font-size:1rem;text-align:right;font-weight:950}
-        div[class*="st-key-nfl_game_select_"]{margin:0 0 7px!important}
-        div[class*="st-key-nfl_game_select_"] button{min-height:34px!important;padding:.18rem .55rem!important;background:#080909!important;color:#f6c84c!important;border:1px solid rgba(214,179,92,.58)!important;border-radius:9px!important;font-size:.72rem!important;font-weight:850!important}
-
+        div[class*="st-key-nfl_game_select_"]{margin:0 0 8px!important}
+        div[class*="st-key-nfl_game_select_"] button{position:relative!important;width:100%!important;min-height:68px!important;padding:10px 54px!important;box-sizing:border-box!important;background:linear-gradient(110deg,#101112,#0c0e0e 72%,rgba(25,217,120,.07))!important;border:1.5px solid #34373c!important;border-left:4px solid #19d978!important;border-radius:12px!important;color:#fff!important}
+        div[class*="st-key-nfl_game_select_"] button:hover{border-color:#19d978!important}
+        div[class*="st-key-nfl_game_select_"] button p{width:100%!important;margin:0!important;text-align:center!important;white-space:pre-line!important;color:#fff!important;font-size:.82rem!important;font-weight:850!important;line-height:1.35!important}
         .nfl-intel-shell{margin:9px 0 14px;padding:13px;border:1.5px solid rgba(214,179,92,.66);border-radius:15px;background:linear-gradient(118deg,#0b0c0d,#101214 72%,rgba(25,217,120,.05));box-shadow:0 8px 24px rgba(0,0,0,.20)}
         .nfl-matchup-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;padding-bottom:10px;border-bottom:1px solid #292d31}
-        .nfl-team{display:flex;align-items:center;gap:8px;min-width:0}.nfl-team.home{justify-content:flex-end}.nfl-team img{width:42px;height:42px;object-fit:contain}.nfl-team strong{font-size:1.05rem;color:#fff}.nfl-at{color:#888f96;font-size:.72rem;font-weight:900}
-        .nfl-rundown{margin:10px 0 0;color:#d8dadd;font-size:.78rem;line-height:1.48}.nfl-rundown b{color:#f6c84c}
-        .nfl-game-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}.nfl-game-metric{background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:8px;min-width:0}.nfl-game-metric span{display:block;color:#92979e;font-size:.57rem}.nfl-game-metric strong{display:block;color:#fff;font-size:.80rem;margin-top:3px;white-space:normal}
-        .nfl-scout{margin:9px 0 2px;padding:9px 10px;border:1px solid #2d3136;border-radius:10px;background:#0d0f10}.nfl-scout-title{color:#f6c84c;font-size:.72rem;font-weight:950;margin-bottom:6px}.nfl-signal{color:#c9cdd1;font-size:.70rem;line-height:1.42;margin:3px 0}
+        .nfl-team{display:flex;align-items:center;gap:8px;min-width:0}
+        .nfl-team.home{justify-content:flex-end}
+        .nfl-team img{width:42px;height:42px;object-fit:contain}
+        .nfl-team strong{font-size:1.05rem;color:#fff}
+        .nfl-at{color:#888f96;font-size:.72rem;font-weight:900}
+        .nfl-rundown{margin:10px 0 0;color:#d8dadd;font-size:.78rem;line-height:1.48}
+        .nfl-rundown b{color:#f6c84c}
+        .nfl-game-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}
+        .nfl-game-metric{background:#111315;border:1px solid #30343a;border-bottom:2px solid #19d978;border-radius:9px;padding:8px;min-width:0}
+        .nfl-game-metric span{display:block;color:#92979e;font-size:.57rem}
+        .nfl-game-metric strong{display:block;color:#fff;font-size:.80rem;margin-top:3px;white-space:normal}
+        .nfl-scout{margin:9px 0 2px;padding:9px 10px;border:1px solid #2d3136;border-radius:10px;background:#0d0f10}
+        .nfl-scout-title{color:#f6c84c;font-size:.72rem;font-weight:950;margin-bottom:6px}
+        .nfl-signal{color:#c9cdd1;font-size:.70rem;line-height:1.42;margin:3px 0}
         div[class*="st-key-game_player_"] button{background:#101112!important;color:#fff!important;border:1px solid #30343a!important;border-radius:9px!important;min-height:42px!important;font-weight:800!important;text-align:left!important;justify-content:flex-start!important}
         div[class*="st-key-back_to_nfl"] button{background:#080909!important;color:#fff!important;border:1px solid #34373c!important;border-radius:9px!important}
         @media(max-width:700px){
           .block-container{padding-left:.85rem!important;padding-right:.85rem!important}
-          div[class*="st-key-back_to_nfl"]{display:flex!important;justify-content:flex-end!important;width:auto!important;margin:0 0 8px auto!important}
-          .nfl-games-hero{margin-top:.2rem!important}
-          .nfl-slate-card{padding:9px 10px 7px}.nfl-slate-team{grid-template-columns:38px minmax(0,1fr) 36px;gap:8px}.nfl-slate-logo{width:34px;height:34px}.nfl-slate-team-main strong{font-size:.88rem}.nfl-slate-team-main span{font-size:.67rem}
-          .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}.nfl-scout{padding:8px}.nfl-signal{padding:6px 0;margin:0;border-bottom:1px solid #272b30;font-size:.68rem}.nfl-signal:last-child{border-bottom:0}
+          div[class*="st-key-back_to_nfl"]{width:max-content!important;margin-top:0!important;margin-left:0!important;margin-bottom:8px!important}
+          .nfl-games-hero{padding:12px 13px;margin-top:2px}.nfl-games-hero h1{font-size:1.24rem}.nfl-games-hero p{margin-top:7px;font-size:.79rem}
+          .nfl-game-metrics{gap:4px}.nfl-team img{width:34px;height:34px}.nfl-team strong{font-size:.92rem}
+          div[class*="st-key-nfl_game_select_"] button{min-height:64px!important;padding:9px 47px!important}
+          div[class*="st-key-nfl_game_select_"] button p{font-size:.76rem!important}
+          .nfl-scout{padding:8px}.nfl-signal{padding:6px 0;margin:0;border-bottom:1px solid #272b30;font-size:.68rem}.nfl-signal:last-child{border-bottom:0}
         }
         </style>
         """,
@@ -145,125 +101,176 @@ def _load_phase(phase: str) -> pd.DataFrame:
 
 
 def _open_player(row: pd.Series, matchup: str) -> None:
-    player = row.to_dict(); player["game"] = matchup
+    player = row.to_dict()
+    player["game"] = matchup
     st.session_state["nfl_selected_player"] = player
     st.switch_page("pages/nfl_player.py")
 
 
 def _select_game(game_id: str) -> None:
-    current = str(st.session_state.get("nfl_selected_game") or "")
-    st.session_state["nfl_selected_game"] = None if current == str(game_id) else str(game_id)
+    """Select a matchup without a browser-level page navigation."""
+    st.session_state["nfl_selected_game"] = str(game_id)
     if st.query_params.get("nfl_game"):
         st.query_params.clear()
 
 
-def _starting_qb(team: str, roster: pd.DataFrame) -> str:
-    if roster.empty:
-        return "QB TBD"
-    pool = roster[(roster["team"].astype(str).str.upper() == team.upper()) & (roster["position"] == "QB")].copy()
-    if pool.empty:
-        return "QB TBD"
-    if "status" in pool.columns:
-        active = pool[~pool["status"].astype(str).str.lower().isin(["injured reserve", "reserve", "retired"])]
-        if not active.empty:
-            pool = active
-    return str(pool.iloc[0].get("player_name") or "QB TBD")
-
-
-def _score(game: pd.Series, side: str) -> str:
-    value = game.get(f"{side}_score")
-    return "" if pd.isna(value) else str(int(value) if float(value).is_integer() else value)
-
-
-def _status(game: pd.Series) -> str:
-    raw = str(game.get("status") or "Scheduled")
-    if raw.lower() == "final": return "FINAL"
-    return raw.upper() if raw else "SCHEDULED"
-
-
-def _render_game_card(game: pd.Series, roster: pd.DataFrame, selected: bool, key: str) -> None:
-    away = str(game.get("away_team") or "").upper(); home = str(game.get("home_team") or "").upper()
-    away_name = TEAM_NAMES.get(away, away); home_name = TEAM_NAMES.get(home, home)
-    away_logo = nfl_team_logo_url(away); home_logo = nfl_team_logo_url(home)
-    when = _time_label(game.get("kickoff_et")); stadium = str(game.get("stadium") or "Venue TBD")
-
-    live_state = _live_game_states().get((away, home), {})
-    status = str(live_state.get("label") or _status(game))
-    is_live = bool(live_state.get("is_live"))
-    is_final = bool(live_state.get("is_final")) or status == "FINAL"
-    if live_state.get("venue"):
-        stadium = str(live_state["venue"])
-
-    away_score = live_state.get("away_score")
-    home_score = live_state.get("home_score")
-    if away_score in (None, "") and is_final:
-        away_score = _score(game, "away")
-    if home_score in (None, "") and is_final:
-        home_score = _score(game, "home")
-
-    classes = []
-    if selected: classes.append("selected")
-    if is_live: classes.append("live")
-    class_attr = (" " + " ".join(classes)) if classes else ""
-    card = f'''
-    <div class="nfl-slate-card{class_attr}">
-      <div class="nfl-slate-top"><span class="nfl-slate-status">{escape(status)}</span><span>{escape(stadium)} · {escape(when)}</span></div>
-      <div class="nfl-slate-team"><img class="nfl-slate-logo" src="{escape(away_logo)}"><div class="nfl-slate-team-main"><strong>{escape(away_name)}</strong><span>QB · {escape(_starting_qb(away, roster))}</span></div><b>{escape(str(away_score or "") if (is_live or is_final) else "")}</b></div>
-      <div class="nfl-slate-team"><img class="nfl-slate-logo" src="{escape(home_logo)}"><div class="nfl-slate-team-main"><strong>{escape(home_name)}</strong><span>QB · {escape(_starting_qb(home, roster))}</span></div><b>{escape(str(home_score or "") if (is_live or is_final) else "")}</b></div>
-    </div>'''
-    st.html(card)
-    st.button("Hide Game Intelligence" if selected else f"View {away} @ {home}  →", key=key, use_container_width=True, on_click=_select_game, args=(str(game.get("game_id")),))
+def _game_button(
+    game_id: str,
+    away: str,
+    home: str,
+    when: str,
+    away_logo: str,
+    home_logo: str,
+    key: str,
+    selected: bool,
+    live: bool,
+) -> None:
+    selected_border = "#19d978" if selected or live else "#34373c"
+    live_shadow = "0 0 0 1px rgba(25,217,120,.35),0 0 18px rgba(25,217,120,.14)" if live else "none"
+    st.markdown(
+        f"""
+        <style>
+        div[class*="st-key-{key}"] button{{border-color:{selected_border}!important;box-shadow:{live_shadow}!important}}
+        div[class*="st-key-{key}"] button:before,
+        div[class*="st-key-{key}"] button:after{{
+          content:"";position:absolute;top:50%;transform:translateY(-50%);
+          width:34px;height:34px;background-repeat:no-repeat;background-position:center;background-size:contain
+        }}
+        div[class*="st-key-{key}"] button:before{{left:12px;background-image:url('{escape(away_logo, quote=True)}')}}
+        div[class*="st-key-{key}"] button:after{{right:12px;background-image:url('{escape(home_logo, quote=True)}')}}
+        @media(max-width:700px){{
+          div[class*="st-key-{key}"] button:before,
+          div[class*="st-key-{key}"] button:after{{width:30px;height:30px}}
+          div[class*="st-key-{key}"] button:before{{left:9px}}
+          div[class*="st-key-{key}"] button:after{{right:9px}}
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.button(
+        f"{away}     @     {home}\n{when}",
+        key=key,
+        use_container_width=True,
+        on_click=_select_game,
+        args=(game_id,),
+    )
 
 
 def _player_buttons(team: str, matchup: str, key_prefix: str) -> None:
-    try: roster = load_nfl_roster(NFL_SEASON)
+    try:
+        roster = load_nfl_roster(NFL_SEASON)
     except Exception:
-        st.info("Player roster is temporarily unavailable."); return
+        st.info("Player roster is temporarily unavailable.")
+        return
     players = roster[roster["team"].astype(str).str.upper().eq(team.upper())].copy()
-    pos_order = {"QB":0,"RB":1,"WR":2,"TE":3,"DE":4,"DT":4,"DL":4,"NT":4,"LB":5,"OLB":5,"ILB":5,"CB":6,"DB":6,"S":7,"FS":7,"SS":7}
-    players["_pos_order"] = players["position"].map(pos_order).fillna(50)
-    players = players.sort_values(["_pos_order","player_name"], kind="stable")
-    if players.empty: return
-    offense = players[players["position"].isin(["QB", "RB", "WR", "TE"])].copy(); defense = players[players["position"].isin(["DE", "DT", "DL", "NT", "LB", "OLB", "ILB", "CB", "DB", "S", "FS", "SS"])].copy()
+    if players.empty:
+        return
+    offense = players[players["position"].isin(["QB", "RB", "WR", "TE"])].copy()
+    defense = players[players["position"].isin(["DE", "DT", "DL", "NT", "LB", "OLB", "ILB", "CB", "DB", "S", "FS", "SS"])].copy()
     pool = pd.concat([offense, defense.head(10)], ignore_index=True).drop_duplicates("player_id")
     cols = st.columns(2)
     for i, (_, row) in enumerate(pool.iterrows()):
         with cols[i % 2]:
             label = f"{row.get('player_name','Player')} · {row.get('position','')}"
-            if st.button(label, key=f"game_player_{key_prefix}_{i}_{row.get('player_id')}", use_container_width=True): _open_player(row, matchup)
+            if st.button(label, key=f"game_player_{key_prefix}_{i}_{row.get('player_id')}", use_container_width=True):
+                _open_player(row, matchup)
 
 
 def _render_game_intelligence(game: pd.Series, game_id: str) -> None:
-    away = str(game.get("away_team") or "").upper(); home = str(game.get("home_team") or "").upper(); when = _time_label(game.get("kickoff_et")); stadium = str(game.get("stadium") or "Venue TBD"); roof = str(game.get("roof") or "Environment TBD").replace("outdoors", "Outdoor").replace("dome", "Dome")
-    intel = build_matchup_intelligence(away, home, BASELINE_SEASON); away_logo = nfl_team_logo_url(away); home_logo = nfl_team_logo_url(home); signals = "".join(f'<div class="nfl-signal">• {escape(s)}</div>' for s in intel.get("signals", [])[:4])
-    _render_html(f'''<div class="nfl-intel-shell"><div class="nfl-matchup-head"><div class="nfl-team"><img src="{escape(away_logo)}"><strong>{escape(away)}</strong></div><div class="nfl-at">AT</div><div class="nfl-team home"><strong>{escape(home)}</strong><img src="{escape(home_logo)}"></div></div><div class="nfl-rundown"><b>Game Rundown</b><br>{escape(intel.get('rundown','Matchup context is loading.'))}</div><div class="nfl-game-metrics"><div class="nfl-game-metric"><span>KICKOFF</span><strong>{escape(when)}</strong></div><div class="nfl-game-metric"><span>VENUE</span><strong>{escape(stadium)}</strong></div><div class="nfl-game-metric"><span>ENVIRONMENT</span><strong>{escape(roof)}</strong></div></div><div class="nfl-scout"><div class="nfl-scout-title">SCOUT DESK · MATCHUP SIGNALS</div>{signals or '<div class="nfl-signal">More matchup signals will populate as Week 1 data arrives.</div>'}</div></div>''')
+    away = str(game.get("away_team") or "").upper()
+    home = str(game.get("home_team") or "").upper()
+    when = _game_state_label(game)
+    stadium = str(game.get("stadium") or "Venue TBD")
+    roof = str(game.get("roof") or "Environment TBD").replace("outdoors", "Outdoor").replace("dome", "Dome")
+    intel = build_matchup_intelligence(away, home, BASELINE_SEASON)
+    away_logo = nfl_team_logo_url(away)
+    home_logo = nfl_team_logo_url(home)
+    signals = "".join(f'<div class="nfl-signal">• {escape(s)}</div>' for s in intel.get("signals", [])[:4])
+
+    _render_html(
+        f"""
+        <div class="nfl-intel-shell">
+          <div class="nfl-matchup-head">
+            <div class="nfl-team"><img src="{escape(away_logo)}"><strong>{escape(away)}</strong></div>
+            <div class="nfl-at">AT</div>
+            <div class="nfl-team home"><strong>{escape(home)}</strong><img src="{escape(home_logo)}"></div>
+          </div>
+          <div class="nfl-rundown"><b>Game Rundown</b><br>{escape(intel.get('rundown','Matchup context is loading.'))}</div>
+          <div class="nfl-game-metrics">
+            <div class="nfl-game-metric"><span>KICKOFF</span><strong>{escape(when)}</strong></div>
+            <div class="nfl-game-metric"><span>VENUE</span><strong>{escape(stadium)}</strong></div>
+            <div class="nfl-game-metric"><span>ENVIRONMENT</span><strong>{escape(roof)}</strong></div>
+          </div>
+          <div class="nfl-scout"><div class="nfl-scout-title">SCOUT DESK · MATCHUP SIGNALS</div>{signals or '<div class="nfl-signal">More matchup signals will populate as Week 1 data arrives.</div>'}</div>
+        </div>
+        """
+    )
+
     away_tab, home_tab = st.tabs([away, home])
-    with away_tab: _player_buttons(away, f"{away} @ {home}", f"{game_id}_away")
-    with home_tab: _player_buttons(home, f"{away} @ {home}", f"{game_id}_home")
+    with away_tab:
+        _player_buttons(away, f"{away} @ {home}", f"{game_id}_away")
+    with home_tab:
+        _player_buttons(home, f"{away} @ {home}", f"{game_id}_home")
 
 
 def show() -> None:
     _css()
-    if st.button("← Back to NFL", key="back_to_nfl"): st.switch_page("pages/nfl.py")
-    phase = str(st.session_state.get("nfl_active_phase") or "REG"); week = st.session_state.get("nfl_active_week"); schedule = _load_phase(phase)
+    if st.button("← NFL Intelligence Center", key="back_to_nfl"):
+        st.switch_page("pages/nfl.py")
+
+    phase = str(st.session_state.get("nfl_active_phase") or "REG")
+    week = st.session_state.get("nfl_active_week")
+    schedule = _load_phase(phase)
     if schedule.empty:
-        st.error("The NFL schedule feed is temporarily unavailable. Return to NFL and refresh the page."); return
+        st.error("The NFL schedule feed is temporarily unavailable. Return to NFL and refresh the page.")
+        return
+
     weeks = sorted(pd.to_numeric(schedule["week"], errors="coerce").dropna().astype(int).unique())
-    if week is None or int(week) not in weeks: week = weeks[0] if weeks else None
+    if week is None or int(week) not in weeks:
+        week = weeks[0] if weeks else None
     if week is None:
-        st.error("No NFL week is available yet."); return
-    games = schedule[pd.to_numeric(schedule["week"], errors="coerce").eq(int(week))].copy().sort_values(["kickoff_et", "game_id"], kind="stable")
-    _render_html(f'<div class="nfl-games-hero"><h1>🏈 Week {int(week)} NFL Games</h1><p>Choose a matchup to open Game Intelligence, team rosters and matchup details.</p></div>')
-    try: roster = load_nfl_roster(NFL_SEASON)
-    except Exception: roster = pd.DataFrame()
+        st.error("No NFL week is available yet.")
+        return
+
+    games = schedule[pd.to_numeric(schedule["week"], errors="coerce").eq(int(week))].copy()
+    games = games.sort_values(["kickoff_et", "game_id"], kind="stable")
+    _render_html(
+        f'<div class="nfl-games-hero"><h1>Week {int(week)} NFL Games</h1><p>Open a matchup for the game rundown, environment and matchup signals, then move directly into either team roster.</p></div>'
+    )
+
     query_selected = st.query_params.get("nfl_game")
-    if query_selected: st.session_state["nfl_selected_game"] = str(query_selected)
+    if query_selected:
+        st.session_state["nfl_selected_game"] = str(query_selected)
     selected_id = st.session_state.get("nfl_selected_game")
+
     games["day_key"] = games["kickoff_et"].dt.normalize()
     for day_index, day_key in enumerate(games["day_key"].drop_duplicates().tolist()):
-        day_games = games[games["day_key"].eq(day_key)].sort_values("kickoff_et", kind="stable"); day = pd.to_datetime(day_key, errors="coerce"); day_label = f"{day.strftime('%A')} · {day.strftime('%B')} {day.day}" if pd.notna(day) else "Kickoff TBD"; _render_html(f'<div class="nfl-day-heading">{escape(day_label)}</div>')
+        day_games = games[games["day_key"].eq(day_key)].sort_values("kickoff_et", kind="stable")
+        day = pd.to_datetime(day_key, errors="coerce")
+        day_label = f"{day.strftime('%A')} · {day.strftime('%B')} {day.day}" if pd.notna(day) else "Kickoff TBD"
+        _render_html(f'<div class="nfl-day-heading">{escape(day_label)}</div>')
+
         for game_index, (_, game) in enumerate(day_games.iterrows()):
-            game_id = str(game.get("game_id") or f"{week}-{game_index}"); selected = str(selected_id) == game_id; _render_game_card(game, roster, selected, f"nfl_game_select_{day_index}_{game_index}")
-            if str(st.session_state.get("nfl_selected_game") or "") == game_id: _render_game_intelligence(game, game_id)
+            away = str(game.get("away_team") or "").upper()
+            home = str(game.get("home_team") or "").upper()
+            when = _game_state_label(game)
+            game_id = str(game.get("game_id") or f"{week}-{away}-{home}")
+            away_logo = nfl_team_logo_url(away)
+            home_logo = nfl_team_logo_url(home)
+            button_key = f"nfl_game_select_{day_index}_{game_index}"
+            _game_button(
+                game_id,
+                away,
+                home,
+                when,
+                away_logo,
+                home_logo,
+                button_key,
+                str(selected_id) == game_id,
+                str(game.get("status_group") or "").lower() == "live",
+            )
+            if str(selected_id) == game_id:
+                _render_game_intelligence(game, game_id)
 
 show()
