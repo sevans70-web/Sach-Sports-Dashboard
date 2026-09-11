@@ -1,0 +1,788 @@
+"""
+Supabase persistence for MLB rankings.
+
+This module is deliberately Streamlit-free. Railway background jobs can use it
+to persist finished MLB ranking snapshots while the dashboard only reads data.
+"""
+
+from __future__ import annotations
+
+from datetime import date
+import json
+from typing import Any
+
+from database.connection import supabase
+
+
+BATTER_MARKETS = {
+    "home_runs": ("mlb_batter_home_runs", "Home Runs", "home_runs"),
+    "hits": ("mlb_batter_hits", "Hits", "hits"),
+    "total_bases": ("mlb_batter_total_bases", "Total Bases", "total_bases"),
+    "runs": ("mlb_batter_runs", "Runs", "runs"),
+    "rbis": ("mlb_batter_rbis", "RBIs", "rbis"),
+    "walks": ("mlb_batter_walks", "Walks", "walks"),
+    "stolen_bases": ("mlb_batter_stolen_bases", "Stolen Bases", "stolen_bases"),
+    "hits_runs_rbis": (
+        "mlb_batter_hits_runs_rbis",
+        "Hits + Runs + RBIs",
+        "hits_runs_rbis",
+    ),
+}
+
+PITCHER_MARKETS = {
+    "strikeouts": ("mlb_pitcher_strikeouts", "Pitcher Strikeouts", "strikeouts"),
+    "outs_recorded": ("mlb_pitcher_outs_recorded", "Pitcher Outs", "outs_recorded"),
+    "hits_allowed": ("mlb_pitcher_hits_allowed", "Pitcher Hits Allowed", "hits_allowed"),
+    "walks_allowed": ("mlb_pitcher_walks_allowed", "Pitcher Walks Allowed", "walks_allowed"),
+    "earned_runs": ("mlb_pitcher_earned_runs", "Pitcher Earned Runs", "earned_runs"),
+}
+
+_FOUNDATION_CACHE: dict[str, Any] | None = None
+
+
+def _json_safe(value: Any) -> Any:
+    """Return a JSON-safe copy for jsonb columns."""
+    return json.loads(json.dumps(value, default=str))
+
+
+def _first(data: Any) -> dict[str, Any] | None:
+    if isinstance(data, list) and data:
+        return data[0]
+    return None
+
+
+def ensure_mlb_foundation() -> dict[str, Any]:
+    """Ensure the MLB league/markets once per process, then reuse them."""
+    global _FOUNDATION_CACHE
+    if _FOUNDATION_CACHE is not None:
+        return dict(_FOUNDATION_CACHE)
+
+    sports = (
+        supabase.table("sports")
+        .select("id,name,slug")
+        .eq("slug", "baseball")
+        .limit(1)
+        .execute()
+        .data
+    )
+    sport = _first(sports)
+
+    if not sport:
+        sports = (
+            supabase.table("sports")
+            .select("id,name,slug")
+            .ilike("name", "Baseball")
+            .limit(1)
+            .execute()
+            .data
+        )
+        sport = _first(sports)
+
+    if not sport:
+        raise RuntimeError("Baseball sport row is missing from Supabase.")
+
+    sport_id = int(sport["id"])
+
+    league_payload = {
+        "sport_id": sport_id,
+        "name": "Major League Baseball",
+        "abbreviation": "MLB",
+        "slug": "mlb",
+        "provider_league_id": "mlb",
+        "is_active": True,
+    }
+
+    (
+        supabase.table("leagues")
+        .upsert(league_payload, on_conflict="sport_id,slug")
+        .execute()
+    )
+
+    league_rows = (
+        supabase.table("leagues")
+        .select("id,sport_id,name,slug")
+        .eq("sport_id", sport_id)
+        .eq("slug", "mlb")
+        .limit(1)
+        .execute()
+        .data
+    )
+    league = _first(league_rows)
+    if not league:
+        raise RuntimeError("Unable to create/read MLB league row.")
+
+    league_id = int(league["id"])
+
+    market_ids: dict[str, int] = {}
+    all_markets = {**BATTER_MARKETS, **PITCHER_MARKETS}
+
+    for category, (code, name, stat_key) in all_markets.items():
+        payload = {
+            "sport_id": sport_id,
+            "league_id": league_id,
+            "code": code,
+            "name": name,
+            "stat_key": stat_key,
+            "is_active": True,
+        }
+        (
+            supabase.table("markets")
+            .upsert(payload, on_conflict="sport_id,league_id,code")
+            .execute()
+        )
+
+        rows = (
+            supabase.table("markets")
+            .select("id,code")
+            .eq("sport_id", sport_id)
+            .eq("league_id", league_id)
+            .eq("code", code)
+            .limit(1)
+            .execute()
+            .data
+        )
+        row = _first(rows)
+        if not row:
+            raise RuntimeError(f"Unable to create/read market {code}.")
+        market_ids[category] = int(row["id"])
+
+    _FOUNDATION_CACHE = {
+        "sport_id": sport_id,
+        "league_id": league_id,
+        "market_ids": market_ids,
+    }
+    return dict(_FOUNDATION_CACHE)
+
+
+def _upsert_player(
+    *,
+    league_id: int,
+    provider_player_id: Any,
+    name: str,
+    position: str = "",
+    photo_url: str = "",
+) -> int:
+    provider_id = str(provider_player_id or "").strip()
+    if not provider_id:
+        raise ValueError(f"Missing provider player id for {name!r}")
+
+    payload = {
+        "league_id": league_id,
+        "provider_player_id": provider_id,
+        "name": str(name or "Player unavailable"),
+        "position": str(position or ""),
+        "photo_url": str(photo_url or ""),
+        "is_active": True,
+    }
+
+    (
+        supabase.table("players")
+        .upsert(payload, on_conflict="league_id,provider_player_id")
+        .execute()
+    )
+
+    rows = (
+        supabase.table("players")
+        .select("id")
+        .eq("league_id", league_id)
+        .eq("provider_player_id", provider_id)
+        .limit(1)
+        .execute()
+        .data
+    )
+    row = _first(rows)
+    if not row:
+        raise RuntimeError(f"Unable to create/read player {name!r}.")
+    return int(row["id"])
+
+
+def _previous_rank_lookup(
+    *,
+    league_id: int,
+    market_id: int,
+    ranking_date: str,
+) -> tuple[dict[int, int], Any]:
+    """Return the comparison baseline for durable movement.
+
+    Prefer the previous snapshot from the same day. If this is the first
+    snapshot after midnight, compare against the newest earlier snapshot so
+    returning players show real movement and only true entrants show NEW.
+    """
+    same_day = (
+        supabase.table("ranking_snapshots")
+        .select("id,snapshot_time,ranking_date")
+        .eq("league_id", league_id)
+        .eq("market_id", market_id)
+        .eq("ranking_date", ranking_date)
+        .order("snapshot_time", desc=True)
+        .limit(1)
+        .execute()
+        .data
+        or []
+    )
+    previous = _first(same_day)
+
+    if not previous:
+        earlier = (
+            supabase.table("ranking_snapshots")
+            .select("id,snapshot_time,ranking_date")
+            .eq("league_id", league_id)
+            .eq("market_id", market_id)
+            .lt("ranking_date", ranking_date)
+            .order("ranking_date", desc=True)
+            .order("snapshot_time", desc=True)
+            .limit(1)
+            .execute()
+            .data
+            or []
+        )
+        previous = _first(earlier)
+
+    if not previous:
+        return {}, None
+
+    entries = (
+        supabase.table("ranking_entries")
+        .select("player_id,rank")
+        .eq("snapshot_id", previous["id"])
+        .execute()
+        .data
+        or []
+    )
+
+    return ({
+        int(entry["player_id"]): int(entry["rank"])
+        for entry in entries
+        if entry.get("player_id") is not None and entry.get("rank") is not None
+    }, previous.get("id"))
+
+
+def save_ranking_category(
+    *,
+    league_id: int,
+    market_id: int,
+    ranking_date: date | str,
+    category: str,
+    rankings: list[dict[str, Any]],
+    role: str,
+    model_version: str,
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Persist one finished ranking category and movement snapshot."""
+    ranking_date_text = (
+        ranking_date.isoformat() if isinstance(ranking_date, date) else str(ranking_date)
+    )
+
+    previous_ranks, previous_snapshot_id = _previous_rank_lookup(
+        league_id=league_id,
+        market_id=market_id,
+        ranking_date=ranking_date_text,
+    )
+
+    snapshot_payload = {
+        "league_id": league_id,
+        "market_id": market_id,
+        "ranking_date": ranking_date_text,
+        "status": "ready",
+        "model_version": model_version,
+        "metadata": _json_safe(
+            {
+                "category": category,
+                "role": role,
+                **(metadata or {}),
+            }
+        ),
+    }
+
+    inserted = (
+        supabase.table("ranking_snapshots")
+        .insert(snapshot_payload)
+        .execute()
+        .data
+    )
+    snapshot = _first(inserted)
+    if not snapshot:
+        raise RuntimeError(f"Unable to create ranking snapshot for {category}.")
+
+    snapshot_id = snapshot["id"]
+    movement_rows: list[dict[str, Any]] = []
+
+    for row in rankings:
+        if role == "pitcher":
+            provider_player_id = row.get("pitcher_id")
+            player_name = row.get("pitcher_name") or "Pitcher unavailable"
+            position = "P"
+            photo_url = row.get("headshot_url") or ""
+            projection = row.get("projection")
+        else:
+            provider_player_id = row.get("player_id")
+            player_name = row.get("player_name") or row.get("player") or "Player unavailable"
+            position = row.get("position_abbreviation") or row.get("position") or ""
+            photo_url = row.get("headshot_url") or ""
+            projection = (
+                row.get("projected_total_bases")
+                if category == "total_bases"
+                else row.get("home_run_probability")
+                if category == "home_runs"
+                else row.get("one_plus_hit_probability")
+                if category == "hits"
+                else row.get("gi_score")
+            )
+
+        player_id = _upsert_player(
+            league_id=league_id,
+            provider_player_id=provider_player_id,
+            name=str(player_name),
+            position=str(position),
+            photo_url=str(photo_url),
+        )
+
+        rank = int(row.get("rank") or 0)
+        score = row.get("gi_score")
+        confidence = row.get("benchmark_probability") if role == "pitcher" else None
+
+        entry_payload = {
+            "snapshot_id": snapshot_id,
+            "player_id": player_id,
+            "rank": rank,
+            "score": score,
+            "projection": projection,
+            "confidence": confidence,
+            "intelligence": _json_safe(row),
+        }
+        supabase.table("ranking_entries").insert(entry_payload).execute()
+
+        previous_rank = previous_ranks.get(player_id)
+        if previous_rank is None:
+            movement_type = "new"
+            movement = None
+        else:
+            movement = previous_rank - rank
+            if movement > 0:
+                movement_type = "up"
+            elif movement < 0:
+                movement_type = "down"
+            else:
+                movement_type = "unchanged"
+
+        movement_rows.append(
+            {
+                "league_id": league_id,
+                "market_id": market_id,
+                "player_id": player_id,
+                "ranking_date": ranking_date_text,
+                "previous_rank": previous_rank,
+                "current_rank": rank,
+                "movement": movement,
+                "movement_type": movement_type,
+                "snapshot_id": snapshot_id,
+            }
+        )
+
+    # Do not erase meaningful movement on the next worker refresh when the
+    # ranking order itself has not changed. Carry the prior display forward
+    # until another material Top-25 change produces a new comparison.
+    if (
+        movement_rows
+        and previous_snapshot_id
+        and previous_ranks
+        and all(row.get("movement_type") == "unchanged" for row in movement_rows)
+    ):
+        prior_rows = (
+            supabase.table("ranking_movements")
+            .select("player_id,previous_rank,current_rank,movement,movement_type")
+            .eq("snapshot_id", previous_snapshot_id)
+            .execute()
+            .data
+            or []
+        )
+        prior_lookup = {
+            int(row["player_id"]): row
+            for row in prior_rows
+            if row.get("player_id") is not None
+        }
+        for row in movement_rows:
+            prior = prior_lookup.get(int(row["player_id"]))
+            if prior and str(prior.get("movement_type") or "") in {"new", "up", "down"}:
+                row["previous_rank"] = prior.get("previous_rank")
+                row["movement"] = prior.get("movement")
+                row["movement_type"] = prior.get("movement_type")
+
+    if movement_rows:
+        supabase.table("ranking_movements").insert(movement_rows).execute()
+
+    return {
+        "snapshot_id": snapshot_id,
+        "category": category,
+        "role": role,
+        "saved_count": len(rankings),
+    }
+
+
+def save_source_snapshot(
+    *,
+    league_id: int,
+    source_name: str,
+    source_type: str,
+    game_date: date | str,
+    payload: Any,
+) -> None:
+    game_date_text = game_date.isoformat() if isinstance(game_date, date) else str(game_date)
+    supabase.table("source_snapshots").insert(
+        {
+            "league_id": league_id,
+            "source_name": source_name,
+            "source_type": source_type,
+            "game_date": game_date_text,
+            "payload": _json_safe(payload),
+        }
+    ).execute()
+
+
+def save_latest_source_snapshot(
+    *,
+    league_id: int,
+    source_name: str,
+    source_type: str,
+    game_date: date | str,
+    payload: Any,
+) -> None:
+    """Keep one replaceable source snapshot for large durable state payloads."""
+    game_date_text = (
+        game_date.isoformat()
+        if isinstance(game_date, date)
+        else str(game_date)
+    )
+    rows = (
+        supabase.table("source_snapshots")
+        .select("id")
+        .eq("league_id", league_id)
+        .eq("source_name", source_name)
+        .eq("source_type", source_type)
+        .order("created_at", desc=True)
+        .limit(1)
+        .execute()
+        .data
+        or []
+    )
+    row = _first(rows)
+    values = {
+        "game_date": game_date_text,
+        "payload": _json_safe(payload),
+    }
+    if row:
+        supabase.table("source_snapshots").update(values).eq("id", row["id"]).execute()
+        return
+
+    supabase.table("source_snapshots").insert(
+        {
+            "league_id": league_id,
+            "source_name": source_name,
+            "source_type": source_type,
+            **values,
+        }
+    ).execute()
+
+
+def start_refresh_run(*, league_id: int, job_name: str) -> str:
+    rows = (
+        supabase.table("refresh_runs")
+        .insert(
+            {
+                "league_id": league_id,
+                "job_name": job_name,
+                "status": "running",
+            }
+        )
+        .execute()
+        .data
+    )
+    row = _first(rows)
+    if not row:
+        raise RuntimeError("Unable to create refresh run.")
+    return str(row["id"])
+
+
+def finish_refresh_run(
+    *,
+    run_id: str,
+    status: str,
+    records_processed: int,
+    error_message: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> None:
+    from datetime import datetime, timezone
+
+    supabase.table("refresh_runs").update(
+        {
+            "finished_at": datetime.now(timezone.utc).isoformat(),
+            "status": status,
+            "records_processed": int(records_processed),
+            "error_message": error_message,
+            "metadata": _json_safe(metadata or {}),
+        }
+    ).eq("id", run_id).execute()
+
+
+def get_latest_source_payload(
+    *,
+    source_name: str,
+    game_date: date | str | None = None,
+) -> dict[str, Any]:
+    """Read the newest stored source payload for MLB.
+
+    Source snapshots preserve the complete engine payload (photos, team/opponent
+    identity, lineup context and evidence). The normalized ranking tables remain
+    the durable ranking/movement store while this payload is the lossless UI
+    fallback.
+    """
+    # Reading an existing MLB snapshot must not require the normalized
+    # foundation tables to be writable/available. If the foundation lookup
+    # fails (for example sports/markets schema or RLS issues), fall back to
+    # the lossless source_snapshots table directly so the dashboard can still
+    # serve rankings and history.
+    try:
+        foundation = ensure_mlb_foundation()
+        league_id = foundation["league_id"]
+    except Exception:
+        league_id = None
+
+    query = (
+        supabase.table("source_snapshots")
+        .select("id,source_name,source_type,game_date,payload,created_at")
+        .eq("source_name", source_name)
+    )
+    if league_id is not None:
+        query = query.eq("league_id", league_id)
+
+    if game_date is not None:
+        date_text = (
+            game_date.isoformat()
+            if isinstance(game_date, date)
+            else str(game_date)
+        )
+        query = query.eq("game_date", date_text)
+
+    rows = query.order("created_at", desc=True).limit(1).execute().data or []
+    row = _first(rows)
+    if not row:
+        return {
+            "success": False,
+            "payload": {},
+            "error": f"No source snapshot found for {source_name}",
+        }
+
+    return {
+        "success": True,
+        "snapshot": {
+            key: row.get(key)
+            for key in (
+                "id",
+                "source_name",
+                "source_type",
+                "game_date",
+                "created_at",
+            )
+        },
+        "payload": dict(row.get("payload") or {}),
+    }
+
+
+def get_latest_rankings(
+    *,
+    market_code: str,
+    ranking_date: date | str | None = None,
+    limit: int = 25,
+) -> dict[str, Any]:
+    """Read the newest finished ranking snapshot for a market.
+
+    Rows are enriched with permanent player identity and movement from Supabase.
+    """
+    try:
+        foundation = ensure_mlb_foundation()
+        league_id = foundation["league_id"]
+    except Exception as exc:
+        # Normalized ranking tables are an enhancement, not a hard dependency
+        # for rendering the MLB dashboard. The caller can still use the full
+        # source snapshot or the live engine fallback.
+        return {
+            "success": False,
+            "rankings": [],
+            "error": f"MLB normalized ranking store unavailable: {exc}",
+        }
+
+    market_rows = (
+        supabase.table("markets")
+        .select("id,code,name")
+        .eq("league_id", league_id)
+        .eq("code", market_code)
+        .limit(1)
+        .execute()
+        .data
+    )
+    market = _first(market_rows)
+    if not market:
+        return {"success": False, "rankings": [], "error": "Market not found"}
+
+    query = (
+        supabase.table("ranking_snapshots")
+        .select("id,ranking_date,snapshot_time,status,model_version,metadata")
+        .eq("league_id", league_id)
+        .eq("market_id", market["id"])
+        .eq("status", "ready")
+    )
+
+    if ranking_date is not None:
+        date_text = (
+            ranking_date.isoformat()
+            if isinstance(ranking_date, date)
+            else str(ranking_date)
+        )
+        query = query.eq("ranking_date", date_text)
+
+    snapshots = (
+        query.order("snapshot_time", desc=True)
+        .limit(1)
+        .execute()
+        .data
+        or []
+    )
+    snapshot = _first(snapshots)
+    if not snapshot:
+        return {
+            "success": False,
+            "rankings": [],
+            "error": "No finished snapshot yet",
+        }
+
+    entries = (
+        supabase.table("ranking_entries")
+        .select("player_id,rank,score,projection,confidence,intelligence")
+        .eq("snapshot_id", snapshot["id"])
+        .order("rank")
+        .limit(max(1, int(limit)))
+        .execute()
+        .data
+        or []
+    )
+
+    player_ids = [
+        int(entry["player_id"])
+        for entry in entries
+        if entry.get("player_id") is not None
+    ]
+
+    player_lookup: dict[int, dict[str, Any]] = {}
+    if player_ids:
+        try:
+            player_rows = (
+                supabase.table("players")
+                .select("id,provider_player_id,name,position,photo_url")
+                .in_("id", player_ids)
+                .execute()
+                .data
+                or []
+            )
+            player_lookup = {
+                int(row["id"]): row
+                for row in player_rows
+                if row.get("id") is not None
+            }
+        except Exception:
+            player_lookup = {}
+
+    movement_lookup: dict[int, dict[str, Any]] = {}
+    try:
+        movement_rows = (
+            supabase.table("ranking_movements")
+            .select(
+                "player_id,previous_rank,current_rank,movement,movement_type"
+            )
+            .eq("snapshot_id", snapshot["id"])
+            .execute()
+            .data
+            or []
+        )
+        movement_lookup = {
+            int(row["player_id"]): row
+            for row in movement_rows
+            if row.get("player_id") is not None
+        }
+    except Exception:
+        movement_lookup = {}
+
+    rankings: list[dict[str, Any]] = []
+    for entry in entries:
+        payload = dict(entry.get("intelligence") or {})
+        internal_player_id = entry.get("player_id")
+        identity = (
+            player_lookup.get(int(internal_player_id))
+            if internal_player_id is not None
+            else None
+        ) or {}
+
+        provider_player_id = identity.get("provider_player_id")
+        if provider_player_id not in (None, ""):
+            try:
+                provider_player_id = int(provider_player_id)
+            except (TypeError, ValueError):
+                provider_player_id = str(provider_player_id)
+
+        is_pitcher = bool(payload.get("pitcher_id")) or str(
+            payload.get("position")
+            or identity.get("position")
+            or ""
+        ).upper() == "P"
+
+        if is_pitcher:
+            if payload.get("pitcher_id") in (None, ""):
+                payload["pitcher_id"] = provider_player_id
+            if not payload.get("pitcher_name"):
+                payload["pitcher_name"] = identity.get("name")
+        else:
+            if payload.get("player_id") in (None, ""):
+                payload["player_id"] = provider_player_id
+            if not payload.get("player_name"):
+                payload["player_name"] = identity.get("name")
+
+        if not payload.get("headshot_url") and identity.get("photo_url"):
+            payload["headshot_url"] = identity.get("photo_url")
+        if not payload.get("position_abbreviation") and identity.get("position"):
+            payload["position_abbreviation"] = identity.get("position")
+
+        payload["rank"] = entry.get("rank")
+        payload["gi_score"] = payload.get("gi_score", entry.get("score"))
+        if payload.get("projection") is None and entry.get("projection") is not None:
+            payload["projection"] = entry.get("projection")
+        if (
+            payload.get("benchmark_probability") is None
+            and entry.get("confidence") is not None
+        ):
+            payload["benchmark_probability"] = entry.get("confidence")
+
+        movement_row = (
+            movement_lookup.get(int(internal_player_id))
+            if internal_player_id is not None
+            else None
+        )
+        if movement_row:
+            movement_type = str(
+                movement_row.get("movement_type") or "unchanged"
+            ).lower()
+            if movement_type == "unchanged":
+                movement_type = "same"
+            payload["movement"] = {
+                "status": movement_type,
+                "previous": movement_row.get("previous_rank"),
+                "current": movement_row.get("current_rank"),
+                "change": movement_row.get("movement"),
+            }
+
+        rankings.append(payload)
+
+    return {
+        "success": bool(rankings),
+        "snapshot": snapshot,
+        "market": market,
+        "rankings": rankings,
+    }
