@@ -536,15 +536,24 @@ def get_latest_source_payload(
     the durable ranking/movement store while this payload is the lossless UI
     fallback.
     """
-    foundation = ensure_mlb_foundation()
-    league_id = foundation["league_id"]
+    # Reading an existing MLB snapshot must not require the normalized
+    # foundation tables to be writable/available. If the foundation lookup
+    # fails (for example sports/markets schema or RLS issues), fall back to
+    # the lossless source_snapshots table directly so the dashboard can still
+    # serve rankings and history.
+    try:
+        foundation = ensure_mlb_foundation()
+        league_id = foundation["league_id"]
+    except Exception:
+        league_id = None
 
     query = (
         supabase.table("source_snapshots")
         .select("id,source_name,source_type,game_date,payload,created_at")
-        .eq("league_id", league_id)
         .eq("source_name", source_name)
     )
+    if league_id is not None:
+        query = query.eq("league_id", league_id)
 
     if game_date is not None:
         date_text = (
@@ -589,8 +598,18 @@ def get_latest_rankings(
 
     Rows are enriched with permanent player identity and movement from Supabase.
     """
-    foundation = ensure_mlb_foundation()
-    league_id = foundation["league_id"]
+    try:
+        foundation = ensure_mlb_foundation()
+        league_id = foundation["league_id"]
+    except Exception as exc:
+        # Normalized ranking tables are an enhancement, not a hard dependency
+        # for rendering the MLB dashboard. The caller can still use the full
+        # source snapshot or the live engine fallback.
+        return {
+            "success": False,
+            "rankings": [],
+            "error": f"MLB normalized ranking store unavailable: {exc}",
+        }
 
     market_rows = (
         supabase.table("markets")
