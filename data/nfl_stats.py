@@ -6,7 +6,7 @@ import streamlit as st
 
 PLAYER_STATS_URL = "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{season}.parquet"
 
-@st.cache_data(ttl=21600, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def load_nfl_weekly_player_stats(season=2025):
     r=requests.get(PLAYER_STATS_URL.format(season=season),timeout=30)
     r.raise_for_status()
