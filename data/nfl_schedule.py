@@ -1,6 +1,6 @@
 """NFL schedule data helpers for Sach Sports Dashboard."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from html import unescape
 import re
 from io import StringIO
@@ -8,11 +8,17 @@ from io import StringIO
 import pandas as pd
 import requests
 import streamlit as st
+from zoneinfo import ZoneInfo
 
 
 NFLVERSE_SCHEDULE_URL = (
     "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 )
+ESPN_NFL_SCOREBOARD_URL = (
+    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+)
+EASTERN_TIMEZONE = ZoneInfo("America/New_York")
+ESPN_TEAM_ALIASES = {"LAR": "LA"}
 
 NFL_PRESEASON_URLS = {
     0: "https://www.nfl.com/schedules/{season}/by-week/hall-of-fame",
@@ -242,9 +248,9 @@ def load_nfl_preseason_schedule(season: int = 2026) -> pd.DataFrame:
     )
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def load_nfl_regular_schedule(season: int = 2026) -> pd.DataFrame:
-    """Load regular-season schedule from nflverse."""
+@st.cache_data(ttl=3600, show_spinner=False)
+def _load_nfl_regular_schedule_base(season: int = 2026) -> pd.DataFrame:
+    """Load the slower-changing regular-season schedule from nflverse."""
 
     response = requests.get(
         NFLVERSE_SCHEDULE_URL,
@@ -309,6 +315,136 @@ def load_nfl_regular_schedule(season: int = 2026) -> pd.DataFrame:
     )
 
 
+def _espn_team(value: object) -> str:
+    team = str(value or "").upper().strip()
+    return ESPN_TEAM_ALIASES.get(team, team)
+
+
+def _score_value(value: object):
+    try:
+        number = float(value)
+        return int(number) if number.is_integer() else number
+    except (TypeError, ValueError):
+        return pd.NA
+
+
+def _live_detail(status_type: dict) -> str:
+    detail = str(
+        status_type.get("shortDetail")
+        or status_type.get("detail")
+        or "In progress"
+    ).strip()
+    detail = re.sub(r"\s*-\s*(\d+)(?:st|nd|rd|th)\s*$", r" · Q\1", detail)
+    return f"LIVE · {detail}" if detail else "LIVE"
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def _load_espn_scoreboard_window(anchor_date: str) -> list[dict]:
+    """Load the current NFL game window with scores and game states."""
+    anchor = datetime.strptime(anchor_date, "%Y-%m-%d").date()
+    start = anchor - timedelta(days=2)
+    end = anchor + timedelta(days=4)
+    response = requests.get(
+        ESPN_NFL_SCOREBOARD_URL,
+        params={"dates": f"{start:%Y%m%d}-{end:%Y%m%d}", "limit": 100},
+        timeout=12,
+    )
+    response.raise_for_status()
+
+    rows = []
+    for event in response.json().get("events", []):
+        competitions = event.get("competitions") or []
+        if not competitions:
+            continue
+        competition = competitions[0]
+        by_side = {
+            str(item.get("homeAway")): item
+            for item in competition.get("competitors") or []
+        }
+        away_item, home_item = by_side.get("away"), by_side.get("home")
+        if not away_item or not home_item:
+            continue
+
+        status_type = (event.get("status") or {}).get("type") or {}
+        state = str(status_type.get("state") or "pre").lower()
+        status_group = "live" if state == "in" else "final" if state == "post" else "scheduled"
+        if status_group == "live":
+            status_detail = _live_detail(status_type)
+        elif status_group == "final":
+            status_detail = str(status_type.get("shortDetail") or "Final")
+        else:
+            status_detail = "Scheduled"
+
+        rows.append(
+            {
+                "espn_event_id": str(event.get("id") or ""),
+                "away_team": _espn_team((away_item.get("team") or {}).get("abbreviation")),
+                "home_team": _espn_team((home_item.get("team") or {}).get("abbreviation")),
+                "away_score": _score_value(away_item.get("score")),
+                "home_score": _score_value(home_item.get("score")),
+                "status_group": status_group,
+                "status_detail": status_detail,
+            }
+        )
+    return rows
+
+
+def _overlay_live_states(schedule: pd.DataFrame) -> pd.DataFrame:
+    result = schedule.copy()
+    result["status_group"] = result["status"].map(
+        {"Final": "final", "Scheduled": "scheduled"}
+    ).fillna("scheduled")
+    result["status_detail"] = result["status"]
+    result["espn_event_id"] = ""
+
+    now = datetime.now(EASTERN_TIMEZONE).replace(tzinfo=None)
+    try:
+        live_rows = _load_espn_scoreboard_window(now.strftime("%Y-%m-%d"))
+    except Exception:
+        live_rows = []
+
+    live_map = {
+        (row["away_team"], row["home_team"]): row
+        for row in live_rows
+        if row.get("away_team") and row.get("home_team")
+    }
+    for index, game in result.iterrows():
+        key = (_espn_team(game.get("away_team")), _espn_team(game.get("home_team")))
+        live = live_map.get(key)
+        if live:
+            for column in [
+                "espn_event_id", "away_score", "home_score",
+                "status_group", "status_detail",
+            ]:
+                result.at[index, column] = live.get(column)
+            result.at[index, "status"] = (
+                "Live" if live["status_group"] == "live"
+                else "Final" if live["status_group"] == "final"
+                else "Scheduled"
+            )
+            continue
+
+        kickoff = pd.to_datetime(game.get("kickoff_et"), errors="coerce")
+        if (
+            result.at[index, "status_group"] == "scheduled"
+            and pd.notna(kickoff)
+            and kickoff <= now <= kickoff + pd.Timedelta(hours=5)
+        ):
+            result.at[index, "status"] = "Live"
+            result.at[index, "status_group"] = "live"
+            result.at[index, "status_detail"] = "LIVE · Updating"
+
+    result["game_live"] = result["status_group"].eq("live")
+    result["game_final"] = result["status_group"].eq("final")
+    return result
+
+
+@st.cache_data(ttl=30, show_spinner=False)
+def load_nfl_regular_schedule(season: int = 2026) -> pd.DataFrame:
+    """Return the regular schedule with current live/final game states."""
+    return _overlay_live_states(_load_nfl_regular_schedule_base(season))
+
+
 def load_nfl_schedule(
     season: int = 2026,
     game_type: str = "REG",
@@ -319,3 +455,11 @@ def load_nfl_schedule(
         return load_nfl_preseason_schedule(season)
 
     return load_nfl_regular_schedule(season)
+
+
+def clear_nfl_schedule_cache() -> None:
+    """Clear both the static schedule and fast live-score caches."""
+    _load_nfl_regular_schedule_base.clear()
+    _load_espn_scoreboard_window.clear()
+    load_nfl_regular_schedule.clear()
+    load_nfl_preseason_schedule.clear()
