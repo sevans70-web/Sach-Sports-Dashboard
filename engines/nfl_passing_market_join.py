@@ -6,6 +6,7 @@ import unicodedata
 import pandas as pd
 
 from data.nfl_odds import load_nfl_passing_yards_markets
+from engines.nfl_projection_calibration import market_anchored_projection
 
 
 def normalize_player_name(value) -> str:
@@ -137,6 +138,18 @@ def attach_live_passing_yards_lines(
     line = pd.to_numeric(
         result["consensus_line"],
         errors="coerce",
+    )
+
+    # A verified sportsbook consensus is valuable calibration information.
+    # Keep the independent model signal, but anchor the displayed forecast to
+    # the active market and cap it within ten yards of that consensus.
+    result["passing_yards_projection_unanchored"] = projection
+    result["passing_yards_projection_matchup"] = market_anchored_projection(
+        projection, line, maximum_distance=10.0
+    ).astype("Float64").round(1)
+
+    projection = pd.to_numeric(
+        result["passing_yards_projection_matchup"], errors="coerce"
     )
 
     result["projection_edge_yards"] = (

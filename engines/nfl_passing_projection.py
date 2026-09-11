@@ -29,14 +29,10 @@ def build_passing_yards_projection(
 
     idx = matchup.get("passing_matchup_index")
 
-    multiplier = (
-        1.0
+    matchup_adjustment = (
+        0.0
         if idx is None or pd.isna(idx)
-        else _clamp(
-            float(idx) / 100.0,
-            0.88,
-            1.12,
-        )
+        else _clamp(float(idx) - 100.0, -3.0, 3.0)
     )
 
     qbs["opponent_team"] = str(opponent_team).upper()
@@ -45,9 +41,7 @@ def build_passing_yards_projection(
         "passing_matchup_label",
         "Unknown",
     )
-    qbs["matchup_multiplier"] = float(
-        round(multiplier, 3)
-    )
+    qbs["matchup_adjustment_yards"] = float(round(matchup_adjustment, 1))
 
     # Force projection inputs to numeric before rounding.
     # This prevents missing merged baseline values from being treated
@@ -60,7 +54,12 @@ def build_passing_yards_projection(
     qbs["passing_yards_projection_matchup"] = pd.to_numeric(
         qbs["passing_yards_projection_base"],
         errors="coerce",
-    ) * float(multiplier)
+    ) + float(matchup_adjustment)
+
+    qbs["matchup_multiplier"] = (
+        qbs["passing_yards_projection_matchup"]
+        / qbs["passing_yards_projection_base"].replace(0, pd.NA)
+    ).astype("Float64").round(3)
 
     qbs["passing_yards_projection_matchup"] = (
         qbs["passing_yards_projection_matchup"]

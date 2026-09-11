@@ -13,6 +13,8 @@ from data.nfl_odds import (
 )
 from data.nfl_player_baseline import get_prop_eligible_player_baseline
 from data.nfl_stats import load_nfl_weekly_player_stats
+from engines.nfl_projection_calibration import market_anchored_projection
+from engines.nfl_projection_calibration import season_anchored_projection
 
 
 ROSTER_SEASON = 2026
@@ -176,24 +178,13 @@ def build_td_foundation(
 
 
 def _weighted_td_rate(row):
-    values = [
-        (row.get("tds_per_game"), 0.55),
-        (row.get("last_5_tds_per_game"), 0.25),
-        (row.get("last_3_tds_per_game"), 0.20),
-    ]
-
-    total = 0.0
-    weight_total = 0.0
-
-    for value, weight in values:
-        if value is not None and not pd.isna(value):
-            total += float(value) * weight
-            weight_total += weight
-
-    if weight_total == 0:
-        return pd.NA
-
-    return round(total / weight_total, 3)
+    return season_anchored_projection(
+        row.get("tds_per_game"),
+        row.get("last_5_tds_per_game"),
+        row.get("last_3_tds_per_game"),
+        max_adjustment=0.12,
+        digits=3,
+    )
 
 
 def _data_status(row):
@@ -295,10 +286,22 @@ def _attach_market(
         )
     )
 
-    result["model_probability"] = pd.to_numeric(
+    result["model_probability_unanchored"] = pd.to_numeric(
         result[probability_column],
         errors="coerce",
     )
+
+    market_probability = pd.to_numeric(
+        result.get("fair_implied_probability"), errors="coerce"
+    )
+    market_probability = market_probability.fillna(
+        pd.to_numeric(result.get("sportsbook_implied_probability"), errors="coerce")
+    )
+    result["model_probability"] = market_anchored_projection(
+        result["model_probability_unanchored"],
+        market_probability,
+        maximum_distance=6.0,
+    ).round(1)
 
     result["probability_edge"] = (
         result["model_probability"]

@@ -5,6 +5,7 @@ import streamlit as st
 
 from data.nfl_player_baseline import get_prop_eligible_player_baseline
 from data.nfl_stats import load_nfl_weekly_player_stats
+from engines.nfl_projection_calibration import season_anchored_projection
 
 
 @st.cache_data(ttl=21600, show_spinner=False)
@@ -102,33 +103,13 @@ def build_passing_yards_foundation(
 
 
 def _calculate_historical_baseline(row: pd.Series):
-    """Blend season and recent production into a historical passing baseline."""
-
-    season_avg = row.get("passing_yards_per_game")
-    last_5 = row.get("last_5_passing_yards_per_game")
-    last_3 = row.get("last_3_passing_yards_per_game")
-
-    if pd.isna(season_avg):
-        return pd.NA
-
-    values = [
-        (season_avg, 0.55),
-        (last_5, 0.25),
-        (last_3, 0.20),
-    ]
-
-    weighted_total = 0.0
-    weight_total = 0.0
-
-    for value, weight in values:
-        if pd.notna(value):
-            weighted_total += float(value) * weight
-            weight_total += weight
-
-    if weight_total == 0:
-        return pd.NA
-
-    return round(weighted_total / weight_total, 1)
+    return season_anchored_projection(
+        row.get("passing_yards_per_game"),
+        row.get("last_5_passing_yards_per_game"),
+        row.get("last_3_passing_yards_per_game"),
+        max_adjustment=3.0,
+        digits=1,
+    )
 
 
 def get_team_passing_yards_foundation(

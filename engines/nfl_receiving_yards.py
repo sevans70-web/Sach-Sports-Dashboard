@@ -10,6 +10,7 @@ import streamlit as st
 from data.nfl_odds import load_nfl_receiving_yards_markets
 from data.nfl_player_baseline import get_prop_eligible_player_baseline
 from data.nfl_stats import load_nfl_weekly_player_stats
+from engines.nfl_projection_calibration import market_anchored_projection, season_anchored_projection
 
 
 ROSTER_SEASON = 2026
@@ -127,28 +128,13 @@ def build_receiving_yards_foundation(
 
 
 def _baseline_projection(row):
-    season_avg = row.get("receiving_yards_per_game")
-    last_5 = row.get("last_5_receiving_yards_per_game")
-    last_3 = row.get("last_3_receiving_yards_per_game")
-
-    values = [
-        (season_avg, 0.55),
-        (last_5, 0.25),
-        (last_3, 0.20),
-    ]
-
-    weighted = 0.0
-    total_weight = 0.0
-
-    for value, weight in values:
-        if value is not None and not pd.isna(value):
-            weighted += float(value) * weight
-            total_weight += weight
-
-    if total_weight == 0:
-        return pd.NA
-
-    return round(weighted / total_weight, 1)
+    return season_anchored_projection(
+        row.get("receiving_yards_per_game"),
+        row.get("last_5_receiving_yards_per_game"),
+        row.get("last_3_receiving_yards_per_game"),
+        max_adjustment=4.0,
+        digits=1,
+    )
 
 
 def _data_status(row):
@@ -260,10 +246,14 @@ def attach_receiving_market(df: pd.DataFrame) -> pd.DataFrame:
         )
     )
 
-    result["receiving_projection"] = pd.to_numeric(
-        result["receiving_baseline_projection"],
-        errors="coerce",
+    result["receiving_projection_unanchored"] = pd.to_numeric(
+        result["receiving_baseline_projection"], errors="coerce"
     )
+    result["receiving_projection"] = market_anchored_projection(
+        result["receiving_projection_unanchored"],
+        result["consensus_line"],
+        maximum_distance=6.0,
+    ).round(1)
 
     result["projection_edge_yards"] = (
         result["receiving_projection"]
