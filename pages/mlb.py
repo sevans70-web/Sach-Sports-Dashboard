@@ -648,8 +648,51 @@ def load_emerging_power_candidates(schedule_date: str) -> list[dict]:
 
 @st.cache_data(ttl=300, show_spinner=False)
 def load_live_rankings() -> dict:
-    """Read today's completed MLB batter rankings from Supabase."""
-    return load_batter_rankings_from_supabase(limit=25)
+    """Load today's MLB batter rankings without allowing Supabase to take down MLB.
+
+    Supabase remains the preferred fast path. If its normalized foundation or
+    snapshot read is unavailable, run the existing statistical engine directly
+    for today's Toronto slate so Top 25/statistical data remain usable.
+    """
+    try:
+        stored = load_batter_rankings_from_supabase(limit=25)
+        if any(
+            bool((stored.get(category) or {}).get("rankings"))
+            for category in (
+                "home_runs", "hits", "total_bases", "runs",
+                "rbis", "walks", "stolen_bases", "hits_runs_rbis",
+            )
+        ):
+            return stored
+    except Exception:
+        pass
+
+    try:
+        today = get_toronto_now().date()
+        live = get_all_rankings(schedule_date=today, recent_days=14, limit=25)
+        for payload in live.values():
+            if isinstance(payload, dict):
+                payload.setdefault("source", "live_engine_fallback")
+                payload.setdefault("requested_date", today.isoformat())
+                payload.setdefault("stale", False)
+        return live
+    except Exception as exc:
+        # Keep the page alive even if both persistence and live generation fail.
+        # Individual ranking sections will render their normal unavailable state.
+        return {
+            category: {
+                "success": False,
+                "rankings": [],
+                "errors": [f"MLB ranking data unavailable: {exc}"],
+                "date": get_toronto_now().date().isoformat(),
+                "requested_date": get_toronto_now().date().isoformat(),
+                "source": "unavailable",
+            }
+            for category in (
+                "home_runs", "hits", "total_bases", "runs",
+                "rbis", "walks", "stolen_bases", "hits_runs_rbis",
+            )
+        }
 
 def load_previous_rankings() -> dict:
     """Load yesterday's saved MLB rankings when available."""
