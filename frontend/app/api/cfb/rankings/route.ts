@@ -1,0 +1,3 @@
+import { NextRequest, NextResponse } from "next/server";import { CFB_MARKETS, type CfbMarketKey } from "@/lib/cfb";import { getCfbRankings } from "@/lib/cfb-server";
+export const dynamic="force-dynamic";
+export async function GET(req:NextRequest){const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as CfbMarketKey;if(!CFB_MARKETS.some(x=>x[0]===market))return NextResponse.json({success:false,error:"Unsupported CFB market"},{status:400});try{return NextResponse.json({success:true,market,rows:await getCfbRankings(market),updatedAt:new Date().toISOString()})}catch(e){return NextResponse.json({success:false,market,rows:[],error:e instanceof Error?e.message:"CFB rankings unavailable"},{status:500})}}
