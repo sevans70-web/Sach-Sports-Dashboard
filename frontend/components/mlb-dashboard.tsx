@@ -57,7 +57,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey=""}:{row:Rankin
   const gi=numberValue(row.gi_score,1), team=String(row.team_abbreviation||row.team_name||"MLB"),opp=String(row.opponent_abbreviation||row.opponent_name||"");
   const teamId=Number((row as any).team_id||(row as any).teamId||0);
   const logo=teamId?`https://www.mlbstatic.com/team-logos/${teamId}.svg`:String((row as any).team_logo_url||"");
-  const probability=percentValue(row.hr_probability??row.probability),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
+  const probability=percentValue(row.home_run_probability??row.hr_probability??row.probability),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
   const confirmed=row.lineup_confirmed!==false;
   const summary=String((row as any).summary||(row as any).reason||(row as any).intelligence_summary||(pitcher?"Ranked by workload, season rates, matchup and sample reliability.":"GI score blends performance, matchup, lineup position, park/weather and sample reliability."));
   const evidence=String((row as any).performance_evidence||(row as any).market_evidence||(row as any).recent_form||summary);
