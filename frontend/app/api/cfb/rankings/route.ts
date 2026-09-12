@@ -95,7 +95,6 @@ function weightedProjection(values:number[]){
   const xs=values.slice(-10);
   if(!xs.length)return null;
 
-  // Recent games carry more weight while still keeping the longer sample.
   let weighted=0;
   let weightTotal=0;
   xs.forEach((value,index)=>{
@@ -126,19 +125,28 @@ export async function GET(req:NextRequest){
   }
 
   try{
-    const[rows,schedule]=await Promise.all([getCfbRankings(market),getEspnCfbSchedule()]);
+    const[allRows,schedule]=await Promise.all([getCfbRankings(market),getEspnCfbSchedule()]);
     const today=easternDayKey(new Date());
 
-    const active=rows.filter((row:any)=>{
+    // CRITICAL ELIGIBILITY RULE:
+    // Only sportsbook-backed player props are allowed into CFB rankings.
+    // Statistical fallback rows must never fill the Top 25.
+    const sportsbookRows=allRows.filter((row:any)=>
+      row.marketBacked===true &&
+      row.sportsbookLine!=null &&
+      Number(row.bookmakerCount||0)>0
+    );
+
+    // Keep completed-game players for the remainder of game day.
+    // At midnight Eastern, players tied to an earlier game date drop out.
+    const active=sportsbookRows.filter((row:any)=>{
       const t=rowGameTime(row,schedule);
       if(!t)return true;
       const key=easternDayKey(t);
       return !key||key>=today;
     });
 
-    // Add a real prop projection from the player's recent game history.
-    // Returning players can use 2025 history until enough 2026 games build up.
-    const enriched=await Promise.all(active.map(async(row:any,index:number)=>{
+    const enriched=await Promise.all(active.slice(0,25).map(async(row:any,index:number)=>{
       if(market==="first_td"){
         return {
           ...row,
@@ -162,6 +170,8 @@ export async function GET(req:NextRequest){
       success:true,
       market,
       rows:enriched,
+      sportsbookOnly:true,
+      validRankingCount:enriched.length,
       updatedAt:new Date().toISOString(),
     });
   }catch(e){
@@ -169,6 +179,7 @@ export async function GET(req:NextRequest){
       success:false,
       market,
       rows:[],
+      sportsbookOnly:true,
       error:e instanceof Error?e.message:"CFB rankings unavailable",
     },{status:500});
   }
