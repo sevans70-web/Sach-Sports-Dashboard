@@ -259,9 +259,30 @@ async function getRankingsForDay(day:string){
 
 function rowsFrom(payload: any, key: string): RankingRow[] {
   const value = payload?.[key];
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value?.rankings)) return value.rankings;
-  return [];
+  const rows = Array.isArray(value)
+    ? value
+    : Array.isArray(value?.rankings)
+      ? value.rankings
+      : [];
+
+  if (key !== "home_runs") return rows;
+
+  // Older/saved MLB ranking snapshots may carry HR probability under a
+  // generic projection/probability field. Normalize it here so every Next.js
+  // consumer receives the canonical home_run_probability field without
+  // changing the stored snapshot or any other ranking data.
+  return rows.map((row: any) => {
+    const probability =
+      row?.home_run_probability ??
+      row?.hr_probability ??
+      row?.probability ??
+      row?.projection ??
+      null;
+
+    return probability == null
+      ? row
+      : { ...row, home_run_probability: probability };
+  });
 }
 
 export async function getRankings() {
