@@ -29,6 +29,20 @@ function useJson<T>(url:string,fallback:T){
 
 function marketMeta(key:CfbMarketKey){return CFB_MARKETS.find(x=>x[0]===key)!}
 
+function projectionText(row:CfbRankingRow,market:CfbMarketKey){
+  if(market==="first_td"){
+    return row.modelProbability!=null?`${Number(row.modelProbability).toFixed(0)}% chance`:"—";
+  }
+  const v=row.modelProjection;
+  if(v==null||!Number.isFinite(Number(v)))return "Calculating…";
+  const n=Number(v);
+  if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${n.toFixed(1)} yds`;
+  if(market==="pass_completions")return `${n.toFixed(1)} comp`;
+  if(market==="receptions")return `${n.toFixed(1)} rec`;
+  if(market==="anytime_td")return `${n.toFixed(1)} TD`;
+  return n.toFixed(1);
+}
+
 function MenuButton(){
   return <Link href="/" className="cfbMenu" aria-label="Open sports menu">▦⌄</Link>;
 }
@@ -40,6 +54,8 @@ function fallbackSummary(label:string){
 function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
   const[open,setOpen]=useState(false);
   const meta=marketMeta(market);
+  const projection=projectionText(row,market);
+
   return <article className="rankCard">
     <div className="rankNo">#{row.rank}<span>−</span></div>
     <div className="rankPhoto">{row.headshot?<img src={row.headshot} alt=""/>:<div>CFB</div>}</div>
@@ -47,17 +63,27 @@ function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
       <strong>{row.playerName}</strong>
       <span>{row.teamName}{row.matchup?` · ${row.matchup}`:""}</span>
       <b>{row.sportsbookLine!=null?`${meta[2]} line: ${row.sportsbookLine}`:`${meta[2]} statistical intelligence`}</b>
+      <p className="projectionLine"><b>Model projection:</b> {projection}</p>
       <p>{row.marketBacked?`Model probability: ${Number(row.modelProbability||0).toFixed(0)}%`:"Verified season production · sportsbook line pending"}</p>
     </div>
     <div className="rankGi"><span>GI SCORE</span><strong>{Number(row.giScore||0).toFixed(1)}</strong></div>
+
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>{open?"ⓘ Hide Intelligence":"ⓘ View Intelligence"}</button>
+
     {open?<div className="detail">
       <div className="detailMetric green"><span>MODEL</span><b>{row.marketBacked?`${Number(row.modelProbability||0).toFixed(1)}%`:"Stat Model"}</b></div>
       <div className="detailMetric"><span>SPORTSBOOK LINE</span><b>{row.sportsbookLine??"—"}</b></div>
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div>
       <div className="detailMetric"><span>DATA</span><b>{row.marketBacked?"Market + Stats":"Verified"}</b></div>
+
+      <div className="projectionBox">
+        <span>MODEL PROJECTION</span>
+        <strong>{projection}</strong>
+        {row.projectionGames?<small>Recent sample: {row.projectionGames} game{row.projectionGames===1?"":"s"}</small>:null}
+      </div>
+
       <div className="why"><b>Why This Player Ranks Here</b><p>{row.marketBacked?row.summary:fallbackSummary(meta[2])}</p></div>
-      <Link className="fullCard" href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&gi=${row.giScore}&prob=${row.modelProbability||0}&line=${row.sportsbookLine??""}&img=${encodeURIComponent(row.headshot||"")}`}>Open full player card</Link>
+      <Link className="fullCard" href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&gi=${row.giScore}&prob=${row.modelProbability||0}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}`}>Open full player card</Link>
     </div>:null}
   </article>;
 }
@@ -116,6 +142,7 @@ export default function CfbDashboard(){
       <div className="periodTabs">
         {["Today","Yesterday","Week","Month","Season"].map(x=><button className={period===x?"active":""} onClick={()=>setPeriod(x)} key={x}>{x}</button>)}
       </div>
+
       <div className="overallMetrics">
         <article className="green"><span>Hit Rate</span><strong>—</strong></article>
         <article><span>Correct / Settled</span><strong>0 / 0</strong></article>
@@ -188,22 +215,18 @@ export default function CfbDashboard(){
       .rankNo{font-size:26px;font-weight:900}.rankNo span{display:block;color:#9da1a8;margin-top:12px}
       .rankPhoto img,.rankPhoto>div{width:112px;height:112px;border-radius:50%;border:4px solid #d9b85d;object-fit:cover}.rankPhoto>div{display:grid;place-items:center;color:#d9b85d;font-weight:900}
       .rankBody strong{display:block;font-size:25px}.rankBody span{display:block;color:#a9acb3;font-size:19px;line-height:1.25;margin-top:6px}.rankBody b{display:block;font-size:19px;margin-top:12px}.rankBody p{color:#a9acb3;font-size:17px;line-height:1.35;margin:10px 0 0}
+      .projectionLine{color:#fff!important}.projectionLine b{display:inline!important;color:#d9b85d!important;font-size:inherit!important;margin:0!important}
       .rankGi{text-align:right}.rankGi span{display:block;color:#a9acb3;font-size:13px;font-weight:900}.rankGi strong{display:block;color:#d9b85d;font-size:26px;margin-top:3px}
       .intelButton{grid-column:2/-1;background:#080a09;color:#fff;border:4px solid #20df7f;border-radius:18px;padding:14px;font-size:19px;font-weight:700}.detail{grid-column:1/-1}
       .detail{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.detailMetric{border:1px solid #34373d;border-radius:12px;padding:10px;background:#0d0f10}.detailMetric.green{border-color:#20df7f}.detailMetric.gold{border-color:#d9b85d}.detailMetric span{display:block;color:#9da1a8;font-size:11px}.detailMetric b{display:block;margin-top:5px}
+      .projectionBox{grid-column:1/-1;border:1px solid #20df7f;border-radius:12px;padding:12px;background:#0d0f10}.projectionBox span{display:block;color:#9da1a8;font-size:11px}.projectionBox strong{display:block;color:#d9b85d;font-size:22px;margin-top:4px}.projectionBox small{display:block;color:#9da1a8;margin-top:4px}
       .why{grid-column:1/-1;border-left:5px solid #20df7f;background:#151116;padding:14px}.why>b{color:#d9b85d}.why p{color:#d7d8db;line-height:1.45}.fullCard{grid-column:1/-1;text-align:center;border:2px solid #34373d;border-radius:14px;padding:13px;color:#fff!important;text-decoration:none!important;background:#0d0f10}
       .empty{padding:30px;color:#a9acb3;text-align:center}.viewFull{width:100%;background:#0d0f10;color:#fff;border:2px solid #34373d;border-radius:14px;padding:14px;font-size:17px}
-
       @media(max-width:600px){
-        .cfbMenu{width:52px;height:52px;margin-bottom:20px}
-        .cfbShell .hero h1{font-size:30px}.cfbShell .hero p{font-size:17px}
-        .performanceTitle{font-size:27px!important}
-        .snapshot{gap:6px}.snapshot article{padding:10px}.snapshot strong{font-size:22px}
-        .periodTabs{grid-template-columns:repeat(5,118px)}
-        .lineTabs button{font-size:16px;padding:12px 15px 9px}
-        .rankCard{grid-template-columns:40px 92px 1fr 70px;gap:9px;padding:14px 10px;border-left-width:12px}
-        .rankPhoto img,.rankPhoto>div{width:86px;height:86px}.rankBody strong{font-size:21px}.rankBody span,.rankBody b{font-size:16px}.rankBody p{font-size:15px}.rankGi strong{font-size:22px}
-        .intelButton{grid-column:2/-1}.detail{grid-template-columns:repeat(2,1fr)}
+        .cfbMenu{width:52px;height:52px;margin-bottom:20px}.cfbShell .hero h1{font-size:30px}.cfbShell .hero p{font-size:17px}.performanceTitle{font-size:27px!important}
+        .snapshot{gap:6px}.snapshot article{padding:10px}.snapshot strong{font-size:22px}.periodTabs{grid-template-columns:repeat(5,118px)}.lineTabs button{font-size:16px;padding:12px 15px 9px}
+        .rankCard{grid-template-columns:40px 92px 1fr 70px;gap:9px;padding:14px 10px;border-left-width:12px}.rankPhoto img,.rankPhoto>div{width:86px;height:86px}.rankBody strong{font-size:21px}.rankBody span,.rankBody b{font-size:16px}.rankBody p{font-size:15px}.rankGi strong{font-size:22px}
+        .intelButton{grid-column:2/-1}.detail{grid-template-columns:repeat(2,1fr)}.projectionBox{grid-column:1/-1}
       }
     `}</style>
   </main>;

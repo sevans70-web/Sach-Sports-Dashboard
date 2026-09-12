@@ -23,6 +23,8 @@ export type CfbRankingRow = {
   gameTime?:string;
   giScore:number;
   modelProbability?:number;
+  modelProjection?:number|null;
+  projectionGames?:number|null;
   sportsbookLine?:number|null;
   sportsbookProbability?:number|null;
   bookmakerCount?:number;
