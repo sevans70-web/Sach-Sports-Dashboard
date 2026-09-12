@@ -9,3 +9,31 @@
 .soccerPage .origPeriods button.active,.soccerPage .origTabs button.active{border-bottom-color:var(--soccer-red)}.soccerPage .origPeriods button.active{border-color:var(--soccer-red);background:rgba(239,51,64,.10)}
 .soccerPage .origRankCard{border-left-color:var(--soccer-red)}.soccerPage .origHeadshot,.soccerAvatarFallback{border-color:var(--soccer-blue)!important}.soccerAvatarFallback{width:88px;height:88px;border-radius:50%;border:3px solid;display:grid;place-items:center;background:#191b22;color:#fff;font-weight:950;font-size:1rem}.soccerPage .origGi strong{color:#8ea8ff}.soccerPage .origIntel{border-color:var(--soccer-blue)}.soccerIntelButton{cursor:pointer;width:auto;font:inherit}.soccerStatus{color:var(--soccer-green);font-size:.77rem;font-weight:900;margin-top:7px}.soccerBest{border:2px solid rgba(35,84,217,.55);border-left:7px solid var(--soccer-red);border-radius:14px;background:linear-gradient(105deg,#101112,rgba(35,84,217,.10));padding:12px 13px;margin:0 0 13px}.soccerBest small,.soccerBest strong,.soccerBest span{display:block}.soccerBest small{color:#8ea8ff;font-size:.66rem;font-weight:950}.soccerBest strong{margin-top:4px;font-size:1rem}.soccerBest span{margin-top:4px;color:#c7cad0;font-size:.76rem}.soccerPerfNote{color:#9fa4ab;font-size:.76rem;margin-top:9px}.soccerPage .viewFullTop25{border-color:var(--soccer-blue);color:#aebeff}.soccerPage .origInlineIntel details{border-color:#34383e}.soccerPage .intelKpis article{border-bottom:3px solid var(--soccer-red)}
 @media(max-width:700px){.soccerAvatarFallback{width:70px;height:70px}.soccerGameCard{padding:10px 11px}.soccerGameCard strong{font-size:.84rem}.soccerMarkets button{font-size:.83rem!important;padding-left:9px!important;padding-right:9px!important}}
+
+
+/* Final consolidated Soccer corrections */
+.soccerHero{margin-bottom:14px}
+.soccerLeagueRow{margin:0 0 8px}
+.soccerLeagueRow label{font-size:.78rem}
+.soccerSlate{margin:8px 0 18px}
+.soccerFullGameCard{border:2px solid #34383e;border-left:7px solid var(--soccer-red);border-radius:14px;background:#101112;overflow:hidden}
+.soccerFullGameCard.live{border-color:var(--soccer-green);box-shadow:inset 0 0 0 1px rgba(25,217,120,.18)}
+.soccerGameMain{width:100%;border:0;background:transparent;color:#fff;padding:12px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;font:inherit;cursor:pointer}
+.soccerGameMain strong,.soccerGameMain span{display:block}
+.soccerGameMain span{margin-top:4px;color:#aeb3b9;font-size:.76rem}
+.soccerGameMain b{color:#8ea8ff;font-size:.72rem;white-space:nowrap}
+.soccerGameIntel{border-top:1px solid #34383e;padding:12px 13px;background:#0c0d0e}
+.soccerGameIntel p{color:#aeb3b9;font-size:.76rem;margin:9px 0 0}
+.soccerTeamAccess{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.soccerTeamAccess button{border:1px solid #4a4f58;border-radius:9px;background:#17191c;color:#fff;padding:9px;font-weight:850;cursor:pointer}
+.soccerSectionSub{color:#aeb3b9;font-size:.78rem;margin:-7px 0 11px}
+.soccerPerformanceMarkets{margin-top:16px}
+.soccerPropPerformance{grid-template-columns:repeat(4,minmax(0,1fr))!important;margin-top:10px}
+.soccerPropPerformance article{min-width:0}
+.soccerPropPerformance article:nth-child(1){border-color:var(--soccer-green)}
+.soccerPropPerformance article:nth-child(3){border-color:var(--soccer-gold)}
+@media(max-width:700px){
+  .soccerPropPerformance{grid-template-columns:repeat(4,minmax(92px,1fr))!important;overflow-x:auto;padding-bottom:4px}
+  .soccerPropPerformance article{min-width:92px}
+  .soccerTeamAccess{grid-template-columns:1fr}
+}
