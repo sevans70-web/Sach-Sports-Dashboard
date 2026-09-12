@@ -22,7 +22,7 @@ function useJson<T>(url:string,fallback:T){
       .finally(()=>active&&setLoading(false));
     run();
     const id=setInterval(run,30000);
-    return()=>{active=false;clearInterval(id)};
+    return()=>{active=false;clearInterval(id)}
   },[url]);
   return{data,loading};
 }
@@ -31,6 +31,10 @@ function marketMeta(key:CfbMarketKey){return CFB_MARKETS.find(x=>x[0]===key)!}
 
 function MenuButton(){
   return <Link href="/" className="cfbMenu" aria-label="Open sports menu">▦⌄</Link>;
+}
+
+function fallbackSummary(label:string){
+  return `${label} ranking is based on verified college production and current matchup context. Sportsbook player-prop lines are still pending.`;
 }
 
 function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
@@ -43,16 +47,16 @@ function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
       <strong>{row.playerName}</strong>
       <span>{row.teamName}{row.matchup?` · ${row.matchup}`:""}</span>
       <b>{row.sportsbookLine!=null?`${meta[2]} line: ${row.sportsbookLine}`:`${meta[2]} statistical intelligence`}</b>
-      <p>{row.marketBacked?`Model probability: ${Number(row.modelProbability||0).toFixed(0)}%`:`Verified ESPN 2026 production · sportsbook line pending`}</p>
+      <p>{row.marketBacked?`Model probability: ${Number(row.modelProbability||0).toFixed(0)}%`:"Verified season production · sportsbook line pending"}</p>
     </div>
     <div className="rankGi"><span>GI SCORE</span><strong>{Number(row.giScore||0).toFixed(1)}</strong></div>
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>{open?"ⓘ Hide Intelligence":"ⓘ View Intelligence"}</button>
     {open?<div className="detail">
-      <div className="detailMetric green"><span>MODEL</span><b>{row.marketBacked?`${Number(row.modelProbability||0).toFixed(1)}%`:"ESPN"}</b></div>
+      <div className="detailMetric green"><span>MODEL</span><b>{row.marketBacked?`${Number(row.modelProbability||0).toFixed(1)}%`:"Stat Model"}</b></div>
       <div className="detailMetric"><span>SPORTSBOOK LINE</span><b>{row.sportsbookLine??"—"}</b></div>
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div>
-      <div className="detailMetric"><span>DATA</span><b>{row.marketBacked?"Market":"2026 ESPN"}</b></div>
-      <div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div>
+      <div className="detailMetric"><span>DATA</span><b>{row.marketBacked?"Market + Stats":"Verified"}</b></div>
+      <div className="why"><b>Why This Player Ranks Here</b><p>{row.marketBacked?row.summary:fallbackSummary(meta[2])}</p></div>
       <Link className="fullCard" href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&gi=${row.giScore}&prob=${row.modelProbability||0}&line=${row.sportsbookLine??""}&img=${encodeURIComponent(row.headshot||"")}`}>Open full player card</Link>
     </div>:null}
   </article>;
@@ -92,7 +96,7 @@ export default function CfbDashboard(){
     </Link>
 
     <h2 className="snapshotTitle">This Week&apos;s CFB Snapshot</h2>
-    <p className="greenNote">{s.data.filterMode==="schedule_fallback"?"Player-prop availability pending — current ESPN slate shown.":"Only games with at least one supported player prop are counted."}</p>
+    <p className="greenNote">{s.data.filterMode==="schedule_fallback"?"Player-prop availability pending — current weekly slate shown.":"Only games with at least one supported player prop are counted."}</p>
     <div className="snapshot">
       <article className="green"><span>GAMES</span><strong>{gameCount}</strong><small>{live} live · {finals} final</small></article>
       <article><span>MARKETS</span><strong>7</strong><small>College-supported categories</small></article>
@@ -149,7 +153,7 @@ export default function CfbDashboard(){
       </div>
 
       <div className="cards">{(full?rows:rows.slice(0,5)).map(row=><RankingCard row={row} market={market} key={`${row.playerId}-${row.rank}`}/>)}</div>
-      {!r.loading&&rows.length===0?<div className="empty">Ranking data is still loading from the CFB market and ESPN statistical feeds.</div>:null}
+      {!r.loading&&rows.length===0?<div className="empty">Ranking data is still loading from the CFB market and verified statistical feeds.</div>:null}
       {rows.length>5?<button className="viewFull" onClick={()=>setFull(v=>!v)}>{full?"Show Top 5 Only":"View Full Rankings"}</button>:null}
     </section>
 
@@ -185,7 +189,8 @@ export default function CfbDashboard(){
       .rankPhoto img,.rankPhoto>div{width:112px;height:112px;border-radius:50%;border:4px solid #d9b85d;object-fit:cover}.rankPhoto>div{display:grid;place-items:center;color:#d9b85d;font-weight:900}
       .rankBody strong{display:block;font-size:25px}.rankBody span{display:block;color:#a9acb3;font-size:19px;line-height:1.25;margin-top:6px}.rankBody b{display:block;font-size:19px;margin-top:12px}.rankBody p{color:#a9acb3;font-size:17px;line-height:1.35;margin:10px 0 0}
       .rankGi{text-align:right}.rankGi span{display:block;color:#a9acb3;font-size:13px;font-weight:900}.rankGi strong{display:block;color:#d9b85d;font-size:26px;margin-top:3px}
-      .intelButton{grid-column:2/-1;background:#080a09;color:#fff;border:4px solid #20df7f;border-radius:18px;padding:14px;font-size:19px;font-weight:700}.detail{grid-column:1/-1}.detail{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.detailMetric{border:1px solid #34373d;border-radius:12px;padding:10px;background:#0d0f10}.detailMetric.green{border-color:#20df7f}.detailMetric.gold{border-color:#d9b85d}.detailMetric span{display:block;color:#9da1a8;font-size:11px}.detailMetric b{display:block;margin-top:5px}
+      .intelButton{grid-column:2/-1;background:#080a09;color:#fff;border:4px solid #20df7f;border-radius:18px;padding:14px;font-size:19px;font-weight:700}.detail{grid-column:1/-1}
+      .detail{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.detailMetric{border:1px solid #34373d;border-radius:12px;padding:10px;background:#0d0f10}.detailMetric.green{border-color:#20df7f}.detailMetric.gold{border-color:#d9b85d}.detailMetric span{display:block;color:#9da1a8;font-size:11px}.detailMetric b{display:block;margin-top:5px}
       .why{grid-column:1/-1;border-left:5px solid #20df7f;background:#151116;padding:14px}.why>b{color:#d9b85d}.why p{color:#d7d8db;line-height:1.45}.fullCard{grid-column:1/-1;text-align:center;border:2px solid #34373d;border-radius:14px;padding:13px;color:#fff!important;text-decoration:none!important;background:#0d0f10}
       .empty{padding:30px;color:#a9acb3;text-align:center}.viewFull{width:100%;background:#0d0f10;color:#fff;border:2px solid #34373d;border-radius:14px;padding:14px;font-size:17px}
 
