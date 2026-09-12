@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   SOCCER_LEAGUES,
@@ -186,9 +187,6 @@ export function SoccerDashboard() {
   const [market, setMarket] = useState<SoccerMarketKey>("shots_on_target");
   const [showFull, setShowFull] = useState(false);
   const [period, setPeriod] = useState("Today");
-  const [showGames, setShowGames] = useState(false);
-  const [openGame, setOpenGame] = useState<string | null>(null);
-  const [openRoster, setOpenRoster] = useState<string | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -227,9 +225,6 @@ export function SoccerDashboard() {
           onChange={(e) => {
             setLeague(e.target.value);
             setShowFull(false);
-            setShowGames(false);
-            setOpenGame(null);
-            setOpenRoster(null);
           }}
         >
           {SOCCER_LEAGUES.map(([name, slug]) => (
@@ -242,84 +237,13 @@ export function SoccerDashboard() {
         Updated {data.updatedAt ? fmtTime(data.updatedAt) : "—"}
       </div>
 
-      <button className="origGamesEntry soccerGamesEntry" onClick={() => setShowGames((v) => !v)}>
+      <Link
+        className="origGamesEntry soccerGamesEntry"
+        href={`/soccer/games?league=${encodeURIComponent(league)}`}
+      >
         <strong>⚽ TODAY&apos;S SOCCER GAMES</strong>
-        <span>› Open today&apos;s game cards, intelligence &amp; team rosters</span>
-      </button>
-
-      {showGames ? (
-        <section className="soccerSlate">
-          {upcoming.map((g) => {
-            const open = openGame === g.gameId;
-            return (
-              <article className={`soccerFullGameCard ${g.state === "in" ? "live" : ""}`} key={g.gameId}>
-                <button
-                  className="soccerGameMain"
-                  onClick={() => {
-                    setOpenGame(open ? null : g.gameId);
-                    setOpenRoster(null);
-                  }}
-                >
-                  <div className="soccerGameTeams">
-                    {g.awayLogo ? <img src={g.awayLogo} alt="" /> : null}
-                    <strong>{g.awayTeam} @ {g.homeTeam}</strong>
-                    {g.homeLogo ? <img src={g.homeLogo} alt="" /> : null}
-                    <span>{fmtTime(g.kickoff)}</span>
-                  </div>
-                  <b>{g.status}</b>
-                </button>
-
-                {open ? (
-                  <div className="soccerGameIntel">
-                    <h4>Game Intelligence</h4>
-                    {(() => {
-                      const intel = data.matchupIntelligence.find((item) => item.gameId === g.gameId);
-                      if (!intel) {
-                        return <p>Player intelligence will populate as the engine confirms eligible recent form and lineup context.</p>;
-                      }
-                      return (
-                        <>
-                          <p>{intel.reason}</p>
-                          <div className="soccerGameIntelKpis">
-                            <span><b>Best prop angle:</b> {intel.bestProp}</span>
-                            <span><b>Ranked players:</b> {intel.rankedPlayers}</span>
-                            <span>
-                              <b>Players to watch:</b>{" "}
-                              {intel.playersToWatch.length ? intel.playersToWatch.join(", ") : "Pending"}
-                            </span>
-                          </div>
-                        </>
-                      );
-                    })()}
-
-                    <div className="soccerTeamAccess">
-                      <button
-                        className={openRoster === g.awayTeamId ? "active" : ""}
-                        onClick={() => setOpenRoster(openRoster === g.awayTeamId ? null : g.awayTeamId)}
-                      >
-                        {g.awayTeam} Roster
-                      </button>
-                      <button
-                        className={openRoster === g.homeTeamId ? "active" : ""}
-                        onClick={() => setOpenRoster(openRoster === g.homeTeamId ? null : g.homeTeamId)}
-                      >
-                        {g.homeTeam} Roster
-                      </button>
-                    </div>
-
-                    {openRoster === g.awayTeamId ? (
-                      <RosterPanel league={league} teamId={g.awayTeamId} teamName={g.awayTeam} />
-                    ) : null}
-                    {openRoster === g.homeTeamId ? (
-                      <RosterPanel league={league} teamId={g.homeTeamId} teamName={g.homeTeam} />
-                    ) : null}
-                  </div>
-                ) : null}
-              </article>
-            );
-          })}
-        </section>
-      ) : null}
+        <span>› Open today&apos;s slate, lineups &amp; Game Intelligence</span>
+      </Link>
 
       <section className="origSnapshot">
         <div className="snapshotTitleRow">

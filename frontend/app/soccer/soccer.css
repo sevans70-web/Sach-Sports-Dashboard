@@ -130,3 +130,64 @@
   .soccerGameTeams{grid-template-columns:auto minmax(0,1fr)}
   .soccerGameTeams img:nth-of-type(2){display:none}
 }
+
+
+/* --- Soccer separate slate + Game Intelligence pages --- */
+.soccerPage .soccerSubpage .subnav a,
+.soccerPage .soccerSubpage .viewGame{
+  color:var(--soccer-gold-bright)!important;
+}
+.soccerPage .soccerSubpage .slateHead{
+  border-color:rgba(30,207,115,.70)!important;
+  background:linear-gradient(110deg,#101311 0%,#111713 60%,rgba(30,207,115,.10) 100%)!important;
+}
+.soccerPage .soccerSubpage .gameCard{
+  border-left-color:var(--soccer-green)!important;
+  background:#0f1310!important;
+}
+.soccerPage .soccerSubpage .gameMeta strong{
+  color:var(--soccer-green)!important;
+}
+.soccerPage .soccerSubpage .gameMeta span{
+  color:#c0c7c0!important;
+}
+.soccerSlateLeague{margin:10px 0 14px}
+.soccerLogoFallback{
+  width:34px;height:34px;display:grid;place-items:center;
+  border-radius:50%;border:1px solid rgba(214,179,92,.55);
+}
+.soccerGameIntelligence{margin-bottom:22px}
+.soccerGameWhy{
+  border:1px solid rgba(214,179,92,.42);
+  border-left:6px solid var(--soccer-green);
+  border-radius:14px;
+  background:#0f1310;
+  padding:14px;
+  margin:0 0 24px;
+}
+.soccerGameWhy h2{margin:0 0 9px;color:#fff}
+.soccerGameWhy h4{margin:0 0 5px;color:var(--soccer-green)}
+.soccerGameWhy p{margin:0;color:#c7cec8;line-height:1.5}
+.soccerGameRosterList{display:grid;gap:8px;margin-top:12px}
+.soccerGameRosterRow{
+  display:flex;align-items:center;gap:10px;
+  border:1px solid #2f3932;border-radius:10px;
+  background:#111512;padding:9px 10px;
+}
+.soccerGameRosterPhoto{
+  width:46px;height:46px;flex:0 0 auto;border-radius:50%;
+  overflow:hidden;border:2px solid var(--soccer-gold);
+  background:#202620;display:grid;place-items:center;
+}
+.soccerGameRosterPhoto img{width:100%;height:100%;object-fit:cover}
+.soccerGameRosterPhoto span{font-size:.72rem;font-weight:950}
+.soccerGameRosterRow strong{display:block;color:#fff}
+.soccerGameRosterRow small{display:block;color:#9fa8a0;margin-top:2px}
+.soccerPage .legacyTabs.top button.active{
+  color:#fff!important;border-bottom-color:var(--soccer-green)!important
+}
+.soccerPage .teamGold{color:var(--soccer-gold-bright)!important}
+.soccerPage .confirmed{
+  border-color:var(--soccer-green)!important;
+  color:var(--soccer-green)!important
+}
