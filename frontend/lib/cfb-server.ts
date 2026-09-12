@@ -19,14 +19,40 @@ const ODDS_MARKETS:Record<CfbMarketKey,string>={
 };
 
 const SGO_STATS:Record<CfbMarketKey,string[]>={
-  passing_yards:["passing_yards","passingYards"],
-  pass_completions:["completions","passing_completions","passingCompletions"],
-  rushing_yards:["rushing_yards","rushingYards"],
-  receiving_yards:["receiving_yards","receivingYards"],
-  receptions:["receptions","receiving_receptions"],
-  anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown"],
-  first_td:["firstTouchdown","first_touchdown"],
+  passing_yards:["passing_yards","passingYards","passing yards","pass_yards","passYards","player_pass_yds"],
+  pass_completions:["completions","passing_completions","passingCompletions","passing completions","pass_completions","player_pass_completions"],
+  rushing_yards:["rushing_yards","rushingYards","rushing yards","rush_yards","rushYards","player_rush_yds"],
+  receiving_yards:["receiving_yards","receivingYards","receiving yards","reception_yards","receptionYards","player_reception_yds"],
+  receptions:["receptions","receiving_receptions","receivingReceptions","player_receptions"],
+  anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
+  first_td:["firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
 };
+
+function normSgo(v:any){
+  return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+}
+const SGO_NORMALIZED:Record<CfbMarketKey,Set<string>>=Object.fromEntries(
+  Object.entries(SGO_STATS).map(([k,v])=>[k,new Set((v as string[]).map(normSgo))])
+) as Record<CfbMarketKey,Set<string>>;
+function sgoMatchesMarket(o:any,market:CfbMarketKey){
+  const values=[o.statID,o.statId,o.stat,o.marketID,o.marketId,o.market,o.betTypeID,o.betTypeId,o.betType,o.statName,o.marketName,o.label,o.name];
+  return values.some(v=>v&&SGO_NORMALIZED[market].has(normSgo(v)));
+}
+function sgoPlayerName(o:any){
+  return String(o.statEntityName||o.statEntity?.name||o.playerName||o.player?.name||o.participantName||o.participant?.name||o.entityName||"").trim();
+}
+function sgoLine(o:any){
+  return safeNumber(o.bookOverUnder??o.overUnder??o.line??o.point??o.bookLine??o.consensusLine);
+}
+function sgoPrice(o:any){
+  return safeNumber(o.fairOdds??o.bookOdds??o.odds??o.price??o.americanOdds);
+}
+function sgoBookCount(o:any){
+  const raw=o.byBookmaker||o.bookmakers||o.books||o.sportsbooks;
+  if(Array.isArray(raw))return raw.length;
+  if(raw&&typeof raw==="object")return Object.keys(raw).length;
+  return sgoLine(o)!=null||sgoPrice(o)!=null?1:0;
+}
 
 const LEADER_ALIASES:Record<CfbMarketKey,string[]>={
   passing_yards:["passingyards","passing yards"],
@@ -136,25 +162,43 @@ export async function getCfbMarketRows(market:CfbMarketKey){
       const rows:any[]=[];
       for(const e of p.data||[]){
         for(const o of sgoOdds(e)){
-          const stat=String(o.statID||o.statId||"");
-          if(!SGO_STATS[market].includes(stat))continue;
-          const side=String(o.sideID||o.side||"").toLowerCase();
-          if(!["anytime_td","first_td"].includes(market)&&side!=="over")continue;
+          if(!sgoMatchesMarket(o,market))continue;
+          const side=String(o.sideID||o.sideId||o.side||o.outcome||"").toLowerCase();
+          if(!["anytime_td","first_td"].includes(market)&&side&&side!=="over")continue;
           if(["anytime_td","first_td"].includes(market)&&["no","under"].includes(side))continue;
-          const playerName=String(o.statEntityName||o.playerName||o.participantName||"").trim();
+          const playerName=sgoPlayerName(o);
           if(!playerName)continue;
+          const line=sgoLine(o);
+          const price=sgoPrice(o);
+          if(!["anytime_td","first_td"].includes(market)&&line==null)continue;
+          if(["anytime_td","first_td"].includes(market)&&price==null&&line==null)continue;
           rows.push({
             eventId:String(e.eventID||e.id||""),
             matchup:sgoMatchup(e),
             playerName,
-            line:safeNumber(o.bookOverUnder),
-            price:safeNumber(o.fairOdds??o.bookOdds),
-            prob:americanProb(o.fairOdds??o.bookOdds),
-            bookmakerCount:o.byBookmaker&&typeof o.byBookmaker==="object"?Object.keys(o.byBookmaker).length:0,
+            line,
+            price,
+            prob:americanProb(price),
+            bookmakerCount:sgoBookCount(o),
           });
         }
       }
-      if(rows.length)return rows;
+      if(rows.length){
+        const grouped=new Map<string,any[]>();
+        for(const r of rows){
+          const k=`${cleanName(r.playerName)}|${cleanName(r.matchup)}`;
+          grouped.set(k,[...(grouped.get(k)||[]),r]);
+        }
+        return [...grouped.values()].map(g=>({
+          eventId:g[0].eventId,
+          matchup:g[0].matchup,
+          playerName:g[0].playerName,
+          line:median(g.map(x=>x.line).filter((x:any)=>x!=null)),
+          price:median(g.map(x=>x.price).filter((x:any)=>x!=null)),
+          prob:median(g.map(x=>x.prob).filter((x:any)=>x!=null)),
+          bookmakerCount:Math.max(...g.map(x=>Number(x.bookmakerCount||0)),1),
+        }));
+      }
     }catch{}
   }
 
