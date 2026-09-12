@@ -23,6 +23,8 @@ export type SoccerGame = {
   kickoff: string;
   awayTeam: string;
   homeTeam: string;
+  awayTeamId: string;
+  homeTeamId: string;
   awayLogo?: string;
   homeLogo?: string;
   awayScore?: string | number | null;
@@ -38,6 +40,7 @@ export type SoccerRanking = {
   playerName: string;
   photoUrl?: string;
   team: string;
+  teamId: string;
   position: string;
   matchup: string;
   opponent: string;
@@ -57,6 +60,33 @@ export type SoccerRanking = {
   why: string;
 };
 
+export type SoccerMatchupIntel = {
+  gameId: string;
+  matchup: string;
+  kickoff: string;
+  status: string;
+  reason: string;
+  bestProp: string;
+  rankedPlayers: number;
+  playersToWatch: string[];
+};
+
+export type SoccerRosterPlayer = {
+  playerId: string;
+  playerName: string;
+  photoUrl?: string;
+  position: string;
+  jersey?: string;
+};
+
+export type SoccerRosterResponse = {
+  success: boolean;
+  teamId: string;
+  teamName: string;
+  players: SoccerRosterPlayer[];
+  error?: string;
+};
+
 export type SoccerDashboardResponse = {
   success: boolean;
   league: string;
@@ -64,6 +94,7 @@ export type SoccerDashboardResponse = {
   updatedAt: string;
   games: SoccerGame[];
   rankings: Record<SoccerMarketKey, SoccerRanking[]>;
+  matchupIntelligence: SoccerMatchupIntel[];
   playersTracked: number;
   errors?: string[];
 };

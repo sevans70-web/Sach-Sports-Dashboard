@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import {
   SOCCER_LEAGUES,
@@ -6,6 +7,7 @@ import {
   type SoccerDashboardResponse,
   type SoccerMarketKey,
   type SoccerRanking,
+  type SoccerRosterPlayer,
 } from "@/lib/soccer";
 
 const empty: SoccerDashboardResponse = {
@@ -21,6 +23,7 @@ const empty: SoccerDashboardResponse = {
     goals: [],
     assists: [],
   },
+  matchupIntelligence: [],
   playersTracked: 0,
 };
 
@@ -58,6 +61,7 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
         #{row.rank}
         <span>−</span>
       </div>
+
       <div className="origPhotoWrap">
         {row.photoUrl ? (
           <img className="origHeadshot" src={row.photoUrl} alt="" />
@@ -65,11 +69,10 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
           <div className="soccerAvatarFallback">{initials(row.playerName)}</div>
         )}
       </div>
+
       <div className="origRankBody">
         <strong className="origName">{row.playerName}</strong>
-        <div className="origMatch">
-          {row.team} · {row.matchup}
-        </div>
+        <div className="origMatch">{row.team} · {row.matchup}</div>
         <div className="origProp">
           <b>Projection:</b> {row.projection.toFixed(2)} {unit}
         </div>
@@ -81,39 +84,98 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
           {row.availability} · {Math.round(row.expectedMinutes)} expected min
         </div>
       </div>
+
       <div className="origGi">
         <small>GI SCORE</small>
         <strong>{row.giScore.toFixed(1)}</strong>
       </div>
+
       <button className="origIntel soccerIntelButton" onClick={() => setOpen((v) => !v)}>
         {open ? "Close Intelligence" : "View Intelligence"}
       </button>
+
       {open ? (
         <div className="origInlineIntel">
           <div className="intelKpis">
-            <article>
-              <span>Recent Avg</span>
-              <strong>{row.avgMetric.toFixed(2)}</strong>
-            </article>
-            <article>
-              <span>Avg Minutes</span>
-              <strong>{Math.round(row.avgMinutes)}</strong>
-            </article>
-            <article>
-              <span>Start Rate</span>
-              <strong>{Math.round(row.startRate * 100)}%</strong>
-            </article>
+            <article><span>Recent Avg</span><strong>{row.avgMetric.toFixed(2)}</strong></article>
+            <article><span>Avg Minutes</span><strong>{Math.round(row.avgMinutes)}</strong></article>
+            <article><span>Start Rate</span><strong>{Math.round(row.startRate * 100)}%</strong></article>
           </div>
           <details open>
             <summary>Why this player?</summary>
             <p>
-              {row.why}. Ranking blends recent production, expected minutes, starter
-              frequency, sample quality and the upcoming fixture.
+              {row.why}. The GI score also considers expected minutes, starting reliability
+              and the upcoming matchup.
             </p>
           </details>
         </div>
       ) : null}
     </article>
+  );
+}
+
+function RosterPanel({
+  league,
+  teamId,
+  teamName,
+}: {
+  league: string;
+  teamId: string;
+  teamName: string;
+}) {
+  const [players, setPlayers] = useState<SoccerRosterPlayer[] | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let live = true;
+    setPlayers(null);
+    setError("");
+
+    fetch(`/api/soccer/roster?league=${encodeURIComponent(league)}&teamId=${encodeURIComponent(teamId)}`, {
+      cache: "no-store",
+    })
+      .then((r) => r.json())
+      .then((payload) => {
+        if (!live) return;
+        if (!payload?.success) {
+          setError(payload?.error || "Roster unavailable.");
+          setPlayers([]);
+          return;
+        }
+        setPlayers(payload.players || []);
+      })
+      .catch(() => {
+        if (live) {
+          setError("Roster unavailable.");
+          setPlayers([]);
+        }
+      });
+
+    return () => {
+      live = false;
+    };
+  }, [league, teamId]);
+
+  if (players === null) return <div className="soccerRosterState">Loading {teamName} roster…</div>;
+  if (error) return <div className="soccerRosterState">{error}</div>;
+  if (!players.length) return <div className="soccerRosterState">No roster players returned.</div>;
+
+  return (
+    <div className="soccerRosterGrid">
+      {players.map((player) => (
+        <article className="soccerRosterPlayer" key={player.playerId || player.playerName}>
+          <div className="soccerRosterPhoto">
+            {player.photoUrl ? <img src={player.photoUrl} alt="" /> : <span>{initials(player.playerName)}</span>}
+          </div>
+          <div>
+            <strong>{player.playerName}</strong>
+            <small>
+              {player.position || "Player"}{player.jersey ? ` · #${player.jersey}` : ""}
+            </small>
+          </div>
+        </article>
+      ))}
+    </div>
   );
 }
 
@@ -126,15 +188,18 @@ export function SoccerDashboard() {
   const [period, setPeriod] = useState("Today");
   const [showGames, setShowGames] = useState(false);
   const [openGame, setOpenGame] = useState<string | null>(null);
+  const [openRoster, setOpenRoster] = useState<string | null>(null);
 
   useEffect(() => {
     let live = true;
     setLoading(true);
+
     fetch(`/api/soccer/dashboard?league=${encodeURIComponent(league)}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((v) => live && setData(v))
       .catch(() => live && setData(empty))
       .finally(() => live && setLoading(false));
+
     return () => {
       live = false;
     };
@@ -142,19 +207,8 @@ export function SoccerDashboard() {
 
   const leagueName = SOCCER_LEAGUES.find((x) => x[1] === league)?.[0] || "Soccer";
   const upcoming = data.games.filter((g) => !g.completed);
-  const liveGames = data.games.filter((g) => g.state === "in");
   const rows = data.rankings?.[market] || [];
   const active = SOCCER_MARKETS.find((x) => x[0] === market)!;
-
-  // Highlight a small number of current fixtures instead of duplicating the full schedule.
-  const featured = [...upcoming]
-    .sort((a, b) => {
-      const popular = /Liverpool|Arsenal|Chelsea|Manchester|Tottenham|Barcelona|Real Madrid|Bayern|PSG|Inter|Milan|Juventus/i;
-      const aScore = (popular.test(a.homeTeam) ? 1 : 0) + (popular.test(a.awayTeam) ? 1 : 0);
-      const bScore = (popular.test(b.homeTeam) ? 1 : 0) + (popular.test(b.awayTeam) ? 1 : 0);
-      return bScore - aScore || String(a.kickoff).localeCompare(String(b.kickoff));
-    })
-    .slice(0, 3);
 
   return (
     <div className="origMlb soccerDashboard">
@@ -174,52 +228,96 @@ export function SoccerDashboard() {
             setLeague(e.target.value);
             setShowFull(false);
             setShowGames(false);
+            setOpenGame(null);
+            setOpenRoster(null);
           }}
         >
           {SOCCER_LEAGUES.map(([name, slug]) => (
-            <option value={slug} key={slug}>
-              {name}
-            </option>
+            <option value={slug} key={slug}>{name}</option>
           ))}
         </select>
       </section>
 
-      <div className="origUpdated">Updated {data.updatedAt ? fmtTime(data.updatedAt) : "—"}</div>
+      <div className="origUpdated">
+        Updated {data.updatedAt ? fmtTime(data.updatedAt) : "—"}
+      </div>
 
       <button className="origGamesEntry soccerGamesEntry" onClick={() => setShowGames((v) => !v)}>
         <strong>⚽ TODAY&apos;S SOCCER GAMES</strong>
-        <span>› Open today&apos;s game cards, teams &amp; roster access</span>
+        <span>› Open today&apos;s game cards, intelligence &amp; team rosters</span>
       </button>
 
       {showGames ? (
         <section className="soccerSlate">
-          {upcoming.map((g) => (
-            <article className={`soccerFullGameCard ${g.state === "in" ? "live" : ""}`} key={g.gameId}>
-              <button
-                className="soccerGameMain"
-                onClick={() => setOpenGame(openGame === g.gameId ? null : g.gameId)}
-              >
-                <div>
-                  <strong>{g.awayTeam} @ {g.homeTeam}</strong>
-                  <span>{fmtTime(g.kickoff)}</span>
-                </div>
-                <b>{g.status}</b>
-              </button>
-              {openGame === g.gameId ? (
-                <div className="soccerGameIntel">
-                  <div className="soccerTeamAccess">
-                    <button>{g.awayTeam} Roster</button>
-                    <button>{g.homeTeam} Roster</button>
+          {upcoming.map((g) => {
+            const open = openGame === g.gameId;
+            return (
+              <article className={`soccerFullGameCard ${g.state === "in" ? "live" : ""}`} key={g.gameId}>
+                <button
+                  className="soccerGameMain"
+                  onClick={() => {
+                    setOpenGame(open ? null : g.gameId);
+                    setOpenRoster(null);
+                  }}
+                >
+                  <div className="soccerGameTeams">
+                    {g.awayLogo ? <img src={g.awayLogo} alt="" /> : null}
+                    <strong>{g.awayTeam} @ {g.homeTeam}</strong>
+                    {g.homeLogo ? <img src={g.homeLogo} alt="" /> : null}
+                    <span>{fmtTime(g.kickoff)}</span>
                   </div>
-                  <p>
-                    Game intelligence opens here. Team roster access is attached to each game
-                    card so the slate does not remain permanently expanded on the home screen.
-                  </p>
-                </div>
-              ) : null}
-            </article>
-          ))}
-          {!loading && !upcoming.length ? <div className="origInfo">No upcoming games are available.</div> : null}
+                  <b>{g.status}</b>
+                </button>
+
+                {open ? (
+                  <div className="soccerGameIntel">
+                    <h4>Game Intelligence</h4>
+                    {(() => {
+                      const intel = data.matchupIntelligence.find((item) => item.gameId === g.gameId);
+                      if (!intel) {
+                        return <p>Player intelligence will populate as the engine confirms eligible recent form and lineup context.</p>;
+                      }
+                      return (
+                        <>
+                          <p>{intel.reason}</p>
+                          <div className="soccerGameIntelKpis">
+                            <span><b>Best prop angle:</b> {intel.bestProp}</span>
+                            <span><b>Ranked players:</b> {intel.rankedPlayers}</span>
+                            <span>
+                              <b>Players to watch:</b>{" "}
+                              {intel.playersToWatch.length ? intel.playersToWatch.join(", ") : "Pending"}
+                            </span>
+                          </div>
+                        </>
+                      );
+                    })()}
+
+                    <div className="soccerTeamAccess">
+                      <button
+                        className={openRoster === g.awayTeamId ? "active" : ""}
+                        onClick={() => setOpenRoster(openRoster === g.awayTeamId ? null : g.awayTeamId)}
+                      >
+                        {g.awayTeam} Roster
+                      </button>
+                      <button
+                        className={openRoster === g.homeTeamId ? "active" : ""}
+                        onClick={() => setOpenRoster(openRoster === g.homeTeamId ? null : g.homeTeamId)}
+                      >
+                        {g.homeTeam} Roster
+                      </button>
+                    </div>
+
+                    {openRoster === g.awayTeamId ? (
+                      <RosterPanel league={league} teamId={g.awayTeamId} teamName={g.awayTeam} />
+                    ) : null}
+                    {openRoster === g.homeTeamId ? (
+                      <RosterPanel league={league} teamId={g.homeTeamId} teamName={g.homeTeam} />
+                    ) : null}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
         </section>
       ) : null}
 
@@ -230,35 +328,50 @@ export function SoccerDashboard() {
         </div>
         <div className="origMetrics snapshot">
           <article className="green">
-            <span>Confirmed Lineups</span>
-            <strong>0</strong>
-            <small>updates near kickoff</small>
+            <span>Confirmed Lineups</span><strong>0</strong><small>updates near kickoff</small>
           </article>
           <article>
-            <span>Key Player Alerts</span>
-            <strong>0</strong>
-            <small>out · doubtful · limited</small>
+            <span>Key Player Alerts</span><strong>0</strong><small>out · doubtful · limited</small>
           </article>
           <article className="gold">
-            <span>Lineup Changes</span>
-            <strong>0</strong>
-            <small>late changes &amp; rotation alerts</small>
+            <span>Lineup Changes</span><strong>0</strong><small>late changes &amp; rotation alerts</small>
           </article>
         </div>
       </section>
 
       <section className="origSection soccerMatchup">
         <h2>🔥 Matchup Intelligence</h2>
-        <p className="soccerSectionSub">Featured and high-interest games from the selected league.</p>
-        {featured.map((g) => (
-          <article className={`soccerGameCard ${g.state === "in" ? "live" : ""}`} key={g.gameId}>
-            <div>
-              <strong>{g.awayTeam} @ {g.homeTeam}</strong>
-              <span>{fmtTime(g.kickoff)}</span>
+        <p className="soccerSectionSub">
+          Featured games are selected because the engine sees stronger player-prop signals,
+          a concentration of ranked players, or a high-interest matchup.
+        </p>
+
+        {data.matchupIntelligence.map((intel) => (
+          <article className="soccerMatchupIntelCard" key={intel.gameId}>
+            <div className="soccerMatchupIntelTop">
+              <div>
+                <strong>{intel.matchup}</strong>
+                <span>{fmtTime(intel.kickoff)}</span>
+              </div>
+              <b>{intel.status}</b>
             </div>
-            <b>{g.status}</b>
+            <h4>Why this matchup matters</h4>
+            <p>{intel.reason}</p>
+            <div className="soccerMatchupTags">
+              <span>Best angle: {intel.bestProp}</span>
+              <span>{intel.rankedPlayers} ranked players</span>
+              {intel.playersToWatch.length ? (
+                <span>Watch: {intel.playersToWatch.join(" · ")}</span>
+              ) : null}
+            </div>
           </article>
         ))}
+
+        {!loading && !data.matchupIntelligence.length ? (
+          <div className="origInfo">
+            Matchup intelligence will populate when the engine confirms eligible player data.
+          </div>
+        ) : null}
       </section>
 
       <section className="origSection performance">
@@ -267,8 +380,8 @@ export function SoccerDashboard() {
           <summary>ⓘ How performance is measured</summary>
           <div className="origExplain">
             <p>
-              Soccer performance is graded from predictions generated before kickoff. Overall
-              results and each individual prop category are tracked separately.
+              Soccer performance is graded from predictions generated before kickoff.
+              Overall results and each prop category are tracked separately.
             </p>
           </div>
         </details>
@@ -281,6 +394,7 @@ export function SoccerDashboard() {
             </button>
           ))}
         </div>
+
         <div className="origMetrics">
           <article className="green"><span>Hit Rate</span><strong>—</strong></article>
           <article><span>Correct / Settled</span><strong>0 / 0</strong></article>
@@ -301,6 +415,7 @@ export function SoccerDashboard() {
           <article className="gold"><span>Settled</span><strong>0</strong></article>
           <article><span>Hit Rate</span><strong>—</strong></article>
         </div>
+
         <div className="soccerPerfNote">Results will appear after games are graded.</div>
       </section>
 
@@ -328,8 +443,8 @@ export function SoccerDashboard() {
         <div className="origMarketHead">
           <h2>{active[1]} {active[2]} Rankings</h2>
           <p>
-            Ranked by Soccer GI Score using recent production, expected minutes, starting
-            reliability, sample quality and upcoming matchup context.
+            Ranked by Soccer GI Score using recent production, expected minutes,
+            starting reliability, sample quality and upcoming matchup context.
           </p>
         </div>
 
@@ -337,11 +452,13 @@ export function SoccerDashboard() {
           {rows.slice(0, showFull ? 25 : 5).map((r) => (
             <RankCard key={`${market}-${r.playerId}-${r.rank}`} row={r} market={market} />
           ))}
+
           {!loading && !rows.length ? (
             <div className="origEmpty">
-              No eligible {active[2]} rankings are available yet for this slate.
+              No eligible {active[2]} rankings were returned for this slate.
             </div>
           ) : null}
+
           {loading ? <div className="origInfo">Loading {leagueName} player intelligence…</div> : null}
         </div>
 
