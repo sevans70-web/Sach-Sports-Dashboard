@@ -58,7 +58,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey=""}:{row:Rankin
   const teamId=Number((row as any).team_id||(row as any).teamId||0);
   const logo=teamId?`https://www.mlbstatic.com/team-logos/${teamId}.svg`:String((row as any).team_logo_url||"");
   const probability=percentValue(row.home_run_probability??row.hr_probability??row.probability),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
-  const confirmed=row.lineup_confirmed!==false;
+  const confirmed=row.lineup_confirmed===true;
   const summary=String((row as any).summary||(row as any).reason||(row as any).intelligence_summary||(pitcher?"Ranked by workload, season rates, matchup and sample reliability.":"GI score blends performance, matchup, lineup position, park/weather and sample reliability."));
   const evidence=String((row as any).performance_evidence||(row as any).market_evidence||(row as any).recent_form||summary);
   const why=String((row as any).why_this_player||(row as any).ranking_reason||(row as any).why_ranked||summary);
