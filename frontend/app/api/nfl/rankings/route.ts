@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName,safeNumber} from "@/lib/nfl";
 import {getEspnNflSchedule,getNflTeamRoster} from "@/lib/nfl-server";
 import {nflPredictionProbability,nflGiScore} from "@/lib/nfl-prediction";
-import {saveNflPregamePredictions,getNflResultMap} from "@/lib/nfl-history";
+import {saveNflPregamePredictions,getNflResultMap,getNflPredictions,type SavedNflPrediction} from "@/lib/nfl-history";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -244,6 +244,33 @@ export async function GET(req:NextRequest){
   const results=await getNflResultMap(market,today);
   const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|${r.matchup}`);const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
   const liveRows=await liveContext(withResults,schedule,market);
-  return NextResponse.json({success:true,source:"Owls Insight",market,rows:liveRows,sportsbookOnly:true,validRankingCount:liveRows.length,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
+
+  // NFL must behave like the MLB daily board: once a player reaches kickoff in the
+  // tracked Top 25, that prediction stays visible for the rest of the day even if
+  // the sportsbook feed removes the completed game.  Current pregame rows can still
+  // move, enter and drop; started/final rows are locked from the Supabase snapshot.
+  const savedToday=await getNflPredictions(market,today);
+  const liveKeys=new Set(liveRows.map((r:any)=>`${r.playerId}|${r.matchup}`));
+  const gameFor=(matchup:string)=>matchupGame(schedule,matchup);
+  const started=(g:any)=>Boolean(g&&(g.state==="in"||g.completed||g.state==="post"));
+  const archived=savedToday.predictions
+    .filter((p:SavedNflPrediction)=>started(gameFor(p.matchup))&&!liveKeys.has(`${p.playerId}|${p.matchup}`))
+    .sort((a:SavedNflPrediction,b:SavedNflPrediction)=>Number(a.lastSeenRank||a.originalRank||99)-Number(b.lastSeenRank||b.originalRank||99))
+    .map((p:SavedNflPrediction)=>{
+      const g=gameFor(p.matchup);
+      const margin=p.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
+      return {rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||"",position:p.position||"",
+        headshot:p.headshot||(/^\d+$/.test(p.playerId)?`https://a.espncdn.com/i/headshots/nfl/players/full/${p.playerId}.png`:""),teamLogo:p.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,
+        giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:null,sportsbookLine:p.sportsbookLine,sportsbookProbability:null,bookmakerCount:p.bookmakerCount,
+        perGame:p.modelProjection,seasonTotal:null,gamesPlayed:null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. This player remains on today's board after kickoff so the original pick can be graded.`,marketBacked:true,
+        resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":"",
+        gameId:String(g?.id||""),gameState:g?.completed?"post":String(g?.state||"post"),gameStatus:String(g?.status||""),liveCurrent:p.actual,liveProgressPct:p.actual!=null&&p.sportsbookLine&&p.sportsbookLine>0?Math.max(0,Math.min(200,Math.round(p.actual/p.sportsbookLine*100))):null};
+    });
+  const startedCurrent=liveRows.filter((r:any)=>started(gameFor(r.matchup)));
+  const futureCurrent=liveRows.filter((r:any)=>!started(gameFor(r.matchup)));
+  const lockedKeys=new Set([...startedCurrent,...archived].map((r:any)=>`${r.playerId}|${r.matchup}`));
+  const merged=[...startedCurrent,...archived,...futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.matchup}`))]
+    .slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
+  return NextResponse.json({success:true,source:"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:true,validRankingCount:merged.length,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
  }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
