@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import {useEffect,useMemo,useState} from "react";
-import {CFB_MARKETS,type CfbPerformanceResponse={success:boolean;connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;total?:number;predictions?:any[]};
-type CfbMarketKey,type CfbRankingRow} from "@/lib/cfb";
+import {CFB_MARKETS,type CfbMarketKey,type CfbRankingRow} from "@/lib/cfb";
+
+type CfbPerformanceResponse={success:boolean;connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;total?:number;predictions?:any[]};
 
 type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterMode?:string;updatedAt?:string};
 type RankingResponse={success:boolean;rows:CfbRankingRow[];updatedAt?:string};
