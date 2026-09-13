@@ -40,6 +40,13 @@ export type NflRankingRow = {
   actualResult?:number|null;
   resultSymbol?:string;
   resultMargin?:number|null;
+  gameId?:string;
+  gameState?:"pre"|"in"|"post"|string;
+  gameStatus?:string;
+  liveCurrent?:number|null;
+  liveProgressPct?:number|null;
+  movement?:"new"|"up"|"down"|"same";
+  previousRank?:number|null;
 };
 
 export type NflRosterPlayer = {

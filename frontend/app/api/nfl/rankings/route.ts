@@ -141,6 +141,85 @@ function teamLogo(profile:any,row:any,schedule:any[]){
  if(!g)return "";return cleanName(g.awayTeam)===team?String(g.awayLogo||""):String(g.homeLogo||"")
 }
 
+const ESPN_SUMMARY="https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
+function matchupGame(schedule:any[],matchup:string){
+ const wanted=cleanName(matchup);
+ return schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===wanted);
+}
+function numStat(v:any){
+ const n=Number(String(v??"").replace(/[^0-9.-]/g,""));
+ return Number.isFinite(n)?n:null;
+}
+function statFromSummary(payload:any,playerId:string,playerName:string,category:string,label:string){
+ const wantedId=String(playerId||""),wantedName=cleanName(playerName);
+ for(const team of payload?.boxscore?.players||[]){
+  for(const group of team?.statistics||[]){
+   const groupName=cleanName(group?.name||group?.displayName||group?.shortDisplayName||"");
+   if(groupName!==cleanName(category))continue;
+   const labels=(group?.labels||group?.keys||[]).map((x:any)=>cleanName(x));
+   let ix=labels.findIndex((x:string)=>x===cleanName(label));
+   if(ix<0&&cleanName(label)==="yds")ix=labels.findIndex((x:string)=>x==="yards");
+   if(ix<0)return null;
+   for(const row of group?.athletes||[]){
+    const athlete=row?.athlete||{};
+    const id=String(athlete?.id||row?.athleteId||"");
+    const name=cleanName(athlete?.displayName||athlete?.fullName||row?.name||"");
+    if((wantedId&&id===wantedId)||(!wantedId&&wantedName&&name===wantedName)||(wantedName&&name===wantedName)){
+     return numStat(Array.isArray(row?.stats)?row.stats[ix]:null);
+    }
+   }
+  }
+ }
+ return null;
+}
+function firstTdFromSummary(payload:any,playerName:string){
+ const plays=Array.isArray(payload?.scoringPlays)?payload.scoringPlays:[];
+ const td=plays.find((x:any)=>{
+  const kind=cleanName(x?.scoringType?.name||x?.scoringType?.abbreviation||x?.type?.text||"");
+  const text=cleanName(x?.text||x?.shortText||"");
+  return kind.includes("touchdown")||kind==="td"||text.includes("touchdown");
+ });
+ if(!td)return 0;
+ const text=cleanName(td?.text||td?.shortText||""),name=cleanName(playerName),last=name.split(" ").filter(Boolean).pop()||name;
+ return text.includes(name)||(last.length>=3&&text.split(" ").includes(last))?1:0;
+}
+function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playerName:string){
+ const passingYds=()=>statFromSummary(payload,playerId,playerName,"passing","YDS");
+ const passingTd=()=>statFromSummary(payload,playerId,playerName,"passing","TD");
+ const rushingYds=()=>statFromSummary(payload,playerId,playerName,"rushing","YDS");
+ const receivingYds=()=>statFromSummary(payload,playerId,playerName,"receiving","YDS");
+ const receptions=()=>statFromSummary(payload,playerId,playerName,"receiving","REC");
+ const rushingTd=()=>statFromSummary(payload,playerId,playerName,"rushing","TD");
+ const receivingTd=()=>statFromSummary(payload,playerId,playerName,"receiving","TD");
+ if(market==="passing_yards")return passingYds();
+ if(market==="passing_tds")return passingTd();
+ if(market==="rushing_yards")return rushingYds();
+ if(market==="receiving_yards")return receivingYds();
+ if(market==="receptions")return receptions();
+ if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null&&b==null?null:(a||0)+(b||0)}
+ if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null&&b==null?null:(a||0)+(b||0)}
+ if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null&&b==null?null:(a||0)+(b||0)}
+ if(market==="first_td")return firstTdFromSummary(payload,playerName);
+ return null;
+}
+async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
+ const gameMap=new Map<string,any>();
+ for(const row of rows){const g=matchupGame(schedule,row.matchup);if(g?.id)gameMap.set(String(g.id),g)}
+ const summaries=new Map<string,any>();
+ await Promise.all([...gameMap.values()].filter((g:any)=>g.state==="in"||g.completed||g.state==="post").map(async(g:any)=>{
+  try{const r=await fetch(`${ESPN_SUMMARY}?event=${encodeURIComponent(g.id)}`,{cache:"no-store"});if(r.ok)summaries.set(String(g.id),await r.json())}catch{}
+ }));
+ return rows.map(row=>{
+  const g=matchupGame(schedule,row.matchup);
+  if(!g)return row;
+  const payload=summaries.get(String(g.id));
+  const current=payload?currentMarketStat(payload,market,row.playerId,row.playerName):null;
+  const line=Number(row.sportsbookLine);
+  const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
+  return {...row,gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
+ });
+}
+
 export async function GET(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
  if(!NFL_MARKETS.some(x=>x[0]===market))return NextResponse.json({success:false,error:"Unsupported NFL market"},{status:400});
@@ -157,6 +236,7 @@ export async function GET(req:NextRequest){
   await saveNflPregamePredictions(market,ranked,schedule);
   const results=await getNflResultMap(market,today);
   const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|${r.matchup}`);const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
-  return NextResponse.json({success:true,source:"Owls Insight",market,rows:withResults,sportsbookOnly:true,validRankingCount:withResults.length,updatedAt:new Date().toISOString()});
+  const liveRows=await liveContext(withResults,schedule,market);
+  return NextResponse.json({success:true,source:"Owls Insight",market,rows:liveRows,sportsbookOnly:true,validRankingCount:liveRows.length,updatedAt:new Date().toISOString()});
  }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500})}
 }

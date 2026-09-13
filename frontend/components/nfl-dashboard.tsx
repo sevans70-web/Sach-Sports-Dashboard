@@ -75,12 +75,13 @@ function RankingCard({row,market}:{row:NflRankingRow;market:NflMarketKey}){
   const projection=projectionText(row,market);
 
   return <article className="rankCard">
-    <div className="rankNo">#{row.rank}<span>−</span></div>
+    <div className="rankNo">#{row.rank}<span className={`move ${row.movement||"same"}`}>{row.movement==="new"?"NEW":row.movement==="up"?`↑ ${row.previousRank}`:row.movement==="down"?`↓ ${row.previousRank}`:"−"}</span></div>
     <div className="rankPhoto">{row.headshot?<img src={row.headshot} alt=""/>:<div>NFL</div>}</div>
     <div className="rankBody">
       <strong>{row.playerName}</strong>
       <span>{row.teamName}{row.matchup?` · ${row.matchup}`:""}</span>
       <b>{row.sportsbookLine!=null?`${meta[2]} line: ${row.sportsbookLine}`:`${meta[2]} statistical intelligence`}</b>
+      {row.gameState==="in"?<div className="liveProgress"><b>● LIVE · {row.gameStatus||"In progress"}</b><span>Current: {row.liveCurrent==null?"Waiting for stat":formatActual(row.liveCurrent,market)}{row.sportsbookLine!=null?` / Line ${row.sportsbookLine}`:""}</span>{row.liveProgressPct!=null?<div className="progressTrack"><i style={{width:`${Math.min(100,row.liveProgressPct)}%`}}/></div>:null}</div>:null}
       <p className="projectionLine"><b>Model projection:</b> {projection}</p>
       <p>{row.marketBacked?(row.modelProbability!=null?`Model probability: ${Number(row.modelProbability).toFixed(0)}%`:"Model probability: Insufficient history"):"Verified season production · sportsbook line pending"}</p>
       {row.resultStatus&&row.resultStatus!=="pending"?<div className={`finalResult ${row.resultStatus}`}>
@@ -118,12 +119,32 @@ export default function NflDashboard(){
   const[market,setMarket]=useState<NflMarketKey>("passing_yards");
   const[full,setFull]=useState(false);
   const[period,setPeriod]=useState("Today");
+  const[warmVersion,setWarmVersion]=useState(0);
   const s=useJson<ScheduleResponse>("/api/nfl/schedule",{success:false,games:[],qualifiedCount:0});
   const r=useJson<RankingResponse>(`/api/nfl/rankings?market=${market}`,{success:false,rows:[]});
-  const overallPerf=useJson<NflPerformanceResponse>(`/api/nfl/performance?period=${period}&group=${group}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null});
-  const marketPerf=useJson<NflPerformanceResponse>(`/api/nfl/performance?period=${period}&group=${group}&market=${market}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null});
+  const overallPerf=useJson<NflPerformanceResponse>(`/api/nfl/performance?period=${period}&group=${group}&warm=${warmVersion}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null});
+  const marketPerf=useJson<NflPerformanceResponse>(`/api/nfl/performance?period=${period}&group=${group}&market=${market}&warm=${warmVersion}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null});
 
-  const rows=useMemo(()=>r.data.rows||[],[r.data]);
+  const [movementRows,setMovementRows]=useState<NflRankingRow[]>([]);
+  const [dropped,setDropped]=useState<string[]>([]);
+  const rawRows=useMemo(()=>r.data.rows||[],[r.data]);
+  useEffect(()=>{
+    if(!rawRows.length)return;
+    const key=`nfl-rank-history-${market}`;
+    let previous:Record<string,{rank:number;name:string}>={};
+    try{previous=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch{}
+    const current:Record<string,{rank:number;name:string}>={};
+    const next=rawRows.map(row=>{
+      const id=String(row.playerId||row.playerName);current[id]={rank:row.rank,name:row.playerName};
+      const old=previous[id];
+      const movement:NflRankingRow["movement"]=!old?"new":row.rank<old.rank?"up":row.rank>old.rank?"down":"same";
+      return {...row,movement,previousRank:old?.rank??null};
+    });
+    setDropped(Object.entries(previous).filter(([id])=>!current[id]).map(([,v])=>v.name).slice(0,8));
+    setMovementRows(next);
+    try{localStorage.setItem(key,JSON.stringify(current))}catch{}
+  },[rawRows,market]);
+  const rows=movementRows.length?movementRows:rawRows;
   const active=marketMeta(market);
   const live=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
@@ -132,6 +153,12 @@ export default function NflDashboard(){
 
   useEffect(()=>{if(!markets.includes(market))setMarket(markets[0]);setFull(false)},[group]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(()=>setFull(false),[market]);
+  useEffect(()=>{
+    let active=true;
+    Promise.all(markets.map(k=>fetch(`/api/nfl/rankings?market=${k}`,{cache:"no-store"}).then(r=>r.json()).catch(()=>null)))
+      .finally(()=>{if(active)setWarmVersion(v=>v+1)});
+    return()=>{active=false};
+  },[group]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return <main className="nflShell">
     <MenuButton/>
@@ -182,7 +209,7 @@ export default function NflDashboard(){
 
       <div className="perfGrid">
         <article className="green"><span>Hits / Predictions</span><strong>{marketPerf.data.hits} / {marketPerf.data.total||0}</strong></article>
-        <article><span>Pending</span><strong>{marketPerf.data.pending}</strong></article>
+        <article><span>Pending</span><strong>{period==="Today"&&marketPerf.data.pending===0?rows.filter(x=>!x.resultStatus||x.resultStatus==="pending").length:marketPerf.data.pending}</strong></article>
         <article className="gold"><span>Settled</span><strong>{marketPerf.data.settled}</strong></article>
         <article><span>Hit Rate</span><strong>{marketPerf.data.hitRate==null?"—":`${marketPerf.data.hitRate}%`}</strong></article>
       </div>
@@ -204,6 +231,7 @@ export default function NflDashboard(){
       <div className="marketHead">
         <h2>{active[1]} {active[2]} Rankings</h2>
         <p>Ranked by GI Score. NFL market depth varies by game and sportsbook, so the list expands only as far as legitimate coverage allows.</p>
+        {dropped.length?<p className="droppedLine"><b>Dropped since last refresh:</b> {dropped.join(", ")}</p>:null}
       </div>
 
       <div className="cards">{(full?rows:rows.slice(0,5)).map(row=><RankingCard row={row} market={market} key={`${row.playerId}-${row.rank}`}/>)}</div>
@@ -240,7 +268,8 @@ export default function NflDashboard(){
       .rankHeader{background:#0c0d0e;padding:20px;margin-top:8px}.rankHeader h2{font-size:34px}.rankHeader p{margin-bottom:0;font-size:18px}
       .marketHead h2{font-size:30px;margin:24px 0 8px}.marketHead p{font-size:18px}
       .rankCard{position:relative;display:grid;grid-template-columns:55px 120px 1fr 86px;gap:12px;border:4px solid #34373d;border-left:16px solid #20df7f;border-radius:26px;background:#111214;padding:20px;margin:20px 0;overflow:hidden}
-      .rankNo{font-size:26px;font-weight:900}.rankNo span{display:block;color:#9da1a8;margin-top:12px}
+      .rankNo{font-size:26px;font-weight:900}.rankNo span{display:block;color:#9da1a8;margin-top:12px}.rankNo .move{font-size:13px;font-weight:900}.rankNo .move.new{color:#d9b85d}.rankNo .move.up{color:#20df7f}.rankNo .move.down{color:#ff6b6b}
+      .liveProgress{margin-top:12px;border:1px solid #20df7f;border-radius:12px;padding:10px;background:rgba(32,223,127,.06)}.liveProgress b{color:#20df7f!important;margin:0 0 6px!important;font-size:15px!important}.liveProgress span{color:#fff!important;font-size:15px!important;margin:0!important}.progressTrack{height:7px;background:#2b2e31;border-radius:99px;margin-top:8px;overflow:hidden}.progressTrack i{display:block;height:100%;background:#20df7f}.droppedLine{margin-top:10px!important;color:#c9cbd0!important}.droppedLine b{color:#ff8a8a}
       .rankPhoto img,.rankPhoto>div{width:112px;height:112px;border-radius:50%;border:4px solid #d9b85d;object-fit:cover}.rankPhoto>div{display:grid;place-items:center;color:#d9b85d;font-weight:900}
       .rankBody strong{display:block;font-size:25px}.rankBody span{display:block;color:#a9acb3;font-size:19px;line-height:1.25;margin-top:6px}.rankBody b{display:block;font-size:19px;margin-top:12px}.rankBody p{color:#a9acb3;font-size:17px;line-height:1.35;margin:10px 0 0}
       .projectionLine{color:#fff!important}.projectionLine b{display:inline!important;color:#d9b85d!important;font-size:inherit!important;margin:0!important}

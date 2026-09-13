@@ -40,8 +40,8 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
  for(const row of rows){
    const game=schedule.find((g:any)=>String(g.awayTeam&&g.homeTeam?`${g.awayTeam} @ ${g.homeTeam}`:"").toLowerCase()===String(row.matchup||"").toLowerCase());
    // Freeze only pregame predictions. Live/final refreshes can never rewrite the original pick.
-   if(game&&game.state!=="pre")continue;
-   if(!row.playerId||row.sportsbookLine==null||row.modelProbability==null)continue;
+   if(game?.completed)continue;
+   if(!row.playerId||row.sportsbookLine==null||(row.modelProbability==null&&row.modelProjection==null))continue;
    const gameDate=nflDay(row.gameTime||game?.date||new Date());
    if(gameDate!==day)continue;
    const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;
@@ -49,7 +49,7 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
    map.set(key,{key,gameDate,gameTime:String(row.gameTime||game?.date||""),matchup:String(row.matchup||""),market:m,
      playerId:String(row.playerId),playerName:String(row.playerName),teamName:String(row.teamName),position:String(row.position||""),
      sportsbookLine:Number(row.sportsbookLine),modelProjection:row.modelProjection==null?null:Number(row.modelProjection),
-     modelProbability:Number(row.modelProbability),giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
+     modelProbability:row.modelProbability==null?null:Number(row.modelProbability),giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
      savedAt:new Date().toISOString(),status:"pending",actual:null,gradedAt:null});
  }
  const next=[...map.values()];

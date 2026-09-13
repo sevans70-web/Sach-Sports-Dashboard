@@ -30,17 +30,19 @@ async function fetchLog(id:string,season:number){
   if(!r.ok)throw new Error(`history ${r.status}`);
   return r.json();
 }
-function statIndex(payload:any,market:NflMarketKey){
+function statIndexFor(payload:any,keys:string[]){
   const names=(Array.isArray(payload?.names)?payload.names:[]).map(clean);
-  for(const wanted of STAT_KEYS[market]||[]){
-    const i=names.findIndex((n:string)=>n===wanted);
-    if(i>=0)return i;
-  }
+  for(const wanted of keys){const i=names.findIndex((n:string)=>n===wanted);if(i>=0)return i}
   return -1;
 }
+function marketIndexes(payload:any,market:NflMarketKey){
+  if(market==="passing_rushing_yards")return [statIndexFor(payload,["passingyards","passyards"]),statIndexFor(payload,["rushingyards","rushyards"])].filter(i=>i>=0);
+  if(market==="rushing_receiving_yards")return [statIndexFor(payload,["rushingyards","rushyards"]),statIndexFor(payload,["receivingyards","receptionyards","recyards"])].filter(i=>i>=0);
+  const ix=statIndexFor(payload,STAT_KEYS[market]||[]);return ix>=0?[ix]:[];
+}
 function parseSeason(payload:any,season:number,market:NflMarketKey){
-  const ix=statIndex(payload,market);
-  if(ix<0)return [];
+  const indexes=marketIndexes(payload,market);
+  if(!indexes.length)return [];
   const events=payload?.events||{};
   const rows:any[]=[];const seen=new Set<string>();
   for(const st of payload?.seasonTypes||[]){
@@ -49,8 +51,8 @@ function parseSeason(payload:any,season:number,market:NflMarketKey){
       for(const ev of category?.events||[]){
         const eventId=String(ev?.eventId||"");
         if(!eventId||seen.has(eventId))continue;
-        const raw=Array.isArray(ev?.stats)?ev.stats[ix]:undefined;
-        const value=Number(raw);
+        const stats=Array.isArray(ev?.stats)?ev.stats:[];
+        const value=indexes.reduce((sum,ix)=>{const n=Number(stats[ix]);return sum+(Number.isFinite(n)?n:0)},0);
         if(!Number.isFinite(value))continue;
         const meta=events?.[eventId]||{};
         seen.add(eventId);

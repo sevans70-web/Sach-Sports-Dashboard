@@ -12,16 +12,23 @@ const KEYS:Partial<Record<NflMarketKey,string[]>>={
 };
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 async function log(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0",Accept:"application/json, text/plain, */*"}});return r.ok?r.json():null}
+function indexFor(names:string[],keys:string[]){for(const k of keys){const ix=names.findIndex((n:string)=>n===k);if(ix>=0)return ix}return -1}
 function actualFrom(payload:any,m:NflMarketKey,day:string){
  if(!payload||m==="first_td")return null;
- const names=(Array.isArray(payload.names)?payload.names:[]).map(norm);let ix=-1;
- for(const k of KEYS[m]||[]){ix=names.findIndex((n:string)=>n===k);if(ix>=0)break} if(ix<0)return null;
+ const names=(Array.isArray(payload.names)?payload.names:[]).map(norm);
+ let indexes:number[]=[];
+ if(m==="passing_rushing_yards")indexes=[indexFor(names,["passingyards","passyards"]),indexFor(names,["rushingyards","rushyards"])].filter(i=>i>=0);
+ else if(m==="rushing_receiving_yards")indexes=[indexFor(names,["rushingyards","rushyards"]),indexFor(names,["receivingyards","receptionyards","recyards"])].filter(i=>i>=0);
+ else {const ix=indexFor(names,KEYS[m]||[]);if(ix>=0)indexes=[ix]}
+ if(!indexes.length)return null;
  const events=payload.events||{};
  for(const st of payload.seasonTypes||[])for(const c of st.categories||[])if(c?.type==="event")for(const ev of c.events||[]){
    const id=String(ev?.eventId||""); const meta=events[id]||{};
    const date=meta?.gameDate||meta?.date||meta?.startDate||ev?.gameDate||ev?.date||"";
    if(date&&nflDay(date)!==day)continue;
-   const v=Number(Array.isArray(ev.stats)?ev.stats[ix]:NaN);if(Number.isFinite(v))return v;
+   const stats=Array.isArray(ev.stats)?ev.stats:[];
+   const vals=indexes.map(ix=>Number(stats[ix]));
+   if(vals.some(Number.isFinite))return vals.reduce((sum,v)=>sum+(Number.isFinite(v)?v:0),0);
  }
  return null;
 }
