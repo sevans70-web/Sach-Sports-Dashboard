@@ -89,10 +89,10 @@ export async function GET(req:NextRequest){
  const marketParam=req.nextUrl.searchParams.get("market") as NflMarketKey|null;
  const markets=(marketParam?[marketParam]:NFL_MARKETS.map(x=>x[0])).filter(m=>NFL_MARKETS.some(x=>x[0]===m));
  try{
-   const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true;
+   const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,recoveredSnapshots=0;
    const summaryCache=new Map<string,any>();
    for(const day of days)for(const market of markets){
-     const got=await getNflPredictions(market,day);connected=connected&&got.connected;let changed=false;
+     const got=await getNflPredictions(market,day);connected=connected&&got.connected;recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
      for(const p of got.predictions){
        if(p.status!=="pending"){all.push(p);continue}
        const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
@@ -114,6 +114,6 @@ export async function GET(req:NextRequest){
    const scoped=marketParam?all:all.filter(p=>groupMarkets.has(p.market));
    const settled=scoped.filter(p=>p.status==="hit"||p.status==="miss"),hits=scoped.filter(p=>p.status==="hit").length,pending=scoped.filter(p=>p.status==="pending").length;
    return NextResponse.json({success:true,connected,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
-     hitRate:settled.length?Math.round(hits/settled.length*1000)/10:null,predictions:scoped.sort((a,b)=>b.savedAt.localeCompare(a.savedAt))},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
+     hitRate:settled.length?Math.round(hits/settled.length*1000)/10:null,recoveredSnapshots,predictions:scoped.sort((a,b)=>b.savedAt.localeCompare(a.savedAt))},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
  }catch(e){return NextResponse.json({success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null,predictions:[],error:e instanceof Error?e.message:"NFL performance unavailable"},{status:500,headers:{"Cache-Control":"no-store"}})}
 }
