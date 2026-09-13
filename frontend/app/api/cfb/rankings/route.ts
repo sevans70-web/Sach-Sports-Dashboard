@@ -1,6 +1,6 @@
 import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName,safeNumber} from "@/lib/cfb";
-import {getEspnCfbSchedule} from "@/lib/cfb-server";
+import {getEspnCfbSchedule,getCfbTeamRoster} from "@/lib/cfb-server";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
 
 export const dynamic="force-dynamic";
@@ -54,17 +54,49 @@ async function fetchOwlsRows(market:CfbMarketKey){
  return [...grouped.values()].map((x:any)=>({playerName:x.playerName,teamName:x.teamName,matchup:x.matchup,gameTime:x.gameTime,line:median(x.lines),prob:americanProb(median(x.prices)),bookmakerCount:x.books.size}));
 }
 
-async function espnProfile(name:string,teamName:string,matchup:string){
+async function resolvePlayer(name:string,teamName:string,matchup:string,schedule:any[]){
+ const wanted=cleanName(name);
+ const matchupTeams=String(matchup||"").split("@").map(x=>cleanName(x.trim())).filter(Boolean);
+ const suppliedTeam=cleanName(teamName);
+ const game=schedule.find((g:any)=>{
+   const a=cleanName(g.awayTeam),h=cleanName(g.homeTeam);
+   return matchupTeams.length===2&&((a===matchupTeams[0]&&h===matchupTeams[1])||(a===matchupTeams[1]&&h===matchupTeams[0]));
+ });
+ const candidates:string[]=[];
+ if(game){
+   if(suppliedTeam){
+     if(cleanName(game.awayTeam)===suppliedTeam)candidates.push(String(game.awayTeamId||""));
+     if(cleanName(game.homeTeam)===suppliedTeam)candidates.push(String(game.homeTeamId||""));
+   }
+   candidates.push(String(game.awayTeamId||""),String(game.homeTeamId||""));
+ }
+ for(const teamId of [...new Set(candidates.filter(Boolean))]){
+   try{
+     const roster=await getCfbTeamRoster(teamId);
+     const exact=roster.players.find(p=>cleanName(p.name)===wanted);
+     const loose=roster.players.find(p=>{
+       const n=cleanName(p.name);return n&&wanted&&(n.includes(wanted)||wanted.includes(n));
+     });
+     const p=exact||loose;
+     if(p)return {id:p.id,headshot:p.headshot,teamName:roster.teamName||teamName,teamId,position:p.position,teamLogo:roster.teamLogo};
+   }catch{}
+ }
+ // Search is only a fallback. We require an athlete-shaped result, not merely any search node with the same name.
  try{
-  const r=await fetch(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(name)}&limit=20&sport=football`,{cache:"no-store"});if(!r.ok)throw 0;
-  const p=await r.json(),nodes:any[]=[];const walk=(v:any)=>{if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==="object"){nodes.push(v);Object.values(v).forEach(walk)}};walk(p);
-  const target=cleanName(name),team=cleanName(teamName),game=cleanName(matchup);
-  const matches=nodes.map(n=>{const display=String(n.displayName||n.fullName||n.name||n.title||"");if(cleanName(display)!==target)return {score:-1,n};const blob=cleanName(JSON.stringify(n));let score=100;if(team&&blob.includes(team))score+=50;if(game&&[...game.matchAll(/[a-z]+/g)].some(x=>x[0].length>4&&blob.includes(x[0])))score+=10;if(blob.includes("college"))score+=10;return {score,n}}).filter(x=>x.score>=100).sort((a,b)=>b.score-a.score);
-  const n=matches[0]?.n||{};
-  return {id:String(n.id||n.uid||""),headshot:String(n.headshot?.href||n.image?.href||n.image?.url||n.images?.[0]?.href||""),teamName:String(n.team?.displayName||n.team?.name||teamName||""),teamId:String(n.team?.id||n.teamId||""),position:String(n.position?.abbreviation||n.positionAbbreviation||"")};
- }catch{return {id:"",headshot:"",teamName,teamId:"",position:""}}
+   const r=await fetch(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(name)}&limit=30&sport=football`,{cache:"no-store"});
+   if(r.ok){
+     const payload=await r.json(),nodes:any[]=[];
+     const walk=(v:any)=>{if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==="object"){nodes.push(v);Object.values(v).forEach(walk)}};walk(payload);
+     const matches=nodes.filter(n=>cleanName(String(n.displayName||n.fullName||n.name||n.title||""))===wanted)
+       .filter(n=>n.position||n.headshot||n.team)
+       .sort((a,b)=>Number(Boolean(b.position))+Number(Boolean(b.team))-Number(Boolean(a.position))-Number(Boolean(a.team)));
+     const n=matches[0]||{};
+     const id=String(n.id||n.uid||"");
+     if(id)return {id,headshot:String(n.headshot?.href||n.image?.href||n.image?.url||""),teamName:String(n.team?.displayName||n.team?.name||teamName||""),teamId:String(n.team?.id||n.teamId||""),position:String(n.position?.abbreviation||n.positionAbbreviation||""),teamLogo:""};
+   }
+ }catch{}
+ return {id:"",headshot:"",teamName:teamName||"CFB",teamId:"",position:"",teamLogo:""};
 }
-
 async function fetchLog(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0","Accept":"application/json, text/plain, */*","Origin":"https://www.espn.com","Referer":"https://www.espn.com/"}});if(!r.ok)throw 0;return r.json()}
 function indexFor(payload:any,category:any,market:CfbMarketKey){
  const wanted=HISTORY_KEYS[market]||[],pools=[category?.names,category?.labels,category?.abbreviations,category?.statNames,category?.displayNames,payload?.names].filter(Array.isArray);
@@ -97,9 +129,9 @@ export async function GET(req:NextRequest){
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market),getEspnCfbSchedule()]),today=easternDayKey(new Date());
   const active=owlsRows.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
   const rows=await Promise.all(active.slice(0,50).map(async(row:any)=>{
-   const profile=await espnProfile(row.playerName,row.teamName,row.matchup),m=await model(profile.id,market);
+   const profile=await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule),m=await model(profile.id,market);
    const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
-   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime,giScore:cfbGiScore(probability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"}.`,marketBacked:true};
+   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime,giScore:cfbGiScore(probability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"}.`,marketBacked:true};
   }));
   rows.sort((a,b)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
   return NextResponse.json({success:true,source:"Owls Insight",market,rows:ranked,sportsbookOnly:true,validRankingCount:ranked.length,updatedAt:new Date().toISOString()});

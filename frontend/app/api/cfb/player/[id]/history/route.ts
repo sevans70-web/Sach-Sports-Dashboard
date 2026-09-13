@@ -48,7 +48,7 @@ function parseSeason(payload:any,season:number,market:CfbMarketKey){
   const rows:any[]=[]; const seen=new Set<string>();
   for(const st of payload?.seasonTypes||[]){
     for(const category of st?.categories||[]){
-      if(category?.type!=="event")continue;
+      if(category?.type&&category.type!=="event"&&!Array.isArray(category?.events))continue;
       const categoryName=clean(category?.name||category?.displayName||"");
       if(market.startsWith("pass")&&categoryName&& !categoryName.includes("pass"))continue;
       if(market==="rushing_yards"&&categoryName&& !categoryName.includes("rush"))continue;
