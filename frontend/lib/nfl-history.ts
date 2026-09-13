@@ -23,11 +23,64 @@ export function nflDay(v:Date|string){
  const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`;
 }
 function source(m:NflMarketKey){return `${SOURCE_PREFIX}${m}`}
+function predictionList(row:any):SavedNflPrediction[]{
+ const payload=row?.payload;
+ if(Array.isArray(payload?.predictions))return payload.predictions as SavedNflPrediction[];
+ if(Array.isArray(payload))return payload as SavedNflPrediction[];
+ if(Array.isArray(payload?.rows))return payload.rows as SavedNflPrediction[];
+ return [];
+}
+function recoveryKey(p:any,m:NflMarketKey,day:string){
+ const player=String(p?.playerId||p?.playerName||"").trim();
+ const matchup=String(p?.matchup||"").trim();
+ const market=String(p?.market||m);
+ const gameDate=String(p?.gameDate||day);
+ return String(p?.key||`${gameDate}|${market}|${player}|${matchup}`);
+}
+function mergeRecovered(older:any,newer:any,m:NflMarketKey,day:string):SavedNflPrediction{
+ // Preserve the earliest pregame prediction values. Only status/result and last-seen
+ // metadata are allowed to advance as later snapshots are encountered.
+ const base={...newer,...older};
+ const statusOrder:any={pending:0,void:1,push:2,miss:3,hit:3};
+ const newerStatus=String(newer?.status||"pending"),olderStatus=String(older?.status||"pending");
+ const chosenStatus=(statusOrder[newerStatus]??0)>(statusOrder[olderStatus]??0)?newerStatus:olderStatus;
+ return {
+   ...base,
+   key:recoveryKey(older,m,day),gameDate:String(older?.gameDate||newer?.gameDate||day),market:m,
+   sportsbookLine:older?.sportsbookLine??newer?.sportsbookLine??null,
+   modelProjection:older?.modelProjection??newer?.modelProjection??null,
+   modelProbability:older?.modelProbability??newer?.modelProbability??null,
+   giScore:Number(older?.giScore??newer?.giScore??0),bookmakerCount:Number(older?.bookmakerCount??newer?.bookmakerCount??0),
+   savedAt:String(older?.savedAt||newer?.savedAt||new Date().toISOString()),
+   originalRank:older?.originalRank??newer?.originalRank??null,
+   lastSeenRank:newer?.lastSeenRank??older?.lastSeenRank??null,
+   lastSeenAt:newer?.lastSeenAt??older?.lastSeenAt??null,
+   status:chosenStatus as SavedNflPrediction["status"],
+   actual:newer?.actual??older?.actual??null,
+   gradedAt:newer?.gradedAt??older?.gradedAt??null,
+ } as SavedNflPrediction;
+}
+async function getRows(m:NflMarketKey,day:string){
+ const {url,key}=config();if(!url||!key)return {connected:false,rows:[] as any[]};
+ // Read ALL snapshots for the market/day. Older deployments sometimes created a
+ // fresh source_snapshots row, so looking at only the newest row loses the 1 PM slate.
+ const q=`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(source(m))}&game_date=eq.${encodeURIComponent(day)}&order=created_at.asc&limit=200`;
+ const r=await fetch(`${url}/rest/v1/${q}`,{headers:headers(),cache:"no-store"});if(!r.ok)return {connected:false,rows:[] as any[]};
+ const a=await r.json();return {connected:true,rows:Array.isArray(a)?a:[]};
+}
 async function getRow(m:NflMarketKey,day:string){
- const {url,key}=config();if(!url||!key)return {connected:false,row:null as any};
- const q=`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(source(m))}&game_date=eq.${encodeURIComponent(day)}&order=created_at.desc&limit=1`;
- const r=await fetch(`${url}/rest/v1/${q}`,{headers:headers(),cache:"no-store"});if(!r.ok)return {connected:false,row:null as any};
- const a=await r.json();return {connected:true,row:Array.isArray(a)?a[0]||null:null};
+ const x=await getRows(m,day);if(!x.connected)return {connected:false,row:null as any,predictions:[] as SavedNflPrediction[]};
+ const map=new Map<string,SavedNflPrediction>();
+ // Oldest -> newest. First sighting freezes the original line/projection; later
+ // rows can contribute final grading and last-seen metadata without deleting it.
+ for(const row of x.rows){
+   for(const raw of predictionList(row)){
+     const k=recoveryKey(raw,m,day),old=map.get(k);
+     map.set(k,old?mergeRecovered(old,raw,m,day):({...raw,key:k,market:m,gameDate:String(raw?.gameDate||day)} as SavedNflPrediction));
+   }
+ }
+ const latest=x.rows[x.rows.length-1]||null;
+ return {connected:true,row:latest?{...latest,payload:{predictions:[...map.values()]}}:null,predictions:[...map.values()]};
 }
 async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
  const {url,key}=config();if(!url||!key)return false;
@@ -40,7 +93,7 @@ function sameMatchup(a:any,b:any){
 }
 export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedule:any[]){
  const day=nflDay(new Date()),existing=await getRow(m,day);if(!existing.connected)return false;
- const saved:SavedNflPrediction[]=Array.isArray(existing.row?.payload?.predictions)?existing.row.payload.predictions:[];
+ const saved:SavedNflPrediction[]=existing.predictions||[];
  const map=new Map(saved.map(x=>[x.key,x]));
  let changed=false;
  for(const row of rows){
@@ -72,7 +125,7 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
  return writeRow(m,day,next,existing.row?.id);
 }
 export async function getNflPredictions(m:NflMarketKey,day:string){
- const x=await getRow(m,day);return {connected:x.connected,predictions:(Array.isArray(x.row?.payload?.predictions)?x.row.payload.predictions:[]) as SavedNflPrediction[],id:x.row?.id as string|undefined};
+ const x=await getRow(m,day);return {connected:x.connected,predictions:(x.predictions||[]) as SavedNflPrediction[],id:x.row?.id as string|undefined};
 }
 export async function saveGradedNflPredictions(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
  return writeRow(m,day,predictions,id);
