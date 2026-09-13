@@ -151,21 +151,28 @@ function numStat(v:any){
  return Number.isFinite(n)?n:null;
 }
 function statFromSummary(payload:any,playerId:string,playerName:string,category:string,label:string){
- const wantedId=String(playerId||""),wantedName=cleanName(playerName);
+ const wantedId=String(playerId||""),wantedName=cleanName(playerName),wantedCategory=cleanName(category),wantedLabel=cleanName(label);
  for(const team of payload?.boxscore?.players||[]){
   for(const group of team?.statistics||[]){
-   const groupName=cleanName(group?.name||group?.displayName||group?.shortDisplayName||"");
-   if(groupName!==cleanName(category))continue;
-   const labels=(group?.labels||group?.keys||[]).map((x:any)=>cleanName(x));
-   let ix=labels.findIndex((x:string)=>x===cleanName(label));
-   if(ix<0&&cleanName(label)==="yds")ix=labels.findIndex((x:string)=>x==="yards");
-   if(ix<0)return null;
+   const groupName=cleanName(group?.name||group?.displayName||group?.shortDisplayName||group?.type||"");
+   if(!(groupName===wantedCategory||groupName.includes(wantedCategory)||wantedCategory.includes(groupName)))continue;
+   const rawLabels=Array.isArray(group?.labels)?group.labels:Array.isArray(group?.keys)?group.keys:[];
+   const labels=rawLabels.map((x:any)=>cleanName(typeof x==="string"?x:(x?.name||x?.displayName||x?.abbreviation||x?.label||"")));
+   let ix=labels.findIndex((x:string)=>x===wantedLabel);
+   if(ix<0&&wantedLabel==="yds")ix=labels.findIndex((x:string)=>x==="yards"||x.endsWith("yards")||x==="yds");
+   if(ix<0&&wantedLabel==="rec")ix=labels.findIndex((x:string)=>x==="receptions"||x==="rec");
+   if(ix<0&&wantedLabel==="td")ix=labels.findIndex((x:string)=>x==="touchdowns"||x==="td");
+   if(ix<0)continue;
    for(const row of group?.athletes||[]){
-    const athlete=row?.athlete||{};
-    const id=String(athlete?.id||row?.athleteId||"");
-    const name=cleanName(athlete?.displayName||athlete?.fullName||row?.name||"");
-    if((wantedId&&id===wantedId)||(!wantedId&&wantedName&&name===wantedName)||(wantedName&&name===wantedName)){
-     return numStat(Array.isArray(row?.stats)?row.stats[ix]:null);
+    const athlete=row?.athlete||row?.player||{};
+    const id=String(athlete?.id||row?.athleteId||row?.playerId||"");
+    const name=cleanName(athlete?.displayName||athlete?.fullName||athlete?.name||row?.displayName||row?.name||"");
+    const sameId=Boolean(wantedId&&id&&id===wantedId);
+    const sameName=Boolean(wantedName&&name&&(name===wantedName||name.includes(wantedName)||wantedName.includes(name)));
+    if(sameId||sameName){
+     const stats=Array.isArray(row?.stats)?row.stats:Array.isArray(row?.values)?row.values:[];
+     const direct=numStat(stats[ix]);
+     if(direct!=null)return direct;
     }
    }
   }
@@ -237,6 +244,6 @@ export async function GET(req:NextRequest){
   const results=await getNflResultMap(market,today);
   const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|${r.matchup}`);const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
   const liveRows=await liveContext(withResults,schedule,market);
-  return NextResponse.json({success:true,source:"Owls Insight",market,rows:liveRows,sportsbookOnly:true,validRankingCount:liveRows.length,updatedAt:new Date().toISOString()});
- }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500})}
+  return NextResponse.json({success:true,source:"Owls Insight",market,rows:liveRows,sportsbookOnly:true,validRankingCount:liveRows.length,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
+ }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }

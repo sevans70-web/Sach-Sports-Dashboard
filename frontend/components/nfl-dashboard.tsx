@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {NFL_MARKETS,type NflMarketKey,type NflRankingRow} from "@/lib/nfl";
 
 type NflPerformanceResponse={success:boolean;connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;total?:number;predictions?:any[]};
 
 type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterMode?:string;updatedAt?:string};
-type RankingResponse={success:boolean;rows:NflRankingRow[];updatedAt?:string};
+type RankingResponse={success:boolean;market?:NflMarketKey;rows:NflRankingRow[];updatedAt?:string};
 
 const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","passing_rushing_yards"];
 const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
@@ -17,15 +17,25 @@ function useJson<T>(url:string,fallback:T){
   const[loading,setLoading]=useState(true);
   useEffect(()=>{
     let active=true;
-    const run=()=>fetch(url,{cache:"no-store"})
-      .then(r=>r.json())
-      .then(v=>active&&setData(v))
-      .catch(()=>{})
-      .finally(()=>active&&setLoading(false));
+    let requestSeq=0;
+    let controller:AbortController|null=null;
+    setData(fallback);
+    setLoading(true);
+    const run=()=>{
+      requestSeq+=1;
+      const seq=requestSeq;
+      controller?.abort();
+      controller=new AbortController();
+      return fetch(url,{cache:"no-store",signal:controller.signal})
+        .then(r=>r.json())
+        .then(v=>{if(active&&seq===requestSeq)setData(v)})
+        .catch((e:any)=>{if(e?.name!=="AbortError")return})
+        .finally(()=>{if(active&&seq===requestSeq)setLoading(false)});
+    };
     run();
     const id=setInterval(run,30000);
-    return()=>{active=false;clearInterval(id)}
-  },[url]);
+    return()=>{active=false;clearInterval(id);controller?.abort()}
+  },[url]); // eslint-disable-line react-hooks/exhaustive-deps
   return{data,loading};
 }
 
@@ -126,25 +136,39 @@ export default function NflDashboard(){
   const marketPerf=useJson<NflPerformanceResponse>(`/api/nfl/performance?period=${period}&group=${group}&market=${market}&warm=${warmVersion}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null});
 
   const [movementRows,setMovementRows]=useState<NflRankingRow[]>([]);
+  const [movementMarket,setMovementMarket]=useState<NflMarketKey|null>(null);
   const [dropped,setDropped]=useState<string[]>([]);
-  const rawRows=useMemo(()=>r.data.rows||[],[r.data]);
+  const liveCacheRef=useRef<Record<string,Record<string,NflRankingRow>>>({});
+  const rawRows=useMemo(()=>r.data.market===market?(r.data.rows||[]):[],[r.data,market]);
   useEffect(()=>{
-    if(!rawRows.length)return;
+    setMovementRows([]);
+    setDropped([]);
+    setMovementMarket(null);
+  },[market]);
+  useEffect(()=>{
+    if(r.data.market!==market||!rawRows.length)return;
     const key=`nfl-rank-history-${market}`;
     let previous:Record<string,{rank:number;name:string}>={};
     try{previous=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch{}
     const current:Record<string,{rank:number;name:string}>={};
-    const next=rawRows.map(row=>{
-      const id=String(row.playerId||row.playerName);current[id]={rank:row.rank,name:row.playerName};
+    const priorLive=liveCacheRef.current[market]||{};
+    const next=rawRows.map(raw=>{
+      const id=String(raw.playerId||raw.playerName);
+      const prior=priorLive[id];
+      const keepLive=Boolean(prior&&prior.gameState==="in"&&raw.gameState!=="post"&&raw.resultStatus!=="hit"&&raw.resultStatus!=="miss"&&raw.resultStatus!=="push"&&raw.resultStatus!=="void");
+      const row:NflRankingRow=keepLive?{...raw,gameState:raw.gameState==="in"?"in":prior.gameState,gameStatus:raw.gameStatus||prior.gameStatus,liveCurrent:raw.liveCurrent??prior.liveCurrent,liveProgressPct:raw.liveProgressPct??prior.liveProgressPct}:raw;
+      current[id]={rank:row.rank,name:row.playerName};
       const old=previous[id];
       const movement:NflRankingRow["movement"]=!old?"new":row.rank<old.rank?"up":row.rank>old.rank?"down":"same";
       return {...row,movement,previousRank:old?.rank??null};
     });
+    liveCacheRef.current[market]=Object.fromEntries(next.map(row=>[String(row.playerId||row.playerName),row]));
     setDropped(Object.entries(previous).filter(([id])=>!current[id]).map(([,v])=>v.name).slice(0,8));
     setMovementRows(next);
+    setMovementMarket(market);
     try{localStorage.setItem(key,JSON.stringify(current))}catch{}
-  },[rawRows,market]);
-  const rows=movementRows.length?movementRows:rawRows;
+  },[rawRows,market,r.data.market]);
+  const rows=movementMarket===market?movementRows:rawRows;
   const active=marketMeta(market);
   const live=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
@@ -231,7 +255,7 @@ export default function NflDashboard(){
       <div className="marketHead">
         <h2>{active[1]} {active[2]} Rankings</h2>
         <p>Ranked by GI Score. NFL market depth varies by game and sportsbook, so the list expands only as far as legitimate coverage allows.</p>
-        {dropped.length?<p className="droppedLine"><b>Dropped since last refresh:</b> {dropped.join(", ")}</p>:null}
+        {movementMarket===market&&dropped.length?<p className="droppedLine"><b>Dropped since last refresh:</b> {dropped.join(", ")}</p>:null}
       </div>
 
       <div className="cards">{(full?rows:rows.slice(0,5)).map(row=><RankingCard row={row} market={market} key={`${row.playerId}-${row.rank}`}/>)}</div>
