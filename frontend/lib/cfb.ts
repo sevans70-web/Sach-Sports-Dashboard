@@ -37,6 +37,7 @@ export type CfbRankingRow = {
   resultStatus?:"pending"|"hit"|"miss"|"push"|"void";
   actualResult?:number|null;
   resultSymbol?:string;
+  resultMargin?:number|null;
 };
 
 export type CfbRosterPlayer = {

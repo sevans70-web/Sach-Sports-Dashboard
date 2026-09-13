@@ -26,9 +26,27 @@ function actualFrom(payload:any,m:CfbMarketKey,day:string){
  return null;
 }
 function settle(p:SavedCfbPrediction,actual:number){
- if(p.market==="anytime_td")return actual>0?"hit":"miss";
+ if(p.market==="anytime_td"||p.market==="first_td")return actual>0?"hit":"miss";
  if(p.sportsbookLine==null)return "void";
  if(actual>p.sportsbookLine)return "hit"; if(actual<p.sportsbookLine)return "miss"; return "push";
+}
+async function firstTdResult(gameId:string,playerName:string){
+ try{
+  const r=await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${encodeURIComponent(gameId)}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0",Accept:"application/json, text/plain, */*"}});
+  if(!r.ok)return null;
+  const payload=await r.json();
+  const plays=Array.isArray(payload?.scoringPlays)?payload.scoringPlays:[];
+  const td=plays.find((x:any)=>{
+    const t=cleanName(String(x?.scoringType?.name||x?.scoringType?.abbreviation||x?.type?.text||""));
+    const text=cleanName(String(x?.text||x?.shortText||""));
+    return t.includes("touchdown")||t==="td"||text.includes("touchdown");
+  });
+  if(!td)return 0;
+  const text=cleanName(String(td?.text||td?.shortText||""));
+  const player=cleanName(playerName);
+  const last=player.split(" ").filter(Boolean).pop()||player;
+  return text.includes(player)||(last.length>=3&&text.split(" ").includes(last))?1:0;
+ }catch{return null}
 }
 function daysFor(period:string){
  const n=period==="Today"?1:period==="Yesterday"?1:period==="Week"?7:period==="Month"?31:370;
@@ -47,8 +65,11 @@ export async function GET(req:NextRequest){
        if(p.status!=="pending"){all.push(p);continue}
        const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
        if(!game?.completed){all.push(p);continue}
-       // First TD needs play-by-play scorer identity; do not fabricate a result.
-       if(p.market==="first_td"){p.status="void";p.gradedAt=new Date().toISOString();changed=true;all.push(p);continue}
+       if(p.market==="first_td"){
+         const actual=await firstTdResult(String(game.id||""),p.playerName);
+         if(actual!=null){p.actual=actual;p.status=settle(p,actual);p.gradedAt=new Date().toISOString();changed=true}
+         all.push(p);continue;
+       }
        const payload=await log(p.playerId,Number(p.gameDate.slice(0,4))||2026),actual=actualFrom(payload,p.market,p.gameDate);
        if(actual!=null){p.actual=actual;p.status=settle(p,actual);p.gradedAt=new Date().toISOString();changed=true}
        all.push(p);

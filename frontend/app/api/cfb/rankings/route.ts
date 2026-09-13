@@ -152,7 +152,7 @@ export async function GET(req:NextRequest){
   rows.sort((a,b)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
   await saveCfbPregamePredictions(market,ranked,schedule);
   const results=await getCfbResultMap(market,today);
-  const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|${r.matchup}`);return p?{...r,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
+  const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|${r.matchup}`);const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
   return NextResponse.json({success:true,source:"Owls Insight",market,rows:withResults,sportsbookOnly:true,validRankingCount:withResults.length,updatedAt:new Date().toISOString()});
  }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"CFB rankings unavailable"},{status:500})}
 }

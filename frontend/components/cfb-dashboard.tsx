@@ -45,6 +45,24 @@ function projectionText(row:CfbRankingRow,market:CfbMarketKey){
   return n.toFixed(1);
 }
 
+
+function formatActual(value:number,market:CfbMarketKey){
+  const n=Number(value); const shown=Number.isInteger(n)?String(n):n.toFixed(1);
+  if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${shown} yards`;
+  if(market==="pass_completions")return `${shown} completion${n===1?"":"s"}`;
+  if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;
+  if(market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
+  return shown;
+}
+function formatMargin(value:number,market:CfbMarketKey){
+  const n=Number(value); const shown=Number.isInteger(n)?String(n):n.toFixed(1);
+  if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${shown} yard${n===1?"":"s"}`;
+  if(market==="pass_completions")return `${shown} completion${n===1?"":"s"}`;
+  if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;
+  if(market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
+  return shown;
+}
+
 function MenuButton(){
   return <Link href="/" className="cfbMenu" aria-label="Open sports menu">▦⌄</Link>;
 }
@@ -67,7 +85,13 @@ function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
       <b>{row.sportsbookLine!=null?`${meta[2]} line: ${row.sportsbookLine}`:`${meta[2]} statistical intelligence`}</b>
       <p className="projectionLine"><b>Model projection:</b> {projection}</p>
       <p>{row.marketBacked?(row.modelProbability!=null?`Model probability: ${Number(row.modelProbability).toFixed(0)}%`:"Model probability: Insufficient history"):"Verified season production · sportsbook line pending"}</p>
-      {row.resultStatus&&row.resultStatus!=="pending"?<p className={`finalResult ${row.resultStatus}`}><b>{row.resultSymbol||""} FINAL:</b> {row.actualResult!=null?`${row.actualResult} actual`:(row.resultStatus==="void"?"Void":"")}</p>:null}
+      {row.resultStatus&&row.resultStatus!=="pending"?<div className={`finalResult ${row.resultStatus}`}>
+        <b>FINAL</b>
+        {row.resultStatus==="void"?<span>Result: VOID</span>:row.actualResult!=null?<>
+          <span>Result: {row.resultSymbol||""} {formatActual(row.actualResult,market)}</span>
+          {row.resultStatus==="push"?<small>Matched line exactly · Line: {row.sportsbookLine}</small>:row.resultMargin!=null?<small>{row.resultStatus==="hit"?"Beat":"Missed"} line by {formatMargin(Math.abs(row.resultMargin),market)} · Line: {row.sportsbookLine}</small>:null}
+        </>:null}
+      </div>:null}
     </div>
     <div className="rankGi"><span>GI SCORE</span><strong>{Number(row.giScore||0).toFixed(1)}</strong></div>
 
@@ -190,7 +214,7 @@ export default function CfbDashboard(){
     </section>
 
     <style jsx global>{`
-      .finalResult{margin-top:8px!important;font-weight:800}.finalResult.hit{color:#45ef8d}.finalResult.miss{color:#ff6b6b}.finalResult.push{color:#d9b85d}
+      .finalResult{margin-top:12px!important;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.finalResult>b{display:inline-block!important;margin:0!important;padding:4px 10px;border:2px solid #d9b85d;border-radius:999px;color:#d9b85d!important;font-size:13px!important}.finalResult>span{font-size:17px;font-weight:900}.finalResult>small{font-size:14px;color:#c9cbd0}.finalResult.hit>span{color:#45ef8d}.finalResult.miss>span{color:#ff6b6b}.finalResult.push>span{color:#d9b85d}
       .cfbShell{max-width:780px;margin:0 auto;padding:10px 14px 80px;color:#fff}
       .cfbMenu{display:grid;place-items:center;width:58px;height:58px;margin:0 0 24px;border:2px solid #20df7f;border-radius:16px;background:#0c0e0d;color:#fff!important;text-decoration:none!important;font-size:22px}
       .cfbShell .hero{border:2px solid #d9b85d;border-radius:18px;padding:18px 20px;background:linear-gradient(110deg,rgba(217,184,93,.48),#0b0d0e 48%,rgba(0,78,47,.78))}
