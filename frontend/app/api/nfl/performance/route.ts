@@ -12,6 +12,15 @@ const KEYS:Partial<Record<NflMarketKey,string[]>>={
  receptions:["receptions","rec"],passing_rushing_yards:["passingyards","passyards","yds"],rushing_receiving_yards:["rushingyards","rushyards","yds"],anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"]
 };
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function teamNick(v:any){const x=cleanName(String(v||""));return x.split(" ").filter(Boolean).pop()||x}
+function matchupParts(v:any){const raw=String(v||"").replace(/\bvs\.?\b/gi,"@").replace(/\bv\b/gi,"@");const parts=raw.split("@").map(x=>cleanName(x)).filter(Boolean);return parts.length===2?parts:[]}
+function sameTeam(a:any,b:any){const x=cleanName(String(a||"")),y=cleanName(String(b||""));if(!x||!y)return false;return x===y||teamNick(x)===teamNick(y)}
+function findScheduleGame(schedule:any[],p:SavedNflPrediction){
+ if(p.gameId){const byId=schedule.find((g:any)=>String(g?.id||"")===String(p.gameId));if(byId)return byId}
+ const parts=matchupParts(p.matchup);if(parts.length===2){const hit=schedule.find((g:any)=>sameTeam(g.awayTeam,parts[0])&&sameTeam(g.homeTeam,parts[1]));if(hit)return hit}
+ return schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
+}
+function summaryCompleted(payload:any){return Boolean(payload?.header?.competitions?.[0]?.status?.type?.completed||payload?.header?.competitions?.[0]?.status?.type?.state==="post")}
 async function log(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0",Accept:"application/json, text/plain, */*"}});return r.ok?r.json():null}
 function actualFrom(payload:any,m:NflMarketKey,day:string){
  if(!payload||m==="first_td")return null;
@@ -89,16 +98,20 @@ export async function GET(req:NextRequest){
  const marketParam=req.nextUrl.searchParams.get("market") as NflMarketKey|null;
  const markets=(marketParam?[marketParam]:NFL_MARKETS.map(x=>x[0])).filter(m=>NFL_MARKETS.some(x=>x[0]===m));
  try{
-   const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,recoveredSnapshots=0;
+   const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,writable=true,recoveredSnapshots=0;
    const summaryCache=new Map<string,any>();
    for(const day of days)for(const market of markets){
-     const got=await getNflPredictions(market,day);connected=connected&&got.connected;recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
+     const got=await getNflPredictions(market,day);connected=connected&&got.connected;writable=writable&&Boolean(got.writable);recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
      for(const p of got.predictions){
        if(p.status!=="pending"){all.push(p);continue}
-       const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
-       if(!game?.completed){all.push(p);continue}
-       let payload=summaryCache.get(String(game.id||""));
-       if(payload===undefined){payload=await getSummary(String(game.id||""));summaryCache.set(String(game.id||""),payload)}
+       const game=findScheduleGame(schedule,p);
+       const gameId=String(p.gameId||game?.id||"");
+       if(!gameId){all.push(p);continue}
+       let payload=summaryCache.get(gameId);
+       if(payload===undefined){payload=await getSummary(gameId);summaryCache.set(gameId,payload)}
+       const isFinal=Boolean(game?.completed||summaryCompleted(payload));
+       if(!isFinal){all.push(p);continue}
+       if(!p.gameId){p.gameId=gameId;changed=true}
        let actual=payload?summaryActual(payload,p):null;
        // ESPN's athlete gamelog can lag behind the final whistle. Use it only as a fallback.
        if(actual==null&&p.market!=="first_td"){
@@ -113,7 +126,7 @@ export async function GET(req:NextRequest){
    const groupMarkets=group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","passing_rushing_yards"]):new Set<NflMarketKey>(["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
    const scoped=marketParam?all:all.filter(p=>groupMarkets.has(p.market));
    const settled=scoped.filter(p=>p.status==="hit"||p.status==="miss"),hits=scoped.filter(p=>p.status==="hit").length,pending=scoped.filter(p=>p.status==="pending").length;
-   return NextResponse.json({success:true,connected,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
+   return NextResponse.json({success:true,connected,writable,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
      hitRate:settled.length?Math.round(hits/settled.length*1000)/10:null,recoveredSnapshots,predictions:scoped.sort((a,b)=>b.savedAt.localeCompare(a.savedAt))},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
- }catch(e){return NextResponse.json({success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null,predictions:[],error:e instanceof Error?e.message:"NFL performance unavailable"},{status:500,headers:{"Cache-Control":"no-store"}})}
+ }catch(e){return NextResponse.json({success:false,connected:false,writable:false,hits:0,settled:0,pending:0,hitRate:null,predictions:[],error:e instanceof Error?e.message:"NFL performance unavailable"},{status:500,headers:{"Cache-Control":"no-store"}})}
 }

@@ -4,13 +4,14 @@ import Link from "next/link";
 import {useEffect,useMemo,useRef,useState} from "react";
 import {NFL_MARKETS,type NflMarketKey,type NflRankingRow} from "@/lib/nfl";
 
-type NflPerformanceResponse={success:boolean;connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;total?:number;predictions?:any[]};
+type NflPerformanceResponse={success:boolean;connected:boolean;writable?:boolean;hits:number;settled:number;pending:number;hitRate:number|null;total?:number;predictions?:any[]};
 
 type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterMode?:string;updatedAt?:string};
-type RankingResponse={success:boolean;market?:NflMarketKey;rows:NflRankingRow[];updatedAt?:string};
+type RankingResponse={success:boolean;market?:NflMarketKey;rows:NflRankingRow[];updatedAt?:string;historySaved?:boolean;historyConnected?:boolean;historyWritable?:boolean};
 
 const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","passing_rushing_yards"];
 const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
+const ALL_MARKETS:NflMarketKey[]=NFL_MARKETS.map(x=>x[0]);
 
 function useJson<T>(url:string,fallback:T){
   const[data,setData]=useState(fallback);
@@ -179,10 +180,16 @@ export default function NflDashboard(){
   useEffect(()=>setFull(false),[market]);
   useEffect(()=>{
     let active=true;
-    Promise.all(markets.map(k=>fetch(`/api/nfl/rankings?market=${k}`,{cache:"no-store"}).then(r=>r.json()).catch(()=>null)))
-      .finally(()=>{if(active)setWarmVersion(v=>v+1)});
-    return()=>{active=false};
-  },[group]); // eslint-disable-line react-hooks/exhaustive-deps
+    const captureAll=async()=>{
+      for(let i=0;i<ALL_MARKETS.length;i+=3){
+        await Promise.all(ALL_MARKETS.slice(i,i+3).map(k=>fetch(`/api/nfl/rankings?market=${k}`,{cache:"no-store"}).then(r=>r.json()).catch(()=>null)));
+      }
+      if(active)setWarmVersion(v=>v+1);
+    };
+    captureAll();
+    const id=setInterval(captureAll,300000);
+    return()=>{active=false;clearInterval(id)};
+  },[]);
 
   return <main className="nflShell">
     <MenuButton/>
@@ -233,11 +240,11 @@ export default function NflDashboard(){
 
       <div className="perfGrid">
         <article className="green"><span>Hits / Predictions</span><strong>{marketPerf.data.hits} / {marketPerf.data.total||0}</strong></article>
-        <article><span>Pending</span><strong>{period==="Today"&&marketPerf.data.pending===0?rows.filter(x=>!x.resultStatus||x.resultStatus==="pending").length:marketPerf.data.pending}</strong></article>
+        <article><span>Pending</span><strong>{marketPerf.data.pending}</strong></article>
         <article className="gold"><span>Settled</span><strong>{marketPerf.data.settled}</strong></article>
         <article><span>Hit Rate</span><strong>{marketPerf.data.hitRate==null?"—":`${marketPerf.data.hitRate}%`}</strong></article>
       </div>
-      <small>Results will appear after saved predictions are graded.</small>
+      {!marketPerf.data.connected||marketPerf.data.writable===false?<small className="historyWarning">⚠ NFL prediction history storage is not writable. Rankings can display, but predictions are not being permanently saved.</small>:<small>Results will appear after saved predictions are graded.</small>}
     </section>
 
     <section className="section rankings">
@@ -277,7 +284,7 @@ export default function NflDashboard(){
       .snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
       .snapshot article,.overallMetrics article,.perfGrid article{border:2px solid #34373d;border-radius:18px;padding:14px;background:#111214;display:flex;flex-direction:column;gap:8px}
       .snapshot .green,.overallMetrics .green,.perfGrid .green{border-color:#20df7f}.snapshot .gold,.overallMetrics .gold,.perfGrid .gold{border-color:#d9b85d}
-      .snapshot span,.overallMetrics span,.perfGrid span{color:#9da1a8;font-size:13px}.snapshot strong,.overallMetrics strong,.perfGrid strong{font-size:26px}.snapshot small{color:#d0d1d4}
+      .snapshot span,.overallMetrics span,.perfGrid span{color:#9da1a8;font-size:13px}.snapshot strong,.overallMetrics strong,.perfGrid strong{font-size:26px}.snapshot small{color:#d0d1d4}.historyWarning{display:block;margin-top:10px;color:#ffcf67;font-weight:800}
       .section{margin-top:34px}.performanceTitle{font-size:31px!important;white-space:nowrap!important;line-height:1!important;letter-spacing:-.02em}
       .section>h2,.rankHeader h2{font-size:31px;margin:0 0 8px}.rankHeader p,.marketHead p{color:#a9acb3;line-height:1.4}
       .section details{border:2px solid #34373d;border-radius:16px;padding:13px 16px;margin:14px 0}.section summary{font-size:17px}.explain{color:#a9acb3;margin-top:10px}
