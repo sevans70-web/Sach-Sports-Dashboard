@@ -107,5 +107,13 @@ export type SoccerDashboardResponse = {
     matchedToSelectedLeagueSlate: number;
     meta?: unknown;
   };
+  historyDiagnostics?: {
+    currentTeams: number;
+    rosterPlayers: number;
+    historicalEvents: number;
+    appearancesParsed: number;
+    playersWithHistory: number;
+    rankingRowsWithHistory: number;
+  };
   errors?: string[];
 };

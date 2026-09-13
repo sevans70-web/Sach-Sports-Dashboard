@@ -1,5 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  buildHistoryIndex,
+  extractAppearances,
+  extractRosterPlayers,
+  findPlayerHistory,
+  findRosterPlayer,
+  scheduleEventRows,
+  type SoccerAppearance,
+  type SoccerRosterPlayer,
+} from "@/lib/soccer-history";
+
+import {
   fairOverProbability,
   normalizeName,
   parseOwlsSoccerProps,
@@ -12,6 +23,7 @@ export const dynamic = "force-dynamic";
 
 const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer";
 const OWLS_PROPS_URL = "https://api.owlsinsight.com/api/v1/soccer/props";
+const ESPN_CDN_GAME = "https://cdn.espn.com/core/soccer/game";
 
 const ALLOWED = new Set([
   "eng.1",
@@ -242,91 +254,81 @@ export async function GET(req: NextRequest) {
     const completed = games.filter((game: any) => game.completed).slice(-48);
     const upcoming = games.filter((game: any) => !game.completed);
 
-    const summaries = await Promise.all(
-      completed.map(async (game: any) => {
+    const currentTeams = new Map<string, string>();
+    for (const game of upcoming) {
+      if (game.homeTeamId) currentTeams.set(game.homeTeamId, game.homeTeam);
+      if (game.awayTeamId) currentTeams.set(game.awayTeamId, game.awayTeam);
+    }
+
+    const rosterPlayers: SoccerRosterPlayer[] = [];
+    const historicalEventIds = new Map<string, string>();
+
+    await Promise.all(
+      [...currentTeams.entries()].map(async ([teamId, teamName]) => {
         try {
-          return {
-            game,
-            data: await fetchEspnJson(`${ESPN_BASE}/${league}/summary?event=${game.gameId}`),
-          };
+          const [rosterPayload, schedulePayload] = await Promise.all([
+            fetchEspnJson(`${ESPN_BASE}/${league}/teams/${teamId}/roster`),
+            fetchEspnJson(`${ESPN_BASE}/${league}/teams/${teamId}/schedule`),
+          ]);
+
+          rosterPlayers.push(
+            ...extractRosterPlayers(rosterPayload, {
+              teamId,
+              team: teamName,
+            }),
+          );
+
+          const recentTeamEvents = scheduleEventRows(schedulePayload)
+            .filter((event) => event.completed)
+            .sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)))
+            .slice(-7);
+
+          for (const event of recentTeamEvents) {
+            historicalEventIds.set(event.gameId, event.kickoff);
+          }
         } catch (error: any) {
-          errors.push(`summary ${game.gameId}: ${error?.message || error}`);
-          return null;
+          errors.push(`team ${teamId} history: ${error?.message || error}`);
         }
       }),
     );
 
-    const appearances: any[] = [];
-
-    for (const item of summaries) {
-      if (!item) continue;
-
-      for (const teamBlock of item.data?.boxscore?.players || []) {
-        const team = teamBlock?.team || {};
-        const teamId = String(team?.id || "");
-        const teamName = String(team?.displayName || team?.shortDisplayName || "");
-
-        for (const group of teamBlock?.statistics || []) {
-          const labels = group?.labels || group?.names || group?.keys || [];
-
-          for (const athleteRow of group?.athletes || []) {
-            const athlete = athleteRow?.athlete || {};
-            const values = athleteRow?.stats || [];
-
-            const row: Record<string, any> = {
-              gameId: item.game.gameId,
-              gameDate: item.game.kickoff,
-              playerId: String(athlete?.id || ""),
-              playerName: String(
-                athlete?.displayName ||
-                  athlete?.shortName ||
-                  athlete?.fullName ||
-                  "Unknown",
-              ),
-              photoUrl: String(athlete?.headshot?.href || ""),
-              teamId,
-              team: teamName,
-              position: String(athlete?.position?.abbreviation || "").toUpperCase(),
-              starter: Boolean(athleteRow?.starter),
-              minutes: 0,
-              shots: 0,
-              shots_on_target: 0,
-              goals: 0,
-              assists: 0,
-              saves: 0,
-            };
-
-            let found = false;
-
-            labels.forEach((label: unknown, index: number) => {
-              const key = statKey(label);
-              if (!key) return;
-              row[key] = num(values[index]);
-              found = true;
-            });
-
-            if (!found && athleteRow?.statistics && typeof athleteRow.statistics === "object") {
-              for (const [rawKey, rawValue] of Object.entries(athleteRow.statistics)) {
-                const mapped = statKey(rawKey);
-                if (!mapped) continue;
-                row[mapped] = num(rawValue);
-                found = true;
-              }
-            }
-
-            if (found && row.playerName !== "Unknown") appearances.push(row);
-          }
-        }
+    for (const game of completed) {
+      if (!historicalEventIds.has(game.gameId)) {
+        historicalEventIds.set(game.gameId, game.kickoff);
       }
     }
 
-    const appearancesByPlayer = new Map<string, any[]>();
-    for (const appearance of appearances) {
-      const key = normalizeName(appearance.playerName);
-      if (!key) continue;
-      if (!appearancesByPlayer.has(key)) appearancesByPlayer.set(key, []);
-      appearancesByPlayer.get(key)!.push(appearance);
-    }
+    const historyEvents = [...historicalEventIds.entries()]
+      .sort((a, b) => String(a[1]).localeCompare(String(b[1])))
+      .slice(-80);
+
+    const appearances: SoccerAppearance[] = [];
+
+    await Promise.all(
+      historyEvents.map(async ([gameId, gameDate]) => {
+        try {
+          const summary = await fetchEspnJson(`${ESPN_BASE}/${league}/summary?event=${gameId}`);
+          let parsed = extractAppearances(summary, { gameId, gameDate });
+
+          if (!parsed.length) {
+            try {
+              const cdn = await fetchEspnJson(
+                `${ESPN_CDN_GAME}?xhr=1&gameId=${gameId}&league=${league}`,
+              );
+              parsed = extractAppearances(cdn, { gameId, gameDate });
+            } catch (cdnError: any) {
+              errors.push(`cdn ${gameId}: ${cdnError?.message || cdnError}`);
+            }
+          }
+
+          appearances.push(...parsed);
+        } catch (error: any) {
+          errors.push(`summary ${gameId}: ${error?.message || error}`);
+        }
+      }),
+    );
+
+    const appearancesByPlayer = buildHistoryIndex(appearances);
 
     // Only use props that can be tied to a game on the selected ESPN league slate.
     const propGamePairs: { prop: OwlsSoccerProp; game: any }[] = [];
@@ -366,7 +368,17 @@ export async function GET(req: NextRequest) {
 
         if (!selected || !pair) continue;
 
-        const recentAll = (appearancesByPlayer.get(playerKey) || [])
+        const rosterMatch = findRosterPlayer(
+          selected.playerName,
+          rosterPlayers,
+          selected.team,
+        );
+
+        const recentAll = findPlayerHistory(
+          selected.playerName,
+          appearancesByPlayer,
+          selected.team || rosterMatch?.team || "",
+        )
           .sort((a, b) => String(a.gameDate).localeCompare(String(b.gameDate)))
           .slice(-5);
 
@@ -421,12 +433,12 @@ export async function GET(req: NextRequest) {
         allPlayers.add(playerKey);
 
         rows.push({
-          playerId: last?.playerId || `owls:${playerKey}`,
+          playerId: last?.playerId || rosterMatch?.playerId || `owls:${playerKey}`,
           playerName: selected.playerName,
-          photoUrl: last?.photoUrl || "",
-          teamId: last?.teamId || "",
-          team: selected.team || last?.team || "",
-          position: last?.position || (metric === "saves" ? "GK" : ""),
+          photoUrl: last?.photoUrl || rosterMatch?.photoUrl || "",
+          teamId: last?.teamId || rosterMatch?.teamId || "",
+          team: selected.team || last?.team || rosterMatch?.team || "",
+          position: last?.position || rosterMatch?.position || (metric === "saves" ? "GK" : ""),
           matchup: `${pair.game.awayTeam} @ ${pair.game.homeTeam}`,
           opponent: "",
           homeAway: "",
@@ -544,6 +556,18 @@ export async function GET(req: NextRequest) {
         received: owls.rows.length,
         matchedToSelectedLeagueSlate: propGamePairs.length,
         meta: owls.meta,
+      },
+      historyDiagnostics: {
+        currentTeams: currentTeams.size,
+        rosterPlayers: rosterPlayers.length,
+        historicalEvents: historyEvents.length,
+        appearancesParsed: appearances.length,
+        playersWithHistory: appearancesByPlayer.size,
+        rankingRowsWithHistory: metrics.reduce(
+          (sum, metric) =>
+            sum + (rankings[metric] || []).filter((row: any) => row.games > 0).length,
+          0,
+        ),
       },
       errors,
     });
