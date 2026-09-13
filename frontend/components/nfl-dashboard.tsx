@@ -9,8 +9,8 @@ type NflPerformanceResponse={success:boolean;connected:boolean;hits:number;settl
 type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterMode?:string;updatedAt?:string};
 type RankingResponse={success:boolean;rows:NflRankingRow[];updatedAt?:string};
 
-const QB_MARKETS:NflMarketKey[]=["passing_yards","pass_completions"];
-const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","receiving_yards","receptions","anytime_td","first_td"];
+const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","passing_rushing_yards"];
+const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
 
 function useJson<T>(url:string,fallback:T){
   const[data,setData]=useState(fallback);
@@ -38,8 +38,8 @@ function projectionText(row:NflRankingRow,market:NflMarketKey){
   const v=row.modelProjection;
   if(v==null||!Number.isFinite(Number(v)))return "Insufficient history";
   const n=Number(v);
-  if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${n.toFixed(1)} yds`;
-  if(market==="pass_completions")return `${n.toFixed(1)} comp`;
+  if(market==="passing_yards"||market==="passing_rushing_yards"||market==="rushing_yards"||market==="receiving_yards"||market==="rushing_receiving_yards")return `${n.toFixed(1)} yds`;
+  if(market==="passing_tds")return `${n.toFixed(1)} TD`;
   if(market==="receptions")return `${n.toFixed(1)} rec`;
   if(market==="anytime_td")return `${n.toFixed(1)} TD`;
   return n.toFixed(1);
@@ -154,7 +154,7 @@ export default function NflDashboard(){
     <p className="greenNote">{s.data.filterMode==="schedule_fallback"?"Player-prop availability pending — current weekly slate shown.":"Only games with at least one supported player prop are counted."}</p>
     <div className="snapshot">
       <article className="green"><span>GAMES</span><strong>{gameCount}</strong><small>{live} live · {finals} final</small></article>
-      <article><span>MARKETS</span><strong>7</strong><small>NFL-supported categories</small></article>
+      <article><span>MARKETS</span><strong>{NFL_MARKETS.length}</strong><small>NFL-supported categories</small></article>
       <article className="gold"><span>ALERTS</span><strong>0</strong><small>No active alerts</small></article>
     </div>
 

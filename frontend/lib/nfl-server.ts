@@ -8,9 +8,9 @@ const ESPN_ATHLETE="https://site.web.api.espn.com/apis/common/v3/sports/football
 const ODDS_BASE="https://api.the-odds-api.com/v4";
 const ODDS_SPORT="americanfootball_nfl";
 
-const ODDS_MARKETS:Record<NflMarketKey,string>={
+const ODDS_MARKETS:Partial<Record<NflMarketKey,string>>={
   passing_yards:"player_pass_yds",
-  pass_completions:"player_pass_completions",
+  passing_tds:"player_pass_tds",
   rushing_yards:"player_rush_yds",
   receiving_yards:"player_reception_yds",
   receptions:"player_receptions",
@@ -20,10 +20,12 @@ const ODDS_MARKETS:Record<NflMarketKey,string>={
 
 const SGO_STATS:Record<NflMarketKey,string[]>={
   passing_yards:["passing_yards","passingYards","passing yards","pass_yards","passYards","player_pass_yds"],
-  pass_completions:["completions","passing_completions","passingCompletions","passing completions","pass_completions","player_pass_completions"],
+  passing_tds:["passing_tds","passingTouchdowns","passing touchdowns","pass_tds","passTDs","player_pass_tds"],
+  passing_rushing_yards:["passing_rushing_yards","passingRushingYards","pass+rush yards","pass_rush_yds","passing+rushing yards"],
   rushing_yards:["rushing_yards","rushingYards","rushing yards","rush_yards","rushYards","player_rush_yds"],
   receiving_yards:["receiving_yards","receivingYards","receiving yards","reception_yards","receptionYards","player_reception_yds"],
   receptions:["receptions","receiving_receptions","receivingReceptions","player_receptions"],
+  rushing_receiving_yards:["rushing_receiving_yards","rushingReceivingYards","rush+receiving yards","rush_receiving_yds","rushing+receiving yards"],
   anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
   first_td:["firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
 };
@@ -79,7 +81,7 @@ export async function getEspnNflSchedule(){
   const dates=[-1,0,1,2,3].map(offset=>dateKey(new Date(now.getTime()+offset*86400000)));
   const payloads=await Promise.all(
     dates.map(async date=>{
-      try{return await json(`${ESPN_SCOREBOARD}?limit=200&groups=80&dates=${date}`)}
+      try{return await json(`${ESPN_SCOREBOARD}?limit=200&dates=${date}`)}
       catch{return {events:[]}}
     })
   );
@@ -210,7 +212,9 @@ export async function getNflMarketRows(market:NflMarketKey){
     for(const e of (events||[]).slice(0,80)){
       let p:any;
       try{
-        p=await json(`${ODDS_BASE}/sports/${ODDS_SPORT}/events/${e.id}/odds?apiKey=${encodeURIComponent(key)}&regions=us&markets=${ODDS_MARKETS[market]}&oddsFormat=american&dateFormat=iso`);
+        const oddsMarket=ODDS_MARKETS[market];
+        if(!oddsMarket) continue;
+        p=await json(`${ODDS_BASE}/sports/${ODDS_SPORT}/events/${e.id}/odds?apiKey=${encodeURIComponent(key)}&regions=us&markets=${oddsMarket}&oddsFormat=american&dateFormat=iso`);
       }catch{continue}
       for(const b of p.bookmakers||[]){
         for(const m of b.markets||[]){

@@ -1,9 +1,11 @@
 export const NFL_MARKETS = [
   ["passing_yards", "🏈", "Passing Yards"],
-  ["pass_completions", "✅", "Pass Completions"],
+  ["passing_tds", "🎯", "Passing TDs"],
+  ["passing_rushing_yards", "⚡", "Passing + Rushing Yards"],
   ["rushing_yards", "🏃", "Rushing Yards"],
   ["receiving_yards", "🙌", "Receiving Yards"],
   ["receptions", "🧤", "Receptions"],
+  ["rushing_receiving_yards", "🔀", "Rushing + Receiving Yards"],
   ["anytime_td", "🔥", "Anytime TD"],
   ["first_td", "1️⃣", "First TD"],
 ] as const;
