@@ -58,10 +58,12 @@ function sgoBookCount(o:any){
 
 const LEADER_ALIASES:Record<NflMarketKey,string[]>={
   passing_yards:["passingyards","passing yards"],
-  pass_completions:["completions","passingcompletions","passing completions"],
+  passing_tds:["passingtouchdowns","passing tds","passing touchdowns"],
+  passing_rushing_yards:["passingyards","passing yards","rushingyards","rushing yards"],
   rushing_yards:["rushingyards","rushing yards"],
   receiving_yards:["receivingyards","receiving yards"],
   receptions:["receptions"],
+  rushing_receiving_yards:["rushingyards","rushing yards","receivingyards","receiving yards"],
   anytime_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
   first_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
 };

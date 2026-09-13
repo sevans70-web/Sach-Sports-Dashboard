@@ -8,16 +8,18 @@ const BASE="https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/ath
 
 const STAT_KEYS:Partial<Record<NflMarketKey,string[]>>={
   passing_yards:["passingyards","passyards","yds"],
-  pass_completions:["completions","passingcompletions","cmp"],
+  passing_tds:["passingtouchdowns","passingtds","passtds","td"],
   rushing_yards:["rushingyards","rushyards","yds"],
   receiving_yards:["receivingyards","receptionyards","recyards","yds"],
   receptions:["receptions","rec"],
+  passing_rushing_yards:["passingyards","passyards","yds"],
+  rushing_receiving_yards:["rushingyards","rushyards","yds"],
   anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
 };
 const LABELS:Partial<Record<NflMarketKey,string>>={
-  passing_yards:"Passing Yards",pass_completions:"Pass Completions",
+  passing_yards:"Passing Yards",passing_tds:"Passing TDs",passing_rushing_yards:"Passing + Rushing Yards",
   rushing_yards:"Rushing Yards",receiving_yards:"Receiving Yards",
-  receptions:"Receptions",anytime_td:"Touchdowns",
+  receptions:"Receptions",rushing_receiving_yards:"Rushing + Receiving Yards",anytime_td:"Touchdowns",
 };
 function clean(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");}
 async function fetchLog(id:string,season:number){

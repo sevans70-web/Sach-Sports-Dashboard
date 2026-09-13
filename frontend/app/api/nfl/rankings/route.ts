@@ -12,19 +12,23 @@ const ATHLETE_BASE="https://site.web.api.espn.com/apis/common/v3/sports/football
 
 const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  passing_yards:["passing_yards","passingyards","pass_yards","passyards"],
- pass_completions:["passing_completions","pass_completions","completions","passingcompletions"],
+ passing_tds:["passing_tds","pass_tds","passing_touchdowns","passingtouchdowns"],
+ passing_rushing_yards:["passing_rushing_yards","pass_rush_yards","passing+rushing_yards","passingrushingyards"],
  rushing_yards:["rushing_yards","rushingyards","rush_yards","rushyards"],
  receiving_yards:["receiving_yards","receivingyards","reception_yards","receptionyards"],
  receptions:["receptions","receiving_receptions","receivingreceptions"],
+ rushing_receiving_yards:["rushing_receiving_yards","rush_receiving_yards","rushing+receiving_yards","rushingreceivingyards"],
  anytime_td:["anytime_td","anytime_touchdown","anytime_touchdown_scorer","touchdown_scorer","touchdowns"],
  first_td:["first_td","first_touchdown","first_touchdown_scorer","first_scorer"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
  passing_yards:["passingyards","passyards","yds"],
- pass_completions:["completions","passingcompletions","cmp"],
+ passing_tds:["passingtouchdowns","passingtds","passtds","td"],
+ passing_rushing_yards:["passingyards","passyards","yds"],
  rushing_yards:["rushingyards","rushyards","yds"],
  receiving_yards:["receivingyards","receptionyards","recyards","yds"],
  receptions:["receptions","rec"],
+ rushing_receiving_yards:["rushingyards","rushyards","yds"],
  anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
 };
 function norm(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}

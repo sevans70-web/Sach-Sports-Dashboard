@@ -49,7 +49,6 @@ function projectionText(row:NflRankingRow,market:NflMarketKey){
 function formatActual(value:number,market:NflMarketKey){
   const n=Number(value); const shown=Number.isInteger(n)?String(n):n.toFixed(1);
   if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${shown} yards`;
-  if(market==="pass_completions")return `${shown} completion${n===1?"":"s"}`;
   if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;
   if(market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
   return shown;
@@ -57,7 +56,6 @@ function formatActual(value:number,market:NflMarketKey){
 function formatMargin(value:number,market:NflMarketKey){
   const n=Number(value); const shown=Number.isInteger(n)?String(n):n.toFixed(1);
   if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${shown} yard${n===1?"":"s"}`;
-  if(market==="pass_completions")return `${shown} completion${n===1?"":"s"}`;
   if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;
   if(market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
   return shown;

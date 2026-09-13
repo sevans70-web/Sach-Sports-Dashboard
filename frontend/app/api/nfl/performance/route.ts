@@ -6,9 +6,9 @@ import {nflDay,getNflPredictions,saveGradedNflPredictions,type SavedNflPredictio
 export const dynamic="force-dynamic"; export const revalidate=0;
 const ATHLETE_BASE="https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes";
 const KEYS:Partial<Record<NflMarketKey,string[]>>={
- passing_yards:["passingyards","passyards","yds"],pass_completions:["completions","passingcompletions","cmp"],
+ passing_yards:["passingyards","passyards","yds"],passing_tds:["passingtouchdowns","passingtds","passtds","td"],
  rushing_yards:["rushingyards","rushyards","yds"],receiving_yards:["receivingyards","receptionyards","recyards","yds"],
- receptions:["receptions","rec"],anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"]
+ receptions:["receptions","rec"],passing_rushing_yards:["passingyards","passyards","yds"],rushing_receiving_yards:["rushingyards","rushyards","yds"],anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"]
 };
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 async function log(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0",Accept:"application/json, text/plain, */*"}});return r.ok?r.json():null}
@@ -76,7 +76,7 @@ export async function GET(req:NextRequest){
      }
      if(changed)await saveGradedNflPredictions(market,day,got.predictions,got.id);
    }
-   const groupMarkets=group==="QB"?new Set(["passing_yards","pass_completions"]):new Set(["rushing_yards","receiving_yards","receptions","anytime_td","first_td"]);
+   const groupMarkets=group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","passing_rushing_yards"]):new Set<NflMarketKey>(["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
    const scoped=marketParam?all:all.filter(p=>groupMarkets.has(p.market));
    const settled=scoped.filter(p=>p.status==="hit"||p.status==="miss"),hits=scoped.filter(p=>p.status==="hit").length,pending=scoped.filter(p=>p.status==="pending").length;
    return NextResponse.json({success:true,connected,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
