@@ -114,6 +114,10 @@ export type SoccerDashboardResponse = {
     appearancesParsed: number;
     playersWithHistory: number;
     rankingRowsWithHistory: number;
+    corePlayersRequested?: number;
+    corePlayersMatched?: number;
+    corePlayersWithHistory?: number;
+    coreAppearancesParsed?: number;
   };
   errors?: string[];
 };

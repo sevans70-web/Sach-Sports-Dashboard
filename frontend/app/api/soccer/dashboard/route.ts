@@ -6,6 +6,7 @@ import {
   findPlayerHistory,
   findRosterPlayer,
   scheduleEventRows,
+  extractStatisticsLogAppearances,
   type SoccerAppearance,
   type SoccerRosterPlayer,
 } from "@/lib/soccer-history";
@@ -24,6 +25,7 @@ export const dynamic = "force-dynamic";
 const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer";
 const OWLS_PROPS_URL = "https://api.owlsinsight.com/api/v1/soccer/props";
 const ESPN_CDN_GAME = "https://cdn.espn.com/core/soccer/game";
+const ESPN_CORE_BASE = "https://sports.core.api.espn.com/v2/sports/soccer/leagues";
 
 const ALLOWED = new Set([
   "eng.1",
@@ -330,6 +332,63 @@ export async function GET(req: NextRequest) {
 
     const appearancesByPlayer = buildHistoryIndex(appearances);
 
+    // SECOND HISTORY SOURCE:
+    // ESPN's Soccer site summary is inconsistent for player-level stats.
+    // For every current Owls prop player that has a roster match but still no history,
+    // fetch the athlete's Core API statisticslog directly by ESPN athlete ID.
+    const owlsCurrentPlayers = new Map<string, { name: string; team: string }>();
+    for (const prop of owls.rows) {
+      const key = normalizeName(prop.playerName);
+      if (key && !owlsCurrentPlayers.has(key)) {
+        owlsCurrentPlayers.set(key, {
+          name: prop.playerName,
+          team: prop.team || "",
+        });
+      }
+    }
+
+    const coreHistoryRows: SoccerAppearance[] = [];
+    let corePlayersRequested = 0;
+    let corePlayersMatched = 0;
+    let corePlayersWithHistory = 0;
+
+    await Promise.all(
+      [...owlsCurrentPlayers.values()].map(async ({ name, team }) => {
+        const existing = findPlayerHistory(name, appearancesByPlayer, team);
+        if (existing.length) return;
+
+        const rosterMatch = findRosterPlayer(name, rosterPlayers, team);
+        if (!rosterMatch?.playerId) return;
+
+        corePlayersMatched += 1;
+        corePlayersRequested += 1;
+
+        try {
+          const payload = await fetchEspnJson(
+            `${ESPN_CORE_BASE}/${league}/athletes/${rosterMatch.playerId}/statisticslog?limit=25`,
+          );
+
+          const rows = extractStatisticsLogAppearances(payload, rosterMatch);
+          if (rows.length) {
+            corePlayersWithHistory += 1;
+            coreHistoryRows.push(...rows);
+          }
+        } catch (error: any) {
+          errors.push(
+            `core statisticslog ${rosterMatch.playerId}: ${error?.message || error}`,
+          );
+        }
+      }),
+    );
+
+    for (const row of coreHistoryRows) {
+      const key = normalizeName(row.playerName);
+      if (!key) continue;
+      if (!appearancesByPlayer.has(key)) appearancesByPlayer.set(key, []);
+      appearancesByPlayer.get(key)!.push(row);
+    }
+
+
     // Only use props that can be tied to a game on the selected ESPN league slate.
     const propGamePairs: { prop: OwlsSoccerProp; game: any }[] = [];
     for (const prop of owls.rows) {
@@ -568,6 +627,10 @@ export async function GET(req: NextRequest) {
             sum + (rankings[metric] || []).filter((row: any) => row.games > 0).length,
           0,
         ),
+        corePlayersRequested,
+        corePlayersMatched,
+        corePlayersWithHistory,
+        coreAppearancesParsed: coreHistoryRows.length,
       },
       errors,
     });

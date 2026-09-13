@@ -529,3 +529,211 @@ export function scheduleEventRows(payload: any) {
     })
     .filter((event: any) => event.gameId);
 }
+
+
+function numericStat(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  const parsed = Number(
+    String(value ?? "")
+      .split(":")[0]
+      .replace("%", "")
+      .replace(/[^\d.+-]/g, ""),
+  );
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function extractCoreStatName(entry: any) {
+  return String(
+    entry?.name ||
+      entry?.displayName ||
+      entry?.shortDisplayName ||
+      entry?.abbreviation ||
+      entry?.label ||
+      entry?.type ||
+      "",
+  );
+}
+
+function applyCoreStat(target: SoccerAppearance, rawName: unknown, rawValue: unknown) {
+  const key = statKey(rawName);
+  if (!key) return false;
+  target[key] = numericStat(rawValue);
+  return true;
+}
+
+function collectCoreStats(node: any, target: SoccerAppearance, depth = 0): number {
+  if (node == null || depth > 10) return 0;
+
+  if (Array.isArray(node)) {
+    return node.reduce(
+      (sum, item) => sum + collectCoreStats(item, target, depth + 1),
+      0,
+    );
+  }
+
+  if (typeof node !== "object") return 0;
+
+  let found = 0;
+  const obj = node as Record<string, any>;
+
+  const name = extractCoreStatName(obj);
+  if (name) {
+    for (const valueKey of [
+      "value",
+      "displayValue",
+      "statValue",
+      "total",
+      "amount",
+    ]) {
+      if (obj[valueKey] !== undefined && applyCoreStat(target, name, obj[valueKey])) {
+        found += 1;
+        break;
+      }
+    }
+  }
+
+  // Common category shape:
+  // { names:[...], displayNames:[...], statistics:[...]/totals:[...] }
+  const labels =
+    obj.names ||
+    obj.labels ||
+    obj.displayNames ||
+    obj.abbreviations ||
+    [];
+  const values =
+    obj.statistics ||
+    obj.totals ||
+    obj.values ||
+    obj.stats ||
+    [];
+
+  if (Array.isArray(labels) && Array.isArray(values) && labels.length) {
+    labels.forEach((label: unknown, index: number) => {
+      const raw = values[index];
+      const value =
+        raw && typeof raw === "object"
+          ? raw.value ?? raw.displayValue ?? raw.statValue ?? raw.total
+          : raw;
+      if (applyCoreStat(target, label, value)) found += 1;
+    });
+  }
+
+  for (const value of Object.values(obj)) {
+    found += collectCoreStats(value, target, depth + 1);
+  }
+
+  return found;
+}
+
+function coreEventRefToId(node: any) {
+  const refs: string[] = [];
+
+  const walk = (value: any, depth = 0) => {
+    if (value == null || depth > 8) return;
+    if (typeof value === "string") {
+      if (/events\/\d+/.test(value)) refs.push(value);
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item) => walk(item, depth + 1));
+      return;
+    }
+    if (typeof value === "object") {
+      Object.values(value).forEach((item) => walk(item, depth + 1));
+    }
+  };
+
+  walk(node);
+  for (const ref of refs) {
+    const match = ref.match(/events\/(\d+)/);
+    if (match) return match[1];
+  }
+  return "";
+}
+
+function coreDate(node: any) {
+  const candidates = [
+    node?.date,
+    node?.event?.date,
+    node?.eventDate,
+    node?.competition?.date,
+    node?.timestamp,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate) return candidate;
+  }
+  return "";
+}
+
+export function extractStatisticsLogAppearances(
+  payload: any,
+  player: SoccerRosterPlayer,
+) {
+  const root = payload?.items || payload?.entries || payload?.events || payload;
+  const candidates: any[] = [];
+
+  if (Array.isArray(root)) {
+    candidates.push(...root);
+  } else if (root && typeof root === "object") {
+    for (const key of ["items", "entries", "events", "statistics", "splits"]) {
+      if (Array.isArray(root[key])) candidates.push(...root[key]);
+    }
+  }
+
+  // If the endpoint returns a deeply nested object instead of a top-level array,
+  // locate event-like nodes recursively.
+  if (!candidates.length) {
+    const walk = (node: any, depth = 0) => {
+      if (!node || depth > 8) return;
+      if (Array.isArray(node)) {
+        node.forEach((item) => walk(item, depth + 1));
+        return;
+      }
+      if (typeof node !== "object") return;
+
+      const eventId = coreEventRefToId(node);
+      if (eventId) candidates.push(node);
+
+      Object.values(node).forEach((value) => walk(value, depth + 1));
+    };
+    walk(root);
+  }
+
+  const output: SoccerAppearance[] = [];
+  const seen = new Set<string>();
+
+  for (const item of candidates) {
+    const eventId = coreEventRefToId(item) || String(item?.event?.id || item?.eventId || item?.id || "");
+    if (!eventId) continue;
+
+    const row: SoccerAppearance = {
+      gameId: eventId,
+      gameDate: coreDate(item),
+      playerId: player.playerId,
+      playerName: player.playerName,
+      photoUrl: player.photoUrl,
+      teamId: player.teamId,
+      team: player.team,
+      position: player.position,
+      starter: Boolean(item?.starter ?? item?.isStarter ?? item?.started),
+      minutes: 0,
+      shots: 0,
+      shots_on_target: 0,
+      goals: 0,
+      assists: 0,
+      saves: 0,
+    };
+
+    const found = collectCoreStats(item, row);
+    if (!found) continue;
+
+    const key = `${row.gameId}|${row.playerId}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push(row);
+  }
+
+  return output
+    .sort((a, b) => String(a.gameDate).localeCompare(String(b.gameDate)))
+    .slice(-10);
+}
