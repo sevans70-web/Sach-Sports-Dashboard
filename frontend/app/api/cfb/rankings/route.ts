@@ -125,10 +125,19 @@ function history(payload:any,market:CfbMarketKey){
  }
  return vals;
 }
-function projection(vals:number[]){const xs=vals.slice(-10);if(!xs.length)return null;let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});return Math.round(sum/w*10)/10}
-async function model(id:string,market:CfbMarketKey){
- if(!id||market==="first_td")return {projection:null,games:0};
- const blocks=await Promise.all([2025,2026].map(async y=>{try{return history(await fetchLog(id,y),market)}catch{return []}}));const vals=blocks.flat();return {projection:projection(vals),games:vals.length}
+function projection(values:number[],market:CfbMarketKey){
+ if(!values.length)return null;
+ const recent=values.slice(0,10);
+ if(market==="anytime_td"||market==="first_td"){
+   return Math.round((recent.filter(v=>v>0).length/recent.length)*1000)/10;
+ }
+ const sorted=[...recent].sort((a,b)=>a-b);
+ const lo=sorted[Math.floor((sorted.length-1)*.10)];
+ const hi=sorted[Math.ceil((sorted.length-1)*.90)];
+ const clean=recent.map(v=>Math.max(lo,Math.min(hi,v)));
+ const weights=clean.map((_,i)=>clean.length-i);
+ const den=weights.reduce((a,b)=>a+b,0);
+ return Math.round((clean.reduce((s,v,i)=>s+v*weights[i],0)/den)*10)/10;
 }
 function teamLogo(profile:any,row:any,schedule:any[]){
  const team=cleanName(profile.teamName||row.teamName||"");

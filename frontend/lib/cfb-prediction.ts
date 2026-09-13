@@ -1,15 +1,33 @@
 import type {CfbMarketKey} from "@/lib/cfb";
-export function cfbPredictionProbability(market:CfbMarketKey,projection:number|null,line:number|null,marketProb:number|null):number|null{
-  if(projection==null||line==null)return null;
-  if(market==="first_td"||market==="anytime_td")return marketProb??50;
-  const scale=Math.max(Math.abs(line)*0.16,market==="pass_completions"||market==="receptions"?2.5:12);
-  const edge=(projection-line)/scale;
-  const model=100/(1+Math.exp(-edge));
-  const blended=model*0.7+(marketProb??50)*0.3;
-  return Math.round(Math.max(1,Math.min(99,blended))*10)/10;
+
+const clamp=(n:number,lo:number,hi:number)=>Math.max(lo,Math.min(hi,n));
+const logistic=(z:number)=>1/(1+Math.exp(-z));
+
+export function cfbPredictionProbability(
+ market:CfbMarketKey,projection:number|null,line:number|null,marketProb:number|null
+):number|null{
+ if(projection==null||line==null||!Number.isFinite(projection)||!Number.isFinite(line))return null;
+ const marketP=marketProb!=null&&Number.isFinite(marketProb)?clamp(marketProb/100,.05,.95):.5;
+ let histP=.5;
+ if(market==="anytime_td"||market==="first_td"){
+   histP=clamp(projection/100,.03,.97);
+ }else if(market==="passing_tds"||market==="interceptions"||market==="sacks"){
+   const scale=Math.max(.85,Math.sqrt(Math.max(1,projection))*1.05);
+   histP=logistic((projection-line)/scale);
+ }else if(market==="pass_completions"||market==="receptions"||market==="tackles"||market==="tackles_assists"){
+   const scale=Math.max(2.75,Math.abs(line)*.20);
+   histP=logistic((projection-line)/scale);
+ }else{
+   const scale=Math.max(18,Math.abs(line)*.28);
+   histP=logistic((projection-line)/scale);
+ }
+ const blended=clamp(histP*.75+marketP*.25,.05,.95);
+ return Math.round(blended*1000)/10;
 }
+
 export function cfbGiScore(prob:number,books:number,sample:number){
-  const depth=Math.min(10,Math.max(0,books)*2);
-  const history=Math.min(8,Math.max(0,sample)*0.8);
-  return Math.round(Math.max(1,Math.min(99,prob*0.82+depth+history))*10)/10;
+ const p=clamp(Number.isFinite(prob)?prob:50,1,99);
+ const depth=Math.min(8,Math.max(0,books)*1.5);
+ const history=Math.min(10,Math.max(0,sample)*.6);
+ return Math.round(clamp(p*.82+depth+history,1,99)*10)/10;
 }
