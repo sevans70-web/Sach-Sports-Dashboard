@@ -58,6 +58,10 @@ export type SoccerRanking = {
   giScore: number;
   availability: string;
   why: string;
+  sportsbook?: string;
+  marketLine?: number;
+  overOdds?: number | null;
+  underOdds?: number | null;
 };
 
 export type SoccerMatchupIntel = {
@@ -96,5 +100,12 @@ export type SoccerDashboardResponse = {
   rankings: Record<SoccerMarketKey, SoccerRanking[]>;
   matchupIntelligence: SoccerMatchupIntel[];
   playersTracked: number;
+  propSource?: string;
+  propCounts?: Record<string, number>;
+  owls?: {
+    received: number;
+    matchedToSelectedLeagueSlate: number;
+    meta?: unknown;
+  };
   errors?: string[];
 };

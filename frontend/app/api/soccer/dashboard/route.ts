@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  fairOverProbability,
+  normalizeName,
+  parseOwlsSoccerProps,
+  type OwlsSoccerProp,
+  type SoccerPropMetric,
+} from "@/lib/owls-soccer";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer";
+const OWLS_PROPS_URL = "https://api.owlsinsight.com/api/v1/soccer/props";
+
 const ALLOWED = new Set([
   "eng.1",
   "usa.1",
@@ -14,15 +23,7 @@ const ALLOWED = new Set([
   "fra.1",
 ]);
 
-type Metric = "shots_on_target" | "shots" | "saves" | "goals" | "assists";
-
-const TARGETS: Record<Metric, number> = {
-  shots_on_target: 0.5,
-  shots: 1.5,
-  saves: 2.5,
-  goals: 0.5,
-  assists: 0.5,
-};
+type Metric = SoccerPropMetric;
 
 const PROP_LABELS: Record<Metric, string> = {
   shots_on_target: "Shots on Target",
@@ -39,14 +40,6 @@ function ymd(date: Date) {
 function num(value: unknown) {
   const parsed = Number(String(value ?? "").split(":")[0].replace("%", ""));
   return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function keyName(value: unknown) {
-  return String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/gi, "")
-    .toLowerCase();
 }
 
 function statKey(label: unknown): Metric | "minutes" | null {
@@ -101,7 +94,7 @@ function expectedMinutes(avg: number, startRate: number) {
   return Math.min(90, Math.max(avg, 35));
 }
 
-async function fetchJson(url: string) {
+async function fetchEspnJson(url: string) {
   const response = await fetch(url, {
     headers: { "User-Agent": "SachSportsDashboard/1.0" },
     next: { revalidate: 900 },
@@ -110,14 +103,98 @@ async function fetchJson(url: string) {
   return response.json();
 }
 
+async function fetchOwlsProps(errors: string[]) {
+  const apiKey = process.env.OWLS_INSIGHT_API_KEY;
+  if (!apiKey) {
+    errors.push("OWLS_INSIGHT_API_KEY is missing from Railway.");
+    return { rows: [] as OwlsSoccerProp[], meta: null };
+  }
+
+  try {
+    const response = await fetch(OWLS_PROPS_URL, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const text = await response.text();
+    let payload: any;
+
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      errors.push(`Owls soccer props returned non-JSON (${response.status}).`);
+      return { rows: [] as OwlsSoccerProp[], meta: null };
+    }
+
+    if (!response.ok) {
+      errors.push(
+        `Owls soccer props ${response.status}: ${payload?.error || payload?.message || response.statusText}`,
+      );
+      return { rows: [] as OwlsSoccerProp[], meta: payload?.meta ?? null };
+    }
+
+    return {
+      rows: parseOwlsSoccerProps(payload),
+      meta: payload?.meta ?? null,
+    };
+  } catch (error: any) {
+    errors.push(`Owls soccer props: ${error?.message || error}`);
+    return { rows: [] as OwlsSoccerProp[], meta: null };
+  }
+}
+
 function popularityScore(home: string, away: string) {
   const major =
     /Arsenal|Chelsea|Liverpool|Manchester City|Manchester United|Tottenham|Barcelona|Real Madrid|Atletico|Bayern|Dortmund|PSG|Marseille|Inter|Milan|Juventus|Napoli/i;
   return (major.test(home) ? 1 : 0) + (major.test(away) ? 1 : 0);
 }
 
+function eventMatchesGame(prop: OwlsSoccerProp, game: any) {
+  const event = normalizeName(prop.eventText);
+  const team = normalizeName(prop.team);
+  const home = normalizeName(game.homeTeam);
+  const away = normalizeName(game.awayTeam);
+
+  if (!event && !team) return false;
+
+  const eventHasHome = home.length >= 5 && event.includes(home);
+  const eventHasAway = away.length >= 5 && event.includes(away);
+  const teamMatches = team && (team === home || team === away || home.includes(team) || away.includes(team));
+
+  return Boolean((eventHasHome && eventHasAway) || teamMatches);
+}
+
+function pickConsensusLine(rows: OwlsSoccerProp[]) {
+  const lineGroups = new Map<string, OwlsSoccerProp[]>();
+
+  for (const row of rows) {
+    const key = String(row.line);
+    if (!lineGroups.has(key)) lineGroups.set(key, []);
+    lineGroups.get(key)!.push(row);
+  }
+
+  const sorted = [...lineGroups.entries()].sort(
+    (a, b) => b[1].length - a[1].length || Number(a[0]) - Number(b[0]),
+  );
+
+  return sorted[0]?.[1] || rows;
+}
+
+function averageProbability(rows: OwlsSoccerProp[]) {
+  const values = rows
+    .map((row) => fairOverProbability(row.overOdds, row.underOdds))
+    .filter((value): value is number => value !== null && Number.isFinite(value));
+
+  if (!values.length) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
 export async function GET(req: NextRequest) {
   const league = req.nextUrl.searchParams.get("league") || "eng.1";
+
   if (!ALLOWED.has(league)) {
     return NextResponse.json({ success: false, error: "Unsupported league" }, { status: 400 });
   }
@@ -128,9 +205,12 @@ export async function GET(req: NextRequest) {
   const errors: string[] = [];
 
   try {
-    const board = await fetchJson(
-      `${ESPN_BASE}/${league}/scoreboard?dates=${ymd(start)}-${ymd(end)}&limit=500`,
-    );
+    const [board, owls] = await Promise.all([
+      fetchEspnJson(
+        `${ESPN_BASE}/${league}/scoreboard?dates=${ymd(start)}-${ymd(end)}&limit=500`,
+      ),
+      fetchOwlsProps(errors),
+    ]);
 
     const games = (board?.events || [])
       .map((event: any) => {
@@ -139,6 +219,7 @@ export async function GET(req: NextRequest) {
         const home = teams.find((team: any) => team.homeAway === "home") || {};
         const away = teams.find((team: any) => team.homeAway === "away") || {};
         const type = event?.status?.type || {};
+
         return {
           gameId: String(event?.id || ""),
           kickoff: String(event?.date || ""),
@@ -159,13 +240,14 @@ export async function GET(req: NextRequest) {
       .sort((a: any, b: any) => String(a.kickoff).localeCompare(String(b.kickoff)));
 
     const completed = games.filter((game: any) => game.completed).slice(-48);
+    const upcoming = games.filter((game: any) => !game.completed);
 
     const summaries = await Promise.all(
       completed.map(async (game: any) => {
         try {
           return {
             game,
-            data: await fetchJson(`${ESPN_BASE}/${league}/summary?event=${game.gameId}`),
+            data: await fetchEspnJson(`${ESPN_BASE}/${league}/summary?event=${game.gameId}`),
           };
         } catch (error: any) {
           errors.push(`summary ${game.gameId}: ${error?.message || error}`);
@@ -178,21 +260,28 @@ export async function GET(req: NextRequest) {
 
     for (const item of summaries) {
       if (!item) continue;
+
       for (const teamBlock of item.data?.boxscore?.players || []) {
         const team = teamBlock?.team || {};
         const teamId = String(team?.id || "");
         const teamName = String(team?.displayName || team?.shortDisplayName || "");
+
         for (const group of teamBlock?.statistics || []) {
           const labels = group?.labels || group?.names || group?.keys || [];
+
           for (const athleteRow of group?.athletes || []) {
             const athlete = athleteRow?.athlete || {};
             const values = athleteRow?.stats || [];
+
             const row: Record<string, any> = {
               gameId: item.game.gameId,
               gameDate: item.game.kickoff,
               playerId: String(athlete?.id || ""),
               playerName: String(
-                athlete?.displayName || athlete?.shortName || athlete?.fullName || "Unknown",
+                athlete?.displayName ||
+                  athlete?.shortName ||
+                  athlete?.fullName ||
+                  "Unknown",
               ),
               photoUrl: String(athlete?.headshot?.href || ""),
               teamId,
@@ -208,6 +297,7 @@ export async function GET(req: NextRequest) {
             };
 
             let found = false;
+
             labels.forEach((label: unknown, index: number) => {
               const key = statKey(label);
               if (!key) return;
@@ -215,7 +305,6 @@ export async function GET(req: NextRequest) {
               found = true;
             });
 
-            // Some soccer feeds expose named stat objects instead of label arrays.
             if (!found && athleteRow?.statistics && typeof athleteRow.statistics === "object") {
               for (const [rawKey, rawValue] of Object.entries(athleteRow.statistics)) {
                 const mapped = statKey(rawKey);
@@ -231,112 +320,144 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const upcoming = games.filter((game: any) => !game.completed);
-    const teamContext = new Map<string, any>();
-
-    for (const game of upcoming) {
-      if (game.homeTeamId) {
-        teamContext.set(game.homeTeamId, {
-          opponent: game.awayTeam,
-          homeAway: "HOME",
-          matchup: `${game.awayTeam} @ ${game.homeTeam}`,
-          kickoff: game.kickoff,
-          gameId: game.gameId,
-        });
-      }
-      if (game.awayTeamId) {
-        teamContext.set(game.awayTeamId, {
-          opponent: game.homeTeam,
-          homeAway: "AWAY",
-          matchup: `${game.awayTeam} @ ${game.homeTeam}`,
-          kickoff: game.kickoff,
-          gameId: game.gameId,
-        });
-      }
+    const appearancesByPlayer = new Map<string, any[]>();
+    for (const appearance of appearances) {
+      const key = normalizeName(appearance.playerName);
+      if (!key) continue;
+      if (!appearancesByPlayer.has(key)) appearancesByPlayer.set(key, []);
+      appearancesByPlayer.get(key)!.push(appearance);
     }
 
-    const metrics: Metric[] = ["shots_on_target", "shots", "saves", "goals", "assists"];
+    // Only use props that can be tied to a game on the selected ESPN league slate.
+    const propGamePairs: { prop: OwlsSoccerProp; game: any }[] = [];
+    for (const prop of owls.rows) {
+      const game = upcoming.find((candidate: any) => eventMatchesGame(prop, candidate));
+      if (game) propGamePairs.push({ prop, game });
+    }
+
+    const metrics: Metric[] = [
+      "shots_on_target",
+      "shots",
+      "saves",
+      "goals",
+      "assists",
+    ];
+
     const rankings: Record<string, any[]> = {};
     const allPlayers = new Set<string>();
 
     for (const metric of metrics) {
-      const byPlayer = new Map<string, any[]>();
+      const marketRows = propGamePairs.filter(({ prop }) => prop.metric === metric);
+      const byPlayer = new Map<string, { prop: OwlsSoccerProp; game: any }[]>();
 
-      for (const row of appearances) {
-        if (!row.teamId || !teamContext.has(row.teamId)) continue;
-        if (metric === "saves" && row.position !== "GK" && Number(row.saves) <= 0) continue;
-        if (metric !== "saves" && row.position === "GK") continue;
-
-        const playerKey = `${row.teamId}:${keyName(row.playerName)}`;
-        if (!byPlayer.has(playerKey)) byPlayer.set(playerKey, []);
-        byPlayer.get(playerKey)!.push(row);
+      for (const pair of marketRows) {
+        const key = normalizeName(pair.prop.playerName);
+        if (!key) continue;
+        if (!byPlayer.has(key)) byPlayer.set(key, []);
+        byPlayer.get(key)!.push(pair);
       }
 
       const rows: any[] = [];
 
-      for (const appearancesForPlayer of byPlayer.values()) {
-        appearancesForPlayer.sort((a, b) =>
-          String(a.gameDate).localeCompare(String(b.gameDate)),
-        );
+      for (const [playerKey, pairs] of byPlayer.entries()) {
+        const consensus = pickConsensusLine(pairs.map((pair) => pair.prop));
+        const selected = consensus[0] || pairs[0]?.prop;
+        const pair = pairs.find((item) => item.prop === selected) || pairs[0];
 
-        const recent = appearancesForPlayer.slice(-5);
-        const last = recent[recent.length - 1];
-        if (!last) continue;
+        if (!selected || !pair) continue;
+
+        const recentAll = (appearancesByPlayer.get(playerKey) || [])
+          .sort((a, b) => String(a.gameDate).localeCompare(String(b.gameDate)))
+          .slice(-5);
+
+        const recent =
+          metric === "saves"
+            ? recentAll.filter((row) => row.position === "GK" || Number(row.saves) > 0)
+            : recentAll.filter((row) => row.position !== "GK");
 
         const gamesN = recent.length;
-        const avg = recent.reduce((sum, row) => sum + Number(row[metric] || 0), 0) / gamesN;
+        const avg =
+          gamesN > 0
+            ? recent.reduce((sum, row) => sum + Number(row[metric] || 0), 0) / gamesN
+            : 0;
+
         const avgMinutes =
-          recent.reduce((sum, row) => sum + Number(row.minutes || 0), 0) / gamesN;
+          gamesN > 0
+            ? recent.reduce((sum, row) => sum + Number(row.minutes || 0), 0) / gamesN
+            : 0;
+
         const starts = recent.filter((row) => row.starter).length;
-        const startRate = starts / gamesN;
-        const per90 = (avg * 90) / Math.max(avgMinutes, 20);
-        const expected = expectedMinutes(avgMinutes, startRate);
-        const projection = Math.max(0, 0.58 * avg + 0.42 * per90 * (expected / 90));
-        const target = TARGETS[metric];
-        const probability = poissonOver(Math.max(projection, 0.001), target);
-        const sampleScore = Math.min(gamesN / 5, 1) * 10;
-        const minutesScore = Math.min(avgMinutes / 90, 1) * 10;
-        const startScore = Math.min(startRate, 1) * 8;
+        const startRate = gamesN > 0 ? starts / gamesN : 0;
+        const per90 = gamesN > 0 ? (avg * 90) / Math.max(avgMinutes, 20) : 0;
+        const expected = gamesN > 0 ? expectedMinutes(avgMinutes, startRate) : 0;
+        const statProjection =
+          gamesN > 0
+            ? Math.max(0, 0.58 * avg + 0.42 * per90 * (expected / 90))
+            : selected.line;
+
+        const marketProbability = averageProbability(consensus);
+        const statProbability =
+          gamesN > 0
+            ? poissonOver(Math.max(statProjection, 0.001), selected.line)
+            : null;
+
+        const probability =
+          marketProbability !== null && statProbability !== null
+            ? marketProbability * 0.6 + statProbability * 0.4
+            : marketProbability ?? statProbability ?? 50;
+
+        const sampleScore = Math.min(gamesN / 5, 1) * 8;
+        const bookScore = Math.min(new Set(pairs.map((x) => x.prop.book)).size / 4, 1) * 8;
+        const starterScore = gamesN > 0 ? Math.min(startRate, 1) * 6 : 0;
+
         const giScore = Math.max(
           0,
-          Math.min(100, probability * 0.72 + sampleScore + minutesScore + startScore),
+          Math.min(100, probability * 0.78 + sampleScore + bookScore + starterScore),
         );
-        const context = teamContext.get(last.teamId);
 
-        if (metric !== "saves" && avg <= 0 && projection < 0.1) continue;
-        if (metric === "saves" && avg <= 0) continue;
+        const last = recent[recent.length - 1];
+        const books = [...new Set(pairs.map((x) => x.prop.book).filter(Boolean))];
 
-        allPlayers.add(last.playerId || `${last.teamId}:${last.playerName}`);
+        allPlayers.add(playerKey);
 
         rows.push({
-          playerId: last.playerId,
-          playerName: last.playerName,
-          photoUrl: last.photoUrl,
-          teamId: last.teamId,
-          team: last.team,
-          position: last.position,
-          matchup: context?.matchup || "",
-          opponent: context?.opponent || "",
-          homeAway: context?.homeAway || "",
-          kickoff: context?.kickoff || "",
-          gameId: context?.gameId || "",
+          playerId: last?.playerId || `owls:${playerKey}`,
+          playerName: selected.playerName,
+          photoUrl: last?.photoUrl || "",
+          teamId: last?.teamId || "",
+          team: selected.team || last?.team || "",
+          position: last?.position || (metric === "saves" ? "GK" : ""),
+          matchup: `${pair.game.awayTeam} @ ${pair.game.homeTeam}`,
+          opponent: "",
+          homeAway: "",
+          kickoff: pair.game.kickoff,
+          gameId: pair.game.gameId,
           games: gamesN,
           avgMetric: Number(avg.toFixed(2)),
-          lastMetric: Number(last[metric] || 0),
+          lastMetric: Number(last?.[metric] || 0),
           avgMinutes: Number(avgMinutes.toFixed(1)),
           expectedMinutes: Number(expected.toFixed(1)),
           startRate: Number(startRate.toFixed(2)),
-          projection: Number(projection.toFixed(2)),
-          modelTarget: target,
+          projection: Number(statProjection.toFixed(2)),
+          modelTarget: selected.line,
           modelProbability: Number(probability.toFixed(1)),
           giScore: Number(giScore.toFixed(1)),
           availability:
-            startRate >= 0.8
-              ? "Likely starter"
-              : startRate >= 0.5
-                ? "Expected contributor"
-                : "Rotation watch",
-          why: `Last ${gamesN}: ${avg.toFixed(2)}/match · ${avgMinutes.toFixed(0)} avg min · ${(startRate * 100).toFixed(0)}% starts`,
+            gamesN === 0
+              ? "Sportsbook-backed prop"
+              : startRate >= 0.8
+                ? "Likely starter"
+                : startRate >= 0.5
+                  ? "Expected contributor"
+                  : "Lineup watch",
+          sportsbook: books.join(", "),
+          marketLine: selected.line,
+          overOdds: selected.overOdds,
+          underOdds: selected.underOdds,
+          why:
+            gamesN > 0
+              ? `Owls line ${selected.line} · ${books.length} book${books.length === 1 ? "" : "s"} · Last ${gamesN}: ${avg.toFixed(2)}/match`
+              : `Owls line ${selected.line} · ${books.length} sportsbook${books.length === 1 ? "" : "s"} posting this prop`,
         });
       }
 
@@ -345,13 +466,12 @@ export async function GET(req: NextRequest) {
           (a, b) =>
             b.giScore - a.giScore ||
             b.modelProbability - a.modelProbability ||
-            b.projection - a.projection,
+            b.games - a.games,
         )
         .slice(0, 25)
         .map((row, index) => ({ ...row, rank: index + 1 }));
     }
 
-    // Build real Matchup Intelligence from the ranking engine.
     const allRanked = metrics.flatMap((metric) =>
       (rankings[metric] || []).map((row: any) => ({ ...row, metric })),
     );
@@ -361,23 +481,28 @@ export async function GET(req: NextRequest) {
         const gamePlayers = allRanked.filter((row: any) => row.gameId === game.gameId);
         const sorted = [...gamePlayers].sort((a, b) => b.giScore - a.giScore);
         const best = sorted[0];
-        const rankedPlayers = new Set(sorted.map((row: any) => row.playerId || row.playerName)).size;
+        const rankedPlayers = new Set(
+          sorted.map((row: any) => row.playerId || row.playerName),
+        ).size;
         const bestProp = best ? PROP_LABELS[best.metric as Metric] : "Matchup watch";
-        const playerNames = [...new Set(sorted.slice(0, 4).map((row: any) => row.playerName))];
+        const playerNames = [
+          ...new Set(sorted.slice(0, 4).map((row: any) => row.playerName)),
+        ];
 
         let reason = "";
+
         if (best) {
           const second = sorted[1];
           reason =
-            `${rankedPlayers} ranked player${rankedPlayers === 1 ? "" : "s"} are concentrated in this game. ` +
-            `${best.playerName} carries the strongest current signal at GI ${Number(best.giScore).toFixed(1)} in ${bestProp}` +
+            `${rankedPlayers} sportsbook-backed player prop${rankedPlayers === 1 ? "" : "s"} are active in this game. ` +
+            `${best.playerName} carries the strongest current Soccer GI signal at ${Number(best.giScore).toFixed(1)} in ${bestProp}` +
             (second ? `, with ${second.playerName} also grading strongly.` : ".");
         } else if (popularityScore(game.homeTeam, game.awayTeam) > 0) {
           reason =
-            "This is a high-interest fixture featuring a major club. The engine will add player-prop angles as recent eligible player data is confirmed.";
+            "This is a high-interest fixture featuring a major club. No supported Owls player prop has been tied to this matchup yet.";
         } else {
           reason =
-            "This fixture is on the active slate. It will move up the intelligence list when the engine identifies stronger player-prop signals or lineup changes.";
+            "This fixture is on the active slate. It will move up when Owls posts a supported player prop or stronger lineup intelligence becomes available.";
         }
 
         return {
@@ -399,6 +524,11 @@ export async function GET(req: NextRequest) {
       .slice(0, 3)
       .map(({ sortScore, ...item }: any) => item);
 
+    const propCounts = metrics.reduce<Record<string, number>>((acc, metric) => {
+      acc[metric] = rankings[metric]?.length || 0;
+      return acc;
+    }, {});
+
     return NextResponse.json({
       success: true,
       league,
@@ -408,6 +538,13 @@ export async function GET(req: NextRequest) {
       rankings,
       matchupIntelligence,
       playersTracked: allPlayers.size,
+      propSource: "Owls Insight",
+      propCounts,
+      owls: {
+        received: owls.rows.length,
+        matchedToSelectedLeagueSlate: propGamePairs.length,
+        meta: owls.meta,
+      },
       errors,
     });
   } catch (error: any) {
@@ -426,6 +563,14 @@ export async function GET(req: NextRequest) {
       },
       matchupIntelligence: [],
       playersTracked: 0,
+      propSource: "Owls Insight",
+      propCounts: {
+        shots_on_target: 0,
+        shots: 0,
+        saves: 0,
+        goals: 0,
+        assists: 0,
+      },
       errors: [String(error?.message || error)],
     });
   }
