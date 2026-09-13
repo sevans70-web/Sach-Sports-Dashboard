@@ -2,6 +2,7 @@ import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName,safeNumber} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbTeamRoster} from "@/lib/cfb-server";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
+import {saveCfbPregamePredictions,getCfbResultMap} from "@/lib/cfb-history";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -149,6 +150,9 @@ export async function GET(req:NextRequest){
    return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime,giScore:cfbGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"}.`,marketBacked:true};
   }));
   rows.sort((a,b)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
-  return NextResponse.json({success:true,source:"Owls Insight",market,rows:ranked,sportsbookOnly:true,validRankingCount:ranked.length,updatedAt:new Date().toISOString()});
+  await saveCfbPregamePredictions(market,ranked,schedule);
+  const results=await getCfbResultMap(market,today);
+  const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|${r.matchup}`);return p?{...r,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
+  return NextResponse.json({success:true,source:"Owls Insight",market,rows:withResults,sportsbookOnly:true,validRankingCount:withResults.length,updatedAt:new Date().toISOString()});
  }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"CFB rankings unavailable"},{status:500})}
 }

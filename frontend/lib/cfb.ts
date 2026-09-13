@@ -34,6 +34,9 @@ export type CfbRankingRow = {
   season?:number|null;
   summary:string;
   marketBacked:boolean;
+  resultStatus?:"pending"|"hit"|"miss"|"push"|"void";
+  actualResult?:number|null;
+  resultSymbol?:string;
 };
 
 export type CfbRosterPlayer = {
