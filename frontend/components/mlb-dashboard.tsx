@@ -109,6 +109,10 @@ export function MlbDashboard(){
   const cardResultPayload=role==="Pitcher"?performance.data.pitcher:performance.data.batter;
   const normTeam=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
   const gameForRow=(row:any)=>{
+    // Never attach a saved prior-day ranking to a current live game merely
+    // because the teams happen to match. Live/final badges must belong to the
+    // same dated Top 25 that the card came from.
+    if ((role==="Batter" && rankings.data.batterStale) || (role==="Pitcher" && rankings.data.pitcherStale)) return null;
     const pk=Number(row?.game_pk||row?.gamePk||row?.game_id||0);
     if(pk){const byPk=games.find((g:any)=>Number(g.gamePk)===pk);if(byPk)return byPk;}
     const team=normTeam(row?.team_name||row?.team||row?.team_abbreviation);

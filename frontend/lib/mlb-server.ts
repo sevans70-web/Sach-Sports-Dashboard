@@ -288,11 +288,6 @@ function rowsFrom(payload: any, key: string): RankingRow[] {
 export async function getRankings() {
   const today = torontoDate();
 
-  // A ranking snapshot is already date-scoped when the Python intelligence
-  // worker saves it. Prefer that exact-date snapshot and do not run a second
-  // destructive filter over it in Next.js. The previous implementation could
-  // turn a valid Top 25 into an empty list when legacy rows used a different
-  // game/team field shape.
   const [todayBatters, todayPitchers, latestBatters, latestPitchers] = await Promise.all([
     getSourceSnapshotForDay("mlb_game_intelligence", today),
     getSourceSnapshotForDay("mlb_pitcher_intelligence", today),
@@ -300,24 +295,45 @@ export async function getRankings() {
     getSourceSnapshot("mlb_pitcher_intelligence"),
   ]);
 
-  const batterSource = todayBatters.row ? todayBatters : latestBatters;
-  const pitcherSource = todayPitchers.row ? todayPitchers : latestPitchers;
+  // Prefer an exact dated snapshot. If the newest saved row is stamped with an
+  // older date, only carry it forward when its own gamePk/team data resolves to
+  // today's official MLB slate. This handles a late/mis-dated refresh without
+  // ever presenting a genuinely old Top 25 as today's rankings.
+  const resolveSource = async (exact:any, latest:any, pitcher=false) => {
+    if (exact?.row) return { ...exact, acceptedForToday: true, resolvedDate: today };
+    const parsed = rankingsFromSnapshots(
+      pitcher ? null : latest,
+      pitcher ? latest : null,
+    );
+    const raw = pitcher ? parsed.pitcher : parsed.batter;
+    const filtered = await filterRankingsForDay(raw, today);
+    const count = Object.values(filtered).reduce((n:number, rows:any) => n + (Array.isArray(rows) ? rows.length : 0), 0);
+    if (count > 0) {
+      return { ...latest, payload: pitcher ? { rankings: filtered } : filtered, acceptedForToday: true, resolvedDate: today };
+    }
+    return { ...latest, acceptedForToday: false, resolvedDate: latest?.row?.game_date || null };
+  };
+
+  const [batterSource, pitcherSource] = await Promise.all([
+    resolveSource(todayBatters, latestBatters, false),
+    resolveSource(todayPitchers, latestPitchers, true),
+  ]);
 
   const batter: Record<string, RankingRow[]> = {};
   for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) {
-    batter[key] = rowsFrom(batterSource.payload, key).slice(0, 25);
+    batter[key] = batterSource.acceptedForToday ? rowsFrom(batterSource.payload, key).slice(0, 25) : [];
   }
 
   const pitcherRoot = pitcherSource.payload?.rankings || pitcherSource.payload || {};
   const pitcher: Record<string, RankingRow[]> = {};
   for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) {
-    pitcher[key] = rowsFrom(pitcherRoot, key).slice(0, 25);
+    pitcher[key] = pitcherSource.acceptedForToday ? rowsFrom(pitcherRoot, key).slice(0, 25) : [];
   }
 
-  const batterDataDate = batterSource.row?.game_date || null;
-  const pitcherDataDate = pitcherSource.row?.game_date || null;
-  const batterStale = Boolean(batterDataDate && batterDataDate !== today);
-  const pitcherStale = Boolean(pitcherDataDate && pitcherDataDate !== today);
+  const batterDataDate = batterSource.resolvedDate || batterSource.row?.game_date || null;
+  const pitcherDataDate = pitcherSource.resolvedDate || pitcherSource.row?.game_date || null;
+  const batterStale = !batterSource.acceptedForToday;
+  const pitcherStale = !pitcherSource.acceptedForToday;
 
   return {
     batter,
