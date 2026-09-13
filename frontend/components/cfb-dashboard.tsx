@@ -31,10 +31,10 @@ function marketMeta(key:CfbMarketKey){return CFB_MARKETS.find(x=>x[0]===key)!}
 
 function projectionText(row:CfbRankingRow,market:CfbMarketKey){
   if(market==="first_td"){
-    return row.modelProbability!=null?`${Number(row.modelProbability).toFixed(0)}% chance`:"—";
+    return row.modelProbability!=null?`${Number(row.modelProbability).toFixed(0)}% chance`:"Model unavailable";
   }
   const v=row.modelProjection;
-  if(v==null||!Number.isFinite(Number(v)))return "Calculating…";
+  if(v==null||!Number.isFinite(Number(v)))return "Insufficient history";
   const n=Number(v);
   if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${n.toFixed(1)} yds`;
   if(market==="pass_completions")return `${n.toFixed(1)} comp`;
@@ -64,14 +64,14 @@ function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
       <span>{row.teamName}{row.matchup?` · ${row.matchup}`:""}</span>
       <b>{row.sportsbookLine!=null?`${meta[2]} line: ${row.sportsbookLine}`:`${meta[2]} statistical intelligence`}</b>
       <p className="projectionLine"><b>Model projection:</b> {projection}</p>
-      <p>{row.marketBacked?`Model probability: ${Number(row.modelProbability||0).toFixed(0)}%`:"Verified season production · sportsbook line pending"}</p>
+      <p>{row.marketBacked?(row.modelProbability!=null?`Model probability: ${Number(row.modelProbability).toFixed(0)}%`:"Model probability: Insufficient history"):"Verified season production · sportsbook line pending"}</p>
     </div>
     <div className="rankGi"><span>GI SCORE</span><strong>{Number(row.giScore||0).toFixed(1)}</strong></div>
 
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>{open?"ⓘ Hide Intelligence":"ⓘ View Intelligence"}</button>
 
     {open?<div className="detail">
-      <div className="detailMetric green"><span>MODEL</span><b>{row.marketBacked?`${Number(row.modelProbability||0).toFixed(1)}%`:"Stat Model"}</b></div>
+      <div className="detailMetric green"><span>MODEL</span><b>{row.marketBacked?(row.modelProbability!=null?`${Number(row.modelProbability).toFixed(1)}%`:"—"):"Stat Model"}</b></div>
       <div className="detailMetric"><span>SPORTSBOOK LINE</span><b>{row.sportsbookLine??"—"}</b></div>
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div>
       <div className="detailMetric"><span>DATA</span><b>{row.marketBacked?"Market + Stats":"Verified"}</b></div>
@@ -83,7 +83,7 @@ function RankingCard({row,market}:{row:CfbRankingRow;market:CfbMarketKey}){
       </div>
 
       <div className="why"><b>Why This Player Ranks Here</b><p>{row.marketBacked?row.summary:fallbackSummary(meta[2])}</p></div>
-      <Link className="fullCard" href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&gi=${row.giScore}&prob=${row.modelProbability||0}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}`}>Open full player card</Link>
+      <Link className="fullCard" href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&gi=${row.giScore}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link>
     </div>:null}
   </article>;
 }

@@ -9,19 +9,19 @@ function label(k:CfbMarketKey){return CFB_MARKETS.find(x=>x[0]===k)?.[2]||"Playe
 export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){
  const{id}=await params,qs=await searchParams;const get=(k:string)=>typeof qs[k]==="string"?String(qs[k]):"";
  const[details,schedule]=await Promise.all([getCfbAthleteDetails(id),getEspnCfbSchedule()]);
- const name=details.name!=="CFB Player"?details.name:(get("name")||"CFB Player"),team=details.teamName||get("team"),matchup=get("matchup"),img=details.headshot||get("img");
+ const name=details.name!=="CFB Player"?details.name:(get("name")||"CFB Player"),team=details.teamName||get("team"),matchup=get("matchup"),img=details.headshot||get("img"),position=details.position||get("position");
  const requested=(get("market")||"passing_yards") as CfbMarketKey,market=CFB_MARKETS.some(x=>x[0]===requested)?requested:"passing_yards";
  const gi=get("gi")||"—",prob=get("prob")||"—",line=get("line")||"—",projection=get("projection")||"—";
- const teamId=String(details.teamId||""),teamKey=norm(team);
+ const teamId=String(details.teamId||get("teamId")||""),teamKey=norm(team);
  const game=schedule.find((g:any)=>teamId&&(String(g.awayTeamId)===teamId||String(g.homeTeamId)===teamId))||schedule.find((g:any)=>teamKey&&(norm(String(g.awayTeam||""))===teamKey||norm(String(g.homeTeam||""))===teamKey));
  const state=String(game?.state||"pre").toLowerCase(),completed=Boolean(game?.completed)||state==="post",live=state==="in"&&!completed;
  const status=completed?"FINAL":live?"LIVE":"SCHEDULED",detail=game?(live||completed?`${game.awayTeam} ${game.awayScore??0} · ${game.homeTeam} ${game.homeScore??0}`:`${game.awayTeam} @ ${game.homeTeam}`):(matchup||"Matchup pending");
  const teamLogo=game?(String(game.awayTeamId)===teamId?game.awayLogo:game.homeLogo):"";
  return <main className="p"><Link href="/" className="menu">▦⌄</Link><Link className="back" href="/cfb">← Back to CFB</Link>
- <section className="head"><div className="visual">{img?<img src={img} alt=""/>:<div className="avatar">CFB</div>}{teamLogo?<img className="logo" src={teamLogo} alt=""/>:null}</div><div><h1>{name}</h1><p>{team}{details.position?` · ${details.position}`:""}</p>{matchup?<b>{matchup}</b>:null}</div></section>
+ <section className="head"><div className="visual">{img?<img src={img} alt=""/>:<div className="avatar">CFB</div>}{teamLogo?<img className="logo" src={teamLogo} alt=""/>:null}</div><div><h1>{name}</h1><p>{team}{position?` · ${position}`:""}</p>{matchup?<b>{matchup}</b>:null}</div></section>
  <section className={`game ${live?"live":completed?"final":""}`}><div><small>GAME STATUS</small><strong>{status}</strong><span>{game?.status||"Game status pending"}</span></div><div className="gd">{detail}</div></section>
  <section className="strip"><b>{label(market)}</b><span>GI {gi}{prob!=="—"?` · ${prob}%`:""}</span></section>
- <div className="metrics"><article><span>SPORTSBOOK LINE</span><b>{line}</b></article><article><span>MODEL PROJECTION</span><b>{projection}</b></article><article><span>POSITION</span><b>{details.position||"—"}</b></article><article><span>SEASON</span><b>2026</b></article></div>
+ <div className="metrics"><article><span>SPORTSBOOK LINE</span><b>{line}</b></article><article><span>MODEL PROJECTION</span><b>{projection}</b></article><article><span>POSITION</span><b>{position||"—"}</b></article><article><span>SEASON</span><b>2026</b></article></div>
  <section className="why"><h3>Why This Player Ranks Here</h3><p>The sportsbook line is compared with verified college game history to build the model projection and prediction score. No missing line or result is invented.</p></section>
  {details.teamId?<Link className="roster" href={`/cfb/team/${encodeURIComponent(details.teamId)}?name=${encodeURIComponent(team)}&logo=${encodeURIComponent(teamLogo||"")}`}>Open {team} roster →</Link>:null}
  <CfbPlayerHistory playerId={id} playerName={name} market={market} marketLabel={label(market)} line={line}/>

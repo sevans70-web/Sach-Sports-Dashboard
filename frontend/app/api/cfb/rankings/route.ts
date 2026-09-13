@@ -98,18 +98,32 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  return {id:"",headshot:"",teamName:teamName||"CFB",teamId:"",position:"",teamLogo:""};
 }
 async function fetchLog(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0","Accept":"application/json, text/plain, */*","Origin":"https://www.espn.com","Referer":"https://www.espn.com/"}});if(!r.ok)throw 0;return r.json()}
-function indexFor(payload:any,category:any,market:CfbMarketKey){
- const wanted=HISTORY_KEYS[market]||[],pools=[category?.names,category?.labels,category?.abbreviations,category?.statNames,category?.displayNames,payload?.names].filter(Array.isArray);
- for(const pool of pools){const names=(pool as any[]).map(norm);for(const w of wanted){let i=names.findIndex((n:string)=>n===w||n.includes(w)||w.includes(n));if(i>=0)return i}}return -1
+function statIndex(payload:any,market:CfbMarketKey){
+ const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);
+ for(const wanted of HISTORY_KEYS[market]||[]){
+   const i=names.findIndex((n:string)=>n===wanted);
+   if(i>=0)return i;
+ }
+ return -1;
 }
 function history(payload:any,market:CfbMarketKey){
+ const ix=statIndex(payload,market);
+ if(ix<0)return [];
  const vals:number[]=[];const seen=new Set<string>();
- for(const st of payload?.seasonTypes||[])for(const c of st?.categories||[]){
-  if(c?.type!=="event")continue;const cn=norm(c?.name||c?.displayName||"");
-  if(market.startsWith("pass")&&cn&&!cn.includes("pass"))continue;if(market==="rushing_yards"&&cn&&!cn.includes("rush"))continue;if((market==="receiving_yards"||market==="receptions")&&cn&&!cn.includes("receiv"))continue;
-  const ix=indexFor(payload,c,market);if(ix<0)continue;
-  for(const e of c?.events||[]){const id=String(e?.eventId||"");if(!id||seen.has(id))continue;const v=Number(e?.stats?.[ix]);if(!Number.isFinite(v))continue;seen.add(id);vals.push(v)}
- }return vals
+ for(const st of payload?.seasonTypes||[]){
+   for(const c of st?.categories||[]){
+     if(c?.type!=="event")continue;
+     for(const ev of c?.events||[]){
+       const eventId=String(ev?.eventId||"");
+       if(!eventId||seen.has(eventId))continue;
+       const raw=Array.isArray(ev?.stats)?ev.stats[ix]:undefined;
+       const value=Number(raw);
+       if(!Number.isFinite(value))continue;
+       seen.add(eventId);vals.push(value);
+     }
+   }
+ }
+ return vals;
 }
 function projection(vals:number[]){const xs=vals.slice(-10);if(!xs.length)return null;let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});return Math.round(sum/w*10)/10}
 async function model(id:string,market:CfbMarketKey){
@@ -131,7 +145,8 @@ export async function GET(req:NextRequest){
   const rows=await Promise.all(active.slice(0,50).map(async(row:any)=>{
    const profile=await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule),m=await model(profile.id,market);
    const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
-   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime,giScore:cfbGiScore(probability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"}.`,marketBacked:true};
+   const rankingProbability=probability??row.prob??50;
+   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime,giScore:cfbGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"}.`,marketBacked:true};
   }));
   rows.sort((a,b)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
   return NextResponse.json({success:true,source:"Owls Insight",market,rows:ranked,sportsbookOnly:true,validRankingCount:ranked.length,updatedAt:new Date().toISOString()});

@@ -1,6 +1,6 @@
 import type {CfbMarketKey} from "@/lib/cfb";
-export function cfbPredictionProbability(market:CfbMarketKey,projection:number|null,line:number|null,marketProb:number|null){
-  if(projection==null||line==null)return marketProb??50;
+export function cfbPredictionProbability(market:CfbMarketKey,projection:number|null,line:number|null,marketProb:number|null):number|null{
+  if(projection==null||line==null)return null;
   if(market==="first_td"||market==="anytime_td")return marketProb??50;
   const scale=Math.max(Math.abs(line)*0.16,market==="pass_completions"||market==="receptions"?2.5:12);
   const edge=(projection-line)/scale;

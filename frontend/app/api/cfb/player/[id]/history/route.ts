@@ -28,37 +28,27 @@ async function fetchLog(id:string,season:number){
   if(!r.ok)throw new Error(`history ${r.status}`);
   return r.json();
 }
-function findIndex(payload:any,category:any,market:CfbMarketKey){
-  const wanted=STAT_KEYS[market]||[];
-  const pools=[
-    payload?.names,category?.names,category?.labels,category?.abbreviations,
-    category?.statNames,category?.displayNames
-  ].filter(Array.isArray);
-  for(const pool of pools){
-    const names=(pool as any[]).map(clean);
-    for(const key of wanted){
-      const i=names.findIndex((n:string)=>n===key||n.includes(key)||key.includes(n));
-      if(i>=0)return i;
-    }
+function statIndex(payload:any,market:CfbMarketKey){
+  const names=(Array.isArray(payload?.names)?payload.names:[]).map(clean);
+  for(const wanted of STAT_KEYS[market]||[]){
+    const i=names.findIndex((n:string)=>n===wanted);
+    if(i>=0)return i;
   }
   return -1;
 }
 function parseSeason(payload:any,season:number,market:CfbMarketKey){
+  const ix=statIndex(payload,market);
+  if(ix<0)return [];
   const events=payload?.events||{};
-  const rows:any[]=[]; const seen=new Set<string>();
+  const rows:any[]=[];const seen=new Set<string>();
   for(const st of payload?.seasonTypes||[]){
     for(const category of st?.categories||[]){
-      if(category?.type&&category.type!=="event"&&!Array.isArray(category?.events))continue;
-      const categoryName=clean(category?.name||category?.displayName||"");
-      if(market.startsWith("pass")&&categoryName&& !categoryName.includes("pass"))continue;
-      if(market==="rushing_yards"&&categoryName&& !categoryName.includes("rush"))continue;
-      if((market==="receiving_yards"||market==="receptions")&&categoryName&& !categoryName.includes("receiv"))continue;
-      const statIndex=findIndex(payload,category,market);
-      if(statIndex<0)continue;
+      if(category?.type!=="event")continue;
       for(const ev of category?.events||[]){
         const eventId=String(ev?.eventId||"");
         if(!eventId||seen.has(eventId))continue;
-        const value=Number(ev?.stats?.[statIndex]);
+        const raw=Array.isArray(ev?.stats)?ev.stats[ix]:undefined;
+        const value=Number(raw);
         if(!Number.isFinite(value))continue;
         const meta=events?.[eventId]||{};
         seen.add(eventId);
