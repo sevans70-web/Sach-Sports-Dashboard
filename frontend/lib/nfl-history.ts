@@ -47,7 +47,7 @@ function mergeSnapshotPredictions(rows:any[]){
        gameTime:old.gameTime||next.gameTime,matchup:old.matchup||next.matchup,
        lastSeenRank:next.lastSeenRank??old.lastSeenRank,lastSeenAt:next.lastSeenAt??old.lastSeenAt,
        status:next.status&&next.status!=="pending"?next.status:old.status,
-       actual:next.actual!=null?next.actual:old.actual,gradedAt:next.gradedAt||old.gradedAt};
+       actual:next.actual!=null?next.actual:old.actual,gradedAt:next.gradedAt||old.gradedAt});
    }
  }
  return [...merged.values()];
