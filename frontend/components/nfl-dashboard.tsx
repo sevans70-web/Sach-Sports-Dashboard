@@ -9,8 +9,9 @@ type NflPerformanceResponse={success:boolean;connected:boolean;writable?:boolean
 type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterMode?:string;updatedAt?:string};
 type RankingResponse={success:boolean;market?:NflMarketKey;rows:NflRankingRow[];updatedAt?:string;historySaved?:boolean;historyConnected?:boolean;historyWritable?:boolean};
 
-const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","passing_rushing_yards"];
-const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
+const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"];
+const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
+const Q1_MARKETS:NflMarketKey[]=["q1_passing_yards","q1_qb_rushing_yards","q1_rushing_yards","q1_receiving_yards"];
 const ALL_MARKETS:NflMarketKey[]=NFL_MARKETS.map(x=>x[0]);
 
 function useJson<T>(url:string,fallback:T){
@@ -49,8 +50,8 @@ function projectionText(row:NflRankingRow,market:NflMarketKey){
   const v=row.modelProjection;
   if(v==null||!Number.isFinite(Number(v)))return "Insufficient history";
   const n=Number(v);
-  if(market==="passing_yards"||market==="passing_rushing_yards"||market==="rushing_yards"||market==="receiving_yards"||market==="rushing_receiving_yards")return `${n.toFixed(1)} yds`;
-  if(market==="passing_tds")return `${n.toFixed(1)} TD`;
+  if(market==="passing_yards"||market==="passing_rushing_yards"||market==="qb_rushing_yards"||market==="rushing_yards"||market==="receiving_yards"||market==="rushing_receiving_yards"||market.startsWith("q1_"))return `${n.toFixed(1)} yds`;
+  if(market==="passing_tds"||market==="rushing_tds")return `${n.toFixed(1)} TD`;
   if(market==="receptions")return `${n.toFixed(1)} rec`;
   if(market==="anytime_td")return `${n.toFixed(1)} TD`;
   return n.toFixed(1);
@@ -59,16 +60,16 @@ function projectionText(row:NflRankingRow,market:NflMarketKey){
 
 function formatActual(value:number,market:NflMarketKey){
   const n=Number(value); const shown=Number.isInteger(n)?String(n):n.toFixed(1);
-  if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${shown} yards`;
+  if(market==="passing_yards"||market==="passing_rushing_yards"||market==="qb_rushing_yards"||market==="rushing_yards"||market==="receiving_yards"||market==="rushing_receiving_yards"||market.startsWith("q1_"))return `${shown} yards`;
   if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;
-  if(market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
+  if(market==="passing_tds"||market==="rushing_tds"||market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
   return shown;
 }
 function formatMargin(value:number,market:NflMarketKey){
   const n=Number(value); const shown=Number.isInteger(n)?String(n):n.toFixed(1);
-  if(market==="passing_yards"||market==="rushing_yards"||market==="receiving_yards")return `${shown} yard${n===1?"":"s"}`;
+  if(market==="passing_yards"||market==="passing_rushing_yards"||market==="qb_rushing_yards"||market==="rushing_yards"||market==="receiving_yards"||market==="rushing_receiving_yards"||market.startsWith("q1_"))return `${shown} yard${n===1?"":"s"}`;
   if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;
-  if(market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
+  if(market==="passing_tds"||market==="rushing_tds"||market==="anytime_td"||market==="first_td")return `${shown} TD${n===1?"":"s"}`;
   return shown;
 }
 
@@ -126,7 +127,7 @@ function RankingCard({row,market}:{row:NflRankingRow;market:NflMarketKey}){
 }
 
 export default function NflDashboard(){
-  const[group,setGroup]=useState<"QB"|"Offense">("QB");
+  const[group,setGroup]=useState<"QB"|"Offense"|"Q1">("QB");
   const[market,setMarket]=useState<NflMarketKey>("passing_yards");
   const[full,setFull]=useState(false);
   const[period,setPeriod]=useState("Today");
@@ -174,7 +175,7 @@ export default function NflDashboard(){
   const live=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
   const gameCount=s.data.filterMode==="schedule_fallback"?s.data.games.length:s.data.qualifiedCount;
-  const markets=group==="QB"?QB_MARKETS:OFFENSE_MARKETS;
+  const markets=group==="QB"?QB_MARKETS:group==="Q1"?Q1_MARKETS:OFFENSE_MARKETS;
 
   useEffect(()=>{if(!markets.includes(market))setMarket(markets[0]);setFull(false)},[group]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(()=>setFull(false),[market]);
@@ -187,7 +188,7 @@ export default function NflDashboard(){
       if(active)setWarmVersion(v=>v+1);
     };
     captureAll();
-    const id=setInterval(captureAll,300000);
+    const id=setInterval(captureAll,900000);
     return()=>{active=false;clearInterval(id)};
   },[]);
 
@@ -216,11 +217,12 @@ export default function NflDashboard(){
 
     <section className="section performance">
       <h2 className="performanceTitle">📊 Prediction Performance</h2>
-      <details><summary>ⓘ How performance is measured</summary><div className="explain">Settled predictions are graded against recorded results. Pending predictions are excluded from hit rate until they settle.</div></details>
+      <details><summary>ⓘ How performance is measured</summary><div className="explain">Full-game predictions are frozen before kickoff and graded at final. First-quarter predictions are frozen before kickoff and graded as soon as Q1 is complete. Pending predictions are excluded from hit rate until they settle.</div></details>
 
       <div className="lineTabs groupTabs">
         <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
         <button className={group==="Offense"?"active":""} onClick={()=>setGroup("Offense")}>🏃 Offense</button>
+        <button className={group==="Q1"?"active":""} onClick={()=>setGroup("Q1")}>1Q First Quarter</button>
       </div>
 
       <h3>🌐 Overall NFL {group} Performance</h3>
@@ -244,7 +246,7 @@ export default function NflDashboard(){
         <article className="gold"><span>Settled</span><strong>{marketPerf.data.settled}</strong></article>
         <article><span>Hit Rate</span><strong>{marketPerf.data.hitRate==null?"—":`${marketPerf.data.hitRate}%`}</strong></article>
       </div>
-      {!marketPerf.data.connected||marketPerf.data.writable===false?<small className="historyWarning">⚠ NFL prediction history storage is not writable. Rankings can display, but predictions are not being permanently saved.</small>:<small>Results will appear after saved predictions are graded.</small>}
+      {!marketPerf.data.connected||marketPerf.data.writable===false?<small className="historyWarning">⚠ NFL prediction history storage is not writable. Rankings can display, but predictions are not being permanently saved.</small>:<small>Saved predictions stay frozen through kickoff and are graded automatically.</small>}
     </section>
 
     <section className="section rankings">
@@ -253,6 +255,7 @@ export default function NflDashboard(){
       <div className="lineTabs groupTabs">
         <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
         <button className={group==="Offense"?"active":""} onClick={()=>setGroup("Offense")}>🏃 Offense</button>
+        <button className={group==="Q1"?"active":""} onClick={()=>setGroup("Q1")}>1Q First Quarter</button>
       </div>
 
       <div className="lineTabs marketTabs">

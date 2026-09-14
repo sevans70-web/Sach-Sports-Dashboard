@@ -24,8 +24,12 @@ export function nflPredictionProbability(
   if(projection==null||line==null||!Number.isFinite(projection)||!Number.isFinite(line))return null;
 
   let scale:number;
-  if(market==="receptions"||market==="passing_tds"){
-    scale=Math.max(2.75,Math.abs(line)*.20);
+  if(market==="receptions"||market==="passing_tds"||market==="rushing_tds"){
+    scale=Math.max(1.15,Math.abs(line)*.32);
+  }else if(market.startsWith("q1_")){
+    scale=Math.max(5.5,Math.abs(line)*.34);
+  }else if(market==="qb_rushing_yards"){
+    scale=Math.max(9,Math.abs(line)*.34);
   }else{
     scale=Math.max(18,Math.abs(line)*.28);
   }

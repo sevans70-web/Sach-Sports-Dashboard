@@ -11,7 +11,9 @@ const ODDS_SPORT="americanfootball_nfl";
 const ODDS_MARKETS:Partial<Record<NflMarketKey,string>>={
   passing_yards:"player_pass_yds",
   passing_tds:"player_pass_tds",
+  qb_rushing_yards:"player_rush_yds",
   rushing_yards:"player_rush_yds",
+  rushing_tds:"player_rush_tds",
   receiving_yards:"player_reception_yds",
   receptions:"player_receptions",
   anytime_td:"player_anytime_td",
@@ -21,13 +23,19 @@ const ODDS_MARKETS:Partial<Record<NflMarketKey,string>>={
 const SGO_STATS:Record<NflMarketKey,string[]>={
   passing_yards:["passing_yards","passingYards","passing yards","pass_yards","passYards","player_pass_yds"],
   passing_tds:["passing_tds","passingTouchdowns","passing touchdowns","pass_tds","passTDs","player_pass_tds"],
+  qb_rushing_yards:["rushing_yards","rushingYards","rushing yards","rush_yards","rushYards","player_rush_yds"],
   passing_rushing_yards:["passing_rushing_yards","passingRushingYards","pass+rush yards","pass_rush_yds","passing+rushing yards"],
   rushing_yards:["rushing_yards","rushingYards","rushing yards","rush_yards","rushYards","player_rush_yds"],
+  rushing_tds:["rushing_tds","rushingTouchdowns","rushing touchdowns","rush_tds","rushTDs","player_rush_tds"],
   receiving_yards:["receiving_yards","receivingYards","receiving yards","reception_yards","receptionYards","player_reception_yds"],
   receptions:["receptions","receiving_receptions","receivingReceptions","player_receptions"],
   rushing_receiving_yards:["rushing_receiving_yards","rushingReceivingYards","rush+receiving yards","rush_receiving_yds","rushing+receiving yards"],
   anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
   first_td:["firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
+  q1_passing_yards:["q1_passing_yards","1q_passing_yards","first_quarter_passing_yards","1st_quarter_passing_yards","passing_yards_1q","player_pass_yds_1q"],
+  q1_qb_rushing_yards:["q1_rushing_yards","1q_rushing_yards","first_quarter_rushing_yards","1st_quarter_rushing_yards","rushing_yards_1q","player_rush_yds_1q"],
+  q1_rushing_yards:["q1_rushing_yards","1q_rushing_yards","first_quarter_rushing_yards","1st_quarter_rushing_yards","rushing_yards_1q","player_rush_yds_1q"],
+  q1_receiving_yards:["q1_receiving_yards","1q_receiving_yards","first_quarter_receiving_yards","1st_quarter_receiving_yards","receiving_yards_1q","player_reception_yds_1q"],
 };
 
 function normSgo(v:any){
@@ -59,13 +67,19 @@ function sgoBookCount(o:any){
 const LEADER_ALIASES:Record<NflMarketKey,string[]>={
   passing_yards:["passingyards","passing yards"],
   passing_tds:["passingtouchdowns","passing tds","passing touchdowns"],
+  qb_rushing_yards:["rushingyards","rushing yards"],
   passing_rushing_yards:["passingyards","passing yards","rushingyards","rushing yards"],
   rushing_yards:["rushingyards","rushing yards"],
+  rushing_tds:["rushingtouchdowns","rushing touchdowns"],
   receiving_yards:["receivingyards","receiving yards"],
   receptions:["receptions"],
   rushing_receiving_yards:["rushingyards","rushing yards","receivingyards","receiving yards"],
   anytime_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
   first_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
+  q1_passing_yards:[],
+  q1_qb_rushing_yards:[],
+  q1_rushing_yards:[],
+  q1_receiving_yards:[],
 };
 
 async function json(url:string,init?:RequestInit){
@@ -308,7 +322,8 @@ function nodeLabel(n:any){
 }
 
 function extractLeaderRows(payload:any,market:NflMarketKey){
-  const aliases=LEADER_ALIASES[market].map(cleanName);
+  const aliases=(LEADER_ALIASES[market]||[]).map(cleanName);
+  if(!aliases.length)return [];
   const rows:any[]=[];
   const seen=new Set<string>();
   for(const n of walkNodes(payload)){

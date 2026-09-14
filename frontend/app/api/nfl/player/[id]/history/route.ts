@@ -9,7 +9,9 @@ const BASE="https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/ath
 const STAT_KEYS:Partial<Record<NflMarketKey,string[]>>={
   passing_yards:["passingyards","passyards","yds"],
   passing_tds:["passingtouchdowns","passingtds","passtds","td"],
+  qb_rushing_yards:["rushingyards","rushyards","yds"],
   rushing_yards:["rushingyards","rushyards","yds"],
+  rushing_tds:["rushingtouchdowns","rushingtds","rushtds","td"],
   receiving_yards:["receivingyards","receptionyards","recyards","yds"],
   receptions:["receptions","rec"],
   passing_rushing_yards:["passingyards","passyards","yds"],
@@ -17,8 +19,8 @@ const STAT_KEYS:Partial<Record<NflMarketKey,string[]>>={
   anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
 };
 const LABELS:Partial<Record<NflMarketKey,string>>={
-  passing_yards:"Passing Yards",passing_tds:"Passing TDs",passing_rushing_yards:"Passing + Rushing Yards",
-  rushing_yards:"Rushing Yards",receiving_yards:"Receiving Yards",
+  passing_yards:"Passing Yards",passing_tds:"Passing TDs",qb_rushing_yards:"QB Rushing Yards",passing_rushing_yards:"Passing + Rushing Yards",
+  rushing_yards:"Rushing Yards",rushing_tds:"Rushing TDs",receiving_yards:"Receiving Yards",
   receptions:"Receptions",rushing_receiving_yards:"Rushing + Receiving Yards",anytime_td:"Touchdowns",
 };
 function clean(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");}
@@ -68,6 +70,7 @@ export async function GET(req:NextRequest,{params}:{params:Promise<{id:string}>}
   const{id}=await params;
   const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
   if(market==="first_td")return NextResponse.json({success:true,supported:false,points:[],statLabel:"First TD",message:"First TD does not have a reliable game-by-game stat series."});
+  if(market.startsWith("q1_"))return NextResponse.json({success:true,supported:false,points:[],statLabel:"First Quarter",message:"Dedicated first-quarter game history is not yet available; Q1 results are tracked from live play-by-play."});
   if(!STAT_KEYS[market])return NextResponse.json({success:true,supported:false,points:[],statLabel:"Player History",message:"This market does not have a reliable game-by-game history series."});
   const blocks=await Promise.all([2025,2026].map(async season=>{try{return parseSeason(await fetchLog(id,season),season,market)}catch{return []}}));
   const points=blocks.flat().sort((a,b)=>new Date(a.date).getTime()-new Date(b.date).getTime()).slice(-20);
