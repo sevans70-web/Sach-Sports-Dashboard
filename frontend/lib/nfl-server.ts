@@ -46,7 +46,19 @@ const SGO_NORMALIZED:Record<NflMarketKey,Set<string>>=Object.fromEntries(
 ) as Record<NflMarketKey,Set<string>>;
 function sgoMatchesMarket(o:any,market:NflMarketKey){
   const values=[o.statID,o.statId,o.stat,o.marketID,o.marketId,o.market,o.betTypeID,o.betTypeId,o.betType,o.statName,o.marketName,o.label,o.name];
-  return values.some(v=>v&&SGO_NORMALIZED[market].has(normSgo(v)));
+  const normalized=values.filter(Boolean).map(normSgo);
+  if(normalized.some(v=>SGO_NORMALIZED[market].has(v)))return true;
+  // SportsGameOdds has used several different labels for quarter props. Match the
+  // meaning instead of depending on one exact vendor string.
+  if(market.startsWith("q1_")){
+    const joined=normalized.join(" ");
+    const isQ1=/firstquarter|1stquarter|quarter1|q1/.test(joined);
+    if(!isQ1)return false;
+    if(market==="q1_passing_yards")return /pass/.test(joined)&&/yard|yd/.test(joined);
+    if(market==="q1_qb_rushing_yards"||market==="q1_rushing_yards")return /rush/.test(joined)&&/yard|yd/.test(joined);
+    if(market==="q1_receiving_yards")return /receiv|reception/.test(joined)&&/yard|yd/.test(joined);
+  }
+  return false;
 }
 function sgoPlayerName(o:any){
   return String(o.statEntityName||o.statEntity?.name||o.playerName||o.player?.name||o.participantName||o.participant?.name||o.entityName||"").trim();
@@ -94,7 +106,12 @@ function dateKey(d:Date){
 
 export async function getEspnNflSchedule(){
   const now=new Date();
-  const dates=[-1,0,1,2,3].map(offset=>dateKey(new Date(now.getTime()+offset*86400000)));
+  // Standard NFL weekly slate: Thursday through Monday. On Tuesday/Wednesday,
+  // move forward to the upcoming Thursday instead of mixing two NFL weeks.
+  const day=now.getDay();
+  const toThursday=day===2||day===3?4-day:-(day>=4?day-4:day+3);
+  const thursday=new Date(now.getTime()+toThursday*86400000);
+  const dates=[0,1,2,3,4].map(offset=>dateKey(new Date(thursday.getTime()+offset*86400000)));
   const payloads=await Promise.all(
     dates.map(async date=>{
       try{return await json(`${ESPN_SCOREBOARD}?limit=200&dates=${date}`)}
@@ -131,6 +148,7 @@ export async function getEspnNflSchedule(){
         completed:Boolean(status.completed),
         venue:c.venue?.fullName||"",
         broadcasts:(c.broadcasts||[]).flatMap((b:any)=>b.names||[]),
+        weekNumber:Number(e.week?.number||payload.week?.number||0)||null,
       });
     }
   }
@@ -539,24 +557,37 @@ export async function getNflGameIntelligence(gameId:string,availableProps:NflMar
   for(const market of candidateMarkets.slice(0,4)){
     try{
       const rows=await getNflRankings(market);
+      const awayName=cleanName(away.team?.displayName||"");
+      const homeName=cleanName(home.team?.displayName||"");
+      const awayId=String(away.team?.id||"");
+      const homeId=String(home.team?.id||"");
       const hit=rows.filter(r=>{
         const m=cleanName(r.matchup);
-        return m&&(m.includes(cleanName(away.team?.displayName||""))&&m.includes(cleanName(home.team?.displayName||"")));
+        const teamId=String(r.teamId||"");
+        const teamName=cleanName(r.teamName||"");
+        const belongs=Boolean((teamId&&(teamId===awayId||teamId===homeId))||(teamName&&(teamName===awayName||teamName===homeName)));
+        const matchupMatches=Boolean(m&&m.includes(awayName)&&m.includes(homeName));
+        return belongs&&matchupMatches;
       }).slice(0,2);
       for(const r of hit)leaders.push({market,player:r});
     }catch{}
   }
 
+  const awayId=String(away.team?.id||"");
+  const homeId=String(home.team?.id||"");
+  const [awayRoster,homeRoster]=await Promise.all([getNflTeamRoster(awayId),getNflTeamRoster(homeId)]);
   return {
     home:{
-      id:String(home.team?.id||""),
+      id:homeId,
       name:String(home.team?.displayName||""),
       record:String(home.records?.[0]?.summary||""),
+      roster:homeRoster.players.slice(0,14),
     },
     away:{
-      id:String(away.team?.id||""),
+      id:awayId,
       name:String(away.team?.displayName||""),
       record:String(away.records?.[0]?.summary||""),
+      roster:awayRoster.players.slice(0,14),
     },
     venue:String(competition.venue?.fullName||summary.gameInfo?.venue?.fullName||""),
     weather:String(weather.displayValue||weather.conditionId||""),

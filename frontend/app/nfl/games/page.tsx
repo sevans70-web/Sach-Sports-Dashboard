@@ -4,127 +4,25 @@ import Link from "next/link";
 import {useEffect,useMemo,useState} from "react";
 import {NFL_MARKETS,type NflMarketKey} from "@/lib/nfl";
 
-function MenuButton(){return <Link href="/" className="gamesMenu" aria-label="Open sports menu">▦⌄</Link>}
-
+function fmtDate(v:string){const d=new Date(v);return Number.isNaN(d.getTime())?"":d.toLocaleString("en-US",{month:"numeric",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"})}
 export default function NflGames(){
-  const[d,setD]=useState<any>({games:[],filterMode:""});
-  const[open,setOpen]=useState("");
-  const[intel,setIntel]=useState<Record<string,any>>({});
-
-  useEffect(()=>{
-    const run=()=>fetch("/api/nfl/schedule",{cache:"no-store"}).then(r=>r.json()).then(setD).catch(()=>{});
-    run();
-    const id=setInterval(run,30000);
-    return()=>clearInterval(id);
-  },[]);
-
+  const[d,setD]=useState<any>({games:[],filterMode:"",weekNumber:null});const[open,setOpen]=useState("");const[intel,setIntel]=useState<Record<string,any>>({});const[rosterTab,setRosterTab]=useState<Record<string,"away"|"home">>({});
+  useEffect(()=>{const run=()=>fetch("/api/nfl/schedule",{cache:"no-store"}).then(r=>r.json()).then(setD).catch(()=>{});run();const id=setInterval(run,30000);return()=>clearInterval(id)},[]);
   const games=useMemo(()=>d.games||[],[d]);
-
-  async function toggleGame(x:any){
-    if(open===x.id){setOpen("");return}
-    setOpen(x.id);
-    if(intel[x.id])return;
-    const props=(x.availableProps||[]).join(",");
-    try{
-      const payload=await fetch(`/api/nfl/game/${x.id}?props=${encodeURIComponent(props)}`,{cache:"no-store"}).then(r=>r.json());
-      setIntel(v=>({...v,[x.id]:payload.intelligence||{}}));
-    }catch{
-      setIntel(v=>({...v,[x.id]:{}}));
-    }
-  }
-
-  return <main className="gamesPage">
-    <MenuButton/>
-    <Link href="/nfl" className="backButton">← Back to NFL</Link>
-
-    <section className="gamesHero">
-      <h1>🏈 This Week&apos;s NFL Games</h1>
-      <p>{d.filterMode==="schedule_fallback"?"Player-prop availability is still filling in. The real ESPN slate remains visible so you can open matchups, rosters and Game Intelligence.":"Choose a matchup to open Game Intelligence, team rosters and available player-prop details."}</p>
-    </section>
-
-    {games.length===0?<div className="emptyGames">No NFL games are available in the current slate window.</div>:games.map((x:any)=>{
-      const live=x.state==="in";
-      const pre=x.state==="pre";
-      const props:(NflMarketKey[])=(x.availableProps||[]);
-      const propNames=props.map((p:string)=>NFL_MARKETS.find(m=>m[0]===p)?.[2]||p);
-      const info=intel[x.id]||{};
-      const kick=new Date(x.date);
-      const dateLabel=Number.isNaN(kick.getTime())?"":kick.toLocaleString("en-US",{month:"numeric",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"});
-
-      return <section key={x.id} className={`gameCard ${live?"live":""}`}>
-        <div className="gameStatus">
-          <b>{live?x.status:(pre?dateLabel:(x.status||"Final"))}</b>
-          <span>{x.venue||"Venue TBD"}</span>
-        </div>
-
-        <div className="teamRow">
-          {x.awayLogo?<img src={x.awayLogo} alt=""/>:<div/>}
-          <div>
-            <Link className="teamLink" href={`/nfl/team/${encodeURIComponent(x.awayTeamId)}?name=${encodeURIComponent(x.awayTeam)}&logo=${encodeURIComponent(x.awayLogo||"")}`}>{x.awayTeam}</Link>
-            {x.awayRecord?<small>{x.awayRecord}</small>:null}
-          </div>
-          {!pre?<b>{x.awayScore??""}</b>:<b className="noScore"></b>}
-        </div>
-
-        <div className="teamRow">
-          {x.homeLogo?<img src={x.homeLogo} alt=""/>:<div/>}
-          <div>
-            <Link className="teamLink" href={`/nfl/team/${encodeURIComponent(x.homeTeamId)}?name=${encodeURIComponent(x.homeTeam)}&logo=${encodeURIComponent(x.homeLogo||"")}`}>{x.homeTeam}</Link>
-            {x.homeRecord?<small>{x.homeRecord}</small>:null}
-          </div>
-          {!pre?<b>{x.homeScore??""}</b>:<b className="noScore"></b>}
-        </div>
-
-        <div className="propLine">{propNames.length?`Player props: ${propNames.join(" · ")}`:"Player-prop availability pending"}</div>
-
-        <button className="viewGame" onClick={()=>toggleGame(x)}>{open===x.id?"Hide Game Intelligence":`View ${x.awayTeam} @ ${x.homeTeam} →`}</button>
-
-        {open===x.id?<div className="gameIntel">
-          <b>🔥 Game Intelligence</b>
-          <div className="intelGrid">
-            <div><span>AWAY</span><strong>{info.away?.record||x.awayRecord||"—"}</strong></div>
-            <div><span>HOME</span><strong>{info.home?.record||x.homeRecord||"—"}</strong></div>
-            <div><span>VENUE</span><strong>{info.venue||x.venue||"TBD"}</strong></div>
-            <div><span>TV</span><strong>{(info.broadcast||[]).join(", ")||"TBD"}</strong></div>
-          </div>
-
-          {(info.spread||info.overUnder!=null)?<div className="marketContext">
-            <strong>Market context</strong>
-            <p>{info.spread?`${info.spread}`:""}{info.overUnder!=null?`${info.spread?" · ":""}O/U ${info.overUnder}`:""}{info.provider?` · ${info.provider}`:""}</p>
-          </div>:null}
-
-          {Array.isArray(info.leaders)&&info.leaders.length?<div className="playersToWatch">
-            <strong>Players to watch</strong>
-            {info.leaders.slice(0,4).map((l:any,i:number)=><Link key={`${l.player?.playerId}-${i}`} href={`/nfl/player/${encodeURIComponent(l.player?.playerId||"")}?market=${encodeURIComponent(l.market)}&name=${encodeURIComponent(l.player?.playerName||"")}&team=${encodeURIComponent(l.player?.teamName||"")}&matchup=${encodeURIComponent(l.player?.matchup||"")}&gi=${l.player?.giScore||0}&prob=${l.player?.modelProbability||0}&line=${l.player?.sportsbookLine??""}&img=${encodeURIComponent(l.player?.headshot||"")}`}>
-              {NFL_MARKETS.find(m=>m[0]===l.market)?.[2]||l.market}: {l.player?.playerName} · GI {Number(l.player?.giScore||0).toFixed(1)}
-            </Link>)}
-          </div>:<p>{propNames.length?`This matchup currently has ${propNames.join(", ")} available. Player rankings and player cards use the same NFL intelligence feed.`:"Sportsbook player props have not posted yet. The matchup, rosters, records, venue and team context remain available without inventing betting lines."}</p>}
-
-          <div className="rosterLinks">
-            <Link href={`/nfl/team/${encodeURIComponent(x.awayTeamId)}?name=${encodeURIComponent(x.awayTeam)}&logo=${encodeURIComponent(x.awayLogo||"")}`}>View {x.awayTeam} roster →</Link>
-            <Link href={`/nfl/team/${encodeURIComponent(x.homeTeamId)}?name=${encodeURIComponent(x.homeTeam)}&logo=${encodeURIComponent(x.homeLogo||"")}`}>View {x.homeTeam} roster →</Link>
-          </div>
-        </div>:null}
-      </section>
-    })}
-
-    <style jsx global>{`
-      .gamesPage{max-width:780px;margin:0 auto;padding:10px 14px 80px;color:#fff}
-      .gamesMenu{display:grid;place-items:center;width:58px;height:58px;border:2px solid #20df7f;border-radius:16px;background:#0c0e0d;color:#fff!important;text-decoration:none!important;font-size:22px}
-      .backButton{display:block;width:max-content;margin:10px 0 24px auto;padding:12px 18px;border:2px solid #34373d;border-radius:16px;background:#101112;color:#fff!important;text-decoration:none!important;font-size:18px}
-      .gamesHero{border:2px solid #20df7f;border-radius:18px;padding:20px;background:#101112}
-      .gamesHero h1{margin:0;font-size:30px}.gamesHero p{color:#a9acb3;font-size:18px;line-height:1.45;margin-bottom:0}
-      .gameCard{margin:24px 0;border:4px solid #34373d;border-radius:22px;background:#101112;overflow:hidden}.gameCard.live{border-color:#20df7f}
-      .gameStatus{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid #30343a;padding:14px 18px;color:#9da1a8}.gameStatus b{color:#20df7f}
-      .teamRow{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:14px;padding:12px 18px}.teamRow img{width:82px;height:82px;object-fit:contain}
-      .teamLink{display:block;color:#fff!important;text-decoration:none!important;font-size:24px;font-weight:900}.teamRow small{display:block;color:#9da1a8;margin-top:5px;font-size:15px}.teamRow>b{font-size:28px}.noScore{min-width:20px}
-      .propLine{color:#d9b85d;padding:8px 18px 14px}.viewGame{width:100%;background:#0c0d0e;color:#d9b85d;border:0;border-top:2px solid #d9b85d;padding:16px;font-size:19px}
-      .gameIntel{border-left:6px solid #20df7f;background:#101112;padding:16px 18px}.gameIntel>b{color:#d9b85d;font-size:20px}.gameIntel p{color:#d8d9dc;line-height:1.45}
-      .intelGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}.intelGrid div{border:1px solid #34373d;border-radius:12px;padding:10px;background:#0d0f10}.intelGrid span{display:block;color:#9da1a8;font-size:11px}.intelGrid strong{display:block;margin-top:5px}
-      .marketContext,.playersToWatch{border-left:4px solid #d9b85d;padding:10px 12px;margin:12px 0;background:#0d0f10}.playersToWatch>a{display:block;color:#fff!important;text-decoration:none!important;margin-top:8px}
-      .rosterLinks{display:grid;gap:8px;margin-top:14px}.rosterLinks a{display:block;border:2px solid #34373d;border-radius:12px;padding:12px;color:#fff!important;text-decoration:none!important;background:#0d0f10}
-      .emptyGames{margin:28px 0;color:#a9acb3;text-align:center}
-      @media(max-width:600px){.gamesMenu{width:52px;height:52px}.gamesHero h1{font-size:26px}.gamesHero p{font-size:16px}.teamRow{grid-template-columns:66px 1fr auto;padding:10px 14px}.teamRow img{width:60px;height:60px}.teamLink{font-size:19px}.teamRow>b{font-size:24px}.backButton{font-size:16px}}
-    `}</style>
-  </main>;
+  async function toggleGame(x:any){if(open===x.id){setOpen("");return}setOpen(x.id);setRosterTab(v=>({...v,[x.id]:v[x.id]||"away"}));if(intel[x.id])return;const props=(x.availableProps||[]).join(",");try{const payload=await fetch(`/api/nfl/game/${x.id}?props=${encodeURIComponent(props)}`,{cache:"no-store"}).then(r=>r.json());setIntel(v=>({...v,[x.id]:payload.intelligence||{}}))}catch{setIntel(v=>({...v,[x.id]:{}}))}}
+  return <main className="gamesPage"><div className="topbar"><Link href="/" className="gamesMenu">▦⌄</Link><Link href="/nfl" className="backButton">← Back to NFL</Link></div>
+    <section className="gamesHero"><h1>🏈 {d.weekNumber?`NFL Week ${d.weekNumber}`:"This Week's NFL Games"}</h1><p>Weekly schedule, starting-QB context, rosters and Game Intelligence.</p></section>
+    {games.length===0?<div className="emptyGames">No NFL games are available in this week.</div>:games.map((x:any)=>{const live=x.state==="in",pre=x.state==="pre",props:NflMarketKey[]=x.availableProps||[],propNames=props.map((p:string)=>NFL_MARKETS.find(m=>m[0]===p)?.[2]||p),info=intel[x.id]||{},tab=rosterTab[x.id]||"away",roster=tab==="away"?(info.away?.roster||[]):(info.home?.roster||[]);return <section key={x.id} className={`gameCard ${live?"live":""}`}>
+      <div className="gameStatus"><b>{live?x.status:(pre?fmtDate(x.date):(x.status||"Final"))}</b><span>{x.venue||"Venue TBD"}</span></div>
+      <div className="teamRow">{x.awayLogo?<img src={x.awayLogo} alt=""/>:<div/>}<div><Link className="teamLink" href={`/nfl/team/${encodeURIComponent(x.awayTeamId)}?name=${encodeURIComponent(x.awayTeam)}&logo=${encodeURIComponent(x.awayLogo||"")}`}>{x.awayTeam}</Link><small>{x.awayQb?`QB · ${x.awayQb}`:x.awayRecord||"QB pending"}</small>{x.awayQb&&x.awayRecord?<small>{x.awayRecord}</small>:null}</div>{!pre?<b>{x.awayScore??""}</b>:<b/>}</div>
+      <div className="teamRow">{x.homeLogo?<img src={x.homeLogo} alt=""/>:<div/>}<div><Link className="teamLink" href={`/nfl/team/${encodeURIComponent(x.homeTeamId)}?name=${encodeURIComponent(x.homeTeam)}&logo=${encodeURIComponent(x.homeLogo||"")}`}>{x.homeTeam}</Link><small>{x.homeQb?`QB · ${x.homeQb}`:x.homeRecord||"QB pending"}</small>{x.homeQb&&x.homeRecord?<small>{x.homeRecord}</small>:null}</div>{!pre?<b>{x.homeScore??""}</b>:<b/>}</div>
+      <div className="propLine">{propNames.length?`${propNames.length} supported prop market${propNames.length===1?"":"s"}`:"Player-prop availability pending"}</div><button className="viewGame" onClick={()=>toggleGame(x)}>{open===x.id?"Hide Game Intelligence":`View ${x.awayTeam} @ ${x.homeTeam} →`}</button>
+      {open===x.id?<div className="gameIntel"><b>🔥 Game Intelligence</b><div className="intelGrid"><div><span>AWAY</span><strong>{info.away?.record||x.awayRecord||"—"}</strong></div><div><span>HOME</span><strong>{info.home?.record||x.homeRecord||"—"}</strong></div><div><span>VENUE</span><strong>{info.venue||x.venue||"TBD"}</strong></div><div><span>TV</span><strong>{(info.broadcast||[]).join(", ")||"TBD"}</strong></div></div>
+        {(info.spread||info.overUnder!=null)?<div className="marketContext"><strong>Market context</strong><p>{info.spread||""}{info.overUnder!=null?`${info.spread?" · ":""}O/U ${info.overUnder}`:""}</p>{info.provider?<small>Source: {info.provider}. This is the displayed source, not a claim that it is the best available line.</small>:null}</div>:null}
+        {Array.isArray(info.leaders)&&info.leaders.length?<div className="playersToWatch"><strong>Players to watch</strong>{info.leaders.slice(0,4).map((l:any,i:number)=><Link key={`${l.player?.playerId}-${i}`} href={`/nfl/player/${encodeURIComponent(l.player?.playerId||"")}?market=${encodeURIComponent(l.market)}&name=${encodeURIComponent(l.player?.playerName||"")}&team=${encodeURIComponent(l.player?.teamName||"")}&matchup=${encodeURIComponent(l.player?.matchup||"")}&gi=${l.player?.giScore||0}&prob=${l.player?.modelProbability||0}&line=${l.player?.sportsbookLine??""}&img=${encodeURIComponent(l.player?.headshot||"")}`}>{NFL_MARKETS.find(m=>m[0]===l.market)?.[2]||l.market}: {l.player?.playerName} · GI {Number(l.player?.giScore||0).toFixed(1)}</Link>)}</div>:null}
+        <div className="rosterBox"><div className="rosterTabs"><button className={tab==="away"?"active":""} onClick={()=>setRosterTab(v=>({...v,[x.id]:"away"}))}>{x.awayTeam}</button><button className={tab==="home"?"active":""} onClick={()=>setRosterTab(v=>({...v,[x.id]:"home"}))}>{x.homeTeam}</button></div><div className="rosterList">{roster.slice(0,10).map((p:any)=><Link key={p.id} href={`/nfl/player/${encodeURIComponent(p.id)}?name=${encodeURIComponent(p.name)}&team=${encodeURIComponent(tab==="away"?x.awayTeam:x.homeTeam)}&position=${encodeURIComponent(p.position||"")}`}>{p.position==="QB"?<b>QB · </b>:null}{p.name}<span>{p.position||""}</span></Link>)}</div><Link className="fullRoster" href={`/nfl/team/${encodeURIComponent(tab==="away"?x.awayTeamId:x.homeTeamId)}?name=${encodeURIComponent(tab==="away"?x.awayTeam:x.homeTeam)}&logo=${encodeURIComponent(tab==="away"?x.awayLogo||"":x.homeLogo||"")}`}>Open full roster →</Link></div>
+      </div>:null}
+    </section>})}
+    <style jsx global>{`.gamesPage{max-width:780px;margin:0 auto;padding:8px 14px 72px;color:#fff}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.gamesMenu{display:grid;place-items:center;width:44px;height:44px;border:2px solid #20df7f;border-radius:13px;background:#0c0e0d;color:#fff!important;text-decoration:none!important}.backButton{padding:8px 12px;border:1.5px solid #34373d;border-radius:12px;background:#101112;color:#fff!important;text-decoration:none!important;font-size:13px}.gamesHero{border:1.5px solid #20df7f;border-radius:15px;padding:13px 15px;background:#101112}.gamesHero h1{margin:0;font-size:24px}.gamesHero p{color:#a9acb3;font-size:13px;line-height:1.35;margin:6px 0 0}.gameCard{margin:14px 0;border:2.5px solid #34373d;border-radius:18px;background:#101112;overflow:hidden}.gameCard.live{border-color:#20df7f}.gameStatus{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #30343a;padding:9px 12px;color:#9da1a8;font-size:12px}.gameStatus b{color:#20df7f}.teamRow{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:10px;padding:8px 12px}.teamRow img{width:52px;height:52px;object-fit:contain}.teamLink{display:block;color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:900}.teamRow small{display:block;color:#9da1a8;margin-top:2px;font-size:11px}.teamRow>b{font-size:22px}.propLine{color:#d9b85d;padding:6px 12px 9px;font-size:12px}.viewGame{width:100%;background:#0c0d0e;color:#d9b85d;border:0;border-top:1.5px solid #d9b85d;padding:10px;font-size:14px;font-weight:800}.gameIntel{border-left:5px solid #20df7f;background:#101112;padding:12px}.gameIntel>b{color:#d9b85d;font-size:18px}.intelGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:10px 0}.intelGrid div{border:1px solid #34373d;border-radius:10px;padding:8px;background:#0d0f10}.intelGrid span{display:block;color:#9da1a8;font-size:9px}.intelGrid strong{display:block;margin-top:3px;font-size:13px}.marketContext,.playersToWatch{border-left:3px solid #d9b85d;padding:8px 10px;margin:9px 0;background:#0d0f10}.marketContext p{margin:5px 0;font-size:13px}.marketContext small{display:block;color:#8f949c;font-size:10px;line-height:1.3}.playersToWatch>a{display:block;color:#fff!important;text-decoration:none!important;margin-top:6px;font-size:12px}.rosterBox{margin-top:10px;border:1px solid #34373d;border-radius:12px;overflow:hidden}.rosterTabs{display:grid;grid-template-columns:1fr 1fr}.rosterTabs button{border:0;border-bottom:2px solid #34373d;background:#0f1113;color:#fff;padding:9px 6px;font-size:11px;font-weight:800}.rosterTabs button.active{border-bottom-color:#f04f5f;color:#d9b85d}.rosterList{display:grid}.rosterList a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid #25282c;color:#fff!important;text-decoration:none;font-size:12px}.rosterList a:first-child{color:#d9b85d!important}.rosterList span{color:#9da1a8}.fullRoster{display:block;text-align:center;padding:9px;color:#fff!important;text-decoration:none;font-size:12px}.emptyGames{margin:20px 0;color:#a9acb3;text-align:center}@media(max-width:430px){.gamesHero h1{font-size:21px}.teamRow{grid-template-columns:50px 1fr auto}.teamRow img{width:45px;height:45px}.teamLink{font-size:16px}.gameStatus span{max-width:50%;text-align:right}.intelGrid strong{font-size:12px}}`}</style>
+  </main>
 }

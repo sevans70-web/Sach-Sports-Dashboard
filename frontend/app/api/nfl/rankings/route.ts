@@ -315,7 +315,14 @@ export async function GET(req:NextRequest){
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
    const game=matchupGame(schedule,row.matchup);
-   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:`Sportsbook-backed ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"}.${market.startsWith("q1_")?" First-quarter projection is scaled from recent verified production and graded only on Q1 play-by-play.":""}`,marketBacked:true};
+   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
+     const label=NFL_MARKETS.find(x=>x[0]===market)?.[2]||market;
+     const edge=row.line!=null&&m.projection!=null?Number(m.projection)-Number(row.line):null;
+     const edgeText=edge==null?"":` The model sits ${Math.abs(edge).toFixed(1)} ${edge>=0?"above":"below"} the current line.`;
+     const probText=probability!=null?` Model probability is ${Number(probability).toFixed(0)}%.`:"";
+     const q1=market.startsWith("q1_")?" This is a first-quarter market and is graded only on Q1 production.":"";
+     return `${label}: ${m.games} verified recent game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"} support the ranking.${edgeText}${probText}${q1}`;
+   })(),marketBacked:true};
   }));
   const rows=built.filter(Boolean) as any[];
   rows.sort((a,b)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));

@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {cleanName} from "@/lib/nfl";
-import {getEspnNflSchedule,getPropQualifiedGames} from "@/lib/nfl-server";
+import {getEspnNflSchedule,getPropQualifiedGames,getNflTeamRoster} from "@/lib/nfl-server";
 
 export const dynamic="force-dynamic";
 
@@ -32,12 +32,30 @@ export async function GET(){
 
     // Keep the weekly slate visible. Live games rise to the top, upcoming games
     // follow, and completed games stay visible at the bottom as FINAL.
-    const games=orderGames(qualified.length?qualified:decorated);
+    const baseGames=orderGames(qualified.length?qualified:decorated);
+    const rosterCache=new Map<string,Promise<any>>();
+    const roster=(id:string)=>{
+      if(!id)return Promise.resolve({players:[]});
+      if(!rosterCache.has(id))rosterCache.set(id,getNflTeamRoster(id));
+      return rosterCache.get(id)!;
+    };
+    const games=await Promise.all(baseGames.map(async(g:any)=>{
+      const [awayRoster,homeRoster]=await Promise.all([roster(String(g.awayTeamId||"")),roster(String(g.homeTeamId||""))]);
+      const firstQb=(r:any)=>r?.players?.find((p:any)=>String(p.position||"").toUpperCase()==="QB")?.name||"";
+      return {...g,awayQb:firstQb(awayRoster),homeQb:firstQb(homeRoster)};
+    }));
+    const totalLineups=games.length*2;
+    const confirmedLineups=games.filter((g:any)=>g.state==="in"||g.completed||g.state==="post").length*2;
+    const weekNumber=games.map((g:any)=>Number(g.weekNumber||0)).find((n:number)=>n>0)||null;
 
     return NextResponse.json({
       success:true,
       games,
       qualifiedCount:q.length,
+      totalLineups,
+      confirmedLineups,
+      pendingLineups:Math.max(0,totalLineups-confirmedLineups),
+      weekNumber,
       filterMode:qualified.length?"prop_qualified":"schedule_fallback",
       updatedAt:new Date().toISOString(),
     });
