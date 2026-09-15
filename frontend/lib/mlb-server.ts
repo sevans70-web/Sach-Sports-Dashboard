@@ -105,9 +105,19 @@ async function supabaseRows(path: string) {
   for (const key of keys) {
     try {
       const res=await fetch(`${url}/rest/v1/${path}`,{headers:supabaseHeaders(key),cache:"no-store"});
-      if (!res.ok) { lastError=`Supabase returned ${res.status}`; continue; }
-      return {rows:await res.json(),connected:true,error:""};
-    } catch (error) { lastError=error instanceof Error?error.message:"Supabase request failed"; }
+      if (!res.ok) {
+        const detail=(await res.text().catch(()=>"")).slice(0,500);
+        lastError=`Supabase returned ${res.status}${detail?`: ${detail}`:""}`;
+        console.error("[MLB Supabase read]", {status:res.status, path:path.split("?")[0], detail});
+        continue;
+      }
+      const rows=await res.json();
+      console.info("[MLB Supabase read]", {status:res.status, path:path.split("?")[0], rows:Array.isArray(rows)?rows.length:0});
+      return {rows,connected:true,error:""};
+    } catch (error) {
+      lastError=error instanceof Error?error.message:"Supabase request failed";
+      console.error("[MLB Supabase read exception]", {path:path.split("?")[0], error:lastError});
+    }
   }
   return {rows:[] as any[],connected:false,error:lastError};
 }
@@ -129,13 +139,14 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
     const headers=supabaseHeaders(key,true,"return=minimal");
     try {
       const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
-      if(!existing.ok)continue;
+      if(!existing.ok){const detail=(await existing.text().catch(()=>"")).slice(0,500);console.error("[MLB Supabase write lookup]",{status:existing.status,sourceName,detail});continue;}
       const rows=await existing.json();
       const res=Array.isArray(rows)&&rows[0]?.id
         ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
         : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
-      if(res.ok)return true;
-    } catch {}
+      if(res.ok){console.info("[MLB Supabase write]",{status:res.status,sourceName,gameDate});return true;}
+      const detail=(await res.text().catch(()=>"")).slice(0,500);console.error("[MLB Supabase write]",{status:res.status,sourceName,gameDate,detail});
+    } catch(error) { console.error("[MLB Supabase write exception]",{sourceName,gameDate,error:error instanceof Error?error.message:String(error)}); }
   }
   return false;
 }

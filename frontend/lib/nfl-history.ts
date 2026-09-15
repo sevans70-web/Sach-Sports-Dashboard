@@ -40,7 +40,7 @@ async function getRows(m:NflMarketKey,day:string){
  // Try the service/server key first, then configured fallbacks. This avoids a
  // valid anon key masking a service key when RLS protects source_snapshots.
  for(const key of keys){
-   try{const r=await fetch(`${url}/rest/v1/${q}`,{headers:headers(key),cache:"no-store"});if(!r.ok)continue;const a=await r.json();return {connected:true,writable:true,rows:Array.isArray(a)?a:[]}}catch{}
+   try{const r=await fetch(`${url}/rest/v1/${q}`,{headers:headers(key),cache:"no-store"});if(!r.ok){const detail=(await r.text().catch(()=>"")).slice(0,500);console.error("[NFL Supabase read]",{status:r.status,market:m,day,detail});continue;}const a=await r.json();console.info("[NFL Supabase read]",{status:r.status,market:m,day,rows:Array.isArray(a)?a.length:0});return {connected:true,writable:true,rows:Array.isArray(a)?a:[]}}catch(error){console.error("[NFL Supabase read exception]",{market:m,day,error:error instanceof Error?error.message:String(error)})}
  }
  return {connected:false,writable:false,rows:[] as any[]};
 }
@@ -74,7 +74,7 @@ async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction
  const body=JSON.stringify({source_name:source(m),game_date:day,payload:{predictions},created_at:new Date().toISOString()});
  const endpoint=id?`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(id)}`:`${url}/rest/v1/source_snapshots`;
  for(const key of keys){
-   try{const r=await fetch(endpoint,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body,cache:"no-store"});if(r.ok)return true}catch{}
+   try{const r=await fetch(endpoint,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body,cache:"no-store"});if(r.ok){console.info("[NFL Supabase write]",{status:r.status,market:m,day,mode:id?"PATCH":"POST"});return true}const detail=(await r.text().catch(()=>"")).slice(0,500);console.error("[NFL Supabase write]",{status:r.status,market:m,day,mode:id?"PATCH":"POST",detail})}catch(error){console.error("[NFL Supabase write exception]",{market:m,day,error:error instanceof Error?error.message:String(error)})}
  }
  return false;
 }
