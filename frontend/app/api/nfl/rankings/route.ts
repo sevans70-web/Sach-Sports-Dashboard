@@ -22,7 +22,9 @@ const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  rushing_receiving_yards:["rushing_receiving_yards","rush_receiving_yards","rushing+receiving_yards","rushingreceivingyards"],
  anytime_td:["anytime_td","anytime_touchdown","anytime_touchdown_scorer","touchdown_scorer","touchdowns"],
  first_td:["first_td","first_touchdown","first_touchdown_scorer","first_scorer"],
- q1_touchdowns:["touchdowns_1q"],
+ q1_passing_yards:["passing_yards_1q","passing_1q_yards","1q_passing_yards","first_quarter_passing_yards"],
+ q1_receiving_yards:["receiving_yards_1q","receiving_1q_yards","1q_receiving_yards","first_quarter_receiving_yards"],
+ q1_rushing_yards:["rushing_yards_1q","rushing_1q_yards","1q_rushing_yards","first_quarter_rushing_yards"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
  passing_yards:["passingyards","passyards","yds"],
@@ -35,7 +37,9 @@ const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
  receptions:["receptions","rec"],
  rushing_receiving_yards:["rushingyards","rushyards","yds"],
  anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
- q1_touchdowns:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
+ q1_passing_yards:["passingyards","passyards","yds"],
+ q1_receiving_yards:["receivingyards","receptionyards","recyards","yds"],
+ q1_rushing_yards:["rushingyards","rushyards","yds"],
 };
 function norm(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function median(xs:number[]){const a=xs.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2}
@@ -279,7 +283,9 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null&&b==null?null:(a||0)+(b||0)}
  if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null&&b==null?null:(a||0)+(b||0)}
  if(market==="first_td")return firstTdFromSummary(payload,playerName);
- if(market==="q1_touchdowns")return q1TouchdownsFromSummary(payload,playerName);
+ if(market==="q1_passing_yards")return q1StatFromSummary(payload,playerId,playerName,"passing");
+ if(market==="q1_receiving_yards")return q1StatFromSummary(payload,playerId,playerName,"receiving");
+ if(market==="q1_rushing_yards")return q1StatFromSummary(payload,playerId,playerName,"rushing");
  return null;
 }
 async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){

@@ -73,7 +73,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
     <div className="origRank">#{Number(row.rank||0)||"—"}<span>−</span></div>
     <div className="origPhotoWrap">{image?<img className="origHeadshot" src={image} alt="" onError={(e)=>{e.currentTarget.style.visibility="hidden"}}/>:<div className="origHeadshot photoFallback">{name.split(" ").map(x=>x[0]).slice(0,2).join("")}</div>}{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>
-      {pitcher?<><div className="origProp"><b>Projection:</b> {projection} K</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
+      {pitcher?<><div className="origProp"><b>Prediction:</b> {String((row as any).prediction||((row as any).line!=null?`Over ${(row as any).line}`:`${projection} ${marketKey==="strikeouts"?"K":""}`))}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>Prediction:</b> {String((row as any).prediction||(marketKey==="home_runs"?"1+ HR":((row as any).line!=null?`Over ${(row as any).line}`:"Market posted")))}</div><div className="origProp"><b>Probability:</b> {probability}</div></>}
       <p>{summary}</p>
       {isFinal||isLive?<div className="origResultBlock">
         <span className={`resultStatus ${isLive?"live":""}`}>{isLive?"LIVE":"FINAL"}</span>

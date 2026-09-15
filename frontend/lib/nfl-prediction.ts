@@ -24,7 +24,7 @@ export function nflPredictionProbability(
   if(projection==null||line==null||!Number.isFinite(projection)||!Number.isFinite(line))return null;
 
   let scale:number;
-  if(market==="receptions"||market==="passing_tds"||market==="rushing_tds"||market==="q1_touchdowns"){
+  if(market==="receptions"||market==="passing_tds"||market==="rushing_tds"){
     scale=Math.max(1.15,Math.abs(line)*.32);
   }else if(market.startsWith("q1_")){
     scale=Math.max(5.5,Math.abs(line)*.34);

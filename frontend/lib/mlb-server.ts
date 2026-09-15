@@ -127,9 +127,18 @@ async function getOwlsMlbRankings(){
       }
       return [...grouped.values()].map((x:any)=>{
         const line=medianNumber(x.lines),prob=impliedProbability(medianNumber(x.prices));
-        const score=Math.max(1,Math.min(99,Math.round((prob??50)*10)/10));
+        // OWLS fallback is market-backed, but it is not allowed to pretend the sportsbook
+        // implied probability is the GI model itself. Liquidity/book coverage is a separate
+        // reliability input, so GI and probability remain distinct.
+        const marketProb=prob??50;
+        const liquidity=Math.min(100,35+x.books.size*10);
+        const score=Math.max(1,Math.min(99,Math.round((marketProb*0.72+liquidity*0.28)*10)/10));
         const resolved=playerDirectory.get(normalizedPersonName(x.playerName));
-        const base:any={player_id:resolved?.id||null,player_name:x.playerName,player:x.playerName,headshot_url:resolved?.id?`https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${resolved.id}/headshot/67/current`:"",team_id:resolved?.teamId||null,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,bookmaker_count:x.books.size,source:"Owls Insight live props",lineup_status:"Pending"};
+        const label=category.replace(/_/g," ");
+        const prediction=category==="home_runs"?"1+ HR":line!=null?`Over ${line}`:"Market posted";
+        const evidence=`OWLS currently shows this ${label} market at ${x.books.size} sportsbook${x.books.size===1?"":"s"}${line!=null?` with a consensus line of ${line}`:""}${prob!=null?` and an implied over probability near ${Math.round(prob)}%`:""}.`;
+        const why=`This ranking is eligible because a live sportsbook market is posted. GI ${score.toFixed(1)} keeps market probability (${prob!=null?Math.round(prob)+"%":"unavailable"}) separate from market reliability (${x.books.size} book${x.books.size===1?"":"s"}). It is not a claim that GI equals probability.`;
+        const base:any={player_id:resolved?.id||null,player_name:x.playerName,player:x.playerName,headshot_url:resolved?.id?`https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${resolved.id}/headshot/67/current`:"",team_id:resolved?.teamId||null,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,prediction,bookmaker_count:x.books.size,summary:`Prediction: ${prediction}. ${evidence}`,performance_evidence:evidence,why_this_player:why,source:"Owls Insight live props",lineup_status:"Pending"};
         if(category==="home_runs")base.home_run_probability=prob;
         if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=resolved?.id||null;}
         return base;

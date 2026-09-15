@@ -32,7 +32,9 @@ const SGO_STATS:Record<NflMarketKey,string[]>={
   rushing_receiving_yards:["rushing_receiving_yards","rushingReceivingYards","rush+receiving yards","rush_receiving_yds","rushing+receiving yards"],
   anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
   first_td:["firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
-  q1_touchdowns:["touchdowns_1q","touchdowns1q","1q touchdowns","first quarter touchdowns"],
+  q1_passing_yards:["passing_yards_1q","passing1qyards","1q passing yards","first quarter passing yards"],
+  q1_receiving_yards:["receiving_yards_1q","receiving1qyards","1q receiving yards","first quarter receiving yards"],
+  q1_rushing_yards:["rushing_yards_1q","rushing1qyards","1q rushing yards","first quarter rushing yards"],
 };
 
 function normSgo(v:any){
@@ -51,7 +53,9 @@ function sgoMatchesMarket(o:any,market:NflMarketKey){
     const joined=normalized.join(" ");
     const isQ1=/firstquarter|1stquarter|quarter1|q1/.test(joined);
     if(!isQ1)return false;
-    if(market==="q1_touchdowns")return /touchdown|td/.test(joined);
+    if(market==="q1_passing_yards")return /pass/.test(joined)&&/yard|yd/.test(joined);
+    if(market==="q1_receiving_yards")return /receiv|reception/.test(joined)&&/yard|yd/.test(joined);
+    if(market==="q1_rushing_yards")return /rush/.test(joined)&&/yard|yd/.test(joined);
   }
   return false;
 }
@@ -83,7 +87,9 @@ const LEADER_ALIASES:Record<NflMarketKey,string[]>={
   rushing_receiving_yards:["rushingyards","rushing yards","receivingyards","receiving yards"],
   anytime_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
   first_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
-  q1_touchdowns:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
+  q1_passing_yards:["passingyards","passing yards"],
+  q1_receiving_yards:["receivingyards","receiving yards"],
+  q1_rushing_yards:["rushingyards","rushing yards"],
 };
 
 async function json(url:string,init?:RequestInit){
