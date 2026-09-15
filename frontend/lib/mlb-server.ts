@@ -127,6 +127,18 @@ function supabaseWriteConfig() {
 }
 
 let lastPerformanceArchiveAt = 0;
+function performanceDayPayload(payload:any, gameDate:string) {
+  // Performance used to write the ENTIRE season history into today's row every
+  // five minutes. That made each Supabase read/write grow continuously and was
+  // a major source of unnecessary egress. Persist only the requested game day;
+  // older rows remain readable for backwards compatibility.
+  const day = payload?.days?.[gameDate];
+  return {
+    schema_version: Number(payload?.schema_version || 1),
+    days: day ? { [gameDate]: day } : {},
+  };
+}
+
 async function savePerformanceArchive(sourceName:string, payload:any, gameDate:string) {
   // Keep one durable source_snapshots row per source/day. The route polls every
   // 30 seconds, so throttle writes while still refreshing the current day.
@@ -134,7 +146,7 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
   const {url,keys}=supabaseWriteConfig();
   if(!url||!keys.length)return false;
   const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
-  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
+  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload:performanceDayPayload(payload,gameDate),created_at:new Date().toISOString()});
   for(const key of keys){
     const headers=supabaseHeaders(key,true,"return=minimal");
     try {
@@ -166,6 +178,19 @@ async function getSourceSnapshotForDay(sourceName:string, gameDate:string) {
 async function getRecentSourceSnapshots(sourceName:string, limit=24) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=${limit}`);
   return { connected: result.connected, error: result.error, rows: Array.isArray(result.rows)?result.rows:[] };
+}
+
+async function getPerformanceHistory(sourceName:string, local:any, pitcher=false, limit=120) {
+  // Read daily snapshots and fold them into one history object. This supports
+  // both the new small day-only payloads and legacy rows that contain many days.
+  const recent=await getRecentSourceSnapshots(sourceName,limit);
+  let merged=structuredClone(local||{schema_version:1,days:{}});
+  const rows=[...(recent.rows||[])].reverse();
+  for(const row of rows){
+    const payload=row?.payload;
+    if(payload&&typeof payload==="object") merged=mergeHistory(payload,merged,pitcher);
+  }
+  return {payload:merged,connected:recent.connected,error:recent.error};
 }
 
 async function officialGameDayFromRankings(rankings:Record<string,RankingRow[]>, fallback:string) {
@@ -611,8 +636,14 @@ function emergingExplanation(r:any){
 export async function getPerformance(){
   const today=torontoDay();
   const yesterday=torontoDay(-1);
-  const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
-  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
+  const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([
+    getPerformanceHistory("mlb_batter_performance_history",batterHistory,false),
+    getPerformanceHistory("mlb_pitcher_performance_history",pitcherHistory,true),
+    getPerformanceHistory("mlb_emerging_power_history",{schema_version:1,days:{}},false),
+    getRankings(),
+    getRankingsForDay(yesterday)
+  ]);
+  let mergedBatter=batter.payload,mergedPitcher=pitcher.payload;
 
   // The latest intelligence snapshot can carry a stale game_date even when the
   // rows themselves belong to today's MLB games. Resolve each row by gamePk and
