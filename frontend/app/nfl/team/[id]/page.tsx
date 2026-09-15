@@ -32,19 +32,11 @@ export default async function NflTeamPage({
     <div className="rosterLabel"><h2>Roster</h2><span>Quarterbacks listed first</span></div>
 
     {roster.players.length?<div className="roster">
-      {roster.players.map(p=><article className="playerCard" key={p.id}>
+      {roster.players.map(p=><Link className="playerRow" key={p.id} href={`/nfl/player/${encodeURIComponent(p.id)}?name=${encodeURIComponent(p.name)}&team=${encodeURIComponent(name)}&img=${encodeURIComponent(p.headshot||"")}&position=${encodeURIComponent(p.position||"")}`}>
         <div className="photo">{p.headshot?<img src={p.headshot} alt=""/>:<span>{p.position||"NFL"}</span>}</div>
-        <div className="playerMain">
-          <strong>{p.name}</strong>
-          <p>{p.position||"Position TBD"}{p.jersey?` · #${p.jersey}`:""}</p>
-          <div className="miniStats">
-            <span><small>CLASS</small><b>{p.className||"—"}</b></span>
-            <span><small>HEIGHT</small><b>{p.height||"—"}</b></span>
-            <span><small>WEIGHT</small><b>{p.weight||"—"}</b></span>
-          </div>
-        </div>
-        <Link className="openPlayer" href={`/nfl/player/${encodeURIComponent(p.id)}?name=${encodeURIComponent(p.name)}&team=${encodeURIComponent(name)}&img=${encodeURIComponent(p.headshot||"")}`}>Open Player Card →</Link>
-      </article>)}
+        <div className="playerMain"><strong>{p.name}</strong><p>{p.position||"Position TBD"}{p.jersey?` · #${p.jersey}`:""}</p></div>
+        <span className="openArrow">›</span>
+      </Link>)}
     </div>:<div className="empty">Roster data is temporarily unavailable.</div>}
 
     <style>{`
@@ -56,15 +48,12 @@ export default async function NflTeamPage({
       .teamHead img,.logoFallback{width:92px;height:92px;object-fit:contain}.logoFallback{display:grid;place-items:center;border:3px solid #d9b85d;border-radius:50%;color:#d9b85d;font-weight:900}
       .teamHead h1{font-size:31px;margin:0}.teamHead p{color:#a9acb3;margin:6px 0 0;font-size:18px}
       .rosterLabel{display:flex;justify-content:space-between;align-items:end;margin:24px 2px 10px}.rosterLabel h2{font-size:28px;margin:0}.rosterLabel span{color:#9da1a8;font-size:13px}
-      .roster{display:grid;gap:14px}
-      .playerCard{display:grid;grid-template-columns:88px 1fr;gap:16px;border:2px solid #34373d;border-left:10px solid #20df7f;border-radius:20px;padding:16px;background:#111214;overflow:hidden}
-      .photo img,.photo span{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #d9b85d}.photo span{display:grid;place-items:center;color:#d9b85d;font-weight:900}
-      .playerMain strong{display:block;font-size:22px}.playerMain>p{margin:4px 0 10px;color:#a9acb3;font-size:16px}
-      .miniStats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.miniStats span{border:1px solid #34373d;border-radius:10px;padding:8px;background:#0d0f10}.miniStats small{display:block;color:#8f949c;font-size:9px}.miniStats b{display:block;margin-top:3px;font-size:13px}
-      .openPlayer{grid-column:1/-1;display:block;text-align:center;border:2px solid #34373d;border-radius:13px;padding:12px;color:#fff;text-decoration:none;background:#0d0f10;font-weight:800}
-      .playerCard:hover,.playerCard:focus-within{border-color:#20df7f}.openPlayer:hover{border-color:#d9b85d;color:#d9b85d}
+      .roster{display:grid;gap:8px}
+      .playerRow{display:grid;grid-template-columns:58px 1fr 24px;align-items:center;gap:11px;border:1.5px solid #34373d;border-left:6px solid #20df7f;border-radius:14px;padding:9px 11px;background:#111214;color:#fff;text-decoration:none}
+      .photo img,.photo span{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #d9b85d}.photo span{display:grid;place-items:center;color:#d9b85d;font-weight:900;font-size:11px}
+      .playerMain strong{display:block;font-size:17px}.playerMain>p{margin:3px 0 0;color:#a9acb3;font-size:12px}.openArrow{color:#d9b85d;font-size:26px;text-align:right}.playerRow:hover,.playerRow:focus{border-color:#20df7f}
       .empty{margin-top:30px;text-align:center;color:#a9acb3;border:1px solid #34373d;border-radius:16px;padding:20px;background:#0d0f10}
-      @media(max-width:600px){.teamMenu{width:52px;height:52px}.teamHead{grid-template-columns:82px 1fr;padding:16px}.teamHead img,.logoFallback{width:74px;height:74px}.teamHead h1{font-size:25px}.rosterLabel{align-items:flex-start;flex-direction:column;gap:4px}.playerCard{grid-template-columns:72px 1fr;padding:13px;border-left-width:8px}.photo img,.photo span{width:66px;height:66px}.playerMain strong{font-size:19px}.miniStats{grid-template-columns:repeat(3,minmax(0,1fr))}.miniStats b{font-size:11px}}
+      @media(max-width:600px){.teamMenu{width:48px;height:48px}.teamHead{grid-template-columns:72px 1fr;padding:14px}.teamHead img,.logoFallback{width:64px;height:64px}.teamHead h1{font-size:23px}.rosterLabel{align-items:flex-start;flex-direction:column;gap:4px}.playerRow{grid-template-columns:52px 1fr 20px;padding:8px 9px}.photo img,.photo span{width:48px;height:48px}.playerMain strong{font-size:16px}}
     `}</style>
   </main>;
 }
