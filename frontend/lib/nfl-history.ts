@@ -12,16 +12,15 @@ export type SavedNflPrediction={
 };
 
 const SOURCE_PREFIX="nfl_predictions_";
-function readConfig(){
-  const url=(process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||"").replace(/\/$/,"");
-  const key=process.env.SUPABASE_KEY||process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||"";
-  return {url,key};
+function supabaseUrl(){return (process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||"").replace(/\/$/,"");}
+function candidateKeys(){
+  // Server-side credentials must win. A public/anon key can be present on Railway
+  // while RLS blocks source_snapshots, which previously made NFL silently report 0/0.
+  return [process.env.SUPABASE_SECRET_KEY,process.env.SUPABASE_SERVICE_ROLE_KEY,process.env.SUPABASE_KEY,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY]
+    .map(v=>String(v||"").trim()).filter((v,i,a)=>Boolean(v)&&a.indexOf(v)===i);
 }
-function writeConfig(){
-  const url=(process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||"").replace(/\/$/,"");
-  const key=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||process.env.SUPABASE_KEY||"";
-  return {url,key};
-}
+function readConfig(){const keys=candidateKeys();return {url:supabaseUrl(),key:keys[0]||"",keys};}
+function writeConfig(){const keys=candidateKeys();return {url:supabaseUrl(),key:keys[0]||"",keys};}
 function headers(key:string,prefer="return=representation"){return {apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Accept:"application/json",Prefer:prefer}}
 export function nflDay(v:Date|string){
  const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";
@@ -30,12 +29,14 @@ export function nflDay(v:Date|string){
 }
 function source(m:NflMarketKey){return `${SOURCE_PREFIX}${m}`}
 async function getRows(m:NflMarketKey,day:string){
- const {url,key}=readConfig();const write=writeConfig();if(!url||!key)return {connected:false,writable:Boolean(write.url&&write.key),rows:[] as any[]};
- // Read every snapshot for this market/day. Older deployments could create more than
- // one row during the day, and the early-game predictions may live in an older row.
+ const {url,keys}=readConfig();if(!url||!keys.length)return {connected:false,writable:false,rows:[] as any[]};
  const q=`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(source(m))}&game_date=eq.${encodeURIComponent(day)}&order=created_at.asc&limit=500`;
- const r=await fetch(`${url}/rest/v1/${q}`,{headers:headers(key),cache:"no-store"});if(!r.ok)return {connected:false,writable:Boolean(write.url&&write.key),rows:[] as any[]};
- const a=await r.json();return {connected:true,writable:Boolean(write.url&&write.key),rows:Array.isArray(a)?a:[]};
+ // Try the service/server key first, then configured fallbacks. This avoids a
+ // valid anon key masking a service key when RLS protects source_snapshots.
+ for(const key of keys){
+   try{const r=await fetch(`${url}/rest/v1/${q}`,{headers:headers(key),cache:"no-store"});if(!r.ok)continue;const a=await r.json();return {connected:true,writable:true,rows:Array.isArray(a)?a:[]}}catch{}
+ }
+ return {connected:false,writable:false,rows:[] as any[]};
 }
 function mergeSnapshotPredictions(rows:any[]){
  const merged=new Map<string,SavedNflPrediction>();
@@ -63,10 +64,13 @@ async function getRow(m:NflMarketKey,day:string){
  return {connected:x.connected,writable:x.writable,row,rows:x.rows};
 }
 async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
- const {url,key}=writeConfig();if(!url||!key)return false;
+ const {url,keys}=writeConfig();if(!url||!keys.length)return false;
  const body=JSON.stringify({source_name:source(m),game_date:day,payload:{predictions},created_at:new Date().toISOString()});
  const endpoint=id?`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(id)}`:`${url}/rest/v1/source_snapshots`;
- const r=await fetch(endpoint,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body,cache:"no-store"});return r.ok;
+ for(const key of keys){
+   try{const r=await fetch(endpoint,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body,cache:"no-store"});if(r.ok)return true}catch{}
+ }
+ return false;
 }
 function teamNick(v:any){const x=cleanName(String(v||""));return x.split(" ").filter(Boolean).pop()||x}
 function matchupParts(v:any){
