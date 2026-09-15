@@ -9,6 +9,7 @@ export type SavedNflPrediction={
   giScore:number; bookmakerCount:number; savedAt:string;
   originalRank?:number|null; lastSeenRank?:number|null; lastSeenAt?:string|null;
   status:"pending"|"hit"|"miss"|"push"|"void"; actual:number|null; gradedAt:string|null;
+  recoveredAfterStart?:boolean;
 };
 
 const SOURCE_PREFIX="nfl_predictions_";
@@ -30,7 +31,7 @@ export function nflDay(v:Date|string){
 function source(m:NflMarketKey){return `${SOURCE_PREFIX}${m}`}
 async function getRows(m:NflMarketKey,day:string){
  const {url,keys}=readConfig();if(!url||!keys.length)return {connected:false,writable:false,rows:[] as any[]};
- const q=`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(source(m))}&game_date=eq.${encodeURIComponent(day)}&order=created_at.asc&limit=500`;
+ const q=`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(source(m))}&game_date=eq.${encodeURIComponent(day)}&order=created_at.desc&limit=25`;
  // Try the service/server key first, then configured fallbacks. This avoids a
  // valid anon key masking a service key when RLS protects source_snapshots.
  for(const key of keys){
@@ -60,7 +61,7 @@ function mergeSnapshotPredictions(rows:any[]){
  return [...merged.values()];
 }
 async function getRow(m:NflMarketKey,day:string){
- const x=await getRows(m,day),row=x.rows.length?x.rows[x.rows.length-1]:null;
+ const x=await getRows(m,day),row=x.rows.length?x.rows[0]:null;
  return {connected:x.connected,writable:x.writable,row,rows:x.rows};
 }
 async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
@@ -92,21 +93,25 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
  // Capture against the actual ESPN game date. Do not abort just because the initial read is empty/blocked;
  // a server write may still be authorized and is the important operation.
  const buckets=new Map<string,{existing:any,saved:SavedNflPrediction[],map:Map<string,SavedNflPrediction>,changed:boolean}>();
- const ensure=async(day:string)=>{let b=buckets.get(day);if(b)return b;const existing=await getRow(m,day);const saved=mergeSnapshotPredictions(existing.rows||[]);b={existing,saved,map:new Map(saved.map(x=>[x.key,x])),changed:false};buckets.set(day,b);return b};
+ const ensure=async(day:string)=>{let b=buckets.get(day);if(b)return b;const existing=await getRow(m,day);const saved=mergeSnapshotPredictions([...(existing.rows||[])].reverse());b={existing,saved,map:new Map(saved.map(x=>[x.key,x])),changed:false};buckets.set(day,b);return b};
  for(const row of rows){
    const game=findScheduleGame(schedule,row);
-   // Once a game starts, never rewrite the frozen prediction for that player/market.
-   if(game?.state==="in"||game?.completed||game?.state==="post")continue;
    const tdMarket=m==="anytime_td"||m==="first_td";
    if(!row.playerId||(!tdMarket&&row.sportsbookLine==null)||(tdMarket&&row.sportsbookLine==null&&row.sportsbookProbability==null))continue;
    const gameDate=nflDay(game?.date||row.gameTime||new Date());
-   // Ignore stale games, but allow today and future weekly-slate predictions to be frozen under their real game date.
+   // Ignore stale prior dates. Same-day rows are still recoverable after kickoff when
+   // the provider is continuing to return the exact ranked line. This salvages a
+   // missed write on game day, but is explicitly marked as a recovery.
    if(!gameDate||gameDate<today)continue;
    const bucket=await ensure(gameDate);
    const {map,saved}=bucket;
    const gameId=String(row.gameId||game?.id||"");
    const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;
    const old=map.get(key)||saved.find(x=>x.playerId===String(row.playerId)&&((gameId&&x.gameId===gameId)||sameMatchup(x.matchup,row.matchup)));
+   const alreadyStarted=Boolean(game?.state==="in"||game?.completed||game?.state==="post");
+   // Never rewrite a prediction after kickoff. If no frozen row exists at all, allow
+   // a same-day recovery from the still-visible provider row so today's board is not lost.
+   if(alreadyStarted&&old){continue}
    if(old){
      map.set(old.key,{...old,
        playerName:String(row.playerName||old.playerName),teamName:String(row.teamName||old.teamName),position:String(row.position||old.position||""),
@@ -120,7 +125,7 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
      sportsbookLine:row.sportsbookLine==null?null:Number(row.sportsbookLine),sportsbookProbability:row.sportsbookProbability==null?null:Number(row.sportsbookProbability),modelProjection:row.modelProjection==null?null:Number(row.modelProjection),
      modelProbability:row.modelProbability==null?null:Number(row.modelProbability),giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
      savedAt:new Date().toISOString(),originalRank:Number(row.rank||0)||null,lastSeenRank:Number(row.rank||0)||null,lastSeenAt:new Date().toISOString(),
-     status:"pending",actual:null,gradedAt:null});bucket.changed=true;
+     status:"pending",actual:null,gradedAt:null,recoveredAfterStart:alreadyStarted||undefined});bucket.changed=true;
  }
  let ok=true;
  for(const [day,bucket] of buckets){
@@ -133,7 +138,7 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
 }
 export async function getNflPredictions(m:NflMarketKey,day:string){
  const x=await getRow(m,day);
- const predictions=mergeSnapshotPredictions(x.rows||[]);
+ const predictions=mergeSnapshotPredictions([...(x.rows||[])].reverse());
  return {connected:x.connected,writable:x.writable,predictions,id:x.row?.id as string|undefined,snapshotCount:(x.rows||[]).length};
 }
 export async function saveGradedNflPredictions(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
