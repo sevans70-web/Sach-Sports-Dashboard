@@ -88,18 +88,22 @@ function findScheduleGame(schedule:any[],row:any){
  return schedule.find((g:any)=>sameMatchup(`${g.awayTeam} @ ${g.homeTeam}`,row?.matchup));
 }
 export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedule:any[]){
- const day=nflDay(new Date()),existing=await getRow(m,day);if(!existing.connected)return false;
- const saved:SavedNflPrediction[]=mergeSnapshotPredictions(existing.rows||[]);
- const map=new Map(saved.map(x=>[x.key,x]));
- let changed=false;
+ const today=nflDay(new Date());
+ // Capture against the actual ESPN game date. Do not abort just because the initial read is empty/blocked;
+ // a server write may still be authorized and is the important operation.
+ const buckets=new Map<string,{existing:any,saved:SavedNflPrediction[],map:Map<string,SavedNflPrediction>,changed:boolean}>();
+ const ensure=async(day:string)=>{let b=buckets.get(day);if(b)return b;const existing=await getRow(m,day);const saved=mergeSnapshotPredictions(existing.rows||[]);b={existing,saved,map:new Map(saved.map(x=>[x.key,x])),changed:false};buckets.set(day,b);return b};
  for(const row of rows){
    const game=findScheduleGame(schedule,row);
    // Once a game starts, never rewrite the frozen prediction for that player/market.
    if(game?.state==="in"||game?.completed||game?.state==="post")continue;
    const tdMarket=m==="anytime_td"||m==="first_td";
    if(!row.playerId||(!tdMarket&&row.sportsbookLine==null)||(tdMarket&&row.sportsbookLine==null&&row.sportsbookProbability==null))continue;
-   const gameDate=nflDay(row.gameTime||game?.date||new Date());
-   if(gameDate!==day)continue;
+   const gameDate=nflDay(game?.date||row.gameTime||new Date());
+   // Ignore stale games, but allow today and future weekly-slate predictions to be frozen under their real game date.
+   if(!gameDate||gameDate<today)continue;
+   const bucket=await ensure(gameDate);
+   const {map,saved}=bucket;
    const gameId=String(row.gameId||game?.id||"");
    const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;
    const old=map.get(key)||saved.find(x=>x.playerId===String(row.playerId)&&((gameId&&x.gameId===gameId)||sameMatchup(x.matchup,row.matchup)));
@@ -108,7 +112,7 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
        playerName:String(row.playerName||old.playerName),teamName:String(row.teamName||old.teamName),position:String(row.position||old.position||""),
        teamId:String(row.teamId||old.teamId||""),teamLogo:String(row.teamLogo||old.teamLogo||""),headshot:String(row.headshot||old.headshot||""),gameId:String(old.gameId||gameId),
        lastSeenRank:Number(row.rank||old.lastSeenRank||old.originalRank||0)||null,lastSeenAt:new Date().toISOString()});
-     changed=true;continue;
+     bucket.changed=true;continue;
    }
    map.set(key,{key,gameDate,gameTime:String(row.gameTime||game?.date||""),matchup:String(row.matchup||""),market:m,
      playerId:String(row.playerId),playerName:String(row.playerName),teamName:String(row.teamName),position:String(row.position||""),
@@ -116,11 +120,16 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
      sportsbookLine:row.sportsbookLine==null?null:Number(row.sportsbookLine),sportsbookProbability:row.sportsbookProbability==null?null:Number(row.sportsbookProbability),modelProjection:row.modelProjection==null?null:Number(row.modelProjection),
      modelProbability:row.modelProbability==null?null:Number(row.modelProbability),giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
      savedAt:new Date().toISOString(),originalRank:Number(row.rank||0)||null,lastSeenRank:Number(row.rank||0)||null,lastSeenAt:new Date().toISOString(),
-     status:"pending",actual:null,gradedAt:null});changed=true;
+     status:"pending",actual:null,gradedAt:null});bucket.changed=true;
  }
- const next=[...map.values()];
- if(!changed&&next.length===saved.length)return true;
- return writeRow(m,day,next,existing.row?.id);
+ let ok=true;
+ for(const [day,bucket] of buckets){
+   const next=[...bucket.map.values()];
+   if(!bucket.changed&&next.length===bucket.saved.length)continue;
+   const wrote=await writeRow(m,day,next,bucket.existing.row?.id);
+   ok=ok&&wrote;
+ }
+ return ok;
 }
 export async function getNflPredictions(m:NflMarketKey,day:string){
  const x=await getRow(m,day);

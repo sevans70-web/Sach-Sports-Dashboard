@@ -140,6 +140,15 @@ function summaryActual(payload:any,p:SavedNflPrediction){
  return null;
 }
 async function getSummary(gameId:string){try{const r=await fetch(`${ESPN_SUMMARY}?event=${encodeURIComponent(gameId)}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0",Accept:"application/json, text/plain, */*"}});return r.ok?await r.json():null}catch{return null}}
+
+function summaryGameState(payload:any){
+ const c=payload?.header?.competitions?.[0];
+ const type=c?.status?.type||c?.status||{};
+ const state=String(type?.state||type?.name||c?.status?.state||"").toLowerCase();
+ const completed=Boolean(type?.completed??c?.status?.completed);
+ const period=Number(c?.status?.period??type?.period??0);
+ return {completed:completed||state==="post"||state.includes("final"),state,period};
+}
 function daysFor(period:string){
  const n=period==="Today"?1:period==="Yesterday"?1:period==="Week"?7:period==="Month"?31:370;
  const offset=period==="Yesterday"?1:0,days:string[]=[];
@@ -157,12 +166,17 @@ export async function GET(req:NextRequest){
      for(const p of got.predictions){
        if(p.status!=="pending"){all.push(p);continue}
        const game=(p.gameId?schedule.find((g:any)=>String(g.id||"")===String(p.gameId)):null)||schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
-       if(!game){all.push(p);continue}
        const q1=p.market.startsWith("q1_");
-       if(!game.completed&&!q1){all.push(p);continue}
-       let payload=summaryCache.get(String(game.id||""));
-       if(payload===undefined){payload=await getSummary(String(game.id||""));summaryCache.set(String(game.id||""),payload)}
-       if(q1&&(!payload||!q1IsFinal(payload,game))){all.push(p);continue}
+       // Saved gameId is durable. A completed game can disappear from the active weekly schedule after rollover,
+       // so grade from ESPN summary even when the game is no longer returned by getEspnNflSchedule().
+       const summaryId=String(p.gameId||game?.id||"");
+       if(!summaryId){all.push(p);continue}
+       let payload=summaryCache.get(summaryId);
+       if(payload===undefined){payload=await getSummary(summaryId);summaryCache.set(summaryId,payload)}
+       const summaryState=summaryGameState(payload);
+       const fullGameFinal=Boolean(game?.completed||game?.state==="post"||summaryState.completed);
+       if(!q1&&!fullGameFinal){all.push(p);continue}
+       if(q1&&(!payload||!(q1IsFinal(payload,game)||summaryState.period>=2||summaryState.completed))){all.push(p);continue}
        let actual=payload?summaryActual(payload,p):null;
        // ESPN's athlete gamelog can lag behind the final whistle. Use it only as a fallback for full-game markets.
        if(actual==null&&!q1&&p.market!=="first_td"){
