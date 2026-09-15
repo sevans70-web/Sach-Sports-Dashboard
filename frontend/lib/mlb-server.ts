@@ -6,6 +6,7 @@ const MLB_SCHEDULE = "https://statsapi.mlb.com/api/v1/schedule";
 const MLB_FEED = "https://statsapi.mlb.com/api/v1.1/game";
 const MLB_API = "https://statsapi.mlb.com/api/v1";
 const TORONTO = "America/Toronto";
+const OWLS_MLB_PROPS = "https://api.owlsinsight.com/api/v1/mlb/props";
 
 function safe(obj: unknown, path: string[], fallback: unknown = null): any {
   let current: any = obj;
@@ -75,6 +76,58 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
   return { games, fetchedAt: new Date().toISOString(), date: requestedDate, lineupsConfirmed };
 }
 
+
+function normMarket(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+function medianNumber(values:number[]){const a=values.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2}
+function impliedProbability(american:any){const n=Number(american);if(!Number.isFinite(n)||n===0)return null;return (n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100))*100}
+const OWLS_MLB_MARKETS:Record<string,string[]>={
+  home_runs:["home_runs","homeruns"], hits:["hits"], total_bases:["total_bases","totalbases"], runs:["runs"],
+  rbis:["rbis"], walks:["walks"], stolen_bases:["stolen_bases","stolenbases"], hits_runs_rbis:["hits_runs_rbis","hitsrunsrbis"],
+  strikeouts:["strikeouts_pitcher","pitcher_strikeouts","strikeoutspitcher"], outs_recorded:["outs_recorded","outsrecorded"],
+  hits_allowed:["hits_allowed","hitsallowed"], walks_allowed:["walks_allowed","walksallowed"], earned_runs:["earned_runs","earnedruns"]
+};
+function owlsCategoryMatches(value:any,category:string){const x=normMarket(value);return (OWLS_MLB_MARKETS[category]||[]).some(v=>normMarket(v)===x)}
+async function getOwlsMlbRankings(){
+  const apiKey=String(process.env.OWLS_INSIGHT_API_KEY||"").trim();
+  if(!apiKey)return {batter:{} as Record<string,RankingRow[]>,pitcher:{} as Record<string,RankingRow[]>,ok:false,error:"OWLS_INSIGHT_API_KEY is missing"};
+  try{
+    const res=await fetch(OWLS_MLB_PROPS,{headers:{Authorization:`Bearer ${apiKey}`,Accept:"application/json"},next:{revalidate:45}});
+    if(!res.ok)return {batter:{},pitcher:{},ok:false,error:`Owls Insight returned ${res.status}`};
+    const payload=await res.json();
+    const games=Array.isArray(payload?.data)?payload.data:[];
+    const schedule=(await getSchedule()).games;
+    const gameByTeams=(away:string,home:string)=>schedule.find(g=>normMarket(g.away.name)===normMarket(away)&&normMarket(g.home.name)===normMarket(home));
+    const build=(category:string,pitcher=false)=>{
+      const grouped=new Map<string,any>();
+      for(const game of games){
+        const away=String(game.awayTeam||game.away_team||""),home=String(game.homeTeam||game.home_team||"");
+        const scheduled=gameByTeams(away,home); const gamePk=scheduled?.gamePk||null;
+        for(const book of Array.isArray(game.books)?game.books:[])for(const prop of Array.isArray(book.props)?book.props:[]){
+          if(!owlsCategoryMatches(prop.category??prop.market??prop.type,category))continue;
+          const playerName=String(prop.playerName||prop.player_name||prop.name||"").trim(); if(!playerName)continue;
+          const key=`${normMarket(playerName)}|${gamePk||normMarket(away+home)}`;
+          const cur=grouped.get(key)||{playerName,teamName:String(prop.team||prop.teamName||prop.team_name||""),away,home,gamePk,lines:[],prices:[],books:new Set<string>()};
+          const line=Number(prop.line??prop.point??prop.total); if(Number.isFinite(line))cur.lines.push(line);
+          const price=Number(prop.overPrice??prop.over_price??prop.price??prop.odds); if(Number.isFinite(price))cur.prices.push(price);
+          cur.books.add(String(book.key||book.name||book.title||"book")); grouped.set(key,cur);
+        }
+      }
+      return [...grouped.values()].map((x:any)=>{
+        const line=medianNumber(x.lines),prob=impliedProbability(medianNumber(x.prices));
+        const score=Math.max(1,Math.min(99,Math.round((prob??50)*10)/10));
+        const base:any={player_name:x.playerName,player:x.playerName,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,bookmaker_count:x.books.size,source:"Owls Insight live props",lineup_status:"Pending"};
+        if(category==="home_runs")base.home_run_probability=prob;
+        if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=null;}
+        return base;
+      }).sort((a:any,b:any)=>Number(b.probability??0)-Number(a.probability??0)||Number(b.line??0)-Number(a.line??0)).slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
+    };
+    const batter:Record<string,RankingRow[]>={},pitcher:Record<string,RankingRow[]>={};
+    for(const c of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"])batter[c]=build(c,false);
+    for(const c of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"])pitcher[c]=build(c,true);
+    return {batter,pitcher,ok:Object.values(batter).some(x=>x.length>0)||Object.values(pitcher).some(x=>x.length>0),error:""};
+  }catch(error){return {batter:{},pitcher:{},ok:false,error:error instanceof Error?error.message:"Owls Insight MLB props failed"};}
+}
+
 function supabaseUrl() {
   return (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/$/, "");
 }
@@ -98,8 +151,10 @@ function supabaseHeaders(key:string, contentType=false, prefer?:string) {
   return h;
 }
 
+let supabaseCircuitOpenUntil=0;
 async function supabaseRows(path: string) {
   const url=supabaseUrl(), keys=supabaseKeys();
+  if(Date.now()<supabaseCircuitOpenUntil)return {rows:[] as any[],connected:false,error:"Supabase temporarily unavailable; using live OWLS fallback."};
   if (!url || !keys.length) return { rows: [] as any[], connected: false, error: "Supabase environment variables are unavailable to the Next.js server." };
   let lastError="Supabase request failed";
   for (const key of keys) {
@@ -108,6 +163,7 @@ async function supabaseRows(path: string) {
       if (!res.ok) {
         const detail=(await res.text().catch(()=>"")).slice(0,500);
         lastError=`Supabase returned ${res.status}${detail?`: ${detail}`:""}`;
+        if(res.status>=500) supabaseCircuitOpenUntil=Date.now()+60_000;
         console.error("[MLB Supabase read]", {status:res.status, path:path.split("?")[0], detail});
         continue;
       }
@@ -127,18 +183,6 @@ function supabaseWriteConfig() {
 }
 
 let lastPerformanceArchiveAt = 0;
-function performanceDayPayload(payload:any, gameDate:string) {
-  // Performance used to write the ENTIRE season history into today's row every
-  // five minutes. That made each Supabase read/write grow continuously and was
-  // a major source of unnecessary egress. Persist only the requested game day;
-  // older rows remain readable for backwards compatibility.
-  const day = payload?.days?.[gameDate];
-  return {
-    schema_version: Number(payload?.schema_version || 1),
-    days: day ? { [gameDate]: day } : {},
-  };
-}
-
 async function savePerformanceArchive(sourceName:string, payload:any, gameDate:string) {
   // Keep one durable source_snapshots row per source/day. The route polls every
   // 30 seconds, so throttle writes while still refreshing the current day.
@@ -146,7 +190,7 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
   const {url,keys}=supabaseWriteConfig();
   if(!url||!keys.length)return false;
   const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
-  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload:performanceDayPayload(payload,gameDate),created_at:new Date().toISOString()});
+  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
   for(const key of keys){
     const headers=supabaseHeaders(key,true,"return=minimal");
     try {
@@ -178,19 +222,6 @@ async function getSourceSnapshotForDay(sourceName:string, gameDate:string) {
 async function getRecentSourceSnapshots(sourceName:string, limit=24) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=${limit}`);
   return { connected: result.connected, error: result.error, rows: Array.isArray(result.rows)?result.rows:[] };
-}
-
-async function getPerformanceHistory(sourceName:string, local:any, pitcher=false, limit=120) {
-  // Read daily snapshots and fold them into one history object. This supports
-  // both the new small day-only payloads and legacy rows that contain many days.
-  const recent=await getRecentSourceSnapshots(sourceName,limit);
-  let merged=structuredClone(local||{schema_version:1,days:{}});
-  const rows=[...(recent.rows||[])].reverse();
-  for(const row of rows){
-    const payload=row?.payload;
-    if(payload&&typeof payload==="object") merged=mergeHistory(payload,merged,pitcher);
-  }
-  return {payload:merged,connected:recent.connected,error:recent.error};
 }
 
 async function officialGameDayFromRankings(rankings:Record<string,RankingRow[]>, fallback:string) {
@@ -394,14 +425,22 @@ export async function getRankings() {
   const batterStale = Boolean(batterDataDate && batterDataDate !== today);
   const pitcherStale = Boolean(pitcherDataDate && pitcherDataDate !== today);
 
+  const hasSaved=Object.values(batter).some(rows=>rows.length>0)||Object.values(pitcher).some(rows=>rows.length>0);
+  const owls=!hasSaved||!(batterSource.connected||pitcherSource.connected)?await getOwlsMlbRankings():null;
+  const finalBatter=owls?.ok?Object.fromEntries(Object.keys(batter).map(k=>[k,(batter[k]?.length?batter[k]:(owls.batter[k]||[]))])):batter;
+  const finalPitcher=owls?.ok?Object.fromEntries(Object.keys(pitcher).map(k=>[k,(pitcher[k]?.length?pitcher[k]:(owls.pitcher[k]||[]))])):pitcher;
+  const usingOwls=Boolean(owls?.ok&&!hasSaved);
+
   return {
-    batter,
-    pitcher,
-    connected: batterSource.connected || pitcherSource.connected,
+    batter:finalBatter,
+    pitcher:finalPitcher,
+    connected: batterSource.connected || pitcherSource.connected || Boolean(owls?.ok),
     batterConnected: batterSource.connected,
     pitcherConnected: pitcherSource.connected,
-    errors: [batterSource.error, pitcherSource.error].filter(Boolean),
-    updatedAt: batterSource.row?.created_at || pitcherSource.row?.created_at || null,
+    errors: [batterSource.error, pitcherSource.error, owls?.error].filter(Boolean),
+    source: usingOwls?"Owls Insight live props":"Supabase intelligence snapshot",
+    fallbackActive: usingOwls,
+    updatedAt: batterSource.row?.created_at || pitcherSource.row?.created_at || (owls?.ok?new Date().toISOString():null),
     dataDate: batterDataDate || pitcherDataDate,
     batterDataDate,
     pitcherDataDate,
@@ -636,14 +675,8 @@ function emergingExplanation(r:any){
 export async function getPerformance(){
   const today=torontoDay();
   const yesterday=torontoDay(-1);
-  const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([
-    getPerformanceHistory("mlb_batter_performance_history",batterHistory,false),
-    getPerformanceHistory("mlb_pitcher_performance_history",pitcherHistory,true),
-    getPerformanceHistory("mlb_emerging_power_history",{schema_version:1,days:{}},false),
-    getRankings(),
-    getRankingsForDay(yesterday)
-  ]);
-  let mergedBatter=batter.payload,mergedPitcher=pitcher.payload;
+  const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
+  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
 
   // The latest intelligence snapshot can carry a stale game_date even when the
   // rows themselves belong to today's MLB games. Resolve each row by gamePk and
