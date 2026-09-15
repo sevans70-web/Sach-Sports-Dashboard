@@ -693,6 +693,6 @@ export async function getPlayer(playerId: string) {
 }
 
 export function connectionStatus() {
-  const { url, key } = supabaseConfig();
-  return { supabaseConfigured: Boolean(url && key), mlbStatsConfigured: true };
+  const { url, keys } = supabaseConfig();
+  return { supabaseConfigured: Boolean(url && keys.length), mlbStatsConfigured: true };
 }
