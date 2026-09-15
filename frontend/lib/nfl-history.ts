@@ -17,7 +17,7 @@ function supabaseUrl(){return (process.env.SUPABASE_URL||process.env.NEXT_PUBLIC
 function candidateKeys(){
   // Server-side credentials must win. A public/anon key can be present on Railway
   // while RLS blocks source_snapshots, which previously made NFL silently report 0/0.
-  return [process.env.SUPABASE_SECRET_KEY,process.env.SUPABASE_SERVICE_ROLE_KEY,process.env.SUPABASE_KEY,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY]
+  return [process.env.SUPABASE_SECRET_KEY,process.env.SUPABASE_SERVICE_ROLE_KEY,process.env.SUPABASE_SERVICE_KEY,process.env.SUPABASE_KEY,process.env.SUPABASE_PUBLISHABLE_KEY,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY]
     .map(v=>String(v||"").trim()).filter((v,i,a)=>Boolean(v)&&a.indexOf(v)===i);
 }
 function readConfig(){const keys=candidateKeys();return {url:supabaseUrl(),key:keys[0]||"",keys};}
