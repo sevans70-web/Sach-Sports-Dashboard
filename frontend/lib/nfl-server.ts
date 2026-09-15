@@ -98,11 +98,22 @@ function dateKey(d:Date){
 
 export async function getEspnNflSchedule(){
   const now=new Date();
-  // Standard NFL weekly slate: Thursday through Monday. On Tuesday/Wednesday,
-  // move forward to the upcoming Thursday instead of mixing two NFL weeks.
-  const day=now.getDay();
+  // NFL week selection must use Eastern Time, not the Railway server's UTC day.
+  // This keeps Monday-night games on the current week until Monday is actually
+  // over in ET. Without this, 8 PM ET Monday becomes Tuesday in UTC and the
+  // dashboard can jump to next week's slate before the game starts.
+  const etParts=new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit",weekday:"short"
+  }).formatToParts(now);
+  const part=(type:string)=>etParts.find(x=>x.type===type)?.value||"";
+  const y=Number(part("year")),m=Number(part("month")),d=Number(part("day"));
+  const weekday=part("weekday");
+  const dayMap:Record<string,number>={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  const day=dayMap[weekday]??now.getUTCDay();
+  // Noon UTC is a safe calendar anchor; dateKey only needs the calendar date.
+  const etCalendarDate=new Date(Date.UTC(y,m-1,d,12));
   const toThursday=day===2||day===3?4-day:-(day>=4?day-4:day+3);
-  const thursday=new Date(now.getTime()+toThursday*86400000);
+  const thursday=new Date(etCalendarDate.getTime()+toThursday*86400000);
   const dates=[0,1,2,3,4].map(offset=>dateKey(new Date(thursday.getTime()+offset*86400000)));
   const payloads=await Promise.all(
     dates.map(async date=>{
