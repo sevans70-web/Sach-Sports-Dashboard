@@ -75,44 +75,45 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
   return { games, fetchedAt: new Date().toISOString(), date: requestedDate, lineupsConfirmed };
 }
 
-function supabaseCandidateKeys() {
-  // Always prefer a server/service credential. Railway can also expose the newer
-  // Supabase publishable-key names, so keep those as read-only fallbacks.
+function supabaseUrl() {
+  return (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/$/, "");
+}
+
+function supabaseKeys() {
   return [
     process.env.SUPABASE_SECRET_KEY,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
-    process.env.SUPABASE_SERVICE_KEY,
     process.env.SUPABASE_KEY,
-    process.env.SUPABASE_PUBLISHABLE_KEY,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   ].map(v => String(v || "").trim()).filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
 }
-function supabaseConfig() {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  return { url: url.replace(/\/$/, ""), keys: supabaseCandidateKeys() };
+
+function supabaseHeaders(key:string, contentType=false, prefer?:string) {
+  // Supabase's new sb_secret_/sb_publishable_ keys authenticate through apikey.
+  // Legacy JWT anon/service-role keys also support Authorization: Bearer.
+  const h:any = { apikey:key, Accept:"application/json" };
+  if (!key.startsWith("sb_secret_") && !key.startsWith("sb_publishable_")) h.Authorization=`Bearer ${key}`;
+  if (contentType) h["Content-Type"]="application/json";
+  if (prefer) h.Prefer=prefer;
+  return h;
 }
 
 async function supabaseRows(path: string) {
-  const { url, keys } = supabaseConfig();
-  if (!url || !keys.length) return { rows: [] as any[], connected: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
-  let lastError = "Supabase request failed";
+  const url=supabaseUrl(), keys=supabaseKeys();
+  if (!url || !keys.length) return { rows: [] as any[], connected: false, error: "Supabase environment variables are unavailable to the Next.js server." };
+  let lastError="Supabase request failed";
   for (const key of keys) {
     try {
-      const res = await fetch(`${url}/rest/v1/${path}`, { headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" }, cache: "no-store" });
-      if (!res.ok) { lastError = `Supabase returned ${res.status}`; continue; }
-      return { rows: await res.json(), connected: true, error: "" };
-    } catch (error) { lastError = error instanceof Error ? error.message : "Supabase request failed"; }
+      const res=await fetch(`${url}/rest/v1/${path}`,{headers:supabaseHeaders(key),cache:"no-store"});
+      if (!res.ok) { lastError=`Supabase returned ${res.status}`; continue; }
+      return {rows:await res.json(),connected:true,error:""};
+    } catch (error) { lastError=error instanceof Error?error.message:"Supabase request failed"; }
   }
-  return { rows: [], connected: false, error: lastError };
+  return {rows:[] as any[],connected:false,error:lastError};
 }
 
 function supabaseWriteConfig() {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  // Do not select a browser/public key ahead of the service credential.
-  const keys = [process.env.SUPABASE_SECRET_KEY, process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_SERVICE_KEY, process.env.SUPABASE_KEY]
-    .map(v => String(v || "").trim()).filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
-  return { url: url.replace(/\/$/, ""), keys };
+  return {url:supabaseUrl(),keys:supabaseKeys()};
 }
 
 let lastPerformanceArchiveAt = 0;
@@ -122,17 +123,17 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
   if (Date.now() - lastPerformanceArchiveAt < 5 * 60 * 1000) return true;
   const {url,keys}=supabaseWriteConfig();
   if(!url||!keys.length)return false;
-  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
   const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
+  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
   for(const key of keys){
-    const headers:any={apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Accept:"application/json",Prefer:"return=minimal"};
+    const headers=supabaseHeaders(key,true,"return=minimal");
     try {
       const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
       if(!existing.ok)continue;
       const rows=await existing.json();
       const res=Array.isArray(rows)&&rows[0]?.id
-        ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body,cache:"no-store"})
-        : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body,cache:"no-store"});
+        ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
+        : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
       if(res.ok)return true;
     } catch {}
   }
@@ -693,6 +694,6 @@ export async function getPlayer(playerId: string) {
 }
 
 export function connectionStatus() {
-  const { url, keys } = supabaseConfig();
-  return { supabaseConfigured: Boolean(url && keys.length), mlbStatsConfigured: true };
+  const { url, key } = supabaseConfig();
+  return { supabaseConfigured: Boolean(url && key), mlbStatsConfigured: true };
 }

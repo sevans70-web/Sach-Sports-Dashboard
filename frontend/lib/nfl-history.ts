@@ -17,12 +17,17 @@ function supabaseUrl(){return (process.env.SUPABASE_URL||process.env.NEXT_PUBLIC
 function candidateKeys(){
   // Server-side credentials must win. A public/anon key can be present on Railway
   // while RLS blocks source_snapshots, which previously made NFL silently report 0/0.
-  return [process.env.SUPABASE_SECRET_KEY,process.env.SUPABASE_SERVICE_ROLE_KEY,process.env.SUPABASE_SERVICE_KEY,process.env.SUPABASE_KEY,process.env.SUPABASE_PUBLISHABLE_KEY,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY]
+  return [process.env.SUPABASE_SECRET_KEY,process.env.SUPABASE_SERVICE_ROLE_KEY,process.env.SUPABASE_KEY,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY]
     .map(v=>String(v||"").trim()).filter((v,i,a)=>Boolean(v)&&a.indexOf(v)===i);
 }
 function readConfig(){const keys=candidateKeys();return {url:supabaseUrl(),key:keys[0]||"",keys};}
 function writeConfig(){const keys=candidateKeys();return {url:supabaseUrl(),key:keys[0]||"",keys};}
-function headers(key:string,prefer="return=representation"){return {apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Accept:"application/json",Prefer:prefer}}
+function headers(key:string,prefer="return=representation"){
+ const h:any={apikey:key,"Content-Type":"application/json",Accept:"application/json",Prefer:prefer};
+ // New Supabase sb_secret_ keys use the apikey header; Bearer is for legacy JWT keys.
+ if(!key.startsWith("sb_secret_")&&!key.startsWith("sb_publishable_"))h.Authorization=`Bearer ${key}`;
+ return h;
+}
 export function nflDay(v:Date|string){
  const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";
  const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
