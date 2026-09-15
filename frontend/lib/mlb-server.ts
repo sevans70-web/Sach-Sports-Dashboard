@@ -87,6 +87,18 @@ const OWLS_MLB_MARKETS:Record<string,string[]>={
   hits_allowed:["hits_allowed","hitsallowed"], walks_allowed:["walks_allowed","walksallowed"], earned_runs:["earned_runs","earnedruns"]
 };
 function owlsCategoryMatches(value:any,category:string){const x=normMarket(value);return (OWLS_MLB_MARKETS[category]||[]).some(v=>normMarket(v)===x)}
+let mlbPlayerDirectoryCache:{at:number,byName:Map<string,{id:number,teamId:number}>}|null=null;
+function normalizedPersonName(v:any){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase()}
+async function mlbPlayerDirectory(){
+  if(mlbPlayerDirectoryCache&&Date.now()-mlbPlayerDirectoryCache.at<6*60*60*1000)return mlbPlayerDirectoryCache.byName;
+  const byName=new Map<string,{id:number,teamId:number}>();
+  try{
+    const season=new Date().getFullYear();
+    const r=await fetch(`${MLB_API}/sports/1/players?season=${season}&hydrate=currentTeam`,{next:{revalidate:21600}});
+    if(r.ok){const payload=await r.json();for(const p of Array.isArray(payload?.people)?payload.people:[]){const id=Number(p?.id||0),name=normalizedPersonName(p?.fullName),teamId=Number(p?.currentTeam?.id||0);if(id&&name)byName.set(name,{id,teamId})}}
+  }catch{}
+  mlbPlayerDirectoryCache={at:Date.now(),byName};return byName;
+}
 async function getOwlsMlbRankings(){
   const apiKey=String(process.env.OWLS_INSIGHT_API_KEY||"").trim();
   if(!apiKey)return {batter:{} as Record<string,RankingRow[]>,pitcher:{} as Record<string,RankingRow[]>,ok:false,error:"OWLS_INSIGHT_API_KEY is missing"};
@@ -96,6 +108,7 @@ async function getOwlsMlbRankings(){
     const payload=await res.json();
     const games=Array.isArray(payload?.data)?payload.data:[];
     const schedule=(await getSchedule()).games;
+    const playerDirectory=await mlbPlayerDirectory();
     const gameByTeams=(away:string,home:string)=>schedule.find(g=>normMarket(g.away.name)===normMarket(away)&&normMarket(g.home.name)===normMarket(home));
     const build=(category:string,pitcher=false)=>{
       const grouped=new Map<string,any>();
@@ -115,9 +128,10 @@ async function getOwlsMlbRankings(){
       return [...grouped.values()].map((x:any)=>{
         const line=medianNumber(x.lines),prob=impliedProbability(medianNumber(x.prices));
         const score=Math.max(1,Math.min(99,Math.round((prob??50)*10)/10));
-        const base:any={player_name:x.playerName,player:x.playerName,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,bookmaker_count:x.books.size,source:"Owls Insight live props",lineup_status:"Pending"};
+        const resolved=playerDirectory.get(normalizedPersonName(x.playerName));
+        const base:any={player_id:resolved?.id||null,player_name:x.playerName,player:x.playerName,headshot_url:resolved?.id?`https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${resolved.id}/headshot/67/current`:"",team_id:resolved?.teamId||null,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,bookmaker_count:x.books.size,source:"Owls Insight live props",lineup_status:"Pending"};
         if(category==="home_runs")base.home_run_probability=prob;
-        if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=null;}
+        if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=resolved?.id||null;}
         return base;
       }).sort((a:any,b:any)=>Number(b.probability??0)-Number(a.probability??0)||Number(b.line??0)-Number(a.line??0)).slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
     };
@@ -672,11 +686,19 @@ function emergingExplanation(r:any){
   return text;
 }
 
+async function archivedPerformanceHistory(sourceName:string, local:any, pitcher=false){
+  const recent=await getRecentSourceSnapshots(sourceName,90);
+  let merged=mergeHistory({},local,pitcher);
+  // Oldest first, newest last: later snapshots win while settled rows remain canonical.
+  for(const row of [...recent.rows].reverse())merged=mergeHistory(row?.payload||{},merged,pitcher);
+  return {history:merged,connected:recent.connected,error:recent.error};
+}
+
 export async function getPerformance(){
   const today=torontoDay();
   const yesterday=torontoDay(-1);
-  const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
-  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
+  const [batterArchive,pitcherArchive,emerging,rankingData,yesterdayRankings]=await Promise.all([archivedPerformanceHistory("mlb_batter_performance_history",batterHistory,false),archivedPerformanceHistory("mlb_pitcher_performance_history",pitcherHistory,true),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
+  let mergedBatter=batterArchive.history,mergedPitcher=pitcherArchive.history;
 
   // The latest intelligence snapshot can carry a stale game_date even when the
   // rows themselves belong to today's MLB games. Resolve each row by gamePk and
@@ -719,7 +741,7 @@ export async function getPerformance(){
     const saved=await Promise.all([savePerformanceArchive("mlb_batter_performance_history",batterRefreshed,today),savePerformanceArchive("mlb_pitcher_performance_history",pitcherRefreshed,today),savePerformanceArchive("mlb_emerging_power_history",emergingRefreshed,today)]);
     archiveSaved=saved.every(Boolean);if(archiveSaved)lastPerformanceArchiveAt=Date.now();
   } else archiveSaved=true;
-  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay:batterSourceDay,pitcherSourceDay,todayBatterRows:todayBatterCount,todayPitcherRows:todayPitcherCount,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
+  return{connected:batterArchive.connected||pitcherArchive.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay:batterSourceDay,pitcherSourceDay,todayBatterRows:todayBatterCount,todayPitcherRows:todayPitcherCount,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batterArchive.error,pitcherArchive.error,emerging.error].filter(Boolean)};
 }
 
 export async function getGameFeed(gamePk: string) {

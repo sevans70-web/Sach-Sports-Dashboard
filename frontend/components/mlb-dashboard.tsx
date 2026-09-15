@@ -7,7 +7,7 @@ type ScheduleResponse = { success:boolean; games:any[]; fetchedAt?:string; lineu
 type RankingResponse = { success:boolean; batter:Record<string,RankingRow[]>; pitcher:Record<string,RankingRow[]>; connected:boolean; errors?:string[]; updatedAt?:string; dataDate?:string; batterDataDate?:string|null; pitcherDataDate?:string|null; requestedDate?:string; stale?:boolean; batterStale?:boolean; pitcherStale?:boolean };
 type PerformanceResponse = { success:boolean; connected:boolean; batter:any; pitcher:any; emerging:any; hrIntelligence?:{live?:any[];yesterdayWatch?:any[];yesterday?:any[];emergingToday?:any[]}; errors?:string[] };
 
-function useJson<T>(url:string,fallback:T){const[data,setData]=useState<T>(fallback);const[loading,setLoading]=useState(true);useEffect(()=>{let live=true;const load=()=>fetch(url,{cache:"no-store"}).then(r=>r.json()).then(v=>live&&setData(v)).catch(()=>{}).finally(()=>live&&setLoading(false));load();const id=setInterval(load,30000);return()=>{live=false;clearInterval(id)}},[url]);return{data,loading}}
+function useJson<T>(url:string,fallback:T,refreshMs=60000){const[data,setData]=useState<T>(fallback);const[loading,setLoading]=useState(true);useEffect(()=>{let live=true;const load=()=>fetch(url).then(r=>r.json()).then(v=>live&&setData(v)).catch(()=>{}).finally(()=>live&&setLoading(false));load();const id=setInterval(load,refreshMs);return()=>{live=false;clearInterval(id)}},[url,refreshMs]);return{data,loading}}
 function historyRows(payload:any){return Object.entries(payload?.days||{}).sort(([a],[b])=>String(b).localeCompare(String(a)))}
 function torontoDate(offset=0){const d=new Date(Date.now()+offset*86400000);const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>parts.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`}
 function includeDate(date:string,period:string){const today=torontoDate(),yesterday=torontoDate(-1);if(period==="Today")return date===today;if(period==="Yesterday")return date===yesterday;const d=new Date(`${date}T12:00:00Z`),t=new Date(`${today}T12:00:00Z`);const diff=Math.round((+t-+d)/86400000);if(period==="Week")return diff>=0&&diff<7;if(period==="Month")return date.slice(0,7)===today.slice(0,7);return date.slice(0,4)===today.slice(0,4)}
@@ -71,7 +71,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
   const actualLabel=pitcher?pitcherActualLabel(resultRow,marketKey):batterActualLabel(resultRow,marketKey);
   return <article className={`origRankCard ${pitcher?"pitcher":"batter"} ${open?"expanded":""}`}>
     <div className="origRank">#{Number(row.rank||0)||"—"}<span>−</span></div>
-    <div className="origPhotoWrap"><img className="origHeadshot" src={image} alt=""/>{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
+    <div className="origPhotoWrap">{image?<img className="origHeadshot" src={image} alt="" onError={(e)=>{e.currentTarget.style.visibility="hidden"}}/>:<div className="origHeadshot photoFallback">{name.split(" ").map(x=>x[0]).slice(0,2).join("")}</div>}{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>
       {pitcher?<><div className="origProp"><b>Projection:</b> {projection} K</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
       <p>{summary}</p>
@@ -81,21 +81,21 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
       </div>:<span className="confirmed">✓ {confirmed?"Confirmed lineup":"Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>}
     </div>
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
-    <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>
+    <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>{id?<Link className="openFullCard directFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}`}>Open full player card</Link>:null}
     {open?<div className="origInlineIntel">
       <div className="intelKpis"><article><span>GI Score</span><strong>{gi}</strong></article><article><span>{pitcher?"Projection":"Probability"}</span><strong>{pitcher?`${projection} K`:probability}</strong></article><article><span>Lineup</span><strong>{confirmed?"Confirmed":"Pending"}</strong></article></div>
       <details><summary>› Market Performance Evidence</summary><p>{evidence}</p></details>
       {!pitcher&&statcast?<details><summary>› Statcast Contact Quality</summary><p>{statcast}</p></details>:null}
       <details><summary>› Why This {pitcher?"Pitcher":"Player"} Ranks Here</summary><p>{why}</p></details>
-      {id?<Link className="openFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}`}>Open full player card</Link>:null}
+      
     </div>:null}
   </article>
 }
 
 export function MlbDashboard(){
-  const schedule=useJson<ScheduleResponse>("/api/mlb/schedule",{success:false,games:[]});
-  const rankings=useJson<RankingResponse>("/api/mlb/rankings",{success:false,batter:{},pitcher:{},connected:false});
-  const performance=useJson<PerformanceResponse>("/api/mlb/performance",{success:false,connected:false,batter:{},pitcher:{},emerging:{}});
+  const schedule=useJson<ScheduleResponse>("/api/mlb/schedule",{success:false,games:[]},30000);
+  const rankings=useJson<RankingResponse>("/api/mlb/rankings",{success:false,batter:{},pitcher:{},connected:false},45000);
+  const performance=useJson<PerformanceResponse>("/api/mlb/performance",{success:false,connected:false,batter:{},pitcher:{},emerging:{}},45000);
   const[role,setRole]=useState<"Batter"|"Pitcher">("Batter"),[market,setMarket]=useState("home_runs"),[period,setPeriod]=useState("Today"),[perfRole,setPerfRole]=useState<"Batter"|"Pitcher"|"Emerging Power">("Batter"),[hrTab,setHrTab]=useState<"Live HR"|"Yesterday"|"Emerging Power">("Live HR"),[showOutside,setShowOutside]=useState(false),[showYesterdayMore,setShowYesterdayMore]=useState(false),[showEmergingMore,setShowEmergingMore]=useState(false),[showFull,setShowFull]=useState(false),[perfMarket,setPerfMarket]=useState("home_runs");
   const games=schedule.data.games||[],liveGames=games.filter(g=>g.isLive),finalGames=games.filter(g=>g.isFinal),delayed=games.filter(g=>g.isDelayed).length;
   const perfPayload=perfRole==="Pitcher"?performance.data.pitcher:perfRole==="Emerging Power"?performance.data.emerging:performance.data.batter;
