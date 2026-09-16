@@ -96,8 +96,8 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  for(const teamId of [...new Set(candidates.filter(Boolean))]){
    try{
      const roster=await cachedRoster(teamId);
-     const exact=roster.players.find(p=>cleanName(p.name)===wanted);
-     const loose=roster.players.find(p=>{
+     const exact=roster.players.find((p:any)=>cleanName(p.name)===wanted);
+     const loose=roster.players.find((p:any)=>{
        const n=cleanName(p.name);return n&&wanted&&(n.includes(wanted)||wanted.includes(n));
      });
      const p=exact||loose;
