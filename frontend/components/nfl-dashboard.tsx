@@ -10,7 +10,7 @@ type RankingResponse={success:boolean;market?:NflMarketKey;rows:NflRankingRow[];
 
 const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"];
 const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
-const Q1_MARKETS:NflMarketKey[]=["q1_touchdowns"];
+const Q1_MARKETS:NflMarketKey[]=["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"];
 
 function useJson<T>(url:string,fallback:T,intervalMs=90_000){
   const[data,setData]=useState(fallback); const[loading,setLoading]=useState(true);
@@ -28,11 +28,11 @@ function projectionText(row:NflRankingRow,market:NflMarketKey){
   if(market==="first_td")return row.modelProbability!=null?`${Number(row.modelProbability).toFixed(0)}% chance`:"Model unavailable";
   const v=row.modelProjection;if(v==null||!Number.isFinite(Number(v)))return "Insufficient history";const n=Number(v);
   if(["passing_yards","passing_rushing_yards","qb_rushing_yards","rushing_yards","receiving_yards","rushing_receiving_yards"].includes(market))return `${n.toFixed(1)} yds`;
-  if(market==="q1_touchdowns")return `${n.toFixed(2)} TD`;
+  if(["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"].includes(market))return `${n.toFixed(1)} Q1 yds`;
   if(["passing_tds","rushing_tds","anytime_td"].includes(market))return `${n.toFixed(1)} TD`;
   if(market==="receptions")return `${n.toFixed(1)} rec`; return n.toFixed(1);
 }
-function formatActual(value:number,market:NflMarketKey){const n=Number(value),shown=Number.isInteger(n)?String(n):n.toFixed(1);if(["passing_yards","passing_rushing_yards","qb_rushing_yards","rushing_yards","receiving_yards","rushing_receiving_yards"].includes(market))return `${shown} yards`;if(market==="q1_touchdowns")return `${shown} Q1 TD${n===1?"":"s"}`;if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;if(["passing_tds","rushing_tds","anytime_td","first_td"].includes(market))return `${shown} TD${n===1?"":"s"}`;return shown}
+function formatActual(value:number,market:NflMarketKey){const n=Number(value),shown=Number.isInteger(n)?String(n):n.toFixed(1);if(["passing_yards","passing_rushing_yards","qb_rushing_yards","rushing_yards","receiving_yards","rushing_receiving_yards"].includes(market))return `${shown} yards`;if(["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"].includes(market))return `${shown} Q1 yards`;if(market==="receptions")return `${shown} reception${n===1?"":"s"}`;if(["passing_tds","rushing_tds","anytime_td","first_td"].includes(market))return `${shown} TD${n===1?"":"s"}`;return shown}
 function formatMargin(value:number,market:NflMarketKey){return formatActual(value,market).replace(/s$/,"s")}
 function updatedLabel(v?:string){if(!v)return "Updated just now";const d=new Date(v);if(Number.isNaN(d.getTime()))return "Updated just now";return `Updated ${new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}).format(d)}`}
 
