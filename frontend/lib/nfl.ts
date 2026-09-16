@@ -12,7 +12,14 @@ export const NFL_MARKETS = [
   ["first_td", "1️⃣", "First TD"],
   ["q1_passing_yards", "1Q", "Q1 Passing Yards"],
   ["q1_receiving_yards", "1Q", "Q1 Receiving Yards"],
+  ["q1_receptions", "1Q", "Q1 Receptions"],
+  ["q1_qb_rushing_yards", "1Q", "Q1 QB Rushing Yards"],
   ["q1_rushing_yards", "1Q", "Q1 Rushing Yards"],
+  ["q1_pass_attempts", "1Q", "Q1 Pass Attempts"],
+  ["q1_pass_completions", "1Q", "Q1 Pass Completions"],
+  ["q1_rushing_receiving_yards", "1Q", "Q1 Rush + Receiving Yards"],
+  ["q1_anytime_td", "1Q", "Q1 Anytime TD"],
+  ["q1_rush_attempts", "1Q", "Q1 Rush Attempts"],
 ] as const;
 
 export type NflMarketKey = typeof NFL_MARKETS[number][0];
