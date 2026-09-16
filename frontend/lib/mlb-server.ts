@@ -237,6 +237,26 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
   return false;
 }
 
+async function saveRankingState(sourceName:string, payload:any, gameDate:string) {
+  const {url,keys}=supabaseWriteConfig();
+  if(!url||!keys.length)return false;
+  const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
+  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
+  for(const key of keys){
+    const headers=supabaseHeaders(key,true,"return=minimal");
+    try{
+      const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
+      if(!existing.ok)continue;
+      const rows=await existing.json();
+      const res=Array.isArray(rows)&&rows[0]?.id
+        ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
+        : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
+      if(res.ok)return true;
+    }catch{}
+  }
+  return false;
+}
+
 export async function getSourceSnapshot(sourceName: string) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=1`);
   const row = result.rows?.[0] || null;
@@ -440,6 +460,27 @@ function annotateMovement(current:Record<string,RankingRow[]>, previous:Record<s
   }
   return out;
 }
+async function preserveLockedPredictions(current:Record<string,RankingRow[]>, previous:Record<string,RankingRow[]>) {
+  const schedule=(await getSchedule()).games;
+  const locked=new Set(schedule.filter((g:any)=>g?.isLive||g?.isFinal).map((g:any)=>Number(g.gamePk)));
+  const out:Record<string,RankingRow[]>={};
+  for(const category of new Set([...Object.keys(previous||{}),...Object.keys(current||{})])){
+    const now=Array.isArray(current?.[category])?[...current[category]]:[];
+    const keys=new Set(now.map(r=>rankingIdentity(r)));
+    const priorRows=Array.isArray(previous?.[category])?previous[category]:[];
+    const lockedRows=priorRows.filter((r:any)=>locked.has(Number(r?.game_pk||r?.gamePk||0)));
+    // A live/final prediction owns its captured slot. Never let a later refresh replace
+    // it. Pregame candidates may move only through the remaining open slots.
+    const slots:Array<any|null>=Array(25).fill(null);
+    const lockedKeys=new Set<string>();
+    for(const r of lockedRows){const pos=Math.max(0,Math.min(24,Number((r as any)?.rank||1)-1));if(!slots[pos]){slots[pos]=r;lockedKeys.add(rankingIdentity(r));}}
+    const candidates=now.filter(r=>!lockedKeys.has(rankingIdentity(r))).sort((a:any,b:any)=>Number(b?.gi_score??0)-Number(a?.gi_score??0));
+    let ci=0;for(let i=0;i<25&&ci<candidates.length;i++)if(!slots[i])slots[i]=candidates[ci++];
+    out[category]=slots.map((r:any,i:number)=>r?({...r,rank:i+1,prediction_locked:locked.has(Number(r?.game_pk||r?.gamePk||0))}):null).filter(Boolean) as any[];
+  }
+  return out;
+}
+
 async function enforceTodayEligibility(rankings:Record<string,RankingRow[]>, owls:Record<string,RankingRow[]>, pitcher=false){
   const out:Record<string,RankingRow[]>={};
   const schedule=(await getSchedule()).games;
@@ -481,7 +522,7 @@ async function enforceTodayEligibility(rankings:Record<string,RankingRow[]>, owl
 export async function getRankings() {
   const today = torontoDate();
   const yesterday = torontoDay(-1);
-  const [todayBatters,todayPitchers,latestBatters,latestPitchers,yesterdayBatters,yesterdayPitchers,owls] = await Promise.all([
+  const [todayBatters,todayPitchers,latestBatters,latestPitchers,yesterdayBatters,yesterdayPitchers,owls,displayState] = await Promise.all([
     getSourceSnapshotForDay("mlb_game_intelligence",today),
     getSourceSnapshotForDay("mlb_pitcher_intelligence",today),
     getSourceSnapshot("mlb_game_intelligence"),
@@ -489,6 +530,7 @@ export async function getRankings() {
     getSourceSnapshotForDay("mlb_game_intelligence",yesterday),
     getSourceSnapshotForDay("mlb_pitcher_intelligence",yesterday),
     getOwlsMlbRankings(),
+    getSourceSnapshotForDay("mlb_display_ranking_state",today),
   ]);
   const batterSource=todayBatters.row?todayBatters:latestBatters;
   const pitcherSource=todayPitchers.row?todayPitchers:latestPitchers;
@@ -505,12 +547,18 @@ export async function getRankings() {
   const candidatePitcher=owls.ok?Object.fromEntries(Object.keys(pitcher).map(k=>[k,pitcher[k]?.length?pitcher[k]:(owls.pitcher[k]||[])])):pitcher;
   const eligibleBatter=owls.ok?await enforceTodayEligibility(candidateBatter,owls.batter,false):candidateBatter;
   const eligiblePitcher=owls.ok?await enforceTodayEligibility(candidatePitcher,owls.pitcher,true):candidatePitcher;
-  // Prefer today's saved pre-refresh order as the movement baseline so lineup/market changes
-  // render immediately. Fall back to yesterday only when no saved order exists today.
-  const movementBatterBase=Object.values(batter).some(x=>x.length)?batter:prior.batter;
-  const movementPitcherBase=Object.values(pitcher).some(x=>x.length)?pitcher:prior.pitcher;
-  const finalBatter=annotateMovement(eligibleBatter,movementBatterBase);
-  const finalPitcher=annotateMovement(eligiblePitcher,movementPitcherBase);
+  // Movement must compare with the LAST DISPLAYED eligible board, not the raw model
+  // snapshot. Otherwise every lineup-driven replacement is incorrectly labelled NEW.
+  const savedDisplay=displayState?.payload||{};
+  const movementBatterBase=Object.values(savedDisplay?.batter||{}).some((x:any)=>Array.isArray(x)&&x.length)?savedDisplay.batter:(Object.values(batter).some(x=>x.length)?batter:prior.batter);
+  const movementPitcherBase=Object.values(savedDisplay?.pitcher||{}).some((x:any)=>Array.isArray(x)&&x.length)?savedDisplay.pitcher:(Object.values(pitcher).some(x=>x.length)?pitcher:prior.pitcher);
+  const stableBatter=await preserveLockedPredictions(eligibleBatter,movementBatterBase);
+  const stablePitcher=await preserveLockedPredictions(eligiblePitcher,movementPitcherBase);
+  const finalBatter=annotateMovement(stableBatter,movementBatterBase);
+  const finalPitcher=annotateMovement(stablePitcher,movementPitcherBase);
+  // Persist only the canonical displayed board. This survives browser refresh/restart and
+  // gives the next poll a real movement baseline. Do not block the response on storage.
+  void saveRankingState("mlb_display_ranking_state",{batter:finalBatter,pitcher:finalPitcher},today);
   const batterDataDate=batterSource.row?.game_date||null,pitcherDataDate=pitcherSource.row?.game_date||null;
   return {
     batter:finalBatter,pitcher:finalPitcher,
@@ -572,6 +620,14 @@ function mergeHistory(stored:any,local:any,pitcher=false){
   for(const k of [...keys].sort()){
     const a=stored?.days?.[k],b=local?.days?.[k];
     out.days[k]=a&&b?mergeDay(a,b,pitcher):(a||b);
+  }
+  return out;
+}
+function canonicalizeHistory(history:any,pitcher=false){
+  const out=structuredClone(history||{schema_version:1,days:{}});out.days=out.days||{};
+  for(const day of Object.values(out.days) as any[]){
+    day.categories=day?.categories||{};
+    for(const [cat,rows] of Object.entries(day.categories))day.categories[cat]=canonicalRows(rows as any[],pitcher,cat==="emerging_power"?10:25);
   }
   return out;
 }
@@ -752,7 +808,7 @@ async function archivedPerformanceHistory(sourceName:string, local:any, pitcher=
   let merged=mergeHistory({},local,pitcher);
   // Oldest first, newest last: later snapshots win while settled rows remain canonical.
   for(const row of [...recent.rows].reverse())merged=mergeHistory(row?.payload||{},merged,pitcher);
-  return {history:merged,connected:recent.connected,error:recent.error};
+  return {history:canonicalizeHistory(merged,pitcher),connected:recent.connected,error:recent.error};
 }
 
 export async function getPerformance(){
