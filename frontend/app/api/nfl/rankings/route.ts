@@ -9,6 +9,14 @@ export const revalidate=0;
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/nfl/props";
 const ATHLETE_BASE="https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes";
+const CACHE_TTL_MS=10*60_000;
+type CacheEntry<T>={expires:number;value:T};
+const rosterCache=new Map<string,CacheEntry<any>>();
+const modelCache=new Map<string,CacheEntry<{projection:number|null,games:number}>>();
+async function cachedRoster(teamId:string){
+ const hit=rosterCache.get(teamId);if(hit&&hit.expires>Date.now())return hit.value;
+ const value=await getNflTeamRoster(teamId);rosterCache.set(teamId,{expires:Date.now()+CACHE_TTL_MS,value});return value;
+}
 
 const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  passing_yards:["passing_yards","passingyards","pass_yards","passyards"],
@@ -22,9 +30,7 @@ const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  rushing_receiving_yards:["rushing_receiving_yards","rush_receiving_yards","rushing+receiving_yards","rushingreceivingyards"],
  anytime_td:["anytime_td","anytime_touchdown","anytime_touchdown_scorer","touchdown_scorer","touchdowns"],
  first_td:["first_td","first_touchdown","first_touchdown_scorer","first_scorer"],
- q1_passing_yards:["passing_yards_1q","passing_1q_yards","1q_passing_yards","first_quarter_passing_yards"],
- q1_receiving_yards:["receiving_yards_1q","receiving_1q_yards","1q_receiving_yards","first_quarter_receiving_yards"],
- q1_rushing_yards:["rushing_yards_1q","rushing_1q_yards","1q_rushing_yards","first_quarter_rushing_yards"],
+ q1_touchdowns:["touchdowns_1q"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
  passing_yards:["passingyards","passyards","yds"],
@@ -37,9 +43,7 @@ const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
  receptions:["receptions","rec"],
  rushing_receiving_yards:["rushingyards","rushyards","yds"],
  anytime_td:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
- q1_passing_yards:["passingyards","passyards","yds"],
- q1_receiving_yards:["receivingyards","receptionyards","recyards","yds"],
- q1_rushing_yards:["rushingyards","rushyards","yds"],
+ q1_touchdowns:["totaltouchdowns","touchdowns","rushingreceivingtouchdowns","td"],
 };
 function norm(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function median(xs:number[]){const a=xs.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2}
@@ -87,7 +91,7 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  }
  for(const teamId of [...new Set(candidates.filter(Boolean))]){
    try{
-     const roster=await getNflTeamRoster(teamId);
+     const roster=await cachedRoster(teamId);
      const exact=roster.players.find(p=>cleanName(p.name)===wanted);
      const loose=roster.players.find(p=>{
        const n=cleanName(p.name);return n&&wanted&&(n.includes(wanted)||wanted.includes(n));
@@ -143,11 +147,12 @@ function history(payload:any,market:NflMarketKey){
 function projection(vals:number[]){const xs=vals.slice(-10);if(!xs.length)return null;let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});return Math.round(sum/w*10)/10}
 async function model(id:string,market:NflMarketKey){
  if(!id||market==="first_td")return {projection:null,games:0};
+ const cacheKey=`${id}|${market}`;const hit=modelCache.get(cacheKey);if(hit&&hit.expires>Date.now())return hit.value;
  const blocks=await Promise.all([2025,2026].map(async y=>{try{return history(await fetchLog(id,y),market)}catch{return []}}));
  const vals=blocks.flat();
  let projected=projection(vals);
  if(projected!=null&&market.startsWith("q1_")) projected=Math.round(projected*0.25*10)/10;
- return {projection:projected,games:vals.length}
+ const value={projection:projected,games:vals.length};modelCache.set(cacheKey,{expires:Date.now()+CACHE_TTL_MS,value});return value;
 }
 function teamLogo(profile:any,row:any,schedule:any[]){
  const team=cleanName(profile.teamName||row.teamName||"");
@@ -283,9 +288,7 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null&&b==null?null:(a||0)+(b||0)}
  if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null&&b==null?null:(a||0)+(b||0)}
  if(market==="first_td")return firstTdFromSummary(payload,playerName);
- if(market==="q1_passing_yards")return q1StatFromSummary(payload,playerId,playerName,"passing");
- if(market==="q1_receiving_yards")return q1StatFromSummary(payload,playerId,playerName,"receiving");
- if(market==="q1_rushing_yards")return q1StatFromSummary(payload,playerId,playerName,"rushing");
+ if(market==="q1_touchdowns")return q1TouchdownsFromSummary(payload,playerName);
  return null;
 }
 async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
@@ -312,7 +315,7 @@ export async function GET(req:NextRequest){
  try{
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market),getEspnNflSchedule()]),today=easternDayKey(new Date());
   const active=owlsRows.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
-  const built=await Promise.all(active.slice(0,60).map(async(row:any)=>{
+  const built=await Promise.all(active.slice(0,25).map(async(row:any)=>{
    const profile=await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
    const pos=String(profile.position||"").toUpperCase();
    const qbOnly=market==="qb_rushing_yards";
