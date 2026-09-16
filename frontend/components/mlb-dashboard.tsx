@@ -70,7 +70,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
   const didHit=!pitcher&&resultRow?.correct===true;
   const actualLabel=pitcher?pitcherActualLabel(resultRow,marketKey):batterActualLabel(resultRow,marketKey);
   return <article className={`origRankCard ${pitcher?"pitcher":"batter"} ${open?"expanded":""}`}>
-    <div className="origRank">#{Number(row.rank||0)||"—"}<span>−</span></div>
+    <div className="origRank">#{Number(row.rank||0)||"—"}<span className="rankMovement">{(()=>{const m=String((row as any).movement||"SAME"),c=Number((row as any).rank_change||0);return m==="NEW"?"NEW":m==="UP"?`↑ ${Math.abs(c)}`:m==="DOWN"?`↓ ${Math.abs(c)}`:"—"})()}</span></div>
     <div className="origPhotoWrap">{image?<img className="origHeadshot" src={image} alt="" onError={(e)=>{e.currentTarget.style.visibility="hidden"}}/>:<div className="origHeadshot photoFallback">{name.split(" ").map(x=>x[0]).slice(0,2).join("")}</div>}{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>
       {pitcher?<><div className="origProp"><b>Prediction:</b> {String((row as any).prediction||((row as any).line!=null?`Over ${(row as any).line}`:`${projection} ${marketKey==="strikeouts"?"K":""}`))}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>Prediction:</b> {String((row as any).prediction||(marketKey==="home_runs"?"1+ HR":((row as any).line!=null?`Over ${(row as any).line}`:"Market posted")))}</div><div className="origProp"><b>Probability:</b> {probability}</div></>}
@@ -78,7 +78,8 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
       {isFinal||isLive?<div className="origResultBlock">
         <span className={`resultStatus ${isLive?"live":""}`}>{isLive?"LIVE":"FINAL"}</span>
         {pitcher?<strong className="resultLine">Result: {actualLabel||(isLive?"Pending":"Awaiting final stats")}</strong>:isFinal&&resultFinal?<strong className="resultLine">Result: {didHit?"✅":"❌"} {actualLabel||"—"}</strong>:isFinal?<strong className="resultLine pending">Result: Awaiting final stats</strong>:liveHit?<strong className="resultLine">Result: ✅ {actualLabel}</strong>:<strong className="resultLine pending">Result: Pending</strong>}
-      </div>:<span className="confirmed">✓ {confirmed?"Confirmed lineup":"Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>}
+      </div>:null}
+      <span className={confirmed?"confirmed":"confirmed pending"}>{confirmed?"✓ Lineup Confirmed":"○ Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>
     </div>
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
     <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>{id?<Link className="openFullCard directFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}`}>Open full player card</Link>:null}

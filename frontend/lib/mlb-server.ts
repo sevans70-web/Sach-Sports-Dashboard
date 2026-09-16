@@ -117,7 +117,10 @@ async function getOwlsMlbRankings(){
         const scheduled=gameByTeams(away,home); const gamePk=scheduled?.gamePk||null;
         for(const book of Array.isArray(game.books)?game.books:[])for(const prop of Array.isArray(book.props)?book.props:[]){
           if(!owlsCategoryMatches(prop.category??prop.market??prop.type,category))continue;
-          const playerName=String(prop.playerName||prop.player_name||prop.name||"").trim(); if(!playerName)continue;
+          const playerName=String(prop.playerName||prop.player_name||prop.name||"").trim();
+          // A Sach ranking is always one MLB player. Reject malformed OWLS participant labels
+          // such as "Player A & Player B" instead of allowing them to contaminate lineup/grading.
+          if(!playerName || /\s&\s|\s(?:vs\.?|versus)\s/i.test(playerName))continue;
           const key=`${normMarket(playerName)}|${gamePk||normMarket(away+home)}`;
           const cur=grouped.get(key)||{playerName,teamName:String(prop.team||prop.teamName||prop.team_name||""),away,home,gamePk,lines:[],prices:[],books:new Set<string>()};
           const line=Number(prop.line??prop.point??prop.total); if(Number.isFinite(line))cur.lines.push(line);
@@ -134,15 +137,19 @@ async function getOwlsMlbRankings(){
         const liquidity=Math.min(100,35+x.books.size*10);
         const score=Math.max(1,Math.min(99,Math.round((marketProb*0.72+liquidity*0.28)*10)/10));
         const resolved=playerDirectory.get(normalizedPersonName(x.playerName));
+        // Player props must resolve to one official MLB player before they can rank.
+        if(!resolved)return null;
+        const scheduledGame=schedule.find((g:any)=>Number(g.gamePk)===Number(x.gamePk));
+        const officialTeam=scheduledGame?(Number(scheduledGame.away.id)===resolved.teamId?scheduledGame.away.name:Number(scheduledGame.home.id)===resolved.teamId?scheduledGame.home.name:""):"";
         const label=category.replace(/_/g," ");
         const prediction=category==="home_runs"?"1+ HR":line!=null?`Over ${line}`:"Market posted";
         const evidence=`OWLS currently shows this ${label} market at ${x.books.size} sportsbook${x.books.size===1?"":"s"}${line!=null?` with a consensus line of ${line}`:""}${prob!=null?` and an implied over probability near ${Math.round(prob)}%`:""}.`;
         const why=`This ranking is eligible because a live sportsbook market is posted. GI ${score.toFixed(1)} keeps market probability (${prob!=null?Math.round(prob)+"%":"unavailable"}) separate from market reliability (${x.books.size} book${x.books.size===1?"":"s"}). It is not a claim that GI equals probability.`;
-        const base:any={player_id:resolved?.id||null,player_name:x.playerName,player:x.playerName,headshot_url:resolved?.id?`https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${resolved.id}/headshot/67/current`:"",team_id:resolved?.teamId||null,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,prediction,bookmaker_count:x.books.size,summary:`Prediction: ${prediction}. ${evidence}`,performance_evidence:evidence,why_this_player:why,source:"Owls Insight live props",lineup_status:"Pending"};
+        const base:any={player_id:resolved?.id||null,player_name:x.playerName,player:x.playerName,headshot_url:resolved?.id?`https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${resolved.id}/headshot/67/current`:"",team_id:resolved.teamId,team_name:officialTeam||x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,prediction,bookmaker_count:x.books.size,summary:`Prediction: ${prediction}. ${evidence}`,performance_evidence:evidence,why_this_player:why,source:"Owls Insight live props",lineup_status:"Pending"};
         if(category==="home_runs")base.home_run_probability=prob;
-        if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=resolved?.id||null;}
+        if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=resolved.id;}
         return base;
-      }).sort((a:any,b:any)=>Number(b.probability??0)-Number(a.probability??0)||Number(b.line??0)-Number(a.line??0)).slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
+      }).filter(Boolean).sort((a:any,b:any)=>Number(b.gi_score??0)-Number(a.gi_score??0)||Number(b.probability??0)-Number(a.probability??0)).slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
     };
     const batter:Record<string,RankingRow[]>={},pitcher:Record<string,RankingRow[]>={};
     for(const c of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"])batter[c]=build(c,false);
@@ -414,66 +421,111 @@ function rowsFrom(payload: any, key: string): RankingRow[] {
   });
 }
 
-export async function getRankings() {
-  const today = torontoDate();
-
-  // A ranking snapshot is already date-scoped when the Python intelligence
-  // worker saves it. Prefer that exact-date snapshot and do not run a second
-  // destructive filter over it in Next.js. The previous implementation could
-  // turn a valid Top 25 into an empty list when legacy rows used a different
-  // game/team field shape.
-  const [todayBatters, todayPitchers, latestBatters, latestPitchers] = await Promise.all([
-    getSourceSnapshotForDay("mlb_game_intelligence", today),
-    getSourceSnapshotForDay("mlb_pitcher_intelligence", today),
-    getSourceSnapshot("mlb_game_intelligence"),
-    getSourceSnapshot("mlb_pitcher_intelligence"),
-  ]);
-
-  const batterSource = todayBatters.row ? todayBatters : latestBatters;
-  const pitcherSource = todayPitchers.row ? todayPitchers : latestPitchers;
-
-  const batter: Record<string, RankingRow[]> = {};
-  for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) {
-    batter[key] = rowsFrom(batterSource.payload, key).slice(0, 25);
+function rankingIdentity(row:any){
+  const id=String(row?.player_id||row?.batter_id||row?.pitcher_id||"").trim();
+  if(id)return `id:${id}`;
+  return `name:${normalizedPersonName(row?.player_name||row?.player||row?.pitcher_name||"")}`;
+}
+function annotateMovement(current:Record<string,RankingRow[]>, previous:Record<string,RankingRow[]>){
+  const out:Record<string,RankingRow[]>={};
+  for(const [category,rows] of Object.entries(current||{})){
+    const prior=new Map<string,number>();
+    for(const r of Array.isArray(previous?.[category])?previous[category]:[]){const key=rankingIdentity(r);if(key&&!key.endsWith('name:'))prior.set(key,Number((r as any)?.rank||0));}
+    out[category]=(Array.isArray(rows)?rows:[]).map((r:any,i:number)=>{
+      const rank=Number(r?.rank||i+1),old=prior.get(rankingIdentity(r));
+      if(!old)return {...r,rank,movement:"NEW",rank_change:null,previous_rank:null};
+      const change=old-rank;
+      return {...r,rank,movement:change>0?"UP":change<0?"DOWN":"SAME",rank_change:change,previous_rank:old};
+    });
   }
-
-  const pitcherRoot = pitcherSource.payload?.rankings || pitcherSource.payload || {};
-  const pitcher: Record<string, RankingRow[]> = {};
-  for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) {
-    pitcher[key] = rowsFrom(pitcherRoot, key).slice(0, 25);
+  return out;
+}
+async function enforceTodayEligibility(rankings:Record<string,RankingRow[]>, owls:Record<string,RankingRow[]>, pitcher=false){
+  const out:Record<string,RankingRow[]>={};
+  const schedule=(await getSchedule()).games;
+  const feeds=new Map<number,any>();
+  await Promise.all(schedule.map(async g=>{try{feeds.set(Number(g.gamePk),await getGameFeed(String(g.gamePk)))}catch{}}));
+  for(const [category,rows] of Object.entries(rankings||{})){
+    const marketRows=Array.isArray(owls?.[category])?owls[category]:[];
+    const marketByName=new Map(marketRows.map((r:any)=>[normalizedPersonName(r?.player_name||r?.player||r?.pitcher_name),r]));
+    const eligible:any[]=[];
+    for(const row of Array.isArray(rows)?rows:[]){
+      const name=normalizedPersonName((row as any)?.player_name||(row as any)?.player||(row as any)?.pitcher_name);
+      const liveMarket:any=marketByName.get(name);
+      const rowPk=Number((row as any)?.game_pk||(row as any)?.gamePk||0);
+      const scheduledGame=schedule.find((g:any)=>Number(g.gamePk)===rowPk);
+      const lockedGame=Boolean(scheduledGame?.isLive||scheduledGame?.isFinal);
+      // Pregame: a current OWLS market is mandatory. Once the player's game starts, preserve
+      // the captured prediction even when books remove the market; live cards must not vanish.
+      if(marketRows.length&&!liveMarket&&!lockedGame)continue;
+      const merged:any=liveMarket?{...row,...liveMarket,gi_score:(row as any)?.gi_score??liveMarket.gi_score,source:`${String((row as any)?.source||"Sach model")} + OWLS verified market`}:row;
+      const pk=Number(merged?.game_pk||merged?.gamePk||0);
+      const feed=feeds.get(pk);
+      if(feed){
+        const playerId=Number(merged?.player_id||merged?.batter_id||merged?.pitcher_id||0);
+        const teamId=Number(merged?.team_id||merged?.teamId||0);
+        const side=teamId===Number(feed?.away?.id)?feed.away:teamId===Number(feed?.home?.id)?feed.home:null;
+        if(side&&Array.isArray(side.lineup)&&side.lineup.length>=9&&!pitcher){
+          const slot=side.lineup.find((x:any)=>playerId?Number(x?.playerId)===playerId:normalizedPersonName(x?.name)===name);
+          if(!slot)continue; // official lineup is posted and this batter is not starting
+          merged.lineup_confirmed=true; merged.lineup_status="Confirmed"; merged.batting_order=slot.battingOrder;
+        }else if(!pitcher){merged.lineup_confirmed=false;merged.lineup_status="Pending";}
+      }
+      eligible.push(merged);
+    }
+    out[category]=eligible.sort((a:any,b:any)=>Number(b?.gi_score??0)-Number(a?.gi_score??0)).slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
   }
-
-  const batterDataDate = batterSource.row?.game_date || null;
-  const pitcherDataDate = pitcherSource.row?.game_date || null;
-  const batterStale = Boolean(batterDataDate && batterDataDate !== today);
-  const pitcherStale = Boolean(pitcherDataDate && pitcherDataDate !== today);
-
-  const hasSaved=Object.values(batter).some(rows=>rows.length>0)||Object.values(pitcher).some(rows=>rows.length>0);
-  const owls=!hasSaved||!(batterSource.connected||pitcherSource.connected)?await getOwlsMlbRankings():null;
-  const finalBatter=owls?.ok?Object.fromEntries(Object.keys(batter).map(k=>[k,(batter[k]?.length?batter[k]:(owls.batter[k]||[]))])):batter;
-  const finalPitcher=owls?.ok?Object.fromEntries(Object.keys(pitcher).map(k=>[k,(pitcher[k]?.length?pitcher[k]:(owls.pitcher[k]||[]))])):pitcher;
-  const usingOwls=Boolean(owls?.ok&&!hasSaved);
-
-  return {
-    batter:finalBatter,
-    pitcher:finalPitcher,
-    connected: batterSource.connected || pitcherSource.connected || Boolean(owls?.ok),
-    batterConnected: batterSource.connected,
-    pitcherConnected: pitcherSource.connected,
-    errors: [batterSource.error, pitcherSource.error, owls?.error].filter(Boolean),
-    source: usingOwls?"Owls Insight live props":"Supabase intelligence snapshot",
-    fallbackActive: usingOwls,
-    updatedAt: batterSource.row?.created_at || pitcherSource.row?.created_at || (owls?.ok?new Date().toISOString():null),
-    dataDate: batterDataDate || pitcherDataDate,
-    batterDataDate,
-    pitcherDataDate,
-    requestedDate: today,
-    batterStale,
-    pitcherStale,
-    stale: batterStale || pitcherStale,
-  };
+  return out;
 }
 
+export async function getRankings() {
+  const today = torontoDate();
+  const yesterday = torontoDay(-1);
+  const [todayBatters,todayPitchers,latestBatters,latestPitchers,yesterdayBatters,yesterdayPitchers,owls] = await Promise.all([
+    getSourceSnapshotForDay("mlb_game_intelligence",today),
+    getSourceSnapshotForDay("mlb_pitcher_intelligence",today),
+    getSourceSnapshot("mlb_game_intelligence"),
+    getSourceSnapshot("mlb_pitcher_intelligence"),
+    getSourceSnapshotForDay("mlb_game_intelligence",yesterday),
+    getSourceSnapshotForDay("mlb_pitcher_intelligence",yesterday),
+    getOwlsMlbRankings(),
+  ]);
+  const batterSource=todayBatters.row?todayBatters:latestBatters;
+  const pitcherSource=todayPitchers.row?todayPitchers:latestPitchers;
+  const batter:Record<string,RankingRow[]>={};
+  for(const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"])batter[key]=rowsFrom(batterSource.payload,key).slice(0,25);
+  const pitcherRoot=pitcherSource.payload?.rankings||pitcherSource.payload||{};
+  const pitcher:Record<string,RankingRow[]>={};
+  for(const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"])pitcher[key]=rowsFrom(pitcherRoot,key).slice(0,25);
+  const prior=rankingsFromSnapshots(yesterdayBatters,yesterdayPitchers);
+  const hasSaved=Object.values(batter).some(x=>x.length)||Object.values(pitcher).some(x=>x.length);
+  // When OWLS is healthy it is the eligibility gate, not merely a fallback. A stale saved
+  // model row cannot remain in a betting Top 25 when no current sportsbook market exists.
+  const candidateBatter=owls.ok?Object.fromEntries(Object.keys(batter).map(k=>[k,batter[k]?.length?batter[k]:(owls.batter[k]||[])])):batter;
+  const candidatePitcher=owls.ok?Object.fromEntries(Object.keys(pitcher).map(k=>[k,pitcher[k]?.length?pitcher[k]:(owls.pitcher[k]||[])])):pitcher;
+  const eligibleBatter=owls.ok?await enforceTodayEligibility(candidateBatter,owls.batter,false):candidateBatter;
+  const eligiblePitcher=owls.ok?await enforceTodayEligibility(candidatePitcher,owls.pitcher,true):candidatePitcher;
+  // Prefer today's saved pre-refresh order as the movement baseline so lineup/market changes
+  // render immediately. Fall back to yesterday only when no saved order exists today.
+  const movementBatterBase=Object.values(batter).some(x=>x.length)?batter:prior.batter;
+  const movementPitcherBase=Object.values(pitcher).some(x=>x.length)?pitcher:prior.pitcher;
+  const finalBatter=annotateMovement(eligibleBatter,movementBatterBase);
+  const finalPitcher=annotateMovement(eligiblePitcher,movementPitcherBase);
+  const batterDataDate=batterSource.row?.game_date||null,pitcherDataDate=pitcherSource.row?.game_date||null;
+  return {
+    batter:finalBatter,pitcher:finalPitcher,
+    connected:batterSource.connected||pitcherSource.connected||Boolean(owls.ok),
+    batterConnected:batterSource.connected,pitcherConnected:pitcherSource.connected,
+    errors:[batterSource.error,pitcherSource.error,owls.error].filter(Boolean),
+    source:owls.ok?(hasSaved?"Sach model + OWLS market verification":"Owls Insight live props"):(hasSaved?"Supabase intelligence snapshot":"No ranking source"),
+    fallbackActive:Boolean(owls.ok&&!hasSaved),
+    updatedAt:owls.ok?new Date().toISOString():(batterSource.row?.created_at||pitcherSource.row?.created_at||null),
+    dataDate:batterDataDate||pitcherDataDate,batterDataDate,pitcherDataDate,requestedDate:today,
+    batterStale:Boolean(batterDataDate&&batterDataDate!==today),pitcherStale:Boolean(pitcherDataDate&&pitcherDataDate!==today),
+    stale:Boolean((batterDataDate&&batterDataDate!==today)||(pitcherDataDate&&pitcherDataDate!==today)),
+    marketVerified:Boolean(owls.ok),movementBaseline:Object.values(batter).some(x=>x.length)?today:yesterday,
+  };
+}
 
 const BATTER_CATEGORIES = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"] as const;
 const PITCHER_CATEGORIES = ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"] as const;
