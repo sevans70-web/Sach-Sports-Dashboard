@@ -79,7 +79,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
         <span className={`resultStatus ${isLive?"live":""}`}>{isLive?"LIVE":"FINAL"}</span>
         {pitcher?<strong className="resultLine">Result: {actualLabel||(isLive?"Pending":"Awaiting final stats")}</strong>:isFinal&&resultFinal?<strong className="resultLine">Result: {didHit?"✅":"❌"} {actualLabel||"—"}</strong>:isFinal?<strong className="resultLine pending">Result: Awaiting final stats</strong>:liveHit?<strong className="resultLine">Result: ✅ {actualLabel}</strong>:<strong className="resultLine pending">Result: Pending</strong>}
       </div>:null}
-      {!isLive&&!isFinal?<span className={confirmed?"confirmed":"confirmed pending"}>{confirmed?"✓ Lineup Confirmed":"○ Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>:null}
+      <span className={confirmed?"confirmed":"confirmed pending"}>{confirmed?"✓ Lineup Confirmed":"○ Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>
     </div>
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
     <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>{id?<Link className="openFullCard directFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}`}>Open full player card</Link>:null}

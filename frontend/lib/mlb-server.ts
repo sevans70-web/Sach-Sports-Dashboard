@@ -478,96 +478,118 @@ async function enforceTodayEligibility(rankings:Record<string,RankingRow[]>, owl
   return out;
 }
 
-// Durable ranking-board state. This is deliberately separate from performance history:
-// rankings may move pregame, while the prediction ledger is immutable once captured.
-const rankingStateWriteAt:Record<string,number>={};
-async function saveRankingState(sourceName:string,payload:any,gameDate:string){
-  if(Date.now()-(rankingStateWriteAt[sourceName]||0)<20_000)return true;
+
+// Fix 06: keep the displayed ranking board separate from live model recalculation.
+// Streamlit used a distinct movement baseline; this mirrors that architecture.
+const mlbGlobal = globalThis as any;
+mlbGlobal.__sachMlbDisplayState ||= {};
+mlbGlobal.__sachMlbPerformanceLedger ||= {};
+
+async function saveStateNow(sourceName:string,payload:any,gameDate:string){
   const {url,keys}=supabaseWriteConfig(); if(!url||!keys.length)return false;
   const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
   const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
-  for(const key of keys){const headers=supabaseHeaders(key,true,"return=minimal");try{
+  for(const key of keys){try{
+    const headers=supabaseHeaders(key,true,"return=minimal");
     const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"}); if(!existing.ok)continue;
-    const rows=await existing.json(); const res=Array.isArray(rows)&&rows[0]?.id
-      ?await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
-      :await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
-    if(res.ok){rankingStateWriteAt[sourceName]=Date.now();return true}
+    const rows=await existing.json();
+    const res=Array.isArray(rows)&&rows[0]?.id
+      ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
+      : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
+    if(res.ok)return true;
   }catch{}}
   return false;
 }
-function unionRankingRows(primary:RankingRow[],extra:RankingRow[]){
-  const out:RankingRow[]=[]; const seen=new Set<string>();
-  for(const r of [...(primary||[]),...(extra||[])]){const k=rankingIdentity(r);if(!k||k.endsWith("name:")||seen.has(k))continue;seen.add(k);out.push(r)}
+function rowGameStatus(row:any,schedule:any[]){
+  const pk=Number(row?.game_pk||row?.gamePk||0); const g=schedule.find((x:any)=>Number(x.gamePk)===pk);
+  return {live:Boolean(g?.isLive),final:Boolean(g?.isFinal)};
+}
+function stableCategory(current:any[], previous:any[], schedule:any[]){
+  const cur=Array.isArray(current)?current:[], prev=Array.isArray(previous)?previous:[];
+  if(!prev.length)return cur.slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
+  const allConfirmed=cur.length>=25&&cur.slice(0,25).every((r:any)=>r?.lineup_confirmed===true||r?.lineup_status==="Confirmed");
+  // Once the board is fully confirmed, return the exact prior 25. Live/result fields
+  // are enriched later by the UI/performance path; rank membership never changes.
+  if(allConfirmed&&prev.length>=25)return prev.slice(0,25).map((r:any,i:number)=>({...r,rank:i+1,ranking_frozen:true}));
+  const currentById=new Map(cur.map((r:any)=>[rankingIdentity(r),r]));
+  const locked=new Map<number,any>(); const lockedIds=new Set<string>();
+  for(let i=0;i<prev.length;i++){
+    const old=prev[i], status=rowGameStatus(old,schedule);
+    if(status.live||status.final){locked.set(i+1,{...old,rank:i+1,ranking_frozen:true});lockedIds.add(rankingIdentity(old));}
+  }
+  // A player whose game is already live/final may never enter the board as a new row.
+  const candidates=cur.filter((r:any)=>{const id=rankingIdentity(r);if(lockedIds.has(id))return false;const st=rowGameStatus(r,schedule);return !st.live&&!st.final;});
+  const out:any[]=[];let ci=0;
+  for(let rank=1;rank<=25;rank++){
+    if(locked.has(rank)){out.push(locked.get(rank));continue;}
+    while(ci<candidates.length&&out.some(x=>rankingIdentity(x)===rankingIdentity(candidates[ci])))ci++;
+    if(ci<candidates.length)out.push({...candidates[ci++],rank});
+  }
   return out;
 }
-function scheduleGameForRow(row:any,games:MlbGame[]){const pk=Number(row?.game_pk||row?.gamePk||0);return games.find(g=>Number(g.gamePk)===pk)}
-function lockStartedRows(current:Record<string,RankingRow[]>,prior:Record<string,RankingRow[]>,games:MlbGame[]){
+function stableBoard(current:Record<string,RankingRow[]>,previous:Record<string,RankingRow[]>,schedule:any[]){
   const out:Record<string,RankingRow[]>={};
-  for(const category of new Set([...Object.keys(current||{}),...Object.keys(prior||{})])){
-    const now=Array.isArray(current?.[category])?current[category]:[]; const old=Array.isArray(prior?.[category])?prior[category]:[];
-    const locked=old.filter((r:any)=>{const g=scheduleGameForRow(r,games);return Boolean(g?.isLive||g?.isFinal)});
-    const lockedKeys=new Set(locked.map(r=>rankingIdentity(r))); const used=new Set<string>(); const slots:Array<RankingRow|null>=Array(25).fill(null);
-    // A prediction that has started owns the slot it had immediately before game time.
-    for(const r of locked){const k=rankingIdentity(r);if(!k||used.has(k))continue;const idx=Math.max(0,Math.min(24,Number((r as any)?.rank||1)-1));if(!slots[idx]){slots[idx]={...r,rank:idx+1};used.add(k)}}
-    // Only PRE-GAME candidates may enter/reorder the remaining slots. A player whose game is
-    // already live/final can never newly enter today's ranking board.
-    const candidates=now.filter((r:any)=>{const k=rankingIdentity(r);const g=scheduleGameForRow(r,games);return !used.has(k)&&!g?.isLive&&!g?.isFinal});
-    let ci=0;for(let i=0;i<25;i++){if(slots[i])continue;while(ci<candidates.length&&used.has(rankingIdentity(candidates[ci])))ci++;if(ci<candidates.length){const r=candidates[ci++];used.add(rankingIdentity(r));slots[i]={...r,rank:i+1}}}
-    out[category]=slots.filter(Boolean) as RankingRow[];
-  }
+  for(const cat of Object.keys(current||{}))out[cat]=stableCategory(current[cat]||[],previous?.[cat]||[],schedule);
   return out;
 }
 
 export async function getRankings() {
-  const today=torontoDate(),yesterday=torontoDay(-1);
-  const [todayBatters,todayPitchers,latestBatters,latestPitchers,yesterdayBatters,yesterdayPitchers,owls,boardBatterSnap,boardPitcherSnap,scheduleInfo]=await Promise.all([
-    getSourceSnapshotForDay("mlb_game_intelligence",today),getSourceSnapshotForDay("mlb_pitcher_intelligence",today),
-    getSourceSnapshot("mlb_game_intelligence"),getSourceSnapshot("mlb_pitcher_intelligence"),
-    getSourceSnapshotForDay("mlb_game_intelligence",yesterday),getSourceSnapshotForDay("mlb_pitcher_intelligence",yesterday),getOwlsMlbRankings(),
-    getSourceSnapshotForDay("mlb_batter_ranking_state",today),getSourceSnapshotForDay("mlb_pitcher_ranking_state",today),getSchedule()
+  const today = torontoDate();
+  const yesterday = torontoDay(-1);
+  const [todayBatters,todayPitchers,latestBatters,latestPitchers,yesterdayBatters,yesterdayPitchers,owls] = await Promise.all([
+    getSourceSnapshotForDay("mlb_game_intelligence",today),
+    getSourceSnapshotForDay("mlb_pitcher_intelligence",today),
+    getSourceSnapshot("mlb_game_intelligence"),
+    getSourceSnapshot("mlb_pitcher_intelligence"),
+    getSourceSnapshotForDay("mlb_game_intelligence",yesterday),
+    getSourceSnapshotForDay("mlb_pitcher_intelligence",yesterday),
+    getOwlsMlbRankings(),
   ]);
-  const batterSource=todayBatters.row?todayBatters:latestBatters,pitcherSource=todayPitchers.row?todayPitchers:latestPitchers;
-  const batter:Record<string,RankingRow[]>={};for(const k of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"])batter[k]=rowsFrom(batterSource.payload,k).slice(0,25);
-  const pitcherRoot=pitcherSource.payload?.rankings||pitcherSource.payload||{};const pitcher:Record<string,RankingRow[]>={};for(const k of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"])pitcher[k]=rowsFrom(pitcherRoot,k).slice(0,25);
-  const priorDay=rankingsFromSnapshots(yesterdayBatters,yesterdayPitchers);
-  const priorBoardBatter:Record<string,RankingRow[]>=boardBatterSnap.row?(boardBatterSnap.payload?.rankings||boardBatterSnap.payload||{}):{};
-  const priorBoardPitcher:Record<string,RankingRow[]>=boardPitcherSnap.row?(boardPitcherSnap.payload?.rankings||boardPitcherSnap.payload||{}):{};
-  const boardFrozen=Boolean(boardBatterSnap.payload?.frozen===true);
+  const batterSource=todayBatters.row?todayBatters:latestBatters;
+  const pitcherSource=todayPitchers.row?todayPitchers:latestPitchers;
+  const batter:Record<string,RankingRow[]>={};
+  for(const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"])batter[key]=rowsFrom(batterSource.payload,key).slice(0,25);
+  const pitcherRoot=pitcherSource.payload?.rankings||pitcherSource.payload||{};
+  const pitcher:Record<string,RankingRow[]>={};
+  for(const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"])pitcher[key]=rowsFrom(pitcherRoot,key).slice(0,25);
+  const prior=rankingsFromSnapshots(yesterdayBatters,yesterdayPitchers);
   const hasSaved=Object.values(batter).some(x=>x.length)||Object.values(pitcher).some(x=>x.length);
-
-  // Once every lineup for today's scheduled teams is confirmed, the board is final for the day.
-  // Never rebuild it from live player performance or late sportsbook removals.
-  const totalLineups=scheduleInfo.games.length*2;
-  const allLineupsConfirmed=totalLineups>0&&scheduleInfo.lineupsConfirmed>=totalLineups;
-  if(boardFrozen&&Object.values(priorBoardBatter).some(x=>x.length)){
-    return {batter:priorBoardBatter,pitcher:priorBoardPitcher,connected:true,batterConnected:batterSource.connected,pitcherConnected:pitcherSource.connected,errors:[],source:"Frozen pregame ranking board",fallbackActive:false,updatedAt:boardBatterSnap.row?.created_at||null,dataDate:today,batterDataDate:today,pitcherDataDate:today,requestedDate:today,batterStale:false,pitcherStale:false,stale:false,marketVerified:Boolean(owls.ok),movementBaseline:today,boardFrozen:true,lineupsConfirmed:scheduleInfo.lineupsConfirmed,totalLineups};
-  }
-
-  // Union the model rows with the full OWLS market list BEFORE filtering. This backfills slots
-  // removed by lineup/market validation instead of shrinking a valid Top 25 to 22/23.
-  const candidateBatter:Record<string,RankingRow[]>={},candidatePitcher:Record<string,RankingRow[]>={};
-  for(const k of Object.keys(batter))candidateBatter[k]=owls.ok?unionRankingRows(batter[k]||[],owls.batter[k]||[]):batter[k]||[];
-  for(const k of Object.keys(pitcher))candidatePitcher[k]=owls.ok?unionRankingRows(pitcher[k]||[],owls.pitcher[k]||[]):pitcher[k]||[];
-  let eligibleBatter=owls.ok?await enforceTodayEligibility(candidateBatter,owls.batter,false):candidateBatter;
-  let eligiblePitcher=owls.ok?await enforceTodayEligibility(candidatePitcher,owls.pitcher,true):candidatePitcher;
-
-  // Started games are immutable: preserve players already on the board, and prohibit any new
-  // live/final player from entering based on in-game performance.
-  if(Object.values(priorBoardBatter).some(x=>x.length))eligibleBatter=lockStartedRows(eligibleBatter,priorBoardBatter,scheduleInfo.games);
-  if(Object.values(priorBoardPitcher).some(x=>x.length))eligiblePitcher=lockStartedRows(eligiblePitcher,priorBoardPitcher,scheduleInfo.games);
-
-  const movementBatterBase=Object.values(priorBoardBatter).some(x=>x.length)?priorBoardBatter:(Object.values(batter).some(x=>x.length)?batter:priorDay.batter);
-  const movementPitcherBase=Object.values(priorBoardPitcher).some(x=>x.length)?priorBoardPitcher:(Object.values(pitcher).some(x=>x.length)?pitcher:priorDay.pitcher);
-  const finalBatter=annotateMovement(eligibleBatter,movementBatterBase),finalPitcher=annotateMovement(eligiblePitcher,movementPitcherBase);
-
-  // Persist THIS rendered board as the next movement baseline. If all lineups are confirmed,
-  // mark it frozen so every later refresh returns exactly the same pregame board.
-  await Promise.all([
-    saveRankingState("mlb_batter_ranking_state",{rankings:finalBatter,frozen:allLineupsConfirmed,lineupsConfirmed:scheduleInfo.lineupsConfirmed,totalLineups},today),
-    saveRankingState("mlb_pitcher_ranking_state",{rankings:finalPitcher,frozen:allLineupsConfirmed,lineupsConfirmed:scheduleInfo.lineupsConfirmed,totalLineups},today)
-  ]);
+  // When OWLS is healthy it is the eligibility gate, not merely a fallback. A stale saved
+  // model row cannot remain in a betting Top 25 when no current sportsbook market exists.
+  const candidateBatter=owls.ok?Object.fromEntries(Object.keys(batter).map(k=>[k,batter[k]?.length?batter[k]:(owls.batter[k]||[])])):batter;
+  const candidatePitcher=owls.ok?Object.fromEntries(Object.keys(pitcher).map(k=>[k,pitcher[k]?.length?pitcher[k]:(owls.pitcher[k]||[])])):pitcher;
+  const eligibleBatter=owls.ok?await enforceTodayEligibility(candidateBatter,owls.batter,false):candidateBatter;
+  const eligiblePitcher=owls.ok?await enforceTodayEligibility(candidatePitcher,owls.pitcher,true):candidatePitcher;
+  // Fix 06: use the last DISPLAYED board as movement baseline, never the newly
+  // recalculated model board. This is the Streamlit separation that prevents NEW resets.
+  const savedDisplay=await getSourceSnapshotForDay("mlb_display_state_v2",today);
+  const memoryDisplay=mlbGlobal.__sachMlbDisplayState?.[today]||{};
+  const previousDisplay=(savedDisplay.row?savedDisplay.payload:memoryDisplay)||{};
+  const schedule=(await getSchedule()).games;
+  const stableBatter=stableBoard(eligibleBatter,previousDisplay.batter||prior.batter,schedule);
+  const stablePitcher=stableBoard(eligiblePitcher,previousDisplay.pitcher||prior.pitcher,schedule);
+  const movementBatterBase=previousDisplay.batter||prior.batter;
+  const movementPitcherBase=previousDisplay.pitcher||prior.pitcher;
+  const finalBatter=annotateMovement(stableBatter,movementBatterBase);
+  const finalPitcher=annotateMovement(stablePitcher,movementPitcherBase);
+  const displayPayload={batter:finalBatter,pitcher:finalPitcher,captured_at:new Date().toISOString()};
+  mlbGlobal.__sachMlbDisplayState[today]=displayPayload;
+  // Await the write: a non-awaited save was one reason movement could reset to NEW.
+  await saveStateNow("mlb_display_state_v2",displayPayload,today);
   const batterDataDate=batterSource.row?.game_date||null,pitcherDataDate=pitcherSource.row?.game_date||null;
-  return {batter:finalBatter,pitcher:finalPitcher,connected:batterSource.connected||pitcherSource.connected||Boolean(owls.ok),batterConnected:batterSource.connected,pitcherConnected:pitcherSource.connected,errors:[batterSource.error,pitcherSource.error,owls.error].filter(Boolean),source:owls.ok?(hasSaved?"Sach model + OWLS market verification":"Owls Insight live props"):(hasSaved?"Supabase intelligence snapshot":"No ranking source"),fallbackActive:Boolean(owls.ok&&!hasSaved),updatedAt:new Date().toISOString(),dataDate:batterDataDate||pitcherDataDate,batterDataDate,pitcherDataDate,requestedDate:today,batterStale:Boolean(batterDataDate&&batterDataDate!==today),pitcherStale:Boolean(pitcherDataDate&&pitcherDataDate!==today),stale:Boolean((batterDataDate&&batterDataDate!==today)||(pitcherDataDate&&pitcherDataDate!==today)),marketVerified:Boolean(owls.ok),movementBaseline:today,boardFrozen:allLineupsConfirmed,lineupsConfirmed:scheduleInfo.lineupsConfirmed,totalLineups};
+  return {
+    batter:finalBatter,pitcher:finalPitcher,
+    connected:batterSource.connected||pitcherSource.connected||Boolean(owls.ok),
+    batterConnected:batterSource.connected,pitcherConnected:pitcherSource.connected,
+    errors:[batterSource.error,pitcherSource.error,owls.error].filter(Boolean),
+    source:owls.ok?(hasSaved?"Sach model + OWLS market verification":"Owls Insight live props"):(hasSaved?"Supabase intelligence snapshot":"No ranking source"),
+    fallbackActive:Boolean(owls.ok&&!hasSaved),
+    updatedAt:owls.ok?new Date().toISOString():(batterSource.row?.created_at||pitcherSource.row?.created_at||null),
+    dataDate:batterDataDate||pitcherDataDate,batterDataDate,pitcherDataDate,requestedDate:today,
+    batterStale:Boolean(batterDataDate&&batterDataDate!==today),pitcherStale:Boolean(pitcherDataDate&&pitcherDataDate!==today),
+    stale:Boolean((batterDataDate&&batterDataDate!==today)||(pitcherDataDate&&pitcherDataDate!==today)),
+    marketVerified:Boolean(owls.ok),movementBaseline:Object.values(batter).some(x=>x.length)?today:yesterday,
+  };
 }
 
 const BATTER_CATEGORIES = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"] as const;
@@ -803,6 +825,11 @@ export async function getPerformance(){
   const yesterday=torontoDay(-1);
   const [batterArchive,pitcherArchive,emerging,rankingData,yesterdayRankings]=await Promise.all([archivedPerformanceHistory("mlb_batter_performance_history",batterHistory,false),archivedPerformanceHistory("mlb_pitcher_performance_history",pitcherHistory,true),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
   let mergedBatter=batterArchive.history,mergedPitcher=pitcherArchive.history;
+  // Fix 06: the frozen prediction ledger is monotonic. Rankings may refresh, but a
+  // captured/settled prediction can never disappear from Today performance.
+  const memLedger=mlbGlobal.__sachMlbPerformanceLedger?.[today]||{};
+  if(memLedger.batter) mergedBatter=mergeHistory(memLedger.batter,mergedBatter,false);
+  if(memLedger.pitcher) mergedPitcher=mergeHistory(memLedger.pitcher,mergedPitcher,true);
 
   // The latest intelligence snapshot can carry a stale game_date even when the
   // rows themselves belong to today's MLB games. Resolve each row by gamePk and
@@ -838,6 +865,17 @@ export async function getPerformance(){
   let emergingHistory=ensureEmergingForDay(emerging.payload||{},todayBatterCount>0?(todayBatterRankings?.home_runs||[]):(rankingData.batter?.home_runs||[]),todayBatterCount>0?today:batterSourceDay);
   if(yesterdayRankings.batterFound) emergingHistory=ensureEmergingForDay(emergingHistory,yesterdayRankings.batter?.home_runs||[],yesterday);
   const [batterRefreshed,pitcherRefreshed,emergingRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher),refreshBatterHistory(emergingHistory)]);
+  // Preserve the exact frozen ledger independently from the current ranking board.
+  mlbGlobal.__sachMlbPerformanceLedger[today]={batter:batterRefreshed,pitcher:pitcherRefreshed};
+  const ledgerSig=JSON.stringify({b:batterRefreshed?.days?.[today]?.categories||{},p:pitcherRefreshed?.days?.[today]?.categories||{}});
+  if(mlbGlobal.__sachMlbLedgerSig?.[today]!==ledgerSig){
+    mlbGlobal.__sachMlbLedgerSig ||= {};
+    const [sb,sp]=await Promise.all([
+      saveStateNow("mlb_batter_performance_history",batterRefreshed,today),
+      saveStateNow("mlb_pitcher_performance_history",pitcherRefreshed,today)
+    ]);
+    if(sb&&sp)mlbGlobal.__sachMlbLedgerSig[today]=ledgerSig;
+  }
   const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);
   const emergingToday=(emergingRefreshed?.days?.[today]?.categories?.emerging_power||[]).slice(0,10).map((r:any)=>({...r,explanation:emergingExplanation(r)}));
   let archiveSaved=false;
