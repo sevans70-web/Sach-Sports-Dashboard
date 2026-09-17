@@ -326,7 +326,9 @@ export async function GET(req:NextRequest){
  try{
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market),getEspnNflSchedule()]),today=easternDayKey(new Date());
   const active=owlsRows.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
-  const built=await Promise.all(active.slice(0,25).map(async(row:any)=>{
+  // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
+  // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
+  const built=await Promise.all(active.slice(0,60).map(async(row:any)=>{
    const profile=await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
    const pos=String(profile.position||"").toUpperCase();
    const qbOnly=market==="qb_rushing_yards";
@@ -357,7 +359,13 @@ export async function GET(req:NextRequest){
     if(!prior||Number(row.bookmakerCount||0)>Number(prior.bookmakerCount||0)||(Number(row.bookmakerCount||0)===Number(prior.bookmakerCount||0)&&Number(row.giScore||0)>Number(prior.giScore||0))) unique.set(key,row);
   }
   const rows=[...unique.values()];
-  rows.sort((a,b)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
+  // Rolling slate priority: today's playable slate gets a meaningful boost without excluding
+  // elite future-week plays. After today's games are final, the next available game day becomes primary.
+  const playableDays=[...new Set(schedule.filter((g:any)=>!g.completed&&g.state!=="post").map((g:any)=>easternDayKey(g.date)).filter(Boolean))].sort();
+  const primaryDay=playableDays.includes(today)?today:(playableDays[0]||today);
+  const nextDay=playableDays.find((d:string)=>d>primaryDay)||"";
+  const priority=(r:any)=>{const day=easternDayKey(rowGameTime(r,schedule));return day===primaryDay?12:day===nextDay?3:0};
+  rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
   const historySaved=await saveNflPregamePredictions(market,ranked,schedule);
   const results=await getNflResultMap(market,today);
   const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|game:${r.gameId}`)||results.get(`${r.playerId}|matchup:${cleanName(r.matchup)}`);const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});

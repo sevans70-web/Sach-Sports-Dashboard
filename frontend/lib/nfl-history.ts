@@ -5,7 +5,7 @@ export type SavedNflPrediction={
   gameId?:string;
   playerId:string; playerName:string; teamName:string; position?:string;
   teamId?:string; teamLogo?:string; headshot?:string;
-  sportsbookLine:number|null; sportsbookProbability?:number|null; modelProjection:number|null; modelProbability:number|null;
+  sportsbookLine:number|null; sportsbookProbability?:number|null; modelProjection:number|null; modelProbability:number|null; pickSide?:"OVER"|"UNDER";
   giScore:number; bookmakerCount:number; savedAt:string;
   originalRank?:number|null; lastSeenRank?:number|null; lastSeenAt?:string|null;
   status:"pending"|"hit"|"miss"|"push"|"void"; actual:number|null; gradedAt:string|null;
@@ -156,7 +156,7 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
      playerId:String(row.playerId),playerName:String(row.playerName),teamName:String(row.teamName),position:String(row.position||""),
      teamId:String(row.teamId||""),teamLogo:String(row.teamLogo||""),headshot:String(row.headshot||""),gameId,
      sportsbookLine:row.sportsbookLine==null?null:Number(row.sportsbookLine),sportsbookProbability:row.sportsbookProbability==null?null:Number(row.sportsbookProbability),modelProjection:row.modelProjection==null?null:Number(row.modelProjection),
-     modelProbability:row.modelProbability==null?null:Number(row.modelProbability),giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
+     modelProbability:row.modelProbability==null?null:Number(row.modelProbability),pickSide:(m==="anytime_td"||m==="first_td")?"OVER":(row.modelProjection!=null&&row.sportsbookLine!=null&&Number(row.modelProjection)<Number(row.sportsbookLine)?"UNDER":"OVER"),giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
      savedAt:new Date().toISOString(),originalRank:Number(row.rank||0)||null,lastSeenRank:Number(row.rank||0)||null,lastSeenAt:new Date().toISOString(),
      status:"pending",actual:null,gradedAt:null,recoveredAfterStart:alreadyStarted||undefined});bucket.changed=true;
  }

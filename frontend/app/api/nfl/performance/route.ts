@@ -33,7 +33,9 @@ function actualFrom(payload:any,m:NflMarketKey,day:string){
 function settle(p:SavedNflPrediction,actual:number){
  if(p.market==="anytime_td"||p.market==="first_td")return actual>0?"hit":"miss";
  if(p.sportsbookLine==null)return "void";
- if(actual>p.sportsbookLine)return "hit"; if(actual<p.sportsbookLine)return "miss"; return "push";
+ if(actual===p.sportsbookLine)return "push";
+ const side=p.pickSide||(p.modelProjection!=null&&p.modelProjection<p.sportsbookLine?"UNDER":"OVER");
+ return side==="UNDER"?(actual<p.sportsbookLine?"hit":"miss"):(actual>p.sportsbookLine?"hit":"miss");
 }
 function numStat(v:any){const n=Number(String(v??"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:null}
 function statFromSummary(payload:any,playerId:string,playerName:string,category:string,label:string){
@@ -161,7 +163,8 @@ function daysFor(period:string){
 export async function GET(req:NextRequest){
  const period=req.nextUrl.searchParams.get("period")||"Today",group=req.nextUrl.searchParams.get("group")||"QB";
  const marketParam=req.nextUrl.searchParams.get("market") as NflMarketKey|null;
- const markets=(marketParam?[marketParam]:NFL_MARKETS.map(x=>x[0])).filter(m=>NFL_MARKETS.some(x=>x[0]===m));
+ const groupMarkets=group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"]):group==="Q1"?new Set<NflMarketKey>(["q1_passing_yards","q1_receiving_yards","q1_receptions","q1_qb_rushing_yards","q1_rushing_yards","q1_pass_attempts","q1_pass_completions","q1_rushing_receiving_yards","q1_anytime_td","q1_rush_attempts"]):new Set<NflMarketKey>(["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
+ const markets=(marketParam?[marketParam]:[...groupMarkets]).filter(m=>NFL_MARKETS.some(x=>x[0]===m));
  try{
    const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,writable=true,recoveredSnapshots=0;
    const summaryCache=new Map<string,any>();
@@ -192,7 +195,6 @@ export async function GET(req:NextRequest){
      }
      if(changed)await saveGradedNflPredictions(market,day,got.predictions,got.id);
    }
-   const groupMarkets=group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"]):group==="Q1"?new Set<NflMarketKey>(["q1_passing_yards","q1_receiving_yards","q1_receptions","q1_qb_rushing_yards","q1_rushing_yards","q1_pass_attempts","q1_pass_completions","q1_rushing_receiving_yards","q1_anytime_td","q1_rush_attempts"]):new Set<NflMarketKey>(["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
    const scoped=marketParam?all:all.filter(p=>groupMarkets.has(p.market));
    const settled=scoped.filter(p=>p.status==="hit"||p.status==="miss"),hits=scoped.filter(p=>p.status==="hit").length,pending=scoped.filter(p=>p.status==="pending").length;
    return NextResponse.json({success:true,connected,writable,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
