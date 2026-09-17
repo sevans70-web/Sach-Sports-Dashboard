@@ -34,8 +34,13 @@ export function nflPredictionProbability(
     scale=Math.max(18,Math.abs(line)*.28);
   }
 
-  const histP=logistic((projection-line)/scale);
-  const blended=clamp(histP*.75+marketP*.25,.05,.95);
+  // Probability shown on a card is the probability of the MODEL'S PICK, not
+  // always the probability of the over.  marketP is the book's over price.
+  const overHistP=logistic((projection-line)/scale);
+  const predictsOver=projection>=line;
+  const histPickP=predictsOver?overHistP:1-overHistP;
+  const bookPickP=predictsOver?marketP:1-marketP;
+  const blended=clamp(histPickP*.75+bookPickP*.25,.05,.95);
   return Math.round(blended*1000)/10;
 }
 
