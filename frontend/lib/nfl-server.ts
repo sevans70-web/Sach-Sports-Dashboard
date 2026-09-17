@@ -51,15 +51,35 @@ const SGO_NORMALIZED:Record<NflMarketKey,Set<string>>=Object.fromEntries(
   Object.entries(SGO_STATS).map(([k,v])=>[k,new Set((v as string[]).map(normSgo))])
 ) as Record<NflMarketKey,Set<string>>;
 function sgoMatchesMarket(o:any,market:NflMarketKey){
-  const values=[o.statID,o.statId,o.stat,o.marketID,o.marketId,o.market,o.betTypeID,o.betTypeId,o.betType,o.statName,o.marketName,o.label,o.name];
-  const normalized=values.filter(Boolean).map(normSgo);
-  if(normalized.some(v=>SGO_NORMALIZED[market].has(v)))return true;
-  // SportsGameOdds has used several different labels for quarter props. Match the
-  // meaning instead of depending on one exact vendor string.
+  const period=String(o.periodID||o.periodId||o.period||"").toLowerCase();
+  const stat=normSgo(o.statID||o.statId||o.stat||o.statName||"");
+  const betType=String(o.betTypeID||o.betTypeId||o.betType||"").toLowerCase();
+
+  // SportsGameOdds v2 keeps the quarter separate from the statistic:
+  // e.g. statID="receiving_yards", periodID="1q", betTypeID="ou".
+  // Older Sach matching expected "receiving_yards_1q" in statID, so valid
+  // DraftKings Q1 props were being discarded even though they were in odds.
   if(market.startsWith("q1_")){
-    const joined=normalized.join(" ");
-    const isQ1=/firstquarter|1stquarter|quarter1|q1/.test(joined);
-    if(!isQ1)return false;
+    if(period!=="1q")return false;
+    if(betType&&market!=="q1_anytime_td"&&betType!=="ou")return false;
+    const q1Stats:Partial<Record<NflMarketKey,string[]>>={
+      q1_passing_yards:["passingyards","passyards"],
+      q1_receiving_yards:["receivingyards","receptionyards"],
+      q1_receptions:["receptions","receivingreceptions"],
+      q1_qb_rushing_yards:["rushingyards","rushyards"],
+      q1_rushing_yards:["rushingyards","rushyards"],
+      q1_pass_attempts:["passingattempts","passattempts"],
+      q1_pass_completions:["passingcompletions","passcompletions","completions"],
+      q1_rushing_receiving_yards:["rushingreceivingyards","rushreceivingyards"],
+      q1_anytime_td:["touchdowns","totaltouchdowns","anytimetouchdown"],
+      q1_rush_attempts:["rushingattempts","rushattempts"],
+    };
+    if((q1Stats[market]||[]).includes(stat))return true;
+
+    // Compatibility fallback for vendor label changes, but periodID=1q remains
+    // mandatory so full-game props can never leak into the Q1 rankings.
+    const values=[o.oddID,o.marketID,o.marketId,o.market,o.statName,o.marketName,o.label,o.name];
+    const joined=values.filter(Boolean).map(normSgo).join(" ");
     if(market==="q1_passing_yards")return /pass/.test(joined)&&/yard|yd/.test(joined);
     if(market==="q1_receiving_yards")return /receiv|reception/.test(joined)&&/yard|yd/.test(joined);
     if(market==="q1_receptions")return /reception/.test(joined)&&!/yard|yd/.test(joined);
@@ -69,8 +89,14 @@ function sgoMatchesMarket(o:any,market:NflMarketKey){
     if(market==="q1_rushing_receiving_yards")return /rush/.test(joined)&&/receiv/.test(joined)&&/yard|yd/.test(joined);
     if(market==="q1_anytime_td")return /touchdown|anytimetd|td/.test(joined);
     if(market==="q1_rush_attempts")return /rush/.test(joined)&&/attempt/.test(joined);
+    return false;
   }
-  return false;
+
+  // Full-game markets must not accidentally consume quarter/half props.
+  if(period&&period!=="game")return false;
+  const values=[o.statID,o.statId,o.stat,o.marketID,o.marketId,o.market,o.betTypeID,o.betTypeId,o.betType,o.statName,o.marketName,o.label,o.name];
+  const normalized=values.filter(Boolean).map(normSgo);
+  return normalized.some(v=>SGO_NORMALIZED[market].has(v));
 }
 function sgoPlayerName(o:any){
   return String(o.statEntityName||o.statEntity?.name||o.playerName||o.player?.name||o.participantName||o.participant?.name||o.entityName||"").trim();
