@@ -77,20 +77,42 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
 
 function supabaseConfig() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const key = process.env.SUPABASE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-  return { url: url.replace(/\/$/, ""), key };
+  // Railway currently carries more than one Supabase key. Read operations must
+  // prefer the secret/service-role key, but safely fall back to the legacy key
+  // or anon key if needed. A single rejected key must not make the dashboard
+  // report that Supabase is missing.
+  const keys = [
+    process.env.SUPABASE_SECRET_KEY,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.SUPABASE_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  ].filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
+  return { url: url.replace(/\/$/, ""), keys };
 }
 
 async function supabaseRows(path: string) {
-  const { url, key } = supabaseConfig();
-  if (!url || !key) return { rows: [] as any[], connected: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
-  try {
-    const res = await fetch(`${url}/rest/v1/${path}`, { headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" }, cache: "no-store" });
-    if (!res.ok) return { rows: [], connected: false, error: `Supabase returned ${res.status}` };
-    return { rows: await res.json(), connected: true, error: "" };
-  } catch (error) {
-    return { rows: [], connected: false, error: error instanceof Error ? error.message : "Supabase request failed" };
+  const { url, keys } = supabaseConfig();
+  if (!url || !keys.length) {
+    return { rows: [] as any[], connected: false, configured: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
   }
+
+  let lastError = "Supabase request failed";
+  for (const key of keys) {
+    try {
+      const res = await fetch(`${url}/rest/v1/${path}`, {
+        headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        return { rows: await res.json(), connected: true, configured: true, error: "" };
+      }
+      lastError = `Supabase returned ${res.status}`;
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "Supabase request failed";
+    }
+  }
+
+  return { rows: [] as any[], connected: false, configured: true, error: lastError };
 }
 
 function supabaseWriteConfig() {
@@ -123,18 +145,18 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
 export async function getSourceSnapshot(sourceName: string) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=1`);
   const row = result.rows?.[0] || null;
-  return { connected: result.connected, error: result.error, row, payload: row?.payload || {} };
+  return { connected: result.connected, configured: result.configured, error: result.error, row, payload: row?.payload || {} };
 }
 
 async function getSourceSnapshotForDay(sourceName:string, gameDate:string) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`);
   const row = result.rows?.[0] || null;
-  return { connected: result.connected, error: result.error, row, payload: row?.payload || {} };
+  return { connected: result.connected, configured: result.configured, error: result.error, row, payload: row?.payload || {} };
 }
 
 async function getRecentSourceSnapshots(sourceName:string, limit=24) {
   const result = await supabaseRows(`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(sourceName)}&order=created_at.desc&limit=${limit}`);
-  return { connected: result.connected, error: result.error, rows: Array.isArray(result.rows)?result.rows:[] };
+  return { connected: result.connected, configured: result.configured, error: result.error, rows: Array.isArray(result.rows)?result.rows:[] };
 }
 
 async function officialGameDayFromRankings(rankings:Record<string,RankingRow[]>, fallback:string) {
@@ -372,6 +394,7 @@ export async function getRankings() {
     batterDropped,
     pitcherDropped,
     connected: batterSource.connected || pitcherSource.connected,
+    configured: Boolean(batterSource.configured || pitcherSource.configured),
     batterConnected: batterSource.connected,
     pitcherConnected: pitcherSource.connected,
     errors: [batterSource.error, pitcherSource.error].filter(Boolean),
@@ -714,6 +737,6 @@ export async function getPlayer(playerId: string) {
 }
 
 export function connectionStatus() {
-  const { url, key } = supabaseConfig();
-  return { supabaseConfigured: Boolean(url && key), mlbStatsConfigured: true };
+  const { url, keys } = supabaseConfig();
+  return { supabaseConfigured: Boolean(url && keys.length), mlbStatsConfigured: true };
 }
