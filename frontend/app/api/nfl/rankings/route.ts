@@ -32,7 +32,14 @@ const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  first_td:["first_td","first_touchdown","first_touchdown_scorer","first_scorer"],
  q1_passing_yards:["passing_yards_1q","passing_1q_yards","1q_passing_yards","first_quarter_passing_yards"],
  q1_receiving_yards:["receiving_yards_1q","receiving_1q_yards","1q_receiving_yards","first_quarter_receiving_yards"],
+ q1_receptions:["receptions_1q","receiving_receptions_1q","1q_receptions","first_quarter_receptions"],
+ q1_qb_rushing_yards:["qb_rushing_yards_1q","qb_rushing_1q_yards","1q_qb_rushing_yards","first_quarter_qb_rushing_yards"],
  q1_rushing_yards:["rushing_yards_1q","rushing_1q_yards","1q_rushing_yards","first_quarter_rushing_yards"],
+ q1_pass_attempts:["pass_attempts_1q","passing_attempts_1q","1q_pass_attempts","first_quarter_pass_attempts"],
+ q1_pass_completions:["pass_completions_1q","passing_completions_1q","1q_pass_completions","first_quarter_pass_completions"],
+ q1_rushing_receiving_yards:["rushing_receiving_yards_1q","rush_receiving_yards_1q","1q_rushing_receiving_yards","first_quarter_rushing_receiving_yards"],
+ q1_anytime_td:["anytime_td_1q","touchdown_scorer_1q","1q_anytime_td","first_quarter_anytime_td"],
+ q1_rush_attempts:["rush_attempts_1q","rushing_attempts_1q","1q_rush_attempts","first_quarter_rush_attempts"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
  passing_yards:["passingyards","passyards"],
