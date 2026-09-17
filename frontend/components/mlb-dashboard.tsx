@@ -4,14 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { BATTER_MARKETS, PITCHER_MARKETS, playerHeadshot, rankingName, rankingPlayerId, numberValue, percentValue, type RankingRow } from "@/lib/mlb";
 
 type ScheduleResponse = { success:boolean; games:any[]; fetchedAt?:string; lineupsConfirmed?:number; error?:string };
-type RankingResponse = { success:boolean; batter:Record<string,RankingRow[]>; pitcher:Record<string,RankingRow[]>; connected:boolean; errors?:string[]; updatedAt?:string; dataDate?:string; batterDataDate?:string|null; pitcherDataDate?:string|null; requestedDate?:string; stale?:boolean; batterStale?:boolean; pitcherStale?:boolean };
+type RankingResponse = { success:boolean; batter:Record<string,RankingRow[]>; pitcher:Record<string,RankingRow[]>; batterDropped?:Record<string,string[]>; pitcherDropped?:Record<string,string[]>; connected:boolean; errors?:string[]; updatedAt?:string; dataDate?:string; batterDataDate?:string|null; pitcherDataDate?:string|null; requestedDate?:string; stale?:boolean; batterStale?:boolean; pitcherStale?:boolean };
 type PerformanceResponse = { success:boolean; connected:boolean; batter:any; pitcher:any; emerging:any; hrIntelligence?:{live?:any[];yesterdayWatch?:any[];yesterday?:any[];emergingToday?:any[]}; errors?:string[] };
 
-function useJson<T>(url:string,fallback:T,refreshMs=60000){const[data,setData]=useState<T>(fallback);const[loading,setLoading]=useState(true);useEffect(()=>{let live=true;const load=()=>fetch(url).then(r=>r.json()).then(v=>live&&setData(v)).catch(()=>{}).finally(()=>live&&setLoading(false));load();const id=setInterval(load,refreshMs);return()=>{live=false;clearInterval(id)}},[url,refreshMs]);return{data,loading}}
+function useJson<T>(url:string,fallback:T){const[data,setData]=useState<T>(fallback);const[loading,setLoading]=useState(true);useEffect(()=>{let live=true;const load=()=>fetch(url,{cache:"no-store"}).then(r=>r.json()).then(v=>live&&setData(v)).catch(()=>{}).finally(()=>live&&setLoading(false));load();const id=setInterval(load,30000);return()=>{live=false;clearInterval(id)}},[url]);return{data,loading}}
 function historyRows(payload:any){return Object.entries(payload?.days||{}).sort(([a],[b])=>String(b).localeCompare(String(a)))}
 function torontoDate(offset=0){const d=new Date(Date.now()+offset*86400000);const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>parts.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`}
 function includeDate(date:string,period:string){const today=torontoDate(),yesterday=torontoDate(-1);if(period==="Today")return date===today;if(period==="Yesterday")return date===yesterday;const d=new Date(`${date}T12:00:00Z`),t=new Date(`${today}T12:00:00Z`);const diff=Math.round((+t-+d)/86400000);if(period==="Week")return diff>=0&&diff<7;if(period==="Month")return date.slice(0,7)===today.slice(0,7);return date.slice(0,4)===today.slice(0,4)}
-function aggregate(payload:any,period:string,category?:string){let settled=0,correct=0,pending=0,total=0,absError=0;for(const[date,day]of historyRows(payload) as any[]){if(!includeDate(String(date),period))continue;const cats=day?.categories||{};const lists=category?[cats?.[category]]:Object.values(cats);for(const cat of lists as any[])for(const row of(Array.isArray(cat)?cat:[])){total++;if(typeof row?.correct==="boolean"){settled++;if(row.correct)correct++;continue}if(row?.finalized===true&&typeof row?.absolute_error==="number"){settled++;absError+=Number(row.absolute_error||0);if(Number(row.absolute_error)<=1)correct++;continue}pending++;}}return{settled,correct,pending,total,hitRate:settled?(correct/settled*100).toFixed(1):"0.0",avgError:settled?(absError/settled).toFixed(2):"0.00"}}
+function aggregate(payload:any,period:string,category?:string,allowed?:readonly string[]){let settled=0,correct=0,pending=0,total=0,absError=0;for(const[date,day]of historyRows(payload) as any[]){if(!includeDate(String(date),period))continue;const cats=day?.categories||{};const lists=category?[cats?.[category]]:(allowed?allowed.map(key=>cats?.[key]):Object.values(cats));for(const cat of lists as any[])for(const row of(Array.isArray(cat)?cat:[])){total++;if(typeof row?.correct==="boolean"){settled++;if(row.correct)correct++;continue}if(row?.finalized===true&&typeof row?.absolute_error==="number"){settled++;absError+=Number(row.absolute_error||0);if(Number(row.absolute_error)<=1)correct++;continue}pending++;}}return{settled,correct,pending,total,hitRate:settled?(correct/settled*100).toFixed(1):"0.0",avgError:settled?(absError/settled).toFixed(2):"0.00"}}
 function rankTierRate(payload:any,period:string,category:string,start:number,end:number){let settled=0,correct=0;for(const[date,day]of historyRows(payload) as any[]){if(!includeDate(String(date),period))continue;const rows=day?.categories?.[category];for(const row of(Array.isArray(rows)?rows:[])){const rank=Number(row?.rank||row?.ranking||0);if(rank<start||rank>end)continue;if(typeof row?.correct==="boolean"){settled++;if(row.correct)correct++;}}}return settled?(correct/settled*100).toFixed(1):"0.0"}
 
 function normalizeName(v:any){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase()}
@@ -36,7 +36,8 @@ function batterActualLabel(result:any,category:string){
     rbis:[result?.actual_rbis??result?.actual,"RBI"],
     walks:[result?.actual_walks??result?.actual,"BB"],
     stolen_bases:[result?.actual_stolen_bases??result?.actual,"SB"],
-    hits_runs_rbis:[result?.actual_hits_runs_rbis??result?.actual,"H+R+RBI"]
+    hits_runs_rbis:[result?.actual_hits_runs_rbis??result?.actual,"H+R+RBI"],
+    batter_strikeouts:[result?.actual_batter_strikeouts??result?.actual,"K"]
   };
   const [value,label]=values[category]||[result?.actual,""];
   return value==null?"":`${Number(value)} ${label}`.trim();
@@ -44,6 +45,27 @@ function batterActualLabel(result:any,category:string){
 function pitcherActualLabel(result:any,category:string){
   const labels:any={strikeouts:"K",outs_recorded:"Outs",hits_allowed:"Hits Allowed",walks_allowed:"Walks Allowed",earned_runs:"ER"};
   return result?.actual==null?"":`${Number(result.actual)} ${labels[category]||""}`.trim();
+}
+
+function pitcherProjectionLabel(value:string,category:string){
+  const labels:any={strikeouts:"K",outs_recorded:"Outs",hits_allowed:"Hits Allowed",walks_allowed:"Walks Allowed",earned_runs:"ER"};
+  return `${value} ${labels[category]||""}`.trim();
+}
+function movementLabel(row:any){
+  const m=row?.movement||{}; const status=String(m?.status||row?.movement_type||"").toLowerCase();
+  const previous=Number((m?.previous??row?.previous_rank) || 0), current=Number((m?.current??row?.rank) || 0);
+  if(status==="new")return <span className="rankMove new">NEW</span>;
+  if(status==="up")return <span className="rankMove up">↑ {previous&&current?`#${previous} → #${current}`:Math.abs(Number(m?.change||0))}</span>;
+  if(status==="down")return <span className="rankMove down">↓ {previous&&current?`#${previous} → #${current}`:Math.abs(Number(m?.change||0))}</span>;
+  return <span className="rankMove same">−</span>;
+}
+function freezeDisplayRows(current:any[],payload:any,category:string,pitcher:boolean,freeze:boolean){
+  if(!freeze)return current;
+  const frozen=payload?.days?.[torontoDate()]?.categories?.[category];
+  if(!Array.isArray(frozen)||!frozen.length)return current;
+  const key=(r:any)=>String(pitcher?(r?.pitcher_id||r?.player_id||normalizeName(r?.pitcher_name||r?.player_name)):(r?.player_id||r?.batter_id||normalizeName(r?.player_name||r?.player)));
+  const lookup=new Map(current.map((r:any)=>[key(r),r]));
+  return frozen.slice(0,25).map((f:any,i:number)=>{const live=lookup.get(key(f))||{};return {...live,...f,rank:Number(f?.rank||i+1),movement:(live as any)?.movement||(f as any)?.movement};});
 }
 
 
@@ -58,7 +80,8 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
   const teamId=Number((row as any).team_id||(row as any).teamId||0);
   const logo=teamId?`https://www.mlbstatic.com/team-logos/${teamId}.svg`:String((row as any).team_logo_url||"");
   const probability=percentValue(row.home_run_probability??row.hr_probability??row.probability),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
-  const confirmed=row.lineup_confirmed===true;
+  const confirmed=row.lineup_confirmed===true||Boolean(resultRow?.lineup_confirmed);
+  const gameTime=String(game?.startTime||(row as any).game_time||"");
   const summary=String((row as any).summary||(row as any).reason||(row as any).intelligence_summary||(pitcher?"Ranked by workload, season rates, matchup and sample reliability.":"GI score blends performance, matchup, lineup position, park/weather and sample reliability."));
   const evidence=String((row as any).performance_evidence||(row as any).market_evidence||(row as any).recent_form||summary);
   const why=String((row as any).why_this_player||(row as any).ranking_reason||(row as any).why_ranked||summary);
@@ -70,43 +93,48 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
   const didHit=!pitcher&&resultRow?.correct===true;
   const actualLabel=pitcher?pitcherActualLabel(resultRow,marketKey):batterActualLabel(resultRow,marketKey);
   return <article className={`origRankCard ${pitcher?"pitcher":"batter"} ${open?"expanded":""}`}>
-    <div className="origRank">#{Number(row.rank||0)||"—"}<span>−</span></div>
-    <div className="origPhotoWrap">{image?<img className="origHeadshot" src={image} alt="" onError={(e)=>{e.currentTarget.style.visibility="hidden"}}/>:<div className="origHeadshot photoFallback">{name.split(" ").map(x=>x[0]).slice(0,2).join("")}</div>}{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
-    <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>
-      {pitcher?<><div className="origProp"><b>Projection:</b> {projection} K</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
+    <div className="origRank">#{Number(row.rank||0)||"—"}{movementLabel(row)}</div>
+    <div className="origPhotoWrap"><img className="origHeadshot" src={image} alt=""/>{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
+    <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>{gameTime?<div className="origGameTime">🕒 {gameTime}</div>:null}
+      {pitcher?<><div className="origProp"><b>Projection:</b> {pitcherProjectionLabel(projection,marketKey)}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
       <p>{summary}</p>
+      {!pitcher&&confirmed?<span className="confirmed">✓ Confirmed lineup{row.batting_order?` · #${row.batting_order}`:""}</span>:!pitcher&&!isLive&&!isFinal?<span className="confirmed pendingLineup">Lineup Pending</span>:null}
       {isFinal||isLive?<div className="origResultBlock">
         <span className={`resultStatus ${isLive?"live":""}`}>{isLive?"LIVE":"FINAL"}</span>
         {pitcher?<strong className="resultLine">Result: {actualLabel||(isLive?"Pending":"Awaiting final stats")}</strong>:isFinal&&resultFinal?<strong className="resultLine">Result: {didHit?"✅":"❌"} {actualLabel||"—"}</strong>:isFinal?<strong className="resultLine pending">Result: Awaiting final stats</strong>:liveHit?<strong className="resultLine">Result: ✅ {actualLabel}</strong>:<strong className="resultLine pending">Result: Pending</strong>}
-      </div>:<span className="confirmed">✓ {confirmed?"Confirmed lineup":"Lineup Pending"}{row.batting_order?` · #${row.batting_order}`:""}</span>}
+      </div>:null}
     </div>
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
-    <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>{id?<Link className="openFullCard directFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}`}>Open full player card</Link>:null}
+    <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>
     {open?<div className="origInlineIntel">
-      <div className="intelKpis"><article><span>GI Score</span><strong>{gi}</strong></article><article><span>{pitcher?"Projection":"Probability"}</span><strong>{pitcher?`${projection} K`:probability}</strong></article><article><span>Lineup</span><strong>{confirmed?"Confirmed":"Pending"}</strong></article></div>
+      <div className="intelKpis"><article><span>GI Score</span><strong>{gi}</strong></article><article><span>{pitcher?"Projection":"Probability"}</span><strong>{pitcher?pitcherProjectionLabel(projection,marketKey):probability}</strong></article><article><span>Lineup</span><strong>{confirmed?"Confirmed":"Pending"}</strong></article></div>
       <details><summary>› Market Performance Evidence</summary><p>{evidence}</p></details>
       {!pitcher&&statcast?<details><summary>› Statcast Contact Quality</summary><p>{statcast}</p></details>:null}
       <details><summary>› Why This {pitcher?"Pitcher":"Player"} Ranks Here</summary><p>{why}</p></details>
-      
+      {id?<Link className="openFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}&market=${encodeURIComponent(marketKey)}&role=${pitcher?"pitcher":"batter"}&projection=${encodeURIComponent(projection)}&gameTime=${encodeURIComponent(gameTime)}`}>Open full player card</Link>:null}
     </div>:null}
   </article>
 }
 
 export function MlbDashboard(){
-  const schedule=useJson<ScheduleResponse>("/api/mlb/schedule",{success:false,games:[]},30000);
-  const rankings=useJson<RankingResponse>("/api/mlb/rankings",{success:false,batter:{},pitcher:{},connected:false},45000);
-  const performance=useJson<PerformanceResponse>("/api/mlb/performance",{success:false,connected:false,batter:{},pitcher:{},emerging:{}},45000);
+  const schedule=useJson<ScheduleResponse>("/api/mlb/schedule",{success:false,games:[]});
+  const rankings=useJson<RankingResponse>("/api/mlb/rankings",{success:false,batter:{},pitcher:{},connected:false});
+  const performance=useJson<PerformanceResponse>("/api/mlb/performance",{success:false,connected:false,batter:{},pitcher:{},emerging:{}});
   const[role,setRole]=useState<"Batter"|"Pitcher">("Batter"),[market,setMarket]=useState("home_runs"),[period,setPeriod]=useState("Today"),[perfRole,setPerfRole]=useState<"Batter"|"Pitcher"|"Emerging Power">("Batter"),[hrTab,setHrTab]=useState<"Live HR"|"Yesterday"|"Emerging Power">("Live HR"),[showOutside,setShowOutside]=useState(false),[showYesterdayMore,setShowYesterdayMore]=useState(false),[showEmergingMore,setShowEmergingMore]=useState(false),[showFull,setShowFull]=useState(false),[perfMarket,setPerfMarket]=useState("home_runs");
   const games=schedule.data.games||[],liveGames=games.filter(g=>g.isLive),finalGames=games.filter(g=>g.isFinal),delayed=games.filter(g=>g.isDelayed).length;
   const perfPayload=perfRole==="Pitcher"?performance.data.pitcher:perfRole==="Emerging Power"?performance.data.emerging:performance.data.batter;
-  const perf=useMemo(()=>aggregate(perfPayload,period),[perfPayload,period]);
+  const perfAllowed=perfRole==="Pitcher"?PITCHER_MARKETS.map(x=>x[0]):perfRole==="Batter"?BATTER_MARKETS.map(x=>x[0]):["emerging_power"];
+  const perf=useMemo(()=>aggregate(perfPayload,period,undefined,perfAllowed),[perfPayload,period,perfRole]);
   const perfMarketSummary=useMemo(()=>aggregate(perfPayload,period,perfRole==="Emerging Power"?"emerging_power":perfMarket),[perfPayload,period,perfRole,perfMarket]);
   const marketList=role==="Batter"?BATTER_MARKETS:PITCHER_MARKETS;
   useEffect(()=>{if(role==="Batter"&&!BATTER_MARKETS.some(x=>x[0]===market))setMarket("home_runs");if(role==="Pitcher"&&!PITCHER_MARKETS.some(x=>x[0]===market))setMarket("strikeouts")},[role,market]);
   useEffect(()=>{setPerfMarket(perfRole==="Pitcher"?"strikeouts":"home_runs")},[perfRole]);
   useEffect(()=>setShowFull(false),[role,market]);
-  const rows=(role==="Batter"?rankings.data.batter?.[market]:rankings.data.pitcher?.[market])||[],activeMarket=marketList.find(x=>x[0]===market)||marketList[0];
+  const rawRows=(role==="Batter"?rankings.data.batter?.[market]:rankings.data.pitcher?.[market])||[],activeMarket=marketList.find(x=>x[0]===market)||marketList[0];
   const cardResultPayload=role==="Pitcher"?performance.data.pitcher:performance.data.batter;
+  const freezeRankings=liveGames.length>0||finalGames.length>0;
+  const rows=useMemo(()=>freezeDisplayRows(rawRows,cardResultPayload,market,role==="Pitcher",freezeRankings),[rawRows,cardResultPayload,market,role,freezeRankings]);
+  const dropped=(role==="Pitcher"?rankings.data.pitcherDropped?.[market]:rankings.data.batterDropped?.[market])||[];
   const normTeam=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
   const gameForRow=(row:any)=>{
     const pk=Number(row?.game_pk||row?.gamePk||row?.game_id||0);
@@ -149,7 +177,7 @@ export function MlbDashboard(){
       {!rankings.loading&&rankings.data.stale?<div className="origDataNote"><b>Ranking refresh pending:</b> showing the latest saved MLB Top 25 from {rankings.data.dataDate||"the previous slate"}. Today&apos;s rankings will replace it automatically when the dated snapshot is available.</div>:null}
       <div className="origTabs two"><button className={role==="Batter"?"active":""} onClick={()=>setRole("Batter")}>🥎 Batter</button><button className={role==="Pitcher"?"active":""} onClick={()=>setRole("Pitcher")}>⚾ Pitcher</button></div>
       <div className="origTabs markets">{marketList.map(([key,icon,label])=><button key={key} className={market===key?"active":""} onClick={()=>setMarket(key)}>{icon} {label}</button>)}</div>
-      <div className="origMarketHead"><h2>{activeMarket[1]} {activeMarket[2]}{role==="Batter"?" Rankings":""}</h2><p>{role==="Batter"?"Ranked by GI Score. Probability is one component of the score, alongside player performance, matchup, lineup position, ballpark, weather, and sample reliability.":"Ranked by pitcher GI score using workload, season rates, sample reliability, matchup and opponent handedness."}</p></div>
+      <div className="origMarketHead"><h2>{activeMarket[1]} {activeMarket[2]}{role==="Batter"?" Rankings":""}</h2><p>{role==="Batter"?"Ranked by GI Score. Probability is one component of the score, alongside player performance, matchup, lineup position, ballpark, weather, and sample reliability.":"Ranked by pitcher GI score using workload, season rates, sample reliability, matchup and opponent handedness."}</p>{dropped.length?<div className="droppedPlayers"><b>Dropped:</b> {dropped.slice(0,8).join(", ")}{dropped.length>8?` +${dropped.length-8} more`:""}</div>:null}</div>
       <div className="origCards">{rows.slice(0,showFull?25:5).map((row,i)=><RankingCard key={`${rankingPlayerId(row)}-${i}`} row={row} pitcher={role==="Pitcher"} marketKey={market} game={gameForRow(row)} resultRow={currentResultRow(cardResultPayload,market,row,role==="Pitcher")}/>)}{!rankings.loading&&rows.length===0?<div className="origEmpty">No completed {activeMarket[2]} snapshot is available yet.</div>:null}</div>{rows.length>5?<button className="viewFullTop25" onClick={()=>setShowFull(v=>!v)}>{showFull?"Show Top 5 Only":"View Full Top 25"}</button>:null}
     </section>
   </div>

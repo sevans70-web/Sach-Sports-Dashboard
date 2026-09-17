@@ -40,6 +40,8 @@ export type RankingRow = Record<string, unknown> & {
   lineup_confirmed?: boolean;
   batting_order?: number;
   position_abbreviation?: string;
+  game_time?: string;
+  movement?: { status?: string; previous?: number | null; current?: number | null; change?: number | null };
 };
 
 export const BATTER_MARKETS = [
@@ -51,6 +53,7 @@ export const BATTER_MARKETS = [
   ["walks", "👁️", "Walks"],
   ["stolen_bases", "💨", "Stolen Bases"],
   ["hits_runs_rbis", "📊", "H+R+RBI"],
+  ["batter_strikeouts", "🎯", "Strikeouts"],
 ] as const;
 
 export const PITCHER_MARKETS = [

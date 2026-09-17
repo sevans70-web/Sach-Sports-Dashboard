@@ -50,3 +50,37 @@
   .resultStatus{font-size:.68rem;padding:4px 9px}
   .resultLine{font-size:.86rem}
 }
+
+/* MLB September foundation/card cleanup: compact NFL-style proportions without changing MLB identity. */
+.mlbPage .origCards{gap:10px}
+.mlbPage .origRankCard{grid-template-columns:44px 82px minmax(0,1fr) 58px;gap:8px;min-height:205px;padding:12px 12px 60px 14px;border-radius:20px}
+.mlbPage .origHeadshot{width:76px;height:76px}
+.mlbPage .origTeamLogo{width:24px;height:24px}
+.mlbPage .origRankBody p{margin:5px 0 7px;-webkit-line-clamp:2;font-size:.86rem}
+.mlbPage .origName{font-size:1.08rem}
+.mlbPage .origMatch{font-size:.9rem}
+.mlbPage .origGameTime{color:#d8b94e;font-size:.8rem;font-weight:800;margin:3px 0 5px}
+.mlbPage .origProp{margin:4px 0;font-size:.92rem}
+.mlbPage .origIntel{left:14px;right:14px;bottom:10px;padding:9px 12px;border-width:2px}
+.mlbPage .origRankCard.expanded{padding-bottom:12px}
+.mlbPage .origRankCard.expanded .origIntel{margin-top:6px}
+.mlbPage .openFullCard{width:100%;padding:10px 12px;margin-top:8px}
+.mlbPage .rankMove{display:block;margin-top:6px;font-size:.76rem;font-weight:900;white-space:nowrap}
+.mlbPage .rankMove.up{color:#45e18e}.mlbPage .rankMove.down{color:#ff6b73}.mlbPage .rankMove.new{color:#e4c04e}.mlbPage .rankMove.same{color:#8b9097}
+.mlbPage .confirmed{display:inline-block;margin-top:5px;color:#37e28c;font-weight:900;font-size:.8rem}
+.mlbPage .pendingLineup{color:#d8b94e}
+.mlbPage .origResultBlock{margin-top:5px}
+.mlbPage .droppedPlayers{margin-top:10px;color:#cfd2d5;font-size:.9rem}
+.mlbPage .droppedPlayers b{color:#ff727a}
+@media(max-width:700px){
+  .mlbPage .origRankCard{grid-template-columns:34px 68px minmax(0,1fr) 44px;gap:6px;min-height:190px;padding:9px 8px 56px 10px}
+  .mlbPage .origHeadshot{width:64px;height:64px}
+  .mlbPage .origName{font-size:.98rem}
+  .mlbPage .origMatch,.mlbPage .origProp{font-size:.78rem}
+  .mlbPage .origGameTime{font-size:.72rem}
+  .mlbPage .origRankBody p{font-size:.76rem;line-height:1.28}
+  .mlbPage .origGi strong{font-size:1rem}
+  .mlbPage .origIntel{left:10px;right:10px;bottom:8px;padding:8px;font-size:.88rem}
+  .mlbPage .rankMove{font-size:.65rem}
+}
+.mlbPage .playerGameStatus{margin:12px 0;border:2px solid #c6a63c;border-radius:14px;padding:12px 14px;background:#0d0f0e}.mlbPage .playerGameStatus small,.mlbPage .playerGameStatus span{display:block;color:#aeb3b9}.mlbPage .playerGameStatus strong{display:block;color:#e6c34d;font-size:1.18rem;margin:3px 0}.mlbPage .playerKpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.mlbPage .playerKpis article{border:2px solid #34383e;border-left:6px solid #19d978;border-radius:12px;padding:10px;background:#111213}.mlbPage .playerKpis small{display:block;color:#9fa4ab;font-size:.68rem}.mlbPage .playerKpis strong{display:block;margin-top:5px}.mlbPage .playerWhy{border:2px solid #c6a63c;border-radius:15px;padding:14px 16px;margin:14px 0;background:#0d0f0e}.mlbPage .playerWhy h2{color:#e3bd4e;font-size:1.35rem;margin:0 0 8px}.mlbPage .playerWhy p{margin:0;color:#d6d8da;line-height:1.45}

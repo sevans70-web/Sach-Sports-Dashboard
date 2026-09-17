@@ -6,7 +6,6 @@ const MLB_SCHEDULE = "https://statsapi.mlb.com/api/v1/schedule";
 const MLB_FEED = "https://statsapi.mlb.com/api/v1.1/game";
 const MLB_API = "https://statsapi.mlb.com/api/v1";
 const TORONTO = "America/Toronto";
-const OWLS_MLB_PROPS = "https://api.owlsinsight.com/api/v1/mlb/props";
 
 function safe(obj: unknown, path: string[], fallback: unknown = null): any {
   let current: any = obj;
@@ -76,124 +75,28 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
   return { games, fetchedAt: new Date().toISOString(), date: requestedDate, lineupsConfirmed };
 }
 
-
-function normMarket(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}
-function medianNumber(values:number[]){const a=values.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2}
-function impliedProbability(american:any){const n=Number(american);if(!Number.isFinite(n)||n===0)return null;return (n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100))*100}
-const OWLS_MLB_MARKETS:Record<string,string[]>={
-  home_runs:["home_runs","homeruns"], hits:["hits"], total_bases:["total_bases","totalbases"], runs:["runs"],
-  rbis:["rbis"], walks:["walks"], stolen_bases:["stolen_bases","stolenbases"], hits_runs_rbis:["hits_runs_rbis","hitsrunsrbis"],
-  strikeouts:["strikeouts_pitcher","pitcher_strikeouts","strikeoutspitcher"], outs_recorded:["outs_recorded","outsrecorded"],
-  hits_allowed:["hits_allowed","hitsallowed"], walks_allowed:["walks_allowed","walksallowed"], earned_runs:["earned_runs","earnedruns"]
-};
-function owlsCategoryMatches(value:any,category:string){const x=normMarket(value);return (OWLS_MLB_MARKETS[category]||[]).some(v=>normMarket(v)===x)}
-let mlbPlayerDirectoryCache:{at:number,byName:Map<string,{id:number,teamId:number}>}|null=null;
-function normalizedPersonName(v:any){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase()}
-async function mlbPlayerDirectory(){
-  if(mlbPlayerDirectoryCache&&Date.now()-mlbPlayerDirectoryCache.at<6*60*60*1000)return mlbPlayerDirectoryCache.byName;
-  const byName=new Map<string,{id:number,teamId:number}>();
-  try{
-    const season=new Date().getFullYear();
-    const r=await fetch(`${MLB_API}/sports/1/players?season=${season}&hydrate=currentTeam`,{next:{revalidate:21600}});
-    if(r.ok){const payload=await r.json();for(const p of Array.isArray(payload?.people)?payload.people:[]){const id=Number(p?.id||0),name=normalizedPersonName(p?.fullName),teamId=Number(p?.currentTeam?.id||0);if(id&&name)byName.set(name,{id,teamId})}}
-  }catch{}
-  mlbPlayerDirectoryCache={at:Date.now(),byName};return byName;
-}
-async function getOwlsMlbRankings(){
-  const apiKey=String(process.env.OWLS_INSIGHT_API_KEY||"").trim();
-  if(!apiKey)return {batter:{} as Record<string,RankingRow[]>,pitcher:{} as Record<string,RankingRow[]>,ok:false,error:"OWLS_INSIGHT_API_KEY is missing"};
-  try{
-    const res=await fetch(OWLS_MLB_PROPS,{headers:{Authorization:`Bearer ${apiKey}`,Accept:"application/json"},next:{revalidate:45}});
-    if(!res.ok)return {batter:{},pitcher:{},ok:false,error:`Owls Insight returned ${res.status}`};
-    const payload=await res.json();
-    const games=Array.isArray(payload?.data)?payload.data:[];
-    const schedule=(await getSchedule()).games;
-    const playerDirectory=await mlbPlayerDirectory();
-    const gameByTeams=(away:string,home:string)=>schedule.find(g=>normMarket(g.away.name)===normMarket(away)&&normMarket(g.home.name)===normMarket(home));
-    const build=(category:string,pitcher=false)=>{
-      const grouped=new Map<string,any>();
-      for(const game of games){
-        const away=String(game.awayTeam||game.away_team||""),home=String(game.homeTeam||game.home_team||"");
-        const scheduled=gameByTeams(away,home); const gamePk=scheduled?.gamePk||null;
-        for(const book of Array.isArray(game.books)?game.books:[])for(const prop of Array.isArray(book.props)?book.props:[]){
-          if(!owlsCategoryMatches(prop.category??prop.market??prop.type,category))continue;
-          const playerName=String(prop.playerName||prop.player_name||prop.name||"").trim(); if(!playerName)continue;
-          const key=`${normMarket(playerName)}|${gamePk||normMarket(away+home)}`;
-          const cur=grouped.get(key)||{playerName,teamName:String(prop.team||prop.teamName||prop.team_name||""),away,home,gamePk,lines:[],prices:[],books:new Set<string>()};
-          const line=Number(prop.line??prop.point??prop.total); if(Number.isFinite(line))cur.lines.push(line);
-          const price=Number(prop.overPrice??prop.over_price??prop.price??prop.odds); if(Number.isFinite(price))cur.prices.push(price);
-          cur.books.add(String(book.key||book.name||book.title||"book")); grouped.set(key,cur);
-        }
-      }
-      return [...grouped.values()].map((x:any)=>{
-        const line=medianNumber(x.lines),prob=impliedProbability(medianNumber(x.prices));
-        const score=Math.max(1,Math.min(99,Math.round((prob??50)*10)/10));
-        const resolved=playerDirectory.get(normalizedPersonName(x.playerName));
-        const base:any={player_id:resolved?.id||null,player_name:x.playerName,player:x.playerName,headshot_url:resolved?.id?`https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${resolved.id}/headshot/67/current`:"",team_id:resolved?.teamId||null,team_name:x.teamName||"MLB",away_team_name:x.away,home_team_name:x.home,game_pk:x.gamePk,gamePk:x.gamePk,gi_score:score,probability:prob,market_probability:prob,line,projection:line,bookmaker_count:x.books.size,source:"Owls Insight live props",lineup_status:"Pending"};
-        if(category==="home_runs")base.home_run_probability=prob;
-        if(pitcher){base.pitcher_name=x.playerName;base.pitcher_id=resolved?.id||null;}
-        return base;
-      }).sort((a:any,b:any)=>Number(b.probability??0)-Number(a.probability??0)||Number(b.line??0)-Number(a.line??0)).slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
-    };
-    const batter:Record<string,RankingRow[]>={},pitcher:Record<string,RankingRow[]>={};
-    for(const c of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"])batter[c]=build(c,false);
-    for(const c of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"])pitcher[c]=build(c,true);
-    return {batter,pitcher,ok:Object.values(batter).some(x=>x.length>0)||Object.values(pitcher).some(x=>x.length>0),error:""};
-  }catch(error){return {batter:{},pitcher:{},ok:false,error:error instanceof Error?error.message:"Owls Insight MLB props failed"};}
+function supabaseConfig() {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const key = process.env.SUPABASE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  return { url: url.replace(/\/$/, ""), key };
 }
 
-function supabaseUrl() {
-  return (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/$/, "");
-}
-
-function supabaseKeys() {
-  return [
-    process.env.SUPABASE_SECRET_KEY,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    process.env.SUPABASE_KEY,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  ].map(v => String(v || "").trim()).filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
-}
-
-function supabaseHeaders(key:string, contentType=false, prefer?:string) {
-  // Supabase's new sb_secret_/sb_publishable_ keys authenticate through apikey.
-  // Legacy JWT anon/service-role keys also support Authorization: Bearer.
-  const h:any = { apikey:key, Accept:"application/json" };
-  if (!key.startsWith("sb_secret_") && !key.startsWith("sb_publishable_")) h.Authorization=`Bearer ${key}`;
-  if (contentType) h["Content-Type"]="application/json";
-  if (prefer) h.Prefer=prefer;
-  return h;
-}
-
-let supabaseCircuitOpenUntil=0;
 async function supabaseRows(path: string) {
-  const url=supabaseUrl(), keys=supabaseKeys();
-  if(Date.now()<supabaseCircuitOpenUntil)return {rows:[] as any[],connected:false,error:"Supabase temporarily unavailable; using live OWLS fallback."};
-  if (!url || !keys.length) return { rows: [] as any[], connected: false, error: "Supabase environment variables are unavailable to the Next.js server." };
-  let lastError="Supabase request failed";
-  for (const key of keys) {
-    try {
-      const res=await fetch(`${url}/rest/v1/${path}`,{headers:supabaseHeaders(key),cache:"no-store"});
-      if (!res.ok) {
-        const detail=(await res.text().catch(()=>"")).slice(0,500);
-        lastError=`Supabase returned ${res.status}${detail?`: ${detail}`:""}`;
-        if(res.status>=500) supabaseCircuitOpenUntil=Date.now()+60_000;
-        console.error("[MLB Supabase read]", {status:res.status, path:path.split("?")[0], detail});
-        continue;
-      }
-      const rows=await res.json();
-      console.info("[MLB Supabase read]", {status:res.status, path:path.split("?")[0], rows:Array.isArray(rows)?rows.length:0});
-      return {rows,connected:true,error:""};
-    } catch (error) {
-      lastError=error instanceof Error?error.message:"Supabase request failed";
-      console.error("[MLB Supabase read exception]", {path:path.split("?")[0], error:lastError});
-    }
+  const { url, key } = supabaseConfig();
+  if (!url || !key) return { rows: [] as any[], connected: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
+  try {
+    const res = await fetch(`${url}/rest/v1/${path}`, { headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" }, cache: "no-store" });
+    if (!res.ok) return { rows: [], connected: false, error: `Supabase returned ${res.status}` };
+    return { rows: await res.json(), connected: true, error: "" };
+  } catch (error) {
+    return { rows: [], connected: false, error: error instanceof Error ? error.message : "Supabase request failed" };
   }
-  return {rows:[] as any[],connected:false,error:lastError};
 }
 
 function supabaseWriteConfig() {
-  return {url:supabaseUrl(),keys:supabaseKeys()};
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "";
+  return { url: url.replace(/\/$/, ""), key };
 }
 
 let lastPerformanceArchiveAt = 0;
@@ -201,24 +104,20 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
   // Keep one durable source_snapshots row per source/day. The route polls every
   // 30 seconds, so throttle writes while still refreshing the current day.
   if (Date.now() - lastPerformanceArchiveAt < 5 * 60 * 1000) return true;
-  const {url,keys}=supabaseWriteConfig();
-  if(!url||!keys.length)return false;
-  const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
-  const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
-  for(const key of keys){
-    const headers=supabaseHeaders(key,true,"return=minimal");
-    try {
-      const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
-      if(!existing.ok){const detail=(await existing.text().catch(()=>"")).slice(0,500);console.error("[MLB Supabase write lookup]",{status:existing.status,sourceName,detail});continue;}
-      const rows=await existing.json();
-      const res=Array.isArray(rows)&&rows[0]?.id
-        ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
-        : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
-      if(res.ok){console.info("[MLB Supabase write]",{status:res.status,sourceName,gameDate});return true;}
-      const detail=(await res.text().catch(()=>"")).slice(0,500);console.error("[MLB Supabase write]",{status:res.status,sourceName,gameDate,detail});
-    } catch(error) { console.error("[MLB Supabase write exception]",{sourceName,gameDate,error:error instanceof Error?error.message:String(error)}); }
-  }
-  return false;
+  const {url,key}=supabaseWriteConfig();
+  if(!url||!key)return false;
+  const headers:any={apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Accept:"application/json",Prefer:"return=minimal"};
+  try {
+    const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
+    const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
+    if(!existing.ok)return false;
+    const rows=await existing.json();
+    const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
+    const res=Array.isArray(rows)&&rows[0]?.id
+      ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
+      : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
+    return res.ok;
+  } catch { return false; }
 }
 
 export async function getSourceSnapshot(sourceName: string) {
@@ -290,7 +189,7 @@ async function findRankingsSnapshotForDay(sourceName:string, day:string, pitcher
 
 function rankingsFromSnapshots(batters:any,pitchers:any){
   const batter:Record<string,RankingRow[]>={};
-  for(const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) batter[key]=rowsFrom(batters?.payload,key);
+  for(const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"]) batter[key]=rowsFrom(batters?.payload,key);
   const pitcherRoot=pitchers?.payload?.rankings||pitchers?.payload||{};
   const pitcher:Record<string,RankingRow[]>={};
   for(const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) pitcher[key]=rowsFrom(pitcherRoot,key);
@@ -377,6 +276,14 @@ async function getRankingsForDay(day:string){
   return {batter:batters.rankings,pitcher:pitchers.rankings,batterFound:batters.found,pitcherFound:pitchers.found};
 }
 
+function droppedFrom(payload:any,key:string): string[] {
+  const value=payload?.[key];
+  const rows=Array.isArray(value?.dropped_players)?value.dropped_players:[];
+  return rows.map((x:any)=>String(x||"")).filter(Boolean);
+}
+
+function normName(v:any){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/\b(jr|sr|ii|iii|iv)\b/gi,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase()}
+
 function rowsFrom(payload: any, key: string): RankingRow[] {
   const value = payload?.[key];
   const rows = Array.isArray(value)
@@ -424,14 +331,34 @@ export async function getRankings() {
   const pitcherSource = todayPitchers.row ? todayPitchers : latestPitchers;
 
   const batter: Record<string, RankingRow[]> = {};
-  for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"]) {
+  const batterDropped: Record<string,string[]> = {};
+  for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"]) {
     batter[key] = rowsFrom(batterSource.payload, key).slice(0, 25);
+    batterDropped[key] = droppedFrom(batterSource.payload, key);
   }
 
   const pitcherRoot = pitcherSource.payload?.rankings || pitcherSource.payload || {};
   const pitcher: Record<string, RankingRow[]> = {};
+  const pitcherDropped: Record<string,string[]> = pitcherSource.payload?.dropped_players || {};
+
+  // Defensive read-layer guard: a pitcher prop card must belong to one of
+  // today's announced probable starters. This prevents stale/corrupt rows
+  // (including position players) from leaking into pitcher markets.
+  let officialPitcherNames = new Set<string>();
+  try {
+    const schedule = await getSchedule(today);
+    for (const game of schedule.games) {
+      for (const name of [game.away.probablePitcher, game.home.probablePitcher]) {
+        if (name && name !== "Not announced") officialPitcherNames.add(normName(name));
+      }
+    }
+  } catch {}
   for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) {
-    pitcher[key] = rowsFrom(pitcherRoot, key).slice(0, 25);
+    const raw = rowsFrom(pitcherRoot, key);
+    pitcher[key] = (officialPitcherNames.size
+      ? raw.filter((row:any)=>officialPitcherNames.has(normName(row?.pitcher_name||row?.player_name)))
+      : raw
+    ).slice(0, 25);
   }
 
   const batterDataDate = batterSource.row?.game_date || null;
@@ -439,22 +366,16 @@ export async function getRankings() {
   const batterStale = Boolean(batterDataDate && batterDataDate !== today);
   const pitcherStale = Boolean(pitcherDataDate && pitcherDataDate !== today);
 
-  const hasSaved=Object.values(batter).some(rows=>rows.length>0)||Object.values(pitcher).some(rows=>rows.length>0);
-  const owls=!hasSaved||!(batterSource.connected||pitcherSource.connected)?await getOwlsMlbRankings():null;
-  const finalBatter=owls?.ok?Object.fromEntries(Object.keys(batter).map(k=>[k,(batter[k]?.length?batter[k]:(owls.batter[k]||[]))])):batter;
-  const finalPitcher=owls?.ok?Object.fromEntries(Object.keys(pitcher).map(k=>[k,(pitcher[k]?.length?pitcher[k]:(owls.pitcher[k]||[]))])):pitcher;
-  const usingOwls=Boolean(owls?.ok&&!hasSaved);
-
   return {
-    batter:finalBatter,
-    pitcher:finalPitcher,
-    connected: batterSource.connected || pitcherSource.connected || Boolean(owls?.ok),
+    batter,
+    pitcher,
+    batterDropped,
+    pitcherDropped,
+    connected: batterSource.connected || pitcherSource.connected,
     batterConnected: batterSource.connected,
     pitcherConnected: pitcherSource.connected,
-    errors: [batterSource.error, pitcherSource.error, owls?.error].filter(Boolean),
-    source: usingOwls?"Owls Insight live props":"Supabase intelligence snapshot",
-    fallbackActive: usingOwls,
-    updatedAt: batterSource.row?.created_at || pitcherSource.row?.created_at || (owls?.ok?new Date().toISOString():null),
+    errors: [batterSource.error, pitcherSource.error].filter(Boolean),
+    updatedAt: batterSource.row?.created_at || pitcherSource.row?.created_at || null,
     dataDate: batterDataDate || pitcherDataDate,
     batterDataDate,
     pitcherDataDate,
@@ -466,7 +387,7 @@ export async function getRankings() {
 }
 
 
-const BATTER_CATEGORIES = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"] as const;
+const BATTER_CATEGORIES = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"] as const;
 const PITCHER_CATEGORIES = ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"] as const;
 
 function torontoDay(offsetDays=0){
@@ -686,19 +607,11 @@ function emergingExplanation(r:any){
   return text;
 }
 
-async function archivedPerformanceHistory(sourceName:string, local:any, pitcher=false){
-  const recent=await getRecentSourceSnapshots(sourceName,90);
-  let merged=mergeHistory({},local,pitcher);
-  // Oldest first, newest last: later snapshots win while settled rows remain canonical.
-  for(const row of [...recent.rows].reverse())merged=mergeHistory(row?.payload||{},merged,pitcher);
-  return {history:merged,connected:recent.connected,error:recent.error};
-}
-
 export async function getPerformance(){
   const today=torontoDay();
   const yesterday=torontoDay(-1);
-  const [batterArchive,pitcherArchive,emerging,rankingData,yesterdayRankings]=await Promise.all([archivedPerformanceHistory("mlb_batter_performance_history",batterHistory,false),archivedPerformanceHistory("mlb_pitcher_performance_history",pitcherHistory,true),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
-  let mergedBatter=batterArchive.history,mergedPitcher=pitcherArchive.history;
+  const [batter,pitcher,emerging,rankingData,yesterdayRankings]=await Promise.all([getSourceSnapshot("mlb_batter_performance_history"),getSourceSnapshot("mlb_pitcher_performance_history"),getSourceSnapshot("mlb_emerging_power_history"),getRankings(),getRankingsForDay(yesterday)]);
+  let mergedBatter=mergeHistory(batter.payload,batterHistory,false),mergedPitcher=mergeHistory(pitcher.payload,pitcherHistory,true);
 
   // The latest intelligence snapshot can carry a stale game_date even when the
   // rows themselves belong to today's MLB games. Resolve each row by gamePk and
@@ -718,6 +631,16 @@ export async function getPerformance(){
   // already become the latest source.
   if(yesterdayRankings.batterFound) mergedBatter=ensureHistoryForDay(mergedBatter,yesterdayRankings.batter,yesterday,false);
   if(yesterdayRankings.pitcherFound) mergedPitcher=ensureHistoryForDay(mergedPitcher,yesterdayRankings.pitcher,yesterday,true);
+
+  // Repair recent gaps from archived intelligence snapshots. This is deliberately
+  // limited to the current seven-day window so a missing performance write does
+  // not leave Yesterday/Week empty, while avoiding expensive season-wide rebuilds.
+  const recentDays=Array.from({length:5},(_,i)=>torontoDay(-(i+2)));
+  const recentArchives=await Promise.all(recentDays.map(async day=>({day,...await getRankingsForDay(day)})));
+  for(const archived of recentArchives){
+    if(archived.batterFound) mergedBatter=ensureHistoryForDay(mergedBatter,archived.batter,archived.day,false);
+    if(archived.pitcherFound) mergedPitcher=ensureHistoryForDay(mergedPitcher,archived.pitcher,archived.day,true);
+  }
 
   // Batter and pitcher intelligence are separate sources and can roll over at
   // different times. Never use the batter snapshot date for pitcher history.
@@ -741,7 +664,7 @@ export async function getPerformance(){
     const saved=await Promise.all([savePerformanceArchive("mlb_batter_performance_history",batterRefreshed,today),savePerformanceArchive("mlb_pitcher_performance_history",pitcherRefreshed,today),savePerformanceArchive("mlb_emerging_power_history",emergingRefreshed,today)]);
     archiveSaved=saved.every(Boolean);if(archiveSaved)lastPerformanceArchiveAt=Date.now();
   } else archiveSaved=true;
-  return{connected:batterArchive.connected||pitcherArchive.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay:batterSourceDay,pitcherSourceDay,todayBatterRows:todayBatterCount,todayPitcherRows:todayPitcherCount,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batterArchive.error,pitcherArchive.error,emerging.error].filter(Boolean)};
+  return{connected:batter.connected||pitcher.connected||emerging.connected,batter:batterRefreshed,pitcher:pitcherRefreshed,emerging:emergingRefreshed,archiveSaved,sourceDay:batterSourceDay,pitcherSourceDay,todayBatterRows:todayBatterCount,todayPitcherRows:todayPitcherCount,hrIntelligence:{live:contact.live,yesterdayWatch:contact.yesterdayWatch,yesterday:(batterRefreshed?.days?.[yesterday]?.categories?.home_runs||[]).slice(0,25),emergingToday},errors:[batter.error,pitcher.error,emerging.error].filter(Boolean)};
 }
 
 export async function getGameFeed(gamePk: string) {
@@ -791,7 +714,6 @@ export async function getPlayer(playerId: string) {
 }
 
 export function connectionStatus() {
-  const url = supabaseUrl();
-  const keys = supabaseKeys();
-  return { supabaseConfigured: Boolean(url && keys.length), mlbStatsConfigured: true };
+  const { url, key } = supabaseConfig();
+  return { supabaseConfigured: Boolean(url && key), mlbStatsConfigured: true };
 }
