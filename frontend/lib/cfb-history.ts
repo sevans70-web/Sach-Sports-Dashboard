@@ -4,7 +4,7 @@ export type SavedCfbPrediction={
   key:string; gameDate:string; gameTime:string; matchup:string; market:CfbMarketKey;
   playerId:string; playerName:string; teamName:string; position?:string;
   sportsbookLine:number|null; modelProjection:number|null; modelProbability:number|null;
-  pick?:"over"|"under"; giScore:number; bookmakerCount:number; savedAt:string;
+  pick?:"over"|"under"; rank?:number; giScore:number; bookmakerCount:number; savedAt:string;
   status:"pending"|"hit"|"miss"|"push"|"void"; actual:number|null; gradedAt:string|null;
 };
 
@@ -39,18 +39,37 @@ export async function saveCfbPregamePredictions(m:CfbMarketKey,rows:any[],schedu
   const grouped=new Map<string,any[]>();
   for(const row of rows){
     const game=schedule.find((g:any)=>String(`${g.awayTeam||""} @ ${g.homeTeam||""}`).toLowerCase()===String(row.matchup||"").toLowerCase());
-    if(game&&game.state!=="pre")continue;if(!row.playerId||row.sportsbookLine==null||row.modelProbability==null)continue;
-    const gameDate=cfbDay(row.gameTime||game?.date||new Date());if(!gameDate)continue;grouped.set(gameDate,[...(grouped.get(gameDate)||[]),{row,game}]);
+    if(game&&game.state!=="pre")continue;
+    if(!row.playerId||row.sportsbookLine==null||row.modelProbability==null)continue;
+    const gameDate=cfbDay(row.gameTime||game?.date||new Date());
+    if(!gameDate)continue;
+    grouped.set(gameDate,[...(grouped.get(gameDate)||[]),{row,game}]);
   }
-  let ok=true;
+
   for(const [gameDate,items] of grouped){
-    const db=await getRow(m,gameDate),dbSaved:SavedCfbPrediction[]=Array.isArray(db.row?.payload?.predictions)?db.row.payload.predictions:[],saved=mergePredictions(dbSaved,runtime.get(storeKey(m,gameDate))||[]),map=new Map(saved.map(x=>[x.key,x]));let changed=false;
+    const map=new Map((runtime.get(storeKey(m,gameDate))||[]).map(x=>[x.key,x]));
     for(const {row,game} of items){
-      const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;if(map.has(key))continue;
-      const projection=row.modelProjection==null?null:Number(row.modelProjection),line=Number(row.sportsbookLine),pick:"over"|"under"=projection!=null&&projection<line?"under":"over";
-      map.set(key,{key,gameDate,gameTime:String(row.gameTime||game?.date||""),matchup:String(row.matchup||""),market:m,playerId:String(row.playerId),playerName:String(row.playerName),teamName:String(row.teamName),position:String(row.position||""),sportsbookLine:line,modelProjection:projection,modelProbability:Number(row.modelProbability),pick,giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),savedAt:new Date().toISOString(),status:"pending",actual:null,gradedAt:null});changed=true;
+      const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;
+      if(map.has(key))continue;
+      const projection=row.modelProjection==null?null:Number(row.modelProjection);
+      const line=Number(row.sportsbookLine);
+      const pick:"over"|"under"=projection!=null&&projection<line?"under":"over";
+      map.set(key,{key,gameDate,gameTime:String(row.gameTime||game?.date||""),matchup:String(row.matchup||""),market:m,
+        playerId:String(row.playerId),playerName:String(row.playerName),teamName:String(row.teamName),position:String(row.position||""),
+        sportsbookLine:line,modelProjection:projection,modelProbability:Number(row.modelProbability),pick,
+        rank:Number(row.rank||0)||undefined,giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),
+        savedAt:new Date().toISOString(),status:"pending",actual:null,gradedAt:null});
     }
-    const next=[...map.values()];runtime.set(storeKey(m,gameDate),next);if(changed)ok=(await writeRow(m,gameDate,next,db.row?.id))&&ok;
+    runtime.set(storeKey(m,gameDate),[...map.values()]);
+  }
+
+  let ok=true;
+  for(const [gameDate] of grouped){
+    const db=await getRow(m,gameDate);
+    const dbSaved:SavedCfbPrediction[]=Array.isArray(db.row?.payload?.predictions)?db.row.payload.predictions:[];
+    const merged=mergePredictions(dbSaved,runtime.get(storeKey(m,gameDate))||[]);
+    runtime.set(storeKey(m,gameDate),merged);
+    ok=(await writeRow(m,gameDate,merged,db.row?.id))&&ok;
   }
   return ok;
 }

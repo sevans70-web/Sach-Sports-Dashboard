@@ -3,7 +3,7 @@ import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
-import {saveCfbPregamePredictions,getCfbResultMap} from "@/lib/cfb-history";
+import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions} from "@/lib/cfb-history";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -28,6 +28,7 @@ type RankingPayload={
   updatedAt:string;
   cached?:boolean;
   stale?:boolean;
+  dropped?:any[];
 };
 
 type CacheEntry={at:number;payload:RankingPayload};
@@ -132,7 +133,7 @@ function playerFromRosters(row:any,schedule:any[]){
   }
   for(const teamId of [...new Set(ids.filter(Boolean))]){
     const rr=rosterCache.get(teamId)?.value;
-    const p=rr?.players.find(x=>cleanName(x.name)===wanted)||rr?.players.find(x=>{const n=cleanName(x.name);return n&&(n.includes(wanted)||wanted.includes(n))});
+    const p=rr?.players.find((x:any)=>cleanName(x.name)===wanted)||rr?.players.find((x:any)=>{const n=cleanName(x.name);return n&&(n.includes(wanted)||wanted.includes(n))});
     if(p)return {id:p.id,headshot:p.headshot,teamName:rr?.teamName||row.teamName||"CFB",teamId,position:p.position,teamLogo:rr?.teamLogo||""};
   }
   return {id:"",headshot:"",teamName:row.teamName||"CFB",teamId:"",position:"",teamLogo:""};
@@ -179,18 +180,60 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   }));
 
   enriched.sort((a,b)=>b.giScore-a.giScore);
-  const ranked=enriched.map((r,i)=>({...r,rank:i+1}));
+  let ranked:any[]=enriched.map((r,i)=>({...r,rank:i+1}));
 
-  // Never make the page wait for Supabase persistence/results.
-  void saveCfbPregamePredictions(market,ranked,schedule).catch(()=>{});
+  // Freeze pregame predictions once the game starts.
+  const saved=await timeout(getCfbPredictions(market,today),700,{connected:false,predictions:[]} as any);
+  const started=(saved.predictions||[]).filter((p:any)=>{
+    const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
+    return game&&game.state!=="pre";
+  });
+  const current=new Map(ranked.map((r:any)=>[`${r.playerId}|${r.matchup}`,r]));
+  for(const p of started){
+    const key=`${p.playerId}|${p.matchup}`;
+    if(current.has(key)){
+      Object.assign(current.get(key),{
+        rank:p.rank||current.get(key).rank,
+        sportsbookLine:p.sportsbookLine,
+        modelProjection:p.modelProjection,
+        modelProbability:p.modelProbability,
+        giScore:p.giScore,
+        frozen:true
+      });
+    }else{
+      ranked.push({
+        rank:p.rank||99,playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,
+        teamId:"",position:p.position||"",headshot:"",teamLogo:"",matchup:p.matchup,gameTime:p.gameTime,
+        giScore:p.giScore,modelProbability:p.modelProbability,sportsbookLine:p.sportsbookLine,
+        sportsbookProbability:null,bookmakerCount:p.bookmakerCount||0,perGame:p.modelProjection,
+        modelProjection:p.modelProjection,projectionGames:null,seasonTotal:null,gamesPlayed:null,season:2026,
+        summary:"Pregame ranking frozen at kickoff for grading.",marketBacked:true,frozen:true
+      });
+    }
+  }
+  ranked.sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999));
+  ranked=ranked.slice(0,25);
+
+  const previous=rankingCache.get(market)?.payload?.rows||[];
+  const previousRanks=new Map(previous.map((r:any)=>[`${r.playerId}|${r.matchup}`,Number(r.rank)]));
+  const currentKeys=new Set(ranked.map((r:any)=>`${r.playerId}|${r.matchup}`));
+  const moved=ranked.map((r:any)=>{
+    const key=`${r.playerId}|${r.matchup}`,prev=previousRanks.get(key);
+    return {...r,movement:prev==null?"NEW":prev-r.rank};
+  });
+  const dropped=previous.filter((r:any)=>!currentKeys.has(`${r.playerId}|${r.matchup}`)).map((r:any)=>({
+    playerId:r.playerId,playerName:r.playerName,teamName:r.teamName,previousRank:r.rank
+  }));
+
+  void saveCfbPregamePredictions(market,moved,schedule).catch(()=>{});
   const results=await timeout(getCfbResultMap(market,today),600,new Map());
-  const withResults=ranked.map(r=>{
+  const withResults=moved.map((r:any)=>{
     const p=results.get(`${r.playerId}|${r.matchup}`) as any;
     const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
     return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r;
   });
 
-  return {success:true,source:"Owls Insight",market,rows:withResults,sportsbookOnly:true,validRankingCount:withResults.length,updatedAt:new Date().toISOString()};
+  return {success:true,source:"Owls Insight",market,rows:withResults,dropped,sportsbookOnly:true,validRankingCount:withResults.length,updatedAt:new Date().toISOString()};
 }
 async function getPayload(market:CfbMarketKey){
   const cached=rankingCache.get(market),age=cached?Date.now()-cached.at:Infinity;
