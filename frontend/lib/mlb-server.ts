@@ -94,7 +94,7 @@ function sleep(ms: number) {
 }
 
 async function supabaseFetch(url: string, key: string, init: RequestInit = {}) {
-  const attempts = 4;
+  const attempts = 2;
   let lastError = "Supabase request failed";
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     const controller = new AbortController();
@@ -127,10 +127,23 @@ async function supabaseFetch(url: string, key: string, init: RequestInit = {}) {
   throw new Error(lastError);
 }
 
+const supabaseReadCache = new Map<string, { rows: any[]; at: number }>();
+let supabaseCircuitOpenUntil = 0;
+
 async function supabaseRows(path: string) {
   const { url, keys } = supabaseConfig();
   if (!url || keys.length === 0) {
     return { rows: [] as any[], connected: false, configured: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
+  }
+
+  const cached = supabaseReadCache.get(path);
+  if (Date.now() < supabaseCircuitOpenUntil) {
+    return {
+      rows: cached?.rows || [],
+      connected: Boolean(cached),
+      configured: true,
+      error: cached ? "Supabase is recovering; serving the last successful snapshot." : "Supabase is temporarily unavailable."
+    };
   }
 
   let lastError = "Supabase request failed";
@@ -138,17 +151,30 @@ async function supabaseRows(path: string) {
     try {
       const res = await supabaseFetch(`${url}/rest/v1/${path}`, key);
       if (res.ok) {
-        return { rows: await res.json(), connected: true, configured: true, error: "" };
+        const rows = await res.json();
+        supabaseReadCache.set(path, { rows, at: Date.now() });
+        supabaseCircuitOpenUntil = 0;
+        return { rows, connected: true, configured: true, error: "" };
       }
       lastError = `Supabase returned ${res.status}`;
-      // 401/403 can be credential/RLS specific, so try the next configured key.
       if (res.status === 401 || res.status === 403) continue;
-      return { rows: [] as any[], connected: false, configured: true, error: lastError };
+      if (res.status >= 500 || res.status === 408 || res.status === 425 || res.status === 429) {
+        supabaseCircuitOpenUntil = Date.now() + 60_000;
+      }
+      break;
     } catch (error) {
       lastError = error instanceof Error ? error.message : "Supabase request failed";
+      supabaseCircuitOpenUntil = Date.now() + 60_000;
+      break;
     }
   }
-  return { rows: [] as any[], connected: false, configured: true, error: lastError };
+
+  return {
+    rows: cached?.rows || [],
+    connected: Boolean(cached),
+    configured: true,
+    error: cached ? `${lastError}; serving the last successful snapshot.` : lastError
+  };
 }
 
 function supabaseWriteConfig() {
