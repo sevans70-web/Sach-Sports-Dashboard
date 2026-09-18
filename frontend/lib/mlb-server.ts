@@ -1,6 +1,7 @@
 import batterHistory from "@/data/mlb_performance_history.json";
 import pitcherHistory from "@/data/mlb_pitcher_performance_history.json";
 import type { MlbGame, RankingRow } from "./mlb";
+import { getNextMlbRankings } from "./mlb-next-rankings";
 
 const MLB_SCHEDULE = "https://statsapi.mlb.com/api/v1/schedule";
 const MLB_FEED = "https://statsapi.mlb.com/api/v1.1/game";
@@ -399,11 +400,6 @@ function rowsFrom(payload: any, key: string): RankingRow[] {
 export async function getRankings() {
   const today = torontoDate();
 
-  // A ranking snapshot is already date-scoped when the Python intelligence
-  // worker saves it. Prefer that exact-date snapshot and do not run a second
-  // destructive filter over it in Next.js. The previous implementation could
-  // turn a valid Top 25 into an empty list when legacy rows used a different
-  // game/team field shape.
   const [todayBatters, todayPitchers, latestBatters, latestPitchers] = await Promise.all([
     getSourceSnapshotForDay("mlb_game_intelligence", today),
     getSourceSnapshotForDay("mlb_pitcher_intelligence", today),
@@ -413,63 +409,50 @@ export async function getRankings() {
 
   const batterSource = todayBatters.row ? todayBatters : latestBatters;
   const pitcherSource = todayPitchers.row ? todayPitchers : latestPitchers;
+  const sourceBatterDate = batterSource.row?.game_date || null;
+  const sourcePitcherDate = pitcherSource.row?.game_date || null;
 
-  const batter: Record<string, RankingRow[]> = {};
-  const batterDropped: Record<string,string[]> = {};
+  const sourceBatter: Record<string, RankingRow[]> = {};
+  const sourceBatterDropped: Record<string,string[]> = {};
   for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"]) {
-    batter[key] = rowsFrom(batterSource.payload, key).slice(0, 25);
-    batterDropped[key] = droppedFrom(batterSource.payload, key);
+    sourceBatter[key] = rowsFrom(batterSource.payload, key).slice(0, 25);
+    sourceBatterDropped[key] = droppedFrom(batterSource.payload, key);
   }
-
   const pitcherRoot = pitcherSource.payload?.rankings || pitcherSource.payload || {};
-  const pitcher: Record<string, RankingRow[]> = {};
-  const pitcherDropped: Record<string,string[]> = pitcherSource.payload?.dropped_players || {};
+  const sourcePitcher: Record<string, RankingRow[]> = {};
+  const sourcePitcherDropped: Record<string,string[]> = pitcherSource.payload?.dropped_players || {};
+  for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) sourcePitcher[key] = rowsFrom(pitcherRoot, key).slice(0,25);
 
-  // Defensive read-layer guard: a pitcher prop card must belong to one of
-  // today's announced probable starters. This prevents stale/corrupt rows
-  // (including position players) from leaking into pitcher markets.
-  let officialPitcherNames = new Set<string>();
-  try {
-    const schedule = await getSchedule(today);
-    for (const game of schedule.games) {
-      for (const name of [game.away.probablePitcher, game.home.probablePitcher]) {
-        if (name && name !== "Not announced") officialPitcherNames.add(normName(name));
-      }
-    }
-  } catch {}
-  for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) {
-    const raw = rowsFrom(pitcherRoot, key);
-    pitcher[key] = (officialPitcherNames.size
-      ? raw.filter((row:any)=>officialPitcherNames.has(normName(row?.pitcher_name||row?.player_name)))
-      : raw
-    ).slice(0, 25);
+  const batterHasToday = sourceBatterDate === today && Object.values(sourceBatter).some(rows=>rows.length>0);
+  const pitcherHasToday = sourcePitcherDate === today && Object.values(sourcePitcher).some(rows=>rows.length>0);
+  let fallback:any = null;
+  if (!batterHasToday || !pitcherHasToday || !batterSource.connected || !pitcherSource.connected) {
+    try { fallback = await getNextMlbRankings(today); } catch {}
   }
 
-  const batterDataDate = batterSource.row?.game_date || null;
-  const pitcherDataDate = pitcherSource.row?.game_date || null;
-  const batterStale = Boolean(batterDataDate && batterDataDate !== today);
-  const pitcherStale = Boolean(pitcherDataDate && pitcherDataDate !== today);
+  const batter:Record<string,RankingRow[]> = batterHasToday ? sourceBatter : (fallback?.batter || sourceBatter);
+  const pitcher:Record<string,RankingRow[]> = pitcherHasToday ? sourcePitcher : (fallback?.pitcher || sourcePitcher);
+  const batterDropped = batterHasToday ? sourceBatterDropped : (fallback?.batterDropped || sourceBatterDropped);
+  const pitcherDropped = pitcherHasToday ? sourcePitcherDropped : (fallback?.pitcherDropped || sourcePitcherDropped);
+  const usingNextFallback = Boolean(fallback && (!batterHasToday || !pitcherHasToday));
 
   return {
-    batter,
-    pitcher,
-    batterDropped,
-    pitcherDropped,
+    batter, pitcher, batterDropped, pitcherDropped,
     connected: batterSource.connected || pitcherSource.connected,
     configured: Boolean(batterSource.configured || pitcherSource.configured),
-    batterConnected: batterSource.connected,
-    pitcherConnected: pitcherSource.connected,
-    errors: [batterSource.error, pitcherSource.error].filter(Boolean),
-    updatedAt: batterSource.row?.created_at || pitcherSource.row?.created_at || null,
-    dataDate: batterDataDate || pitcherDataDate,
-    batterDataDate,
-    pitcherDataDate,
+    batterConnected: batterSource.connected, pitcherConnected: pitcherSource.connected,
+    errors: [batterSource.error, pitcherSource.error, ...(fallback?.errors||[]), usingNextFallback ? "Using Next.js MLB ranking engine while the stored snapshot is unavailable." : ""].filter(Boolean),
+    updatedAt: usingNextFallback ? fallback?.fetchedAt : (batterSource.row?.created_at || pitcherSource.row?.created_at || null),
+    dataDate: usingNextFallback ? today : (sourceBatterDate || sourcePitcherDate),
+    batterDataDate: batterHasToday ? sourceBatterDate : (fallback ? today : sourceBatterDate),
+    pitcherDataDate: pitcherHasToday ? sourcePitcherDate : (fallback ? today : sourcePitcherDate),
     requestedDate: today,
-    batterStale,
-    pitcherStale,
-    stale: batterStale || pitcherStale,
+    batterStale: !batterHasToday && !fallback, pitcherStale: !pitcherHasToday && !fallback,
+    stale: (!batterHasToday || !pitcherHasToday) && !fallback,
+    rankingEngine: usingNextFallback ? "nextjs-live" : "supabase-snapshot",
   };
 }
+
 
 
 const BATTER_CATEGORIES = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"] as const;
