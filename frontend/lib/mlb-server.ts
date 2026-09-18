@@ -77,42 +77,30 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
 
 function supabaseConfig() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  // Railway currently carries more than one Supabase key. Read operations must
-  // prefer the secret/service-role key, but safely fall back to the legacy key
-  // or anon key if needed. A single rejected key must not make the dashboard
-  // report that Supabase is missing.
-  const keys = [
-    process.env.SUPABASE_SECRET_KEY,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    process.env.SUPABASE_KEY,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  ].filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
-  return { url: url.replace(/\/$/, ""), keys };
+  // Preserve the key order that was already working in Railway. SUPABASE_KEY
+  // is the existing read key used by this service; only fall back when it is
+  // genuinely absent.
+  const key = process.env.SUPABASE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  return { url: url.replace(/\/$/, ""), key };
 }
 
 async function supabaseRows(path: string) {
-  const { url, keys } = supabaseConfig();
-  if (!url || !keys.length) {
+  const { url, key } = supabaseConfig();
+  if (!url || !key) {
     return { rows: [] as any[], connected: false, configured: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
   }
-
-  let lastError = "Supabase request failed";
-  for (const key of keys) {
-    try {
-      const res = await fetch(`${url}/rest/v1/${path}`, {
-        headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" },
-        cache: "no-store",
-      });
-      if (res.ok) {
-        return { rows: await res.json(), connected: true, configured: true, error: "" };
-      }
-      lastError = `Supabase returned ${res.status}`;
-    } catch (error) {
-      lastError = error instanceof Error ? error.message : "Supabase request failed";
+  try {
+    const res = await fetch(`${url}/rest/v1/${path}`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return { rows: [] as any[], connected: false, configured: true, error: `Supabase returned ${res.status}` };
     }
+    return { rows: await res.json(), connected: true, configured: true, error: "" };
+  } catch (error) {
+    return { rows: [] as any[], connected: false, configured: true, error: error instanceof Error ? error.message : "Supabase request failed" };
   }
-
-  return { rows: [] as any[], connected: false, configured: true, error: lastError };
 }
 
 function supabaseWriteConfig() {
@@ -737,6 +725,6 @@ export async function getPlayer(playerId: string) {
 }
 
 export function connectionStatus() {
-  const { url, keys } = supabaseConfig();
-  return { supabaseConfigured: Boolean(url && keys.length), mlbStatsConfigured: true };
+  const { url, key } = supabaseConfig();
+  return { supabaseConfigured: Boolean(url && key), mlbStatsConfigured: true };
 }
