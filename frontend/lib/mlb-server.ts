@@ -426,11 +426,10 @@ export async function getRankings() {
   const batterHasToday = sourceBatterDate === today && Object.values(sourceBatter).some(rows=>rows.length>0);
   const pitcherHasToday = sourcePitcherDate === today && Object.values(sourcePitcher).some(rows=>rows.length>0);
   let fallback:any = null;
-  if (!batterHasToday || !pitcherHasToday || !batterSource.connected || !pitcherSource.connected) {
-    try { fallback = await getNextMlbRankings(today); } catch {}
-  }
+  try { fallback = await getNextMlbRankings(today); } catch {}
 
-  const batter:Record<string,RankingRow[]> = batterHasToday ? sourceBatter : (fallback?.batter || sourceBatter);
+  const batter:Record<string,RankingRow[]> = batterHasToday ? {...sourceBatter} : (fallback?.batter || sourceBatter);
+  if(fallback?.batter?.home_runs_pool?.length) batter.home_runs_pool=fallback.batter.home_runs_pool;
   const pitcher:Record<string,RankingRow[]> = pitcherHasToday ? sourcePitcher : (fallback?.pitcher || sourcePitcher);
   const batterDropped = batterHasToday ? sourceBatterDropped : (fallback?.batterDropped || sourceBatterDropped);
   const pitcherDropped = pitcherHasToday ? sourcePitcherDropped : (fallback?.pitcherDropped || sourcePitcherDropped);
@@ -722,7 +721,8 @@ export async function getPerformance(){
   // This keeps yesterday's snapshot from being copied into today's history.
   if(todayBatterCount===0) mergedBatter=ensureHistoryForDay(mergedBatter,rankingData.batter,batterSourceDay,false);
   if(todayPitcherCount===0) mergedPitcher=ensureHistoryForDay(mergedPitcher,rankingData.pitcher,pitcherSourceDay,true);
-  let emergingHistory=ensureEmergingForDay(emerging.payload||{},todayBatterCount>0?(todayBatterRankings?.home_runs||[]):(rankingData.batter?.home_runs||[]),todayBatterCount>0?today:batterSourceDay);
+  const emergingPool=(rankingData.batter?.home_runs_pool||rankingData.batter?.home_runs||[]);
+  let emergingHistory=ensureEmergingForDay(emerging.payload||{},emergingPool,today);
   if(yesterdayRankings.batterFound) emergingHistory=ensureEmergingForDay(emergingHistory,yesterdayRankings.batter?.home_runs||[],yesterday);
   const [batterRefreshed,pitcherRefreshed,emergingRefreshed]=await Promise.all([refreshBatterHistory(mergedBatter),refreshPitcherHistory(mergedPitcher),refreshBatterHistory(emergingHistory)]);
   const contact=await getHrContactIntelligence(rankingData.batter?.home_runs||[]);

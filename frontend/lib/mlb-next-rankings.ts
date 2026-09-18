@@ -109,6 +109,7 @@ async function batterRankings(context:Map<number,GameContext>){
       return {...r,...extra};
     }).sort((a,b)=>n(b.gi_score)-n(a.gi_score));
     markets[market]=movementFor(`b:${market}`,scored.slice(0,25),false) as RankingRow[];
+    if(market==="home_runs") markets.home_runs_pool=scored.slice(25,125).map((r:any,i:number)=>({...r,rank:i+26})) as RankingRow[];
     dropped[market]=scored.slice(25,30).map(r=>r.player_name);
   }
   // Dashboard has a batter strikeouts tab in some builds; do not fabricate it.
