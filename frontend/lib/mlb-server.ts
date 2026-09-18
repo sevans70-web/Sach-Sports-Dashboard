@@ -77,30 +77,78 @@ export async function getSchedule(date?: string): Promise<{ games: MlbGame[]; fe
 
 function supabaseConfig() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  // Preserve the key order that was already working in Railway. SUPABASE_KEY
-  // is the existing read key used by this service; only fall back when it is
-  // genuinely absent.
-  const key = process.env.SUPABASE_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-  return { url: url.replace(/\/$/, ""), key };
+  // Server-side MLB reads should prefer the secret/service-role credential.
+  // Railway can still fall back to the existing read key if that is the only
+  // credential configured for this service.
+  const keys = [
+    process.env.SUPABASE_SECRET_KEY,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.SUPABASE_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  ].filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
+  return { url: url.replace(/\/$/, ""), keys };
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function supabaseFetch(url: string, key: string, init: RequestInit = {}) {
+  const attempts = 4;
+  let lastError = "Supabase request failed";
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    try {
+      const res = await fetch(url, {
+        ...init,
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+          Accept: "application/json",
+          ...(init.headers || {}),
+        },
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (res.ok) return res;
+
+      const retryable = res.status === 408 || res.status === 425 || res.status === 429 || res.status >= 500;
+      lastError = `Supabase returned ${res.status}`;
+      if (!retryable || attempt === attempts) return res;
+    } catch (error) {
+      clearTimeout(timeout);
+      lastError = error instanceof Error ? error.message : "Supabase request failed";
+      if (attempt === attempts) throw new Error(lastError);
+    }
+    await sleep(400 * attempt);
+  }
+  throw new Error(lastError);
 }
 
 async function supabaseRows(path: string) {
-  const { url, key } = supabaseConfig();
-  if (!url || !key) {
+  const { url, keys } = supabaseConfig();
+  if (!url || keys.length === 0) {
     return { rows: [] as any[], connected: false, configured: false, error: "Supabase environment variables are missing from the Next.js Railway service." };
   }
-  try {
-    const res = await fetch(`${url}/rest/v1/${path}`, {
-      headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: "application/json" },
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      return { rows: [] as any[], connected: false, configured: true, error: `Supabase returned ${res.status}` };
+
+  let lastError = "Supabase request failed";
+  for (const key of keys) {
+    try {
+      const res = await supabaseFetch(`${url}/rest/v1/${path}`, key);
+      if (res.ok) {
+        return { rows: await res.json(), connected: true, configured: true, error: "" };
+      }
+      lastError = `Supabase returned ${res.status}`;
+      // 401/403 can be credential/RLS specific, so try the next configured key.
+      if (res.status === 401 || res.status === 403) continue;
+      return { rows: [] as any[], connected: false, configured: true, error: lastError };
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "Supabase request failed";
     }
-    return { rows: await res.json(), connected: true, configured: true, error: "" };
-  } catch (error) {
-    return { rows: [] as any[], connected: false, configured: true, error: error instanceof Error ? error.message : "Supabase request failed" };
   }
+  return { rows: [] as any[], connected: false, configured: true, error: lastError };
 }
 
 function supabaseWriteConfig() {
@@ -119,13 +167,13 @@ async function savePerformanceArchive(sourceName:string, payload:any, gameDate:s
   const headers:any={apikey:key,Authorization:`Bearer ${key}`,"Content-Type":"application/json",Accept:"application/json",Prefer:"return=minimal"};
   try {
     const q=`source_snapshots?select=id&source_name=eq.${encodeURIComponent(sourceName)}&game_date=eq.${encodeURIComponent(gameDate)}&order=created_at.desc&limit=1`;
-    const existing=await fetch(`${url}/rest/v1/${q}`,{headers,cache:"no-store"});
+    const existing=await supabaseFetch(`${url}/rest/v1/${q}`,key,{headers});
     if(!existing.ok)return false;
     const rows=await existing.json();
     const body=JSON.stringify({source_name:sourceName,game_date:gameDate,payload,created_at:new Date().toISOString()});
     const res=Array.isArray(rows)&&rows[0]?.id
-      ? await fetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,{method:"PATCH",headers,body})
-      : await fetch(`${url}/rest/v1/source_snapshots`,{method:"POST",headers,body});
+      ? await supabaseFetch(`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(String(rows[0].id))}`,key,{method:"PATCH",headers,body})
+      : await supabaseFetch(`${url}/rest/v1/source_snapshots`,key,{method:"POST",headers,body});
     return res.ok;
   } catch { return false; }
 }
@@ -725,6 +773,6 @@ export async function getPlayer(playerId: string) {
 }
 
 export function connectionStatus() {
-  const { url, key } = supabaseConfig();
-  return { supabaseConfigured: Boolean(url && key), mlbStatsConfigured: true };
+  const { url, keys } = supabaseConfig();
+  return { supabaseConfigured: Boolean(url && keys.length), mlbStatsConfigured: true };
 }
