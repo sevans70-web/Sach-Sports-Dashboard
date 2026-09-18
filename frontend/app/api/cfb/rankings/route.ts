@@ -219,7 +219,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   const currentKeys=new Set(ranked.map((r:any)=>`${r.playerId}|${r.matchup}`));
   const moved=ranked.map((r:any)=>{
     const key=`${r.playerId}|${r.matchup}`,prev=previousRanks.get(key);
-    return {...r,movement:prev==null?"NEW":prev-r.rank};
+    return {...r,movement:prev==null?"NEW":Number(prev)-Number(r.rank)};
   });
   const dropped=previous.filter((r:any)=>!currentKeys.has(`${r.playerId}|${r.matchup}`)).map((r:any)=>({
     playerId:r.playerId,playerName:r.playerName,teamName:r.teamName,previousRank:r.rank
