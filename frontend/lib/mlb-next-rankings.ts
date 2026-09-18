@@ -74,7 +74,7 @@ function movementFor(market:string, rows:any[], pitcher=false){
   const next=new Map<string,number>();
   const enriched=rows.map((r:any,i:number)=>{
     const rank=i+1;const key=String(pitcher?(r.pitcher_id||r.player_id):(r.player_id||r.batter_id));next.set(key,rank);
-    const old=prev.get(key);let status="new",change:null as number|null;
+    const old=prev.get(key);let status="new";let change:number|null=null;
     if(old!=null){change=old-rank;status=change>0?"up":change<0?"down":"same"}
     return {...r,rank,movement:{status,previous:old??null,current:rank,change}};
   });
