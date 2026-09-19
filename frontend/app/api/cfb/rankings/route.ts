@@ -3,7 +3,7 @@ import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
-import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions,getRuntimeCfbPredictions} from "@/lib/cfb-history";
+import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions} from "@/lib/cfb-history";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -183,66 +183,65 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   let ranked:any[]=enriched.map((r,i)=>({...r,rank:i+1}));
 
   // Freeze pregame predictions once the game starts.
-  // Runtime snapshot is immediate. Supabase is only used when runtime is empty.
-  // A live sportsbook line is never allowed to become the grading line.
-  const runtimeSaved=getRuntimeCfbPredictions(market,today);
-  const saved=runtimeSaved.predictions.length
-    ? runtimeSaved
-    : await timeout(getCfbPredictions(market,today),2500,{connected:false,predictions:[]} as any);
-
-  const previousRows=rankingCache.get(market)?.payload?.rows||[];
-  const previousByKey=new Map(previousRows.map((r:any)=>[`${r.playerId}|${r.matchup}`,r]));
-
-  const started=(saved.predictions||[]).filter((p:any)=>{
-    const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
+  const saved=await timeout(getCfbPredictions(market,today),700,{connected:false,predictions:[]} as any);
+  // HARD LOCK: once a player's game starts, that player owns a Top-25 slot
+  // until the slate refreshes. Live sportsbook updates cannot remove or replace them.
+  const gameForMatchup=(matchup:string)=>schedule.find((g:any)=>
+    cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(matchup)
+  );
+  const savedStarted=(saved.predictions||[]).filter((p:any)=>{
+    const game=gameForMatchup(p.matchup);
     return game&&game.state!=="pre";
   });
-  const current=new Map(ranked.map((r:any)=>[`${r.playerId}|${r.matchup}`,r]));
-  for(const p of started){
+
+  // Safety lock: if the sportsbook removes the prop at kickoff before storage
+  // returns, preserve any player who was visible on the previous Top 25.
+  const previousStarted=previousRows.filter((p:any)=>{
+    const game=gameForMatchup(p.matchup);
+    return game&&game.state!=="pre";
+  });
+
+  const lockedMap=new Map<string,any>();
+  for(const p of savedStarted){
     const key=`${p.playerId}|${p.matchup}`;
-    if(current.has(key)){
-      Object.assign(current.get(key),{
-        rank:p.rank||current.get(key).rank,
-        sportsbookLine:p.sportsbookLine,
-        modelProjection:p.modelProjection,
-        modelProbability:p.modelProbability,
-        giScore:p.giScore,
-        frozen:true
-      });
-    }else{
-      ranked.push({
-        rank:p.rank||99,playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,
-        teamId:"",position:p.position||"",headshot:"",teamLogo:"",matchup:p.matchup,gameTime:p.gameTime,
-        giScore:p.giScore,modelProbability:p.modelProbability,sportsbookLine:p.sportsbookLine,
-        sportsbookProbability:null,bookmakerCount:p.bookmakerCount||0,perGame:p.modelProjection,
-        modelProjection:p.modelProjection,projectionGames:null,seasonTotal:null,gamesPlayed:null,season:2026,
-        summary:"Pregame ranking frozen at kickoff for grading.",marketBacked:true,frozen:true
-      });
-    }
+    const prev=previousByKey.get(key) as any;
+    lockedMap.set(key,{
+      ...(prev||{}),
+      rank:p.rank??prev?.rank??99,
+      playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,
+      position:p.position||prev?.position||"",matchup:p.matchup,gameTime:p.gameTime,
+      sportsbookLine:p.sportsbookLine,modelProjection:p.modelProjection,
+      modelProbability:p.modelProbability,giScore:p.giScore,
+      bookmakerCount:p.bookmakerCount||prev?.bookmakerCount||0,
+      perGame:p.modelProjection,marketBacked:true,frozen:true,lockedAtKickoff:true,
+      summary:"Top 25 position and pregame prediction locked at kickoff."
+    });
   }
-  // Safety net: if persisted storage is slow, use the previous cached pregame
-  // values for any game already in progress. Never substitute a refreshed live line.
-  for(const row of ranked){
-    const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(row.matchup));
-    if(!game||game.state==="pre")continue;
-    const prev=previousByKey.get(`${row.playerId}|${row.matchup}`) as any;
-    if(prev){
-      row.rank=prev.rank??row.rank;
-      row.sportsbookLine=prev.sportsbookLine;
-      row.modelProjection=prev.modelProjection;
-      row.modelProbability=prev.modelProbability;
-      row.giScore=prev.giScore;
-      row.frozen=true;
-    }else if(!started.some((p:any)=>`${p.playerId}|${p.matchup}`===`${row.playerId}|${row.matchup}`)){
-      // Better to show no grading line than silently grade against an in-game line.
-      row.sportsbookLine=null;
-      row.frozen=true;
-      row.freezeWarning="Pregame line snapshot unavailable";
-    }
+  for(const p of previousStarted){
+    const key=`${p.playerId}|${p.matchup}`;
+    if(!lockedMap.has(key))lockedMap.set(key,{...p,frozen:true,lockedAtKickoff:true});
   }
 
-  ranked.sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999));
-  ranked=ranked.slice(0,25);
+  // Reserve locked positions FIRST. Only unused Top-25 positions can be filled
+  // by refreshed pregame candidates.
+  const locked=[...lockedMap.values()]
+    .sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999))
+    .slice(0,25);
+  const lockedKeys=new Set(locked.map((r:any)=>`${r.playerId}|${r.matchup}`));
+  const lockedRanks=new Set(locked.map((r:any)=>Number(r.rank)).filter((n:number)=>n>=1&&n<=25));
+  const fresh=ranked.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.matchup}`));
+
+  const finalRows:any[]=[...locked];
+  let freshIndex=0;
+  for(let slot=1;slot<=25&&freshIndex<fresh.length;slot++){
+    if(lockedRanks.has(slot))continue;
+    finalRows.push({...fresh[freshIndex++],rank:slot});
+  }
+  ranked=finalRows
+    .sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999))
+    .slice(0,25);
+
+  // Started players remain visible through live/final and cannot be marked dropped.
 
   const previous=rankingCache.get(market)?.payload?.rows||[];
   const previousRanks=new Map(previous.map((r:any)=>[`${r.playerId}|${r.matchup}`,Number(r.rank)]));
@@ -251,14 +250,15 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const key=`${r.playerId}|${r.matchup}`,prev=previousRanks.get(key);
     return {...r,movement:prev==null?"NEW":Number(prev)-Number(r.rank)};
   });
-  const dropped=previous.filter((r:any)=>!currentKeys.has(`${r.playerId}|${r.matchup}`)).map((r:any)=>({
+  const dropped=previous.filter((r:any)=>{
+    if(currentKeys.has(`${r.playerId}|${r.matchup}`))return false;
+    const game=gameForMatchup(r.matchup);
+    return !game||game.state==="pre";
+  }).map((r:any)=>({
     playerId:r.playerId,playerName:r.playerName,teamName:r.teamName,previousRank:r.rank
   }));
 
-  // Persist the pregame Top 25 before returning the ranking response.
-  // This prevents kickoff/market changes from deleting players before the
-  // prediction record is durable.
-  await timeout(saveCfbPregamePredictions(market,moved,schedule),3500,false);
+  void saveCfbPregamePredictions(market,moved,schedule).catch(()=>{});
   const results=await timeout(getCfbResultMap(market,today),600,new Map());
   const withResults=moved.map((r:any)=>{
     const p=results.get(`${r.playerId}|${r.matchup}`) as any;
