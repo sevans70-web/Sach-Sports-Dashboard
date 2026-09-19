@@ -12,7 +12,7 @@ type Row={
   movement?:"new"|"up"|"down"|"same";previousRank?:number|null
 };
 type RankingResponse={success:boolean;market:WnbaMarketKey;rows:Row[];updatedAt?:string;error?:string;source?:string};
-type PerfResponse={connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;results:Array<{key:string;playerName:string;pickSide:string;sportsbookLine:number|null;actual:number|null;status:string}>};
+type PerfResponse={connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;results:Array<{key:string;playerName:string;pickSide:string;sportsbookLine:number|null;modelProjection?:number|null;actual:number|null;status:string}>};
 
 function useJson<T>(url:string,fallback:T,interval=120000){
   const[data,setData]=useState(fallback),[loading,setLoading]=useState(true);
@@ -136,7 +136,7 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
         <article><span>Correct / Settled</span><strong>{perf.data.connected?`${perf.data.hits} / ${perf.data.settled}`:"—"}</strong></article>
         <article className="gold"><span>Pending</span><strong>{perf.data.connected?perf.data.pending:"—"}</strong></article>
       </div>
-      {perf.data.results.length?<div className="perfResults">{perf.data.results.slice(0,5).map(x=><div key={x.key}><b>{x.status==="hit"?"✅":x.status==="miss"?"❌":x.status==="push"?"➖":"⏳"} {x.playerName}</b><span>Actual {x.actual??"—"}</span></div>)}</div>:<p className="perfNote">No saved {meta(performanceMarket)[1]} predictions for this period yet.</p>}
+      {perf.data.results.length?<div className="perfResults">{perf.data.results.slice(0,25).map(x=><div key={x.key}><b>{x.status==="hit"?"✅":x.status==="miss"?"❌":x.status==="push"?"➖":"⏳"} {x.playerName}</b><span>Prediction {x.modelProjection==null?"—":Number(x.modelProjection).toFixed(1)} · Actual {x.actual??"—"} · {x.status==="pending"?"PENDING":x.status.toUpperCase()}</span></div>)}</div>:<p className="perfNote">No saved {meta(performanceMarket)[1]} predictions for this period yet.</p>}
     </section>
 
     <section className="section rankings">
