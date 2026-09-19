@@ -1,5 +1,6 @@
 import {NextRequest,NextResponse} from "next/server";
 import {cleanWnbaName,loadWnbaOverview,playerBaseline,type WnbaMarketKey,WNBA_MARKETS,wnbaHeadshot} from "@/lib/wnba";
+import {saveWnbaPredictions} from "@/lib/wnba-history";
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/wnba/props";
 const allowed=new Set(WNBA_MARKETS.map(x=>x[0]));
@@ -33,6 +34,6 @@ export async function GET(req:NextRequest){
    return acc;
   },new Map<string,any>()).values()] as any[];
   const rows=uniqueBoard.map((b:any)=>{const p=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();const game=overview.games.find(g=>[g.awayAbbr,g.homeAbbr].map(x=>String(x).toUpperCase()).includes(team));const actualMatchup=game?`${game.awayTeam} @ ${game.homeTeam}`:b.matchup;const actualTime=game?.tipoff||b.gameTime;const teamLogo=game?(String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo):null;const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;const reliability=Math.min(1,Math.max(0,(p?.gamesPlayed??0)/30));const edgePct=edge!=null&&b.line?Math.min(1,Math.abs(edge)/Math.max(1,Math.abs(b.line))):0;const gi=Math.round((50+edgePct*35+reliability*15)*10)/10;const modelProbability=edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10));return{playerId:p?.playerId||cleanWnbaName(b.playerName),playerName:b.playerName,teamName:p?.team||"WNBA",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game?.gameId||"",gameState:game?.state||"pre",gameStatus:game?.status||"Scheduled",headshot:p?wnbaHeadshot(p.playerId):"",sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2026 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}});
-  rows.sort((a:any,b:any)=>b.giScore-a.giScore);return NextResponse.json({success:true,market,rows:rows.slice(0,25).map((x:any,i:number)=>({...x,rank:i+1})),updatedAt:new Date().toISOString(),source:"Owls Insight WNBA props + ESPN WNBA season statistics"});
+  rows.sort((a:any,b:any)=>b.giScore-a.giScore);const ranked=rows.slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));await saveWnbaPredictions(market,ranked).catch(()=>false);return NextResponse.json({success:true,market,rows:ranked,updatedAt:new Date().toISOString(),source:"Owls Insight WNBA props + ESPN WNBA season statistics"});
  }catch(e:any){return NextResponse.json({success:false,market,rows:[],error:String(e?.message||e),updatedAt:new Date().toISOString()},{status:200})}
 }
