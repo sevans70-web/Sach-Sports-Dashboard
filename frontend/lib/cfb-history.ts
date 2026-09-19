@@ -22,7 +22,24 @@ async function request(url:string,init:RequestInit={},attempts=2){
 export function cfbDay(v:Date|string){const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`}
 function source(m:CfbMarketKey){return `${SOURCE_PREFIX}${m}`}
 function storeKey(m:CfbMarketKey,day:string){return `${m}|${day}`}
-function mergePredictions(a:SavedCfbPrediction[],b:SavedCfbPrediction[]){const m=new Map<string,SavedCfbPrediction>();for(const x of [...a,...b]){const old=m.get(x.key);if(!old||old.status==="pending"&&x.status!=="pending")m.set(x.key,x)}return [...m.values()]}
+function mergePredictions(a:SavedCfbPrediction[],b:SavedCfbPrediction[]){
+  const m=new Map<string,SavedCfbPrediction>();
+  for(const x of [...a,...b]){
+    const old=m.get(x.key);
+    if(!old){m.set(x.key,x);continue}
+    if(old.status==="pending"&&x.status!=="pending"){m.set(x.key,x);continue}
+    if(old.status==="pending"&&x.status==="pending"){
+      const oldTime=Date.parse(old.savedAt||"");
+      const nextTime=Date.parse(x.savedAt||"");
+      // Keep the earliest pregame snapshot. This permanently freezes the
+      // sportsbook line, projection, GI and pick used for grading.
+      if(Number.isFinite(nextTime)&&(!Number.isFinite(oldTime)||nextTime<oldTime)){
+        m.set(x.key,x);
+      }
+    }
+  }
+  return [...m.values()]
+}
 
 async function getRow(m:CfbMarketKey,day:string){
   const {url,key}=config();if(!url||!key)return {connected:false,row:null as any};
@@ -72,6 +89,10 @@ export async function saveCfbPregamePredictions(m:CfbMarketKey,rows:any[],schedu
     ok=(await writeRow(m,gameDate,merged,db.row?.id))&&ok;
   }
   return ok;
+}
+export function getRuntimeCfbPredictions(m:CfbMarketKey,day:string){
+  const predictions=runtime.get(storeKey(m,day))||[];
+  return {connected:predictions.length>0,predictions};
 }
 export async function getCfbPredictions(m:CfbMarketKey,day:string){
   const db=await getRow(m,day),dbSaved=(Array.isArray(db.row?.payload?.predictions)?db.row.payload.predictions:[]) as SavedCfbPrediction[],predictions=mergePredictions(dbSaved,runtime.get(storeKey(m,day))||[]);

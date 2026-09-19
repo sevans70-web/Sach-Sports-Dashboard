@@ -3,7 +3,7 @@ import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
-import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions} from "@/lib/cfb-history";
+import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions,getRuntimeCfbPredictions} from "@/lib/cfb-history";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -183,7 +183,16 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   let ranked:any[]=enriched.map((r,i)=>({...r,rank:i+1}));
 
   // Freeze pregame predictions once the game starts.
-  const saved=await timeout(getCfbPredictions(market,today),700,{connected:false,predictions:[]} as any);
+  // Runtime snapshot is immediate. Supabase is only used when runtime is empty.
+  // A live sportsbook line is never allowed to become the grading line.
+  const runtimeSaved=getRuntimeCfbPredictions(market,today);
+  const saved=runtimeSaved.predictions.length
+    ? runtimeSaved
+    : await timeout(getCfbPredictions(market,today),2500,{connected:false,predictions:[]} as any);
+
+  const previousRows=rankingCache.get(market)?.payload?.rows||[];
+  const previousByKey=new Map(previousRows.map((r:any)=>[`${r.playerId}|${r.matchup}`,r]));
+
   const started=(saved.predictions||[]).filter((p:any)=>{
     const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
     return game&&game.state!=="pre";
@@ -211,6 +220,27 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
       });
     }
   }
+  // Safety net: if persisted storage is slow, use the previous cached pregame
+  // values for any game already in progress. Never substitute a refreshed live line.
+  for(const row of ranked){
+    const game=schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(row.matchup));
+    if(!game||game.state==="pre")continue;
+    const prev=previousByKey.get(`${row.playerId}|${row.matchup}`) as any;
+    if(prev){
+      row.rank=prev.rank??row.rank;
+      row.sportsbookLine=prev.sportsbookLine;
+      row.modelProjection=prev.modelProjection;
+      row.modelProbability=prev.modelProbability;
+      row.giScore=prev.giScore;
+      row.frozen=true;
+    }else if(!started.some((p:any)=>`${p.playerId}|${p.matchup}`===`${row.playerId}|${row.matchup}`)){
+      // Better to show no grading line than silently grade against an in-game line.
+      row.sportsbookLine=null;
+      row.frozen=true;
+      row.freezeWarning="Pregame line snapshot unavailable";
+    }
+  }
+
   ranked.sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999));
   ranked=ranked.slice(0,25);
 
