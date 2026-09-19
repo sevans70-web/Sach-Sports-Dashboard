@@ -139,6 +139,7 @@ function liveFor(row:Row,live:LiveResponse){
 function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse}){
   const[open,setOpen]=useState(false);
   const proj=projectionText(row,market);
+  const displayName=String(row.playerName||"").replace(/\s*\([A-Z0-9 .'-]+\)\s*$/,"").trim();
   const lg=liveFor(row,live);
   const actual=lg?.actual??null;
   const confidence=row.modelProbability!=null?`${Number(row.modelProbability).toFixed(0)}%`:"—";
@@ -150,7 +151,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
     <div className="rankNo">#{row.rank}<span className={row.movement==="NEW"?"new":Number(row.movement||0)>0?"up":Number(row.movement||0)<0?"down":""}>{move(row.movement)}</span></div>
     <div className="rankPhoto">{row.headshot?<img src={row.headshot} alt=""/>:<div>CFB</div>}</div>
     <div className="rankBody">
-      <strong>{row.playerName}</strong>
+      <strong>{displayName}</strong>
       <span>{row.teamName}{row.position?` · ${row.position}`:""}</span>
       {row.matchup?<span>{row.matchup}</span>:null}
       {row.gameTime?<span className="gameTime">🗓️ {gameTime(row.gameTime)}</span>:null}
@@ -186,7 +187,14 @@ export default function CfbDashboard(){
   const overall=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${group}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},60000);
   const perf=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${group}&market=${market}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},60000);
 
-  const rows=useMemo(()=>r.data.rows||[],[r.data]);
+  const rows=useMemo(()=>{
+    const source=r.data.rows||[];
+    const valid=source.filter((row:Row)=>{
+      if(market==="first_td")return row.modelProbability!=null&&Number.isFinite(Number(row.modelProbability));
+      return row.modelProjection!=null&&Number.isFinite(Number(row.modelProjection));
+    });
+    return valid.map((row:Row,index:number)=>({...row,rank:index+1}));
+  },[r.data,market]);
   const markets=group==="QB"?QB_MARKETS:OFFENSE_MARKETS;
   const active=meta(market);
 
@@ -320,20 +328,20 @@ export default function CfbDashboard(){
       .tabs button{flex:0 0 auto;background:transparent;border:0;border-bottom:4px solid transparent;color:#fff;padding:13px 18px;font-weight:800}
       .tabs button.active{border-bottom-color:#f04f5f}
       .rankHeader{background:#0c0d0e;padding:20px;margin-top:8px}
-      .rankCard{position:relative;display:grid;grid-template-columns:55px 120px 1fr 86px;gap:12px;border:4px solid #34373d;border-left:16px solid #20df7f;border-radius:26px;background:#111214;padding:20px;margin:20px 0}
+      .rankCard{position:relative;display:grid;grid-template-columns:38px 78px 1fr 55px;gap:8px;border:3px solid #34373d;border-left:10px solid #20df7f;border-radius:20px;background:#111214;padding:11px 9px;margin:12px 0}
       .rankCard.isLive{box-shadow:0 0 0 2px rgba(32,223,127,.35),0 0 20px rgba(32,223,127,.18)}
-      .rankNo{font-size:26px;font-weight:900}
-      .rankNo span{display:block;margin-top:12px;color:#9da1a8}
+      .rankNo{font-size:21px;font-weight:900}
+      .rankNo span{display:block;margin-top:6px;color:#9da1a8;font-size:10px}
       .rankNo .up{color:#20df7f}
       .rankNo .down{color:#ff6b6b}
       .rankNo .new{color:#d9b85d;font-size:13px}
-      .rankPhoto img,.rankPhoto>div{width:112px;height:112px;border-radius:50%;border:4px solid #d9b85d;object-fit:cover}
+      .rankPhoto img,.rankPhoto>div{width:74px;height:74px;border-radius:50%;border:3px solid #d9b85d;object-fit:cover}
       .rankPhoto>div{display:grid;place-items:center}
-      .rankBody strong{font-size:25px}
-      .rankBody span{display:block;color:#a9acb3;margin-top:5px}
-      .rankBody b{display:block;margin-top:10px}
-      .rankBody p{color:#a9acb3}
-      .gameTime{color:#d9b85d!important;font-weight:700}
+      .rankBody strong{display:block;font-size:18px}
+      .rankBody span{display:block;color:#a9acb3;font-size:13px;margin-top:3px}
+      .rankBody b{display:block;font-size:14px;margin-top:7px}
+      .rankBody p{color:#a9acb3;font-size:12px;margin:5px 0 0}
+      .gameTime{color:#d9b85d!important;font-weight:800!important;font-size:11px!important}
       .livePanel{margin-top:12px;border:2px solid #20df7f;border-radius:16px;padding:12px;background:rgba(0,55,34,.25)}
       .liveHeader{color:#20df7f;font-weight:900;font-size:18px}
       .liveCurrent{margin-top:7px;color:#fff}
@@ -352,23 +360,26 @@ export default function CfbDashboard(){
       .predictionLine span{display:inline!important;color:#a9acb3!important}
       .locked{display:inline-block!important;width:max-content;padding:3px 8px;border:1px solid #20df7f;border-radius:999px;color:#20df7f!important;font-size:11px}
       .rankGi{text-align:right}
-      .rankGi strong{display:block;color:#d9b85d;font-size:26px}
-      .intelButton{grid-column:2/-1;background:#080a09;color:#fff;border:4px solid #20df7f;border-radius:18px;padding:14px;font-size:19px;font-weight:700}
+      .rankGi span{display:block;color:#a9acb3;font-size:10px;font-weight:900}.rankGi strong{display:block;color:#d9b85d;font-size:19px;margin-top:2px}
+      .intelButton{grid-column:2/-1;background:#080a09;color:#fff;border:2.5px solid #20df7f;border-radius:14px;padding:9px;font-size:15px;font-weight:700}
       .detail{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
       .detail>div,.detail>section{border:1px solid #34373d;border-radius:12px;padding:10px}
       .detail section{grid-column:1/-1;border-color:#20df7f}
       .detail p,.detail a{grid-column:1/-1}
       .detail a{text-align:center;border:2px solid #34373d;border-radius:14px;padding:13px;color:#fff;text-decoration:none}
-      .droppedTop25{width:max-content;max-width:100%;margin:14px 0;border:2px solid #4a4e55;border-radius:14px;background:#0d0f10}
-      .droppedTop25 summary{list-style:none;cursor:pointer;padding:10px 14px;color:#fff;font-weight:800}
+      .droppedTop25{width:max-content;max-width:100%;margin:8px 0 12px;border:1px solid #4b4f55;border-radius:10px;background:#0d0f10}
+      .droppedTop25 summary{list-style:none;cursor:pointer;padding:7px 10px;color:#fff;font-weight:800;font-size:11px}
       .droppedTop25 summary::-webkit-details-marker{display:none}
       .droppedList{display:flex;flex-wrap:wrap;gap:7px;padding:0 12px 12px;max-width:680px}
-      .droppedList span{border:1px solid #34373d;border-radius:999px;padding:5px 9px;color:#c9cbd0;font-size:12px}
+      .droppedList span{border:1px solid #34373d;border-radius:999px;padding:4px 7px;color:#c9cbd0;font-size:10px}
       .viewFull{width:100%;background:#0d0f10;color:#fff;border:2px solid #34373d;border-radius:14px;padding:14px}
       .empty{padding:30px;text-align:center;color:#a9acb3}
       @media(max-width:600px){
-        .rankCard{grid-template-columns:40px 92px 1fr 70px;gap:9px;padding:14px 10px;border-left-width:12px}
-        .rankPhoto img,.rankPhoto>div{width:86px;height:86px}
+        .rankCard{grid-template-columns:32px 68px 1fr 48px;gap:6px;padding:11px 9px;border-left-width:10px}
+        .rankPhoto img,.rankPhoto>div{width:64px;height:64px}
+        .rankBody strong{font-size:16px}
+        .rankBody span,.rankBody b{font-size:12px}
+        .rankGi strong{font-size:17px}
         .metrics.four{grid-template-columns:repeat(4,minmax(120px,1fr));overflow-x:auto}
         .periods{overflow-x:auto}
         .detail{grid-template-columns:repeat(2,1fr)}
