@@ -255,7 +255,10 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     playerId:r.playerId,playerName:r.playerName,teamName:r.teamName,previousRank:r.rank
   }));
 
-  void saveCfbPregamePredictions(market,moved,schedule).catch(()=>{});
+  // Persist the pregame Top 25 before returning the ranking response.
+  // This prevents kickoff/market changes from deleting players before the
+  // prediction record is durable.
+  await timeout(saveCfbPregamePredictions(market,moved,schedule),3500,false);
   const results=await timeout(getCfbResultMap(market,today),600,new Map());
   const withResults=moved.map((r:any)=>{
     const p=results.get(`${r.playerId}|${r.matchup}`) as any;

@@ -430,6 +430,12 @@ export async function getRankings() {
 
   const batter:Record<string,RankingRow[]> = batterHasToday ? {...sourceBatter} : (fallback?.batter || sourceBatter);
   if(fallback?.batter?.home_runs_pool?.length) batter.home_runs_pool=fallback.batter.home_runs_pool;
+  // Batter strikeouts were added after the stored intelligence schema.
+  // Always fill the category from the Next.js ranking engine when the snapshot
+  // has no completed strikeout ranking.
+  if((!Array.isArray(batter.batter_strikeouts)||!batter.batter_strikeouts.length)&&fallback?.batter?.batter_strikeouts?.length){
+    batter.batter_strikeouts=fallback.batter.batter_strikeouts;
+  }
   const pitcher:Record<string,RankingRow[]> = pitcherHasToday ? sourcePitcher : (fallback?.pitcher || sourcePitcher);
   const batterDropped = batterHasToday ? sourceBatterDropped : (fallback?.batterDropped || sourceBatterDropped);
   const pitcherDropped = pitcherHasToday ? sourcePitcherDropped : (fallback?.pitcherDropped || sourcePitcherDropped);
@@ -564,7 +570,7 @@ async function dailyPlayerResults(dayKey:string){
 async function refreshBatterHistory(history:any){
   const copy=structuredClone(history||{days:{}});const today=torontoDay();
   const dayKeys=Object.keys(copy.days||{}).filter(k=>{const diff=(new Date(`${today}T12:00:00Z`).getTime()-new Date(`${k}T12:00:00Z`).getTime())/86400000;return diff>=0&&diff<8});
-  const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2,emerging_power:1};
+  const thresholds:any={home_runs:1,hits:1,total_bases:2,runs:1,rbis:1,walks:1,stolen_bases:1,hits_runs_rbis:2,batter_strikeouts:1,emerging_power:1};
   for(const dk of dayKeys){const results=await dailyPlayerResults(dk);const day=copy.days?.[dk];if(!day)continue;
     for(const [cat,rows] of Object.entries(day?.categories||{}) as any[]){if(!Array.isArray(rows)||!(cat in thresholds))continue;
       for(const r of rows){
@@ -572,12 +578,12 @@ async function refreshBatterHistory(history:any){
         const actualRow=(id&&results.byId.get(id))||results.byName.get(results.norm(r?.player_name||r?.player));
         if(!actualRow?.batting)continue;
         const stat=actualRow.batting;
-        const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases)};
+        const actual:any={home_runs:numAny(stat.homeRuns),hits:numAny(stat.hits),total_bases:numAny(stat.totalBases),runs:numAny(stat.runs),rbis:numAny(stat.rbi),walks:numAny(stat.baseOnBalls),stolen_bases:numAny(stat.stolenBases),batter_strikeouts:numAny(stat.strikeOuts)};
         actual.hits_runs_rbis=actual.hits+actual.runs+actual.rbis;
         const key=cat==="emerging_power"?"home_runs":cat;
         const reached=actual[key]>=thresholds[cat];
         r.game_pk=r.game_pk||actualRow.game_pk;
-        r.actual=actual[key];r.actual_hits=actual.hits;r.actual_home_runs=actual.home_runs;r.actual_total_bases=actual.total_bases;r.actual_runs=actual.runs;r.actual_rbis=actual.rbis;r.actual_walks=actual.walks;r.actual_stolen_bases=actual.stolen_bases;r.actual_hits_runs_rbis=actual.hits_runs_rbis;
+        r.actual=actual[key];r.actual_hits=actual.hits;r.actual_home_runs=actual.home_runs;r.actual_total_bases=actual.total_bases;r.actual_runs=actual.runs;r.actual_rbis=actual.rbis;r.actual_walks=actual.walks;r.actual_stolen_bases=actual.stolen_bases;r.actual_hits_runs_rbis=actual.hits_runs_rbis;r.actual_batter_strikeouts=actual.batter_strikeouts;
         r.result_live=Boolean(actualRow.result_live&&!actualRow.game_finished);
         r.live_hit=Boolean(r.result_live&&reached);
         if(actualRow.game_finished){

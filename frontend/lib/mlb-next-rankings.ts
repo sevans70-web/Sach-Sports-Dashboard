@@ -4,7 +4,7 @@ const MLB_API = "https://statsapi.mlb.com/api/v1";
 const TORONTO = "America/Toronto";
 const SEASON = new Date().getFullYear();
 
-const BATTER_MARKETS = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis"] as const;
+const BATTER_MARKETS = ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"] as const;
 const PITCHER_MARKETS = ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"] as const;
 
 type GameContext = {
@@ -91,9 +91,9 @@ async function batterRankings(context:Map<number,GameContext>){
     const st=s?.stat||{};const person=s?.player||s?.person||{};const team=s?.team||person?.currentTeam||{};const teamId=Number(team?.id||0);const game=context.get(teamId);
     if(!game)return null;
     const pa=n(st.plateAppearances)||n(st.atBats)+n(st.baseOnBalls);const ab=n(st.atBats);if(pa<25)return null;
-    const hits=n(st.hits),hr=n(st.homeRuns),tb=n(st.totalBases),runs=n(st.runs),rbis=n(st.rbi),bb=n(st.baseOnBalls),sb=n(st.stolenBases);
+    const hits=n(st.hits),hr=n(st.homeRuns),tb=n(st.totalBases),runs=n(st.runs),rbis=n(st.rbi),bb=n(st.baseOnBalls),sb=n(st.stolenBases),so=n(st.strikeOuts);
     const avg=n(st.avg)||per(hits,ab);const slg=n(st.slg)||per(tb,ab);const obp=n(st.obp);
-    return {player_id:Number(person?.id||0),player_name:String(person?.fullName||"Player"),headshot_url:headshot(Number(person?.id||0)),team_id:teamId,team_name:game.teamName,team_abbreviation:teamAbbr(game.teamName),opponent_name:game.opponentName,opponent_abbreviation:teamAbbr(game.opponentName),game_pk:game.gamePk,game_time:game.startTime,venue:game.venue,opposing_probable_pitcher:game.probablePitcherName,season_stats:{plate_appearances:pa,at_bats:ab,hits,home_runs:hr,total_bases:tb,runs,rbis,walks:bb,stolen_bases:sb,avg,slg,obp,ops:n(st.ops)},_rates:{home_runs:per(hr,pa),hits:per(hits,pa),total_bases:per(tb,pa),runs:per(runs,pa),rbis:per(rbis,pa),walks:per(bb,pa),stolen_bases:per(sb,pa),hits_runs_rbis:per(hits+runs+rbis,pa)},_avg:avg,_slg:slg,_pa:pa};
+    return {player_id:Number(person?.id||0),player_name:String(person?.fullName||"Player"),headshot_url:headshot(Number(person?.id||0)),team_id:teamId,team_name:game.teamName,team_abbreviation:teamAbbr(game.teamName),opponent_name:game.opponentName,opponent_abbreviation:teamAbbr(game.opponentName),game_pk:game.gamePk,game_time:game.startTime,venue:game.venue,opposing_probable_pitcher:game.probablePitcherName,season_stats:{plate_appearances:pa,at_bats:ab,hits,home_runs:hr,total_bases:tb,runs,rbis,walks:bb,stolen_bases:sb,strikeouts:so,avg,slg,obp,ops:n(st.ops)},_rates:{home_runs:per(hr,pa),hits:per(hits,pa),total_bases:per(tb,pa),runs:per(runs,pa),rbis:per(rbis,pa),walks:per(bb,pa),stolen_bases:per(sb,pa),hits_runs_rbis:per(hits+runs+rbis,pa),batter_strikeouts:per(so,pa)},_avg:avg,_slg:slg,_pa:pa};
   }).filter(Boolean) as any[];
 
   const markets:Record<string,RankingRow[]>={};const dropped:Record<string,string[]>={};
@@ -106,15 +106,13 @@ async function batterRankings(context:Map<number,GameContext>){
       if(market==="home_runs")extra.home_run_probability=Math.round(probabilityAtLeastOne(rate,4.25)*10)/10;
       if(market==="hits")extra.one_plus_hit_probability=Math.round(probabilityAtLeastOne(r._avg,3.9)*10)/10;
       if(market==="total_bases")extra.projected_total_bases=Math.round(projection*100)/100;
+      if(market==="batter_strikeouts")extra.probability=Math.round(probabilityAtLeastOne(rate,4.25)*10)/10;
       return {...r,...extra};
     }).sort((a,b)=>n(b.gi_score)-n(a.gi_score));
     markets[market]=movementFor(`b:${market}`,scored.slice(0,25),false) as RankingRow[];
     if(market==="home_runs") markets.home_runs_pool=scored.slice(25,125).map((r:any,i:number)=>({...r,rank:i+26})) as RankingRow[];
     dropped[market]=scored.slice(25,30).map(r=>r.player_name);
   }
-  // Dashboard has a batter strikeouts tab in some builds; do not fabricate it.
-  markets.batter_strikeouts=[];
-  dropped.batter_strikeouts=[];
   return {markets,dropped};
 }
 
