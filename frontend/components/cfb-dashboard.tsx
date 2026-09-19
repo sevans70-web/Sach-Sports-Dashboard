@@ -82,6 +82,14 @@ function projectionText(row:Row,m:CfbMarketKey){
   return n.toFixed(1);
 }
 
+function unit(m:CfbMarketKey){
+  if(["passing_yards","rushing_yards","receiving_yards"].includes(m))return "yards";
+  if(m==="pass_completions")return "completions";
+  if(m==="receptions")return "receptions";
+  if(m==="anytime_td"||m==="first_td")return "TD";
+  return "";
+}
+
 function gameTime(v?:string){
   if(!v)return "";
   const d=new Date(v);
@@ -106,6 +114,17 @@ function clean(v:any){
   return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 }
 
+function quarterLabel(value?:string){
+  const q=String(value||"").toUpperCase();
+  if(q==="Q1")return "Quarter 1";
+  if(q==="Q2")return "Quarter 2";
+  if(q==="Q3")return "Quarter 3";
+  if(q==="Q4")return "Quarter 4";
+  if(q==="HALF")return "Halftime";
+  if(q.startsWith("OT"))return q==="OT"?"Overtime":`Overtime ${q.replace("OT","")}`;
+  return q;
+}
+
 function liveFor(row:Row,live:LiveResponse){
   const game=live.games?.find(g=>clean(g.matchup)===clean(row.matchup));
   if(!game)return null;
@@ -114,6 +133,16 @@ function liveFor(row:Row,live:LiveResponse){
     clean(x.playerName)===clean(row.playerName)
   );
   return {...game,actual:stat?.value??null};
+}
+
+function prediction(row:Row){
+  if(row.sportsbookLine==null||row.modelProjection==null)return null;
+  const line=Number(row.sportsbookLine);
+  const projection=Number(row.modelProjection);
+  if(!Number.isFinite(line)||!Number.isFinite(projection))return null;
+  const side=projection>=line?"OVER":"UNDER";
+  const edge=projection-line;
+  return {side,edge,line};
 }
 
 function grade(row:Row,market:CfbMarketKey,actual:number|null,completed:boolean){
@@ -135,6 +164,10 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
   const lg=liveFor(row,live);
   const actual=lg?.actual??null;
   const finalGrade=grade(row,market,actual,Boolean(lg?.completed));
+  const pick=prediction(row);
+  const progress=row.sportsbookLine!=null&&actual!=null&&Number(row.sportsbookLine)>0
+    ?Math.max(0,Math.min(100,(Number(actual)/Number(row.sportsbookLine))*100))
+    :0;
 
   return <article className={`rankCard ${lg?.state==="in"?"isLive":""}`}>
     <div className="rankNo">
@@ -152,27 +185,35 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       <strong>{row.playerName}</strong>
       <span>{row.teamName}{row.position?` · ${row.position}`:""}</span>
       {row.matchup?<span>{row.matchup}</span>:null}
-      {row.gameTime?<span className="gameTime">🕒 {gameTime(row.gameTime)}</span>:null}
-
-      {lg?.state==="in"?
-        <span className="liveTag">● LIVE {lg.quarter}{lg.clock?` ${lg.clock}`:""}</span>:null}
-
-      {lg?.completed?
-        <span className={`finalTag ${finalGrade||""}`}>
-          FINAL {finalGrade==="hit"?"✅":finalGrade==="miss"?"❌":finalGrade==="push"?"➖":""}
-        </span>:null}
-
-      {actual!=null&&lg?.state==="in"?
-        <span className="liveProgress">Current: <b>{actual}</b> / Frozen line: <b>{row.sportsbookLine??"—"}</b></span>:null}
-
-      {actual!=null&&lg?.completed?
-        <span className="liveProgress">Final: <b>{actual}</b> / Frozen line: <b>{row.sportsbookLine??"—"}</b></span>:null}
-
-      {row.frozen?<span className="locked">LOCKED AT KICKOFF</span>:null}
+      {row.gameTime?<span className="gameTime">🗓️ {gameTime(row.gameTime)}</span>:null}
 
       <b>{row.sportsbookLine!=null?`${m[2]} line: ${row.sportsbookLine}`:`${m[2]} statistical intelligence`}</b>
-      <p><b>Model projection:</b> {proj}</p>
-      <p>{row.modelProbability!=null?`Model probability: ${Number(row.modelProbability).toFixed(0)}%`:"Model probability: —"}</p>
+
+      {lg?.state==="in"?
+        <div className="livePanel">
+          <div className="liveHeader">● LIVE · {quarterLabel(lg.quarter)}{lg.clock?` · ${lg.clock}`:""}</div>
+          <div className="liveCurrent">Current: <b>{actual??"—"} {unit(market)}</b> / Line <b>{row.sportsbookLine??"—"}</b></div>
+          <div className="progressTrack"><div className="progressFill" style={{width:`${progress}%`}}/></div>
+        </div>:null}
+
+      {lg?.completed?
+        <div className={`finalPanel ${finalGrade||""}`}>
+          <div className="finalHeader">
+            FINAL {finalGrade==="hit"?"✅":finalGrade==="miss"?"❌":finalGrade==="push"?"➖":""}
+          </div>
+          <div>Final: <b>{actual??"—"} {unit(market)}</b> / Frozen line <b>{row.sportsbookLine??"—"}</b></div>
+        </div>:null}
+
+      <p className="projectionLine"><b>Sach Projection:</b> {proj}</p>
+
+      {pick?
+        <p className={`predictionLine ${pick.side==="OVER"?"over":"under"}`}>
+          <b>Prediction:</b> {pick.side} {pick.line} <span>· Edge {pick.edge>=0?"+":""}{pick.edge.toFixed(1)}</span>
+        </p>:null}
+
+      <p>{row.modelProbability!=null?`${pick?.side||"Model"} probability ${Number(row.modelProbability).toFixed(0)}%`:"Model probability: —"}</p>
+
+      {row.frozen?<span className="locked">LOCKED AT KICKOFF</span>:null}
     </div>
 
     <div className="rankGi">
@@ -245,6 +286,7 @@ export default function CfbDashboard(){
     </Link>
 
     <h2>This Week&apos;s CFB Snapshot</h2>
+
     <div className="snapshot">
       <article><span>GAMES</span><strong>{gameCount}</strong><small>{liveGames} live · {finals} final</small></article>
       <article><span>MARKETS</span><strong>7</strong><small>College-supported categories</small></article>
@@ -352,13 +394,22 @@ export default function CfbDashboard(){
       .rankBody b{display:block;margin-top:10px}
       .rankBody p{color:#a9acb3}
       .gameTime{color:#d9b85d!important;font-weight:700}
-      .liveTag{color:#20df7f!important;font-weight:900}
-      .finalTag{font-weight:900!important}
-      .finalTag.hit{color:#20df7f!important}
-      .finalTag.miss{color:#ff6b6b!important}
-      .finalTag.push{color:#d9b85d!important}
-      .liveProgress{color:#fff!important;font-size:15px!important}
-      .liveProgress b{display:inline!important;margin:0!important}
+      .livePanel{margin-top:12px;border:2px solid #20df7f;border-radius:16px;padding:12px;background:rgba(0,55,34,.25)}
+      .liveHeader{color:#20df7f;font-weight:900;font-size:18px}
+      .liveCurrent{margin-top:7px;color:#fff}
+      .liveCurrent b{display:inline;margin:0}
+      .progressTrack{height:10px;border-radius:999px;background:#3b3f44;margin-top:10px;overflow:hidden}
+      .progressFill{height:100%;background:#20df7f;border-radius:999px}
+      .finalPanel{margin-top:12px;border:2px solid #34373d;border-radius:16px;padding:12px}
+      .finalPanel.hit{border-color:#20df7f}
+      .finalPanel.miss{border-color:#ff6b6b}
+      .finalPanel.push{border-color:#d9b85d}
+      .finalHeader{font-weight:900;margin-bottom:7px}
+      .projectionLine b{color:#d9b85d}
+      .predictionLine b{color:#d9b85d}
+      .predictionLine.over{color:#20df7f}
+      .predictionLine.under{color:#fff}
+      .predictionLine span{display:inline!important;color:#a9acb3!important}
       .locked{display:inline-block!important;width:max-content;padding:3px 8px;border:1px solid #20df7f;border-radius:999px;color:#20df7f!important;font-size:11px}
       .rankGi{text-align:right}
       .rankGi strong{display:block;color:#d9b85d;font-size:26px}
