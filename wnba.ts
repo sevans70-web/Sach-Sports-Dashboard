@@ -1,0 +1,46 @@
+export const WNBA_SEASON = "2026";
+
+export const WNBA_MARKETS = [
+  ["points","Points","PTS"],["rebounds","Rebounds","REB"],["assists","Assists","AST"],
+  ["threes_made","3-Pointers Made","3PM"],["pts_rebs_asts","Points + Rebounds + Assists","PRA"],
+  ["pts_rebs","Points + Rebounds","P+R"],["pts_asts","Points + Assists","P+A"],
+  ["rebs_asts","Rebounds + Assists","R+A"],["steals","Steals","STL"],["blocks","Blocks","BLK"],
+] as const;
+export type WnbaMarketKey=(typeof WNBA_MARKETS)[number][0];
+
+export type WnbaPlayer={
+  playerId:number;playerName:string;team:string;gamesPlayed:number|null;minutesPerGame:number|null;
+  pointsPerGame:number|null;reboundsPerGame:number|null;assistsPerGame:number|null;threesPerGame:number|null;
+  stealsPerGame:number|null;blocksPerGame:number|null
+};
+export type WnbaGame={gameId:string;tipoff:string|null;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string};
+export type WnbaOverview={season:string;updatedAt:string;players:WnbaPlayer[];games:WnbaGame[];warnings:string[]};
+
+type JsonRecord=Record<string,unknown>;
+const STATS_URL="https://site.web.api.espn.com/apis/common/v3/sports/basketball/wnba/statistics/byathlete";
+const SCOREBOARD_URL="https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard";
+const averageAliases={minutesPerGame:["avgminutes","minutespergame","minpergame"],pointsPerGame:["avgpoints","pointspergame","ptspergame"],reboundsPerGame:["avgrebounds","reboundspergame","rebpergame"],assistsPerGame:["avgassists","assistspergame","astpergame"],threesPerGame:["avgthreepointfieldgoalsmade","threepointfieldgoalsmadepergame","threepointersmadepergame","fg3mpergame"],stealsPerGame:["avgsteals","stealspergame","stlpergame"],blocksPerGame:["avgblocks","blockspergame","blkpergame"]} as const;
+const totalAliases={minutesPerGame:["minutes","min"],pointsPerGame:["points","pts"],reboundsPerGame:["rebounds","rebs","reb"],assistsPerGame:["assists","ast"],threesPerGame:["threepointfieldgoalsmade","threepointersmade","fg3m","3pm"],stealsPerGame:["steals","stl"],blocksPerGame:["blocks","blk"]} as const;
+function record(v:unknown):JsonRecord{return v&&typeof v==="object"&&!Array.isArray(v)?v as JsonRecord:{}}
+function list(v:unknown):unknown[]{return Array.isArray(v)?v:[]}
+function text(v:unknown):string{return typeof v==="string"||typeof v==="number"?String(v):""}
+function number(v:unknown):number|null{if(typeof v==="number"&&Number.isFinite(v))return v;const n=Number(String(v??"").replaceAll(",",""));return Number.isFinite(n)?n:null}
+function normalized(v:unknown):string{return text(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
+function firstStat(stats:Map<string,number>,aliases:readonly string[]):number|null{for(const alias of aliases){const v=stats.get(alias);if(v!==undefined)return v}return null}
+function perGame(stats:Map<string,number>,field:keyof typeof averageAliases,games:number|null):number|null{const avg=firstStat(stats,averageAliases[field]);if(avg!==null)return avg;const total=firstStat(stats,totalAliases[field]);return total!==null&&games&&games>0?total/games:null}
+function categoryLabels(payload:JsonRecord):string[][]{return list(payload.categories).map(v=>{const c=record(v);return list(c.names??c.labels).map(text)})}
+function flattenStats(entry:JsonRecord,fallback:string[][]):Map<string,number>{const out=new Map<string,number>();list(entry.categories).forEach((v,i)=>{const c=record(v);const own=list(c.names??c.labels);const labels=own.length?own.map(text):(fallback[i]??[]);const totals=c.values??c.totals;if(totals&&typeof totals==="object"&&!Array.isArray(totals)){Object.entries(totals as JsonRecord).forEach(([label,value])=>{const n=number(value);if(n!==null)out.set(normalized(label),n)});return}list(totals).forEach((value,index)=>{const n=number(value);if(n!==null&&labels[index])out.set(normalized(labels[index]),n)})});return out}
+function parsePlayers(payloads:JsonRecord[]):WnbaPlayer[]{const players=new Map<number,WnbaPlayer>();payloads.forEach(payload=>{const labels=categoryLabels(payload);list(payload.athletes).forEach(v=>{const entry=record(v),athlete=record(entry.athlete);const id=number(text(athlete.id??athlete.uid).split(":").at(-1)?.split("~").at(-1));const name=text(athlete.displayName??athlete.fullName);if(id===null||!name)return;const team=record(athlete.team),stats=flattenStats(entry,labels),games=firstStat(stats,["gamesplayed","games","gp"]);players.set(id,{playerId:id,playerName:name,team:text(athlete.teamShortName??athlete.teamAbbreviation??team.abbreviation)||"—",gamesPlayed:games,minutesPerGame:perGame(stats,"minutesPerGame",games),pointsPerGame:perGame(stats,"pointsPerGame",games),reboundsPerGame:perGame(stats,"reboundsPerGame",games),assistsPerGame:perGame(stats,"assistsPerGame",games),threesPerGame:perGame(stats,"threesPerGame",games),stealsPerGame:perGame(stats,"stealsPerGame",games),blocksPerGame:perGame(stats,"blocksPerGame",games)})})});return [...players.values()]}
+async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{const response=await fetch(url,{headers:{Accept:"application/json","User-Agent":"Sach-Sports/1.0"},next:{revalidate}});if(!response.ok)throw new Error(`Provider returned ${response.status}`);return record(await response.json())}
+async function loadPlayers():Promise<WnbaPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:WNBA_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
+function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
+function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
+async function loadGames():Promise<WnbaGame[]>{const now=new Date(),start=new Date(now),end=new Date(now);start.setUTCDate(start.getUTCDate()-1);end.setUTCDate(end.getUTCDate()+14);const payload=await fetchJson(`${SCOREBOARD_URL}?dates=${dateKey(start)}-${dateKey(end)}&limit=200`,300);return list(payload.events).flatMap(v=>{const e=record(v),c=record(list(e.competitions)[0]);if(!Object.keys(c).length)return[];const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);return[{gameId:text(e.id),tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre"}]})}
+export async function loadWnbaOverview():Promise<WnbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("WNBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The WNBA schedule is temporarily unavailable.");return{season:WNBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+export function wnbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/wnba/players/full/${playerId}.png`}
+export function cleanWnbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
+export function playerBaseline(p:WnbaPlayer|undefined,market:WnbaMarketKey):number|null{
+ if(!p)return null;const a=p.pointsPerGame,r=p.reboundsPerGame,s=p.assistsPerGame;
+ const sum=(...xs:(number|null)[])=>xs.some(x=>x==null)?null:xs.reduce<number>((t,x)=>t+(x??0),0);
+ return market==="points"?a:market==="rebounds"?r:market==="assists"?s:market==="threes_made"?p.threesPerGame:market==="pts_rebs_asts"?sum(a,r,s):market==="pts_rebs"?sum(a,r):market==="pts_asts"?sum(a,s):market==="rebs_asts"?sum(r,s):market==="steals"?p.stealsPerGame:p.blocksPerGame;
+}
