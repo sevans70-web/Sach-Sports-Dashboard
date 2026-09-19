@@ -57,7 +57,10 @@ export async function saveCfbPregamePredictions(m:CfbMarketKey,rows:any[],schedu
   const grouped=new Map<string,any[]>();
   for(const row of rows){
     const game=schedule.find((g:any)=>String(`${g.awayTeam||""} @ ${g.homeTeam||""}`).toLowerCase()===String(row.matchup||"").toLowerCase());
-    if(game&&game.state!=="pre")continue;
+    // Normal rows save pregame. If the ranking route has already hard-locked a
+    // player at kickoff, allow that frozen pregame snapshot to be persisted too.
+    // This closes the race where kickoff happens before Supabase finishes saving.
+    if(game&&game.state!=="pre"&&!row.frozen&&!row.lockedAtKickoff)continue;
     if(!row.playerId||row.sportsbookLine==null||row.modelProbability==null)continue;
     const gameDate=cfbDay(row.gameTime||game?.date||new Date());
     if(!gameDate)continue;
