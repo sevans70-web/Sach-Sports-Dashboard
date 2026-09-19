@@ -182,6 +182,13 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   enriched.sort((a,b)=>b.giScore-a.giScore);
   let ranked:any[]=enriched.map((r,i)=>({...r,rank:i+1}));
 
+  // Capture the previous visible Top 25 BEFORE kickoff-lock logic uses it.
+  const previous=rankingCache.get(market)?.payload?.rows||[];
+  const previousRows:any[]=previous;
+  const previousByKey=new Map<string,any>(
+    previousRows.map((r:any)=>[`${r.playerId}|${r.matchup}`,r])
+  );
+
   // Freeze pregame predictions once the game starts.
   const saved=await timeout(getCfbPredictions(market,today),700,{connected:false,predictions:[]} as any);
   // HARD LOCK: once a player's game starts, that player owns a Top-25 slot
@@ -243,7 +250,6 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
 
   // Started players remain visible through live/final and cannot be marked dropped.
 
-  const previous=rankingCache.get(market)?.payload?.rows||[];
   const previousRanks=new Map(previous.map((r:any)=>[`${r.playerId}|${r.matchup}`,Number(r.rank)]));
   const currentKeys=new Set(ranked.map((r:any)=>`${r.playerId}|${r.matchup}`));
   const moved=ranked.map((r:any)=>{
