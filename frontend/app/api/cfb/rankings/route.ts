@@ -264,8 +264,11 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     playerId:r.playerId,playerName:r.playerName,teamName:r.teamName,previousRank:r.rank
   }));
 
-  void saveCfbPregamePredictions(market,moved,schedule).catch(()=>{});
-  const results=await timeout(getCfbResultMap(market,today),600,new Map());
+  // Prediction Performance depends on this snapshot being durable. Do not fire-and-forget:
+  // Railway may end this request before an unawaited Supabase write completes.
+  // Wait for the save (with a bounded timeout) before returning the ranking response.
+  await timeout(saveCfbPregamePredictions(market,moved,schedule),5500,false);
+  const results=await timeout(getCfbResultMap(market,today),1200,new Map());
   const withResults=moved.map((r:any)=>{
     const p=results.get(`${r.playerId}|${r.matchup}`) as any;
     const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
