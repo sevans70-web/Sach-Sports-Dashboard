@@ -22,35 +22,6 @@ async function request(url:string,init:RequestInit={},attempts=2){
 export function cfbDay(v:Date|string){const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`}
 function source(m:CfbMarketKey){return `${SOURCE_PREFIX}${m}`}
 function storeKey(m:CfbMarketKey,day:string){return `${m}|${day}`}
-
-const RECOVERED_CFB_PREDICTIONS:SavedCfbPrediction[]=[
-  {
-    key:"2026-09-18|passing_yards|recovered-darian-mensah|Miami Hurricanes @ Wake Forest Demon Deacons",
-    gameDate:"2026-09-18",
-    gameTime:"2026-09-18T23:30:00.000Z",
-    matchup:"Miami Hurricanes @ Wake Forest Demon Deacons",
-    market:"passing_yards",
-    playerId:"recovered-darian-mensah",
-    playerName:"Darian Mensah",
-    teamName:"Miami Hurricanes",
-    position:"QB",
-    sportsbookLine:170,
-    modelProjection:325.9,
-    modelProbability:95,
-    pick:"over",
-    rank:1,
-    giScore:89.0,
-    bookmakerCount:0,
-    savedAt:"2026-09-18T23:25:00.000Z",
-    status:"hit",
-    actual:220,
-    gradedAt:"2026-09-19T03:30:00.000Z",
-  }
-];
-
-function recoveredFor(m:CfbMarketKey,day:string){
-  return RECOVERED_CFB_PREDICTIONS.filter(p=>p.market===m&&p.gameDate===day);
-}
 function mergePredictions(a:SavedCfbPrediction[],b:SavedCfbPrediction[]){
   const m=new Map<string,SavedCfbPrediction>();
   for(const x of [...a,...b]){
@@ -60,9 +31,10 @@ function mergePredictions(a:SavedCfbPrediction[],b:SavedCfbPrediction[]){
     if(old.status==="pending"&&x.status==="pending"){
       const oldTime=Date.parse(old.savedAt||"");
       const nextTime=Date.parse(x.savedAt||"");
-      // Keep the earliest pregame snapshot. This permanently freezes the
-      // sportsbook line, projection, GI and pick used for grading.
-      if(Number.isFinite(nextTime)&&(!Number.isFinite(oldTime)||nextTime<oldTime)){
+      // While the game is still pregame, keep the newest snapshot.
+      // The ranking route stops writing once the game starts, so this makes
+      // the final pre-kickoff snapshot the authoritative frozen prediction.
+      if(Number.isFinite(nextTime)&&(!Number.isFinite(oldTime)||nextTime>oldTime)){
         m.set(x.key,x);
       }
     }
@@ -96,7 +68,7 @@ export async function saveCfbPregamePredictions(m:CfbMarketKey,rows:any[],schedu
     const map=new Map((runtime.get(storeKey(m,gameDate))||[]).map(x=>[x.key,x]));
     for(const {row,game} of items){
       const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;
-      if(map.has(key))continue;
+      // Pregame rows are intentionally refreshed until kickoff; do not skip an existing pending key.
       const projection=row.modelProjection==null?null:Number(row.modelProjection);
       const line=Number(row.sportsbookLine);
       const pick:"over"|"under"=projection!=null&&projection<line?"under":"over";
@@ -124,18 +96,7 @@ export function getRuntimeCfbPredictions(m:CfbMarketKey,day:string){
   return {connected:predictions.length>0,predictions};
 }
 export async function getCfbPredictions(m:CfbMarketKey,day:string){
-  const db=await getRow(m,day);
-  const dbSaved=(Array.isArray(db.row?.payload?.predictions)?db.row.payload.predictions:[]) as SavedCfbPrediction[];
-  const recovered=recoveredFor(m,day);
-  const predictions=mergePredictions(
-    mergePredictions(dbSaved,runtime.get(storeKey(m,day))||[]),
-    recovered
-  );
-  if(recovered.length){
-    runtime.set(storeKey(m,day),predictions);
-    // Persist the recovered record so it survives future code changes/restarts.
-    await writeRow(m,day,predictions,db.row?.id as string|undefined);
-  }
+  const db=await getRow(m,day),dbSaved=(Array.isArray(db.row?.payload?.predictions)?db.row.payload.predictions:[]) as SavedCfbPrediction[],predictions=mergePredictions(dbSaved,runtime.get(storeKey(m,day))||[]);
   return {connected:db.connected||predictions.length>0,predictions,id:db.row?.id as string|undefined};
 }
 export async function getCfbPredictionsForDays(markets:CfbMarketKey[],days:string[]){

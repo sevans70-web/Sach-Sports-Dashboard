@@ -100,10 +100,22 @@ async function batterRankings(context:Map<number,GameContext>){
   for(const market of BATTER_MARKETS){
     const pop=rows.map(r=>n(r._rates[market]));
     const scored=rows.map(r=>{
-      const rate=n(r._rates[market]);const rel=clamp(r._pa/350,0.35,1);const pct=percentile(rate,pop);const gi=50+(pct-50)*rel;
+      const rate=n(r._rates[market]);const rel=clamp(r._pa/350,0.35,1);const pct=percentile(rate,pop);
+      // HR needs a broader power signal than season HR/PA alone. Blend HR rate
+      // with SLG and OPS so current extra-base/power production can surface
+      // hitters outside the same established HR-rate leaders.
+      const powerPct=market==="home_runs"
+        ? (pct*0.55 + percentile(n(r._slg),rows.map(x=>n(x._slg)))*0.25 + percentile(n(r.season_stats?.ops),rows.map(x=>n(x.season_stats?.ops)))*0.20)
+        : pct;
+      const gi=50+(powerPct-50)*(0.70+rel*0.30);
       const projection=rate*4.25;
       const extra:any={gi_score:Math.round(gi*10)/10,projection:Math.round(projection*100)/100,reason:`Season production and expected plate appearances rank this matchup in today's MLB player pool.`,summary:`${r.team_abbreviation} vs ${r.opponent_abbreviation} · ${r._pa} PA season sample.`};
-      if(market==="home_runs")extra.home_run_probability=Math.round(probabilityAtLeastOne(rate,4.25)*10)/10;
+      if(market==="home_runs"){
+        const raw=probabilityAtLeastOne(rate,4.25);
+        const powerLift=(percentile(n(r._slg),rows.map(x=>n(x._slg)))-50)*0.08+(percentile(n(r.season_stats?.ops),rows.map(x=>n(x.season_stats?.ops)))-50)*0.05;
+        extra.home_run_probability=Math.round(clamp(raw+powerLift,1,95)*10)/10;
+        extra.reason=`HR probability blends season HR rate with overall power production (SLG/OPS), expected plate appearances and today's matchup pool.`;
+      }
       if(market==="hits")extra.one_plus_hit_probability=Math.round(probabilityAtLeastOne(r._avg,3.9)*10)/10;
       if(market==="total_bases")extra.projected_total_bases=Math.round(projection*100)/100;
       if(market==="batter_strikeouts")extra.probability=Math.round(probabilityAtLeastOne(rate,4.25)*10)/10;

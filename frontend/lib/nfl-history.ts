@@ -13,6 +13,9 @@ export type SavedNflPrediction={
 };
 
 const SOURCE_PREFIX="nfl_predictions_";
+const nflRuntime=new Map<string,SavedNflPrediction[]>();
+function runtimeKey(m:NflMarketKey,day:string){return `${m}|${day}`}
+
 function supabaseUrl(){return (process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||"").replace(/\/$/,"");}
 function candidateKeys(){
   // Server-side credentials must win. A public/anon key can be present on Railway
@@ -27,8 +30,8 @@ function headers(key:string,prefer="return=representation"){
  if(!key.startsWith("sb_secret_")&&!key.startsWith("sb_publishable_"))h.Authorization=`Bearer ${key}`;
  return h;
 }
-const STORAGE_TIMEOUT_MS=1800;
-const STORAGE_COOLDOWN_MS=60_000;
+const STORAGE_TIMEOUT_MS=6500;
+const STORAGE_COOLDOWN_MS=5_000;
 let storageUnavailableUntil=0;
 function storageCooling(){return Date.now()<storageUnavailableUntil}
 function tripStorageCircuit(){storageUnavailableUntil=Date.now()+STORAGE_COOLDOWN_MS}
@@ -90,6 +93,7 @@ async function getRow(m:NflMarketKey,day:string){
  return {connected:x.connected,writable:x.writable,row,rows:x.rows,reason:x.reason};
 }
 async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
+ nflRuntime.set(runtimeKey(m,day),predictions);
  const {url,keys}=writeConfig();if(!url||!keys.length)return false;
  if(storageCooling())return false;
  const body=JSON.stringify({source_name:source(m),game_date:day,payload:{predictions},created_at:new Date().toISOString()});
@@ -171,8 +175,11 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
 }
 export async function getNflPredictions(m:NflMarketKey,day:string){
  const x=await getRow(m,day);
- const predictions=mergeSnapshotPredictions([...(x.rows||[])].reverse());
- return {connected:x.connected,writable:x.writable,predictions,id:x.row?.id as string|undefined,snapshotCount:(x.rows||[]).length,storageReason:x.reason};
+ const db=mergeSnapshotPredictions([...(x.rows||[])].reverse());
+ const memory=nflRuntime.get(runtimeKey(m,day))||[];
+ const predictions=mergeSnapshotPredictions([{payload:{predictions:db}},{payload:{predictions:memory}}]);
+ if(predictions.length)nflRuntime.set(runtimeKey(m,day),predictions);
+ return {connected:x.connected||predictions.length>0,writable:x.writable,predictions,id:x.row?.id as string|undefined,snapshotCount:(x.rows||[]).length,storageReason:x.reason};
 }
 export async function saveGradedNflPredictions(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
  return writeRow(m,day,predictions,id);
