@@ -1,6 +1,6 @@
 import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
-import {getEspnCfbSchedule,getCfbMarketRows,getCfbTeamRoster} from "@/lib/cfb-server";
+import {getEspnCfbSchedule,getCfbMarketRows,getCfbRankings,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
 import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions} from "@/lib/cfb-history";
@@ -143,7 +143,29 @@ async function marketRows(market:CfbMarketKey){
     const rows=await timeout(getOwlsCfbRows(market),4000,[]);
     if(rows.length)return rows;
   }catch{}
-  return await timeout(getCfbMarketRows(market),4000,[]);
+
+  const sportsbook=await timeout(getCfbMarketRows(market),4000,[]);
+  if(sportsbook.length)return sportsbook;
+
+  // Books have not posted player props yet. Build an early candidate pool from
+  // verified ESPN scheduled-team statistical leaders. The normal enrichment
+  // below resolves the athlete to the roster and calculates Sach's projection
+  // from verified game history. No sportsbook line or odds are invented.
+  const early=await timeout(getCfbRankings(market),6000,[]);
+  return early
+    .filter((row:any)=>row.matchup&&row.gameTime)
+    .map((row:any)=>({
+      eventId:"",
+      matchup:row.matchup,
+      gameTime:row.gameTime,
+      playerName:row.playerName,
+      teamName:row.teamName,
+      line:null,
+      price:null,
+      prob:null,
+      bookmakerCount:0,
+      earlyModel:true,
+    }));
 }
 async function build(market:CfbMarketKey):Promise<RankingPayload>{
   const [raw,schedule]=await Promise.all([marketRows(market),timeout(getEspnCfbSchedule(),4000,[])]);
@@ -163,24 +185,37 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const profile=playerFromRosters(row,schedule);
     const m=await model(profile.id,market);
     const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
-    const rankingProbability=probability??row.prob??50;
+    // Before books post a line, confidence comes from verified sample depth only.
+    // Keep it below market-backed confidence until real market information arrives.
+    const earlyConfidence=row.earlyModel&&m.projection!=null
+      ?Math.round(Math.min(84,58+Math.min(26,m.games*2.6))*10)/10
+      :null;
+    const rankingProbability=probability??row.prob??earlyConfidence??50;
     return {
       rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,
       teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,
       headshot:profile.headshot,teamLogo:profile.teamLogo,matchup:row.matchup,
       gameTime:rowGameTime(row,schedule)||row.gameTime,
       giScore:cfbGiScore(rankingProbability,row.bookmakerCount||0,m.games),
-      modelProbability:probability??rankingProbability,sportsbookLine:row.line,
+      modelProbability:probability??earlyConfidence??rankingProbability,sportsbookLine:row.line,
       sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount||0,
       perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,
       seasonTotal:null,gamesPlayed:m.games,season:2026,
-      summary:`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount||0} sportsbook${(row.bookmakerCount||0)===1?"":"s"}.`,
-      marketBacked:true,
+      summary:row.earlyModel
+        ?`Early Sach projection using ${m.games} verified historical game${m.games===1?"":"s"}. Sportsbook player props have not posted yet; no line or odds were invented.`
+        :`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount||0} sportsbook${(row.bookmakerCount||0)===1?"":"s"}.`,
+      marketBacked:!row.earlyModel,
     };
   }));
 
-  enriched.sort((a,b)=>b.giScore-a.giScore);
-  let ranked:any[]=enriched.map((r,i)=>({...r,rank:i+1}));
+  // Never surface a stat card unless verified history produced a real projection.
+  // Impossible negative projections are rejected here at the server boundary.
+  const validEnriched=enriched.filter((row:any)=>{
+    const value=Number(row.modelProjection);
+    return row.modelProjection!=null&&Number.isFinite(value)&&value>=0;
+  });
+  validEnriched.sort((a,b)=>b.giScore-a.giScore);
+  let ranked:any[]=validEnriched.map((r,i)=>({...r,rank:i+1}));
 
   // Capture the previous visible Top 25 BEFORE kickoff-lock logic uses it.
   const previous=rankingCache.get(market)?.payload?.rows||[];
@@ -274,7 +309,8 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r;
   });
 
-  return {success:true,source:"Owls Insight",market,rows:withResults,dropped,sportsbookOnly:true,validRankingCount:withResults.length,updatedAt:new Date().toISOString()};
+  const hasEarlyModel=withResults.some((row:any)=>!row.marketBacked);
+  return {success:true,source:hasEarlyModel?"Sach Model + ESPN":"Owls Insight",market,rows:withResults,dropped,sportsbookOnly:!hasEarlyModel,validRankingCount:withResults.length,updatedAt:new Date().toISOString()};
 }
 async function getPayload(market:CfbMarketKey){
   const cached=rankingCache.get(market),age=cached?Date.now()-cached.at:Infinity;

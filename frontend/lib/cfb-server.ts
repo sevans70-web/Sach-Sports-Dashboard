@@ -76,7 +76,9 @@ function dateKey(d:Date){
 
 export async function getEspnCfbSchedule(){
   const now=new Date();
-  const dates=[-1,0,1,2,3].map(offset=>dateKey(new Date(now.getTime()+offset*86400000)));
+  // Load enough future schedule to create early Sach projections before books post props.
+  const dates=Array.from({length:16},(_,i)=>i-1)
+    .map(offset=>dateKey(new Date(now.getTime()+offset*86400000)));
   const payloads=await Promise.all(
     dates.map(async date=>{
       try{return await json(`${ESPN_SCOREBOARD}?limit=200&groups=80&dates=${date}`)}
