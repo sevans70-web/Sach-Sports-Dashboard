@@ -138,46 +138,91 @@ function playerFromRosters(row:any,schedule:any[]){
   }
   return {id:"",headshot:"",teamName:row.teamName||"CFB",teamId:"",position:"",teamLogo:""};
 }
+function allowedPositions(market:CfbMarketKey){
+  if(market==="passing_yards"||market==="pass_completions")return new Set(["QB"]);
+  if(market==="rushing_yards")return new Set(["QB","RB","FB"]);
+  if(market==="receiving_yards"||market==="receptions")return new Set(["WR","TE","RB","FB"]);
+  return new Set(["QB","RB","FB","WR","TE"]);
+}
+
+async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:any[]){
+  const today=day(new Date());
+  const upcoming=schedule
+    .filter((g:any)=>g.state==="pre"&&day(g.date)>=today)
+    .sort((a:any,b:any)=>new Date(a.date).getTime()-new Date(b.date).getTime());
+  const seen=new Set(existing.map((r:any)=>`${cleanName(r.playerName)}|${cleanName(r.matchup)}`));
+  const positions=allowedPositions(market);
+  const out:any[]=[];
+
+  // Work across the upcoming slate, not just the first game window. Cap the
+  // roster fetches so the ranking request stays responsive while still
+  // providing enough candidates to build a real Top 25.
+  const teamJobs:any[]=[];
+  for(const game of upcoming.slice(0,24)){
+    if(game.awayTeamId)teamJobs.push({game,teamId:String(game.awayTeamId),teamName:game.awayTeam});
+    if(game.homeTeamId)teamJobs.push({game,teamId:String(game.homeTeamId),teamName:game.homeTeam});
+  }
+  await Promise.all(teamJobs.map(j=>roster(j.teamId)));
+
+  for(const {game,teamId,teamName} of teamJobs){
+    const rr=rosterCache.get(teamId)?.value;
+    if(!rr?.players?.length)continue;
+    const matchup=`${game.awayTeam} @ ${game.homeTeam}`;
+    for(const p of rr.players){
+      const pos=String(p.position||"").toUpperCase();
+      if(!positions.has(pos))continue;
+      const key=`${cleanName(p.name)}|${cleanName(matchup)}`;
+      if(seen.has(key))continue;
+      seen.add(key);
+      out.push({
+        eventId:String(game.id||""),matchup,gameTime:game.date,
+        playerName:p.name,teamName:rr.teamName||teamName,
+        line:null,price:null,prob:null,bookmakerCount:0,earlyModel:true,
+      });
+    }
+  }
+  return out;
+}
+
 async function marketRows(market:CfbMarketKey){
   try{
     const rows=await timeout(getOwlsCfbRows(market),4000,[]);
     if(rows.length)return rows;
   }catch{}
-
   const sportsbook=await timeout(getCfbMarketRows(market),4000,[]);
   if(sportsbook.length)return sportsbook;
 
-  // Books have not posted player props yet. Build an early candidate pool from
-  // verified ESPN scheduled-team statistical leaders. The normal enrichment
-  // below resolves the athlete to the roster and calculates Sach's projection
-  // from verified game history. No sportsbook line or odds are invented.
+  // First seed the early pool with verified ESPN statistical leaders. The
+  // build step supplements this with scheduled-team rosters so a thin leader
+  // feed cannot collapse the ranking to only a few players.
   const early=await timeout(getCfbRankings(market),6000,[]);
   return early
     .filter((row:any)=>row.matchup&&row.gameTime)
     .map((row:any)=>({
-      eventId:"",
-      matchup:row.matchup,
-      gameTime:row.gameTime,
-      playerName:row.playerName,
-      teamName:row.teamName,
-      line:null,
-      price:null,
-      prob:null,
-      bookmakerCount:0,
-      earlyModel:true,
+      eventId:"",matchup:row.matchup,gameTime:row.gameTime,
+      playerName:row.playerName,teamName:row.teamName,
+      line:null,price:null,prob:null,bookmakerCount:0,earlyModel:true,
     }));
 }
 async function build(market:CfbMarketKey):Promise<RankingPayload>{
-  const [raw,schedule]=await Promise.all([marketRows(market),timeout(getEspnCfbSchedule(),4000,[])]);
+  const [initialRaw,schedule]=await Promise.all([marketRows(market),timeout(getEspnCfbSchedule(),5000,[])]);
   const today=day(new Date());
+  let raw=initialRaw;
+  const earlyMode=raw.length===0||raw.every((r:any)=>r.earlyModel);
+  if(earlyMode){
+    const supplement=await timeout(rosterFallbackRows(market,schedule,raw),6500,[]);
+    raw=[...raw,...supplement];
+  }
   const active=raw.filter((row:any)=>{const t=rowGameTime(row,schedule);const k=t?day(t):"";return !k||k>=today});
 
-  // Rank the sportsbook pool first. Only the strongest 25 are enriched with
-  // ESPN player history, instead of resolving 50-60 players on every request.
+  // Enrich a pool larger than 25. Some roster players will not have enough
+  // verified history for this market, so slicing to 25 before modeling caused
+  // the visible ranking to collapse to 3-4 players.
+  const candidateLimit=earlyMode?70:45;
   const candidates=active
     .map((row:any)=>({...row,_seed:cfbGiScore(row.prob??50,row.bookmakerCount||0,0)}))
     .sort((a:any,b:any)=>b._seed-a._seed)
-    .slice(0,25);
+    .slice(0,candidateLimit);
 
   await prefetchRosters(candidates,schedule);
 
@@ -185,8 +230,6 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const profile=playerFromRosters(row,schedule);
     const m=await model(profile.id,market);
     const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
-    // Before books post a line, confidence comes from verified sample depth only.
-    // Keep it below market-backed confidence until real market information arrives.
     const earlyConfidence=row.earlyModel&&m.projection!=null
       ?Math.round(Math.min(84,58+Math.min(26,m.games*2.6))*10)/10
       :null;
@@ -208,14 +251,12 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     };
   }));
 
-  // Never surface a stat card unless verified history produced a real projection.
-  // Impossible negative projections are rejected here at the server boundary.
   const validEnriched=enriched.filter((row:any)=>{
     const value=Number(row.modelProjection);
     return row.modelProjection!=null&&Number.isFinite(value)&&value>=0;
   });
   validEnriched.sort((a,b)=>b.giScore-a.giScore);
-  let ranked:any[]=validEnriched.map((r,i)=>({...r,rank:i+1}));
+  let ranked:any[]=validEnriched.slice(0,25).map((r,i)=>({...r,rank:i+1}));
 
   // Capture the previous visible Top 25 BEFORE kickoff-lock logic uses it.
   const previous=rankingCache.get(market)?.payload?.rows||[];
@@ -285,19 +326,29 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
 
   // Started players remain visible through live/final and cannot be marked dropped.
 
-  const previousRanks=new Map(previous.map((r:any)=>[`${r.playerId}|${r.matchup}`,Number(r.rank)]));
+  const slateDays=(rows:any[])=>new Set(rows.map((r:any)=>day(r.gameTime||rowGameTime(r,schedule))).filter(Boolean));
+  const previousDays=slateDays(previousRows),currentDays=slateDays(ranked);
+  const sameSlate=[...currentDays].some(d=>previousDays.has(d));
+  const rankingHealthy=ranked.length>=20;
+  const compareMovement=sameSlate&&rankingHealthy;
+
+  const previousRanks=new Map((compareMovement?previousRows:[]).map((r:any)=>[`${r.playerId}|${r.matchup}`,Number(r.rank)]));
   const currentKeys=new Set(ranked.map((r:any)=>`${r.playerId}|${r.matchup}`));
   const moved=ranked.map((r:any)=>{
     const key=`${r.playerId}|${r.matchup}`,prev=previousRanks.get(key);
     return {...r,movement:prev==null?"NEW":Number(prev)-Number(r.rank)};
   });
-  const dropped=previous.filter((r:any)=>{
+
+  // Never turn an incomplete/transition ranking or an old slate cache into a
+  // giant false "Dropped from Top 25" list. Dropped is only meaningful when
+  // both snapshots are healthy and refer to the same upcoming slate.
+  const dropped=compareMovement?previousRows.filter((r:any)=>{
     if(currentKeys.has(`${r.playerId}|${r.matchup}`))return false;
     const game=gameForMatchup(r.matchup);
     return !game||game.state==="pre";
   }).map((r:any)=>({
     playerId:r.playerId,playerName:r.playerName,teamName:r.teamName,previousRank:r.rank
-  }));
+  })):[];
 
   // Prediction Performance depends on this snapshot. Do not fire-and-forget:
   // make the pregame/kickoff snapshot durable before returning rankings.
