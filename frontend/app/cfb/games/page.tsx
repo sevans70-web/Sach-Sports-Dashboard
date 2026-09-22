@@ -39,7 +39,7 @@ export default function CfbGames(){
 
     <section className="gamesHero">
       <h1>🏈 This Week&apos;s CFB Games</h1>
-      <p>{d.filterMode==="schedule_fallback"?"Player-prop availability is still filling in. The real ESPN slate remains visible so you can open matchups, rosters and Game Intelligence.":"Choose a matchup to open Game Intelligence, team rosters and available player-prop details."}</p>
+      <p>{d.filterMode==="schedule_fallback"?"Sach projections can appear before sportsbook props post. Open a matchup for rosters, Game Intelligence and any early model availability.":"Choose a matchup to open Game Intelligence, team rosters and available player-prop details."}</p>
     </section>
 
     {games.length===0?<div className="emptyGames">No CFB games are available in the current slate window.</div>:games.map((x:any)=>{
@@ -47,6 +47,8 @@ export default function CfbGames(){
       const pre=x.state==="pre";
       const props:(CfbMarketKey[])=(x.availableProps||[]);
       const propNames=props.map((p:string)=>CFB_MARKETS.find(m=>m[0]===p)?.[2]||p);
+      const sachMarkets:(CfbMarketKey[])=(x.sachProjectionMarkets||[]);
+      const sachNames=sachMarkets.map((p:string)=>CFB_MARKETS.find(m=>m[0]===p)?.[2]||p);
       const info=intel[x.id]||{};
       const kick=new Date(x.date);
       const dateLabel=Number.isNaN(kick.getTime())?"":kick.toLocaleString("en-US",{month:"numeric",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"});
@@ -75,7 +77,13 @@ export default function CfbGames(){
           {!pre?<b>{x.homeScore??""}</b>:<b className="noScore"></b>}
         </div>
 
-        <div className="propLine">{propNames.length?`Player props: ${propNames.join(" · ")}`:"Player-prop availability pending"}</div>
+        <div className={`propLine ${!propNames.length&&sachNames.length?"sachAvailable":""}`}>
+          {propNames.length
+            ?`Sportsbook props: ${propNames.join(" · ")}`
+            :sachNames.length
+              ?`Sach early projections available: ${sachNames.join(" · ")} · Sportsbook lines pending`
+              :"Sportsbook props pending · Sach projection candidates still building"}
+        </div>
 
         <button className="viewGame" onClick={()=>toggleGame(x)}>{open===x.id?"Hide Game Intelligence":`View ${x.awayTeam} @ ${x.homeTeam} →`}</button>
 
@@ -98,7 +106,7 @@ export default function CfbGames(){
             {info.leaders.slice(0,4).map((l:any,i:number)=><Link key={`${l.player?.playerId}-${i}`} href={`/cfb/player/${encodeURIComponent(l.player?.playerId||"")}?market=${encodeURIComponent(l.market)}&name=${encodeURIComponent(l.player?.playerName||"")}&team=${encodeURIComponent(l.player?.teamName||"")}&matchup=${encodeURIComponent(l.player?.matchup||"")}&gi=${l.player?.giScore||0}&prob=${l.player?.modelProbability||0}&line=${l.player?.sportsbookLine??""}&img=${encodeURIComponent(l.player?.headshot||"")}`}>
               {CFB_MARKETS.find(m=>m[0]===l.market)?.[2]||l.market}: {l.player?.playerName} · GI {Number(l.player?.giScore||0).toFixed(1)}
             </Link>)}
-          </div>:<p>{propNames.length?`This matchup currently has ${propNames.join(", ")} available. Player rankings and player cards use the same CFB intelligence feed.`:"Sportsbook player props have not posted yet. The matchup, rosters, records, venue and team context remain available without inventing betting lines."}</p>}
+          </div>:<p>{propNames.length?`This matchup currently has ${propNames.join(", ")} sportsbook markets available. Player rankings and player cards use the same CFB intelligence feed.`:sachNames.length?`Sach has early model candidates for ${sachNames.join(", ")} from verified ESPN schedule/stat data. Sportsbook lines have not posted yet, so no betting line or odds are invented.`:"Sportsbook player props have not posted yet and this matchup does not yet have enough verified model candidates. The matchup, rosters, records, venue and team context remain available without inventing betting lines."}</p>}
 
           <div className="rosterLinks">
             <Link href={`/cfb/team/${encodeURIComponent(x.awayTeamId)}?name=${encodeURIComponent(x.awayTeam)}&logo=${encodeURIComponent(x.awayLogo||"")}`}>View {x.awayTeam} roster →</Link>
@@ -118,7 +126,7 @@ export default function CfbGames(){
       .gameStatus{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid #30343a;padding:14px 18px;color:#9da1a8}.gameStatus b{color:#20df7f}
       .teamRow{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:14px;padding:12px 18px}.teamRow img{width:82px;height:82px;object-fit:contain}
       .teamLink{display:block;color:#fff!important;text-decoration:none!important;font-size:24px;font-weight:900}.teamRow small{display:block;color:#9da1a8;margin-top:5px;font-size:15px}.teamRow>b{font-size:28px}.noScore{min-width:20px}
-      .propLine{color:#d9b85d;padding:8px 18px 14px}.viewGame{width:100%;background:#0c0d0e;color:#d9b85d;border:0;border-top:2px solid #d9b85d;padding:16px;font-size:19px}
+      .propLine{color:#d9b85d;padding:8px 18px 14px}.propLine.sachAvailable{color:#20df7f}.viewGame{width:100%;background:#0c0d0e;color:#d9b85d;border:0;border-top:2px solid #d9b85d;padding:16px;font-size:19px}
       .gameIntel{border-left:6px solid #20df7f;background:#101112;padding:16px 18px}.gameIntel>b{color:#d9b85d;font-size:20px}.gameIntel p{color:#d8d9dc;line-height:1.45}
       .intelGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}.intelGrid div{border:1px solid #34373d;border-radius:12px;padding:10px;background:#0d0f10}.intelGrid span{display:block;color:#9da1a8;font-size:11px}.intelGrid strong{display:block;margin-top:5px}
       .marketContext,.playersToWatch{border-left:4px solid #d9b85d;padding:10px 12px;margin:12px 0;background:#0d0f10}.playersToWatch>a{display:block;color:#fff!important;text-decoration:none!important;margin-top:8px}
