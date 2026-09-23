@@ -234,6 +234,7 @@ export default function CfbDashboard(){
 
     <section className="section performance">
       <h2 className="performanceTitle">📊 Prediction Performance</h2>
+      <details><summary>ⓘ How performance is measured</summary><div className="explain">Predictions are saved before kickoff and graded after final results. Pending predictions do not affect hit rate until they settle.</div></details>
 
       <div className="tabs">
         <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
@@ -323,7 +324,7 @@ export default function CfbDashboard(){
       .snapshot,.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
       .metrics.four{grid-template-columns:repeat(4,1fr)}
       .snapshot article,.metrics article{border:2px solid #34373d;border-radius:18px;padding:14px;background:#111214;display:flex;flex-direction:column;gap:8px}
-      .performanceTitle{font-size:27px!important;line-height:1.05!important;margin:0 0 9px!important}.performance h3{font-size:20px;margin:14px 0 7px}
+      .performanceTitle{font-size:27px!important;line-height:1.05!important;margin:0 0 9px!important}.performance details{border:1.5px solid #34373d;border-radius:14px;padding:10px 12px;margin:9px 0 12px}.performance summary{font-size:15px}.performance .explain{color:#a9acb3;margin-top:8px;font-size:13px;line-height:1.35}.performance h3{font-size:20px;margin:14px 0 7px}
       .periodTabs{display:grid;grid-template-columns:repeat(5,1fr)}.periodTabs button{min-width:0;background:#111319;border:1px solid #383b42;color:#fff;padding:10px 3px;font-size:12px;font-weight:700}.periodTabs button.active{background:#351015;border-color:#f04f5f}
       .overallMetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0 5px}.perfGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:9px 0 4px}
       .overallMetrics article,.perfGrid article{border:1.5px solid #34373d;border-radius:15px;padding:8px;background:#111214;display:flex;flex-direction:column;gap:4px;min-width:0}.overallMetrics .green,.perfGrid .green{border-color:#20df7f}.overallMetrics .gold,.perfGrid .gold{border-color:#d9b85d}.overallMetrics span,.perfGrid span{color:#9da1a8;font-size:11px}.overallMetrics strong,.perfGrid strong{font-size:22px}.perfGrid article{padding:9px 7px}.perfGrid span{font-size:10px;white-space:normal;line-height:1.1}.perfGrid strong{font-size:19px}
