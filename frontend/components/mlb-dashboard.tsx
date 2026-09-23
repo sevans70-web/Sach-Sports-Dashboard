@@ -47,6 +47,10 @@ function pitcherActualLabel(result:any,category:string){
   return result?.actual==null?"":`${Number(result.actual)} ${labels[category]||""}`.trim();
 }
 
+function batterProjectionLabel(value:string,category:string){
+  const labels:any={home_runs:"HR",hits:"hits",total_bases:"TB",runs:"runs",rbis:"RBI",walks:"walks",stolen_bases:"SB",hits_runs_rbis:"H+R+RBI",batter_strikeouts:"strikeouts"};
+  return `${value} ${labels[category]||""}`.trim();
+}
 function pitcherProjectionLabel(value:string,category:string){
   const labels:any={strikeouts:"K",outs_recorded:"Outs",hits_allowed:"Hits Allowed",walks_allowed:"Walks Allowed",earned_runs:"ER"};
   return `${value} ${labels[category]||""}`.trim();
@@ -96,7 +100,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
     <div className="origRank">#{Number(row.rank||0)||"—"}{movementLabel(row)}</div>
     <div className="origPhotoWrap"><img className="origHeadshot" src={image} alt=""/>{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>{gameTime?<div className="origGameTime">🕒 {gameTime}</div>:null}
-      {pitcher?<><div className="origProp"><b>Projection:</b> {pitcherProjectionLabel(projection,marketKey)}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
+      {pitcher?<><div className="origProp"><b>Sach Prediction:</b> {pitcherProjectionLabel(projection,marketKey)}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp projectionLine"><b>Sach Prediction:</b> {batterProjectionLabel(projection,marketKey)}</div>{marketKey==="home_runs"?<div className="origProp"><b>HR Probability:</b> {probability}</div>:null}</>}
       <p>{summary}</p>
       {!pitcher&&confirmed?<span className="confirmed">✓ Confirmed lineup{row.batting_order?` · #${row.batting_order}`:""}</span>:!pitcher&&!isLive&&!isFinal?<span className="confirmed pendingLineup">Lineup Pending</span>:null}
       {isFinal||isLive?<div className="origResultBlock">
@@ -107,7 +111,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
     <div className="origGi"><small>GI SCORE</small><strong>{gi}</strong></div>
     <button className="origIntel" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Close Intelligence":"View Intelligence"}</button>
     {open?<div className="origInlineIntel">
-      <div className="intelKpis"><article><span>GI Score</span><strong>{gi}</strong></article><article><span>{pitcher?"Projection":"Probability"}</span><strong>{pitcher?pitcherProjectionLabel(projection,marketKey):probability}</strong></article><article><span>Lineup</span><strong>{confirmed?"Confirmed":"Pending"}</strong></article></div>
+      <div className="intelKpis"><article><span>GI Score</span><strong>{gi}</strong></article><article><span>Sach Prediction</span><strong>{pitcher?pitcherProjectionLabel(projection,marketKey):batterProjectionLabel(projection,marketKey)}</strong></article><article><span>Lineup</span><strong>{confirmed?"Confirmed":"Pending"}</strong></article></div>
       <details><summary>› Market Performance Evidence</summary><p>{evidence}</p></details>
       {!pitcher&&statcast?<details><summary>› Statcast Contact Quality</summary><p>{statcast}</p></details>:null}
       <details><summary>› Why This {pitcher?"Pitcher":"Player"} Ranks Here</summary><p>{why}</p></details>
