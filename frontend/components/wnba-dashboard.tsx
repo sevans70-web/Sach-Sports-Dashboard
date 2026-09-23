@@ -78,10 +78,20 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
   const[full,setFull]=useState(false);
   const[period,setPeriod]=useState("Today");
   const[movementRows,setMovementRows]=useState<Row[]>([]);
+  const[captureVersion,setCaptureVersion]=useState(0);
 
   const r=useJson<RankingResponse>(`/api/wnba/rankings?market=${market}`,{success:false,market,rows:[]},180000);
   const raw=r.data.rows||[];
-  const perf=useJson<PerfResponse>(`/api/wnba/performance?market=${performanceMarket}&period=${period}`,{connected:false,hits:0,settled:0,pending:0,hitRate:null,results:[]},120000);
+  const perf=useJson<PerfResponse>(`/api/wnba/performance?market=${performanceMarket}&period=${period}&capture=${captureVersion}`,{connected:false,hits:0,settled:0,pending:0,hitRate:null,results:[]},120000);
+
+  useEffect(()=>{
+    let on=true;
+    fetch("/api/wnba/capture",{method:"POST",cache:"no-store"})
+      .then(r=>r.json())
+      .then(v=>{if(on&&v?.success)setCaptureVersion(x=>x+1)})
+      .catch(()=>{});
+    return()=>{on=false};
+  },[]);
 
   useEffect(()=>{
     if(!r.data.success)return;
