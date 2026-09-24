@@ -72,8 +72,11 @@ export async function GET(req:NextRequest){
     let connected=false;
     const all:SavedWnbaPrediction[]=[];
     for(const day of range(period)){
-      for(const market of markets){
-        const x=await getWnbaPredictions(market,day);
+      // Read every WNBA market for the day concurrently. Reading them serially could
+      // exceed the serverless request window, leaving the Overall cards at dashes
+      // even though the selected market had already loaded saved predictions.
+      const daily=await Promise.all(markets.map(market=>getWnbaPredictions(market,day)));
+      for(const x of daily){
         connected=connected||x.connected;
         all.push(...x.predictions);
       }
