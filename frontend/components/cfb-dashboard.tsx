@@ -69,9 +69,9 @@ function useJson<T>(url:string,fallback:T,intervalMs=60000){
 }
 
 function meta(k:CfbMarketKey){return CFB_MARKETS.find(x=>x[0]===k)!}
-function ScrollTabs({children}:{children:ReactNode}){
+function ScrollTabs({children,showCue=true}:{children:ReactNode;showCue?:boolean}){
   const ref=useRef<HTMLDivElement|null>(null);
-  return <div className="tabsWrap"><div className="tabs" ref={ref}>{children}</div><button className="scrollCue" aria-label="Scroll prop categories" onClick={()=>ref.current?.scrollBy({left:220,behavior:"smooth"})}>›</button></div>;
+  return <div className={`tabsWrap${showCue?"":" noCue"}`}><div className="lineTabs" ref={ref}>{children}</div>{showCue?<button className="scrollCue" aria-label="Scroll prop categories" onClick={()=>ref.current?.scrollBy({left:220,behavior:"smooth"})}>›</button>:null}</div>;
 }
 
 
@@ -248,12 +248,12 @@ export default function CfbDashboard(){
 
     <section className="section performanceSection">
       <h2 className="performanceTitle">📊 Prediction Performance</h2>
-      <details className="performanceInfo"><summary>▶ ⓘ How performance is measured</summary><div className="performanceExplain">Predictions are saved before kickoff, frozen when the game starts, and graded after final results. Today may be empty when no CFB games are scheduled; Week, Month and Season retain saved history.</div></details>
+      <details className="performanceInfo"><summary>ⓘ How performance is measured</summary><div className="performanceExplain">Predictions are saved before kickoff, frozen when the game starts, and graded after final results. Today may be empty when no CFB games are scheduled; Week, Month and Season retain saved history.</div></details>
 
-      <div className="tabs groupTabs">
+      <ScrollTabs showCue={false}>
         <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
         <button className={group==="Offense"?"active":""} onClick={()=>setGroup("Offense")}>🏃 Offense</button>
-      </div>
+      </ScrollTabs>
 
       <h3>🌐 Overall CFB {group} Performance</h3>
 
@@ -290,10 +290,10 @@ export default function CfbDashboard(){
         <p>Market-specific intelligence · live matchup context</p>
       </div>
 
-      <div className="tabs">
+      <ScrollTabs showCue={false}>
         <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
         <button className={group==="Offense"?"active":""} onClick={()=>setGroup("Offense")}>🏃 Offense</button>
-      </div>
+      </ScrollTabs>
 
       <ScrollTabs>
         {markets.map(k=>{
@@ -343,6 +343,22 @@ export default function CfbDashboard(){
       .tabs{display:flex;overflow-x:auto;border-bottom:2px solid #34373d}
       .tabs button{flex:0 0 auto;background:transparent;border:0;border-bottom:4px solid transparent;color:#fff;padding:13px 18px;font-weight:800}
       .tabs button.active{border-bottom-color:#f04f5f}
+      .cfbShell .performanceTitle{font-size:27px!important;line-height:1.05!important;margin:0 0 9px!important}
+      .cfbShell .performanceInfo{border:1.5px solid #34373d;border-radius:14px;padding:10px 12px;margin:9px 0 12px}
+      .cfbShell .performanceInfo summary{font-size:15px;list-style:none;cursor:pointer}
+      .cfbShell .performanceInfo summary::-webkit-details-marker{display:none}
+      .cfbShell .performanceExplain{color:#a9acb3;margin-top:8px;font-size:13px;line-height:1.35}
+      .cfbShell .tabsWrap{position:relative;padding-right:30px;border-bottom:2px solid #34373d}
+      .cfbShell .tabsWrap.noCue{padding-right:0}
+      .cfbShell .lineTabs{display:flex;overflow-x:auto;scrollbar-width:none;border:0}
+      .cfbShell .lineTabs::-webkit-scrollbar{display:none}
+      .cfbShell .lineTabs button{flex:0 0 auto;white-space:nowrap;background:transparent;border:0;border-bottom:3px solid transparent;color:#fff;padding:10px 14px 8px;font-family:inherit;font-size:14px;font-weight:800;line-height:1.2;letter-spacing:0;border-radius:0;box-shadow:none;appearance:none;-webkit-appearance:none}
+      .cfbShell .lineTabs button.active{border-bottom-color:#f04f5f}
+      .cfbShell .scrollCue{position:absolute;right:0;top:0;bottom:0;width:30px;border:1px solid #34373d;border-radius:0;background:#0f1115;color:#d9b85d;font-size:25px;z-index:3;padding:0;appearance:none;-webkit-appearance:none}
+      .cfbShell .periodTabs{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:0!important;overflow:visible!important;border:0!important;margin:0!important;padding:0!important}
+      .cfbShell .periodTabs button{min-width:0!important;width:auto!important;background:#111319!important;border:1px solid #383b42!important;border-radius:0!important;color:#fff!important;padding:10px 3px!important;font-family:inherit!important;font-size:12px!important;font-weight:700!important;line-height:1.2!important;box-shadow:none!important;appearance:none!important;-webkit-appearance:none!important}
+      .cfbShell .periodTabs button.active{background:#351015!important;border-color:#f04f5f!important;color:#fff!important}
+      .cfbShell .performanceSection h3{font-size:20px;margin:14px 0 7px}
       .rankHeader{background:#0c0d0e;padding:20px;margin-top:8px}
       .rankCard{position:relative;display:grid;grid-template-columns:38px 78px 1fr 55px;gap:8px;border:3px solid #34373d;border-left:10px solid #20df7f;border-radius:20px;background:#111214;padding:11px 9px;margin:12px 0}
       .rankCard.isLive{box-shadow:0 0 0 2px rgba(32,223,127,.35),0 0 20px rgba(32,223,127,.18)}
