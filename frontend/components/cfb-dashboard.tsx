@@ -232,9 +232,8 @@ export default function CfbDashboard(){
       <article><span>ALERTS</span><strong>0</strong><small>No active alerts</small></article>
     </div>
 
-    <section className="section performance">
-      <h2 className="performanceTitle">📊 Prediction Performance</h2>
-      <details><summary>ⓘ How performance is measured</summary><div className="explain">Predictions are saved before kickoff and graded after final results. Pending predictions do not affect hit rate until they settle.</div></details>
+    <section className="section">
+      <h2>📊 Prediction Performance</h2>
 
       <div className="tabs">
         <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
@@ -243,16 +242,16 @@ export default function CfbDashboard(){
 
       <h3>🌐 Overall CFB {group} Performance</h3>
 
-      <div className="periodTabs">
+      <div className="tabs periods">
         {["Today","Yesterday","Week","Month","Season"].map(x=>
           <button className={period===x?"active":""} onClick={()=>setPeriod(x)} key={x}>{x}</button>
         )}
       </div>
 
-      <div className="overallMetrics">
-        <article className="green"><span>Hit Rate</span><strong>{overall.data.hitRate==null?"—":`${overall.data.hitRate}%`}</strong></article>
+      <div className="metrics">
+        <article><span>Hit Rate</span><strong>{overall.data.hitRate==null?"—":`${overall.data.hitRate}%`}</strong></article>
         <article><span>Correct / Settled</span><strong>{overall.data.hits} / {overall.data.settled}</strong></article>
-        <article className="gold"><span>Pending</span><strong>{overall.data.pending}</strong></article>
+        <article><span>All {group} Pending Today</span><strong>{overall.data.pending}</strong></article>
       </div>
 
       <div className="tabs">
@@ -262,10 +261,10 @@ export default function CfbDashboard(){
         })}
       </div>
 
-      <div className="perfGrid">
-        <article className="green"><span>Hits / Predictions</span><strong>{perf.data.hits} / {perf.data.total||0}</strong></article>
+      <div className="metrics four">
+        <article><span>Hits / Saved Today</span><strong>{perf.data.hits} / {perf.data.total||0}</strong></article>
         <article><span>Pending</span><strong>{perf.data.pending}</strong></article>
-        <article className="gold"><span>Settled</span><strong>{perf.data.settled}</strong></article>
+        <article><span>Settled</span><strong>{perf.data.settled}</strong></article>
         <article><span>Hit Rate</span><strong>{perf.data.hitRate==null?"—":`${perf.data.hitRate}%`}</strong></article>
       </div>
     </section>
@@ -324,13 +323,9 @@ export default function CfbDashboard(){
       .snapshot,.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
       .metrics.four{grid-template-columns:repeat(4,1fr)}
       .snapshot article,.metrics article{border:2px solid #34373d;border-radius:18px;padding:14px;background:#111214;display:flex;flex-direction:column;gap:8px}
-      .performanceTitle{font-size:27px!important;line-height:1.05!important;margin:0 0 9px!important}.performance details{border:1.5px solid #34373d;border-radius:14px;padding:10px 12px;margin:9px 0 12px}.performance summary{font-size:15px}.performance .explain{color:#a9acb3;margin-top:8px;font-size:13px;line-height:1.35}.performance h3{font-size:20px;margin:14px 0 7px}
-      .periodTabs{display:grid;grid-template-columns:repeat(5,1fr)}.periodTabs button{min-width:0;background:#111319;border:1px solid #383b42;color:#fff;padding:10px 3px;font-size:12px;font-weight:700}.periodTabs button.active{background:#351015;border-color:#f04f5f}
-      .overallMetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0 5px}.perfGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:9px 0 4px}
-      .overallMetrics article,.perfGrid article{border:1.5px solid #34373d;border-radius:15px;padding:8px;background:#111214;display:flex;flex-direction:column;gap:4px;min-width:0}.overallMetrics .green,.perfGrid .green{border-color:#20df7f}.overallMetrics .gold,.perfGrid .gold{border-color:#d9b85d}.overallMetrics span,.perfGrid span{color:#9da1a8;font-size:11px}.overallMetrics strong,.perfGrid strong{font-size:22px}.perfGrid article{padding:9px 7px}.perfGrid span{font-size:10px;white-space:normal;line-height:1.1}.perfGrid strong{font-size:19px}
       .section{margin-top:34px}
-      .tabs{display:flex;overflow-x:auto;border-bottom:2px solid #34373d}
-      .tabs button{flex:0 0 auto;background:transparent;border:0;border-bottom:4px solid transparent;color:#fff;padding:13px 18px;font-weight:800}
+      .tabs{display:flex;overflow-x:auto;border-bottom:2px solid #34373d;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+      .tabs button{flex:0 0 auto;white-space:nowrap;background:transparent;border:0;border-bottom:3px solid transparent;color:#fff;padding:10px 14px 8px;font-family:inherit;font-size:14px;font-weight:800;line-height:1.2;letter-spacing:0}
       .tabs button.active{border-bottom-color:#f04f5f}
       .rankHeader{background:#0c0d0e;padding:20px;margin-top:8px}
       .rankCard{position:relative;display:grid;grid-template-columns:38px 78px 1fr 55px;gap:8px;border:3px solid #34373d;border-left:10px solid #20df7f;border-radius:20px;background:#111214;padding:11px 9px;margin:12px 0}
@@ -385,7 +380,8 @@ export default function CfbDashboard(){
         .rankBody strong{font-size:16px}
         .rankBody span,.rankBody b{font-size:12px}
         .rankGi strong{font-size:17px}
-        .perfGrid span{font-size:9px}.perfGrid strong{font-size:17px}
+        .metrics.four{grid-template-columns:repeat(4,minmax(120px,1fr));overflow-x:auto}
+        .periods{overflow-x:auto}
         .detail{grid-template-columns:repeat(2,1fr)}
       }
     `}</style>
