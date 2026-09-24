@@ -1,0 +1,1 @@
+import {NextResponse} from "next/server";export const dynamic="force-dynamic";export async function GET(){return NextResponse.json({success:true,connected:true,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]},{headers:{"Cache-Control":"no-store"}})}

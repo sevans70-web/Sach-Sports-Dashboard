@@ -1,0 +1,3 @@
+import {NextRequest,NextResponse} from "next/server";import {NHL_MARKETS,type NhlMarketKey} from "@/lib/nhl";import {buildNhlRankings} from "@/lib/nhl-rankings-server";
+export const dynamic="force-dynamic";export const revalidate=0;const allowed=new Set(NHL_MARKETS.map(x=>x[0]));
+export async function GET(req:NextRequest){const m=(req.nextUrl.searchParams.get("market")||"shots_on_goal") as NhlMarketKey;if(!allowed.has(m))return NextResponse.json({success:false,rows:[],error:"Unsupported NHL market"},{status:400});try{return NextResponse.json(await buildNhlRankings(m),{headers:{"Cache-Control":"no-store"}})}catch(e){return NextResponse.json({success:false,market:m,rows:[],error:e instanceof Error?e.message:"NHL rankings unavailable"},{status:500})}}

@@ -1,0 +1,26 @@
+export const NHL_MARKETS = [
+  ["shots_on_goal","Shots on Goal","SOG"],
+  ["points","Points","PTS"],
+  ["goals","Goals","G"],
+  ["assists","Assists","AST"],
+  ["blocked_shots","Blocked Shots","BLK"],
+  ["goalie_saves","Goalie Saves","SV"],
+] as const;
+export type NhlMarketKey=(typeof NHL_MARKETS)[number][0];
+export type NhlPlayer={playerId:number;playerName:string;team:string;position:string;gamesPlayed:number|null;goalsPerGame:number|null;assistsPerGame:number|null;pointsPerGame:number|null;shotsPerGame:number|null;blocksPerGame:number|null;savesPerStart:number|null};
+export type NhlGame={gameId:string;tipoff:string|null;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
+export type NhlOverview={season:string;updatedAt:string;players:NhlPlayer[];games:NhlGame[];warnings:string[]};
+const WEB="https://api-web.nhle.com/v1";
+const STATS="https://api.nhle.com/stats/rest/en";
+const seasonId=20252026;
+const j=async(url:string,ttl=300)=>{const r=await fetch(url,{headers:{Accept:"application/json","User-Agent":"Sach-Sports/1.0"},next:{revalidate:ttl}});if(!r.ok)throw new Error(`NHL provider ${r.status}`);return r.json()};
+const n=(v:any)=>{const x=Number(v);return Number.isFinite(x)?x:null};
+const nm=(v:any)=>typeof v==="object"?String(v?.default||v?.fr||""):String(v||"");
+function day(d:Date){return d.toISOString().slice(0,10)}
+async function games():Promise<NhlGame[]>{const now=new Date(),dates=Array.from({length:9},(_,i)=>{const d=new Date(now);d.setDate(d.getDate()+i-2);return day(d)});const payloads=await Promise.all(dates.map(d=>j(`${WEB}/score/${d}`,120).catch(()=>({games:[]}))));const seen=new Set<number>();const out:NhlGame[]=[];for(const p of payloads)for(const g of p.games||[]){if(seen.has(g.id))continue;seen.add(g.id);const a=g.awayTeam||{},h=g.homeTeam||{},state=String(g.gameState||"").toUpperCase();out.push({gameId:String(g.id),tipoff:g.startTimeUTC||null,awayTeam:nm(a.name)||a.abbrev||"Away",awayAbbr:a.abbrev||"",awayLogo:a.logo||null,awayScore:n(a.score),homeTeam:nm(h.name)||h.abbrev||"Home",homeAbbr:h.abbrev||"",homeLogo:h.logo||null,homeScore:n(h.score),status:state==="LIVE"||state==="CRIT"?`${g.periodDescriptor?.number?`P${g.periodDescriptor.number} `:""}${g.clock?.timeRemaining||"LIVE"}`:state==="FINAL"||state==="OFF"?"Final":"Scheduled",state:state==="LIVE"||state==="CRIT"?"in":state==="FINAL"||state==="OFF"?"post":"pre",detail:g.clock?.timeRemaining||""})}return out.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime())}
+async function stats(endpoint:string,sort:string){const qs=new URLSearchParams({isAggregate:"false",isGame:"false",start:"0",limit:"1000",sort:JSON.stringify([{property:sort,direction:"DESC"}]),cayenneExp:`seasonId=${seasonId} and gameTypeId=2`});return (await j(`${STATS}/${endpoint}?${qs}`,21600)).data||[]}
+async function players():Promise<NhlPlayer[]>{const [summary,realtime,goalies]=await Promise.all([stats("skater/summary","points").catch(()=>[]),stats("skater/realtime","blockedShots").catch(()=>[]),stats("goalie/summary","saves").catch(()=>[])]);const rt=new Map(realtime.map((x:any)=>[String(x.playerId),x]));const out:NhlPlayer[]=summary.map((x:any)=>{const gp=n(x.gamesPlayed)||0,r:any=rt.get(String(x.playerId))||{};return{playerId:Number(x.playerId),playerName:x.skaterFullName||x.playerName||"",team:String(x.teamAbbrevs||"").split(",")[0],position:x.positionCode||"",gamesPlayed:gp,goalsPerGame:gp?Number(x.goals||0)/gp:null,assistsPerGame:gp?Number(x.assists||0)/gp:null,pointsPerGame:gp?Number(x.points||0)/gp:null,shotsPerGame:gp?Number(x.shots||0)/gp:null,blocksPerGame:gp?Number(r.blockedShots||0)/gp:null,savesPerStart:null}});for(const x of goalies){const starts=n(x.gamesStarted)||n(x.gamesPlayed)||0;out.push({playerId:Number(x.playerId),playerName:x.goalieFullName||x.playerName||"",team:String(x.teamAbbrevs||"").split(",")[0],position:"G",gamesPlayed:n(x.gamesPlayed),goalsPerGame:null,assistsPerGame:null,pointsPerGame:null,shotsPerGame:null,blocksPerGame:null,savesPerStart:starts?Number(x.saves||0)/starts:null})}return out.filter(x=>x.playerId&&x.playerName)}
+export async function loadNhlOverview():Promise<NhlOverview>{const warnings:string[]=[];const [p,g]=await Promise.allSettled([players(),games()]);if(p.status==="rejected")warnings.push("NHL player statistics are temporarily unavailable.");if(g.status==="rejected")warnings.push("The NHL schedule is temporarily unavailable.");return{season:"2026–27",updatedAt:new Date().toISOString(),players:p.status==="fulfilled"?p.value:[],games:g.status==="fulfilled"?g.value:[],warnings}}
+export function nhlHeadshot(id:number|string,team?:string){return team?`https://assets.nhle.com/mugs/nhl/20252026/${team}/${id}.png`:`https://assets.nhle.com/mugs/nhl/20252026/BUF/${id}.png`}
+export function cleanNhlName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
+export function playerBaseline(p:NhlPlayer|undefined,m:NhlMarketKey){if(!p)return null;return m==="shots_on_goal"?p.shotsPerGame:m==="points"?p.pointsPerGame:m==="goals"?p.goalsPerGame:m==="assists"?p.assistsPerGame:m==="blocked_shots"?p.blocksPerGame:p.savesPerStart}
