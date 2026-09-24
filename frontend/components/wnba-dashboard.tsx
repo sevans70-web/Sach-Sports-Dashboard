@@ -82,7 +82,8 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
 
   const r=useJson<RankingResponse>(`/api/wnba/rankings?market=${market}`,{success:false,market,rows:[]},180000);
   const raw=r.data.rows||[];
-  const perf=useJson<PerfResponse>(`/api/wnba/performance?market=${performanceMarket}&period=${period}&capture=${captureTick}`,{connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]},60000);
+  const overallPerf=useJson<PerfResponse>(`/api/wnba/performance?period=${period}&capture=${captureTick}`,{connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]},60000);
+  const marketPerf=useJson<PerfResponse>(`/api/wnba/performance?market=${performanceMarket}&period=${period}&capture=${captureTick}`,{connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]},60000);
 
   useEffect(()=>{
     let live=true;
@@ -140,18 +141,18 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
       <h3>🌐 Overall WNBA Performance</h3>
       <div className="periodTabs">{["Today","Yesterday","Week","Month","Season"].map(x=><button className={period===x?"active":""} onClick={()=>setPeriod(x)} key={x}>{x}</button>)}</div>
       <div className="overallMetrics">
-        <article className="green"><span>Hit Rate</span><strong>{perf.data.hitRate==null?"—":`${perf.data.hitRate}%`}</strong></article>
-        <article><span>Correct / Settled</span><strong>{perf.data.connected?`${perf.data.hits} / ${perf.data.settled}`:"—"}</strong></article>
-        <article className="gold"><span>Pending</span><strong>{perf.data.connected?perf.data.pending:"—"}</strong></article>
+        <article className="green"><span>Hit Rate</span><strong>{overallPerf.data.hitRate==null?"—":`${overallPerf.data.hitRate}%`}</strong></article>
+        <article><span>Correct / Settled</span><strong>{overallPerf.data.connected?`${overallPerf.data.hits} / ${overallPerf.data.settled}`:"—"}</strong></article>
+        <article className="gold"><span>Pending</span><strong>{overallPerf.data.connected?overallPerf.data.pending:"—"}</strong></article>
       </div>
       <ScrollTabs>{WNBA_MARKETS.map(([k,label])=><button className={performanceMarket===k?"active":""} onClick={()=>setPerformanceMarket(k)} key={`perf-${k}`}>{label}</button>)}</ScrollTabs>
       <div className="marketMetrics">
-        <article className="green"><span>Hits / Predictions</span><strong>{perf.data.connected?`${perf.data.hits} / ${perf.data.total}`:"—"}</strong></article>
-        <article><span>Pending</span><strong>{perf.data.connected?perf.data.pending:"—"}</strong></article>
-        <article className="gold"><span>Settled</span><strong>{perf.data.connected?perf.data.settled:"—"}</strong></article>
-        <article><span>Hit Rate</span><strong>{perf.data.hitRate==null?"—":`${perf.data.hitRate}%`}</strong></article>
+        <article className="green"><span>Hits / Predictions</span><strong>{marketPerf.data.connected?`${marketPerf.data.hits} / ${marketPerf.data.total}`:"—"}</strong></article>
+        <article><span>Pending</span><strong>{marketPerf.data.connected?marketPerf.data.pending:"—"}</strong></article>
+        <article className="gold"><span>Settled</span><strong>{marketPerf.data.connected?marketPerf.data.settled:"—"}</strong></article>
+        <article><span>Hit Rate</span><strong>{marketPerf.data.hitRate==null?"—":`${marketPerf.data.hitRate}%`}</strong></article>
       </div>
-      {!perf.data.results.length?<p className="perfNote">No saved {meta(performanceMarket)[1]} predictions for this period yet.</p>:null}
+      {!marketPerf.data.results.length?<p className="perfNote">No saved {meta(performanceMarket)[1]} predictions for this period yet.</p>:null}
     </section>
 
     <section className="section rankings">

@@ -7,7 +7,8 @@ export const revalidate=0;
 
 const BASE="https://site.web.api.espn.com/apis/common/v3/sports/basketball/wnba/athletes";
 const SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard";
-const allowed=new Set(WNBA_MARKETS.map(x=>x[0]));
+const MARKET_KEYS=WNBA_MARKETS.map(x=>x[0]) as WnbaMarketKey[];
+const allowed=new Set<WnbaMarketKey>(MARKET_KEYS);
 const clean=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 
 function dayOffset(n:number){const d=new Date();d.setDate(d.getDate()+n);return wnbaDay(d)}
@@ -15,7 +16,8 @@ function range(period:string){
   if(period==="Yesterday")return[dayOffset(-1)];
   if(period==="Week")return Array.from({length:7},(_,i)=>dayOffset(-i));
   if(period==="Month")return Array.from({length:31},(_,i)=>dayOffset(-i));
-  if(period==="Season")return Array.from({length:180},(_,i)=>dayOffset(-i));
+  // Keep the full WNBA season available even after the regular season ends.
+  if(period==="Season")return Array.from({length:370},(_,i)=>dayOffset(-i));
   return[dayOffset(0)];
 }
 async function json(url:string,ms=4500){
@@ -58,44 +60,40 @@ function settle(p:SavedWnbaPrediction,a:number){
 }
 
 export async function GET(req:NextRequest){
-  const market=(req.nextUrl.searchParams.get("market")||"points") as WnbaMarketKey;
+  const marketParam=req.nextUrl.searchParams.get("market") as WnbaMarketKey|null;
   const period=req.nextUrl.searchParams.get("period")||"Today";
-  if(!allowed.has(market))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
+  if(marketParam&&!allowed.has(marketParam))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
+  const markets:WnbaMarketKey[]=marketParam?[marketParam]:MARKET_KEYS;
 
   let connected=false;
   const all:SavedWnbaPrediction[]=[];
+  const finalCache=new Map<string,Set<string>>();
+  const logCache=new Map<string,any>();
   for(const day of range(period)){
-    const x=await getWnbaPredictions(market,day);
-    connected=connected||x.connected;
-    if(!x.predictions.length)continue;
-
-    // CRITICAL: an ESPN gamelog row can exist during a live game.
-    // It must NEVER grade a prediction until the scoreboard says the game is FINAL.
-    const finals=await finalsForDay(day);
-    let changed=false;
-    const graded:SavedWnbaPrediction[]=[];
-    for(const p of x.predictions){
-      if(p.status!=="pending"){graded.push(p);continue}
-
-      // Match by saved ESPN gameId. If we cannot prove this exact game is final,
-      // the prediction remains pending and cannot affect hit rate.
-      if(!p.gameId||!finals.has(String(p.gameId))){
-        graded.push({...p,status:"pending",actual:null,gradedAt:null});
-        continue;
+    let finals=finalCache.get(day);
+    for(const market of markets){
+      const x=await getWnbaPredictions(market,day);
+      connected=connected||x.connected;
+      if(!x.predictions.length)continue;
+      if(!finals){finals=await finalsForDay(day);finalCache.set(day,finals)}
+      let changed=false;
+      const graded:SavedWnbaPrediction[]=[];
+      for(const p of x.predictions){
+        if(p.status!=="pending"){graded.push(p);continue}
+        if(!p.gameId||!finals.has(String(p.gameId))){graded.push({...p,status:"pending",actual:null,gradedAt:null});continue}
+        const cacheKey=String(p.playerId);
+        let payload=logCache.get(cacheKey);
+        if(payload===undefined){payload=await log(p.playerId);logCache.set(cacheKey,payload)}
+        const a=actual(payload,market,day);
+        if(a==null){graded.push(p);continue}
+        graded.push({...p,actual:a,status:settle(p,a),gradedAt:new Date().toISOString()} as SavedWnbaPrediction);
+        changed=true;
       }
-
-      const payload=await log(p.playerId);
-      const a=actual(payload,market,day);
-      if(a==null){graded.push(p);continue}
-      graded.push({...p,actual:a,status:settle(p,a),gradedAt:new Date().toISOString()} as SavedWnbaPrediction);
-      changed=true;
+      if(changed)await saveWnbaGrades(market,day,graded,x.id);
+      all.push(...graded);
     }
-    if(changed)await saveWnbaGrades(market,day,graded,x.id);
-    all.push(...graded);
   }
 
-  // Counters and displayed rows come from this SAME record set.
-  // Therefore 3/5 can only appear when five visible records are actually settled.
   const settledRows=all.filter(x=>x.status==="hit"||x.status==="miss");
   const hits=settledRows.filter(x=>x.status==="hit").length;
   const pendingRows=all.filter(x=>x.status==="pending");
@@ -106,7 +104,7 @@ export async function GET(req:NextRequest){
     pending:pendingRows.length,
     total:all.length,
     hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
-    results:all.sort((a,b)=>b.gameTime.localeCompare(a.gameTime)).slice(0,50),
+    results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)).slice(0,100),
     updatedAt:new Date().toISOString()
-  });
+  },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }
