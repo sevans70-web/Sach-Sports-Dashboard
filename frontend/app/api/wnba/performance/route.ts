@@ -65,49 +65,43 @@ export async function GET(req:NextRequest){
   if(marketParam&&!allowed.has(marketParam))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
   const markets:WnbaMarketKey[]=marketParam?[marketParam]:MARKET_KEYS;
 
-  // Overall WNBA totals are a fast aggregation of the SAME saved prediction records.
-  // Do not re-grade all ten markets in this request: that made the overall cards slow/blank
-  // while an individual market (for example Points) had already loaded.
-  if(!marketParam){
-    let connected=false;
-    const all:SavedWnbaPrediction[]=[];
-    for(const day of range(period)){
-      // Read every WNBA market for the day concurrently. Reading them serially could
-      // exceed the serverless request window, leaving the Overall cards at dashes
-      // even though the selected market had already loaded saved predictions.
-      const daily=await Promise.all(markets.map(market=>getWnbaPredictions(market,day)));
-      for(const x of daily){
-        connected=connected||x.connected;
-        all.push(...x.predictions);
-      }
-    }
-    const settledRows=all.filter(x=>x.status==="hit"||x.status==="miss");
-    const hits=settledRows.filter(x=>x.status==="hit").length;
-    const pendingRows=all.filter(x=>x.status==="pending");
-    return NextResponse.json({
-      connected,hits,settled:settledRows.length,pending:pendingRows.length,total:all.length,
-      hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
-      results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)).slice(0,100),
-      updatedAt:new Date().toISOString()
-    },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
-  }
-
+  // Match the NFL/CFB lifecycle: the performance request that builds the Overall
+  // cards must read AND grade every market in scope.  The previous WNBA shortcut
+  // only counted saved rows, so Overall could show pending totals but would never
+  // settle a market until the user happened to click that individual market tab.
   let connected=false;
   const all:SavedWnbaPrediction[]=[];
   const finalCache=new Map<string,Set<string>>();
   const logCache=new Map<string,any>();
+
   for(const day of range(period)){
-    let finals=finalCache.get(day);
-    for(const market of markets){
-      const x=await getWnbaPredictions(market,day);
+    // Read the day's markets concurrently so Overall remains fast while still
+    // following the same grading lifecycle as the individual market endpoint.
+    const daily=await Promise.all(markets.map(async market=>({
+      market,
+      data:await getWnbaPredictions(market,day),
+    })));
+
+    const hasPending=daily.some(x=>x.data.predictions.some(p=>p.status==="pending"));
+    let finals:Set<string>|undefined;
+    if(hasPending){
+      finals=await finalsForDay(day);
+      finalCache.set(day,finals);
+    }
+
+    for(const {market,data:x} of daily){
       connected=connected||x.connected;
       if(!x.predictions.length)continue;
-      if(!finals){finals=await finalsForDay(day);finalCache.set(day,finals)}
+
       let changed=false;
       const graded:SavedWnbaPrediction[]=[];
       for(const p of x.predictions){
         if(p.status!=="pending"){graded.push(p);continue}
-        if(!p.gameId||!finals.has(String(p.gameId))){graded.push({...p,status:"pending",actual:null,gradedAt:null});continue}
+        if(!p.gameId||!finals?.has(String(p.gameId))){
+          graded.push({...p,status:"pending",actual:null,gradedAt:null});
+          continue;
+        }
+
         const cacheKey=String(p.playerId);
         let payload=logCache.get(cacheKey);
         if(payload===undefined){payload=await log(p.playerId);logCache.set(cacheKey,payload)}
@@ -116,6 +110,7 @@ export async function GET(req:NextRequest){
         graded.push({...p,actual:a,status:settle(p,a),gradedAt:new Date().toISOString()} as SavedWnbaPrediction);
         changed=true;
       }
+
       if(changed)await saveWnbaGrades(market,day,graded,x.id);
       all.push(...graded);
     }
