@@ -12,7 +12,7 @@ type Row={
   movement?:"new"|"up"|"down"|"same";previousRank?:number|null
 };
 type RankingResponse={success:boolean;market:WnbaMarketKey;rows:Row[];updatedAt?:string;error?:string;source?:string};
-type PerfResponse={connected:boolean;hits:number;settled:number;pending:number;hitRate:number|null;results:Array<{key:string;playerName:string;pickSide:string;sportsbookLine:number|null;modelProjection?:number|null;actual:number|null;status:string}>};
+type PerfResponse={connected:boolean;hits:number;settled:number;pending:number;total:number;hitRate:number|null;results:Array<{key:string;playerName:string;pickSide:string;sportsbookLine:number|null;modelProjection?:number|null;actual:number|null;status:string}>};
 
 function useJson<T>(url:string,fallback:T,interval=120000){
   const[data,setData]=useState(fallback),[loading,setLoading]=useState(true);
@@ -78,10 +78,19 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
   const[full,setFull]=useState(false);
   const[period,setPeriod]=useState("Today");
   const[movementRows,setMovementRows]=useState<Row[]>([]);
+  const[captureTick,setCaptureTick]=useState(0);
 
   const r=useJson<RankingResponse>(`/api/wnba/rankings?market=${market}`,{success:false,market,rows:[]},180000);
   const raw=r.data.rows||[];
-  const perf=useJson<PerfResponse>(`/api/wnba/performance?market=${performanceMarket}&period=${period}`,{connected:false,hits:0,settled:0,pending:0,hitRate:null,results:[]},120000);
+  const perf=useJson<PerfResponse>(`/api/wnba/performance?market=${performanceMarket}&period=${period}&capture=${captureTick}`,{connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]},60000);
+
+  useEffect(()=>{
+    let live=true;
+    fetch("/api/wnba/capture",{method:"POST",cache:"no-store"})
+      .then(()=>{if(live)setCaptureTick(Date.now())})
+      .catch(()=>{});
+    return()=>{live=false};
+  },[]);
 
   useEffect(()=>{
     if(!r.data.success)return;
@@ -129,14 +138,20 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
       <h2 className="performanceTitle">📊 Prediction Performance</h2>
       <details><summary>ⓘ How performance is measured</summary><div className="explain">Predictions are saved before the game and graded after final results. The ranking card shows Sach’s projected stat; reference lines remain inside Intelligence for internal grading context.</div></details>
       <h3>🌐 Overall WNBA Performance</h3>
-      <ScrollTabs>{WNBA_MARKETS.map(([k,label])=><button className={performanceMarket===k?"active":""} onClick={()=>setPerformanceMarket(k)} key={`perf-${k}`}>{label}</button>)}</ScrollTabs>
       <div className="periodTabs">{["Today","Yesterday","Week","Month","Season"].map(x=><button className={period===x?"active":""} onClick={()=>setPeriod(x)} key={x}>{x}</button>)}</div>
       <div className="overallMetrics">
         <article className="green"><span>Hit Rate</span><strong>{perf.data.hitRate==null?"—":`${perf.data.hitRate}%`}</strong></article>
         <article><span>Correct / Settled</span><strong>{perf.data.connected?`${perf.data.hits} / ${perf.data.settled}`:"—"}</strong></article>
         <article className="gold"><span>Pending</span><strong>{perf.data.connected?perf.data.pending:"—"}</strong></article>
       </div>
-      {perf.data.results.length?<div className="perfResults">{perf.data.results.slice(0,25).map(x=><div key={x.key}><b>{x.status==="hit"?"✅":x.status==="miss"?"❌":x.status==="push"?"➖":"⏳"} {x.playerName}</b><span>Prediction {x.modelProjection==null?"—":Number(x.modelProjection).toFixed(1)} · Actual {x.actual??"—"} · {x.status==="pending"?"PENDING":x.status.toUpperCase()}</span></div>)}</div>:<p className="perfNote">No saved {meta(performanceMarket)[1]} predictions for this period yet.</p>}
+      <ScrollTabs>{WNBA_MARKETS.map(([k,label])=><button className={performanceMarket===k?"active":""} onClick={()=>setPerformanceMarket(k)} key={`perf-${k}`}>{label}</button>)}</ScrollTabs>
+      <div className="marketMetrics">
+        <article className="green"><span>Hits / Predictions</span><strong>{perf.data.connected?`${perf.data.hits} / ${perf.data.total}`:"—"}</strong></article>
+        <article><span>Pending</span><strong>{perf.data.connected?perf.data.pending:"—"}</strong></article>
+        <article className="gold"><span>Settled</span><strong>{perf.data.connected?perf.data.settled:"—"}</strong></article>
+        <article><span>Hit Rate</span><strong>{perf.data.hitRate==null?"—":`${perf.data.hitRate}%`}</strong></article>
+      </div>
+      {!perf.data.results.length?<p className="perfNote">No saved {meta(performanceMarket)[1]} predictions for this period yet.</p>:null}
     </section>
 
     <section className="section rankings">
@@ -157,13 +172,12 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
       .updated{text-align:right;color:#9a9da4;margin:5px 2px 10px;font-size:12px;font-weight:700}
       .gamesEntry{display:flex;flex-direction:column;gap:2px;border:1.5px solid #d9b85d;border-left:7px solid #20df7f;border-radius:15px;padding:11px 14px;color:#fff!important;text-decoration:none!important;background:#0d0f10}.gamesEntry b{font-size:18px}.gamesEntry span{font-size:14px;color:#d4d5d8}
       .snapshotHeading{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:11px 0 8px}.snapshotHeading h2{font-size:23px;margin:0}.snapshotHeading span{color:#20df7f;font-size:11px;font-weight:800}
-      .snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.snapshot article,.overallMetrics article{border:1.5px solid #34373d;border-radius:15px;padding:8px;background:#111214;display:flex;flex-direction:column;gap:4px;min-width:0}.snapshot .green,.overallMetrics .green{border-color:#20df7f}.snapshot .gold,.overallMetrics .gold{border-color:#d9b85d}.snapshot span,.overallMetrics span{color:#9da1a8;font-size:11px}.snapshot strong,.overallMetrics strong{font-size:22px}.snapshot small{color:#d0d1d4;font-size:11px}
-      .section{margin-top:24px}.performanceTitle{font-size:27px!important;margin:0 0 9px!important}.section details{border:1.5px solid #34373d;border-radius:14px;padding:10px 12px;margin:9px 0 12px}.explain,.perfNote{color:#a9acb3;font-size:12px;line-height:1.35}
-      .periodTabs{display:grid;grid-template-columns:repeat(5,1fr)}.periodTabs button{background:#111319;border:1px solid #383b42;color:#fff;padding:10px 3px;font-size:12px;font-weight:700}.periodTabs button.active{background:#0d3523;border-color:#20df7f}
-      .perfResults{display:grid;gap:6px;margin-top:8px}.perfResults div{display:flex;justify-content:space-between;gap:8px;border:1px solid #34373d;border-radius:10px;padding:8px;font-size:12px}.perfResults span{color:#a9acb3}
-      .overallMetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0}
+      .snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.snapshot article,.overallMetrics article,.marketMetrics article{border:1.5px solid #34373d;border-radius:15px;padding:8px;background:#111214;display:flex;flex-direction:column;gap:4px;min-width:0}.snapshot .green,.overallMetrics .green,.marketMetrics .green{border-color:#20df7f}.snapshot .gold,.overallMetrics .gold,.marketMetrics .gold{border-color:#d9b85d}.snapshot span,.overallMetrics span,.marketMetrics span{color:#9da1a8;font-size:11px}.snapshot strong,.overallMetrics strong,.marketMetrics strong{font-size:22px}.snapshot small{color:#d0d1d4;font-size:11px}
+      .section{margin-top:24px}.performanceTitle{font-size:27px!important;line-height:1.05!important;margin:0 0 9px!important}.section details{border:1.5px solid #34373d;border-radius:14px;padding:10px 12px;margin:9px 0 12px}.section summary{font-size:15px}.explain{color:#a9acb3;margin-top:8px;font-size:13px;line-height:1.35}.perfNote{margin:4px 0 10px;color:#9da1a8;font-size:12px}
+      .periodTabs{display:grid;grid-template-columns:repeat(5,1fr)}.periodTabs button{min-width:0;background:#111319;border:1px solid #383b42;color:#fff;padding:10px 3px;font-size:12px;font-weight:700}.periodTabs button.active{background:#351015;border-color:#f04f5f}
+      .performance h3{font-size:20px;margin:14px 0 7px}.overallMetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:9px 0 5px}.marketMetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:9px 0 4px}.marketMetrics article{padding:9px 7px}.marketMetrics span{font-size:10px;white-space:normal;line-height:1.1}.marketMetrics strong{font-size:19px}
       .rankHeader{background:#0c0d0e;padding:12px 14px}.rankHeader h2{font-size:27px;margin:0}.rankHeader p,.marketHead p{margin:2px 0 0;color:#a9acb3;font-size:14px}
-      .tabsWrap{position:relative;padding-right:30px;border-bottom:2px solid #34373d}.lineTabs{display:flex;overflow-x:auto;scrollbar-width:none}.lineTabs::-webkit-scrollbar{display:none}.lineTabs button{flex:0 0 auto;white-space:nowrap;background:transparent;border:0;border-bottom:3px solid transparent;color:#fff;padding:10px 14px 8px;font-family:inherit;font-size:14px;font-weight:800;line-height:1.2;letter-spacing:0}.lineTabs button.active{border-bottom-color:#f04f5f}.scrollCue{position:absolute;right:0;top:0;bottom:0;width:30px;border:1px solid #34373d;background:#0f1115;color:#d9b85d;font-size:25px}
+      .tabsWrap{position:relative;padding-right:30px;border-bottom:2px solid #34373d}.lineTabs{display:flex;overflow-x:auto;scrollbar-width:none}.lineTabs::-webkit-scrollbar{display:none}.lineTabs button{flex:0 0 auto;white-space:nowrap;background:transparent;border:0;border-bottom:3px solid transparent;color:#fff;padding:10px 14px 8px;font-size:14px;font-weight:800}.lineTabs button.active{border-bottom-color:#f04f5f}.scrollCue{position:absolute;right:0;top:0;bottom:0;width:30px;border:1px solid #34373d;background:#0f1115;color:#d9b85d;font-size:25px}
       .marketHead h2{font-size:24px;margin:16px 0 5px}
       .rankCard{display:grid;grid-template-columns:38px 78px 1fr 55px;gap:8px;border:3px solid #34373d;border-left:10px solid #20df7f;border-radius:20px;background:#111214;padding:11px 9px;margin:12px 0}
       .rankNo{font-size:21px;font-weight:900}.rankNo span{display:block;margin-top:6px;font-size:10px;color:#9da1a8}.rankNo .new{color:#d9b85d}.rankNo .up{color:#20df7f}.rankNo .down{color:#ff6b6b}
@@ -175,7 +189,7 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
       .detail{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.detailMetric,.why,.projectionBox{border:1px solid #34373d;border-radius:10px;padding:8px;background:#0d0f10}.detailMetric.green{border-color:#20df7f}.detailMetric.gold{border-color:#d9b85d}.detailMetric span,.projectionBox span{display:block;color:#9da1a8;font-size:9px}.projectionBox{grid-column:1/-1;border-color:#20df7f}.projectionBox strong{display:block;color:#d9b85d;font-size:18px;margin-top:3px}.why{grid-column:1/-1;border-left:4px solid #20df7f}.why>b{color:#d9b85d}.why p{color:#d7d8db;font-size:12px}.fullCard{grid-column:1/-1;text-align:center;border:1.5px solid #34373d;border-radius:11px;padding:9px;color:#fff!important;text-decoration:none!important}
       .liveProgress{margin-top:7px;border:1px solid #20df7f;border-radius:10px;padding:7px;background:rgba(32,223,127,.06)}.liveProgress b{color:#20df7f!important;margin:0 0 3px!important;font-size:12px!important}.finalResult b{color:#d9b85d}
       .dataWarning{margin:12px 0;padding:10px;border:1px solid #8d6f2f;border-radius:10px;background:#1a160c;color:#e4c978}.empty{padding:20px;color:#a9acb3;text-align:center}.viewFull{width:100%;background:#0d0f10;color:#fff;border:1.5px solid #34373d;border-radius:12px;padding:10px}
-      @media(max-width:430px){.hero h1{font-size:24px}.hero p{font-size:14px}.snapshotHeading h2{font-size:20px}.rankCard{grid-template-columns:32px 68px 1fr 48px;gap:6px}.rankPhoto img,.rankPhoto>div{width:64px;height:64px}.rankBody strong{font-size:16px}.rankBody span,.rankBody b{font-size:12px}.detail{grid-template-columns:repeat(3,1fr)}}
+      @media(max-width:430px){.marketMetrics{grid-template-columns:repeat(4,minmax(84px,1fr));overflow-x:auto}.hero h1{font-size:24px}.hero p{font-size:14px}.snapshotHeading h2{font-size:20px}.rankCard{grid-template-columns:32px 68px 1fr 48px;gap:6px}.rankPhoto img,.rankPhoto>div{width:64px;height:64px}.rankBody strong{font-size:16px}.rankBody span,.rankBody b{font-size:12px}.detail{grid-template-columns:repeat(3,1fr)}}
     `}</style>
   </main>
 }

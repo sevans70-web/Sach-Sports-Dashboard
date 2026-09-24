@@ -60,7 +60,7 @@ function settle(p:SavedWnbaPrediction,a:number){
 export async function GET(req:NextRequest){
   const market=(req.nextUrl.searchParams.get("market")||"points") as WnbaMarketKey;
   const period=req.nextUrl.searchParams.get("period")||"Today";
-  if(!allowed.has(market))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,hitRate:null,results:[]});
+  if(!allowed.has(market))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
 
   let connected=false;
   const all:SavedWnbaPrediction[]=[];
@@ -104,6 +104,7 @@ export async function GET(req:NextRequest){
     hits,
     settled:settledRows.length,
     pending:pendingRows.length,
+    total:all.length,
     hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
     results:all.sort((a,b)=>b.gameTime.localeCompare(a.gameTime)).slice(0,50),
     updatedAt:new Date().toISOString()

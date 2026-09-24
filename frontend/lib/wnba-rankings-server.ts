@@ -85,9 +85,6 @@ export async function buildWnbaMarketRankings(market:WnbaMarketKey,shared?:{payl
 
 export async function captureAllWnbaMarkets(){
  const [payload,overview]=await Promise.all([fetchOwlsPayload(),loadWnbaOverview()]);
- // Save every market independently. One thin market must never prevent the rest
- // of today's WNBA prediction history from being captured. Shared Owls/ESPN
- // data is fetched once, then all market snapshots are persisted in parallel.
  const results=await Promise.all(WNBA_MARKETS.map(async([market])=>{
   try{return await buildWnbaMarketRankings(market,{payload,overview})}
   catch(e:any){return {success:false,market,rows:[],saved:false,error:String(e?.message||e)}}
