@@ -65,6 +65,30 @@ export async function GET(req:NextRequest){
   if(marketParam&&!allowed.has(marketParam))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
   const markets:WnbaMarketKey[]=marketParam?[marketParam]:MARKET_KEYS;
 
+  // Overall WNBA totals are a fast aggregation of the SAME saved prediction records.
+  // Do not re-grade all ten markets in this request: that made the overall cards slow/blank
+  // while an individual market (for example Points) had already loaded.
+  if(!marketParam){
+    let connected=false;
+    const all:SavedWnbaPrediction[]=[];
+    for(const day of range(period)){
+      for(const market of markets){
+        const x=await getWnbaPredictions(market,day);
+        connected=connected||x.connected;
+        all.push(...x.predictions);
+      }
+    }
+    const settledRows=all.filter(x=>x.status==="hit"||x.status==="miss");
+    const hits=settledRows.filter(x=>x.status==="hit").length;
+    const pendingRows=all.filter(x=>x.status==="pending");
+    return NextResponse.json({
+      connected,hits,settled:settledRows.length,pending:pendingRows.length,total:all.length,
+      hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
+      results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)).slice(0,100),
+      updatedAt:new Date().toISOString()
+    },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
+  }
+
   let connected=false;
   const all:SavedWnbaPrediction[]=[];
   const finalCache=new Map<string,Set<string>>();

@@ -162,7 +162,7 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
       {r.data.error?<div className="dataWarning">{r.data.error}</div>:null}
       <div className="cards">{(full?rows:rows.slice(0,5)).map(x=><Card row={x} market={market} key={`${x.playerId}-${x.rank}`}/>)}</div>
       {!r.loading&&!rows.length?<div className="empty">No verified {meta(market)[1]} rankings are currently available.</div>:null}
-      {rows.length>5?<button className="viewFull" onClick={()=>setFull(v=>!v)}>{full?"Show Top 5 Only":"View Full Rankings"}</button>:null}
+      {rows.length>5?<button className="viewFull" onClick={()=>setFull(v=>!v)}>{full?"Show Top 5 Only":"See Full Top 25"}</button>:null}
     </section>
 
     <style jsx global>{`
