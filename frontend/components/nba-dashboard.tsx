@@ -119,13 +119,15 @@ export function NbaDashboard({data}:{data:NbaOverview}){
   },[data.games]);
 
   const live=data.games.filter(g=>g.state==="in").length;
+  const upcomingGames=data.games.filter(g=>g.tipoff&&new Date(g.tipoff).getTime()>Date.now()).sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
+  const nextSlateDate=!gamesToday.length&&upcomingGames.length?new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric"}).format(new Date(upcomingGames[0].tipoff!)):null;
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="nbaShell">
     <section className="hero"><div className="heroTop"><Link href="/" className="nbaMenu">▦⌄</Link><h1>NBA Intelligence Center</h1></div><p>Today’s strongest NBA player projections and matchup intelligence in one place.</p></section>
     <div className="updated">{updated(data.updatedAt)}</div>
 
-    <Link className="gamesEntry" href="/nba/games"><b>🏀 TODAY’S NBA GAMES</b><span>Schedule · Matchups · Game status ›</span></Link>
+    <Link className="gamesEntry" href="/nba/games"><b>🏀 {gamesToday.length?"TODAY’S NBA GAMES":"UPCOMING NBA GAMES"}</b><span>{nextSlateDate&&!gamesToday.length?`Next slate ${nextSlateDate} · `:""}Schedule · Matchups · Game status ›</span></Link>
 
     <div className="snapshotHeading"><h2>Today’s NBA Snapshot</h2><span>Full-game props only</span></div>
     <div className="snapshot">
