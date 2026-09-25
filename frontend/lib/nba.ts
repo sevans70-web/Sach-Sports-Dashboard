@@ -57,7 +57,7 @@ export async function loadNbaGameRosters(gameId:string):Promise<NbaGameRoster[]>
   const payload=await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${encodeURIComponent(gameId)}`,60);
   const box=record(payload.boxscore);const groups=list(box.players);const out:NbaGameRoster[]=[];
   for(const raw of groups){const g=record(raw),team=record(g.team);const players:NbaRosterPlayer[]=[];
-   for(const statRaw of list(g.statistics)){const stat=record(statRaw);for(const rowRaw of list(stat.athletes)){const row=record(rowRaw),ath=record(row.athlete);const id=text(ath.id);if(!id)continue;const pos=record(ath.position);players.push({playerId:id,playerName:text(ath.displayName??ath.fullName)||"Player",position:text(pos.abbreviation??pos.name),starter:Boolean(row.starter),active:row.didNotPlay!==true,headshot:text(ath.headshot?.href??record(ath.headshot).href)||nbaHeadshot(id)});}}
+   for(const statRaw of list(g.statistics)){const stat=record(statRaw);for(const rowRaw of list(stat.athletes)){const row=record(rowRaw),ath=record(row.athlete);const id=text(ath.id);if(!id)continue;const pos=record(ath.position);players.push({playerId:id,playerName:text(ath.displayName??ath.fullName)||"Player",position:text(pos.abbreviation??pos.name),starter:Boolean(row.starter),active:row.didNotPlay!==true,headshot:text(record(ath.headshot).href)||nbaHeadshot(id)});}}
    const dedup=[...new Map(players.map(x=>[x.playerId,x])).values()].sort((a,b)=>Number(b.starter)-Number(a.starter)||a.playerName.localeCompare(b.playerName));
    out.push({teamId:text(team.id),teamName:text(team.displayName??team.name)||"NBA Team",teamAbbr:text(team.abbreviation),teamLogo:text(team.logo),players:dedup});
   }return out;
