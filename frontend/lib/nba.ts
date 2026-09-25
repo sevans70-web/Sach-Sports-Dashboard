@@ -36,8 +36,10 @@ async function loadPlayers():Promise<NbaPlayer[]>{const base={region:"us",lang:"
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
 async function loadGames():Promise<NbaGame[]>{
- const now=new Date();const days=Array.from({length:17},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()+i-2);return dateKey(d)});
- const payloads=await Promise.all(days.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,300).catch(()=>({events:[]} as JsonRecord))));
+ // Pull a broad window so the dashboard can show the next NBA slate during the
+ // preseason/offseason instead of treating a legitimate no-game day as an outage.
+ const now=new Date();const ranges=Array.from({length:4},(_,i)=>{const start=new Date(now);start.setUTCDate(start.getUTCDate()-2+i*30);const end=new Date(start);end.setUTCDate(end.getUTCDate()+29);return `${dateKey(start)}-${dateKey(end)}`});
+ const payloads=await Promise.all(ranges.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=250`,900).catch(()=>({events:[]} as JsonRecord))));
  const seen=new Set<string>();const games:NbaGame[]=[];for(const payload of payloads)for(const v of list(payload.events)){const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);seen.add(id);games.push({gameId:id,tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});}
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }

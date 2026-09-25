@@ -54,6 +54,15 @@ function gameForRow(games:any[],team:string,b:any){
  return [...pool].sort((a,c)=>Math.abs(new Date(a.tipoff||0).getTime()-target)-Math.abs(new Date(c.tipoff||0).getTime()-target))[0];
 }
 
+function baselineRows(overview:any,market:NbaMarketKey){
+ if(market==="first_basket")return [];
+ return (overview.players||[]).map((p:any)=>{
+   const baseline=playerBaseline(p,market);if(baseline==null||Number(p?.gamesPlayed||0)<20)return null;
+   const reliability=Math.min(1,Math.max(0,Number(p?.gamesPlayed||0)/82));
+   return{playerId:p.playerId,playerName:p.playerName,teamName:p.team||"NBA",teamLogo:"",matchup:"2025–26 regular-season baseline",gameTime:"",gameId:"",gameState:"pre",gameStatus:"Baseline",headshot:nbaHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((baseline*10+reliability)*10)/10,prediction:null,marketBacked:false,summary:`2025–26 statistical baseline ${baseline.toFixed(1)}. This offseason ranking is model-only and is not saved or graded as a sportsbook prediction.`};
+ }).filter(Boolean).sort((a:any,b:any)=>Number(b.modelProjection||0)-Number(a.modelProjection||0)||Number(b.giScore||0)-Number(a.giScore||0)).slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+}
+
 function rowsForMarket(payload:any,overview:any,market:NbaMarketKey){
  const board=boardForMarket(payload,market);const byName=new Map(overview.players.map((p:any)=>[cleanNbaName(p.playerName),p]));const today=torontoNbaDay(new Date());
  const uniqueBoard=[...board.reduce((acc:Map<string,any>,b:any)=>{const key=cleanNbaName(b.playerName);const existing=acc.get(key);if(!existing||Number(b.bookmakerCount||0)>Number(existing.bookmakerCount||0))acc.set(key,b);return acc},new Map<string,any>()).values()] as any[];
@@ -66,39 +75,25 @@ function rowsForMarket(payload:any,overview:any,market:NbaMarketKey){
   const firstBasket=market==="first_basket";
   const modelProbability=firstBasket?b.bookProbability:(edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10)));
   const gi=Math.round((firstBasket?(45+(modelProbability??0)*0.4+reliability*15):(50+edgePct*35+reliability*15))*10)/10;
-  return{playerId:p?.playerId||cleanNbaName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"NBA",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?nbaHeadshot(p.playerId):"",sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:firstBasket?null:baseline,modelProbability,giScore:gi,prediction:firstBasket?"FIRST BASKET":edge==null?null:edge>=0?"OVER":"UNDER",summary:firstBasket?`First Basket candidate backed by ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"}${modelProbability!=null?` with ${modelProbability.toFixed(1)}% market-implied probability`:""}. Starter status and opening-possession context are incorporated when available.`:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2026 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
+  return{playerId:p?.playerId||cleanNbaName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"NBA",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?nbaHeadshot(p.playerId):"",sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:firstBasket?null:baseline,modelProbability,giScore:gi,prediction:firstBasket?"FIRST BASKET":edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:firstBasket?`First Basket candidate backed by ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"}${modelProbability!=null?` with ${modelProbability.toFixed(1)}% market-implied probability`:""}. Starter status and opening-possession context are incorporated when available.`:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2025–26 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
  }).filter(Boolean) as any[];
-
- // Owls can expose only a small market-backed board (often five players). Keep those
- // verified-line candidates first, then fill the ranking board from eligible players
- // whose teams have an active game today. Model-only fillers are NEVER persisted as
- // sportsbook predictions because sportsbookLine remains null.
+ if(market==="first_basket")return rows.sort((a:any,b:any)=>b.giScore-a.giScore).slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+ if(!rows.length)return baselineRows(overview,market);
  const used=new Set(rows.map((x:any)=>cleanNbaName(x.playerName)));
- const activeGames=overview.games.filter((g:any)=>{
-   const gameDay=torontoNbaDay(g.tipoff||"");
-   return g.state==="in"||(gameDay===today&&g.state!=="post");
- });
- const activeTeams=new Set(activeGames.flatMap((g:any)=>[String(g.awayAbbr||"").toUpperCase(),String(g.homeAbbr||"").toUpperCase()]));
- const fillers=market==="first_basket"?[]:overview.players.map((p:any)=>{
-   const team=String(p?.team||"").toUpperCase();
-   if(!activeTeams.has(team)||used.has(cleanNbaName(p.playerName)))return null;
-   const baseline=playerBaseline(p,market);if(baseline==null)return null;
-   const game=activeGames.find((g:any)=>[g.awayAbbr,g.homeAbbr].map((x:any)=>String(x).toUpperCase()).includes(team));
-   if(!game)return null;
-   const reliability=Math.min(1,Math.max(0,(p?.gamesPlayed??0)/30));
-   return{playerId:p.playerId,playerName:p.playerName,teamName:p.team||"NBA",teamLogo:String(game.awayAbbr).toUpperCase()===team?game.awayLogo||"":game.homeLogo||"",matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:nbaHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((50+reliability*15)*10)/10,prediction:null,marketBacked:false,summary:`2026 statistical baseline ${baseline.toFixed(1)}. No verified sportsbook line is currently available, so this player is ranked as a model-only eligible candidate and is not saved for grading.`};
- }).filter(Boolean) as any[];
+ const fill=baselineRows(overview,market).filter((x:any)=>!used.has(cleanNbaName(x.playerName)));
  rows.sort((a:any,b:any)=>b.giScore-a.giScore);
- fillers.sort((a:any,b:any)=>b.giScore-a.giScore);
- return [...rows,...fillers].slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+ return [...rows,...fill].slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
 }
 
 export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload:any;overview:any}){
  try{
-  const source=shared??{payload:await fetchOwlsPayload(),overview:await loadNbaOverview()};
-  const ranked=rowsForMarket(source.payload,source.overview,market);
-  const saved=await saveNbaPredictions(market,ranked).catch(()=>false);
-  return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:"Owls Insight NBA props + ESPN NBA schedule/status"};
+  const overview=shared?.overview??await loadNbaOverview();
+  let payload:any=shared?.payload??{data:[]};let owlsOk=Boolean(shared?.payload);
+  if(!shared){try{payload=await fetchOwlsPayload();owlsOk=true}catch{owlsOk=false}}
+  const ranked=rowsForMarket(payload,overview,market);
+  if(ranked.length){const marketBacked=ranked.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null);const saved=marketBacked.length?await saveNbaPredictions(market,marketBacked).catch(()=>false):false;return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:owlsOk?"Owls Insight NBA props + ESPN NBA data":"ESPN 2025–26 baseline fallback"};}
+  if(market!=="first_basket"){const baseline=baselineRows(overview,market);if(baseline.length)return {success:true,market,rows:baseline,saved:false,updatedAt:new Date().toISOString(),source:"ESPN 2025–26 baseline fallback"};}
+  throw new Error(owlsOk?`No current ${market} market rows are available.`:"Owls Insight NBA props are not currently available.");
  }catch(e:any){
   const today=torontoNbaDay(new Date());
   const saved=await getNbaPredictions(market,today).catch(()=>({connected:false,predictions:[]} as any));
