@@ -63,14 +63,39 @@ export function playerBaseline(p:NbaPlayer|undefined,market:NbaMarketKey):number
 
 export type NbaRosterPlayer={playerId:string;playerName:string;position:string;starter:boolean;active:boolean;headshot:string};
 export type NbaGameRoster={teamId:string;teamName:string;teamAbbr:string;teamLogo:string;players:NbaRosterPlayer[]};
+
+function rosterAthletes(payload:JsonRecord):JsonRecord[]{
+ const raw=list(payload.athletes);const out:JsonRecord[]=[];
+ for(const item of raw){const group=record(item);const nested=list(group.items??group.athletes);if(nested.length){for(const a of nested)out.push(record(a));}else out.push(group)}
+ return out;
+}
+function rosterPlayer(raw:JsonRecord):NbaRosterPlayer|null{
+ const ath=Object.keys(record(raw.athlete)).length?record(raw.athlete):raw;
+ const id=text(ath.id);if(!id)return null;const pos=record(ath.position),status=record(ath.status);
+ return{playerId:id,playerName:text(ath.displayName??ath.fullName)||"Player",position:text(pos.abbreviation??pos.name),starter:Boolean(raw.starter),active:raw.didNotPlay!==true&&text(status.type)!=="inactive",headshot:text(record(ath.headshot).href)||nbaHeadshot(id)};
+}
+async function loadTeamRoster(team:JsonRecord):Promise<NbaGameRoster|null>{
+ const id=text(team.id);if(!id)return null;
+ try{
+  const payload=await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${encodeURIComponent(id)}/roster`,3600);
+  const players=rosterAthletes(payload).map(rosterPlayer).filter((p):p is NbaRosterPlayer=>Boolean(p)).sort((a,b)=>Number(b.starter)-Number(a.starter)||a.playerName.localeCompare(b.playerName));
+  return{teamId:id,teamName:text(team.displayName??team.name)||text(record(payload.team).displayName)||"NBA Team",teamAbbr:text(team.abbreviation)||text(record(payload.team).abbreviation),teamLogo:text(team.logo)||text(record(payload.team).logo),players};
+ }catch{return null}
+}
 export async function loadNbaGameRosters(gameId:string):Promise<NbaGameRoster[]>{
  try{
   const payload=await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${encodeURIComponent(gameId)}`,60);
-  const box=record(payload.boxscore);const groups=list(box.players);const out:NbaGameRoster[]=[];
+  const box=record(payload.boxscore);const groups=list(box.players);const boxOut:NbaGameRoster[]=[];
   for(const raw of groups){const g=record(raw),team=record(g.team);const players:NbaRosterPlayer[]=[];
-   for(const statRaw of list(g.statistics)){const stat=record(statRaw);for(const rowRaw of list(stat.athletes)){const row=record(rowRaw),ath=record(row.athlete);const id=text(ath.id);if(!id)continue;const pos=record(ath.position);players.push({playerId:id,playerName:text(ath.displayName??ath.fullName)||"Player",position:text(pos.abbreviation??pos.name),starter:Boolean(row.starter),active:row.didNotPlay!==true,headshot:text(record(ath.headshot).href)||nbaHeadshot(id)});}}
+   for(const statRaw of list(g.statistics)){const stat=record(statRaw);for(const rowRaw of list(stat.athletes)){const p=rosterPlayer(record(rowRaw));if(p)players.push(p)}}
    const dedup=[...new Map(players.map(x=>[x.playerId,x])).values()].sort((a,b)=>Number(b.starter)-Number(a.starter)||a.playerName.localeCompare(b.playerName));
-   out.push({teamId:text(team.id),teamName:text(team.displayName??team.name)||"NBA Team",teamAbbr:text(team.abbreviation),teamLogo:text(team.logo),players:dedup});
-  }return out;
+   if(dedup.length)boxOut.push({teamId:text(team.id),teamName:text(team.displayName??team.name)||"NBA Team",teamAbbr:text(team.abbreviation),teamLogo:text(team.logo),players:dedup});
+  }
+  if(boxOut.length>=2)return boxOut;
+  // Pregame summaries often have no box-score athletes. Use the two teams from
+  // the event header and fetch each current team roster instead.
+  const header=record(payload.header);const competition=record(list(header.competitions)[0]);const teams=list(competition.competitors).map(v=>record(record(v).team)).filter(t=>text(t.id));
+  const fallback=(await Promise.all(teams.map(loadTeamRoster))).filter((r):r is NbaGameRoster=>Boolean(r&&r.players.length));
+  return fallback.length?fallback:boxOut;
  }catch{return []}
 }
