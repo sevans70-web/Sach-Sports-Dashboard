@@ -65,7 +65,7 @@ function Card({row,market}:{row:Row;market:NhlMarketKey}){
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount}</b></div>
       <div className="projectionBox"><span>SACH PREDICTION</span><strong>{prediction}</strong></div>
       <div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div>
-      <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&gi=${row.giScore}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}`}>Open full player card</Link>
+      <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&gi=${row.giScore}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup||"")}&gameTime=${encodeURIComponent(row.gameTime||"")}&status=${encodeURIComponent(row.gameStatus||"")}&books=${row.bookmakerCount}&summary=${encodeURIComponent(row.summary||"")}&photo=${encodeURIComponent(row.headshot||"")}&logo=${encodeURIComponent(row.teamLogo||"")}`}>Open full player card</Link>
     </div>:null}
   </article>
 }
@@ -103,7 +103,7 @@ export function NhlDashboard({data}:{data:NhlOverview}){
       const old=prev[id];
       if(!old)events[id]={movement:"new",previousRank:null};
       else if(old.rank!==x.rank)events[id]={movement:x.rank<old.rank?"up":"down",previousRank:old.rank};
-      else if(!events[id])events[id]={movement:"same",previousRank:old.rank};
+      else events[id]={movement:"same",previousRank:old.rank};
       return{...x,movement:events[id]?.movement||"same",previousRank:events[id]?.previousRank??null}
     });
     setMovementRows(next);
@@ -115,7 +115,7 @@ export function NhlDashboard({data}:{data:NhlOverview}){
     return data.games.filter(g=>g.tipoff&&new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto"}).format(new Date(g.tipoff))===today)
   },[data.games]);
 
-  const live=data.games.filter(g=>g.state==="in").length;
+  const live=gamesToday.filter(g=>g.state==="in").length;
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="nhlShell">
