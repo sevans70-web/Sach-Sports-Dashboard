@@ -181,28 +181,31 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
 }
 
 export default function CfbDashboard(){
-  const[group,setGroup]=useState<"QB"|"Offense">("QB");
-  const[market,setMarket]=useState<CfbMarketKey>("passing_yards");
+  const[performanceGroup,setPerformanceGroup]=useState<"QB"|"Offense">("QB");
+  const[performanceMarket,setPerformanceMarket]=useState<CfbMarketKey>("passing_yards");
+  const[rankingGroup,setRankingGroup]=useState<"QB"|"Offense">("QB");
+  const[rankingMarket,setRankingMarket]=useState<CfbMarketKey>("passing_yards");
   const[period,setPeriod]=useState("Today");
   const[full,setFull]=useState(false);
   const[captureTick,setCaptureTick]=useState(0);
 
   const s=useJson<ScheduleResponse>("/api/cfb/schedule",{success:false,games:[],qualifiedCount:0},30000);
-  const r=useJson<RankingResponse>(`/api/cfb/rankings?market=${market}`,{success:false,rows:[]},120000);
-  const live=useJson<LiveResponse>(`/api/cfb/live?market=${market}`,{success:false,games:[]},15000);
-  const overall=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${group}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},60000);
-  const perf=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${group}&market=${market}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},60000);
+  const r=useJson<RankingResponse>(`/api/cfb/rankings?market=${rankingMarket}`,{success:false,rows:[]},120000);
+  const live=useJson<LiveResponse>(`/api/cfb/live?market=${rankingMarket}`,{success:false,games:[]},15000);
+  const overall=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${performanceGroup}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},30000);
+  const perf=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${performanceGroup}&market=${performanceMarket}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},30000);
 
   const rows=useMemo(()=>{
     const source=r.data.rows||[];
     const valid=source.filter((row:Row)=>{
-      if(market==="first_td")return row.modelProbability!=null&&Number.isFinite(Number(row.modelProbability));
+      if(rankingMarket==="first_td")return row.modelProbability!=null&&Number.isFinite(Number(row.modelProbability));
       return row.modelProjection!=null&&Number.isFinite(Number(row.modelProjection));
     });
     return valid.map((row:Row,index:number)=>({...row,rank:index+1}));
-  },[r.data,market]);
-  const markets=group==="QB"?QB_MARKETS:OFFENSE_MARKETS;
-  const active=meta(market);
+  },[r.data,rankingMarket]);
+  const performanceMarkets=performanceGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
+  const rankingMarkets=rankingGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
+  const active=meta(rankingMarket);
 
   useEffect(()=>{
     let active=true;
@@ -213,11 +216,15 @@ export default function CfbDashboard(){
   },[]);
 
   useEffect(()=>{
-    if(!markets.includes(market))setMarket(markets[0]);
-    setFull(false);
-  },[group]); // eslint-disable-line react-hooks/exhaustive-deps
+    if(!performanceMarkets.includes(performanceMarket))setPerformanceMarket(performanceMarkets[0]);
+  },[performanceGroup]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(()=>setFull(false),[market]);
+  useEffect(()=>{
+    if(!rankingMarkets.includes(rankingMarket))setRankingMarket(rankingMarkets[0]);
+    setFull(false);
+  },[rankingGroup]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(()=>setFull(false),[rankingMarket]);
 
   const liveGames=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
@@ -252,11 +259,11 @@ export default function CfbDashboard(){
       <details className="performanceInfo"><summary>ⓘ How performance is measured</summary><div className="performanceExplain">Predictions are saved before kickoff, frozen when the game starts, and graded after final results. Today may be empty when no CFB games are scheduled; Week, Month and Season retain saved history.</div></details>
 
       <ScrollTabs showCue={false}>
-        <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
-        <button className={group==="Offense"?"active":""} onClick={()=>setGroup("Offense")}>🏃 Offense</button>
+        <button className={performanceGroup==="QB"?"active":""} onClick={()=>setPerformanceGroup("QB")}>🏈 QB</button>
+        <button className={performanceGroup==="Offense"?"active":""} onClick={()=>setPerformanceGroup("Offense")}>🏃 Offense</button>
       </ScrollTabs>
 
-      <h3>🌐 Overall CFB {group} Performance</h3>
+      <h3>🌐 Overall CFB {performanceGroup} Performance</h3>
 
       <div className="periodTabs">
         {["Today","Yesterday","Week","Month","Season"].map(x=>
@@ -271,9 +278,9 @@ export default function CfbDashboard(){
       </div>
 
       <ScrollTabs>
-        {markets.map(k=>{
+        {performanceMarkets.map(k=>{
           const m=meta(k);
-          return <button className={market===k?"active":""} onClick={()=>setMarket(k)} key={k}>{m[1]} {m[2]}</button>;
+          return <button className={performanceMarket===k?"active":""} onClick={()=>setPerformanceMarket(k)} key={k}>{m[1]} {m[2]}</button>;
         })}
       </ScrollTabs>
 
@@ -292,14 +299,14 @@ export default function CfbDashboard(){
       </div>
 
       <ScrollTabs showCue={false}>
-        <button className={group==="QB"?"active":""} onClick={()=>setGroup("QB")}>🏈 QB</button>
-        <button className={group==="Offense"?"active":""} onClick={()=>setGroup("Offense")}>🏃 Offense</button>
+        <button className={rankingGroup==="QB"?"active":""} onClick={()=>setRankingGroup("QB")}>🏈 QB</button>
+        <button className={rankingGroup==="Offense"?"active":""} onClick={()=>setRankingGroup("Offense")}>🏃 Offense</button>
       </ScrollTabs>
 
       <ScrollTabs>
-        {markets.map(k=>{
+        {rankingMarkets.map(k=>{
           const m=meta(k);
-          return <button className={market===k?"active":""} onClick={()=>setMarket(k)} key={k}>{m[1]} {m[2]}</button>;
+          return <button className={rankingMarket===k?"active":""} onClick={()=>setRankingMarket(k)} key={k}>{m[1]} {m[2]}</button>;
         })}
       </ScrollTabs>
 
@@ -318,7 +325,7 @@ export default function CfbDashboard(){
         </details>:null}
 
       {(full?rows:rows.slice(0,5)).map(row=>
-        <Card row={row} market={market} live={live.data} key={`${row.playerId}-${row.rank}`}/>
+        <Card row={row} market={rankingMarket} live={live.data} key={`${row.playerId}-${row.rank}`}/>
       )}
 
       {!r.loading&&rows.length===0?<div className="empty">Ranking data is temporarily unavailable.</div>:null}
