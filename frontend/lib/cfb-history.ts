@@ -15,7 +15,7 @@ export type SavedCfbPrediction={
 const SOURCE_PREFIX="cfb_predictions_";
 const globalStore=globalThis as typeof globalThis&{__sachCfbPredictions?:Map<string,SavedCfbPrediction[]>};
 const runtime=globalStore.__sachCfbPredictions||(globalStore.__sachCfbPredictions=new Map<string,SavedCfbPrediction[]>());
-const DISK_DIR=process.env.CFB_HISTORY_DIR||"/tmp/sach-cfb-history";
+const DISK_DIR=process.env.CFB_HISTORY_DIR||process.env.SACH_HISTORY_DIR?path.join(process.env.CFB_HISTORY_DIR||process.env.SACH_HISTORY_DIR||"/data/sach-history","cfb"):"/data/sach-history/cfb";
 function diskFile(m:CfbMarketKey,day:string){return path.join(DISK_DIR,`${String(m).replace(/[^a-z0-9_-]/gi,"_")}_${day}.json`)}
 async function readDisk(m:CfbMarketKey,day:string){try{const raw=await fs.readFile(diskFile(m,day),"utf8");const value=JSON.parse(raw);return Array.isArray(value)?value as SavedCfbPrediction[]:[]}catch{return []}}
 async function writeDisk(m:CfbMarketKey,day:string,predictions:SavedCfbPrediction[]){try{await fs.mkdir(DISK_DIR,{recursive:true});await fs.writeFile(diskFile(m,day),JSON.stringify(predictions),"utf8");return true}catch{return false}}
@@ -54,11 +54,11 @@ async function getRow(m:CfbMarketKey,day:string){
 }
 async function writeRow(m:CfbMarketKey,day:string,predictions:SavedCfbPrediction[],id?:string){
   runtime.set(storeKey(m,day),predictions);
-  await writeDisk(m,day,predictions);
-  const {url,keys}=config();if(!url||!keys.length)return predictions.length>0;
+  const diskOk=await writeDisk(m,day,predictions);
+  const {url,keys}=config();if(!url||!keys.length)return diskOk;
   const body=JSON.stringify({source_name:source(m),game_date:day,payload:{predictions},created_at:new Date().toISOString()}),endpoint=id?`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(id)}`:`${url}/rest/v1/source_snapshots`;
-  for(const key of keys){try{const r=await request(endpoint,key,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body});if(r.status===401||r.status===403)continue;if(r.ok)return true;return false}catch{}}
-  return false;
+  for(const key of keys){try{const r=await request(endpoint,key,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body});if(r.status===401||r.status===403)continue;if(r.ok)return true;return diskOk}catch{}}
+  return diskOk;
 }
 function sameMatchup(a:any,b:any){return String(a||"").toLowerCase().replace(/\s+/g," ").trim()===String(b||"").toLowerCase().replace(/\s+/g," ").trim()}
 export async function saveCfbPregamePredictions(m:CfbMarketKey,rows:any[],schedule:any[]){

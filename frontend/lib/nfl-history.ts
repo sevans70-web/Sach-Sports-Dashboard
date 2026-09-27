@@ -1,3 +1,4 @@
+import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {cleanName,type NflMarketKey} from "@/lib/nfl";
 
 export type SavedNflPrediction={
@@ -30,11 +31,8 @@ async function fetchStorage(url:string,init:RequestInit){const controller=new Ab
 export function nflDay(v:Date|string){const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`;}
 function source(m:NflMarketKey){return `${SOURCE_PREFIX}${m}`}
 async function getRows(m:NflMarketKey,day:string){
- const {url,keys}=readConfig();if(!url||!keys.length)return {connected:false,writable:false,rows:[] as any[],reason:"not_configured"};
- if(storageCooling())return {connected:false,writable:false,rows:[] as any[],reason:"temporarily_unreachable"};
- const q=`source_snapshots?select=id,source_name,game_date,payload,created_at&source_name=eq.${encodeURIComponent(source(m))}&game_date=eq.${encodeURIComponent(day)}&order=created_at.desc&limit=25`;
- for(const key of keys){try{const r=await fetchStorage(`${url}/rest/v1/${q}`,{headers:headers(key)});if(r.ok){const a=await r.json();return {connected:true,writable:true,rows:Array.isArray(a)?a:[],reason:"ok"}}const detail=(await r.text().catch(()=>"")).slice(0,220);console.error("[NFL Supabase read]",{status:r.status,market:m,day,detail});if(r.status===401||r.status===403)continue;if(r.status>=500||r.status===408||r.status===429){tripStorageCircuit();return {connected:false,writable:false,rows:[] as any[],reason:"temporarily_unreachable"}}return {connected:false,writable:false,rows:[] as any[],reason:"read_failed"}}catch(error){console.error("[NFL Supabase read exception]",{market:m,day,error:error instanceof Error?error.message:String(error)});tripStorageCircuit();return {connected:false,writable:false,rows:[] as any[],reason:"temporarily_unreachable"}}}
- return {connected:false,writable:false,rows:[] as any[],reason:"auth_failed"};
+ const predictions=await readDurableHistory<SavedNflPrediction>("nfl",String(m),day);
+ return {connected:true,writable:true,rows:predictions.length?[{id:undefined,payload:{predictions},created_at:new Date().toISOString()}]:[],reason:"railway_volume"};
 }
 function mergeSnapshotPredictions(rows:any[]){
  const merged=new Map<string,SavedNflPrediction>();
@@ -49,11 +47,9 @@ function mergeSnapshotPredictions(rows:any[]){
  }}return [...merged.values()];
 }
 async function getRow(m:NflMarketKey,day:string){const x=await getRows(m,day),row=x.rows.length?x.rows[0]:null;return {connected:x.connected,writable:x.writable,row,rows:x.rows,reason:x.reason};}
-async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],id?:string){
- nflRuntime.set(runtimeKey(m,day),predictions);const {url,keys}=writeConfig();if(!url||!keys.length)return false;if(storageCooling())return false;
- const body=JSON.stringify({source_name:source(m),game_date:day,payload:{predictions},created_at:new Date().toISOString()});const endpoint=id?`${url}/rest/v1/source_snapshots?id=eq.${encodeURIComponent(id)}`:`${url}/rest/v1/source_snapshots`;
- for(const key of keys){try{const r=await fetchStorage(endpoint,{method:id?"PATCH":"POST",headers:headers(key,"return=minimal"),body});if(r.ok)return true;const detail=(await r.text().catch(()=>"")).slice(0,220);console.error("[NFL Supabase write]",{status:r.status,market:m,day,mode:id?"PATCH":"POST",detail});if(r.status===401||r.status===403)continue;if(r.status>=500||r.status===408||r.status===429){tripStorageCircuit();return false}return false}catch(error){console.error("[NFL Supabase write exception]",{market:m,day,error:error instanceof Error?error.message:String(error)});tripStorageCircuit();return false}}
- return false;
+async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],_id?:string){
+ nflRuntime.set(runtimeKey(m,day),predictions);
+ return writeDurableHistory("nfl",String(m),day,predictions);
 }
 function teamNick(v:any){const x=cleanName(String(v||""));return x.split(" ").filter(Boolean).pop()||x}
 function matchupParts(v:any){const raw=String(v||"").replace(/\bvs\.?\b/gi,"@").replace(/\bv\b/gi,"@");const parts=raw.split("@").map(x=>cleanName(x)).filter(Boolean);return parts.length===2?parts:[];}
