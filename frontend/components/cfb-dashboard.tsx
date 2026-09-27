@@ -161,7 +161,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       {row.matchup?<span>{row.matchup}</span>:null}
       {row.gameTime?<span className="gameTime">🗓️ {gameTime(row.gameTime)}</span>:null}
       {lg?.state==="in"?<div className="livePanel"><div className="liveHeader">● LIVE · {quarterLabel(lg.quarter)}{lg.clock?` · ${lg.clock}`:""}</div><div className="liveCurrent">Current: <b>{actual??"—"} {unit(market)}</b></div><div className="progressTrack"><div className="progressFill" style={{width:`${progress}%`}}/></div></div>:null}
-      {lg?.completed?<div className="finalPanel"><div className="finalHeader">FINAL</div><div>Actual: <b>{actual??"—"} {unit(market)}</b></div></div>:null}
+      {lg?.completed?<div className="finalPanel"><div className="finalHeader">FINAL {row.resultSymbol?<span className="resultSymbol">{row.resultSymbol}</span>:null}</div><div>Actual: <b>{actual??row.actualResult??"—"} {unit(market)}</b></div>{row.resultStatus&&row.resultStatus!=="pending"?<div className="resultText">{row.resultStatus==="hit"?"HIT":row.resultStatus==="miss"?"MISS":row.resultStatus.toUpperCase()}</div>:null}</div>:null}
       <p className="projectionLine"><b>Sach Prediction:</b> {proj}</p>
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
       {row.frozen?<span className="locked">LOCKED AT KICKOFF</span>:null}
@@ -248,6 +248,7 @@ export default function CfbDashboard(){
 
     <section className="section performanceSection">
       <h2 className="performanceTitle">📊 Prediction Performance</h2>
+      <Link href="/cfb/results" className="resultsArchiveLink">Saturday Predictions / Results ›</Link>
       <details className="performanceInfo"><summary>ⓘ How performance is measured</summary><div className="performanceExplain">Predictions are saved before kickoff, frozen when the game starts, and graded after final results. Today may be empty when no CFB games are scheduled; Week, Month and Season retain saved history.</div></details>
 
       <ScrollTabs showCue={false}>

@@ -274,14 +274,14 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   );
   const savedStarted=(saved.predictions||[]).filter((p:any)=>{
     const game=gameForMatchup(p.matchup);
-    return game&&game.state!=="pre";
+    return game&&game.state==="in";
   });
 
   // Safety lock: if the sportsbook removes the prop at kickoff before storage
   // returns, preserve any player who was visible on the previous Top 25.
   const previousStarted=previousRows.filter((p:any)=>{
     const game=gameForMatchup(p.matchup);
-    return game&&game.state!=="pre";
+    return game&&game.state==="in";
   });
 
   const lockedMap=new Map<string,any>();
@@ -324,7 +324,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     .sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999))
     .slice(0,25);
 
-  // Started players remain visible through live/final and cannot be marked dropped.
+  // Live players remain locked on the active board. Once final, their frozen prediction stays in history/performance and the active Top 25 can refill from later games.
 
   const slateDays=(rows:any[])=>new Set(rows.map((r:any)=>day(r.gameTime||rowGameTime(r,schedule))).filter(Boolean));
   const previousDays=slateDays(previousRows),currentDays=slateDays(ranked);
