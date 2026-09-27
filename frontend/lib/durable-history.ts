@@ -15,15 +15,3 @@ export async function durableHistoryStatus(){
  try{await fs.mkdir(ROOT,{recursive:true});const probe=path.join(ROOT,".write-test");await fs.writeFile(probe,new Date().toISOString(),"utf8");await fs.unlink(probe);return {ok:true,root:ROOT}}
  catch(e){return {ok:false,root:ROOT,error:e instanceof Error?e.message:String(e)}}
 }
-
-export type DurableSnapshot={capturedAt:string;hash:string;payload:unknown};
-function stableHash(value:unknown){const s=JSON.stringify(value);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16)}
-export async function appendDurableSnapshot(sport:string,stream:string,day:string,payload:unknown,maxRows=400):Promise<boolean>{
- try{
-  const existing=await readDurableHistory<DurableSnapshot>(sport,`snapshots_${stream}`,day);
-  const hash=stableHash(payload); if(existing.length&&existing[existing.length-1]?.hash===hash)return true;
-  const next=[...existing,{capturedAt:new Date().toISOString(),hash,payload}].slice(-maxRows);
-  return writeDurableHistory(sport,`snapshots_${stream}`,day,next);
- }catch(e){console.error("[durable-history] snapshot append failed",{sport,stream,day,error:e instanceof Error?e.message:String(e)});return false}
-}
-export function torontoHistoryDay(v:Date|string=new Date()){const d=typeof v==="string"?new Date(v):v;const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`}
