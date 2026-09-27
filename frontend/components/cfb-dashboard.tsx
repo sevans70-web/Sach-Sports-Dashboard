@@ -151,6 +151,17 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
   const progress=row.modelProjection!=null&&actual!=null&&Number(row.modelProjection)>0
     ?Math.max(0,Math.min(100,(Number(actual)/Number(row.modelProjection))*100))
     :0;
+  const derivedResult=(()=>{
+    if(row.resultStatus&&row.resultStatus!=="pending")return row.resultStatus;
+    if(!lg?.completed||actual==null)return "pending";
+    if(market==="anytime_td"||market==="first_td")return Number(actual)>0?"hit":"miss";
+    if(row.sportsbookLine==null||row.modelProjection==null)return "void";
+    const line=Number(row.sportsbookLine),projection=Number(row.modelProjection),value=Number(actual);
+    if(value===line)return "push";
+    const pick=projection<line?"under":"over";
+    return pick==="under"?(value<line?"hit":"miss"):(value>line?"hit":"miss");
+  })();
+  const derivedSymbol=derivedResult==="hit"?"✅":derivedResult==="miss"?"❌":derivedResult==="push"?"➖":derivedResult==="void"?"VOID":"⏳";
 
   return <article className={`rankCard ${lg?.state==="in"?"isLive":""}`}>
     <div className="rankNo">#{row.rank}<span className={row.movement==="NEW"?"new":Number(row.movement||0)>0?"up":Number(row.movement||0)<0?"down":""}>{move(row.movement)}</span></div>
@@ -161,7 +172,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       {row.matchup?<span>{row.matchup}</span>:null}
       {row.gameTime?<span className="gameTime">🗓️ {gameTime(row.gameTime)}</span>:null}
       {lg?.state==="in"?<div className="livePanel"><div className="liveHeader">● LIVE · {quarterLabel(lg.quarter)}{lg.clock?` · ${lg.clock}`:""}</div><div className="liveCurrent">Current: <b>{actual??"—"} {unit(market)}</b></div><div className="progressTrack"><div className="progressFill" style={{width:`${progress}%`}}/></div></div>:null}
-      {lg?.completed?<div className="finalPanel"><div className="finalHeader">FINAL {row.resultSymbol?<span className="resultSymbol">{row.resultSymbol}</span>:null}</div><div>Actual: <b>{actual??row.actualResult??"—"} {unit(market)}</b></div>{row.resultStatus&&row.resultStatus!=="pending"?<div className="resultText">{row.resultStatus==="hit"?"HIT":row.resultStatus==="miss"?"MISS":row.resultStatus.toUpperCase()}</div>:null}</div>:null}
+      {lg?.completed?<div className="finalPanel"><div className="finalHeader">RESULT <span className="resultSymbol">{row.resultSymbol||derivedSymbol}</span></div><div>Actual: <b>{actual??row.actualResult??"—"} {unit(market)}</b></div><div className="resultText">{derivedResult==="hit"?"HIT":derivedResult==="miss"?"MISS":derivedResult.toUpperCase()}</div></div>:null}
       <p className="projectionLine"><b>Sach Prediction:</b> {proj}</p>
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
       {row.frozen?<span className="locked">LOCKED AT KICKOFF</span>:null}
@@ -181,31 +192,31 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
 }
 
 export default function CfbDashboard(){
-  const[performanceGroup,setPerformanceGroup]=useState<"QB"|"Offense">("QB");
-  const[performanceMarket,setPerformanceMarket]=useState<CfbMarketKey>("passing_yards");
-  const[rankingGroup,setRankingGroup]=useState<"QB"|"Offense">("QB");
-  const[rankingMarket,setRankingMarket]=useState<CfbMarketKey>("passing_yards");
+  const[perfGroup,setPerfGroup]=useState<"QB"|"Offense">("QB");
+  const[perfMarket,setPerfMarket]=useState<CfbMarketKey>("passing_yards");
+  const[rankGroup,setRankGroup]=useState<"QB"|"Offense">("QB");
+  const[rankMarket,setRankMarket]=useState<CfbMarketKey>("passing_yards");
   const[period,setPeriod]=useState("Today");
   const[full,setFull]=useState(false);
   const[captureTick,setCaptureTick]=useState(0);
 
   const s=useJson<ScheduleResponse>("/api/cfb/schedule",{success:false,games:[],qualifiedCount:0},30000);
-  const r=useJson<RankingResponse>(`/api/cfb/rankings?market=${rankingMarket}`,{success:false,rows:[]},120000);
-  const live=useJson<LiveResponse>(`/api/cfb/live?market=${rankingMarket}`,{success:false,games:[]},15000);
-  const overall=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${performanceGroup}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},30000);
-  const perf=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${performanceGroup}&market=${performanceMarket}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},30000);
+  const r=useJson<RankingResponse>(`/api/cfb/rankings?market=${rankMarket}`,{success:false,rows:[]},120000);
+  const live=useJson<LiveResponse>(`/api/cfb/live?market=${rankMarket}`,{success:false,games:[]},15000);
+  const overall=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${perfGroup}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},20000);
+  const perf=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${perfGroup}&market=${perfMarket}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},20000);
 
   const rows=useMemo(()=>{
     const source=r.data.rows||[];
     const valid=source.filter((row:Row)=>{
-      if(rankingMarket==="first_td")return row.modelProbability!=null&&Number.isFinite(Number(row.modelProbability));
+      if(rankMarket==="first_td")return row.modelProbability!=null&&Number.isFinite(Number(row.modelProbability));
       return row.modelProjection!=null&&Number.isFinite(Number(row.modelProjection));
     });
     return valid.map((row:Row,index:number)=>({...row,rank:index+1}));
-  },[r.data,rankingMarket]);
-  const performanceMarkets=performanceGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
-  const rankingMarkets=rankingGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
-  const active=meta(rankingMarket);
+  },[r.data,rankMarket]);
+  const perfMarkets=perfGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
+  const rankMarkets=rankGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
+  const active=meta(rankMarket);
 
   useEffect(()=>{
     let active=true;
@@ -216,15 +227,15 @@ export default function CfbDashboard(){
   },[]);
 
   useEffect(()=>{
-    if(!performanceMarkets.includes(performanceMarket))setPerformanceMarket(performanceMarkets[0]);
-  },[performanceGroup]); // eslint-disable-line react-hooks/exhaustive-deps
+    if(!perfMarkets.includes(perfMarket))setPerfMarket(perfMarkets[0]);
+  },[perfGroup]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(()=>{
-    if(!rankingMarkets.includes(rankingMarket))setRankingMarket(rankingMarkets[0]);
+    if(!rankMarkets.includes(rankMarket))setRankMarket(rankMarkets[0]);
     setFull(false);
-  },[rankingGroup]); // eslint-disable-line react-hooks/exhaustive-deps
+  },[rankGroup]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(()=>setFull(false),[rankingMarket]);
+  useEffect(()=>setFull(false),[rankMarket]);
 
   const liveGames=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
@@ -259,11 +270,11 @@ export default function CfbDashboard(){
       <details className="performanceInfo"><summary>ⓘ How performance is measured</summary><div className="performanceExplain">Predictions are saved before kickoff, frozen when the game starts, and graded after final results. Today may be empty when no CFB games are scheduled; Week, Month and Season retain saved history.</div></details>
 
       <ScrollTabs showCue={false}>
-        <button className={performanceGroup==="QB"?"active":""} onClick={()=>setPerformanceGroup("QB")}>🏈 QB</button>
-        <button className={performanceGroup==="Offense"?"active":""} onClick={()=>setPerformanceGroup("Offense")}>🏃 Offense</button>
+        <button className={perfGroup==="QB"?"active":""} onClick={()=>setPerfGroup("QB")}>🏈 QB</button>
+        <button className={perfGroup==="Offense"?"active":""} onClick={()=>setPerfGroup("Offense")}>🏃 Offense</button>
       </ScrollTabs>
 
-      <h3>🌐 Overall CFB {performanceGroup} Performance</h3>
+      <h3>🌐 Overall CFB {perfGroup} Performance</h3>
 
       <div className="periodTabs">
         {["Today","Yesterday","Week","Month","Season"].map(x=>
@@ -278,9 +289,9 @@ export default function CfbDashboard(){
       </div>
 
       <ScrollTabs>
-        {performanceMarkets.map(k=>{
+        {perfMarkets.map(k=>{
           const m=meta(k);
-          return <button className={performanceMarket===k?"active":""} onClick={()=>setPerformanceMarket(k)} key={k}>{m[1]} {m[2]}</button>;
+          return <button className={perfMarket===k?"active":""} onClick={()=>setPerfMarket(k)} key={k}>{m[1]} {m[2]}</button>;
         })}
       </ScrollTabs>
 
@@ -299,14 +310,14 @@ export default function CfbDashboard(){
       </div>
 
       <ScrollTabs showCue={false}>
-        <button className={rankingGroup==="QB"?"active":""} onClick={()=>setRankingGroup("QB")}>🏈 QB</button>
-        <button className={rankingGroup==="Offense"?"active":""} onClick={()=>setRankingGroup("Offense")}>🏃 Offense</button>
+        <button className={rankGroup==="QB"?"active":""} onClick={()=>setRankGroup("QB")}>🏈 QB</button>
+        <button className={rankGroup==="Offense"?"active":""} onClick={()=>setRankGroup("Offense")}>🏃 Offense</button>
       </ScrollTabs>
 
       <ScrollTabs>
-        {rankingMarkets.map(k=>{
+        {rankMarkets.map(k=>{
           const m=meta(k);
-          return <button className={rankingMarket===k?"active":""} onClick={()=>setRankingMarket(k)} key={k}>{m[1]} {m[2]}</button>;
+          return <button className={rankMarket===k?"active":""} onClick={()=>setRankMarket(k)} key={k}>{m[1]} {m[2]}</button>;
         })}
       </ScrollTabs>
 
@@ -325,7 +336,7 @@ export default function CfbDashboard(){
         </details>:null}
 
       {(full?rows:rows.slice(0,5)).map(row=>
-        <Card row={row} market={rankingMarket} live={live.data} key={`${row.playerId}-${row.rank}`}/>
+        <Card row={row} market={rankMarket} live={live.data} key={`${row.playerId}-${row.rank}`}/>
       )}
 
       {!r.loading&&rows.length===0?<div className="empty">Ranking data is temporarily unavailable.</div>:null}

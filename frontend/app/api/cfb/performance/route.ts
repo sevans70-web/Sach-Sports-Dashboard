@@ -14,7 +14,7 @@ function actualFromSummary(payload:any,market:CfbMarketKey,playerId:string,playe
   for(const team of Array.isArray(payload?.boxscore?.players)?payload.boxscore.players:[]){
     for(const group of team?.statistics||[]){
       const ix=statIndex(Array.isArray(group?.labels)?group.labels:[],market);if(ix<0)continue;
-      for(const row of group?.athletes||[]){const a=row?.athlete||{},id=String(a.id||""),name=cleanName(a.displayName||a.fullName||"");if((playerId&&id===playerId)||(!playerId&&name===cleanName(playerName))){const v=safeNumber((row?.stats||[])[ix]);if(v!=null)return Number(v)}}
+      for(const row of group?.athletes||[]){const a=row?.athlete||{},id=String(a.id||""),name=cleanName(a.displayName||a.fullName||"");if((playerId&&id===playerId)||name===cleanName(playerName)){const v=safeNumber((row?.stats||[])[ix]);if(v!=null)return Number(v)}}
     }
   }
   return null;
