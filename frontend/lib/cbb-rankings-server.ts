@@ -73,8 +73,8 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
   const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;
   const reliability=Math.min(1,Math.max(0,(p?.gamesPlayed??0)/30));const edgePct=edge!=null&&b.line?Math.min(1,Math.abs(edge)/Math.max(1,Math.abs(b.line))):0;
   
-  const modelProbability=firstBasket?b.bookProbability:(edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10)));
-  const gi=Math.round((firstBasket?(45+(modelProbability??0)*0.4+reliability*15):(50+edgePct*35+reliability*15))*10)/10;
+  const modelProbability=edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10));
+  const gi=Math.round((50+edgePct*35+reliability*15)*10)/10;
   return{playerId:p?.playerId||cleanCbbName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"CBB",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?cbbHeadshot(p.playerId):"",sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2025–26 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
  }).filter(Boolean) as any[];
  
