@@ -59,6 +59,8 @@ export type NflRankingRow = {
   liveProgressPct?:number|null;
   movement?:"new"|"up"|"down"|"same";
   previousRank?:number|null;
+  frozen?:boolean;
+  lockedAtKickoff?:boolean;
 };
 
 export type NflRosterPlayer = {

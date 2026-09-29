@@ -191,7 +191,11 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
   </article>;
 }
 
+function torontoParts(v?:string){const d=v?new Date(v):new Date();if(Number.isNaN(d.getTime()))return {weekday:"",hour:0};const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",hour:"2-digit",hour12:false}).formatToParts(d);const get=(t:string)=>parts.find(x=>x.type===t)?.value||"";return {weekday:get("weekday"),hour:Number(get("hour"))%24}}
+function cfbSlate(v?:string){const h=torontoParts(v).hour;if(h<15)return "Noon";if(h<18)return "Afternoon";return "Evening"}
+
 export default function CfbDashboard(){
+  const[slate,setSlate]=useState<"All Day"|"Noon"|"Afternoon"|"Evening">("All Day");
   const[perfGroup,setPerfGroup]=useState<"QB"|"Offense">("QB");
   const[perfMarket,setPerfMarket]=useState<CfbMarketKey>("passing_yards");
   const[rankGroup,setRankGroup]=useState<"QB"|"Offense">("QB");
@@ -214,6 +218,8 @@ export default function CfbDashboard(){
     });
     return valid.map((row:Row,index:number)=>({...row,rank:index+1}));
   },[r.data,rankMarket]);
+  const saturdayTabs=torontoParts().weekday==="Sat";
+  const slateRows=useMemo(()=>{if(!saturdayTabs||slate==="All Day")return rows;return rows.filter(row=>cfbSlate(row.gameTime)===slate).map((row,index)=>({...row,rank:index+1}));},[rows,slate,saturdayTabs]);
   const perfMarkets=perfGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
   const rankMarkets=rankGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
   const active=meta(rankMarket);
@@ -309,6 +315,7 @@ export default function CfbDashboard(){
         <p>Market-specific intelligence · live matchup context</p>
       </div>
 
+      {saturdayTabs?<ScrollTabs showCue={false}>{(["All Day","Noon","Afternoon","Evening"] as const).map(x=><button key={x} className={slate===x?"active":""} onClick={()=>{setSlate(x);setFull(false)}}>{x}</button>)}</ScrollTabs>:null}
       <ScrollTabs showCue={false}>
         <button className={rankGroup==="QB"?"active":""} onClick={()=>setRankGroup("QB")}>🏈 QB</button>
         <button className={rankGroup==="Offense"?"active":""} onClick={()=>setRankGroup("Offense")}>🏃 Offense</button>
@@ -335,11 +342,11 @@ export default function CfbDashboard(){
           </div>
         </details>:null}
 
-      {(full?rows:rows.slice(0,5)).map(row=>
+      {(full?slateRows:slateRows.slice(0,5)).map(row=>
         <Card row={row} market={rankMarket} live={live.data} key={`${row.playerId}-${row.rank}`}/>
       )}
 
-      {!r.loading&&rows.length===0?<div className="empty">Ranking data is temporarily unavailable.</div>:null}
+      {!r.loading&&slateRows.length===0?<div className="empty">Ranking data is temporarily unavailable.</div>:null}
 
       {rows.length>5?
         <button className="viewFull" onClick={()=>setFull(v=>!v)}>

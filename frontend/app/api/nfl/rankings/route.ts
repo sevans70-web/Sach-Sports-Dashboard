@@ -393,11 +393,25 @@ export async function GET(req:NextRequest){
         gameId:String(g?.id||""),gameState:g?.completed?"post":String(g?.state||"post"),gameStatus:String(g?.status||""),liveCurrent:p.actual,liveProgressPct:p.actual!=null&&p.sportsbookLine&&p.sportsbookLine>0?Math.max(0,Math.min(200,Math.round(p.actual/p.sportsbookLine*100))):null};
     });
   const currentGameFor=(r:any)=>r.gameId?schedule.find((g:any)=>String(g.id)===String(r.gameId)):matchupGame(schedule,r.matchup);
-  const startedCurrent=liveRows.filter((r:any)=>started(currentGameFor(r)));
+  const liveByKey=new Map(liveRows.map((r:any)=>[`${r.playerId}|${r.gameId||cleanName(r.matchup)}`,r]));
+  // HARD KICKOFF LOCK: rebuild started rows from the durable pregame snapshot.
+  // Live feeds may update Current/Actual and game status, but never rank, line,
+  // projection, confidence or GI after kickoff.
+  const frozenStarted=savedToday.predictions.filter((p:SavedNflPrediction)=>started(gameFor(p))).map((p:SavedNflPrediction)=>{
+    const g=gameFor(p);
+    const key=`${p.playerId}|${p.gameId||cleanName(p.matchup)}`;
+    const live=liveByKey.get(key) as any;
+    const margin=p.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
+    return {rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),liveCurrent:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
+  });
   const futureCurrent=liveRows.filter((r:any)=>!started(currentGameFor(r)));
-  const lockedKeys=new Set([...startedCurrent,...archived].map((r:any)=>`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
-  const merged=[...startedCurrent,...archived,...futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.gameId||cleanName(r.matchup)}`))]
-    .slice(0,25).map((r:any,i:number)=>({...r,rank:i+1}));
+  const lockedKeys=new Set(frozenStarted.map((r:any)=>`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
+  const lockedRanks=new Set(frozenStarted.map((r:any)=>Number(r.rank)).filter((n:number)=>n>=1&&n<=25));
+  const merged:any[]=[...frozenStarted.filter((r:any)=>Number(r.rank)>=1&&Number(r.rank)<=25)];
+  let futureIndex=0;
+  const future=futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
+  for(let slot=1;slot<=25&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
+  merged.sort((a:any,b:any)=>Number(a.rank)-Number(b.rank));
   return NextResponse.json({success:true,source:"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:true,validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
  }catch(e){return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
