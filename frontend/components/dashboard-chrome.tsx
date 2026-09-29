@@ -24,12 +24,20 @@ export function SportsNav({active}:{active:SportKey}){
   return <nav className="ssSportsNav" aria-label="Sports dashboards">{SPORTS.map(s=><Link key={s.key} href={s.href} className={s.key===active?"active":""}>{s.label}</Link>)}</nav>;
 }
 
+function SachSportsBrand(){
+  return <div className="ssBrand" aria-label="Sach Sports">
+    <span className="ssBrandMark" aria-hidden="true">S</span>
+    <span className="ssBrandName"><b>SACH</b> SPORTS</span>
+  </div>;
+}
+
 export function IntelligenceHero({sport}:{sport:SportKey}){
   const c=HERO_COPY[sport];
   return <>
+    <SachSportsBrand/>
     <SportsNav active={sport}/>
     <section className={`ssHero ssHero-${sport}`}>
-      <div className="ssHeroCopy"><span className="ssHeroKicker">{sport==="cbb"?"CBB":sport.toUpperCase()}</span><h1>{c.title}</h1><p>{c.message}</p></div>
+      <div className="ssHeroCopy"><h1>{c.title}</h1><p>{c.message}</p></div>
       <div className="ssHeroArt" aria-hidden="true"><img src={`/hero/${sport}.svg`} alt=""/></div>
     </section>
   </>;
@@ -40,5 +48,5 @@ export function UpdatedStamp({value}:{value?:string|Date|null}){
   if(Number.isNaN(d.getTime()))d=new Date();
   const date=new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric"}).format(d);
   const time=new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",hour:"numeric",minute:"2-digit",hour12:true}).format(d);
-  return <div className="ssUpdated">Last updated {date} at {time} ET</div>;
+  return <div className="ssUpdated"><span className="ssUpdatedClock" aria-hidden="true">◷</span><span>Last updated {date} at {time} ET</span></div>;
 }

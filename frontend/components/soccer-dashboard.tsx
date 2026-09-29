@@ -212,6 +212,7 @@ export function SoccerDashboard() {
   return (
     <div className="origMlb soccerDashboard">
       <IntelligenceHero sport="soccer"/>
+      <UpdatedStamp value={data.updatedAt}/>
 
       <section className="soccerLeagueRow">
         <label>Leagues</label>
@@ -227,8 +228,6 @@ export function SoccerDashboard() {
           ))}
         </select>
       </section>
-
-      <UpdatedStamp value={data.updatedAt}/>
 
       <Link
         className="origGamesEntry soccerGamesEntry"

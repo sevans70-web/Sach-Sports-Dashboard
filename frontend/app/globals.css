@@ -91,3 +91,40 @@
 .ssHero{position:relative;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(220px,.75fr);min-height:210px;overflow:hidden;border:2px solid var(--ss-gold);border-radius:20px;background:linear-gradient(110deg,#080808 0%,#0b0b0a 50%,#171006 100%);box-shadow:inset 0 0 38px rgba(216,181,75,.05)}.ssHeroCopy{position:relative;z-index:2;padding:25px 26px 24px}.ssHeroKicker{display:block;margin-bottom:7px;color:var(--ss-gold-bright);font-size:12px;font-weight:950;letter-spacing:.13em;text-transform:uppercase}.ssHero h1{margin:0 0 10px!important;color:var(--ss-white)!important;font-family:Arial,Helvetica,sans-serif!important;font-size:clamp(27px,4.2vw,44px)!important;line-height:1.02!important;letter-spacing:-.035em!important}.ssHero p{max-width:680px;margin:0!important;color:#d0cec8!important;font-family:Arial,Helvetica,sans-serif!important;font-size:15px!important;line-height:1.46!important}.ssHeroArt{position:absolute;inset:0 0 0 45%;z-index:1}.ssHeroArt:before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.82) 17%,rgba(8,8,8,.1) 62%)}.ssHeroArt img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.72) contrast(1.05)}.ssUpdated{text-align:right;margin:9px 2px 18px;color:#aaa79f;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:650}
 @media(max-width:700px){.ssSportsNav{gap:3px;margin-top:0;margin-bottom:10px}.ssSportsNav a{min-width:auto;padding:8px 12px;font-size:13px}.ssHero{grid-template-columns:1fr;min-height:190px;border-radius:17px}.ssHeroCopy{padding:20px 20px 19px;max-width:78%}.ssHeroKicker{font-size:10px}.ssHero h1{font-size:26px!important}.ssHero p{font-size:13px!important;line-height:1.42!important}.ssHeroArt{left:50%}.ssHeroArt:before{background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.86) 20%,rgba(8,8,8,.16) 67%)}.ssUpdated{font-size:11px;margin:8px 1px 16px}}
 @media(max-width:430px){.ssHero{min-height:178px}.ssHeroCopy{max-width:82%;padding:18px}.ssHero h1{font-size:24px!important}.ssHero p{font-size:12.5px!important}.ssSportsNav a{padding:7px 10px;font-size:12px}}
+
+/* Sach Sports global foundation polish v2 — matched to approved mobile mockup */
+.ssBrand{display:flex;align-items:center;justify-content:center;gap:10px;margin:4px 0 8px;min-height:42px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.ssBrandMark{display:inline-grid;place-items:center;width:36px;height:31px;transform:skew(-10deg);border:1px solid rgba(240,207,103,.6);border-radius:8px;background:linear-gradient(145deg,#f3d36f 8%,#9a6c16 58%,#e6bf52);color:#080704;font-size:23px;font-weight:1000;line-height:1;box-shadow:0 5px 18px rgba(216,181,75,.12)}
+.ssBrandName{color:#f5f4ef;font-size:18px;font-weight:750;letter-spacing:.12em;white-space:nowrap}.ssBrandName b{color:#e8c557;font-weight:950}
+.ssSportsNav{justify-content:flex-start;margin:0 0 10px;padding:3px 0 5px;gap:4px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.ssSportsNav a{min-width:58px;padding:8px 12px;border-radius:13px;font-size:13px;font-weight:800}
+.ssSportsNav a.active{background:linear-gradient(180deg,#f2d16e,#d2a93f);border-color:#f0cf67;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 14px rgba(216,181,75,.12)}
+.ssHero{min-height:190px;border-width:1.5px;border-radius:14px;background:linear-gradient(102deg,#070707 0%,#090908 54%,#21180a 100%);box-shadow:inset 0 0 24px rgba(216,181,75,.035),0 5px 18px rgba(0,0,0,.18)}
+.ssHeroCopy{padding:21px 24px 22px;max-width:68%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.ssHeroKicker{display:none!important}
+.ssHero h1{margin:0 0 11px!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important;font-size:clamp(26px,4vw,41px)!important;font-weight:820!important;letter-spacing:-.035em!important;line-height:1.03!important;text-wrap:balance}
+.ssHero p{max-width:590px;color:#d8d6d1!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important;font-size:14.5px!important;font-weight:430!important;line-height:1.48!important}
+.ssHeroArt{left:auto;right:0;width:43%;overflow:hidden}
+.ssHeroArt:before{background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.88) 18%,rgba(8,8,8,.16) 58%,rgba(8,8,8,.02) 100%)}
+.ssHeroArt img{width:100%;height:100%;object-fit:cover;object-position:46% center;filter:saturate(.78) contrast(1.13) brightness(.9)}
+.ssUpdated{display:flex;align-items:center;justify-content:flex-start;gap:7px;text-align:left;margin:9px 4px 18px;color:#b8b5ae;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:12px;font-weight:600;white-space:nowrap}
+.ssUpdatedClock{display:inline-grid;place-items:center;width:18px;height:18px;border:1px solid #b8b5ae;border-radius:50%;color:#d8b54b;font-size:12px;line-height:1}
+
+/* Bring the old top-level boxes closer to the approved squarer-round geometry. */
+.origGamesEntry,.origSnapshot .metricRow article,.metricRow article,.legacyIntro details,.legacySection details,.origRankCard,.playerGameStatus,.playerWhy,.perfStatGrid article{border-radius:13px!important}
+
+@media(max-width:700px){
+  .ssBrand{margin-top:2px;margin-bottom:7px;min-height:36px;justify-content:center}.ssBrandMark{width:31px;height:27px;font-size:20px;border-radius:7px}.ssBrandName{font-size:15px;letter-spacing:.11em}
+  .ssSportsNav{gap:2px;margin-bottom:9px;padding-bottom:3px}.ssSportsNav a{min-width:auto;padding:7px 11px;border-radius:12px;font-size:12.5px}
+  .ssHero{min-height:176px;border-radius:13px}
+  .ssHeroCopy{position:relative;z-index:3;max-width:76%;padding:18px 18px 17px}
+  .ssHero h1{font-size:25px!important;line-height:1.03!important;margin-bottom:10px!important}
+  .ssHero p{font-size:12.8px!important;line-height:1.43!important}
+  .ssHeroArt{width:46%;left:auto;right:0}
+  .ssHeroArt:before{background:linear-gradient(90deg,#080808 0%,rgba(8,8,8,.93) 12%,rgba(8,8,8,.34) 56%,rgba(8,8,8,.04) 100%)}
+  .ssHeroArt img{object-fit:cover;object-position:43% center}
+  .ssUpdated{margin:8px 3px 15px;font-size:11px;gap:6px}.ssUpdatedClock{width:16px;height:16px;font-size:10px}
+}
+@media(max-width:430px){
+  .ssHero{min-height:170px}.ssHeroCopy{max-width:78%;padding:17px 16px 16px}.ssHero h1{font-size:23px!important}.ssHero p{font-size:12.2px!important}.ssHeroArt{width:47%}.ssSportsNav a{padding:7px 10px;font-size:12px}
+}
