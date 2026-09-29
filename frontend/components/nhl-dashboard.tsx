@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
@@ -123,8 +124,8 @@ export function NhlDashboard({data}:{data:NhlOverview}){
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="nhlShell">
-    <section className="hero"><div className="heroTop"><Link href="/" className="nhlMenu">▦⌄</Link><h1>NHL Intelligence Center</h1></div><p>Today’s strongest NHL player and goalie projections with matchup intelligence in one place.</p></section>
-    <div className="updated">{updated(data.updatedAt)}</div>
+    <IntelligenceHero sport="nhl"/>
+    <UpdatedStamp value={data.updatedAt}/>
 
     <Link className="gamesEntry" href="/nhl/games"><b>🏒 TODAY’S NHL GAMES</b><span>Schedule · Matchups · Game status ›</span></Link>
 

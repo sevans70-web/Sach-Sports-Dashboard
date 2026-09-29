@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -210,13 +211,7 @@ export function SoccerDashboard() {
 
   return (
     <div className="origMlb soccerDashboard">
-      <section className="origHero soccerHero">
-        <h1>Soccer Intelligence Center</h1>
-        <p>
-          Start with the strongest players in each market, review the reason behind every
-          ranking, and open the full Top 25 only when you need more depth.
-        </p>
-      </section>
+      <IntelligenceHero sport="soccer"/>
 
       <section className="soccerLeagueRow">
         <label>Leagues</label>
@@ -233,9 +228,7 @@ export function SoccerDashboard() {
         </select>
       </section>
 
-      <div className="origUpdated">
-        Updated {data.updatedAt ? fmtTime(data.updatedAt) : "—"}
-      </div>
+      <UpdatedStamp value={data.updatedAt}/>
 
       <Link
         className="origGamesEntry soccerGamesEntry"

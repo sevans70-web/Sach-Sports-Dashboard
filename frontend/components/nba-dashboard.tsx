@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
@@ -124,8 +125,8 @@ export function NbaDashboard({data}:{data:NbaOverview}){
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="nbaShell">
-    <section className="hero"><div className="heroTop"><Link href="/" className="nbaMenu">▦⌄</Link><h1>NBA Intelligence Center</h1></div><p>Today’s strongest NBA player projections and matchup intelligence in one place.</p></section>
-    <div className="updated">{updated(data.updatedAt)}</div>
+    <IntelligenceHero sport="nba"/>
+    <UpdatedStamp value={data.updatedAt}/>
 
     <Link className="gamesEntry" href="/nba/games"><b>🏀 {gamesToday.length?"TODAY’S NBA GAMES":"UPCOMING NBA GAMES"}</b><span>{nextSlateDate&&!gamesToday.length?`Next slate ${nextSlateDate} · `:""}Schedule · Matchups · Game status ›</span></Link>
 

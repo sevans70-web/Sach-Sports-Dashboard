@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
@@ -123,8 +124,8 @@ export function CbbDashboard({data}:{data:CbbOverview}){
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="cbbShell">
-    <section className="hero"><div className="heroTop"><Link href="/" className="cbbMenu">▦⌄</Link><h1>College Basketball Intelligence Center</h1></div><p>Today’s strongest college basketball player projections and matchup intelligence in one place.</p></section>
-    <div className="updated">{updated(data.updatedAt)}</div>
+    <IntelligenceHero sport="cbb"/>
+    <UpdatedStamp value={data.updatedAt}/>
 
     <Link className="gamesEntry" href="/cbb/games"><b>🏀 {gamesToday.length?"TODAY’S CBB GAMES":"UPCOMING CBB GAMES"}</b><span>{nextSlateDate&&!gamesToday.length?`Next slate ${nextSlateDate} · `:""}Schedule · Matchups · Game status ›</span></Link>
 

@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BATTER_MARKETS, PITCHER_MARKETS, playerHeadshot, rankingName, rankingPlayerId, numberValue, percentValue, type RankingRow } from "@/lib/mlb";
@@ -151,8 +152,8 @@ export function MlbDashboard(){
   const updated=rankings.data.updatedAt?new Date(rankings.data.updatedAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"Live";
 
   return <div className="origMlb">
-    <section className="origHero"><h1>MLB Intelligence Center</h1><p>Start with the strongest players in each market, review the reason behind every ranking, and open the full Top 25 only when you need more depth.</p></section>
-    <div className="origUpdated">Last updated {updated}</div>
+    <IntelligenceHero sport="mlb"/>
+    <UpdatedStamp value={rankings.data.updatedAt}/>
 
     <Link className="origGamesEntry" href="/mlb/games"><strong>⚾ TODAY&apos;S MLB GAMES</strong><span>Open today&apos;s slate, lineups &amp; Game Intelligence ›</span></Link>
     <section className="origSnapshot"><div className="snapshotTitleRow"><h2>Today&apos;s MLB Snapshot</h2><p>Always confirm starting lineups</p></div><div className="origMetrics snapshot"><article className="green"><span>GAMES</span><strong>{schedule.loading?"…":games.length}</strong><small>{liveGames.length} live · {finalGames.length} final</small></article><article><span>LINEUPS</span><strong>{schedule.data.lineupsConfirmed!=null?`${schedule.data.lineupsConfirmed}/${Math.max(games.length*2,0)}`:"—"}</strong><small>Confirmed</small></article><article className="gold"><span>ALERTS</span><strong>{delayed}</strong><small>{delayed?"Delayed / suspended":"No active alerts"}</small></article></div></section>

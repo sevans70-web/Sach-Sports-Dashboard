@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#070707"/><stop offset=".55" stop-color="#16120a"/><stop offset="1" stop-color="#4b3510"/></linearGradient><radialGradient id="r" cx="78%" cy="45%"><stop stop-color="#e8c45d" stop-opacity=".42"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient><filter id="blur"><feGaussianBlur stdDeviation="18"/></filter></defs>
+<rect width="960" height="420" fill="url(#g)"/><rect width="960" height="420" fill="url(#r)"/>
+<circle cx="760" cy="210" r="150" fill="none" stroke="#d9b85d" stroke-opacity=".25" stroke-width="2"/><circle cx="760" cy="210" r="115" fill="#d9b85d" fill-opacity=".05"/>
+<text x="760" y="260" text-anchor="middle" font-size="155" font-family="Arial, sans-serif">⚾</text>
+<text x="740" y="350" text-anchor="middle" font-size="22" letter-spacing="7" fill="#d9b85d" fill-opacity=".55" font-family="Arial, sans-serif">BASEBALL</text>
+<path d="M520 355 C650 300 780 390 940 310" fill="none" stroke="#d9b85d" stroke-opacity=".13" stroke-width="24" filter="url(#blur)"/>
+</svg>

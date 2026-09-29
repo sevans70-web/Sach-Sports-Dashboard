@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
@@ -121,8 +122,8 @@ export function WnbaDashboard({data}:{data:WnbaOverview}){
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="wnbaShell">
-    <section className="hero"><div className="heroTop"><Link href="/" className="wnbaMenu">▦⌄</Link><h1>WNBA Intelligence Center</h1></div><p>Today’s strongest WNBA player projections and matchup intelligence in one place.</p></section>
-    <div className="updated">{updated(data.updatedAt)}</div>
+    <IntelligenceHero sport="wnba"/>
+    <UpdatedStamp value={data.updatedAt}/>
 
     <Link className="gamesEntry" href="/wnba/games"><b>🏀 TODAY’S WNBA GAMES</b><span>Schedule · Matchups · Game status ›</span></Link>
 
