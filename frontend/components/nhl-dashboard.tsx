@@ -9,7 +9,7 @@ type Row={
   gameTime:string;gameId?:string;gameState?:string;gameStatus?:string;headshot:string;
   sportsbookLine:number|null;bookmakerCount:number;modelProjection:number|null;modelProbability:number|null;
   giScore:number;prediction:"OVER"|"UNDER"|null;summary:string;
-  movement?:"new"|"up"|"down"|"same";previousRank?:number|null
+  movement?:"new"|"up"|"down"|"same";previousRank?:number|null;frozen?:boolean;lockedAtPuckDrop?:boolean
 };
 type RankingResponse={success:boolean;market:NhlMarketKey;rows:Row[];updatedAt?:string;error?:string;source?:string};
 type PerfResponse={connected:boolean;hits:number;settled:number;pending:number;total:number;hitRate:number|null;results:Array<{key:string;playerName:string;pickSide:string;sportsbookLine:number|null;modelProjection?:number|null;actual:number|null;status:string}>};
@@ -27,18 +27,20 @@ const meta=(k:NhlMarketKey)=>NHL_MARKETS.find(x=>x[0]===k)!;
 const fmt=(v:number|null,d=1)=>v==null?"—":Number(v).toFixed(d);
 function when(v:string){if(!v)return"Game time TBD";const d=new Date(v);return Number.isNaN(d.getTime())?"Game time TBD":new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d)}
 function updated(v:string){const d=new Date(v);return `Updated ${new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d)}`}
-function predictionText(row:Row,market:NhlMarketKey){
+function projectionText(row:Row,market:NhlMarketKey){
   if(row.modelProjection==null)return "—";
-  const value=fmt(row.modelProjection);
-  const labels:Record<string,string>={
-    shots_on_goal:"shots on goal",points:"points",goals:"goals",assists:"assists",blocked_shots:"blocked shots",goalie_saves:"saves"
-  };
-  return `${value} ${labels[market]||meta(market)[2]}`;
+  const labels:Record<string,string>={shots_on_goal:"shots on goal",points:"points",goals:"goals",assists:"assists",blocked_shots:"blocked shots",goalie_saves:"saves"};
+  return `${fmt(row.modelProjection)} ${labels[market]||meta(market)[2]}`;
+}
+function predictionText(row:Row){
+  if(!row.prediction||row.sportsbookLine==null)return "Model only — waiting for verified line";
+  return `${row.prediction} ${row.sportsbookLine}`;
 }
 
 function Card({row,market}:{row:Row;market:NhlMarketKey}){
   const[open,setOpen]=useState(false);
-  const prediction=predictionText(row,market);
+  const prediction=predictionText(row);
+  const projection=projectionText(row,market);
   const confidence=row.modelProbability==null?"—":`${fmt(row.modelProbability)}%`;
 
   return <article className="rankCard">
@@ -51,7 +53,9 @@ function Card({row,market}:{row:Row;market:NhlMarketKey}){
 
       {row.gameState==="in"?<div className="liveProgress"><b>● LIVE</b><span>{row.gameStatus||"In progress"}</span></div>:row.gameState==="post"?<p className="finalResult"><b>FINAL</b><span>Final stat grading updates from saved prediction history.</span></p>:null}
 
+      {row.frozen?<span className="lockedBadge">🔒 TOP 25 LOCKED AT PUCK DROP</span>:null}
       <p className="projectionLine"><b>Sach Prediction:</b> {prediction}</p>
+      <p className="modelLine"><b>Model Projection:</b> {projection}</p>
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
     </div>
 
@@ -63,7 +67,7 @@ function Card({row,market}:{row:Row;market:NhlMarketKey}){
       <div className="detailMetric green"><span>CONFIDENCE</span><b>{confidence}</b></div>
       <div className="detailMetric"><span>REFERENCE LINE</span><b>{row.sportsbookLine??"—"}</b></div>
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount}</b></div>
-      <div className="projectionBox"><span>SACH PREDICTION</span><strong>{prediction}</strong></div>
+      <div className="projectionBox"><span>SACH PREDICTION</span><strong>{prediction}</strong><small>Model projection: {projection}</small></div>
       <div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div>
       <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&gi=${row.giScore}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup||"")}&gameTime=${encodeURIComponent(row.gameTime||"")}&status=${encodeURIComponent(row.gameStatus||"")}&books=${row.bookmakerCount}&summary=${encodeURIComponent(row.summary||"")}&photo=${encodeURIComponent(row.headshot||"")}&logo=${encodeURIComponent(row.teamLogo||"")}`}>Open full player card</Link>
     </div>:null}
@@ -182,7 +186,7 @@ export function NhlDashboard({data}:{data:NhlOverview}){
       .rankNo{font-size:21px;font-weight:900}.rankNo span{display:block;margin-top:6px;font-size:10px;color:#9da1a8}.rankNo .new{color:#d9b85d}.rankNo .up{color:#20df7f}.rankNo .down{color:#ff6b6b}
       .rankPhoto{position:relative}.rankPhoto img,.rankPhoto>div{width:74px;height:74px;border-radius:50%;border:3px solid #d9b85d;object-fit:cover}.rankPhoto .teamLogo{position:absolute;right:-2px;bottom:-2px;width:26px!important;height:26px!important;border:2px solid #20df7f!important;background:#111214;object-fit:contain}.rankPhoto>div{display:grid;place-items:center;color:#d9b85d;font-weight:900}
       .rankBody strong{display:block;font-size:18px}.rankBody span{display:block;color:#a9acb3;font-size:13px;margin-top:3px}.rankBody b{display:block;font-size:14px;margin-top:7px}.rankBody p{color:#a9acb3;font-size:12px;margin:5px 0 0}
-      .projectionLine{color:#fff!important;font-weight:800}.projectionLine b{display:inline!important;color:#d9b85d!important;margin:0!important}.confidenceLine{color:#fff!important}.confidenceLine b{display:inline!important;color:#20df7f!important;margin:0!important}
+      .projectionLine{color:#fff!important;font-weight:800}.projectionLine b{display:inline!important;color:#d9b85d!important;margin:0!important}.modelLine{color:#d9dbe0!important}.modelLine b{display:inline!important;color:#fff!important;margin:0!important}.confidenceLine{color:#fff!important}.confidenceLine b{display:inline!important;color:#20df7f!important;margin:0!important}.lockedBadge{display:inline-block!important;margin-top:7px!important;padding:4px 7px;border:1px solid #d9b85d;border-radius:8px;color:#d9b85d!important;font-size:9px!important;font-weight:900!important}.projectionBox small{display:block;color:#c7c9ce;margin-top:4px}
       .rankGi{text-align:right}.rankGi span{display:block;color:#a9acb3;font-size:10px;font-weight:900}.rankGi strong{display:block;color:#d9b85d;font-size:19px}
       .intelButton{grid-column:2/-1;background:#080a09;color:#fff;border:2.5px solid #20df7f;border-radius:14px;padding:9px;font-size:15px;font-weight:700}
       .detail{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.detailMetric,.why,.projectionBox{border:1px solid #34373d;border-radius:10px;padding:8px;background:#0d0f10}.detailMetric.green{border-color:#20df7f}.detailMetric.gold{border-color:#d9b85d}.detailMetric span,.projectionBox span{display:block;color:#9da1a8;font-size:9px}.projectionBox{grid-column:1/-1;border-color:#20df7f}.projectionBox strong{display:block;color:#d9b85d;font-size:18px;margin-top:3px}.why{grid-column:1/-1;border-left:4px solid #20df7f}.why>b{color:#d9b85d}.why p{color:#d7d8db;font-size:12px}.fullCard{grid-column:1/-1;text-align:center;border:1.5px solid #34373d;border-radius:11px;padding:9px;color:#fff!important;text-decoration:none!important}
