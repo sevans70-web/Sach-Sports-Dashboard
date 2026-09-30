@@ -345,3 +345,31 @@
   .ssHero.ssHeroFinal{min-height:0!important;height:auto!important}
   .ssHeroFinalImage{width:100%!important;height:auto!important;object-fit:contain!important}
 }
+
+/* ===== V17 APPROVED REFERENCE HERO =====
+   Uses the exact approved hero crop from the eight signed-off mockups.
+   Do not re-crop, mask, resize independently, round again, or add a second border. */
+.ssHero.ssHeroFinal{
+  width:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.ssHeroFinalImage{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  filter:none!important;
+}
