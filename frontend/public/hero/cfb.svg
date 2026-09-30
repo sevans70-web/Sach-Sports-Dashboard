@@ -1,14 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
-<defs>
- <linearGradient id="g" x1="0" x2="1"><stop stop-color="#070707"/><stop offset=".58" stop-color="#131009"/><stop offset="1" stop-color="#3b2b0e"/></linearGradient>
- <radialGradient id="r" cx="66%" cy="47%"><stop stop-color="#e8c45d" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
- <filter id="glow"><feGaussianBlur stdDeviation="16"/></filter>
-</defs>
-<rect width="960" height="420" fill="url(#g)"/><rect width="960" height="420" fill="url(#r)"/>
-<circle cx="625" cy="206" r="142" fill="none" stroke="#d9b85d" stroke-opacity=".23" stroke-width="2"/>
-<circle cx="625" cy="206" r="105" fill="#d9b85d" fill-opacity=".045"/>
-<circle cx="625" cy="206" r="74" fill="#d9b85d" fill-opacity=".04"/>
-<text x="625" y="255" text-anchor="middle" font-size="150" font-family="Apple Color Emoji,Segoe UI Emoji,Arial,sans-serif">🏈</text>
-<text x="625" y="348" text-anchor="middle" font-size="19" letter-spacing="6" fill="#d9b85d" fill-opacity=".58" font-family="Arial,sans-serif">COLLEGE FOOTBALL</text>
-<path d="M440 350 C555 300 700 382 865 314" fill="none" stroke="#d9b85d" stroke-opacity=".11" stroke-width="22" filter="url(#glow)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320">
+  <defs>
+    <radialGradient id="glow" cx="74%" cy="46%" r="44%">
+      <stop offset="0%" stop-color="#efcc6d" stop-opacity="0.55"/>
+      <stop offset="58%" stop-color="#a6751d" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f1cf74"/>
+      <stop offset="100%" stop-color="#9f7320"/>
+    </linearGradient>
+  </defs>
+  <circle cx="392" cy="154" r="118" fill="url(#glow)"/>
+  <circle cx="404" cy="154" r="92" fill="none" stroke="#d9b85d" stroke-opacity="0.22" stroke-width="2"/>
+  <g transform="translate(226 36)">
+    <path d="M44 237c27-47 54-77 86-96 19-11 40-18 64-19 13 0 25 1 37 5-6 18-9 34-8 50-11-6-24-9-38-10-28-2-56 8-83 28-16 12-34 26-58 42z" fill="#0b0b0b" opacity="0.9"/>
+    <path d="M150 28c18 0 34 4 48 13 14 8 25 19 33 34 8 14 11 28 11 43 0 17-4 31-13 44-9 12-21 22-37 29-16 7-33 9-51 6-17-3-31-10-42-20-17-15-25-34-25-57 0-28 10-51 31-68 14-11 29-18 45-21z" fill="#121212" stroke="#d9b85d" stroke-opacity="0.55" stroke-width="2"/>
+    <path d="M139 44c19 2 35 8 49 18 13 10 22 23 28 40-11-5-22-8-33-8-26 0-51 11-73 34-7-11-10-24-10-39 0-13 4-24 11-34 7-10 16-17 28-23z" fill="#201506"/>
+    <path d="M226 95c12 2 23 7 32 14" fill="none" stroke="#e6c66a" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+    <path d="M229 114c15 4 27 12 36 23" fill="none" stroke="#e6c66a" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <path d="M107 111c-7 12-11 25-11 40 0 13 4 25 11 37" fill="none" stroke="#e6c66a" stroke-width="3.5" stroke-linecap="round" opacity="0.55"/>
+    <ellipse cx="213" cy="184" rx="29" ry="18" fill="#6b4a21" transform="rotate(-15 213 184)"/>
+    <path d="M194 181c12 7 26 11 39 16" fill="none" stroke="#f4f0e4" stroke-width="2.3" stroke-linecap="round"/>
+    <path d="M207 171v23" stroke="#f4f0e4" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M214 169v24" stroke="#f4f0e4" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M221 167v23" stroke="#f4f0e4" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M65 245c36-38 71-59 105-62 28-2 52 7 73 30l-14 35H57z" fill="#121212"/>
+    <path d="M84 247c28-25 53-38 75-39 17-1 35 5 53 18" fill="none" stroke="#d9b85d" stroke-opacity="0.42" stroke-width="3"/>
+  </g>
 </svg>

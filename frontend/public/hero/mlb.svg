@@ -1,14 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
-<defs>
- <linearGradient id="g" x1="0" x2="1"><stop stop-color="#070707"/><stop offset=".58" stop-color="#131009"/><stop offset="1" stop-color="#3b2b0e"/></linearGradient>
- <radialGradient id="r" cx="66%" cy="47%"><stop stop-color="#e8c45d" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
- <filter id="glow"><feGaussianBlur stdDeviation="16"/></filter>
-</defs>
-<rect width="960" height="420" fill="url(#g)"/><rect width="960" height="420" fill="url(#r)"/>
-<circle cx="625" cy="206" r="142" fill="none" stroke="#d9b85d" stroke-opacity=".23" stroke-width="2"/>
-<circle cx="625" cy="206" r="105" fill="#d9b85d" fill-opacity=".045"/>
-<circle cx="625" cy="206" r="74" fill="#d9b85d" fill-opacity=".04"/>
-<text x="625" y="255" text-anchor="middle" font-size="150" font-family="Apple Color Emoji,Segoe UI Emoji,Arial,sans-serif">⚾</text>
-<text x="625" y="348" text-anchor="middle" font-size="19" letter-spacing="6" fill="#d9b85d" fill-opacity=".58" font-family="Arial,sans-serif">BASEBALL</text>
-<path d="M440 350 C555 300 700 382 865 314" fill="none" stroke="#d9b85d" stroke-opacity=".11" stroke-width="22" filter="url(#glow)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320">
+  <defs>
+    <radialGradient id="glow" cx="75%" cy="48%" r="44%">
+      <stop offset="0%" stop-color="#efcb6d" stop-opacity="0.5"/>
+      <stop offset="60%" stop-color="#b07b1b" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bat" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e6c66a"/>
+      <stop offset="100%" stop-color="#976b17"/>
+    </linearGradient>
+  </defs>
+  <circle cx="396" cy="160" r="116" fill="url(#glow)"/>
+  <circle cx="406" cy="160" r="92" fill="none" stroke="#d9b85d" stroke-opacity="0.22" stroke-width="2"/>
+  <g transform="translate(230 36)">
+    <path d="M176 40l22 8-90 154-22-8z" fill="url(#bat)"/>
+    <path d="M186 31l24 9-5 14-24-9z" fill="#f0d074"/>
+    <path d="M98 95c15-24 39-39 67-42 12-1 24 1 36 6-7 9-12 20-13 34-1 11 1 22 7 34-14-2-27 0-39 4-18 7-35 20-50 40-6-12-9-24-9-36 0-14 0-28 1-40z" fill="#111" opacity="0.94"/>
+    <circle cx="170" cy="79" r="35" fill="#141414" stroke="#d9b85d" stroke-opacity="0.52" stroke-width="2"/>
+    <path d="M143 89c6-7 14-12 25-14 10-2 20 0 30 5" fill="none" stroke="#e6c66a" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+    <path d="M145 118c22-12 43-18 64-16 20 1 39 9 56 25l-12 36c-23-20-47-29-71-26-21 2-42 13-62 34l-12-39c4-5 11-10 20-14 6-3 11-6 17-10z" fill="#0d0d0d"/>
+    <path d="M130 238c16-28 33-49 52-63 18-13 37-20 59-20 23 0 43 8 61 24l12 39H102z" fill="#121212"/>
+    <path d="M142 238c19-21 38-34 57-38 18-3 37 2 58 16" fill="none" stroke="#d9b85d" stroke-opacity="0.42" stroke-width="3"/>
+    <circle cx="282" cy="95" r="14" fill="#fbfbfa" opacity="0.98"/>
+    <path d="M274 85c3 5 4 11 3 18" fill="none" stroke="#b93030" stroke-width="1.5"/>
+    <path d="M290 86c-3 5-4 11-3 18" fill="none" stroke="#b93030" stroke-width="1.5"/>
+    <path d="M143 144l46 18" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2"/>
+  </g>
 </svg>

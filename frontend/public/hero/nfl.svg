@@ -1,14 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
-<defs>
- <linearGradient id="g" x1="0" x2="1"><stop stop-color="#070707"/><stop offset=".58" stop-color="#131009"/><stop offset="1" stop-color="#3b2b0e"/></linearGradient>
- <radialGradient id="r" cx="66%" cy="47%"><stop stop-color="#e8c45d" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
- <filter id="glow"><feGaussianBlur stdDeviation="16"/></filter>
-</defs>
-<rect width="960" height="420" fill="url(#g)"/><rect width="960" height="420" fill="url(#r)"/>
-<circle cx="625" cy="206" r="142" fill="none" stroke="#d9b85d" stroke-opacity=".23" stroke-width="2"/>
-<circle cx="625" cy="206" r="105" fill="#d9b85d" fill-opacity=".045"/>
-<circle cx="625" cy="206" r="74" fill="#d9b85d" fill-opacity=".04"/>
-<text x="625" y="255" text-anchor="middle" font-size="150" font-family="Apple Color Emoji,Segoe UI Emoji,Arial,sans-serif">🏈</text>
-<text x="625" y="348" text-anchor="middle" font-size="19" letter-spacing="6" fill="#d9b85d" fill-opacity=".58" font-family="Arial,sans-serif">FOOTBALL</text>
-<path d="M440 350 C555 300 700 382 865 314" fill="none" stroke="#d9b85d" stroke-opacity=".11" stroke-width="22" filter="url(#glow)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320">
+  <defs>
+    <radialGradient id="glow" cx="72%" cy="46%" r="44%">
+      <stop offset="0%" stop-color="#f0cd72" stop-opacity="0.58"/>
+      <stop offset="55%" stop-color="#ad7b1e" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f1cf74"/>
+      <stop offset="100%" stop-color="#9f7320"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#050505"/>
+    </linearGradient>
+  </defs>
+  <rect width="520" height="320" fill="none"/>
+  <circle cx="380" cy="152" r="118" fill="url(#glow)"/>
+  <circle cx="402" cy="150" r="92" fill="none" stroke="#d9b85d" stroke-opacity="0.22" stroke-width="2"/>
+  <circle cx="402" cy="150" r="72" fill="none" stroke="#d9b85d" stroke-opacity="0.16" stroke-width="1.5"/>
+  <g transform="translate(205 36)">
+    <path d="M58 232c15-41 28-67 46-83 20-18 44-28 74-31 31-2 50 3 76 18 16 9 24 20 31 33-18 8-31 21-39 39-16-14-34-21-55-23-22-2-42 1-63 9-18 7-38 19-70 38z" fill="#0a0a0a" opacity="0.92"/>
+    <path d="M121 24c34 1 63 18 80 47 8 14 12 29 12 44-1 10-2 17-5 24-4 8-10 16-18 22l18 11c9 6 15 12 18 18-17 7-35 7-53 0l-47-18c-13-5-24-13-31-24-9-14-13-30-13-47 0-21 7-40 20-54 10-14 21-20 38-23 0 0 5 0 7 0h-26z" fill="url(#dark)" stroke="#d9b85d" stroke-opacity="0.55" stroke-width="2"/>
+    <path d="M155 42c22 4 40 16 52 36 7 11 10 24 10 38-6-5-13-10-23-13-12-4-24-5-36-4-11 2-24 6-35 15-6-10-8-21-8-33 0-13 3-25 9-35 8-13 19-22 31-29z" fill="#201507"/>
+    <path d="M212 104c19 3 35 12 47 27" fill="none" stroke="#e6c66a" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+    <path d="M242 97c10 1 18 4 26 10" fill="none" stroke="#e6c66a" stroke-width="4" stroke-linecap="round" opacity="0.72"/>
+    <path d="M127 116c-7 15-9 30-4 45 7 18 23 32 43 41" fill="none" stroke="#e6c66a" stroke-width="3.5" stroke-linecap="round" opacity="0.55"/>
+    <path d="M154 83c26-11 53-12 78-1 21 9 37 25 47 47" fill="none" stroke="#ffffff" stroke-opacity="0.11" stroke-width="1.5"/>
+    <ellipse cx="243" cy="166" rx="29" ry="18" fill="#6b4a21" transform="rotate(24 243 166)"/>
+    <path d="M226 161c13 8 24 15 34 24" fill="none" stroke="#f4f0e4" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M239 152l10 20" stroke="#f4f0e4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M247 148l10 20" stroke="#f4f0e4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M255 144l10 20" stroke="#f4f0e4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M96 234c28-25 49-38 71-46 18-7 36-10 55-8 20 1 37 8 52 22l-14 42h-156z" fill="#121212"/>
+    <path d="M113 240c31-22 57-32 79-32 20 0 38 8 53 23" fill="none" stroke="#d9b85d" stroke-opacity="0.44" stroke-width="3"/>
+  </g>
 </svg>

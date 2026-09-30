@@ -1,14 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
-<defs>
- <linearGradient id="g" x1="0" x2="1"><stop stop-color="#070707"/><stop offset=".58" stop-color="#131009"/><stop offset="1" stop-color="#3b2b0e"/></linearGradient>
- <radialGradient id="r" cx="66%" cy="47%"><stop stop-color="#e8c45d" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
- <filter id="glow"><feGaussianBlur stdDeviation="16"/></filter>
-</defs>
-<rect width="960" height="420" fill="url(#g)"/><rect width="960" height="420" fill="url(#r)"/>
-<circle cx="625" cy="206" r="142" fill="none" stroke="#d9b85d" stroke-opacity=".23" stroke-width="2"/>
-<circle cx="625" cy="206" r="105" fill="#d9b85d" fill-opacity=".045"/>
-<circle cx="625" cy="206" r="74" fill="#d9b85d" fill-opacity=".04"/>
-<text x="625" y="255" text-anchor="middle" font-size="150" font-family="Apple Color Emoji,Segoe UI Emoji,Arial,sans-serif">🏒</text>
-<text x="625" y="348" text-anchor="middle" font-size="19" letter-spacing="6" fill="#d9b85d" fill-opacity=".58" font-family="Arial,sans-serif">HOCKEY</text>
-<path d="M440 350 C555 300 700 382 865 314" fill="none" stroke="#d9b85d" stroke-opacity=".11" stroke-width="22" filter="url(#glow)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320">
+  <defs>
+    <radialGradient id="glow" cx="74%" cy="46%" r="44%">
+      <stop offset="0%" stop-color="#efcb6d" stop-opacity="0.54"/>
+      <stop offset="58%" stop-color="#ad7a1c" stop-opacity="0.17"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="392" cy="152" r="116" fill="url(#glow)"/>
+  <circle cx="405" cy="152" r="92" fill="none" stroke="#d9b85d" stroke-opacity="0.22" stroke-width="2"/>
+  <g transform="translate(228 28)">
+    <circle cx="170" cy="78" r="25" fill="#141414" stroke="#d9b85d" stroke-opacity="0.42" stroke-width="2"/>
+    <path d="M150 77h40M154 89h32M160 100h20" stroke="#e6c66a" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round"/>
+    <path d="M164 101c16 5 28 17 35 36 7 17 8 36 3 57-5 20-15 38-32 54" fill="none" stroke="#171717" stroke-width="18" stroke-linecap="round"/>
+    <path d="M184 123c26-3 47 2 65 18" fill="none" stroke="#171717" stroke-width="13" stroke-linecap="round"/>
+    <path d="M166 133c-16 14-32 29-49 47" fill="none" stroke="#171717" stroke-width="13" stroke-linecap="round"/>
+    <path d="M168 205c-10 17-17 35-22 55" fill="none" stroke="#171717" stroke-width="12" stroke-linecap="round"/>
+    <path d="M175 205c17 11 31 25 43 42" fill="none" stroke="#171717" stroke-width="12" stroke-linecap="round"/>
+    <path d="M247 140c18 9 34 18 50 29" fill="none" stroke="#171717" stroke-width="10" stroke-linecap="round"/>
+    <path d="M291 170l44 71" fill="none" stroke="#a87b22" stroke-width="7" stroke-linecap="round"/>
+    <path d="M276 238h62" fill="none" stroke="#d9b85d" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="96" cy="207" rx="17" ry="7" fill="#141414"/>
+    <path d="M73 233c46 8 88 8 127 1" fill="none" stroke="#d9b85d" stroke-opacity="0.28" stroke-width="3"/>
+  </g>
 </svg>
