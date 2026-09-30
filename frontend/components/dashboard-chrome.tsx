@@ -94,20 +94,17 @@ export function SportsNav({ active }: { active: SportKey }) {
 
 export function IntelligenceHero({ sport }: { sport: SportKey }) {
   const c = HERO_COPY[sport];
-  const titleClass = sport === "cbb" ? "ssHeroTitle ssHeroTitle--balanced" : "ssHeroTitle ssHeroTitle--singleLine";
 
   return (
     <>
       <BrandBar />
       <SportsNav active={sport} />
-      <section className={`ssHero ssHero-${sport}`}>
-        <div className="ssHeroCopy">
-          <h1 className={titleClass}>{c.title}</h1>
-          <p>{c.message}</p>
-        </div>
-        <div className="ssHeroArt" aria-hidden="true">
-          <img src={HERO_ART[sport]} alt="" />
-        </div>
+      <section className={`ssHero ssHero-${sport} ssHeroFinal`} aria-label={`${c.title}. ${c.message}`}>
+        <img
+          className="ssHeroFinalImage"
+          src={HERO_ART[sport]}
+          alt={`${c.title}. ${c.message}`}
+        />
       </section>
     </>
   );

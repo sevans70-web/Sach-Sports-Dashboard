@@ -293,3 +293,55 @@
   .ssHero-soccer .ssHeroArt img{width:77%!important;height:81%!important;top:9.5%!important}
   .ssHero-cbb .ssHeroArt img{width:77%!important;height:81%!important;top:9.5%!important}
 }
+
+/* ===== V12 FINAL APPROVED HERO ART =====
+   The approved PNGs already contain the complete composition: gold frame,
+   title, body copy, fade, atmosphere and athlete placement. Render them as-is.
+   Do not add masks, overlays, filters, crop rules, or separate hero copy. */
+.ssHero.ssHeroFinal{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  isolation:auto!important;
+}
+.ssHero.ssHeroFinal::before,
+.ssHero.ssHeroFinal::after{
+  content:none!important;
+  display:none!important;
+}
+.ssHeroFinalImage{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  opacity:1!important;
+  filter:none!important;
+  transform:none!important;
+  -webkit-mask-image:none!important;
+  mask-image:none!important;
+  -webkit-mask-size:auto!important;
+  mask-size:auto!important;
+}
+@media(max-width:700px){
+  .ssHero.ssHeroFinal{min-height:0!important;height:auto!important}
+  .ssHeroFinalImage{width:100%!important;height:auto!important;object-fit:contain!important}
+}
+@media(max-width:430px){
+  .ssHero.ssHeroFinal{min-height:0!important;height:auto!important}
+  .ssHeroFinalImage{width:100%!important;height:auto!important;object-fit:contain!important}
+}
