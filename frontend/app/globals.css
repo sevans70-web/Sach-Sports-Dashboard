@@ -94,3 +94,66 @@
 .ssUpdated{display:flex;align-items:center;justify-content:flex-start;gap:7px;margin:10px 2px 18px;color:#b4afa3;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:750}.ssUpdatedIcon{width:16px;height:16px;color:#d9b85d;flex:0 0 auto}
 @media(max-width:700px){.ssBrand{margin:4px 0 12px}.ssBrandMark{width:38px;height:38px;font-size:23px}.ssBrandWordmark{font-size:16px;letter-spacing:.12em}.ssSportsNav{gap:4px;margin-bottom:10px}.ssSportsNav a{padding:8px 2px;font-size:11px;border-radius:14px}.ssHero{min-height:210px;border-radius:22px}.ssHeroArt img{width:96%;height:96%;top:2%;right:1%;bottom:auto;object-fit:contain;object-position:right center}.ssHeroCopy{width:72%;padding:18px 18px 16px}.ssHeroTitle{font-size:22px!important;line-height:1.02!important}.ssHeroTitle--singleLine{white-space:nowrap}.ssHeroTitle--balanced{font-size:20.5px!important;line-height:1.05!important;white-space:normal}.ssHero p{font-size:14px!important;line-height:1.43!important;max-width:100%}.ssUpdated{font-size:11px;margin:8px 1px 16px}}
 @media(max-width:430px){.ssBrandWordmark{font-size:15px;letter-spacing:.11em}.ssSportsNav a{font-size:10px;padding:8px 1px}.ssHero{min-height:198px}.ssHeroArt img{width:94%;height:94%;top:3%;right:1%;bottom:auto;object-fit:contain;object-position:right center}.ssHeroCopy{width:73%;padding:17px 16px 15px}.ssHeroTitle{font-size:20px!important}.ssHeroTitle--balanced{font-size:18.5px!important}.ssHero p{font-size:13.25px!important;line-height:1.42!important}.ssUpdated{font-size:10.8px}}
+
+/* ===== Hero blend + scale correction v9 =====
+   Goal: match the NBA's seamless image transition across every sport,
+   while keeping each athlete clear of the primary copy area. */
+
+/* Smooth the left edge of every hero image into the hero background.
+   The mask begins fully transparent and ramps gradually, eliminating
+   the pasted-in vertical edge without adding a dark overlay. */
+.ssHeroArt img{
+  -webkit-mask-image:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,0,0,.08) 10%,
+    rgba(0,0,0,.28) 20%,
+    rgba(0,0,0,.62) 32%,
+    #000 46%,
+    #000 100%
+  )!important;
+  mask-image:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,0,0,.08) 10%,
+    rgba(0,0,0,.28) 20%,
+    rgba(0,0,0,.62) 32%,
+    #000 46%,
+    #000 100%
+  )!important;
+  object-position:right center!important;
+}
+
+/* Preserve the approved typography. Image placement, not smaller text,
+   is used to create separation between copy and the athlete. */
+@media(max-width:700px){
+  .ssHeroCopy{width:72%!important}
+  .ssHeroTitle{font-size:22px!important}
+  .ssHero p{font-size:14px!important;line-height:1.43!important}
+
+  /* Sport-specific image sizing. These are deliberately independent
+     because each approved artwork has a different subject position. */
+  .ssHero-mlb .ssHeroArt img{width:88%!important;height:90%!important;top:5%!important;right:0!important}
+  .ssHero-nfl .ssHeroArt img{width:84%!important;height:88%!important;top:6%!important;right:0!important}
+  .ssHero-cfb .ssHeroArt img{width:82%!important;height:87%!important;top:6.5%!important;right:0!important}
+  .ssHero-nba .ssHeroArt img{width:87%!important;height:90%!important;top:5%!important;right:0!important}
+  .ssHero-wnba .ssHeroArt img{width:86%!important;height:90%!important;top:5%!important;right:0!important}
+  .ssHero-nhl .ssHeroArt img{width:84%!important;height:88%!important;top:6%!important;right:0!important}
+  .ssHero-soccer .ssHeroArt img{width:85%!important;height:89%!important;top:5.5%!important;right:0!important}
+  .ssHero-cbb .ssHeroArt img{width:85%!important;height:89%!important;top:5.5%!important;right:0!important}
+}
+
+@media(max-width:430px){
+  .ssHeroCopy{width:72%!important}
+  .ssHeroTitle{font-size:20px!important}
+  .ssHero p{font-size:13.25px!important;line-height:1.42!important}
+
+  .ssHero-mlb .ssHeroArt img{width:86%!important;height:88%!important;top:6%!important}
+  .ssHero-nfl .ssHeroArt img{width:82%!important;height:86%!important;top:7%!important}
+  .ssHero-cfb .ssHeroArt img{width:80%!important;height:85%!important;top:7.5%!important}
+  .ssHero-nba .ssHeroArt img{width:85%!important;height:88%!important;top:6%!important}
+  .ssHero-wnba .ssHeroArt img{width:84%!important;height:88%!important;top:6%!important}
+  .ssHero-nhl .ssHeroArt img{width:82%!important;height:86%!important;top:7%!important}
+  .ssHero-soccer .ssHeroArt img{width:83%!important;height:87%!important;top:6.5%!important}
+  .ssHero-cbb .ssHeroArt img{width:83%!important;height:87%!important;top:6.5%!important}
+}
