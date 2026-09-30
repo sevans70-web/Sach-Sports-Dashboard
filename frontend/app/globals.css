@@ -157,3 +157,139 @@
   .ssHero-soccer .ssHeroArt img{width:83%!important;height:87%!important;top:6.5%!important}
   .ssHero-cbb .ssHeroArt img{width:83%!important;height:87%!important;top:6.5%!important}
 }
+
+/* ===== V10 hero finish: smaller art + deeper lower-left blend =====
+   Keep NBA's successful blend as the reference. Reduce all hero art
+   slightly so copy stays in open/dark space, and extend the fade on
+   sports that still showed a pasted lower-left edge. */
+
+/* Default/reference blend: smooth left fade without dark overlay. */
+.ssHeroArt img{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 12%,rgba(0,0,0,.34) 24%,rgba(0,0,0,.72) 38%,#000 52%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 12%,rgba(0,0,0,.34) 24%,rgba(0,0,0,.72) 38%,#000 52%,#000 100%)!important;
+}
+
+/* Extra-soft lower-left transition for the images that still read as pasted in.
+   The diagonal ramp carries the natural gold/smoke farther into the black area
+   near the bottom without adding an overlay on top of the artwork. */
+.ssHero-mlb .ssHeroArt img,
+.ssHero-cfb .ssHeroArt img,
+.ssHero-wnba .ssHeroArt img,
+.ssHero-nhl .ssHeroArt img,
+.ssHero-soccer .ssHeroArt img,
+.ssHero-cbb .ssHeroArt img{
+  -webkit-mask-image:linear-gradient(108deg,transparent 0%,rgba(0,0,0,.07) 14%,rgba(0,0,0,.28) 27%,rgba(0,0,0,.60) 40%,rgba(0,0,0,.88) 51%,#000 60%,#000 100%)!important;
+  mask-image:linear-gradient(108deg,transparent 0%,rgba(0,0,0,.07) 14%,rgba(0,0,0,.28) 27%,rgba(0,0,0,.60) 40%,rgba(0,0,0,.88) 51%,#000 60%,#000 100%)!important;
+}
+
+/* NFL only needs a light finishing fade. NBA keeps the cleanest/reference blend. */
+.ssHero-nfl .ssHeroArt img{
+  -webkit-mask-image:linear-gradient(102deg,transparent 0%,rgba(0,0,0,.10) 12%,rgba(0,0,0,.36) 25%,rgba(0,0,0,.72) 39%,#000 53%,#000 100%)!important;
+  mask-image:linear-gradient(102deg,transparent 0%,rgba(0,0,0,.10) 12%,rgba(0,0,0,.36) 25%,rgba(0,0,0,.72) 39%,#000 53%,#000 100%)!important;
+}
+.ssHero-nba .ssHeroArt img{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 10%,rgba(0,0,0,.28) 20%,rgba(0,0,0,.62) 32%,#000 46%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 10%,rgba(0,0,0,.28) 20%,rgba(0,0,0,.62) 32%,#000 46%,#000 100%)!important;
+}
+
+@media(max-width:700px){
+  /* Slightly smaller across the board so no title/body copy sits on the athlete. */
+  .ssHero-mlb .ssHeroArt img{width:84%!important;height:86%!important;top:7%!important;right:0!important}
+  .ssHero-nfl .ssHeroArt img{width:80%!important;height:84%!important;top:8%!important;right:0!important}
+  .ssHero-cfb .ssHeroArt img{width:78%!important;height:82%!important;top:9%!important;right:0!important}
+  .ssHero-nba .ssHeroArt img{width:83%!important;height:86%!important;top:7%!important;right:0!important}
+  .ssHero-wnba .ssHeroArt img{width:82%!important;height:86%!important;top:7%!important;right:0!important}
+  .ssHero-nhl .ssHeroArt img{width:80%!important;height:84%!important;top:8%!important;right:0!important}
+  .ssHero-soccer .ssHeroArt img{width:81%!important;height:85%!important;top:7.5%!important;right:0!important}
+  .ssHero-cbb .ssHeroArt img{width:81%!important;height:85%!important;top:7.5%!important;right:0!important}
+}
+
+@media(max-width:430px){
+  .ssHero-mlb .ssHeroArt img{width:82%!important;height:84%!important;top:8%!important}
+  .ssHero-nfl .ssHeroArt img{width:78%!important;height:82%!important;top:9%!important}
+  .ssHero-cfb .ssHeroArt img{width:76%!important;height:80%!important;top:10%!important}
+  .ssHero-nba .ssHeroArt img{width:81%!important;height:84%!important;top:8%!important}
+  .ssHero-wnba .ssHeroArt img{width:80%!important;height:84%!important;top:8%!important}
+  .ssHero-nhl .ssHeroArt img{width:78%!important;height:82%!important;top:9%!important}
+  .ssHero-soccer .ssHeroArt img{width:79%!important;height:83%!important;top:8.5%!important}
+  .ssHero-cbb .ssHeroArt img{width:79%!important;height:83%!important;top:8.5%!important}
+}
+
+/* ===== V11 hero frame + gold-dust seam finish =====
+   Final hero foundation: visible premium gold outline and a very light
+   gold atmospheric dust at the blend zone so no hard black/image seam reads. */
+.ssHero{
+  border:1.5px solid #d9b85d!important;
+  box-shadow:
+    0 0 0 1px rgba(217,184,93,.12),
+    inset 0 0 0 1px rgba(255,225,138,.05),
+    0 10px 28px rgba(0,0,0,.24)!important;
+}
+
+/* Keep the approved imagery unobstructed. The dust is atmospheric, not a dark overlay. */
+.ssHero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    radial-gradient(ellipse at 44% 74%, rgba(222,184,76,.12) 0%, rgba(222,184,76,.055) 17%, rgba(222,184,76,0) 39%),
+    radial-gradient(ellipse at 51% 52%, rgba(201,153,45,.08) 0%, rgba(201,153,45,.03) 18%, rgba(201,153,45,0) 42%);
+  mix-blend-mode:screen;
+}
+
+/* Copy must remain above artwork + dust. */
+.ssHeroCopy{z-index:3!important}
+.ssHeroArt{z-index:1!important}
+
+/* Finish the image edge with a longer, softer ramp into the natural black.
+   NBA remains the visual reference; all sports now use the same seam philosophy. */
+.ssHeroArt img{
+  -webkit-mask-image:linear-gradient(104deg,
+    transparent 0%,
+    rgba(0,0,0,.05) 11%,
+    rgba(0,0,0,.18) 22%,
+    rgba(0,0,0,.42) 34%,
+    rgba(0,0,0,.72) 45%,
+    rgba(0,0,0,.92) 55%,
+    #000 64%,
+    #000 100%)!important;
+  mask-image:linear-gradient(104deg,
+    transparent 0%,
+    rgba(0,0,0,.05) 11%,
+    rgba(0,0,0,.18) 22%,
+    rgba(0,0,0,.42) 34%,
+    rgba(0,0,0,.72) 45%,
+    rgba(0,0,0,.92) 55%,
+    #000 64%,
+    #000 100%)!important;
+}
+
+/* NBA was already right; preserve its gentler reference blend. */
+.ssHero-nba .ssHeroArt img{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 10%,rgba(0,0,0,.28) 20%,rgba(0,0,0,.62) 32%,#000 46%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 10%,rgba(0,0,0,.28) 20%,rgba(0,0,0,.62) 32%,#000 46%,#000 100%)!important;
+}
+
+/* Keep the V10 scale decisions; only a tiny extra reduction on the sports
+   where copy still pressed into the subject on phone. */
+@media(max-width:700px){
+  .ssHero-mlb .ssHeroArt img{width:82%!important;height:84%!important;top:8%!important}
+  .ssHero-cfb .ssHeroArt img{width:76%!important;height:80%!important;top:10%!important}
+  .ssHero-wnba .ssHeroArt img{width:80%!important;height:84%!important;top:8%!important}
+  .ssHero-nhl .ssHeroArt img{width:78%!important;height:82%!important;top:9%!important}
+  .ssHero-soccer .ssHeroArt img{width:79%!important;height:83%!important;top:8.5%!important}
+  .ssHero-cbb .ssHeroArt img{width:79%!important;height:83%!important;top:8.5%!important}
+}
+
+@media(max-width:430px){
+  .ssHero{border-width:1.5px!important}
+  .ssHero-mlb .ssHeroArt img{width:80%!important;height:82%!important;top:9%!important}
+  .ssHero-cfb .ssHeroArt img{width:74%!important;height:78%!important;top:11%!important}
+  .ssHero-wnba .ssHeroArt img{width:78%!important;height:82%!important;top:9%!important}
+  .ssHero-nhl .ssHeroArt img{width:76%!important;height:80%!important;top:10%!important}
+  .ssHero-soccer .ssHeroArt img{width:77%!important;height:81%!important;top:9.5%!important}
+  .ssHero-cbb .ssHeroArt img{width:77%!important;height:81%!important;top:9.5%!important}
+}
