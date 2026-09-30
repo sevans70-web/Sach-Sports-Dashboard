@@ -57,6 +57,17 @@ export const HERO_COPY: Record<SportKey, { title: string; message: string }> = {
   },
 };
 
+const HERO_ART: Record<SportKey, string> = {
+  mlb: "/hero/mlb.webp",
+  nfl: "/hero/nfl.webp",
+  cfb: "/hero/cfb.webp",
+  nba: "/hero/nba.webp",
+  wnba: "/hero/wnba.webp",
+  nhl: "/hero/nhl.webp",
+  soccer: "/hero/soccer.webp",
+  cbb: "/hero/cbb.webp",
+};
+
 function BrandBar() {
   return (
     <div className="ssBrand" aria-label="Sach Sports">
@@ -83,12 +94,7 @@ export function SportsNav({ active }: { active: SportKey }) {
 
 export function IntelligenceHero({ sport }: { sport: SportKey }) {
   const c = HERO_COPY[sport];
-  const titleClass =
-    sport === "wnba" || sport === "soccer"
-      ? "ssHeroTitle ssHeroTitle--compact"
-      : sport === "cbb"
-      ? "ssHeroTitle ssHeroTitle--balanced"
-      : "ssHeroTitle";
+  const titleClass = sport === "cbb" ? "ssHeroTitle ssHeroTitle--balanced" : "ssHeroTitle ssHeroTitle--singleLine";
 
   return (
     <>
@@ -100,7 +106,7 @@ export function IntelligenceHero({ sport }: { sport: SportKey }) {
           <p>{c.message}</p>
         </div>
         <div className="ssHeroArt" aria-hidden="true">
-          <img src={`/hero/${sport}.svg`} alt="" />
+          <img src={HERO_ART[sport]} alt="" />
         </div>
       </section>
     </>
@@ -124,15 +130,9 @@ export function UpdatedStamp({ value }: { value?: string | Date | null }) {
 
   return (
     <div className="ssUpdated">
-      <svg
-        className="ssUpdatedIcon"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M12 7.6V12.2L15.2 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <svg className="ssUpdatedIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12 2.75a9.25 9.25 0 1 0 9.25 9.25A9.25 9.25 0 0 0 12 2.75Z" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M12 6.8v5.1l3.45 2.05" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <span>{`Last updated ${date} at ${time} ET`}</span>
     </div>
