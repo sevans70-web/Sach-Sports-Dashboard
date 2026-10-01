@@ -597,7 +597,7 @@
   flex-direction:column;
   align-items:center;
   gap:1px;
-  margin-top:8px;
+  margin-top:12px;
   color:#e1e2e1;
   font-family:inherit;
   font-size:11.5px;
@@ -615,7 +615,7 @@
   border-radius:999px;
   color:#d8dada;
   background:#181b1a;
-  font-size:9px;
+  font-size:11.5px;
   line-height:1;
   font-weight:800;
   text-align:center;
@@ -691,13 +691,13 @@
     letter-spacing:-.02em;
   }
   .ssGameWhen{
-    margin-top:7px;
+    margin-top:11px;
     font-size:11.25px;
   }
   .ssGameStatus{
     min-width:68px;
     padding:4px 6px;
-    font-size:8.5px;
+    font-size:11.25px;
   }
 }
 
@@ -736,14 +736,14 @@
     font-size:8.5px;
   }
   .ssGameWhen{
-    margin-top:6px;
+    margin-top:10px;
     font-size:11px;
   }
   .ssGameStatus{
     min-width:0;
     width:100%;
     padding:4px 3px;
-    font-size:8px;
+    font-size:11px;
   }
 }
 
@@ -758,3 +758,9 @@
 @media(max-width:430px){
   .ssGameTeamLogo,.ssGameTeamFallback{max-width:15px;}
 }
+
+
+/* ===== V24 STATUS + DATE/TIME ALIGNMENT =====
+   Visual-only cleanup: the date/time sits lower in each game card so the
+   vertical spacing is more balanced, and Scheduled/Live/Final now matches
+   the date/time font size. No matchup, rolling logic, or hero changes. */
