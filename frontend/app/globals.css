@@ -462,3 +462,277 @@
   .ssHero.ssHeroFinal{border-radius:17px!important}
   .ssHero.ssHeroFinal::after{border-radius:15px!important}
 }
+
+
+/* ===== V20 APPROVED GAMES PREVIEW =====
+   Replaces the old large "open games" button with the approved mockup layout.
+   This shared treatment applies to MLB, NFL, CFB, NBA, WNBA, NHL, Soccer and CBB.
+   Hero, logo, border, snapshot, performance and ranking styles are untouched. */
+
+/* Hide the old single-link games bars only on the eight dashboard home screens. */
+.origMlb > .origGamesEntry,
+.soccerDashboard > .origGamesEntry,
+.nflShell > .gamesEntry,
+.cfbShell > .gamesEntry,
+.nbaShell > .gamesEntry,
+.wnbaShell > .gamesEntry,
+.nhlShell > .gamesEntry,
+.cbbShell > .gamesEntry{
+  display:none!important;
+}
+
+.ssGamesPreview{
+  margin:14px 0 16px;
+  padding:10px 10px 11px;
+  border:1.5px solid #d9b85d;
+  border-radius:14px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,0)),
+    #0b0d0c;
+  box-shadow:inset 0 0 0 1px rgba(255,224,131,.035);
+}
+
+.ssGamesPreviewHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 2px 8px;
+}
+.ssGamesPreviewHead h2{
+  margin:0!important;
+  color:#f6f7f6!important;
+  font-size:18px!important;
+  line-height:1.05!important;
+  font-weight:900!important;
+  letter-spacing:.01em!important;
+}
+.ssGamesPreviewHead a{
+  flex:0 0 auto;
+  color:#e2bf58!important;
+  text-decoration:none!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+.ssGamesPreviewHead a span{
+  font-size:19px;
+  line-height:0;
+  vertical-align:-1px;
+  margin-left:2px;
+}
+
+.ssGamesPreviewGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.ssGamePreviewCard{
+  min-width:0;
+  min-height:116px;
+  padding:9px 7px 8px;
+  border:1px solid #34383a;
+  border-radius:10px;
+  background:linear-gradient(155deg,#151716,#0d0f0e);
+  color:#fff!important;
+  text-decoration:none!important;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.ssGameMatchup{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr);
+  align-items:center;
+  gap:2px;
+}
+.ssGameTeam{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+.ssGameTeam strong{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:#f4f5f4;
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+}
+.ssGameTeamLogo{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  object-fit:contain;
+}
+.ssGameTeamFallback{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(217,184,93,.55);
+  border-radius:50%;
+  color:#d9b85d;
+  font-size:8px;
+  font-weight:900;
+}
+.ssGameAt{
+  color:#b6bab7;
+  font-size:11px;
+  font-weight:900;
+  text-align:center;
+}
+.ssGameWhen{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1px;
+  margin-top:8px;
+  color:#d4d6d5;
+  font-size:10px;
+  line-height:1.2;
+  text-align:center;
+}
+.ssGameStatus{
+  margin:auto auto 0;
+  min-width:76px;
+  max-width:100%;
+  padding:4px 7px;
+  border:1px solid #45494a;
+  border-radius:999px;
+  color:#d8dada;
+  background:#181b1a;
+  font-size:9px;
+  line-height:1;
+  font-weight:800;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ssGameStatus-in{
+  border-color:rgba(255,73,85,.78);
+  color:#ff747d;
+  background:rgba(135,17,27,.22);
+}
+.ssGameStatus-in i{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  margin-right:5px;
+  border-radius:50%;
+  background:#ff4354;
+  box-shadow:0 0 8px rgba(255,67,84,.85);
+}
+.ssGameStatus-post{
+  border-color:#5a5f5d;
+  color:#f0f1f0;
+}
+.ssGamesPreviewEmpty{
+  grid-column:1/-1;
+  min-height:78px;
+  display:grid;
+  place-items:center;
+  border:1px solid #303434;
+  border-radius:10px;
+  color:#9da39f;
+  background:#111312;
+  font-size:12px;
+  font-weight:700;
+}
+.ssSoccerGamesMount{
+  width:100%;
+}
+
+@media(max-width:700px){
+  .ssGamesPreview{
+    margin:13px 0 16px;
+    padding:9px 8px 10px;
+    border-radius:13px;
+  }
+  .ssGamesPreviewHead{
+    margin-bottom:7px;
+  }
+  .ssGamesPreviewHead h2{
+    font-size:17px!important;
+  }
+  .ssGamesPreviewGrid{
+    gap:6px;
+  }
+  .ssGamePreviewCard{
+    min-height:110px;
+    padding:8px 5px 7px;
+    border-radius:9px;
+  }
+  .ssGameTeam{
+    gap:3px;
+  }
+  .ssGameTeamLogo,
+  .ssGameTeamFallback{
+    width:22px;
+    height:22px;
+    flex-basis:22px;
+  }
+  .ssGameTeam strong{
+    font-size:11px;
+  }
+  .ssGameWhen{
+    margin-top:7px;
+    font-size:9.5px;
+  }
+  .ssGameStatus{
+    min-width:68px;
+    padding:4px 6px;
+    font-size:8.5px;
+  }
+}
+
+@media(max-width:430px){
+  .ssGamesPreview{
+    padding:8px 7px 9px;
+  }
+  .ssGamesPreviewHead h2{
+    font-size:16px!important;
+  }
+  .ssGamesPreviewHead a{
+    font-size:11px!important;
+  }
+  .ssGamesPreviewGrid{
+    gap:5px;
+  }
+  .ssGamePreviewCard{
+    min-height:105px;
+    padding:7px 4px 6px;
+  }
+  .ssGameMatchup{
+    grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr);
+  }
+  .ssGameTeamLogo,
+  .ssGameTeamFallback{
+    width:20px;
+    height:20px;
+    flex-basis:20px;
+  }
+  .ssGameTeam strong{
+    font-size:10px;
+  }
+  .ssGameAt{
+    font-size:9px;
+  }
+  .ssGameWhen{
+    margin-top:6px;
+    font-size:8.5px;
+  }
+  .ssGameStatus{
+    min-width:0;
+    width:100%;
+    padding:4px 3px;
+    font-size:8px;
+  }
+}

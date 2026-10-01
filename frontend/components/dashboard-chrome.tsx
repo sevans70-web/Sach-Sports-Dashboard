@@ -1,7 +1,36 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 type SportKey = "mlb" | "nfl" | "cfb" | "nba" | "wnba" | "nhl" | "soccer" | "cbb";
+
+type PreviewGame = {
+  id: string;
+  href: string;
+  date: string;
+  awayTeam: string;
+  awayAbbr: string;
+  awayLogo?: string | null;
+  awayScore?: number | string | null;
+  homeTeam: string;
+  homeAbbr: string;
+  homeLogo?: string | null;
+  homeScore?: number | string | null;
+  state: "pre" | "in" | "post";
+  status: string;
+};
+
+type GamesPreviewResponse = {
+  success: boolean;
+  sport: SportKey;
+  title: string;
+  viewAllHref: string;
+  games: PreviewGame[];
+  updatedAt?: string;
+  error?: string;
+};
 
 const SPORTS: Array<{ key: SportKey; label: string; href: string }> = [
   { key: "mlb", label: "MLB", href: "/mlb" },
@@ -104,7 +133,11 @@ export function IntelligenceHero({ sport }: { sport: SportKey }) {
     <>
       <BrandBar />
       <SportsNav active={sport} />
-      <section className={`ssHero ssHero-${sport} ssHeroFinal`} aria-label={`${c.title}. ${c.message}`}>
+      <section
+        className={`ssHero ssHero-${sport} ssHeroFinal`}
+        aria-label={`${c.title}. ${c.message}`}
+        data-sach-sport={sport}
+      >
         <img
           className="ssHeroFinalImage"
           src={HERO_ART[sport]}
@@ -113,6 +146,187 @@ export function IntelligenceHero({ sport }: { sport: SportKey }) {
       </section>
     </>
   );
+}
+
+function localWhen(value: string) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return { date: "Date TBA", time: "Time TBA" };
+  return {
+    date: new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Toronto",
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    }).format(d),
+    time: `${new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Toronto",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(d)} ET`,
+  };
+}
+
+function TeamLogo({
+  src,
+  abbr,
+}: {
+  src?: string | null;
+  abbr: string;
+}) {
+  if (src) {
+    return <img className="ssGameTeamLogo" src={src} alt="" aria-hidden="true" />;
+  }
+  return <span className="ssGameTeamFallback">{abbr.slice(0, 2)}</span>;
+}
+
+function statusText(game: PreviewGame) {
+  const hasScore = game.awayScore !== null && game.awayScore !== undefined &&
+    game.homeScore !== null && game.homeScore !== undefined;
+  const score = hasScore ? `${game.awayScore} – ${game.homeScore}` : "";
+  if (game.state === "post") return score ? `Final  ${score}` : "Final";
+  if (game.state === "in") return score ? `Live  ${score}` : "Live";
+  return "Scheduled";
+}
+
+function GamesPreviewCard({ game }: { game: PreviewGame }) {
+  const when = localWhen(game.date);
+  return (
+    <Link className="ssGamePreviewCard" href={game.href}>
+      <div className="ssGameMatchup">
+        <div className="ssGameTeam">
+          <TeamLogo src={game.awayLogo} abbr={game.awayAbbr} />
+          <strong>{game.awayAbbr}</strong>
+        </div>
+        <span className="ssGameAt">@</span>
+        <div className="ssGameTeam">
+          <TeamLogo src={game.homeLogo} abbr={game.homeAbbr} />
+          <strong>{game.homeAbbr}</strong>
+        </div>
+      </div>
+      <div className="ssGameWhen">
+        <span>{when.date}</span>
+        <span>{when.time}</span>
+      </div>
+      <div className={`ssGameStatus ssGameStatus-${game.state}`}>
+        {game.state === "in" ? <i aria-hidden="true" /> : null}
+        {statusText(game)}
+      </div>
+    </Link>
+  );
+}
+
+function GamesPreview({ sport }: { sport: SportKey }) {
+  const [league, setLeague] = useState("eng.1");
+  const [payload, setPayload] = useState<GamesPreviewResponse | null>(null);
+  const [soccerMount, setSoccerMount] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (sport !== "soccer") return;
+
+    const select = document.querySelector<HTMLSelectElement>(".soccerLeagueRow select");
+    if (select) {
+      setLeague(select.value || "eng.1");
+      const onChange = () => setLeague(select.value || "eng.1");
+      select.addEventListener("change", onChange);
+
+      const stamp = document.querySelector<HTMLElement>(".ssUpdated");
+      const leagueRow = document.querySelector<HTMLElement>(".soccerLeagueRow");
+      let anchor: HTMLElement | null = leagueRow || stamp;
+      if (stamp && leagueRow) {
+        const stampBeforeLeague = Boolean(
+          stamp.compareDocumentPosition(leagueRow) & Node.DOCUMENT_POSITION_FOLLOWING
+        );
+        anchor = stampBeforeLeague ? leagueRow : stamp;
+      }
+
+      let mount = document.querySelector<HTMLElement>(".ssSoccerGamesMount");
+      if (!mount) {
+        mount = document.createElement("div");
+        mount.className = "ssSoccerGamesMount";
+        anchor?.insertAdjacentElement("afterend", mount);
+      }
+      setSoccerMount(mount);
+
+      return () => {
+        select.removeEventListener("change", onChange);
+      };
+    }
+  }, [sport]);
+
+  useEffect(() => {
+    let live = true;
+    let controller: AbortController | null = null;
+
+    const load = () => {
+      controller?.abort();
+      controller = new AbortController();
+      const params = new URLSearchParams({ sport });
+      if (sport === "soccer") params.set("league", league);
+      fetch(`/api/games-preview?${params.toString()}`, {
+        cache: "no-store",
+        signal: controller.signal,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (live) setPayload(data);
+        })
+        .catch(() => {});
+    };
+
+    load();
+    const id = window.setInterval(load, 60_000);
+    return () => {
+      live = false;
+      controller?.abort();
+      window.clearInterval(id);
+    };
+  }, [sport, league]);
+
+  const viewAllHref =
+    payload?.viewAllHref ||
+    (sport === "soccer"
+      ? `/soccer/games?league=${encodeURIComponent(league)}`
+      : `/${sport}/games`);
+
+  const content = (
+    <section className="ssGamesPreview" aria-label={payload?.title || "Games"}>
+      <div className="ssGamesPreviewHead">
+        <h2>{payload?.title || (sport === "nfl" ? "NFL GAMES" : sport === "cfb" ? "THIS WEEK’S CFB GAMES" : `${sport.toUpperCase()} GAMES`)}</h2>
+        <Link href={viewAllHref}>View All <span aria-hidden="true">›</span></Link>
+      </div>
+
+      <div className="ssGamesPreviewGrid">
+        {payload?.games?.length ? (
+          payload.games.slice(0, 3).map((game) => (
+            <GamesPreviewCard game={game} key={game.id} />
+          ))
+        ) : (
+          <div className="ssGamesPreviewEmpty">
+            {payload?.error ? "Schedule temporarily unavailable." : "Checking the next slate…"}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+
+  if (sport === "soccer" && soccerMount) {
+    return createPortal(content, soccerMount);
+  }
+  if (sport === "soccer") return null;
+  return content;
+}
+
+function AutoGamesPreview() {
+  const [sport, setSport] = useState<SportKey | null>(null);
+
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>(".ssHeroFinal[data-sach-sport]");
+    const value = hero?.dataset.sachSport as SportKey | undefined;
+    if (value) setSport(value);
+  }, []);
+
+  return sport ? <GamesPreview sport={sport} /> : null;
 }
 
 export function UpdatedStamp({ value }: { value?: string | Date | null }) {
@@ -131,12 +345,15 @@ export function UpdatedStamp({ value }: { value?: string | Date | null }) {
   }).format(d);
 
   return (
-    <div className="ssUpdated">
-      <svg className="ssUpdatedIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M12 2.75a9.25 9.25 0 1 0 9.25 9.25A9.25 9.25 0 0 0 12 2.75Z" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M12 6.8v5.1l3.45 2.05" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span>{`Last updated ${date} at ${time} ET`}</span>
-    </div>
+    <>
+      <div className="ssUpdated">
+        <svg className="ssUpdatedIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2.75a9.25 9.25 0 1 0 9.25 9.25A9.25 9.25 0 0 0 12 2.75Z" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M12 6.8v5.1l3.45 2.05" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span>{`Last updated ${date} at ${time} ET`}</span>
+      </div>
+      <AutoGamesPreview />
+    </>
   );
 }
