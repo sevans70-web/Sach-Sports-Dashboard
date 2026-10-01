@@ -543,37 +543,41 @@
 }
 .ssGameMatchup{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr);
+  grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr);
   align-items:center;
-  gap:2px;
+  column-gap:1px;
 }
 .ssGameTeam{
   min-width:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:4px;
+  gap:1px;
+  overflow:visible;
 }
 .ssGameTeam strong{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  flex:0 0 auto;
+  min-width:auto;
+  max-width:none;
+  overflow:visible;
+  text-overflow:clip;
   color:#f4f5f4;
-  font-size:12px;
+  font-size:11px;
   line-height:1;
   font-weight:900;
+  letter-spacing:-.02em;
   white-space:nowrap;
 }
 .ssGameTeamLogo{
-  width:24px;
-  height:24px;
-  flex:0 0 24px;
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
   object-fit:contain;
 }
 .ssGameTeamFallback{
-  width:24px;
-  height:24px;
-  flex:0 0 24px;
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
   display:grid;
   place-items:center;
   border:1px solid rgba(217,184,93,.55);
@@ -584,7 +588,7 @@
 }
 .ssGameAt{
   color:#b6bab7;
-  font-size:11px;
+  font-size:9px;
   font-weight:900;
   text-align:center;
 }
@@ -594,10 +598,13 @@
   align-items:center;
   gap:1px;
   margin-top:8px;
-  color:#d4d6d5;
-  font-size:10px;
-  line-height:1.2;
+  color:#e1e2e1;
+  font-family:inherit;
+  font-size:11.5px;
+  line-height:1.16;
+  font-weight:500;
   text-align:center;
+  font-variant-numeric:tabular-nums;
 }
 .ssGameStatus{
   margin:auto auto 0;
@@ -671,20 +678,21 @@
     border-radius:9px;
   }
   .ssGameTeam{
-    gap:3px;
+    gap:1px;
   }
   .ssGameTeamLogo,
   .ssGameTeamFallback{
-    width:22px;
-    height:22px;
-    flex-basis:22px;
+    width:16px;
+    height:16px;
+    flex-basis:16px;
   }
   .ssGameTeam strong{
-    font-size:11px;
+    font-size:10.75px;
+    letter-spacing:-.02em;
   }
   .ssGameWhen{
     margin-top:7px;
-    font-size:9.5px;
+    font-size:11.25px;
   }
   .ssGameStatus{
     min-width:68px;
@@ -711,23 +719,25 @@
     padding:7px 4px 6px;
   }
   .ssGameMatchup{
-    grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr);
+    grid-template-columns:minmax(0,1fr) 7px minmax(0,1fr);
+    column-gap:0;
   }
   .ssGameTeamLogo,
   .ssGameTeamFallback{
-    width:20px;
-    height:20px;
-    flex-basis:20px;
+    width:15px;
+    height:15px;
+    flex-basis:15px;
   }
   .ssGameTeam strong{
-    font-size:10px;
+    font-size:10.5px;
+    letter-spacing:-.025em;
   }
   .ssGameAt{
-    font-size:9px;
+    font-size:8.5px;
   }
   .ssGameWhen{
     margin-top:6px;
-    font-size:8.5px;
+    font-size:11px;
   }
   .ssGameStatus{
     min-width:0;
@@ -736,4 +746,15 @@
     font-size:8px;
   }
 }
-\n\n/* ===== V21 TEAM ABBREVIATION FIT =====\n   Shared across all eight dashboards.\n   Keeps the approved 3-card layout, but reclaims horizontal room so\n   team abbreviations remain readable instead of rendering as C..., H..., W..., etc. */\n.ssGameTeam{\n  gap:2px;\n  overflow:visible;\n}\n.ssGameTeam strong{\n  flex:0 0 auto;\n  min-width:auto;\n  max-width:none;\n  overflow:visible;\n  text-overflow:clip;\n  white-space:nowrap;\n  font-size:11px;\n  letter-spacing:-.015em;\n}\n.ssGameTeamLogo,\n.ssGameTeamFallback{\n  width:18px;\n  height:18px;\n  flex:0 0 18px;\n}\n.ssGameTeamFallback{\n  font-size:7px;\n}\n.ssGameAt{\n  font-size:10px;\n}\n\n@media(max-width:700px){\n  .ssGameTeam{gap:1px;}\n  .ssGameTeamLogo,\n  .ssGameTeamFallback{\n    width:17px;\n    height:17px;\n    flex-basis:17px;\n  }\n  .ssGameTeam strong{\n    font-size:10px;\n    letter-spacing:-.02em;\n  }\n}\n\n@media(max-width:430px){\n  .ssGameMatchup{\n    grid-template-columns:minmax(0,1fr) 10px minmax(0,1fr);\n    gap:1px;\n  }\n  .ssGameTeamLogo,\n  .ssGameTeamFallback{\n    width:16px;\n    height:16px;\n    flex-basis:16px;\n  }\n  .ssGameTeam strong{\n    font-size:9.5px;\n    letter-spacing:-.025em;\n  }\n  .ssGameAt{font-size:8.5px;}\n}\n
+
+
+/* ===== V22 ROLLING GAMES PREVIEW =====
+   Full team abbreviations stay visible; compact logos reclaim width.
+   Date/time readability is restored without changing the approved cards. */
+.ssGameMatchup{overflow:visible;}
+.ssGameTeam{flex-wrap:nowrap;}
+.ssGameTeam strong{max-width:none!important;text-overflow:clip!important;overflow:visible!important;}
+.ssGameTeamLogo,.ssGameTeamFallback{max-width:16px;}
+@media(max-width:430px){
+  .ssGameTeamLogo,.ssGameTeamFallback{max-width:15px;}
+}

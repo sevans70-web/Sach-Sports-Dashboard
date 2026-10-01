@@ -105,15 +105,19 @@ function fromOverviewGame(sport: SportKey, raw: any): Game {
   };
 }
 
-async function espnFootball(sport: "nfl" | "cfb") {
+async function espnFootball(sport: "nfl" | "cfb", week?: number) {
   const path = sport === "nfl" ? "football/nfl" : "football/college-football";
+  const params = new URLSearchParams({ limit: "300" });
+  if (week) params.set("week", String(week));
+
   const response = await fetch(
-    `https://site.api.espn.com/apis/site/v2/sports/${path}/scoreboard?limit=300`,
+    `https://site.api.espn.com/apis/site/v2/sports/${path}/scoreboard?${params.toString()}`,
     { cache: "no-store", headers: { "User-Agent": "Sach-Sports/1.0" } },
   );
   if (!response.ok) throw new Error(`${sport} schedule ${response.status}`);
   const payload = await response.json();
   const games: Game[] = [];
+  const payloadWeek = Number(payload?.week?.number || week || 0) || null;
 
   for (const event of payload?.events || []) {
     const comp = event?.competitions?.[0] || {};
@@ -140,11 +144,14 @@ async function espnFootball(sport: "nfl" | "cfb") {
       state,
       status: String(type?.shortDetail || type?.description || (state === "post" ? "Final" : state === "in" ? "Live" : "Scheduled")),
       href: `/${sport}/games`,
-      weekNumber: Number(event?.week?.number || payload?.week?.number || 0) || null,
+      weekNumber: Number(event?.week?.number || payloadWeek || 0) || null,
     });
   }
 
-  return games.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return {
+    games: games.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+    weekNumber: payloadWeek || games.find((g) => g.weekNumber)?.weekNumber || null,
+  };
 }
 
 async function mlbGames() {
@@ -250,19 +257,32 @@ function sortPreviewGames(games: Game[]) {
   });
 }
 
+function unfinished(games: Game[]) {
+  return games.filter((g) => g.state !== "post");
+}
+
 function chooseDailySlate(sport: SportKey, games: Game[]) {
   const today = localDay(new Date());
-  const todayGames = games.filter((g) => g.date && localDay(g.date) === today);
 
-  if (todayGames.length) {
+  // A live game stays visible even if it crossed midnight. Completed games never
+  // occupy one of the three dashboard preview slots.
+  const live = games.filter((g) => g.state === "in");
+  const todayScheduled = games.filter(
+    (g) => g.state === "pre" && g.date && localDay(g.date) === today,
+  );
+  const current = sortPreviewGames([...live, ...todayScheduled]);
+
+  if (current.length) {
     return {
       title: `TODAY’S ${sport.toUpperCase()} GAMES`,
-      games: todayGames,
+      games: current,
     };
   }
 
+  // When today's slate is fully final, immediately roll the preview to the next
+  // scheduled day instead of leaving Final cards parked on the dashboard.
   const future = games
-    .filter((g) => g.date && new Date(g.date).getTime() > Date.now())
+    .filter((g) => g.state === "pre" && g.date && new Date(g.date).getTime() > Date.now())
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   if (!future.length) {
@@ -289,26 +309,41 @@ export async function GET(req: NextRequest) {
 
   try {
     let games: Game[] = [];
-
-    if (sport === "mlb") games = await mlbGames();
-    else if (sport === "nfl" || sport === "cfb") games = await espnFootball(sport);
-    else if (sport === "soccer") games = await soccerGames(league);
-    else if (sport === "nba") games = (await loadNbaOverview()).games.map((g) => fromOverviewGame("nba", g));
-    else if (sport === "wnba") games = (await loadWnbaOverview()).games.map((g) => fromOverviewGame("wnba", g));
-    else if (sport === "nhl") games = (await loadNhlOverview()).games.map((g) => fromOverviewGame("nhl", g));
-    else if (sport === "cbb") games = (await loadCbbOverview()).games.map((g) => fromOverviewGame("cbb", g));
-
     let title = "";
     let slate: Game[] = [];
 
-    if (sport === "nfl") {
-      const week = games.find((g) => g.weekNumber)?.weekNumber;
-      title = week ? `WEEK ${week} NFL GAMES` : "THIS WEEK’S NFL GAMES";
-      slate = games;
-    } else if (sport === "cfb") {
-      title = "THIS WEEK’S CFB GAMES";
-      slate = games;
+    if (sport === "nfl" || sport === "cfb") {
+      const current = await espnFootball(sport);
+      let displayWeek = current.weekNumber;
+      let remaining = unfinished(current.games);
+      let rolledForward = false;
+
+      // Once every game in the current football week is final, pull the next
+      // week so the three-card preview keeps moving forward automatically.
+      if (!remaining.length && displayWeek) {
+        const next = await espnFootball(sport, displayWeek + 1);
+        const nextRemaining = unfinished(next.games);
+        if (nextRemaining.length) {
+          remaining = nextRemaining;
+          displayWeek = next.weekNumber || displayWeek + 1;
+          rolledForward = true;
+        }
+      }
+
+      if (sport === "nfl") {
+        title = displayWeek ? `WEEK ${displayWeek} NFL GAMES` : "UPCOMING NFL GAMES";
+      } else {
+        title = rolledForward ? "UPCOMING CFB GAMES" : "THIS WEEK’S CFB GAMES";
+      }
+      slate = sortPreviewGames(remaining);
     } else {
+      if (sport === "mlb") games = await mlbGames();
+      else if (sport === "soccer") games = await soccerGames(league);
+      else if (sport === "nba") games = (await loadNbaOverview()).games.map((g) => fromOverviewGame("nba", g));
+      else if (sport === "wnba") games = (await loadWnbaOverview()).games.map((g) => fromOverviewGame("wnba", g));
+      else if (sport === "nhl") games = (await loadNhlOverview()).games.map((g) => fromOverviewGame("nhl", g));
+      else if (sport === "cbb") games = (await loadCbbOverview()).games.map((g) => fromOverviewGame("cbb", g));
+
       const chosen = chooseDailySlate(sport, games);
       title = chosen.title;
       slate = chosen.games;
