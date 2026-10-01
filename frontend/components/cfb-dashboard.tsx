@@ -1,9 +1,9 @@
 "use client";
-import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
 import {CFB_MARKETS,type CfbMarketKey,type CfbRankingRow} from "@/lib/cfb";
+import { SnapshotPanel, snapshotGameDetail } from "@/components/snapshot-panel";
 
 type Row=CfbRankingRow&{
   movement?:number|"NEW";
@@ -247,23 +247,32 @@ export default function CfbDashboard(){
   const liveGames=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
   const gameCount=s.data.filterMode==="schedule_fallback"?s.data.games.length:s.data.qualifiedCount;
+  const cfbSlateCount=Math.max(1,new Set(s.data.games.filter((g:any)=>!g.completed).map((g:any)=>cfbSlate(g.date||g.gameTime))).size||1);
+  const cfbRankedCount=r.data.success?(rows.length>=25?cfbSlateCount*25:rows.length):0;
 
   return <main className="cfbShell">
-    <IntelligenceHero sport="cfb"/>
-    <UpdatedStamp/>
+    <Link href="/" className="cfbMenu">▦⌄</Link>
+
+    <section className="hero">
+      <h1>CFB Intelligence Center</h1>
+      <p>Start with the strongest players in each supported college market, review the reason behind every ranking, and open the full rankings only when you need more depth.</p>
+    </section>
+
+    <div className="updated">Last updated Live</div>
 
     <Link className="gamesEntry" href="/cfb/games">
       <b>🏈 THIS WEEK&apos;S CFB GAMES</b>
       <span>Open the slate, team rosters &amp; Game Intelligence ›</span>
     </Link>
 
-    <h2>This Week&apos;s CFB Snapshot</h2>
-
-    <div className="snapshot">
-      <article><span>GAMES</span><strong>{gameCount}</strong><small>{liveGames} live · {finals} final</small></article>
-      <article><span>MARKETS</span><strong>7</strong><small>College-supported categories</small></article>
-      <article><span>ALERTS</span><strong>0</strong><small>No active alerts</small></article>
-    </div>
+    <SnapshotPanel
+      title="CFB Snapshot"
+      metrics={[
+        { label:"Games", value:gameCount, detail:snapshotGameDetail(gameCount,liveGames,finals), tone:"green", icon:"games" },
+        { label:"Ranked Players", value:cfbRankedCount, detail:`Across ${cfbSlateCount} slate${cfbSlateCount===1?"":"s"}`, icon:"ranked" },
+        { label:"Predictions", value:cfbRankedCount, detail:"Players", tone:"gold", icon:"predictions" },
+      ]}
+    />
 
     <section className="section performanceSection">
       <h2 className="performanceTitle">📊 Prediction Performance</h2>

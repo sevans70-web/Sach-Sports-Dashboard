@@ -764,3 +764,138 @@
    Visual-only cleanup: the date/time sits lower in each game card so the
    vertical spacing is more balanced, and Scheduled/Live/Final now matches
    the date/time font size. No matchup, rolling logic, or hero changes. */
+
+/* === Snapshot cleanup v25: approved equal, centered cards + conditional alert === */
+.ssSnapshotAlert{
+  display:grid;
+  grid-template-columns:auto auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  margin:18px 0 10px;
+  padding:12px 14px;
+  border:1.5px solid #ef4356;
+  border-radius:14px;
+  background:linear-gradient(90deg,rgba(91,10,18,.88),rgba(29,7,10,.92));
+  color:#fff!important;
+  text-decoration:none!important;
+}
+.ssSnapshotAlertIcon{
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  background:#ef4356;
+  color:#090909;
+  font-size:20px;
+  font-weight:950;
+}
+.ssSnapshotAlert>strong{color:#ff5264;font-size:14px;letter-spacing:.04em}
+.ssSnapshotAlertText{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ssSnapshotAlertText b{font-size:14px;white-space:normal}
+.ssSnapshotAlertText small{color:#d5c8cb;font-size:11px;line-height:1.25}
+.ssSnapshotAlertAction{display:flex;align-items:center;gap:8px;color:#ff98a2;font-size:12px;font-weight:800;white-space:nowrap}
+.ssSnapshotAlertAction i{font-size:22px;font-style:normal;line-height:1}
+
+.ssSnapshotPanel{margin:18px 0 24px}
+.ssSnapshotPanelHead{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 10px;
+}
+.ssSnapshotPanelHead h2{
+  margin:0;
+  color:#fff;
+  font-size:clamp(1.45rem,5.6vw,2rem);
+  line-height:1.08;
+  letter-spacing:-.025em;
+}
+.ssSnapshotPanelHead span{
+  color:#20df7f;
+  font-size:12px;
+  font-weight:850;
+  line-height:1.2;
+  text-align:right;
+  white-space:nowrap;
+}
+.ssSnapshotPanelGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
+.ssSnapshotMetric{
+  min-width:0;
+  min-height:148px;
+  padding:12px 8px 10px;
+  border:2px solid #34383e;
+  border-radius:16px;
+  background:linear-gradient(180deg,#111315,#0d0f10);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:center;
+}
+.ssSnapshotMetric-green{border-color:#20df7f}
+.ssSnapshotMetric-gold{border-color:#d9b85d}
+.ssSnapshotGlyph{
+  display:grid;
+  place-items:center;
+  width:35px;
+  height:35px;
+  margin:0 0 5px;
+  border:1.5px solid #d9b85d;
+  border-radius:50%;
+  color:#d9b85d;
+}
+.ssSnapshotGlyph svg{
+  width:21px;
+  height:21px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.ssSnapshotGlyph svg circle{fill:none}
+.ssSnapshotMetric>span{
+  color:#c8cbd0;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.1;
+  text-transform:uppercase;
+  white-space:normal;
+}
+.ssSnapshotMetric>strong{
+  margin-top:5px;
+  color:#fff;
+  font-size:27px;
+  line-height:1;
+  font-weight:950;
+}
+.ssSnapshotMetric>small{
+  margin-top:auto;
+  padding-top:8px;
+  color:#d9dade;
+  font-size:11px;
+  line-height:1.25;
+  font-weight:650;
+  white-space:normal;
+}
+@media(max-width:430px){
+  .ssSnapshotAlert{grid-template-columns:auto auto minmax(0,1fr);gap:8px;padding:10px 11px}
+  .ssSnapshotAlertAction{grid-column:2/4;margin-top:2px}
+  .ssSnapshotPanel{margin-top:16px}
+  .ssSnapshotPanelHead{align-items:flex-end;gap:8px}
+  .ssSnapshotPanelHead h2{font-size:1.55rem}
+  .ssSnapshotPanelHead span{font-size:10px;max-width:130px;white-space:normal}
+  .ssSnapshotPanelGrid{gap:7px}
+  .ssSnapshotMetric{min-height:142px;padding:10px 6px 9px;border-radius:15px}
+  .ssSnapshotGlyph{width:31px;height:31px}
+  .ssSnapshotGlyph svg{width:18px;height:18px}
+  .ssSnapshotMetric>span{font-size:10px}
+  .ssSnapshotMetric>strong{font-size:23px}
+  .ssSnapshotMetric>small{font-size:9.8px;line-height:1.2}
+}

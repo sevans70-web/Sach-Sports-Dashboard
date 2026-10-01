@@ -1,9 +1,9 @@
 "use client";
-import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
 import {NBA_MARKETS,type NbaMarketKey,type NbaOverview} from "@/lib/nba";
+import { SnapshotPanel, snapshotGameDetail } from "@/components/snapshot-panel";
 
 type Row={
   rank:number;playerId:string|number;playerName:string;teamName:string;teamLogo?:string;matchup:string;
@@ -119,23 +119,27 @@ export function NbaDashboard({data}:{data:NbaOverview}){
     return data.games.filter(g=>g.tipoff&&new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto"}).format(new Date(g.tipoff))===today)
   },[data.games]);
 
-  const live=data.games.filter(g=>g.state==="in").length;
+  const live=gamesToday.filter(g=>g.state==="in").length;
+  const finals=gamesToday.filter(g=>g.state==="post").length;
   const upcomingGames=data.games.filter(g=>g.tipoff&&new Date(g.tipoff).getTime()>Date.now()).sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
   const nextSlateDate=!gamesToday.length&&upcomingGames.length?new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric"}).format(new Date(upcomingGames[0].tipoff!)):null;
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="nbaShell">
-    <IntelligenceHero sport="nba"/>
-    <UpdatedStamp value={data.updatedAt}/>
+    <section className="hero"><div className="heroTop"><Link href="/" className="nbaMenu">▦⌄</Link><h1>NBA Intelligence Center</h1></div><p>Today’s strongest NBA player projections and matchup intelligence in one place.</p></section>
+    <div className="updated">{updated(data.updatedAt)}</div>
 
     <Link className="gamesEntry" href="/nba/games"><b>🏀 {gamesToday.length?"TODAY’S NBA GAMES":"UPCOMING NBA GAMES"}</b><span>{nextSlateDate&&!gamesToday.length?`Next slate ${nextSlateDate} · `:""}Schedule · Matchups · Game status ›</span></Link>
 
-    <div className="snapshotHeading"><h2>Today’s NBA Snapshot</h2><span>Full-game props only</span></div>
-    <div className="snapshot">
-      <article className="green"><span>GAMES</span><strong>{gamesToday.length}</strong><small>{live} live</small></article>
-      <article><span>RANKED PLAYERS</span><strong>{r.data.success?rows.length:"—"}</strong><small>{meta(market)[1]}</small></article>
-      <article className="gold"><span>DATA SOURCE</span><strong>{r.data.success?"LIVE":"—"}</strong><small>Owls Insight</small></article>
-    </div>
+    <SnapshotPanel
+      title="Today’s NBA Snapshot"
+      note="Full-game props only"
+      metrics={[
+        { label:"Games", value:gamesToday.length, detail:snapshotGameDetail(gamesToday.length,live,finals), tone:"green", icon:"games" },
+        { label:"Lineups", value:`${(live+finals)*2}/${gamesToday.length*2}`, detail:`${(live+finals)*2} confirmed · ${Math.max(0,gamesToday.length*2-(live+finals)*2)} pending`, icon:"lineups" },
+        { label:"Predictions", value:r.data.success?rows.length:0, detail:"Players", tone:"gold", icon:"predictions" },
+      ]}
+    />
 
     {data.warnings.map(w=><div className="dataWarning" key={w}>{w}</div>)}
 

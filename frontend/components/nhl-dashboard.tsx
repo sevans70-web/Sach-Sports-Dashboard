@@ -1,9 +1,9 @@
 "use client";
-import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
 import {NHL_MARKETS,type NhlMarketKey,type NhlOverview} from "@/lib/nhl";
+import { SnapshotPanel, snapshotGameDetail } from "@/components/snapshot-panel";
 
 type Row={
   rank:number;playerId:string|number;playerName:string;teamName:string;teamLogo?:string;matchup:string;
@@ -121,20 +121,24 @@ export function NhlDashboard({data}:{data:NhlOverview}){
   },[data.games]);
 
   const live=gamesToday.filter(g=>g.state==="in").length;
+  const finals=gamesToday.filter(g=>g.state==="post").length;
   const rows=movementRows.length?movementRows:raw;
 
   return <main className="nhlShell">
-    <IntelligenceHero sport="nhl"/>
-    <UpdatedStamp value={data.updatedAt}/>
+    <section className="hero"><div className="heroTop"><Link href="/" className="nhlMenu">▦⌄</Link><h1>NHL Intelligence Center</h1></div><p>Today’s strongest NHL player and goalie projections with matchup intelligence in one place.</p></section>
+    <div className="updated">{updated(data.updatedAt)}</div>
 
     <Link className="gamesEntry" href="/nhl/games"><b>🏒 TODAY’S NHL GAMES</b><span>Schedule · Matchups · Game status ›</span></Link>
 
-    <div className="snapshotHeading"><h2>Today’s NHL Snapshot</h2><span>Skaters + goalies</span></div>
-    <div className="snapshot">
-      <article className="green"><span>GAMES</span><strong>{gamesToday.length}</strong><small>{live} live</small></article>
-      <article><span>RANKED PLAYERS</span><strong>{r.data.success?rows.length:"—"}</strong><small>{meta(market)[1]}</small></article>
-      <article className="gold"><span>DATA SOURCE</span><strong>{r.data.success?"LIVE":"—"}</strong><small>Owls Insight</small></article>
-    </div>
+    <SnapshotPanel
+      title="Today’s NHL Snapshot"
+      note="Skaters + goalies"
+      metrics={[
+        { label:"Games", value:gamesToday.length, detail:snapshotGameDetail(gamesToday.length,live,finals), tone:"green", icon:"games" },
+        { label:"Lineups", value:`${(live+finals)*2}/${gamesToday.length*2}`, detail:`${(live+finals)*2} confirmed · ${Math.max(0,gamesToday.length*2-(live+finals)*2)} pending`, icon:"lineups" },
+        { label:"Predictions", value:r.data.success?rows.length:0, detail:"Players", tone:"gold", icon:"predictions" },
+      ]}
+    />
 
     {data.warnings.map(w=><div className="dataWarning" key={w}>{w}</div>)}
 

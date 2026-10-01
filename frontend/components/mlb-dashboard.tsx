@@ -1,8 +1,8 @@
 "use client";
-import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BATTER_MARKETS, PITCHER_MARKETS, playerHeadshot, rankingName, rankingPlayerId, numberValue, percentValue, type RankingRow } from "@/lib/mlb";
+import { SnapshotPanel, snapshotGameDetail } from "@/components/snapshot-panel";
 
 type ScheduleResponse = { success:boolean; games:any[]; fetchedAt?:string; lineupsConfirmed?:number; error?:string };
 type RankingResponse = { success:boolean; batter:Record<string,RankingRow[]>; pitcher:Record<string,RankingRow[]>; batterDropped?:Record<string,string[]>; pitcherDropped?:Record<string,string[]>; connected:boolean; configured?:boolean; errors?:string[]; updatedAt?:string; dataDate?:string; batterDataDate?:string|null; pitcherDataDate?:string|null; requestedDate?:string; stale?:boolean; batterStale?:boolean; pitcherStale?:boolean };
@@ -152,11 +152,20 @@ export function MlbDashboard(){
   const updated=rankings.data.updatedAt?new Date(rankings.data.updatedAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"Live";
 
   return <div className="origMlb">
-    <IntelligenceHero sport="mlb"/>
-    <UpdatedStamp value={rankings.data.updatedAt}/>
+    <section className="origHero"><h1>MLB Intelligence Center</h1><p>Start with the strongest players in each market, review the reason behind every ranking, and open the full Top 25 only when you need more depth.</p></section>
+    <div className="origUpdated">Last updated {updated}</div>
 
     <Link className="origGamesEntry" href="/mlb/games"><strong>⚾ TODAY&apos;S MLB GAMES</strong><span>Open today&apos;s slate, lineups &amp; Game Intelligence ›</span></Link>
-    <section className="origSnapshot"><div className="snapshotTitleRow"><h2>Today&apos;s MLB Snapshot</h2><p>Always confirm starting lineups</p></div><div className="origMetrics snapshot"><article className="green"><span>GAMES</span><strong>{schedule.loading?"…":games.length}</strong><small>{liveGames.length} live · {finalGames.length} final</small></article><article><span>LINEUPS</span><strong>{schedule.data.lineupsConfirmed!=null?`${schedule.data.lineupsConfirmed}/${Math.max(games.length*2,0)}`:"—"}</strong><small>Confirmed</small></article><article className="gold"><span>ALERTS</span><strong>{delayed}</strong><small>{delayed?"Delayed / suspended":"No active alerts"}</small></article></div></section>
+    <SnapshotPanel
+      title="Today’s MLB Snapshot"
+      note="Always confirm starting lineups"
+      alert={delayed ? { title: `${delayed} game${delayed===1?"":"s"} delayed or suspended`, detail: "Review the affected game before using props.", href: "/mlb/games" } : null}
+      metrics={[
+        { label:"Games", value:schedule.loading?"…":games.length, detail:snapshotGameDetail(games.length,liveGames.length,finalGames.length), tone:"green", icon:"games" },
+        { label:"Lineups", value:`${schedule.data.lineupsConfirmed??0}/${Math.max(games.length*2,0)}`, detail:`${schedule.data.lineupsConfirmed??0} confirmed · ${Math.max(0,games.length*2-(schedule.data.lineupsConfirmed??0))} pending`, icon:"lineups" },
+        { label:"Predictions", value:rows.length||0, detail:"Players", tone:"gold", icon:"predictions" },
+      ]}
+    />
 
     <section className="origSection hr"><h2>🔥 HR Intelligence</h2><div className="origTabs three boxedHrTabs">{(["Live HR","Yesterday","Emerging Power"] as const).map(x=><button key={x} className={hrTab===x?"active":""} onClick={()=>setHrTab(x)}>{x}</button>)}</div>
       {hrTab==="Live HR"&&<div className="hrPane"><h3>Live hard-contact signals</h3><p className="hrCaption">Live hard-contact signals from all hitters in games currently in progress. Barrels and 95+ mph hard-hit balls are context signals, not guarantees.</p><details><summary>›　ⓘ What do the HR contact signals mean?</summary><div className="origExplain"><p><b>🔥 Barrel</b> — a batted ball with a strong combination of exit velocity and launch angle associated with extra-base damage and home-run potential.</p><p><b>💥 Hard Hit</b> — a batted ball hit at <b>95 mph or harder</b> that does not necessarily qualify as a barrel.</p><p><b>mph / Exit Velocity</b> — how fast the ball leaves the bat. Higher is generally stronger contact.</p><p><b>° / Launch Angle</b> — the vertical angle at which the ball leaves the bat.</p><p><b>Important:</b> a barrel or hard hit is a contact-quality signal, <b>not a prediction or guarantee</b> that the player will hit a home run.</p></div></details><details><summary>›　ⓘ What should I look for in an HR pick?</summary><div className="origExplain"><p><b>Start with barrel rate:</b> below 7% is low, 7–9.9% is average, 10–14.9% is strong, and 15%+ is elite HR contact.</p><p><b>Then confirm the full picture:</b> strong xSLG and recent barrels, a vulnerable opposing pitcher, favourable handedness, a hitter-friendly park or weather edge, and a confirmed top-five lineup position.</p></div></details>

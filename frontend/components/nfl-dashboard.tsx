@@ -1,9 +1,9 @@
 "use client";
-import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
 import {NFL_MARKETS,type NflMarketKey,type NflRankingRow} from "@/lib/nfl";
+import { SnapshotPanel, snapshotGameDetail } from "@/components/snapshot-panel";
 
 type NflPerformanceResponse={success:boolean;connected:boolean;writable?:boolean;hits:number;settled:number;pending:number;hitRate:number|null;total?:number;predictions?:any[]};
 type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterMode?:string;updatedAt?:string;confirmedLineups?:number;pendingLineups?:number;totalLineups?:number;weekNumber?:number|null};
@@ -98,11 +98,18 @@ export default function NflDashboard(){
   useEffect(()=>setFull(false),[rankMarket]);
   const weekText=s.data.weekNumber?`Week ${s.data.weekNumber}`:"This Week";
   return <main className="nflShell">
-    <IntelligenceHero sport="nfl"/>
-    <UpdatedStamp value={s.data.updatedAt}/>
+    <section className="hero"><div className="heroTop"><Link href="/" className="nflMenu" aria-label="Open sports menu">▦⌄</Link><h1>NFL Intelligence Center</h1></div><p>Strongest NFL prop plays, matchup context and player intelligence in one place.</p></section>
+    <div className="updated">{updatedLabel(s.data.updatedAt)}</div>
     <Link className="gamesEntry" href="/nfl/games"><b>🏈 {weekText.toUpperCase()} NFL GAMES</b><span>Schedule · Rosters · Intelligence ›</span></Link>
-    <div className="snapshotHeading"><h2>{weekText} NFL Snapshot</h2><span>Always confirm starting lineups</span></div>
-    <div className="snapshot"><article className="green"><span>GAMES</span><strong>{gameCount}</strong><small>{live} live · {finals} final</small></article><article><span>LINEUPS</span><strong>{s.data.confirmedLineups??0}/{s.data.totalLineups??gameCount*2}</strong><small>{s.data.pendingLineups??Math.max(0,gameCount*2-(s.data.confirmedLineups??0))} pending</small></article><article className="gold"><span>ALERTS</span><strong>0</strong><small>No active alerts</small></article></div>
+    <SnapshotPanel
+      title="NFL Snapshot"
+      note="Always confirm starting lineups"
+      metrics={[
+        { label:"Games", value:gameCount, detail:snapshotGameDetail(gameCount,live,finals), tone:"green", icon:"games" },
+        { label:"Lineups", value:`${s.data.confirmedLineups??0}/${s.data.totalLineups??gameCount*2}`, detail:`${s.data.confirmedLineups??0} confirmed · ${s.data.pendingLineups??Math.max(0,gameCount*2-(s.data.confirmedLineups??0))} pending`, icon:"lineups" },
+        { label:"Ranked Players", value:rows.length||0, detail:"Top plays live", tone:"gold", icon:"ranked" },
+      ]}
+    />
 
     <section className="section performance"><h2 className="performanceTitle">📊 Prediction Performance</h2><details><summary>ⓘ How performance is measured</summary><div className="explain">Full-game predictions settle at final. First-quarter predictions settle when Q1 ends. Pending picks do not affect hit rate.</div></details>
       <ScrollTabs className="groupWrap" showCue={false}><button className={perfGroup==="QB"?"active":""} onClick={()=>setPerfGroup("QB")}>🏈 QB</button><button className={perfGroup==="Offense"?"active":""} onClick={()=>setPerfGroup("Offense")}>🏃 Offense</button><button className={perfGroup==="Q1"?"active":""} onClick={()=>setPerfGroup("Q1")}>1Q</button></ScrollTabs>

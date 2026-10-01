@@ -1,5 +1,4 @@
 "use client";
-import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -11,6 +10,7 @@ import {
   type SoccerRanking,
   type SoccerRosterPlayer,
 } from "@/lib/soccer";
+import { SnapshotPanel, snapshotGameDetail } from "@/components/snapshot-panel";
 
 const empty: SoccerDashboardResponse = {
   success: false,
@@ -208,11 +208,20 @@ export function SoccerDashboard() {
   const upcoming = data.games.filter((g) => !g.completed);
   const rows = data.rankings?.[market] || [];
   const active = SOCCER_MARKETS.find((x) => x[0] === market)!;
+  const liveGames = data.games.filter((g) => g.state === "in").length;
+  const finalGames = data.games.filter((g) => g.completed || g.state === "post").length;
+  const lineupTotal = data.games.length * 2;
+  const lineupConfirmed = Math.min(lineupTotal, (liveGames + finalGames) * 2);
 
   return (
     <div className="origMlb soccerDashboard">
-      <IntelligenceHero sport="soccer"/>
-      <UpdatedStamp value={data.updatedAt}/>
+      <section className="origHero soccerHero">
+        <h1>Soccer Intelligence Center</h1>
+        <p>
+          Start with the strongest players in each market, review the reason behind every
+          ranking, and open the full Top 25 only when you need more depth.
+        </p>
+      </section>
 
       <section className="soccerLeagueRow">
         <label>Leagues</label>
@@ -229,6 +238,10 @@ export function SoccerDashboard() {
         </select>
       </section>
 
+      <div className="origUpdated">
+        Updated {data.updatedAt ? fmtTime(data.updatedAt) : "—"}
+      </div>
+
       <Link
         className="origGamesEntry soccerGamesEntry"
         href={`/soccer/games?league=${encodeURIComponent(league)}`}
@@ -237,23 +250,15 @@ export function SoccerDashboard() {
         <span>› Open today&apos;s slate, lineups &amp; Game Intelligence</span>
       </Link>
 
-      <section className="origSnapshot">
-        <div className="snapshotTitleRow">
-          <h2>Game Lineup Alerts</h2>
-          <p>{leagueName}</p>
-        </div>
-        <div className="origMetrics snapshot">
-          <article className="green">
-            <span>Confirmed Lineups</span><strong>0</strong><small>updates near kickoff</small>
-          </article>
-          <article>
-            <span>Key Player Alerts</span><strong>0</strong><small>out · doubtful · limited</small>
-          </article>
-          <article className="gold">
-            <span>Lineup Changes</span><strong>0</strong><small>late changes &amp; rotation alerts</small>
-          </article>
-        </div>
-      </section>
+      <SnapshotPanel
+        title="Soccer Snapshot"
+        note={leagueName}
+        metrics={[
+          { label: "Games", value: data.games.length, detail: snapshotGameDetail(data.games.length, liveGames, finalGames), tone: "green", icon: "games" },
+          { label: "Lineups", value: `${lineupConfirmed}/${lineupTotal}`, detail: `${lineupConfirmed} confirmed · ${Math.max(0, lineupTotal - lineupConfirmed)} pending`, icon: "lineups" },
+          { label: "Predictions", value: rows.length, detail: "Players", tone: "gold", icon: "predictions" },
+        ]}
+      />
 
       <section className="origSection soccerMatchup">
         <h2>🔥 Matchup Intelligence</h2>
