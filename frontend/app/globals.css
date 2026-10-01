@@ -365,18 +365,22 @@
   white-space:nowrap!important;
 }
 
-/* Reinforce the approved gold hero frame without altering hero dimensions. */
+/* V18 border correction: the approved hero artwork already contains its gold frame.
+   Remove the extra wrapper stroke/glow so every hero shows ONE even gold line only. */
 .ssHero.ssHeroFinal{
-  border-radius:20px!important;
-  overflow:hidden!important;
-  box-shadow:
-    0 0 0 1.5px rgba(229,190,74,.98),
-    0 0 12px rgba(217,184,93,.13)!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:visible!important;
+  box-shadow:none!important;
+  outline:0!important;
 }
 
-/* Keep the approved hero artwork exactly as-is. */
+/* Keep the approved hero artwork exactly as-is. Do not add a second frame. */
 .ssHeroFinalImage{
-  border-radius:20px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  outline:0!important;
 }
 
 @media(max-width:700px){
@@ -391,9 +395,5 @@
     width:46px;
     height:46px;
     flex-basis:46px;
-  }
-  .ssHero.ssHeroFinal,
-  .ssHeroFinalImage{
-    border-radius:18px!important;
   }
 }
