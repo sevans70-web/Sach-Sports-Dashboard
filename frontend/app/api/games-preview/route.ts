@@ -235,6 +235,21 @@ async function soccerGames(league: string) {
   return games.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
 
+
+function previewPriority(state: Game["state"]) {
+  if (state === "in") return 0;
+  if (state === "pre") return 1;
+  return 2;
+}
+
+function sortPreviewGames(games: Game[]) {
+  return [...games].sort((a, b) => {
+    const stateDiff = previewPriority(a.state) - previewPriority(b.state);
+    if (stateDiff !== 0) return stateDiff;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+}
+
 function chooseDailySlate(sport: SportKey, games: Game[]) {
   const today = localDay(new Date());
   const todayGames = games.filter((g) => g.date && localDay(g.date) === today);
@@ -309,7 +324,7 @@ export async function GET(req: NextRequest) {
       sport,
       title,
       viewAllHref,
-      games: slate.slice(0, 12),
+      games: sortPreviewGames(slate).slice(0, 12),
       updatedAt: new Date().toISOString(),
     });
   } catch (error: any) {

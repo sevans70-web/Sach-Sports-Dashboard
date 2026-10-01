@@ -167,6 +167,13 @@ function localWhen(value: string) {
   };
 }
 
+function shortTeamAbbr(value: string) {
+  const clean = String(value || "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase();
+  return clean.length > 3 ? clean.slice(0, 3) : clean || "—";
+}
+
 function TeamLogo({
   src,
   abbr,
@@ -191,17 +198,19 @@ function statusText(game: PreviewGame) {
 
 function GamesPreviewCard({ game }: { game: PreviewGame }) {
   const when = localWhen(game.date);
+  const awayAbbr = shortTeamAbbr(game.awayAbbr);
+  const homeAbbr = shortTeamAbbr(game.homeAbbr);
   return (
     <Link className="ssGamePreviewCard" href={game.href}>
       <div className="ssGameMatchup">
         <div className="ssGameTeam">
-          <TeamLogo src={game.awayLogo} abbr={game.awayAbbr} />
-          <strong>{game.awayAbbr}</strong>
+          <TeamLogo src={game.awayLogo} abbr={awayAbbr} />
+          <strong>{awayAbbr}</strong>
         </div>
         <span className="ssGameAt">@</span>
         <div className="ssGameTeam">
-          <TeamLogo src={game.homeLogo} abbr={game.homeAbbr} />
-          <strong>{game.homeAbbr}</strong>
+          <TeamLogo src={game.homeLogo} abbr={homeAbbr} />
+          <strong>{homeAbbr}</strong>
         </div>
       </div>
       <div className="ssGameWhen">
