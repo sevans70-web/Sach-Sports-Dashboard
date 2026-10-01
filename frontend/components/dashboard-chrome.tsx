@@ -51,7 +51,7 @@ export const HERO_COPY: Record<SportKey, { title: string; message: string }> = {
       "Start with who is actually on the pitch — lineup status, role, minutes expectation, opponent quality, and recent form define the strongest player markets.",
   },
   cbb: {
-    title: "College Basketball Intelligence Center",
+    title: "CBB Intelligence Center",
     message:
       "Cut through a crowded college slate using minutes, role, matchup strength, team style, and game environment to find the clearest player angles.",
   },
@@ -71,7 +71,12 @@ const HERO_ART: Record<SportKey, string> = {
 function BrandBar() {
   return (
     <div className="ssBrand" aria-label="Sach Sports">
-      <div className="ssBrandMark">S</div>
+      <img
+        className="ssBrandLogo"
+        src="/brand/sach-sports-crown-logo.png"
+        alt=""
+        aria-hidden="true"
+      />
       <div className="ssBrandWordmark">
         <span className="gold">SACH</span>
         <span className="white"> SPORTS</span>

@@ -346,30 +346,54 @@
   .ssHeroFinalImage{width:100%!important;height:auto!important;object-fit:contain!important}
 }
 
-/* ===== V17 APPROVED REFERENCE HERO =====
-   Uses the exact approved hero crop from the eight signed-off mockups.
-   Do not re-crop, mask, resize independently, round again, or add a second border. */
-.ssHero.ssHeroFinal{
-  width:100%!important;
-  height:auto!important;
-  margin:0!important;
-  padding:0!important;
-  border:0!important;
-  border-radius:0!important;
-  overflow:visible!important;
-  background:transparent!important;
-  box-shadow:none!important;
+
+/* ===== V17 FINAL: logo + hero border only =====
+   Do not change hero height, typography, image sizing, image placement, copy,
+   nav sizing, or dashboard content. */
+
+/* Crowned circular Sach Sports mark. Wordmark remains on one line. */
+.ssBrandLogo{
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+  display:block;
+  object-fit:contain;
+  border-radius:50%;
+  filter:drop-shadow(0 0 10px rgba(224,181,66,.20));
 }
+.ssBrandWordmark{
+  white-space:nowrap!important;
+}
+
+/* Reinforce the approved gold hero frame without altering hero dimensions. */
+.ssHero.ssHeroFinal{
+  border-radius:20px!important;
+  overflow:hidden!important;
+  box-shadow:
+    0 0 0 1.5px rgba(229,190,74,.98),
+    0 0 12px rgba(217,184,93,.13)!important;
+}
+
+/* Keep the approved hero artwork exactly as-is. */
 .ssHeroFinalImage{
-  display:block!important;
-  width:100%!important;
-  height:auto!important;
-  margin:0!important;
-  padding:0!important;
-  border:0!important;
-  border-radius:0!important;
-  object-fit:contain!important;
-  object-position:center!important;
-  transform:none!important;
-  filter:none!important;
+  border-radius:20px!important;
+}
+
+@media(max-width:700px){
+  .ssBrandLogo{
+    width:50px;
+    height:50px;
+    flex-basis:50px;
+  }
+}
+@media(max-width:430px){
+  .ssBrandLogo{
+    width:46px;
+    height:46px;
+    flex-basis:46px;
+  }
+  .ssHero.ssHeroFinal,
+  .ssHeroFinalImage{
+    border-radius:18px!important;
+  }
 }
