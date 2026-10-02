@@ -19,18 +19,50 @@ export type SnapshotAlert = {
   href?: string;
 };
 
-function SnapshotGlyph({ type }: { type?: SnapshotIcon }) {
+type SnapshotSport = "mlb" | "nfl" | "cfb" | "nba" | "wnba" | "nhl" | "soccer" | "cbb" | "generic";
+
+function sportFromTitle(title: string): SnapshotSport {
+  const value = title.toLowerCase();
+  if (value.includes("wnba")) return "wnba";
+  if (value.includes("nba")) return "nba";
+  if (value.includes("mlb")) return "mlb";
+  if (value.includes("nfl")) return "nfl";
+  if (value.includes("cfb")) return "cfb";
+  if (value.includes("nhl")) return "nhl";
+  if (value.includes("soccer")) return "soccer";
+  if (value.includes("cbb")) return "cbb";
+  return "generic";
+}
+
+function sportBall(sport: SnapshotSport) {
+  if (sport === "mlb") return "⚾";
+  if (sport === "nfl" || sport === "cfb") return "🏈";
+  if (sport === "nba" || sport === "wnba" || sport === "cbb") return "🏀";
+  if (sport === "nhl") return "🏒";
+  if (sport === "soccer") return "⚽";
+  return "●";
+}
+
+function SnapshotGlyph({ type, sport }: { type?: SnapshotIcon; sport: SnapshotSport }) {
   if (!type) return null;
+
+  if (type === "games") {
+    return <span className="ssSnapshotSportBall" aria-hidden="true">{sportBall(sport)}</span>;
+  }
+
   if (type === "lineups") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="8" cy="8" r="2.6" />
-        <circle cx="16" cy="8" r="2.6" />
-        <circle cx="12" cy="14.5" r="2.8" />
-        <path d="M3.5 19c.5-2.8 2.1-4.3 4.5-4.3M20.5 19c-.5-2.8-2.1-4.3-4.5-4.3M7 20c.5-3.1 2.2-4.8 5-4.8s4.5 1.7 5 4.8" />
+        <circle cx="8" cy="8" r="2.35" />
+        <circle cx="16" cy="8" r="2.35" />
+        <circle cx="12" cy="6.2" r="2.6" />
+        <path d="M3.6 18.6c.4-2.7 1.9-4.1 4.4-4.1" />
+        <path d="M20.4 18.6c-.4-2.7-1.9-4.1-4.4-4.1" />
+        <path d="M6.8 20c.5-3.4 2.3-5.1 5.2-5.1s4.7 1.7 5.2 5.1" />
       </svg>
     );
   }
+
   if (type === "ranked") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -38,20 +70,17 @@ function SnapshotGlyph({ type }: { type?: SnapshotIcon }) {
       </svg>
     );
   }
+
   if (type === "predictions") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M5 19V9M12 19V5M19 19v-7" />
+        <path d="M5 19V10M12 19V6M19 19v-7" />
         <path d="m4 7 5-3 4 3 7-4" />
       </svg>
     );
   }
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="8" />
-      <path d="M7 12h10M12 7v10" />
-    </svg>
-  );
+
+  return null;
 }
 
 export function snapshotGameDetail(total: number, live: number, finals: number) {
@@ -81,29 +110,28 @@ function AlertBanner({ alert }: { alert: SnapshotAlert }) {
   );
 }
 
-export function SnapshotPanel({
-  title,
-  note,
-  metrics,
-  alert,
-}: {
+export function SnapshotPanel(props: {
   title: string;
   note?: string;
   metrics: SnapshotMetric[];
   alert?: SnapshotAlert | null;
 }) {
+  const { title, metrics, alert } = props;
+  const sport = sportFromTitle(title);
+  const helperText = "Always confirm starting lineup";
+
   return (
     <>
       {alert ? <AlertBanner alert={alert} /> : null}
       <section className="ssSnapshotPanel" aria-label={title}>
         <div className="ssSnapshotPanelHead">
           <h2>{title}</h2>
-          {note ? <span>{note}</span> : null}
+          <span>{helperText}</span>
         </div>
         <div className="ssSnapshotPanelGrid">
           {metrics.slice(0, 3).map((metric) => (
             <article className={`ssSnapshotMetric ssSnapshotMetric-${metric.tone || "neutral"}`} key={metric.label}>
-              <div className="ssSnapshotGlyph"><SnapshotGlyph type={metric.icon} /></div>
+              <div className="ssSnapshotGlyph"><SnapshotGlyph type={metric.icon} sport={sport} /></div>
               <span>{metric.label}</span>
               <strong>{metric.value}</strong>
               <small>{metric.detail}</small>

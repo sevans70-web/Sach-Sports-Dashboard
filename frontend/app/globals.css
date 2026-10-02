@@ -765,7 +765,7 @@
    vertical spacing is more balanced, and Scheduled/Live/Final now matches
    the date/time font size. No matchup, rolling logic, or hero changes. */
 
-/* === Snapshot cleanup v25: approved equal, centered cards + conditional alert === */
+/* === Snapshot polish v28: approved mockup styling across all eight dashboards === */
 .ssSnapshotAlert{
   display:grid;
   grid-template-columns:auto auto minmax(0,1fr) auto;
@@ -800,24 +800,25 @@
 .ssSnapshotPanel{margin:18px 0 24px}
 .ssSnapshotPanelHead{
   display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:12px;
-  margin:0 0 10px;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
+  margin:0 0 11px;
 }
 .ssSnapshotPanelHead h2{
   margin:0;
   color:#fff;
-  font-size:clamp(1.45rem,5.6vw,2rem);
-  line-height:1.08;
+  font-size:clamp(1.42rem,5vw,1.82rem);
+  line-height:1.06;
   letter-spacing:-.025em;
+  white-space:nowrap;
 }
 .ssSnapshotPanelHead span{
   color:#20df7f;
   font-size:12px;
   font-weight:850;
   line-height:1.2;
-  text-align:right;
+  text-align:left;
   white-space:nowrap;
 }
 .ssSnapshotPanelGrid{
@@ -825,21 +826,25 @@
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:9px;
 }
-.ssSnapshotMetric{
+.ssSnapshotMetric,
+.ssSnapshotMetric-green,
+.ssSnapshotMetric-neutral,
+.ssSnapshotMetric-gold{
   min-width:0;
   min-height:148px;
   padding:12px 8px 10px;
-  border:2px solid #34383e;
+  border:1.5px solid rgba(222,187,88,.94);
   border-radius:16px;
-  background:linear-gradient(180deg,#111315,#0d0f10);
+  background:
+    radial-gradient(circle at 18% 8%,rgba(191,143,34,.18),transparent 46%),
+    linear-gradient(145deg,rgba(62,51,27,.66) 0%,rgba(25,26,27,.98) 48%,rgba(13,15,16,.99) 100%);
+  box-shadow:inset 0 0 30px rgba(218,184,93,.025);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
   text-align:center;
 }
-.ssSnapshotMetric-green{border-color:#20df7f}
-.ssSnapshotMetric-gold{border-color:#d9b85d}
 .ssSnapshotGlyph{
   display:grid;
   place-items:center;
@@ -848,7 +853,14 @@
   margin:0 0 5px;
   border:1.5px solid #d9b85d;
   border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,rgba(217,184,93,.12),rgba(8,9,9,.05) 72%);
   color:#d9b85d;
+}
+.ssSnapshotSportBall{
+  display:block;
+  font-size:20px;
+  line-height:1;
+  transform:translateY(-.5px);
 }
 .ssSnapshotGlyph svg{
   width:21px;
@@ -861,7 +873,7 @@
 }
 .ssSnapshotGlyph svg circle{fill:none}
 .ssSnapshotMetric>span{
-  color:#c8cbd0;
+  color:#d1d3d6;
   font-size:12px;
   font-weight:800;
   line-height:1.1;
@@ -888,13 +900,14 @@
   .ssSnapshotAlert{grid-template-columns:auto auto minmax(0,1fr);gap:8px;padding:10px 11px}
   .ssSnapshotAlertAction{grid-column:2/4;margin-top:2px}
   .ssSnapshotPanel{margin-top:16px}
-  .ssSnapshotPanelHead{align-items:flex-end;gap:8px}
-  .ssSnapshotPanelHead h2{font-size:1.55rem}
-  .ssSnapshotPanelHead span{font-size:10px;max-width:130px;white-space:normal}
+  .ssSnapshotPanelHead{gap:4px;margin-bottom:10px}
+  .ssSnapshotPanelHead h2{font-size:1.42rem;white-space:nowrap}
+  .ssSnapshotPanelHead span{font-size:10.5px;white-space:nowrap}
   .ssSnapshotPanelGrid{gap:7px}
-  .ssSnapshotMetric{min-height:142px;padding:10px 6px 9px;border-radius:15px}
+  .ssSnapshotMetric,.ssSnapshotMetric-green,.ssSnapshotMetric-neutral,.ssSnapshotMetric-gold{min-height:142px;padding:10px 6px 9px;border-radius:15px}
   .ssSnapshotGlyph{width:31px;height:31px}
   .ssSnapshotGlyph svg{width:18px;height:18px}
+  .ssSnapshotSportBall{font-size:18px}
   .ssSnapshotMetric>span{font-size:10px}
   .ssSnapshotMetric>strong{font-size:23px}
   .ssSnapshotMetric>small{font-size:9.8px;line-height:1.2}
