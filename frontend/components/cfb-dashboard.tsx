@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState,type ReactNode} from "react";
@@ -251,14 +252,8 @@ export default function CfbDashboard(){
   const cfbRankedCount=r.data.success?(rows.length>=25?cfbSlateCount*25:rows.length):0;
 
   return <main className="cfbShell">
-    <Link href="/" className="cfbMenu">▦⌄</Link>
-
-    <section className="hero">
-      <h1>CFB Intelligence Center</h1>
-      <p>Start with the strongest players in each supported college market, review the reason behind every ranking, and open the full rankings only when you need more depth.</p>
-    </section>
-
-    <div className="updated">Last updated Live</div>
+    <IntelligenceHero sport="cfb"/>
+    <UpdatedStamp/>
 
     <Link className="gamesEntry" href="/cfb/games">
       <b>🏈 THIS WEEK&apos;S CFB GAMES</b>

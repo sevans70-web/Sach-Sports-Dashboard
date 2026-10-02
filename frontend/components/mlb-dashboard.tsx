@@ -1,4 +1,5 @@
 "use client";
+import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BATTER_MARKETS, PITCHER_MARKETS, playerHeadshot, rankingName, rankingPlayerId, numberValue, percentValue, type RankingRow } from "@/lib/mlb";
@@ -152,8 +153,8 @@ export function MlbDashboard(){
   const updated=rankings.data.updatedAt?new Date(rankings.data.updatedAt).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"Live";
 
   return <div className="origMlb">
-    <section className="origHero"><h1>MLB Intelligence Center</h1><p>Start with the strongest players in each market, review the reason behind every ranking, and open the full Top 25 only when you need more depth.</p></section>
-    <div className="origUpdated">Last updated {updated}</div>
+    <IntelligenceHero sport="mlb"/>
+    <UpdatedStamp value={rankings.data.updatedAt}/>
 
     <Link className="origGamesEntry" href="/mlb/games"><strong>⚾ TODAY&apos;S MLB GAMES</strong><span>Open today&apos;s slate, lineups &amp; Game Intelligence ›</span></Link>
     <SnapshotPanel
