@@ -1,0 +1,153 @@
+/* Snapshot cards v33
+   One shared fix for all eight dashboards.
+   - true horizontal centering for every inner element
+   - separate Ranked Players (star) and Predictions (analytics) icons
+   - slightly smaller primary numbers
+   - shorter, more square cards
+*/
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotPanelGrid) :global(.ssSnapshotMetric).metric {
+  min-height: 126px !important;
+  height: 126px !important;
+  padding: 7px 6px !important;
+  display: grid !important;
+  grid-template-rows: 1fr !important;
+  place-items: center !important;
+  text-align: center !important;
+}
+
+.metricInner {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 31px 19px 34px minmax(24px, 1fr);
+  align-items: center;
+  justify-items: center;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+}
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph {
+  width: 31px !important;
+  height: 31px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  justify-self: center !important;
+  align-self: center !important;
+  text-align: center !important;
+}
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph > *,
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph svg,
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph :global(.ssSnapshotStar),
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph :global(.ssSnapshotSportBall) {
+  margin: 0 auto !important;
+  justify-self: center !important;
+  align-self: center !important;
+  text-align: center !important;
+}
+
+.predictionIcon {
+  width: 18px !important;
+  height: 18px !important;
+  display: block;
+}
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .label {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 2px 0 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  justify-self: stretch !important;
+  align-self: center !important;
+  color: #d1d3d6 !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .value {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  justify-self: stretch !important;
+  align-self: center !important;
+  color: #fff !important;
+  font-size: 24px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  font-variant-numeric: tabular-nums;
+}
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .detail {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  justify-self: stretch !important;
+  align-self: center !important;
+  gap: 1px 4px !important;
+  color: #d9dade !important;
+  font-size: 9.8px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+}
+
+:global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .detail span {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+@media (max-width: 430px) {
+  :global(.ssSnapshotPanel) :global(.ssSnapshotPanelGrid) :global(.ssSnapshotMetric).metric {
+    min-height: 122px !important;
+    height: 122px !important;
+    padding: 6px 5px !important;
+  }
+
+  .metricInner {
+    grid-template-rows: 30px 18px 32px minmax(22px, 1fr);
+  }
+
+  :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .label {
+    font-size: 9.2px !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .value {
+    font-size: 21.5px !important;
+  }
+
+  :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .detail {
+    font-size: 9.2px !important;
+    gap: 1px 3px !important;
+  }
+}

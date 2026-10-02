@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import styles from "./snapshot-panel.module.css";
 
 export type SnapshotTone = "green" | "neutral" | "gold";
 export type SnapshotIcon = "games" | "lineups" | "ranked" | "predictions";
@@ -63,8 +64,20 @@ function SnapshotGlyph({ type, sport }: { type?: SnapshotIcon; sport: SnapshotSp
     );
   }
 
-  if (type === "ranked" || type === "predictions") {
+  if (type === "ranked") {
     return <span className="ssSnapshotStar" aria-hidden="true">★</span>;
+  }
+
+  if (type === "predictions") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.predictionIcon}>
+        <path d="M4 18V13" />
+        <path d="M9 18V10" />
+        <path d="M14 18V7" />
+        <path d="M19 18V11" />
+        <path d="M4 9.5 9 6.5l4 1.8L19 4" />
+      </svg>
+    );
   }
 
   return null;
@@ -81,7 +94,7 @@ export function snapshotGameDetail(total: number, live: number, finals: number) 
 function SnapshotDetail({ detail }: { detail: string }) {
   const parts = detail.split(" · ");
   return (
-    <small className="ssSnapshotMetricDetail">
+    <small className={`ssSnapshotMetricDetail ${styles.detail}`}>
       {parts.map((part, index) => (
         <span key={`${part}-${index}`}>
           {index > 0 ? <i aria-hidden="true">·</i> : null}
@@ -131,11 +144,18 @@ export function SnapshotPanel(props: {
         </div>
         <div className="ssSnapshotPanelGrid">
           {metrics.slice(0, 3).map((metric) => (
-            <article className={`ssSnapshotMetric ssSnapshotMetric-${metric.tone || "neutral"}`} key={metric.label}>
-              <div className="ssSnapshotGlyph"><SnapshotGlyph type={metric.icon} sport={sport} /></div>
-              <div className="ssSnapshotMetricLabel">{metric.label}</div>
-              <div className="ssSnapshotMetricValue">{metric.value}</div>
-              <SnapshotDetail detail={metric.detail} />
+            <article
+              className={`ssSnapshotMetric ssSnapshotMetric-${metric.tone || "neutral"} ${styles.metric}`}
+              key={metric.label}
+            >
+              <div className={styles.metricInner}>
+                <div className={`ssSnapshotGlyph ${styles.glyph}`}>
+                  <SnapshotGlyph type={metric.icon} sport={sport} />
+                </div>
+                <div className={`ssSnapshotMetricLabel ${styles.label}`}>{metric.label}</div>
+                <div className={`ssSnapshotMetricValue ${styles.value}`}>{metric.value}</div>
+                <SnapshotDetail detail={metric.detail} />
+              </div>
             </article>
           ))}
         </div>
