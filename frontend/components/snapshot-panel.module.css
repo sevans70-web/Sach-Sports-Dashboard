@@ -311,3 +311,32 @@
     font-size: 9.2px !important;
   }
 }
+
+
+/* =========================================================
+   V37 — UNIFORM THIN HERO BORDER
+   Shared across MLB, NFL, CFB, NBA, WNBA, NHL, Soccer, CBB.
+
+   The approved hero art already has its edge pixels cropped by the global
+   hero rules. This override removes the extra physical wrapper stroke and
+   leaves ONE 1.5px gold overlay stroke — matching the thin border language
+   used by the Games and Snapshot sections.
+
+   Border only. No hero image sizing, copy, spacing, card sizing, Snapshot
+   alignment, or data behavior is changed.
+   ========================================================= */
+
+:global(body .ssHero.ssHeroFinal) {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Stronger specificity than the older global V19 2px rule, so this wins
+   regardless of stylesheet load order. */
+:global(body .ssHero.ssHeroFinal)::after {
+  border-width: 1.5px !important;
+  border-style: solid !important;
+  border-color: #d9b85d !important;
+  box-shadow: none !important;
+}
