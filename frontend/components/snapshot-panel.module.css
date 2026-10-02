@@ -1,42 +1,63 @@
-/* Snapshot cards v35
-   Shared cleanup for all eight dashboards.
-   - exactly equal card widths/heights
-   - true centering for icon, label, value and footer
-   - Ranked Players = people icon
-   - Predictions = star icon
-   - one consistent 1.5px gold border language
-   - hero frame reduced to the same visual border weight
+/* Snapshot cards v36
+   Positioning repair only.
+   Fixes the shared Snapshot cards across MLB, NFL, CFB, NBA, WNBA, NHL, Soccer and CBB.
+
+   IMPORTANT:
+   Older global Snapshot CSS still gives .ssSnapshotMetric its own multi-row grid.
+   That was forcing the new metricInner wrapper into only the first row and making
+   the icon circles rise above the card. This file explicitly neutralizes that
+   parent grid and lets metricInner control the full card layout.
 */
 
-/* ---------- Snapshot three-card grid ---------- */
+/* Keep all 3 cards exactly equal. */
 :global(.ssSnapshotPanel) :global(.ssSnapshotPanelGrid) {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  grid-auto-columns: minmax(0, 1fr) !important;
   align-items: stretch !important;
   gap: 7px !important;
 }
 
+/* Critical repair:
+   Do NOT allow the old global grid-template-rows to control the card.
+   The card becomes a simple flex shell and metricInner owns the layout.
+*/
 :global(.ssSnapshotPanel)
   :global(.ssSnapshotPanelGrid)
   :global(.ssSnapshotMetric).metric {
   box-sizing: border-box !important;
+
   width: 100% !important;
   min-width: 0 !important;
   max-width: none !important;
-  min-height: 122px !important;
-  height: 122px !important;
-  margin: 0 !important;
-  padding: 6px 5px !important;
 
-  display: grid !important;
-  place-items: center !important;
+  height: 122px !important;
+  min-height: 122px !important;
+  max-height: 122px !important;
+
+  margin: 0 !important;
+  padding: 7px 5px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+
+  /* Neutralize all older grid-row rules. */
+  grid-template-rows: none !important;
+  grid-template-columns: none !important;
+
+  overflow: hidden !important;
+  text-align: center !important;
 
   border: 1.5px solid #d9b85d !important;
   border-radius: 15px !important;
 
   background:
-    radial-gradient(circle at 18% 8%, rgba(191, 143, 34, 0.20), transparent 46%),
+    radial-gradient(
+      circle at 18% 8%,
+      rgba(191, 143, 34, 0.20),
+      transparent 46%
+    ),
     linear-gradient(
       145deg,
       rgba(62, 51, 27, 0.68) 0%,
@@ -46,28 +67,43 @@
 
   box-shadow:
     inset 0 0 30px rgba(218, 184, 93, 0.025) !important;
-
-  text-align: center !important;
 }
 
+/* This wrapper now receives the FULL card height. */
 .metricInner {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
   min-width: 0;
+  min-height: 0;
 
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: 30px 22px 31px minmax(22px, 1fr);
+
   align-items: center;
   justify-items: center;
   align-content: center;
 
+  margin: 0;
+  padding: 0;
+
   text-align: center;
 }
 
-/* ---------- Circle icon ---------- */
+/* Icon circle stays INSIDE the card. */
 :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph {
   box-sizing: border-box !important;
+
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  transform: none !important;
+
   width: 30px !important;
   height: 30px !important;
 
@@ -76,11 +112,13 @@
 
   display: grid !important;
   place-items: center !important;
+
   justify-self: center !important;
   align-self: center !important;
 
   border: 1.5px solid #d9b85d !important;
   border-radius: 50% !important;
+
   background:
     radial-gradient(
       circle at 50% 35%,
@@ -102,16 +140,22 @@
   :global(.ssSnapshotMetric)
   .glyph
   :global(.ssSnapshotSportBall) {
+  position: static !important;
   margin: 0 auto !important;
+  transform: none !important;
+
   justify-self: center !important;
   align-self: center !important;
+
   text-align: center !important;
 }
 
+/* People icon */
 :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .glyph svg {
   width: 18px !important;
   height: 18px !important;
   display: block !important;
+
   fill: none !important;
   stroke: currentColor !important;
   stroke-width: 1.7 !important;
@@ -119,24 +163,25 @@
   stroke-linejoin: round !important;
 }
 
+/* Prediction star */
 :global(.ssSnapshotStar) {
   display: block !important;
   color: #d9b85d !important;
   font-size: 19px !important;
   line-height: 1 !important;
-  transform: translateY(-0.5px) !important;
 }
 
+/* Sport icon */
 :global(.ssSnapshotSportBall) {
   display: block !important;
   font-size: 18px !important;
   line-height: 1 !important;
-  transform: translateY(-0.5px) !important;
 }
 
-/* ---------- Label ---------- */
+/* Games / Lineups / Ranked Players / Predictions */
 :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .label {
   box-sizing: border-box !important;
+
   width: 100% !important;
   min-width: 0 !important;
 
@@ -151,6 +196,7 @@
   align-self: center !important;
 
   color: #d1d3d6 !important;
+
   font-size: 9.2px !important;
   font-weight: 800 !important;
   line-height: 1.05 !important;
@@ -161,9 +207,10 @@
   white-space: nowrap !important;
 }
 
-/* ---------- Main number ---------- */
+/* Main number */
 :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .value {
   box-sizing: border-box !important;
+
   width: 100% !important;
   min-width: 0 !important;
 
@@ -177,7 +224,8 @@
   justify-self: stretch !important;
   align-self: center !important;
 
-  color: #fff !important;
+  color: #ffffff !important;
+
   font-size: 21.5px !important;
   font-weight: 950 !important;
   line-height: 1 !important;
@@ -186,9 +234,15 @@
   font-variant-numeric: tabular-nums !important;
 }
 
-/* ---------- Footer/detail ---------- */
+/* Bottom line:
+   "0 live · 0 final · 0 remaining"
+   "Across 3 slates"
+   "Players"
+   etc.
+*/
 :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .detail {
   box-sizing: border-box !important;
+
   width: 100% !important;
   min-width: 0 !important;
 
@@ -206,8 +260,10 @@
   gap: 1px 3px !important;
 
   color: #d9dade !important;
+
   font-size: 9.2px !important;
   line-height: 1.15 !important;
+
   text-align: center !important;
 }
 
@@ -215,83 +271,23 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+
   gap: 3px !important;
-  white-space: nowrap !important;
+
   text-align: center !important;
+  white-space: nowrap !important;
 }
 
-/* ---------- Border uniformity ----------
-   Games preview and Snapshot cards already use 1.5px.
-   Force hero to a single 1.5px overlay frame too.
-   The tiny crop hides the older baked-in edge on the approved hero artwork.
-*/
-:global(.ssHero.ssHeroFinal) {
-  box-sizing: border-box !important;
-  border: 0 !important;
-  border-radius: 18px !important;
-  overflow: hidden !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-}
-
-:global(.ssHero.ssHeroFinal .ssHeroFinalImage) {
-  display: block !important;
-  width: calc(100% + 8px) !important;
-  max-width: none !important;
-  height: auto !important;
-  margin: -4px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  outline: 0 !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  transform: none !important;
-  filter: none !important;
-}
-
-:global(.ssHero.ssHeroFinal)::after {
-  content: "" !important;
-  display: block !important;
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 20 !important;
-  pointer-events: none !important;
-  box-sizing: border-box !important;
-
-  border: 1.5px solid #d9b85d !important;
-  border-radius: 18px !important;
-
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
-/* Match the games-preview outer container to the same stroke */
-:global(.ssGamesPreview) {
-  border-width: 1.5px !important;
-  border-color: #d9b85d !important;
-}
-
-/* Match individual upcoming-game cards as well */
-:global(.ssGamesPreview .ssGamePreviewCard),
-:global(.ssGamesPreview .ssGamesPreviewEmpty) {
-  border-width: 1.5px !important;
-  border-color: #d9b85d !important;
-}
-
+/* Mobile keeps the exact same equal-card geometry. */
 @media (max-width: 430px) {
-  :global(.ssSnapshotPanel) :global(.ssSnapshotPanelGrid) {
-    gap: 7px !important;
-  }
-
   :global(.ssSnapshotPanel)
     :global(.ssSnapshotPanelGrid)
     :global(.ssSnapshotMetric).metric {
-    width: 100% !important;
-    min-height: 122px !important;
     height: 122px !important;
-    padding: 6px 5px !important;
+    min-height: 122px !important;
+    max-height: 122px !important;
+
+    padding: 7px 5px !important;
   }
 
   .metricInner {
@@ -313,10 +309,5 @@
 
   :global(.ssSnapshotPanel) :global(.ssSnapshotMetric) .detail {
     font-size: 9.2px !important;
-  }
-
-  :global(.ssHero.ssHeroFinal),
-  :global(.ssHero.ssHeroFinal)::after {
-    border-radius: 17px !important;
   }
 }
