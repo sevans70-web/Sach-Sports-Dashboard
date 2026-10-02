@@ -63,21 +63,8 @@ function SnapshotGlyph({ type, sport }: { type?: SnapshotIcon; sport: SnapshotSp
     );
   }
 
-  if (type === "ranked") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" />
-      </svg>
-    );
-  }
-
-  if (type === "predictions") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M5 19V10M12 19V6M19 19v-7" />
-        <path d="m4 7 5-3 4 3 7-4" />
-      </svg>
-    );
+  if (type === "ranked" || type === "predictions") {
+    return <span className="ssSnapshotStar" aria-hidden="true">★</span>;
   }
 
   return null;
@@ -89,6 +76,20 @@ export function snapshotGameDetail(total: number, live: number, finals: number) 
   const safeFinals = Math.max(0, Number(finals) || 0);
   const remaining = Math.max(0, safeTotal - safeLive - safeFinals);
   return `${safeLive} live · ${safeFinals} final · ${remaining} remaining`;
+}
+
+function SnapshotDetail({ detail }: { detail: string }) {
+  const parts = detail.split(" · ");
+  return (
+    <small className="ssSnapshotMetricDetail">
+      {parts.map((part, index) => (
+        <span key={`${part}-${index}`}>
+          {index > 0 ? <i aria-hidden="true">·</i> : null}
+          <b>{part}</b>
+        </span>
+      ))}
+    </small>
+  );
 }
 
 function AlertBanner({ alert }: { alert: SnapshotAlert }) {
@@ -134,7 +135,7 @@ export function SnapshotPanel(props: {
               <div className="ssSnapshotGlyph"><SnapshotGlyph type={metric.icon} sport={sport} /></div>
               <span>{metric.label}</span>
               <strong>{metric.value}</strong>
-              <small>{metric.detail}</small>
+              <SnapshotDetail detail={metric.detail} />
             </article>
           ))}
         </div>
