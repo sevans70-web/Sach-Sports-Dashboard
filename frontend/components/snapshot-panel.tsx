@@ -133,8 +133,8 @@ export function SnapshotPanel(props: {
           {metrics.slice(0, 3).map((metric) => (
             <article className={`ssSnapshotMetric ssSnapshotMetric-${metric.tone || "neutral"}`} key={metric.label}>
               <div className="ssSnapshotGlyph"><SnapshotGlyph type={metric.icon} sport={sport} /></div>
-              <span>{metric.label}</span>
-              <strong>{metric.value}</strong>
+              <div className="ssSnapshotMetricLabel">{metric.label}</div>
+              <div className="ssSnapshotMetricValue">{metric.value}</div>
               <SnapshotDetail detail={metric.detail} />
             </article>
           ))}

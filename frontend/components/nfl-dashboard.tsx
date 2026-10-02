@@ -108,7 +108,7 @@ export default function NflDashboard(){
       metrics={[
         { label:"Games", value:gameCount, detail:snapshotGameDetail(gameCount,live,finals), tone:"green", icon:"games" },
         { label:"Lineups", value:`${s.data.confirmedLineups??0}/${s.data.totalLineups??gameCount*2}`, detail:`${s.data.confirmedLineups??0} confirmed · ${s.data.pendingLineups??Math.max(0,gameCount*2-(s.data.confirmedLineups??0))} pending`, icon:"lineups" },
-        { label:"Ranked Players", value:rows.length||0, detail:"Top plays live", tone:"gold", icon:"ranked" },
+        { label:"Predictions", value:rows.length||0, detail:"Players", tone:"gold", icon:"predictions" },
       ]}
     />
 
