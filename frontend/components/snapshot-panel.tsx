@@ -20,7 +20,16 @@ export type SnapshotAlert = {
   href?: string;
 };
 
-type SnapshotSport = "mlb" | "nfl" | "cfb" | "nba" | "wnba" | "nhl" | "soccer" | "cbb" | "generic";
+type SnapshotSport =
+  | "mlb"
+  | "nfl"
+  | "cfb"
+  | "nba"
+  | "wnba"
+  | "nhl"
+  | "soccer"
+  | "cbb"
+  | "generic";
 
 function sportFromTitle(title: string): SnapshotSport {
   const value = title.toLowerCase();
@@ -44,46 +53,56 @@ function sportBall(sport: SnapshotSport) {
   return "●";
 }
 
-function SnapshotGlyph({ type, sport }: { type?: SnapshotIcon; sport: SnapshotSport }) {
+function PeopleGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="8" cy="8" r="2.35" />
+      <circle cx="16" cy="8" r="2.35" />
+      <circle cx="12" cy="6.2" r="2.6" />
+      <path d="M3.6 18.6c.4-2.7 1.9-4.1 4.4-4.1" />
+      <path d="M20.4 18.6c-.4-2.7-1.9-4.1-4.4-4.1" />
+      <path d="M6.8 20c.5-3.4 2.3-5.1 5.2-5.1s4.7 1.7 5.2 5.1" />
+    </svg>
+  );
+}
+
+function SnapshotGlyph({
+  type,
+  sport,
+}: {
+  type?: SnapshotIcon;
+  sport: SnapshotSport;
+}) {
   if (!type) return null;
 
   if (type === "games") {
-    return <span className="ssSnapshotSportBall" aria-hidden="true">{sportBall(sport)}</span>;
-  }
-
-  if (type === "lineups") {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="8" cy="8" r="2.35" />
-        <circle cx="16" cy="8" r="2.35" />
-        <circle cx="12" cy="6.2" r="2.6" />
-        <path d="M3.6 18.6c.4-2.7 1.9-4.1 4.4-4.1" />
-        <path d="M20.4 18.6c-.4-2.7-1.9-4.1-4.4-4.1" />
-        <path d="M6.8 20c.5-3.4 2.3-5.1 5.2-5.1s4.7 1.7 5.2 5.1" />
-      </svg>
+      <span className="ssSnapshotSportBall" aria-hidden="true">
+        {sportBall(sport)}
+      </span>
     );
   }
 
-  if (type === "ranked") {
-    return <span className="ssSnapshotStar" aria-hidden="true">★</span>;
+  if (type === "lineups" || type === "ranked") {
+    return <PeopleGlyph />;
   }
 
   if (type === "predictions") {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.predictionIcon}>
-        <path d="M4 18V13" />
-        <path d="M9 18V10" />
-        <path d="M14 18V7" />
-        <path d="M19 18V11" />
-        <path d="M4 9.5 9 6.5l4 1.8L19 4" />
-      </svg>
+      <span className="ssSnapshotStar" aria-hidden="true">
+        ★
+      </span>
     );
   }
 
   return null;
 }
 
-export function snapshotGameDetail(total: number, live: number, finals: number) {
+export function snapshotGameDetail(
+  total: number,
+  live: number,
+  finals: number
+) {
   const safeTotal = Math.max(0, Number(total) || 0);
   const safeLive = Math.max(0, Number(live) || 0);
   const safeFinals = Math.max(0, Number(finals) || 0);
@@ -108,19 +127,30 @@ function SnapshotDetail({ detail }: { detail: string }) {
 function AlertBanner({ alert }: { alert: SnapshotAlert }) {
   const body = (
     <>
-      <span className="ssSnapshotAlertIcon" aria-hidden="true">!</span>
+      <span className="ssSnapshotAlertIcon" aria-hidden="true">
+        !
+      </span>
       <strong>ALERT</strong>
       <span className="ssSnapshotAlertText">
         <b>{alert.title}</b>
         {alert.detail ? <small>{alert.detail}</small> : null}
       </span>
-      {alert.href ? <span className="ssSnapshotAlertAction">View Details <i aria-hidden="true">›</i></span> : null}
+      {alert.href ? (
+        <span className="ssSnapshotAlertAction">
+          View Details <i aria-hidden="true">›</i>
+        </span>
+      ) : null}
     </>
   );
+
   return alert.href ? (
-    <Link className="ssSnapshotAlert" href={alert.href}>{body}</Link>
+    <Link className="ssSnapshotAlert" href={alert.href}>
+      {body}
+    </Link>
   ) : (
-    <div className="ssSnapshotAlert" role="status">{body}</div>
+    <div className="ssSnapshotAlert" role="status">
+      {body}
+    </div>
   );
 }
 
@@ -142,18 +172,28 @@ export function SnapshotPanel(props: {
           <h2>{title}</h2>
           <span>{helperText}</span>
         </div>
+
         <div className="ssSnapshotPanelGrid">
           {metrics.slice(0, 3).map((metric) => (
             <article
-              className={`ssSnapshotMetric ssSnapshotMetric-${metric.tone || "neutral"} ${styles.metric}`}
+              className={`ssSnapshotMetric ssSnapshotMetric-${
+                metric.tone || "neutral"
+              } ${styles.metric}`}
               key={metric.label}
             >
               <div className={styles.metricInner}>
                 <div className={`ssSnapshotGlyph ${styles.glyph}`}>
                   <SnapshotGlyph type={metric.icon} sport={sport} />
                 </div>
-                <div className={`ssSnapshotMetricLabel ${styles.label}`}>{metric.label}</div>
-                <div className={`ssSnapshotMetricValue ${styles.value}`}>{metric.value}</div>
+
+                <div className={`ssSnapshotMetricLabel ${styles.label}`}>
+                  {metric.label}
+                </div>
+
+                <div className={`ssSnapshotMetricValue ${styles.value}`}>
+                  {metric.value}
+                </div>
+
                 <SnapshotDetail detail={metric.detail} />
               </div>
             </article>
