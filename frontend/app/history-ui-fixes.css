@@ -1,0 +1,21 @@
+/*
+  v41 final cleanup for the approved Prediction Performance redesign.
+  The new shared portal is the only performance UI that should remain visible.
+*/
+
+/* Old CFB performance controls were still visible above the shared panel. */
+.cfbShell .performanceSection > .performanceTitle,
+.cfbShell .performanceSection > .resultsArchiveLink,
+.cfbShell .performanceSection > .performanceInfo,
+.cfbShell .performanceSection > .tabsWrap,
+.cfbShell .performanceSection > h3,
+.cfbShell .performanceSection > .periodTabs,
+.cfbShell .performanceSection > .overallMetrics,
+.cfbShell .performanceSection > .marketMetrics {
+  display: none !important;
+}
+
+/* Old Soccer Matchup Intelligence is no longer part of the approved face. */
+.soccerMatchup {
+  display: none !important;
+}

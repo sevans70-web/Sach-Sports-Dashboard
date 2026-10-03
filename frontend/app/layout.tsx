@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./theme.css";
+import "./history-ui-fixes.css";
 import { PredictionPerformancePortal } from "@/components/prediction-performance-portal";
 
 export const metadata: Metadata = {
