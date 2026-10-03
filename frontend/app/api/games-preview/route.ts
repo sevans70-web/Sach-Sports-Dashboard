@@ -242,7 +242,6 @@ async function soccerGames(league: string) {
   return games.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
 
-
 function previewPriority(state: Game["state"]) {
   if (state === "in") return 0;
   if (state === "pre") return 1;
@@ -262,7 +261,8 @@ function unfinished(games: Game[]) {
 }
 
 function chooseDailySlate(sport: SportKey, games: Game[]) {
-  const today = localDay(new Date());
+  const now = new Date();
+  const today = localDay(now);
 
   // A live game stays visible even if it crossed midnight. Completed games never
   // occupy one of the three dashboard preview slots.
@@ -271,6 +271,47 @@ function chooseDailySlate(sport: SportKey, games: Game[]) {
     (g) => g.state === "pre" && g.date && localDay(g.date) === today,
   );
   const current = sortPreviewGames([...live, ...todayScheduled]);
+
+  /*
+    NBA must use the SAME slate window as Player Rankings:
+      1) unfinished games today, plus
+      2) the next scheduled NBA date.
+
+    Previously this function returned immediately when `current.length` was
+    non-zero. That made the dashboard show only today's Miami/Toronto card while
+    the ranking engine correctly admitted players from Sunday's slate.
+  */
+  if (sport === "nba" && current.length) {
+    const futureAfterToday = games
+      .filter(
+        (g) =>
+          g.state === "pre" &&
+          g.date &&
+          localDay(g.date) > today &&
+          new Date(g.date).getTime() > Date.now(),
+      )
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const nextDay = futureAfterToday.length
+      ? localDay(futureAfterToday[0].date)
+      : "";
+
+    const nextGames = nextDay
+      ? futureAfterToday.filter((g) => localDay(g.date) === nextDay)
+      : [];
+
+    const tomorrow = localDay(new Date(now.getTime() + 86_400_000));
+    const title = nextGames.length
+      ? nextDay === tomorrow
+        ? "TODAY + TOMORROW NBA GAMES"
+        : "TODAY + NEXT NBA GAMES"
+      : "TODAY’S NBA GAMES";
+
+    return {
+      title,
+      games: sortPreviewGames([...current, ...nextGames]),
+    };
+  }
 
   if (current.length) {
     return {
