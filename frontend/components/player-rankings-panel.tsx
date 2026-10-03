@@ -1301,6 +1301,99 @@ function soccerGameFor(row: any, games: any[]) {
   });
 }
 
+
+type CfbLiveRow = {
+  playerId?: string;
+  playerName?: string;
+  value?: number | null;
+};
+
+type CfbLiveGame = {
+  gameId?: string;
+  matchup?: string;
+  state?: string;
+  completed?: boolean;
+  status?: string;
+  quarter?: string;
+  clock?: string;
+  rows?: CfbLiveRow[];
+};
+
+function cfbCardKey(card: RankingCard) {
+  return `${card.playerId}|${clean(card.matchup)}`;
+}
+
+function cfbGameForCard(card: RankingCard, games: CfbLiveGame[]) {
+  const wanted = clean(card.matchup);
+  return games.find((game) => clean(game.matchup) === wanted) || null;
+}
+
+function cfbLivePlayerValue(game: CfbLiveGame | null, card: RankingCard) {
+  if (!game) return null;
+
+  const id = String(card.playerId || "");
+  const name = clean(card.playerName);
+
+  const row =
+    (game.rows || []).find((item) => id && String(item.playerId || "") === id) ||
+    (game.rows || []).find((item) => name && clean(item.playerName) === name);
+
+  return finite(row?.value);
+}
+
+function applyCfbLiveState(card: RankingCard, game: CfbLiveGame | null) {
+  if (!game) return card;
+
+  const isLive = String(game.state || "").toLowerCase() === "in";
+  const isFinal = Boolean(game.completed) || String(game.state || "").toLowerCase() === "post";
+
+  if (!isLive && !isFinal) return card;
+
+  const value = cfbLivePlayerValue(game, card);
+  const statusParts = [
+    game.quarter,
+    game.clock,
+  ].filter(Boolean);
+
+  const gameStatus =
+    statusParts.length
+      ? statusParts.join(" · ")
+      : String(game.status || (isLive ? "In progress" : "Final"));
+
+  const liveProgressPct =
+    isLive &&
+    value != null &&
+    card.sportsbookLine != null &&
+    card.sportsbookLine > 0
+      ? Math.max(0, Math.min(200, (value / card.sportsbookLine) * 100))
+      : card.liveProgressPct;
+
+  return {
+    ...card,
+    lineupStatus: "Confirmed" as const,
+    gameState: isFinal ? "post" : "in",
+    gameStatus,
+    liveCurrent: isLive ? value : card.liveCurrent,
+    liveProgressPct,
+    actual: isFinal && value != null ? value : card.actual,
+    raw: {
+      ...(card.raw || {}),
+      gameState: isFinal ? "post" : "in",
+      gameStatus,
+      isLive,
+      isFinal,
+      completed: isFinal,
+      lineupConfirmed: true,
+      confirmed: true,
+      liveCurrent: isLive ? value : card.liveCurrent,
+      actualResult: isFinal && value != null ? value : card.actual,
+      liveProgressPct,
+      frozen: true,
+      lockedAtKickoff: true,
+    },
+  };
+}
+
 export function PlayerRankingsPanel({
   sport,
 }: {
@@ -1324,6 +1417,8 @@ export function PlayerRankingsPanel({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [league, setLeague] = useState("eng.1");
+  const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
+  const [cfbFrozenCards, setCfbFrozenCards] = useState<Record<string, RankingCard>>({});
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
 
@@ -1367,6 +1462,98 @@ export function PlayerRankingsPanel({
     select.addEventListener("change", sync);
     return () => select.removeEventListener("change", sync);
   }, [sport]);
+
+  useEffect(() => {
+    if (sport !== "cfb") {
+      setCfbLiveGames([]);
+      setCfbFrozenCards({});
+      return;
+    }
+
+    const storageKey = `sach-cfb-frozen-${market.key}-${torontoDay()}`;
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      setCfbFrozenCards(
+        stored && typeof stored === "object"
+          ? stored
+          : {}
+      );
+    } catch {
+      setCfbFrozenCards({});
+    }
+
+    let stopped = false;
+
+    const run = async () => {
+      try {
+        const response = await fetch(
+          `/api/cfb/live?market=${encodeURIComponent(market.key)}`,
+          { cache: "no-store" }
+        );
+
+        if (!response.ok || stopped) return;
+
+        const payload = await response.json();
+        if (!stopped) {
+          setCfbLiveGames(
+            Array.isArray(payload?.games)
+              ? payload.games
+              : []
+          );
+        }
+      } catch {}
+    };
+
+    run();
+    const interval = window.setInterval(run, 15_000);
+
+    return () => {
+      stopped = true;
+      window.clearInterval(interval);
+    };
+  }, [sport, market.key]);
+
+  useEffect(() => {
+    if (sport !== "cfb" || !cards.length || !cfbLiveGames.length) return;
+
+    const storageKey = `sach-cfb-frozen-${market.key}-${torontoDay()}`;
+
+    setCfbFrozenCards((previous) => {
+      const next = { ...previous };
+      let changed = false;
+
+      for (const card of cards) {
+        const game = cfbGameForCard(card, cfbLiveGames);
+        const state = String(game?.state || "").toLowerCase();
+        const started = state === "in" || state === "post" || Boolean(game?.completed);
+
+        if (!started) continue;
+
+        const key = cfbCardKey(card);
+
+        if (!next[key]) {
+          next[key] = {
+            ...card,
+            raw: {
+              ...(card.raw || {}),
+              frozen: true,
+              lockedAtKickoff: true,
+            },
+          };
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(next));
+        } catch {}
+      }
+
+      return changed ? next : previous;
+    });
+  }, [sport, market.key, cards, cfbLiveGames]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -1535,7 +1722,69 @@ export function PlayerRankingsPanel({
     };
   }, [sport, groupKey, marketKey, league]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const visible = full ? cards : cards.slice(0, 5);
+  const displayCards = useMemo(() => {
+    if (sport !== "cfb") return cards;
+
+    const liveByMatchup = new Map(
+      cfbLiveGames.map((game) => [clean(game.matchup), game])
+    );
+
+    const frozen = Object.values(cfbFrozenCards)
+      .filter((card) => {
+        const game = liveByMatchup.get(clean(card.matchup));
+        const state = String(game?.state || "").toLowerCase();
+        return Boolean(game) && (
+          state === "in" ||
+          state === "post" ||
+          Boolean(game?.completed)
+        );
+      })
+      .map((card) =>
+        applyCfbLiveState(
+          card,
+          liveByMatchup.get(clean(card.matchup)) || null
+        )
+      )
+      .sort((a, b) => a.rank - b.rank);
+
+    const frozenKeys = new Set(frozen.map(cfbCardKey));
+    const lockedRanks = new Set(
+      frozen
+        .map((card) => Number(card.rank))
+        .filter((rank) => rank >= 1 && rank <= 25)
+    );
+
+    const fresh = cards
+      .filter((card) => !frozenKeys.has(cfbCardKey(card)))
+      .map((card) =>
+        applyCfbLiveState(
+          card,
+          liveByMatchup.get(clean(card.matchup)) || null
+        )
+      )
+      .sort((a, b) => a.rank - b.rank);
+
+    const merged = [...frozen];
+    let freshIndex = 0;
+
+    for (let slot = 1; slot <= 25 && freshIndex < fresh.length; slot += 1) {
+      if (lockedRanks.has(slot)) continue;
+
+      merged.push({
+        ...fresh[freshIndex],
+        rank: slot,
+      });
+      freshIndex += 1;
+    }
+
+    return merged
+      .sort((a, b) => a.rank - b.rank)
+      .slice(0, 25);
+  }, [sport, cards, cfbLiveGames, cfbFrozenCards]);
+
+  const visible = full
+    ? displayCards
+    : displayCards.slice(0, 5);
 
   const sourceText = useMemo(() => {
     if (sport === "soccer") {
@@ -1642,13 +1891,13 @@ export function PlayerRankingsPanel({
         ))}
       </div>
 
-      {!loading && !error && !cards.length ? (
+      {!loading && !error && !displayCards.length ? (
         <div className={styles.state}>
           No eligible {market.label} rankings are available for the current slate.
         </div>
       ) : null}
 
-      {cards.length > 5 ? (
+      {displayCards.length > 5 ? (
         <button
           type="button"
           className={styles.bottomViewAll}
