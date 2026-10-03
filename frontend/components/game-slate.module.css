@@ -1101,3 +1101,441 @@
     height: 20px;
   }
 }
+
+
+/* ==========================================================
+   v60 — literal approved mockup treatment
+   ========================================================== */
+
+.brand {
+  justify-content: flex-start;
+  padding: 7px 3px 5px;
+  background:
+    linear-gradient(118deg, rgba(202,155,42,.13), transparent 34%, rgba(202,155,42,.045)),
+    #020302;
+  border-bottom: 1px solid rgba(220,175,54,.27);
+}
+
+.brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.brand strong {
+  font-size: 17px;
+  letter-spacing: .04em;
+}
+
+.utilityRow {
+  margin-top: 8px;
+  margin-bottom: 7px;
+}
+
+.backButton {
+  appearance: none;
+  border: 1px solid #a47d26;
+  padding: 7px 10px;
+  min-height: 34px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+}
+
+.utilityActions button {
+  width: 34px;
+  height: 34px;
+  border-color: #a47d26;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.slateTitle {
+  min-height: 64px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background:
+    linear-gradient(112deg, rgba(122,83,11,.25), rgba(10,10,8,.98) 46%, rgba(61,42,7,.18));
+}
+
+.slateTitleIcon {
+  width: 29px;
+  font-size: 23px;
+}
+
+.slateTitle h1 {
+  font-size: 20px;
+}
+
+.slateTitle p {
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+.dateStrip {
+  margin-top: 7px;
+  margin-bottom: 11px;
+  gap: 5px;
+}
+
+.dateStrip button {
+  min-height: 48px;
+  border-radius: 8px;
+  padding: 6px 5px;
+}
+
+.dateStrip button strong {
+  font-size: 9px;
+}
+
+.dateStrip button span {
+  font-size: 8px;
+}
+
+.dayHead {
+  margin-bottom: 6px;
+}
+
+.dayHead h2 {
+  font-size: 17px;
+}
+
+.games {
+  gap: 8px;
+}
+
+.gameCard {
+  position: relative;
+  border-radius: 10px;
+  border: 1.25px solid #b78d2e;
+  background:
+    linear-gradient(112deg, rgba(119,83,13,.09), rgba(12,13,11,.985) 28%),
+    #0d0f0d;
+  box-shadow:
+    inset 0 0 0 1px rgba(238,190,55,.025),
+    inset 0 0 22px rgba(220,171,42,.025);
+}
+
+.gameCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(221,177,51,.11), transparent 10%, transparent 88%, rgba(221,177,51,.05));
+  opacity: .72;
+}
+
+.liveCard {
+  border: 1.7px solid #08df7f;
+  box-shadow:
+    0 0 0 1px rgba(8,223,127,.10),
+    0 0 14px rgba(8,223,127,.055);
+}
+
+.gameMeta {
+  position: relative;
+  z-index: 1;
+  padding: 7px 9px 6px;
+  font-size: 8px;
+}
+
+.gameMeta strong {
+  color: #5ce39a;
+  font-size: 9px;
+}
+
+.gameMeta .liveText {
+  color: #09df7f;
+}
+
+.compactMatchup {
+  position: relative;
+  z-index: 1;
+  padding: 7px 9px 6px;
+  grid-template-columns: minmax(0,1fr) 18px minmax(0,1fr);
+}
+
+.compactTeam {
+  grid-template-columns: 31px minmax(0,1fr) auto;
+  gap: 6px;
+}
+
+.compactTeam img,
+.compactTeam .logoFallback {
+  width: 29px;
+  height: 29px;
+}
+
+.compactTeam b {
+  font-size: 9px;
+}
+
+.compactTeam small {
+  font-size: 7px;
+}
+
+.compactTeam > strong {
+  font-size: 15px;
+}
+
+.compactMatchup > i {
+  font-size: 14px;
+}
+
+.propStatus {
+  position: relative;
+  z-index: 1;
+  padding: 1px 9px 7px;
+  color: #d9b443;
+  font-size: 8px;
+}
+
+.expandButton {
+  position: relative;
+  z-index: 1;
+  padding: 7px 9px;
+  min-height: 36px;
+  font-size: 9px;
+  border-top-color: rgba(226,181,59,.52);
+}
+
+.intelligencePage {
+  margin-top: 4px;
+}
+
+.expanded {
+  border: 0;
+  background: transparent;
+}
+
+.intelHeader {
+  padding: 0 0 8px;
+  background: transparent;
+}
+
+.intelHeadline {
+  padding: 5px 2px 9px;
+}
+
+.intelHeadline h1 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 5px;
+  font-size: 22px;
+  line-height: 1.05;
+  color: #f7f7f5;
+}
+
+.intelHeadline h1 span {
+  font-size: 22px;
+}
+
+.intelHeadline > strong {
+  display: block;
+  font-size: 11px;
+  color: #f1f1ef;
+}
+
+.intelHeadline > p {
+  margin: 3px 0 0;
+  color: #a2a2a0;
+  font-size: 9px;
+}
+
+.intelScore {
+  margin-top: 0;
+  border-radius: 9px;
+  border-color: #b1872b;
+  padding: 8px 9px;
+  background:
+    linear-gradient(106deg, rgba(110,76,10,.09), rgba(6,7,6,.985));
+}
+
+.intelScore > div {
+  grid-template-columns: 38px minmax(0,1fr) auto;
+}
+
+.intelScore img,
+.intelScore .logoFallback {
+  width: 36px;
+  height: 36px;
+}
+
+.intelScore span b {
+  overflow: hidden;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intelScore span small {
+  margin-top: 2px;
+  font-size: 7px;
+}
+
+.intelScore > div > strong {
+  font-size: 16px;
+}
+
+.intelTabs {
+  margin-top: 1px;
+  border: 1px solid #71561e;
+  border-left: 0;
+  border-right: 0;
+}
+
+.intelTabs button {
+  min-width: 0;
+  padding: 7px 8px 6px;
+  font-size: 8px;
+}
+
+.tabBody {
+  padding: 8px 0 0;
+}
+
+.goldPanel {
+  border-color: #755b22;
+  border-radius: 9px;
+  padding: 9px;
+  background:
+    linear-gradient(122deg, rgba(118,82,12,.08), rgba(9,10,9,.985) 43%);
+  box-shadow: inset 0 0 16px rgba(231,186,54,.018);
+}
+
+.panelTitle h4 {
+  font-size: 12px;
+}
+
+.contextMetric {
+  border-color: #725b29;
+  border-radius: 7px;
+  padding: 7px 5px;
+}
+
+.contextMetric span {
+  font-size: 7px;
+}
+
+.contextMetric strong {
+  font-size: 10px;
+}
+
+.contextCopy {
+  font-size: 8.5px;
+}
+
+.watchGrid {
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.watchCard {
+  border-color: #7f6326;
+  border-radius: 8px;
+  padding: 7px;
+}
+
+.watchTop {
+  grid-template-columns: 31px minmax(0,1fr);
+}
+
+.watchTop img,
+.watchTop .logoFallback {
+  width: 29px;
+  height: 29px;
+}
+
+.watchTop b {
+  font-size: 9px;
+}
+
+.watchTop small,
+.watchCard ul {
+  font-size: 7px;
+}
+
+.overviewGrid {
+  gap: 7px;
+}
+
+.teamTables {
+  gap: 8px;
+}
+
+.teamRankPanel {
+  border-color: #8a6927;
+  border-radius: 8px;
+}
+
+.teamRankHead {
+  padding: 6px 8px;
+  background:
+    linear-gradient(90deg, rgba(22,69,119,.72), rgba(16,41,69,.45) 48%, rgba(94,27,34,.55));
+}
+
+.teamRankHead strong {
+  font-size: 8px;
+}
+
+.rankHeader,
+.compactRankRow {
+  grid-template-columns: 18px minmax(92px,1.45fr) 28px 38px 43px 34px;
+  gap: 3px;
+}
+
+.rankHeader {
+  font-size: 6px;
+}
+
+.compactRankRow {
+  padding: 5px 6px;
+  font-size: 7px;
+}
+
+.compactPlayer b {
+  font-size: 7px;
+}
+
+.teamRankFooter {
+  padding: 5px;
+  font-size: 7px;
+}
+
+.rosterList {
+  gap: 5px;
+}
+
+.propGrid {
+  gap: 5px;
+}
+
+@media (max-width: 430px) {
+  .shell {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .intelHeadline h1 {
+    font-size: 20px;
+  }
+
+  .intelScore > div {
+    grid-template-columns: 32px minmax(0,1fr) auto;
+  }
+
+  .intelScore img,
+  .intelScore .logoFallback {
+    width: 31px;
+    height: 31px;
+  }
+
+  .watchGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .overviewGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

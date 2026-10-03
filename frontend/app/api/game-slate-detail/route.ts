@@ -711,6 +711,54 @@ async function mlbGameDetail(
         );
     }
 
+    if (!players.length && team?.id) {
+      try {
+        const rosterPayload =
+          await fetchJson(
+            `https://statsapi.mlb.com/api/v1/teams/${encodeURIComponent(
+              String(team.id)
+            )}/roster?rosterType=active&hydrate=person`
+          );
+
+        players = (
+          rosterPayload?.roster || []
+        )
+          .map((entry: any) => {
+            const person =
+              entry?.person || {};
+
+            const id =
+              text(person?.id);
+
+            if (!id) return null;
+
+            return {
+              playerId: id,
+              playerName: text(
+                person?.fullName ||
+                  "Player"
+              ),
+              position: text(
+                entry?.position
+                  ?.abbreviation ||
+                  entry?.position?.name ||
+                  ""
+              ),
+              starter: false,
+              active: true,
+              headshot:
+                `https://img.mlbstatic.com/mlb-photos/image/upload/w_180,q_auto:best/v1/people/${id}/headshot/67/current`,
+            } as RosterPlayer;
+          })
+          .filter(
+            (
+              player: RosterPlayer | null
+            ): player is RosterPlayer =>
+              Boolean(player)
+          );
+      } catch {}
+    }
+
     players.sort(
       (a, b) =>
         Number(b.starter) -

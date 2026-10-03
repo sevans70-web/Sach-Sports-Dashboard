@@ -209,6 +209,13 @@ function fullDayLabel(value: string) {
   }).format(d);
 }
 
+function addDay(value: string, amount: number) {
+  const d = new Date(`${value}T12:00:00-04:00`);
+  if (Number.isNaN(d.getTime())) return value;
+  d.setDate(d.getDate() + amount);
+  return d.toISOString().slice(0, 10);
+}
+
 function shortDay(value: string) {
   const d = new Date(`${value}T12:00:00-04:00`);
 
@@ -361,6 +368,131 @@ function dedupePlayers(rows: RankingRow[]) {
   return out;
 }
 
+function finiteNumber(value: any): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function normalizeRankingRow(
+  raw: any,
+  market: string,
+  marketLabel: string
+): RankingRow {
+  const playerName =
+    raw?.playerName ??
+    raw?.player_name ??
+    raw?.player ??
+    raw?.batter_name ??
+    raw?.pitcher_name ??
+    "";
+
+  const teamName =
+    raw?.teamName ??
+    raw?.team_name ??
+    raw?.team ??
+    raw?.team_abbreviation ??
+    raw?.teamAbbr ??
+    "";
+
+  const opponent =
+    raw?.opponentName ??
+    raw?.opponent_name ??
+    raw?.opponent ??
+    raw?.opponent_abbreviation ??
+    "";
+
+  return {
+    ...raw,
+    rank: Number(raw?.rank || 0) || undefined,
+    playerId:
+      raw?.playerId ??
+      raw?.player_id ??
+      raw?.batter_id ??
+      raw?.pitcher_id ??
+      undefined,
+    playerName: String(playerName || ""),
+    teamName: String(teamName || ""),
+    matchup: String(
+      raw?.matchup ||
+      (teamName && opponent ? `${teamName} vs ${opponent}` : "")
+    ),
+    position: String(
+      raw?.position ??
+      raw?.position_abbreviation ??
+      raw?.pos ??
+      ""
+    ),
+    sportsbookLine: finiteNumber(
+      raw?.sportsbookLine ??
+      raw?.sportsbook_line ??
+      raw?.marketLine ??
+      raw?.market_line ??
+      raw?.line
+    ),
+    modelProjection: finiteNumber(
+      raw?.modelProjection ??
+      raw?.model_projection ??
+      raw?.projection ??
+      raw?.perGame ??
+      raw?.modelTarget
+    ),
+    giScore: finiteNumber(
+      raw?.giScore ??
+      raw?.gi_score ??
+      raw?.score
+    ),
+    modelProbability: finiteNumber(
+      raw?.modelProbability ??
+      raw?.model_probability ??
+      raw?.probability ??
+      raw?.home_run_probability ??
+      raw?.hr_probability
+    ),
+    headshot: String(
+      raw?.headshot ??
+      raw?.headshot_url ??
+      raw?.photoUrl ??
+      raw?.photo_url ??
+      ""
+    ),
+    market,
+    marketLabel,
+  };
+}
+
+function usefulRankingRow(row: RankingRow) {
+  return Boolean(
+    row.playerName &&
+    row.playerName !== "Player" &&
+    (
+      row.giScore != null ||
+      row.modelProjection != null ||
+      row.sportsbookLine != null
+    )
+  );
+}
+
+function rosterWatchRow(
+  player: RosterPlayer | undefined,
+  teamName: string
+): RankingRow | undefined {
+  if (!player) return undefined;
+
+  return {
+    playerId: player.playerId,
+    playerName: player.playerName,
+    teamName,
+    position: player.position,
+    headshot: player.headshot,
+    market: "watch",
+    marketLabel: "Player to Watch",
+    sportsbookLine: null,
+    modelProjection: null,
+    giScore: null,
+  };
+}
+
 async function fetchRankings(
   sport: GameSlateSport,
   league: string,
@@ -387,15 +519,18 @@ async function fetchRankings(
         [];
 
       for (const row of source || []) {
-        rows.push({
-          ...row,
-          market,
-          marketLabel: label,
-        });
+        rows.push(
+          normalizeRankingRow(
+            row,
+            market,
+            label
+          )
+        );
       }
     }
 
     return rows
+      .filter(usefulRankingRow)
       .filter((row) => gameMatchesRow(game, row))
       .sort(
         (a, b) =>
@@ -421,21 +556,23 @@ async function fetchRankings(
 
     for (const [market, label] of markets) {
       for (const raw of payload?.rankings?.[market] || []) {
-        rows.push({
-          ...raw,
-          playerId: raw?.playerId,
-          playerName: raw?.playerName,
-          teamName: raw?.team,
-          position: raw?.position,
-          sportsbookLine: raw?.marketLine,
-          modelProjection: raw?.projection,
-          market,
-          marketLabel: label,
-        });
+        rows.push(
+          normalizeRankingRow(
+            {
+              ...raw,
+              teamName:
+                raw?.teamName ??
+                raw?.team,
+            },
+            market,
+            label
+          )
+        );
       }
     }
 
     return rows
+      .filter(usefulRankingRow)
       .filter((row) => gameMatchesRow(game, row))
       .sort(
         (a, b) =>
@@ -465,11 +602,12 @@ async function fetchRankings(
         const payload = await response.json();
 
         return (payload?.rows || []).map(
-          (row: RankingRow) => ({
-            ...row,
-            market,
-            marketLabel: label,
-          })
+          (row: RankingRow) =>
+            normalizeRankingRow(
+              row,
+              market,
+              label
+            )
         );
       } catch {
         return [];
@@ -479,6 +617,7 @@ async function fetchRankings(
 
   return blocks
     .flat()
+    .filter(usefulRankingRow)
     .filter((row) => gameMatchesRow(game, row))
     .sort(
       (a, b) =>
@@ -849,8 +988,21 @@ function ExpandedGame({
     ? rosterPlayers
     : rosterPlayers.slice(0, 12);
 
-  const awayWatch = awayRows[0];
-  const homeWatch = homeRows[0];
+  const awayWatch =
+    awayRows[0] ||
+    rosterWatchRow(
+      awayRoster?.players?.find((player) => player.starter) ||
+        awayRoster?.players?.[0],
+      game.awayTeam
+    );
+
+  const homeWatch =
+    homeRows[0] ||
+    rosterWatchRow(
+      homeRoster?.players?.find((player) => player.starter) ||
+        homeRoster?.players?.[0],
+      game.homeTeam
+    );
 
   const injuryByTeam = (teamName: string) =>
     injuries
@@ -903,11 +1055,16 @@ function ExpandedGame({
   return (
     <div className={styles.expanded}>
       <section className={styles.intelHeader}>
-        <div>
-          <small>{ICONS[sport]} GAME INTELLIGENCE</small>
-          <h3>
+        <div className={styles.intelHeadline}>
+          <h1>
+            <span>{ICONS[sport]}</span>
+            Game Intelligence
+          </h1>
+
+          <strong>
             {game.awayTeam} @ {game.homeTeam}
-          </h3>
+          </strong>
+
           <p>
             {game.state === "in"
               ? `LIVE · ${game.status}`
@@ -927,8 +1084,10 @@ function ExpandedGame({
               name={game.awayTeam}
             />
             <span>
-              <b>{game.awayAbbr}</b>
-              <small>{game.awayRecord || "—"}</small>
+              <b>{game.awayTeam}</b>
+              <small>
+                {game.awayRecord || "—"} · AWAY
+              </small>
             </span>
             {game.state !== "pre" ? (
               <strong>{game.awayScore ?? "—"}</strong>
@@ -943,8 +1102,10 @@ function ExpandedGame({
               name={game.homeTeam}
             />
             <span>
-              <b>{game.homeAbbr}</b>
-              <small>{game.homeRecord || "—"}</small>
+              <b>{game.homeTeam}</b>
+              <small>
+                {game.homeRecord || "—"} · HOME
+              </small>
             </span>
             {game.state !== "pre" ? (
               <strong>{game.homeScore ?? "—"}</strong>
@@ -1267,9 +1428,28 @@ function ExpandedGame({
               <h4>Available Prop Intelligence</h4>
             </div>
 
-            {rankings.length ? (
+            {rankings.filter(
+              (row) =>
+                row.playerName &&
+                (
+                  row.sportsbookLine != null ||
+                  row.modelProjection != null ||
+                  row.giScore != null
+                )
+            ).length ? (
               <div className={styles.propGrid}>
-                {rankings.slice(0, 12).map((row, index) => (
+                {rankings
+                  .filter(
+                    (row) =>
+                      row.playerName &&
+                      (
+                        row.sportsbookLine != null ||
+                        row.modelProjection != null ||
+                        row.giScore != null
+                      )
+                  )
+                  .slice(0, 12)
+                  .map((row, index) => (
                   <Link
                     href={playerHref(sport, row, game)}
                     className={styles.propCard}
@@ -1507,16 +1687,27 @@ export function GameSlatePage({
     dates.indexOf(selectedDay)
   );
 
-  const visibleDatePills = dates.slice(
-    Math.max(0, dateIndex - 1),
-    Math.max(0, dateIndex - 1) + 3
-  );
+  const dateBase =
+    selectedDay ||
+    dates[0] ||
+    localDay(new Date().toISOString());
+
+  const visibleDatePills = [
+    dateBase,
+    addDay(dateBase, 1),
+    addDay(dateBase, 2),
+  ];
 
   const visibleGames = games.filter(
     (game) =>
       !selectedDay ||
       localDay(game.date) === selectedDay
   );
+
+  const activeGame =
+    games.find(
+      (game) => game.id === open
+    ) || null;
 
   const selectedLabel =
     selectedDay
@@ -1562,12 +1753,22 @@ export function GameSlatePage({
       <BrandHeader sport={sport} />
 
       <div className={styles.utilityRow}>
-        <Link
-          href={`/${sport}`}
-          className={styles.backButton}
-        >
-          ← Back to {LABELS[sport]}
-        </Link>
+        {activeGame ? (
+          <button
+            type="button"
+            className={styles.backButton}
+            onClick={() => setOpen("")}
+          >
+            ← Back to {LABELS[sport]}
+          </button>
+        ) : (
+          <Link
+            href={`/${sport}`}
+            className={styles.backButton}
+          >
+            ← Back to {LABELS[sport]}
+          </Link>
+        )}
 
         <div className={styles.utilityActions}>
           <button
@@ -1591,6 +1792,16 @@ export function GameSlatePage({
         </div>
       </div>
 
+      {activeGame ? (
+        <section className={styles.intelligencePage}>
+          <ExpandedGame
+            sport={sport}
+            league={league}
+            game={activeGame}
+          />
+        </section>
+      ) : (
+        <>
       <section className={styles.slateTitle}>
         <div className={styles.slateTitleIcon}>
           {ICONS[sport]}
@@ -1638,10 +1849,12 @@ export function GameSlatePage({
             aria-label="Available slate dates"
             onClick={() => {
               const next =
-                dates[
-                  (dateIndex + 1) %
-                    dates.length
-                ];
+                dates.length
+                  ? dates[
+                      (dateIndex + 1) %
+                        dates.length
+                    ]
+                  : addDay(dateBase, 1);
 
               if (next) setSelectedDay(next);
             }}
@@ -1685,8 +1898,6 @@ export function GameSlatePage({
 
         <div className={styles.games}>
           {visibleGames.map((game) => {
-            const expanded =
-              open === game.id;
             const live =
               game.state === "in";
             const final =
@@ -1696,10 +1907,6 @@ export function GameSlatePage({
               <article
                 className={`${styles.gameCard} ${
                   live ? styles.liveCard : ""
-                } ${
-                  expanded
-                    ? styles.openCard
-                    : ""
                 }`}
                 key={game.id}
               >
@@ -1795,35 +2002,22 @@ export function GameSlatePage({
                 <button
                   className={styles.expandButton}
                   onClick={() =>
-                    setOpen(
-                      expanded
-                        ? ""
-                        : game.id
-                    )
+                    setOpen(game.id)
                   }
-                  aria-expanded={expanded}
+                  aria-expanded={false}
                 >
-                  {expanded
-                    ? "Hide Game Intelligence"
-                    : "View Game Intelligence"}
+                  View Game Intelligence
 
-                  <span>
-                    {expanded ? "⌃" : "→"}
-                  </span>
+                  <span>→</span>
                 </button>
-
-                {expanded ? (
-                  <ExpandedGame
-                    sport={sport}
-                    league={league}
-                    game={game}
-                  />
-                ) : null}
               </article>
             );
           })}
         </div>
       </section>
+
+        </>
+      )}
     </main>
   );
 }
