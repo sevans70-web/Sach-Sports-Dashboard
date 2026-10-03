@@ -1792,7 +1792,51 @@ export function PlayerRankingsPanel({
         const isolated =
           sport === "cfb"
             ? normalized.filter(
-                (card) => card.market === requestedMarket
+                (card) => {
+                  if (
+                    card.market !==
+                    requestedMarket
+                  ) {
+                    return false;
+                  }
+
+                  const isTdMarket =
+                    requestedMarket ===
+                      "anytime_td" ||
+                    requestedMarket ===
+                      "first_td";
+
+                  const marketBacked =
+                    card.raw
+                      ?.marketBacked ===
+                    true;
+
+                  if (!marketBacked) {
+                    return false;
+                  }
+
+                  if (isTdMarket) {
+                    return (
+                      card.sportsbookLine !=
+                        null ||
+                      card.raw
+                        ?.sportsbookProbability !=
+                        null ||
+                      Number(
+                        card.raw
+                          ?.bookmakerCount ||
+                          0
+                      ) > 0
+                    );
+                  }
+
+                  return (
+                    card.sportsbookLine !=
+                      null &&
+                    card.modelProjection !=
+                      null
+                  );
+                }
               )
             : normalized;
 

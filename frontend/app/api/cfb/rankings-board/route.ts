@@ -186,6 +186,69 @@ function inSlate(
   return slateForTime(value) === slate;
 }
 
+function finiteNumber(value: any) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return false;
+  }
+
+  return Number.isFinite(
+    Number(value)
+  );
+}
+
+function gradeableBoardRow(
+  row: any,
+  market: CfbMarketKey
+) {
+  if (
+    !row ||
+    row.marketBacked !== true ||
+    !row.playerName ||
+    !row.matchup
+  ) {
+    return false;
+  }
+
+  /*
+    TD scorer markets are sportsbook-backed by price/probability
+    rather than a traditional O/U yardage line.
+  */
+  if (
+    market === "anytime_td" ||
+    market === "first_td"
+  ) {
+    return (
+      finiteNumber(
+        row.sportsbookProbability
+      ) ||
+      finiteNumber(
+        row.sportsbookLine
+      ) ||
+      Number(
+        row.bookmakerCount || 0
+      ) > 0
+    );
+  }
+
+  /*
+    Yardage / completions / receptions only belong in Top 25
+    when there is an actual sportsbook line AND a model projection.
+    A model-only projection is research, not a gradeable prediction.
+  */
+  return (
+    finiteNumber(
+      row.sportsbookLine
+    ) &&
+    finiteNumber(
+      row.modelProjection
+    )
+  );
+}
+
 function rowKey(row: any) {
   return `${row.playerId}|${cleanName(row.matchup || "")}`;
 }
@@ -872,33 +935,16 @@ async function marketRows(
     return sportsbook;
   }
 
-  const early =
-    await timeout(
-      getCfbRankings(market),
-      6000,
-      []
-    );
+  /*
+    Do NOT manufacture a Top 25 from model-only rows when sportsbooks
+    have not posted this market yet.
 
-  return early
-    .filter(
-      (row: any) =>
-        row.matchup &&
-        row.gameTime
-    )
-    .map(
-      (row: any) => ({
-        eventId: "",
-        matchup: row.matchup,
-        gameTime: row.gameTime,
-        playerName: row.playerName,
-        teamName: row.teamName,
-        line: null,
-        price: null,
-        prob: null,
-        bookmakerCount: 0,
-        earlyModel: true,
-      })
-    );
+    If neither Owls nor the sportsbook feed has a real prop, the correct
+    board is empty for now. The model projection can still exist in player
+    research/history, but it is not a betting prediction and cannot be
+    frozen or graded.
+  */
+  return [];
 }
 
 async function rosterFallbackRows(
@@ -1121,23 +1167,11 @@ async function buildFreshBoard(
       }
     );
 
-  const supplement =
-    await timeout(
-      rosterFallbackRows(
-        market,
-        schedule,
-        scopedRaw,
-        gameDay,
-        slate
-      ),
-      6500,
-      []
-    );
-
-  const raw = [
-    ...scopedRaw,
-    ...supplement,
-  ];
+  /*
+    Top 25 is prediction-only. Do not backfill empty sportsbook
+    markets with roster players or model-only projections.
+  */
+  const raw = scopedRaw;
 
   const candidateLimit =
     slate === "all"
@@ -1272,17 +1306,15 @@ async function buildFreshBoard(
                 recent.games,
               season: 2026,
               summary:
-                row.earlyModel
-                  ? `Early Sach projection using ${recent.games} verified historical game${recent.games === 1 ? "" : "s"}. Sportsbook player props have not posted yet; no line or odds were invented.`
-                  : `Sportsbook-backed ${
-                      CFB_MARKETS.find(
-                        (item) =>
-                          item[0] === market
-                      )?.[2] ||
-                      market
-                    } prediction using ${recent.games} verified historical game${recent.games === 1 ? "" : "s"} and ${row.bookmakerCount || 0} sportsbook${(row.bookmakerCount || 0) === 1 ? "" : "s"}.`,
+                `Sportsbook-backed ${
+                  CFB_MARKETS.find(
+                    (item) =>
+                      item[0] === market
+                  )?.[2] ||
+                  market
+                } prediction using ${recent.games} verified historical game${recent.games === 1 ? "" : "s"} and ${row.bookmakerCount || 0} sportsbook${(row.bookmakerCount || 0) === 1 ? "" : "s"}.`,
               marketBacked:
-                !row.earlyModel,
+                true,
             },
             schedule
           );
@@ -1292,18 +1324,11 @@ async function buildFreshBoard(
 
   const valid =
     enriched.filter(
-      (row: any) => {
-        const value =
-          Number(
-            row.modelProjection
-          );
-
-        return (
-          row.modelProjection != null &&
-          Number.isFinite(value) &&
-          value >= 0
-        );
-      }
+      (row: any) =>
+        gradeableBoardRow(
+          row,
+          market
+        )
     );
 
   valid.sort(
@@ -1336,10 +1361,22 @@ async function lockBoard(
       gameDay
     );
 
+  /*
+    Older Railway board files may contain model-only rows from the
+    previous fallback behavior. Purge them before applying kickoff locks.
+  */
   const previous =
-    Array.isArray(state?.rows)
-      ? state!.rows
-      : [];
+    (
+      Array.isArray(state?.rows)
+        ? state!.rows
+        : []
+    ).filter(
+      (row: any) =>
+        gradeableBoardRow(
+          row,
+          market
+        )
+    );
 
   const lockedMap =
     new Map<string, any>();
@@ -1350,7 +1387,15 @@ async function lockBoard(
         state?.locked || {}
       )
   ) {
-    if (!row) continue;
+    if (
+      !row ||
+      !gradeableBoardRow(
+        row,
+        market
+      )
+    ) {
+      continue;
+    }
 
     lockedMap.set(
       rowKey(row),
@@ -1615,11 +1660,19 @@ async function build(
     );
 
   const rows =
-    locked.rows.map((row: any) => ({
-      ...row,
-      slateKey: slate,
-      slateLabel: SLATE_LABELS[slate],
-    }));
+    locked.rows
+      .filter(
+        (row: any) =>
+          gradeableBoardRow(
+            row,
+            market
+          )
+      )
+      .map((row: any) => ({
+        ...row,
+        slateKey: slate,
+        slateLabel: SLATE_LABELS[slate],
+      }));
 
   const sportsbookOnly =
     rows.length > 0 &&
