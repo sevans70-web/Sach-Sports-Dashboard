@@ -66,7 +66,7 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
   nfl: [
     { key: "QB", label: "QB", icon: "🏈", group: "QB" },
     { key: "Offense", label: "Offense", icon: "🏃", group: "Offense" },
-    { key: "Q1", label: "Q1", icon: "1Q", group: "Q1" },
+    { key: "Q1", label: "Q1", icon: "⏱️", group: "Q1" },
   ],
   cfb: [
     { key: "QB", label: "QB", icon: "🏈", group: "QB" },
@@ -83,7 +83,7 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     {
       key: "q1",
       label: "Q1",
-      icon: "1Q",
+      icon: "⏱️",
       available: false,
       note: "Q1 is built into the NBA performance design. Results will populate when the NBA Q1 market feed is connected.",
     },
@@ -310,14 +310,7 @@ function PerformanceCards({
   );
 }
 
-function categorySubtitle(sport: PerformanceSport, category: CategoryConfig) {
-  if (sport === "nfl" || sport === "cfb") {
-    return `All ${category.label} prop predictions`;
-  }
-  if (sport === "mlb") {
-    if (category.key === "emerging") return "Emerging-power prediction results";
-    return `All ${category.label.toLowerCase()} prediction results`;
-  }
+function categoryResultLabel(_sport: PerformanceSport, category: CategoryConfig) {
   return `${category.label} prediction results`;
 }
 
@@ -498,8 +491,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                   </span>
                 )}
                 <div>
-                  <strong>{activeCategory.label} Performance</strong>
-                  <small>{categorySubtitle(sport, activeCategory)}</small>
+                  <strong>{categoryResultLabel(sport, activeCategory)}</strong>
                 </div>
               </div>
 

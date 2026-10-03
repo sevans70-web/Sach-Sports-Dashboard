@@ -1,4 +1,4 @@
-/* Sach Sports Prediction Performance v38
+/* Sach Sports Prediction Performance v39
    Approved redesign:
    - same Prediction Performance shell across all 8 dashboards
    - 3 boxes only: Hit Rate / Settled / Pending
@@ -21,7 +21,7 @@
   background: transparent !important;
 }
 
-:global(.ssPerformanceHost) > *:not(:global(.ssPredictionPerformanceRoot)) {
+:global(.ssPerformanceHost > *:not(.ssPredictionPerformanceRoot)) {
   display: none !important;
 }
 
@@ -535,4 +535,39 @@
   .categoryIdentity strong {
     font-size: 15px;
   }
+}
+
+
+/* v39 cleanup guards */
+:global(.ssPerformanceHost > .periodTabs),
+:global(.ssPerformanceHost > .origPeriods),
+:global(.ssPerformanceHost > .overallMetrics),
+:global(.ssPerformanceHost > .origMetrics),
+:global(.ssPerformanceHost > .marketMetrics),
+:global(.ssPerformanceHost > .perfGrid),
+:global(.ssPerformanceHost > .perfStatGrid),
+:global(.ssPerformanceHost > .tabsWrap),
+:global(.ssPerformanceHost > .origTabs),
+:global(.ssPerformanceHost > .performanceInfo),
+:global(.ssPerformanceHost > .resultsArchiveLink),
+:global(.ssPerformanceHost > .perfNote),
+:global(.ssPerformanceHost > .historyWarning),
+:global(.ssPerformanceHost > h2),
+:global(.ssPerformanceHost > h3),
+:global(.ssPerformanceHost > details) {
+  display: none !important;
+}
+
+/* Soccer's old Matchup Intelligence block is no longer part of the approved face. */
+:global(.soccerMatchup) {
+  display: none !important;
+}
+
+/* Category identity now has one line only. */
+.categoryIdentity > div {
+  min-width: 0;
+}
+
+.categoryIdentity strong {
+  line-height: 1.15;
 }
