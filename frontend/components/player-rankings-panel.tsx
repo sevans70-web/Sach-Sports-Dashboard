@@ -1611,34 +1611,74 @@ export function PlayerRankingsPanel({
           rawRows = payload?.rankings?.[market.key] || [];
           soccerGames = payload?.games || [];
         } else {
-          const rankingUrl =
-            sport === "cfb"
-              ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
-              : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
-
-          const rankingPromise = fetchJson(
-            rankingUrl,
-            controller.signal
-          );
-
           const performancePromise = fetchJson(
             `/api/${sport}/performance?period=Today&market=${encodeURIComponent(market.key)}`,
             controller.signal
           ).catch(() => null);
 
-          const [rankingPayload, performancePayload] =
-            await Promise.all([
-              rankingPromise,
-              performancePromise,
-            ]);
+          if (sport === "cfb" && requestedCfbSlate === "all") {
+            const blocks = (
+              ["early", "afternoon", "evening"] as const
+            );
 
-          rawRows = rankingPayload?.rows || [];
-          rawDropped = rankingPayload?.dropped || [];
-          performance = performancePayload;
+            const [blockPayloads, performancePayload] =
+              await Promise.all([
+                Promise.all(
+                  blocks.map(async (block) => {
+                    const payload = await fetchJson(
+                      `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(block)}`,
+                      controller.signal
+                    );
+
+                    return {
+                      block,
+                      payload,
+                    };
+                  })
+                ),
+                performancePromise,
+              ]);
+
+            rawRows = blockPayloads.flatMap(({ block, payload }) =>
+              (payload?.rows || [])
+                .slice(0, 25)
+                .map((row: any) => ({
+                  ...row,
+                  cfbSlate: block,
+                  cfbSlateLabel: cfbSlateLabel(block),
+                }))
+            );
+
+            rawDropped = [];
+            performance = performancePayload;
+          } else {
+            const rankingUrl =
+              sport === "cfb"
+                ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
+                : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
+
+            const [rankingPayload, performancePayload] =
+              await Promise.all([
+                fetchJson(
+                  rankingUrl,
+                  controller.signal
+                ),
+                performancePromise,
+              ]);
+
+            rawRows = rankingPayload?.rows || [];
+            rawDropped = rankingPayload?.dropped || [];
+            performance = performancePayload;
+          }
         }
 
+        const rankingLimit =
+          sport === "cfb" && requestedCfbSlate === "all"
+            ? 75
+            : 25;
+
         const normalized = rawRows
-          .slice(0, 25)
+          .slice(0, rankingLimit)
           .map((row: any) => {
             let enriched = row;
             let result = performance
@@ -1759,6 +1799,12 @@ export function PlayerRankingsPanel({
       cfbLiveGames.map((game) => [clean(game.matchup), game])
     );
 
+    const blockOrder: Record<string, number> = {
+      early: 0,
+      afternoon: 1,
+      evening: 2,
+    };
+
     return cards
       .filter((card) => card.market === market.key)
       .map((card) =>
@@ -1767,12 +1813,42 @@ export function PlayerRankingsPanel({
           liveByMatchup.get(clean(card.matchup)) || null
         )
       )
-      .sort((a, b) => a.rank - b.rank);
-  }, [sport, market.key, cards, cfbLiveGames]);
+      .sort((a, b) => {
+        if (cfbSlate === "all") {
+          const aBlock = String(a.raw?.cfbSlate || "");
+          const bBlock = String(b.raw?.cfbSlate || "");
 
-  const visible = full
-    ? displayCards
-    : displayCards.slice(0, 5);
+          const blockDiff =
+            (blockOrder[aBlock] ?? 99) -
+            (blockOrder[bBlock] ?? 99);
+
+          if (blockDiff) return blockDiff;
+        }
+
+        return a.rank - b.rank;
+      });
+  }, [sport, market.key, cards, cfbLiveGames, cfbSlate]);
+
+  const visible =
+    sport === "cfb" && cfbSlate === "all"
+      ? displayCards
+      : full
+        ? displayCards
+        : displayCards.slice(0, 5);
+
+  const cfbAllDayGroups = useMemo(() => {
+    if (sport !== "cfb" || cfbSlate !== "all") return [];
+
+    return CFB_SLATES
+      .filter((item) => item.key !== "all")
+      .map((item) => ({
+        ...item,
+        cards: displayCards.filter(
+          (card) =>
+            String(card.raw?.cfbSlate || "") === item.key
+        ),
+      }));
+  }, [sport, cfbSlate, displayCards]);
 
   const sourceText = useMemo(() => {
     if (sport === "soccer") {
@@ -1853,7 +1929,9 @@ export function PlayerRankingsPanel({
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label} Rankings</h3>
         <p>
-          Top 25 · {sourceText} · original prediction values remain frozen after game start when the sport feed supports locking.
+          {sport === "cfb" && cfbSlate === "all"
+            ? "Combined Saturday rankings · up to 25 per time block · each player freezes at kickoff."
+            : `Top 25 · ${sourceText} · original prediction values remain frozen after game start when the sport feed supports locking.`}
         </p>
       </div>
 
@@ -1889,14 +1967,72 @@ export function PlayerRankingsPanel({
       ) : null}
 
       <div className={styles.cards}>
-        {visible.map((card) => (
-          <PlayerCard
-            key={`${sport}-${market.key}-${card.playerId}-${card.rank}`}
-            card={card}
-            sport={sport}
-            league={league}
-          />
-        ))}
+        {sport === "cfb" && cfbSlate === "all"
+          ? cfbAllDayGroups.map((section) => (
+              <section
+                key={section.key}
+                style={{
+                  marginTop: "18px",
+                  paddingTop: "4px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "12px",
+                    marginBottom: "10px",
+                    padding: "10px 12px",
+                    border: "1.5px solid var(--gold)",
+                    borderRadius: "12px",
+                    background:
+                      "linear-gradient(100deg, rgba(229,187,69,.16), rgba(10,12,11,.96) 58%)",
+                  }}
+                >
+                  <strong
+                    style={{
+                      color: "var(--gold)",
+                      fontSize: "16px",
+                    }}
+                  >
+                    {section.label}
+                  </strong>
+                  <span
+                    style={{
+                      color: "var(--muted)",
+                      fontSize: "12px",
+                      fontWeight: 800,
+                    }}
+                  >
+                    {section.cards.length} / 25
+                  </span>
+                </div>
+
+                {section.cards.length ? (
+                  section.cards.map((card) => (
+                    <PlayerCard
+                      key={`${sport}-${market.key}-${section.key}-${card.playerId}-${card.rank}`}
+                      card={card}
+                      sport={sport}
+                      league={league}
+                    />
+                  ))
+                ) : (
+                  <div className={styles.state}>
+                    No eligible {market.label} rankings are available for the {section.label} block.
+                  </div>
+                )}
+              </section>
+            ))
+          : visible.map((card) => (
+              <PlayerCard
+                key={`${sport}-${market.key}-${card.playerId}-${card.rank}`}
+                card={card}
+                sport={sport}
+                league={league}
+              />
+            ))}
       </div>
 
       {!loading && !error && !displayCards.length ? (
@@ -1905,7 +2041,8 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {displayCards.length > 5 ? (
+      {displayCards.length > 5 &&
+      !(sport === "cfb" && cfbSlate === "all") ? (
         <button
           type="button"
           className={styles.bottomViewAll}
