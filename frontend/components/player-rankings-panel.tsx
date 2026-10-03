@@ -927,7 +927,13 @@ function PlayerCard({
             {card.matchup ? ` · ${card.matchup}` : ""}
           </span>
 
-          <small>{gameTimeLabel(card.gameTime)}</small>
+          <small>
+            {state === "live"
+              ? `LIVE · ${card.gameStatus || "In Progress"}`
+              : state === "final"
+                ? "Final"
+                : gameTimeLabel(card.gameTime)}
+          </small>
 
           <em
             className={
@@ -996,13 +1002,13 @@ function PlayerCard({
       {state === "live" ? (
         <div className={styles.liveStrip}>
           <div>
-            <strong>
-              {current == null ? "Live stat pending" : `${shortNumber(current)} / ${shortNumber(card.sportsbookLine)}`}
-            </strong>
+            <strong>LIVE · {card.gameStatus || "In Progress"}</strong>
             <span>
-              {card.sportsbookLine != null && current != null
-                ? `${shortNumber(Math.max(0, card.sportsbookLine - current))} to line`
-                : card.gameStatus || "Game in progress"}
+              {current == null
+                ? "Live stat pending"
+                : card.sportsbookLine != null
+                  ? `${shortNumber(current)} / ${shortNumber(card.sportsbookLine)} · ${shortNumber(Math.max(0, card.sportsbookLine - current))} to line`
+                  : `${shortNumber(current)} current`}
             </span>
           </div>
           <div className={styles.progressTrack}>
@@ -1302,6 +1308,54 @@ function soccerGameFor(row: any, games: any[]) {
 }
 
 
+type SharedStatusGame = {
+  id?: string;
+  date?: string;
+  awayTeam?: string;
+  awayAbbr?: string;
+  homeTeam?: string;
+  homeAbbr?: string;
+  state?: string;
+  status?: string;
+};
+
+function sharedGameForCard(card: RankingCard, games: SharedStatusGame[]) {
+  const matchup = clean(card.matchup);
+  const team = clean(card.teamName);
+  return games.find((game) => {
+    const away = [clean(game.awayTeam), clean(game.awayAbbr)].filter(Boolean);
+    const home = [clean(game.homeTeam), clean(game.homeAbbr)].filter(Boolean);
+    const matchupMatches =
+      away.some((value) => matchup.includes(value)) &&
+      home.some((value) => matchup.includes(value));
+    if (matchupMatches) return true;
+    return [...away, ...home].some((value) => value && team === value);
+  }) || null;
+}
+
+function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null) {
+  if (!game) return card;
+  const state = String(game.state || "").toLowerCase();
+  if (state !== "in" && state !== "post") return card;
+  const gameStatus = String(game.status || (state === "in" ? "In Progress" : "Final"));
+  return {
+    ...card,
+    lineupStatus: "Confirmed" as const,
+    gameState: state,
+    gameStatus,
+    raw: {
+      ...(card.raw || {}),
+      gameState: state,
+      gameStatus,
+      isLive: state === "in",
+      isFinal: state === "post",
+      completed: state === "post",
+      lineupConfirmed: true,
+      confirmed: true,
+    },
+  };
+}
+
 type CfbLiveRow = {
   playerId?: string;
   playerName?: string;
@@ -1428,6 +1482,7 @@ export function PlayerRankingsPanel({
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
+  const [sharedStatusGames, setSharedStatusGames] = useState<SharedStatusGame[]>([]);
   const rankingRequestSeq = useRef(0);
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
@@ -1513,6 +1568,28 @@ export function PlayerRankingsPanel({
     select.addEventListener("change", sync);
     return () => select.removeEventListener("change", sync);
   }, [sport]);
+
+  useEffect(() => {
+    let stopped = false;
+    const run = async () => {
+      try {
+        const params = new URLSearchParams({ sport });
+        if (sport === "soccer") params.set("league", league);
+        const response = await fetch(`/api/game-slate?${params.toString()}`, { cache: "no-store" });
+        if (!response.ok || stopped) return;
+        const payload = await response.json();
+        if (!stopped) {
+          setSharedStatusGames(Array.isArray(payload?.games) ? payload.games : []);
+        }
+      } catch {}
+    };
+    run();
+    const interval = window.setInterval(run, 15_000);
+    return () => {
+      stopped = true;
+      window.clearInterval(interval);
+    };
+  }, [sport, league]);
 
   useEffect(() => {
     if (sport !== "cfb") {
@@ -1611,74 +1688,34 @@ export function PlayerRankingsPanel({
           rawRows = payload?.rankings?.[market.key] || [];
           soccerGames = payload?.games || [];
         } else {
+          const rankingUrl =
+            sport === "cfb"
+              ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
+              : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
+
+          const rankingPromise = fetchJson(
+            rankingUrl,
+            controller.signal
+          );
+
           const performancePromise = fetchJson(
             `/api/${sport}/performance?period=Today&market=${encodeURIComponent(market.key)}`,
             controller.signal
           ).catch(() => null);
 
-          if (sport === "cfb" && requestedCfbSlate === "all") {
-            const blocks = (
-              ["early", "afternoon", "evening"] as const
-            );
+          const [rankingPayload, performancePayload] =
+            await Promise.all([
+              rankingPromise,
+              performancePromise,
+            ]);
 
-            const [blockPayloads, performancePayload] =
-              await Promise.all([
-                Promise.all(
-                  blocks.map(async (block) => {
-                    const payload = await fetchJson(
-                      `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(block)}`,
-                      controller.signal
-                    );
-
-                    return {
-                      block,
-                      payload,
-                    };
-                  })
-                ),
-                performancePromise,
-              ]);
-
-            rawRows = blockPayloads.flatMap(({ block, payload }) =>
-              (payload?.rows || [])
-                .slice(0, 25)
-                .map((row: any) => ({
-                  ...row,
-                  cfbSlate: block,
-                  cfbSlateLabel: cfbSlateLabel(block),
-                }))
-            );
-
-            rawDropped = [];
-            performance = performancePayload;
-          } else {
-            const rankingUrl =
-              sport === "cfb"
-                ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
-                : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
-
-            const [rankingPayload, performancePayload] =
-              await Promise.all([
-                fetchJson(
-                  rankingUrl,
-                  controller.signal
-                ),
-                performancePromise,
-              ]);
-
-            rawRows = rankingPayload?.rows || [];
-            rawDropped = rankingPayload?.dropped || [];
-            performance = performancePayload;
-          }
+          rawRows = rankingPayload?.rows || [];
+          rawDropped = rankingPayload?.dropped || [];
+          performance = performancePayload;
         }
 
-        const rankingLimit =
-          sport === "cfb" && requestedCfbSlate === "all"
-            ? 75
-            : 25;
-
         const normalized = rawRows
-          .slice(0, rankingLimit)
+          .slice(0, sport === "cfb" && requestedCfbSlate === "all" ? 75 : 25)
           .map((row: any) => {
             let enriched = row;
             let result = performance
@@ -1793,61 +1830,46 @@ export function PlayerRankingsPanel({
   }, [sport, groupKey, marketKey, league, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const displayCards = useMemo(() => {
-    if (sport !== "cfb") return cards;
+    const withStatus = cards.map((card) => {
+      const sharedGame = sharedGameForCard(card, sharedStatusGames);
+      let next = applySharedGameStatus(card, sharedGame);
+      if (sport === "cfb") {
+        const cfbGame = cfbGameForCard(next, cfbLiveGames);
+        next = applyCfbLiveState(next, cfbGame);
+      }
+      return next;
+    });
 
-    const liveByMatchup = new Map(
-      cfbLiveGames.map((game) => [clean(game.matchup), game])
-    );
+    if (sport !== "cfb") return withStatus;
 
-    const blockOrder: Record<string, number> = {
-      early: 0,
-      afternoon: 1,
-      evening: 2,
-    };
-
-    return cards
+    const blockOrder: Record<string, number> = { early: 0, afternoon: 1, evening: 2 };
+    return withStatus
       .filter((card) => card.market === market.key)
-      .map((card) =>
-        applyCfbLiveState(
-          card,
-          liveByMatchup.get(clean(card.matchup)) || null
-        )
-      )
       .sort((a, b) => {
         if (cfbSlate === "all") {
-          const aBlock = String(a.raw?.cfbSlate || "");
-          const bBlock = String(b.raw?.cfbSlate || "");
-
-          const blockDiff =
-            (blockOrder[aBlock] ?? 99) -
-            (blockOrder[bBlock] ?? 99);
-
-          if (blockDiff) return blockDiff;
+          const aBlock = blockOrder[String(a.raw?.slateKey || "")] ?? 99;
+          const bBlock = blockOrder[String(b.raw?.slateKey || "")] ?? 99;
+          if (aBlock !== bBlock) return aBlock - bBlock;
         }
-
         return a.rank - b.rank;
       });
-  }, [sport, market.key, cards, cfbLiveGames, cfbSlate]);
+  }, [sport, market.key, cfbSlate, cards, cfbLiveGames, sharedStatusGames]);
 
-  const visible =
-    sport === "cfb" && cfbSlate === "all"
-      ? displayCards
-      : full
-        ? displayCards
-        : displayCards.slice(0, 5);
+  const visible = full
+    ? displayCards
+    : displayCards.slice(0, 5);
 
   const cfbAllDayGroups = useMemo(() => {
     if (sport !== "cfb" || cfbSlate !== "all") return [];
-
-    return CFB_SLATES
-      .filter((item) => item.key !== "all")
-      .map((item) => ({
-        ...item,
-        cards: displayCards.filter(
-          (card) =>
-            String(card.raw?.cfbSlate || "") === item.key
-        ),
-      }));
+    return ([
+      ["early", "Noon / Early"],
+      ["afternoon", "Afternoon"],
+      ["evening", "Evening"],
+    ] as const).map(([key, label]) => ({
+      key,
+      label,
+      rows: displayCards.filter((card) => card.raw?.slateKey === key),
+    }));
   }, [sport, cfbSlate, displayCards]);
 
   const sourceText = useMemo(() => {
@@ -1865,7 +1887,7 @@ export function PlayerRankingsPanel({
     <div className={`ssPlayerRankingsRoot ${styles.root}`}>
       <div className={styles.header}>
         <div>
-          <h2>Top 25 Rankings</h2>
+          <h2>{sport === "cfb" && cfbSlate === "all" ? "All Day Rankings" : "Top 25 Rankings"}</h2>
           <p>
             Market-specific intelligence · live matchup context
           </p>
@@ -1929,9 +1951,7 @@ export function PlayerRankingsPanel({
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label} Rankings</h3>
         <p>
-          {sport === "cfb" && cfbSlate === "all"
-            ? "Combined Saturday rankings · up to 25 per time block · each player freezes at kickoff."
-            : `Top 25 · ${sourceText} · original prediction values remain frozen after game start when the sport feed supports locking.`}
+          {sport === "cfb" && cfbSlate === "all" ? "Up to 75 · three independent Top 25 time blocks" : "Top 25"} · {sourceText} · original prediction values remain frozen after game start when the sport feed supports locking.
         </p>
       </div>
 
@@ -1968,70 +1988,19 @@ export function PlayerRankingsPanel({
 
       <div className={styles.cards}>
         {sport === "cfb" && cfbSlate === "all"
-          ? cfbAllDayGroups.map((section) => (
-              <section
-                key={section.key}
-                style={{
-                  marginTop: "18px",
-                  paddingTop: "4px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "12px",
-                    marginBottom: "10px",
-                    padding: "10px 12px",
-                    border: "1.5px solid var(--gold)",
-                    borderRadius: "12px",
-                    background:
-                      "linear-gradient(100deg, rgba(229,187,69,.16), rgba(10,12,11,.96) 58%)",
-                  }}
-                >
-                  <strong
-                    style={{
-                      color: "var(--gold)",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {section.label}
-                  </strong>
-                  <span
-                    style={{
-                      color: "var(--muted)",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                    }}
-                  >
-                    {section.cards.length} / 25
-                  </span>
+          ? cfbAllDayGroups.map((block) => (
+              <div key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(229,187,69,.35)", padding: "8px 2px", marginBottom: 8 }}>
+                  <strong style={{ color: "#e5bb45" }}>{block.label}</strong>
+                  <span style={{ color: "#9da1a8", fontSize: 11 }}>Top {block.rows.length}</span>
                 </div>
-
-                {section.cards.length ? (
-                  section.cards.map((card) => (
-                    <PlayerCard
-                      key={`${sport}-${market.key}-${section.key}-${card.playerId}-${card.rank}`}
-                      card={card}
-                      sport={sport}
-                      league={league}
-                    />
-                  ))
-                ) : (
-                  <div className={styles.state}>
-                    No eligible {market.label} rankings are available for the {section.label} block.
-                  </div>
-                )}
-              </section>
+                {(full ? block.rows : block.rows.slice(0, 5)).map((card) => (
+                  <PlayerCard key={`${sport}-${market.key}-${block.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />
+                ))}
+              </div>
             ))
           : visible.map((card) => (
-              <PlayerCard
-                key={`${sport}-${market.key}-${card.playerId}-${card.rank}`}
-                card={card}
-                sport={sport}
-                league={league}
-              />
+              <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />
             ))}
       </div>
 
@@ -2041,14 +2010,19 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {displayCards.length > 5 &&
-      !(sport === "cfb" && cfbSlate === "all") ? (
+      {displayCards.length > (sport === "cfb" && cfbSlate === "all" ? 15 : 5) ? (
         <button
           type="button"
           className={styles.bottomViewAll}
           onClick={() => setFull((value) => !value)}
         >
-          {full ? "Show Top 5 Only" : "View Full Top 25"}
+          {sport === "cfb" && cfbSlate === "all"
+            ? full
+              ? "Show Top 5 Per Time Block"
+              : `View Full All Day Rankings · ${displayCards.length}`
+            : full
+              ? "Show Top 5 Only"
+              : "View Full Top 25"}
         </button>
       ) : null}
     </div>
