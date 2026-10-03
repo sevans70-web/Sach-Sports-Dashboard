@@ -404,10 +404,15 @@
 
 .faceFooter {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 0;
   align-items: center;
   padding: 7px 9px 1px;
+}
+
+.faceFooter:has(.movement) {
+  grid-template-columns: auto 1fr;
+  gap: 8px;
 }
 
 .faceFooter p {
@@ -953,15 +958,6 @@
 /* No badge at all when a player has no ranking movement. */
 .moveSame {
   display: none !important;
-}
-
-.faceFooter:has(.moveSame) {
-  grid-template-columns: 1fr;
-  gap: 0;
-}
-
-.faceFooter:has(.moveSame) p {
-  grid-column: 1 / -1;
 }
 
 /* Keep the outer Top 25 frame compact on phones. */

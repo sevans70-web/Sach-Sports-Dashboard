@@ -352,7 +352,7 @@ function recentValues(row: any): number[] {
       )
       .filter((value): value is number => value != null);
 
-    if (values.length) return values.slice(-10);
+    if (values.length) return values.slice(-20);
   }
 
   return [];
@@ -646,7 +646,7 @@ function movementLabel(card: RankingCard) {
   if (card.movement === "new") return "NEW";
   if (card.movement === "up") return `↑ ${card.movementAmount || 1}`;
   if (card.movement === "down") return `↓ ${card.movementAmount || 1}`;
-  return "−";
+  return "";
 }
 
 function movementClass(card: RankingCard) {
@@ -662,6 +662,73 @@ function useHorizontalScroll() {
     ref,
     more: () => ref.current?.scrollBy({ left: 240, behavior: "smooth" }),
   };
+}
+
+
+const NATIVE_HISTORY_SPORTS = new Set<RankingsSport>([
+  "nfl",
+  "cfb",
+  "nba",
+  "wnba",
+  "cbb",
+]);
+
+const recentFormCache = new Map<string, number[]>();
+
+async function loadRecentFormForCard(
+  card: RankingCard,
+  sport: RankingsSport,
+  league: string,
+  signal: AbortSignal
+) {
+  const key = `${sport}|${league}|${card.playerId}|${card.market}`;
+  const cached = recentFormCache.get(key);
+  if (cached) return cached;
+
+  let url = "";
+
+  if (NATIVE_HISTORY_SPORTS.has(sport)) {
+    url =
+      `/api/${sport}/player/${encodeURIComponent(card.playerId)}/history` +
+      `?market=${encodeURIComponent(card.market)}`;
+  } else {
+    const params = new URLSearchParams({
+      sport,
+      playerId: card.playerId,
+      playerName: card.playerName,
+      team: card.teamName,
+      market: card.market,
+    });
+
+    if (sport === "soccer" && league) {
+      params.set("league", league);
+    }
+
+    url = `/api/player-history?${params.toString()}`;
+  }
+
+  const response = await fetch(url, {
+    cache: "no-store",
+    signal,
+  });
+
+  if (!response.ok) return [];
+
+  const payload = await response.json();
+
+  const values = Array.isArray(payload?.points)
+    ? payload.points
+        .map((point: any) => Number(point?.value))
+        .filter((value: number) => Number.isFinite(value))
+    : Array.isArray(payload?.values)
+      ? payload.values
+          .map((value: any) => Number(value))
+          .filter((value: number) => Number.isFinite(value))
+      : [];
+
+  const recent = values.slice(-20);
+  if (recent.length) recentFormCache.set(key, recent);
+  return recent;
 }
 
 function RecentChart({
@@ -719,10 +786,56 @@ function RecentChart({
 
 function PlayerCard({
   card,
+  sport,
+  league,
 }: {
   card: RankingCard;
+  sport: RankingsSport;
+  league: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [formSpan, setFormSpan] = useState<5 | 10 | 20>(10);
+  const [historyValues, setHistoryValues] = useState<number[]>(card.recentValues);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(card.recentValues.length >= 20);
+
+  useEffect(() => {
+    setHistoryValues(card.recentValues);
+    setHistoryLoaded(card.recentValues.length >= 20);
+  }, [card.playerId, card.market, card.recentValues.length]);
+
+  useEffect(() => {
+    if (!open || historyLoaded) return;
+
+    const controller = new AbortController();
+    setHistoryLoading(true);
+
+    loadRecentFormForCard(card, sport, league, controller.signal)
+      .then((values) => {
+        if (values.length) setHistoryValues(values);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setHistoryLoaded(true);
+          setHistoryLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [
+    open,
+    historyLoaded,
+    sport,
+    league,
+    card.playerId,
+    card.playerName,
+    card.teamName,
+    card.market,
+  ]);
+
+  const recentFormValues =
+    (historyValues.length ? historyValues : card.recentValues).slice(-formSpan);
   const state = deriveState(card.raw, {
     status: card.resultStatus,
     actual: card.actual,
@@ -871,9 +984,11 @@ function PlayerCard({
 
       {state === "pregame" ? (
         <div className={styles.faceFooter}>
-          <span className={`${styles.movement} ${movementClass(card)}`}>
-            {movementLabel(card)}
-          </span>
+          {movementLabel(card) ? (
+            <span className={`${styles.movement} ${movementClass(card)}`}>
+              {movementLabel(card)}
+            </span>
+          ) : null}
           <p>{card.summary}</p>
         </div>
       ) : null}
@@ -1002,18 +1117,32 @@ function PlayerCard({
             <div className={styles.sectionTitleRow}>
               <h4>Recent Form</h4>
               <div className={styles.formTabs}>
-                <button type="button">Last 5</button>
-                <button type="button" className={styles.activeForm}>Last 10</button>
-                <button type="button">Last 20</button>
+                {([5, 10, 20] as const).map((span) => (
+                  <button
+                    type="button"
+                    key={span}
+                    className={formSpan === span ? styles.activeForm : ""}
+                    onClick={() => setFormSpan(span)}
+                    aria-pressed={formSpan === span}
+                  >
+                    Last {span}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <RecentChart
-              values={card.recentValues}
-              line={card.sportsbookLine}
-              projection={card.modelProjection}
-              liveValue={state === "live" ? current : null}
-            />
+            {historyLoading && !recentFormValues.length ? (
+              <div className={styles.chartEmpty}>
+                Loading recent game-by-game form…
+              </div>
+            ) : (
+              <RecentChart
+                values={recentFormValues}
+                line={card.sportsbookLine}
+                projection={card.modelProjection}
+                liveValue={state === "live" ? current : null}
+              />
+            )}
           </section>
 
           <section className={styles.intelSection}>
@@ -1051,11 +1180,11 @@ function PlayerCard({
                   <span>{state === "pregame" ? "Current" : "Close"}</span>
                   <strong>{shortNumber(card.sportsbookLine)}</strong>
                 </div>
-                <em>
-                  {lineMovement == null
-                    ? "—"
-                    : `${lineMovement >= 0 ? "+" : ""}${shortNumber(lineMovement)}`}
-                </em>
+                {lineMovement != null && lineMovement !== 0 ? (
+                  <em>
+                    {`${lineMovement >= 0 ? "+" : ""}${shortNumber(lineMovement)}`}
+                  </em>
+                ) : null}
               </div>
             </section>
           ) : null}
@@ -1428,15 +1557,6 @@ export function PlayerRankingsPanel({
           </p>
         </div>
 
-        {cards.length > 5 ? (
-          <button
-            type="button"
-            className={styles.viewAllTop}
-            onClick={() => setFull((value) => !value)}
-          >
-            {full ? "Top 5" : "View All"} <span>›</span>
-          </button>
-        ) : null}
       </div>
 
       {config.groups.length > 1 ? (
@@ -1516,6 +1636,8 @@ export function PlayerRankingsPanel({
           <PlayerCard
             key={`${sport}-${market.key}-${card.playerId}-${card.rank}`}
             card={card}
+            sport={sport}
+            league={league}
           />
         ))}
       </div>
