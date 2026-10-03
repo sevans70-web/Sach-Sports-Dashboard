@@ -82,16 +82,17 @@
   display: none;
 }
 
+/* Match Player Rankings category chips to approved Category Performance chips. */
 .tabs button {
   flex: 0 0 auto;
-  border: 1px solid #383b40;
-  border-radius: 11px;
-  background: #121419;
-  color: #e9e9eb;
-  padding: 9px 13px;
+  border: 1px solid #3a3d43;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #1b1e22, #101216);
+  color: #f3f3f4;
+  padding: 8px 11px;
   font: inherit;
-  font-size: 13px;
-  font-weight: 850;
+  font-size: 11px;
+  font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
 }
@@ -101,10 +102,10 @@
 }
 
 .tabs .activeTab {
-  color: #080908;
-  border-color: var(--gold);
-  background: linear-gradient(145deg, #f5d567, #d8a92a);
-  box-shadow: 0 0 18px rgba(229, 187, 69, .12);
+  color: #17120a;
+  border-color: #d9b85d;
+  background: linear-gradient(180deg, #f6d56f, #d9a932);
+  box-shadow: inset 0 1px rgba(255, 245, 194, 0.52);
 }
 
 .scrollCue {
@@ -894,6 +895,11 @@
   .photoFallback {
     width: 55px;
     height: 55px;
+  }
+
+  .tabs button {
+    padding: 7px 9px;
+    font-size: 10px;
   }
 
   .identityTop strong {
