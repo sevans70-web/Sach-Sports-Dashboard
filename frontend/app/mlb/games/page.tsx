@@ -1,2 +1,2 @@
-import { MlbGames } from "@/components/mlb-games";
-export default function Page(){return <main className="pageShell mlbPage"><MlbGames/></main>}
+import { GameSlatePage } from "@/components/game-slate-page";
+export default function Page(){ return <GameSlatePage sport="mlb" />; }

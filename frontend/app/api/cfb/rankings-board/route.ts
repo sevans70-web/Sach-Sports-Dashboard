@@ -1615,7 +1615,11 @@ async function build(
     );
 
   const rows =
-    locked.rows;
+    locked.rows.map((row: any) => ({
+      ...row,
+      slateKey: slate,
+      slateLabel: SLATE_LABELS[slate],
+    }));
 
   const sportsbookOnly =
     rows.length > 0 &&
@@ -1802,6 +1806,54 @@ export async function GET(
   }
 
   try {
+    if (slate === "all") {
+      const blockKeys: Array<Exclude<SlateKey, "all">> = [
+        "early",
+        "afternoon",
+        "evening",
+      ];
+
+      const blocks = await Promise.all(
+        blockKeys.map((key) =>
+          timeout(
+            getPayload(market, key),
+            12_000,
+            null as BoardPayload | null
+          )
+        )
+      );
+
+      const usable = blocks.filter(
+        (block): block is BoardPayload => Boolean(block)
+      );
+
+      const rows = usable.flatMap((block) =>
+        (block.rows || []).map((row: any) => ({
+          ...row,
+          slateKey: block.slate,
+          slateLabel: block.slateLabel,
+        }))
+      );
+
+      return NextResponse.json(
+        {
+          success: usable.length > 0,
+          source: "CFB independent time-block boards",
+          market,
+          slate: "all",
+          slateLabel: "All Day",
+          rows,
+          sportsbookOnly: rows.length > 0 && rows.every((row: any) => row.marketBacked === true),
+          validRankingCount: rows.length,
+          updatedAt: new Date().toISOString(),
+          blockCounts: Object.fromEntries(
+            usable.map((block) => [block.slate, block.rows?.length || 0])
+          ),
+        },
+        { headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" } }
+      );
+    }
+
     const payload =
       await timeout(
         getPayload(
