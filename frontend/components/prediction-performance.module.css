@@ -1,0 +1,538 @@
+/* Sach Sports Prediction Performance v38
+   Approved redesign:
+   - same Prediction Performance shell across all 8 dashboards
+   - 3 boxes only: Hit Rate / Settled / Pending
+   - Category Performance directly underneath
+   - NFL Q1 included
+   - NBA Q1 slot included (data populates once the NBA Q1 feed is connected)
+   - WNBA and CBB do NOT receive Q1
+   - MLB keeps HR Intelligence immediately above this block
+*/
+
+.root {
+  margin: 0;
+  color: #fff;
+}
+
+:global(.ssPerformanceHost) {
+  margin-top: 24px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+:global(.ssPerformanceHost) > *:not(:global(.ssPredictionPerformanceRoot)) {
+  display: none !important;
+}
+
+.performancePanel,
+.categoryPanel {
+  box-sizing: border-box;
+  border: 1.5px solid #d9b85d;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(190, 142, 34, 0.16), transparent 42%),
+    linear-gradient(145deg, rgba(28, 27, 22, 0.98), rgba(9, 10, 11, 0.99));
+  overflow: hidden;
+}
+
+.performancePanel {
+  padding: 12px;
+}
+
+.categoryPanel {
+  margin-top: 12px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: clamp(23px, 5vw, 31px);
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.periodTabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.periodTabs button,
+.categoryTabs button {
+  appearance: none;
+  border: 1px solid #3a3d43;
+  background: linear-gradient(180deg, #1b1e22, #101216);
+  color: #f3f3f4;
+  font: inherit;
+  font-weight: 800;
+}
+
+.periodTabs button {
+  min-width: 0;
+  padding: 9px 2px;
+  border-radius: 9px;
+  font-size: 11px;
+}
+
+.periodTabs button.activeTab {
+  border-color: #d9b85d;
+  color: #17120a;
+  background: linear-gradient(180deg, #f6d56f, #d9a932);
+  box-shadow: inset 0 1px rgba(255, 245, 194, 0.52);
+}
+
+.summaryMetrics,
+.categoryMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.metricCard {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 100px;
+  padding: 10px 7px;
+  border: 1px solid #555047;
+  border-radius: 13px;
+  background:
+    radial-gradient(circle at 14% 5%, rgba(217, 184, 93, 0.1), transparent 48%),
+    #111315;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+}
+
+.hitRateCard {
+  border-color: #b99b4c;
+}
+
+.metricCopy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.metricCopy > span {
+  color: #dedfe2;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.metricCopy > strong {
+  color: #fff;
+  font-size: clamp(22px, 5vw, 31px);
+  line-height: 1;
+  font-weight: 950;
+}
+
+.metricCopy > small {
+  min-height: 22px;
+  color: #d8d9dc;
+  font-size: 9.5px;
+  line-height: 1.15;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px 7px;
+}
+
+.winText {
+  color: #16df74;
+}
+
+.lossText {
+  color: #ff3f53;
+}
+
+.rateRing {
+  --rate: 0deg;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  position: relative;
+  background: conic-gradient(#13df74 var(--rate), #34373b 0);
+}
+
+.rateRing::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: inherit;
+  background: #111315;
+}
+
+.metricIcon,
+.hourglass {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: #e5bd53;
+  font-size: 22px;
+  font-style: normal;
+}
+
+.metricIcon {
+  border: 2px solid #e5bd53;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.categoryHeader {
+  appearance: none;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(217, 184, 93, 0.4);
+  background: transparent;
+  color: #fff;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: inherit;
+  cursor: pointer;
+}
+
+.categoryHeader > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.categoryHeader b,
+.categoryHeader i {
+  color: #e3b94f;
+}
+
+.categoryHeader i {
+  font-size: 24px;
+  font-style: normal;
+  line-height: 1;
+}
+
+.categoryTabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 10px 10px 8px;
+}
+
+.categoryTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryTabs button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  border-radius: 9px;
+  padding: 8px 11px;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.categoryTabs button.activeCategory {
+  border-color: #d9b85d;
+  color: #17120a;
+  background: linear-gradient(180deg, #f6d56f, #d9a932);
+}
+
+.categoryBody {
+  margin: 0 10px 10px;
+  padding: 10px;
+  border: 1px solid #b89743;
+  border-radius: 13px;
+  background: rgba(12, 13, 13, 0.84);
+}
+
+.categoryIdentity {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px 9px;
+}
+
+.categoryArt,
+.categoryFallback {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+}
+
+.categoryArt {
+  object-fit: cover;
+  object-position: center;
+}
+
+.categoryFallback {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(217, 184, 93, 0.55);
+  background: radial-gradient(circle at 50% 20%, rgba(217, 184, 93, 0.19), rgba(10, 11, 12, 0.96));
+  font-size: 25px;
+}
+
+.categoryIdentity strong {
+  display: block;
+  font-size: 17px;
+  line-height: 1.05;
+}
+
+.categoryIdentity small {
+  display: block;
+  margin-top: 4px;
+  color: #bfc1c5;
+  font-size: 11px;
+}
+
+.categoryMetrics .metricCard {
+  min-height: 88px;
+}
+
+.categoryNote {
+  margin: 9px 2px 0;
+  color: #bfc1c5;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+/* ---------------- MLB HR INTELLIGENCE REDESIGN ----------------
+   The existing live data/logic stays intact. These rules convert the old
+   long-form section into the approved compact visual treatment.
+*/
+:global(.origSection.hr) {
+  box-sizing: border-box;
+  margin-top: 24px !important;
+  padding: 12px !important;
+  border: 1.5px solid #d9b85d !important;
+  border-radius: 16px !important;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(190, 142, 34, 0.14), transparent 42%),
+    linear-gradient(145deg, rgba(24, 23, 18, 0.98), rgba(8, 9, 10, 0.99)) !important;
+}
+
+:global(.origSection.hr > h2) {
+  margin: 0 0 10px !important;
+  font-size: clamp(23px, 5vw, 31px) !important;
+  line-height: 1.05 !important;
+}
+
+:global(.origSection.hr .boxedHrTabs) {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid #3a3d43 !important;
+  border-radius: 11px !important;
+}
+
+:global(.origSection.hr .boxedHrTabs button) {
+  min-width: 0 !important;
+  border: 0 !important;
+  border-right: 1px solid #3a3d43 !important;
+  border-radius: 0 !important;
+  background: #111318 !important;
+  color: #f0f0f1 !important;
+  padding: 10px 4px !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+}
+
+:global(.origSection.hr .boxedHrTabs button:last-child) {
+  border-right: 0 !important;
+}
+
+:global(.origSection.hr .boxedHrTabs button.active) {
+  color: #17120a !important;
+  background: linear-gradient(180deg, #f6d56f, #d9a932) !important;
+}
+
+:global(.origSection.hr .hrPane > details) {
+  display: none !important;
+}
+
+:global(.origSection.hr .hrPane > h4) {
+  display: none !important;
+}
+
+:global(.origSection.hr .hrPane > h3) {
+  margin: 8px 0 4px !important;
+  font-size: 17px !important;
+}
+
+:global(.origSection.hr .hrCaption),
+:global(.origSection.hr .emergingIntro) {
+  margin: 0 0 9px !important;
+  color: #bfc1c5 !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+:global(.origSection.hr .hrSignalRows),
+:global(.origSection.hr .emergingRows) {
+  display: grid !important;
+  gap: 7px !important;
+}
+
+:global(.origSection.hr .hrSignalRow),
+:global(.origSection.hr .emergingRows article) {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 9px 10px !important;
+  border: 1px solid #b89743 !important;
+  border-radius: 12px !important;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(217, 184, 93, 0.11), transparent 46%),
+    #101214 !important;
+}
+
+:global(.origSection.hr .hrSignalRow:nth-child(n + 4)),
+:global(.origSection.hr .emergingRows article:nth-child(n + 4)) {
+  display: none !important;
+}
+
+:global(.origSection.hr .hrSignalRow strong),
+:global(.origSection.hr .emergingRows article strong) {
+  color: #fff !important;
+  font-size: 13px !important;
+}
+
+:global(.origSection.hr .hrSignalRow span),
+:global(.origSection.hr .emergingRows article span),
+:global(.origSection.hr .emergingRows article p),
+:global(.origSection.hr .emergingRows article b) {
+  color: #c8c9cc !important;
+  font-size: 10.5px !important;
+  line-height: 1.3 !important;
+}
+
+:global(.origSection.hr .hrMore summary),
+:global(.origSection.hr .hrMoreButton) {
+  width: auto !important;
+  margin: 8px 0 0 auto !important;
+  padding: 5px 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #e4bd55 !important;
+  font-size: 10.5px !important;
+  font-weight: 850 !important;
+  text-decoration: none !important;
+}
+
+:global(.origSection.hr .origInfo) {
+  margin-top: 8px !important;
+  border: 1px solid #16bf6c !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  background: #0e1210 !important;
+}
+
+/* Mobile */
+@media (max-width: 430px) {
+  .performancePanel {
+    padding: 10px;
+  }
+
+  .title {
+    font-size: 25px;
+  }
+
+  .periodTabs {
+    gap: 4px;
+  }
+
+  .periodTabs button {
+    padding: 8px 1px;
+    font-size: 10px;
+  }
+
+  .summaryMetrics,
+  .categoryMetrics {
+    gap: 5px;
+  }
+
+  .metricCard {
+    min-height: 92px;
+    padding: 8px 4px;
+    gap: 4px;
+  }
+
+  .rateRing {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .rateRing::after {
+    inset: 7px;
+  }
+
+  .metricIcon,
+  .hourglass {
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+  }
+
+  .metricIcon {
+    font-size: 13px;
+  }
+
+  .metricCopy > span {
+    font-size: 9.5px;
+  }
+
+  .metricCopy > strong {
+    font-size: 22px;
+  }
+
+  .metricCopy > small {
+    font-size: 8.7px;
+  }
+
+  .categoryHeader > span {
+    font-size: 18px;
+  }
+
+  .categoryTabs button {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .categoryBody {
+    margin: 0 8px 8px;
+    padding: 8px;
+  }
+
+  .categoryArt,
+  .categoryFallback {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .categoryIdentity strong {
+    font-size: 15px;
+  }
+}

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./theme.css";
+import { PredictionPerformancePortal } from "@/components/prediction-performance-portal";
 
 export const metadata: Metadata = {
   title: "Sach Sports",
@@ -16,7 +17,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <PredictionPerformancePortal />
+      </body>
     </html>
   );
 }
