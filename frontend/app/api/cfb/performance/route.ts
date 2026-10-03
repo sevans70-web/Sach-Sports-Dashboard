@@ -151,11 +151,9 @@ export async function GET(req:NextRequest){
       const [market,day]=bucket.split("|") as [CfbMarketKey,string];
       let changed=false;
 
-      let dayEvents=dayEventCache.get(day);
-      if(!dayEvents){
-        dayEvents=await gamesForDay(day);
-        dayEventCache.set(day,dayEvents);
-      }
+      const cachedDayEvents=dayEventCache.get(day);
+      const dayEvents:any[]=cachedDayEvents ?? await gamesForDay(day);
+      if(!cachedDayEvents)dayEventCache.set(day,dayEvents);
 
       for(const p of predictions){
         if(p.status!=="pending")continue;
