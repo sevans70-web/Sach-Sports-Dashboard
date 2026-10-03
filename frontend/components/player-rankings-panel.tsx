@@ -1320,7 +1320,23 @@ type CfbLiveGame = {
 };
 
 function cfbCardKey(card: RankingCard) {
-  return `${card.playerId}|${clean(card.matchup)}`;
+  return `${card.market}|${card.playerId}|${clean(card.matchup)}`;
+}
+
+function sanitizeCfbFrozenCards(
+  value: unknown,
+  marketKey: string
+): Record<string, RankingCard> {
+  if (!value || typeof value !== "object") return {};
+
+  const next: Record<string, RankingCard> = {};
+
+  for (const card of Object.values(value as Record<string, RankingCard>)) {
+    if (!card || card.market !== marketKey) continue;
+    next[cfbCardKey(card)] = card;
+  }
+
+  return next;
 }
 
 function cfbGameForCard(card: RankingCard, games: CfbLiveGame[]) {
@@ -1419,8 +1435,37 @@ export function PlayerRankingsPanel({
   const [league, setLeague] = useState("eng.1");
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
   const [cfbFrozenCards, setCfbFrozenCards] = useState<Record<string, RankingCard>>({});
+  const rankingRequestSeq = useRef(0);
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
+
+  const resetCfbMarketView = () => {
+    if (sport !== "cfb") return;
+
+    setCards([]);
+    setDropped([]);
+    setError("");
+    setLoading(true);
+    setCfbLiveGames([]);
+    setCfbFrozenCards({});
+    setFull(false);
+    setShowDropped(false);
+  };
+
+  const selectGroup = (item: Group) => {
+    if (item.key === group.key) return;
+
+    resetCfbMarketView();
+    setGroupKey(item.key);
+    setMarketKey(item.markets[0].key);
+  };
+
+  const selectMarket = (key: string) => {
+    if (key === market.key) return;
+
+    resetCfbMarketView();
+    setMarketKey(key);
+  };
 
   useEffect(() => {
     const next = config.groups[0];
@@ -1474,11 +1519,13 @@ export function PlayerRankingsPanel({
 
     try {
       const stored = JSON.parse(localStorage.getItem(storageKey) || "{}");
-      setCfbFrozenCards(
-        stored && typeof stored === "object"
-          ? stored
-          : {}
-      );
+      const sanitized = sanitizeCfbFrozenCards(stored, market.key);
+
+      setCfbFrozenCards(sanitized);
+
+      // Rewrite the key immediately so any cards accidentally saved under
+      // the wrong CFB market by older builds are permanently removed.
+      localStorage.setItem(storageKey, JSON.stringify(sanitized));
     } catch {
       setCfbFrozenCards({});
     }
@@ -1517,13 +1564,20 @@ export function PlayerRankingsPanel({
   useEffect(() => {
     if (sport !== "cfb" || !cards.length || !cfbLiveGames.length) return;
 
+    const marketCards = cards.filter(
+      (card) => card.market === market.key
+    );
+
+    if (!marketCards.length) return;
+
     const storageKey = `sach-cfb-frozen-${market.key}-${torontoDay()}`;
 
     setCfbFrozenCards((previous) => {
-      const next = { ...previous };
-      let changed = false;
+      const next = sanitizeCfbFrozenCards(previous, market.key);
+      let changed =
+        Object.keys(next).length !== Object.keys(previous).length;
 
-      for (const card of cards) {
+      for (const card of marketCards) {
         const game = cfbGameForCard(card, cfbLiveGames);
         const state = String(game?.state || "").toLowerCase();
         const started = state === "in" || state === "post" || Boolean(game?.completed);
@@ -1558,6 +1612,8 @@ export function PlayerRankingsPanel({
   useEffect(() => {
     const controller = new AbortController();
     let alive = true;
+    const requestId = ++rankingRequestSeq.current;
+    const requestedMarket = market.key;
 
     const run = async () => {
       setLoading(true);
@@ -1694,9 +1750,25 @@ export function PlayerRankingsPanel({
             );
           });
 
-        if (!alive) return;
+        if (
+          !alive ||
+          requestId !== rankingRequestSeq.current ||
+          requestedMarket !== market.key
+        ) {
+          return;
+        }
 
-        setCards(normalized);
+        // Defensive market isolation: normalized cards are stamped with
+        // the market used for this request. Never allow a stale/mismatched
+        // card set to enter the current board.
+        const isolated =
+          sport === "cfb"
+            ? normalized.filter(
+                (card) => card.market === requestedMarket
+              )
+            : normalized;
+
+        setCards(isolated);
         setDropped(rawDropped);
       } catch (cause) {
         if (!alive || controller.signal.aborted) return;
@@ -1708,7 +1780,13 @@ export function PlayerRankingsPanel({
             : "Player rankings are temporarily unavailable."
         );
       } finally {
-        if (alive) setLoading(false);
+        if (
+          alive &&
+          requestId === rankingRequestSeq.current &&
+          requestedMarket === market.key
+        ) {
+          setLoading(false);
+        }
       }
     };
 
@@ -1731,6 +1809,8 @@ export function PlayerRankingsPanel({
 
     const frozen = Object.values(cfbFrozenCards)
       .filter((card) => {
+        if (card.market !== market.key) return false;
+
         const game = liveByMatchup.get(clean(card.matchup));
         const state = String(game?.state || "").toLowerCase();
         return Boolean(game) && (
@@ -1755,7 +1835,11 @@ export function PlayerRankingsPanel({
     );
 
     const fresh = cards
-      .filter((card) => !frozenKeys.has(cfbCardKey(card)))
+      .filter(
+        (card) =>
+          card.market === market.key &&
+          !frozenKeys.has(cfbCardKey(card))
+      )
       .map((card) =>
         applyCfbLiveState(
           card,
@@ -1780,7 +1864,7 @@ export function PlayerRankingsPanel({
     return merged
       .sort((a, b) => a.rank - b.rank)
       .slice(0, 25);
-  }, [sport, cards, cfbLiveGames, cfbFrozenCards]);
+  }, [sport, market.key, cards, cfbLiveGames, cfbFrozenCards]);
 
   const visible = full
     ? displayCards
@@ -1816,7 +1900,7 @@ export function PlayerRankingsPanel({
                 type="button"
                 key={item.key}
                 className={item.key === group.key ? styles.activeTab : ""}
-                onClick={() => setGroupKey(item.key)}
+                onClick={() => selectGroup(item)}
               >
                 <span>{item.icon}</span>
                 {item.label}
@@ -1834,7 +1918,7 @@ export function PlayerRankingsPanel({
               type="button"
               key={item.key}
               className={item.key === market.key ? styles.activeTab : ""}
-              onClick={() => setMarketKey(item.key)}
+              onClick={() => selectMarket(item.key)}
             >
               <span>{item.icon}</span>
               {item.label}
@@ -1872,8 +1956,10 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {loading && !cards.length ? (
-        <div className={styles.state}>Loading player intelligence…</div>
+      {loading && !displayCards.length ? (
+        <div className={styles.state}>
+          Loading {market.label} player intelligence…
+        </div>
       ) : null}
 
       {error ? (
