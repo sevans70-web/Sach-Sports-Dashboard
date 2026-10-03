@@ -19,8 +19,15 @@
   --panel-2: #0a0c0b;
   --line: #3b3e3b;
   width: 100%;
+  box-sizing: border-box;
   color: #fff;
-  margin: 0;
+  margin: 18px 0 0;
+  padding: 12px;
+  border: 1.5px solid var(--gold);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(229,187,69,.07), transparent 30%),
+    linear-gradient(180deg, rgba(15,17,15,.98), rgba(5,7,6,.98));
   font-family: inherit;
 }
 
@@ -934,5 +941,34 @@
 
   .expandedHeader strong {
     font-size: 12px;
+  }
+}
+
+
+/* v45 Player Rankings cleanup */
+.viewAllTop {
+  display: none !important;
+}
+
+/* No badge at all when a player has no ranking movement. */
+.moveSame {
+  display: none !important;
+}
+
+.faceFooter:has(.moveSame) {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.faceFooter:has(.moveSame) p {
+  grid-column: 1 / -1;
+}
+
+/* Keep the outer Top 25 frame compact on phones. */
+@media (max-width: 430px) {
+  .root {
+    margin-top: 14px;
+    padding: 10px;
+    border-radius: 16px;
   }
 }
