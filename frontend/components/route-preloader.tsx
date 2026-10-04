@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { warmDefaultRankingCaches } from "@/components/player-rankings-panel";
 
 const ROUTES = [
   "/mlb",
@@ -18,10 +19,15 @@ export function RoutePreloader() {
   const router = useRouter();
 
   useEffect(() => {
+    // Warm the ranking API cache before the user opens another sport.
+    // CFB All Day is intentionally first inside warmDefaultRankingCaches().
+    warmDefaultRankingCaches();
+
     let index = 0;
 
     const timer = window.setInterval(() => {
       const route = ROUTES[index];
+
       if (!route) {
         window.clearInterval(timer);
         return;
@@ -29,7 +35,7 @@ export function RoutePreloader() {
 
       router.prefetch(route);
       index += 1;
-    }, 220);
+    }, 180);
 
     return () => window.clearInterval(timer);
   }, [router]);

@@ -416,6 +416,54 @@ function normalizeResultStatus(value: any) {
   return status;
 }
 
+function marketActualValue(
+  result: any,
+  row: any,
+  marketKey: string
+) {
+  const mlbActual: Record<string, any> = {
+    home_runs:
+      result?.actual_home_runs ??
+      row?.actual_home_runs,
+    hits:
+      result?.actual_hits ??
+      row?.actual_hits,
+    total_bases:
+      result?.actual_total_bases ??
+      row?.actual_total_bases,
+    runs:
+      result?.actual_runs ??
+      row?.actual_runs,
+    rbis:
+      result?.actual_rbis ??
+      row?.actual_rbis,
+    walks:
+      result?.actual_walks ??
+      row?.actual_walks,
+    stolen_bases:
+      result?.actual_stolen_bases ??
+      row?.actual_stolen_bases,
+    hits_runs_rbis:
+      result?.actual_hits_runs_rbis ??
+      row?.actual_hits_runs_rbis,
+    batter_strikeouts:
+      result?.actual_batter_strikeouts ??
+      row?.actual_batter_strikeouts,
+  };
+
+  return finite(
+    mlbActual[marketKey] ??
+      result?.actual ??
+      row?.actualResult ??
+      row?.actual ??
+      row?.liveCurrent
+  );
+}
+
+function isBinaryEventMarket(marketKey: string) {
+  return marketKey === "home_runs";
+}
+
 function deriveState(row: any, result: any): CardState {
   const status = normalizeResultStatus(
     result?.status ??
@@ -490,22 +538,29 @@ function normalizeCard(
 
   const gi = finite(row?.giScore ?? row?.gi_score ?? row?.score);
   const movement = movementFrom(row);
-  const actual = finite(
-    result?.actual ??
-      row?.actualResult ??
-      row?.actual ??
-      row?.liveCurrent
+  const actual = marketActualValue(
+    result,
+    row,
+    market.key
   );
 
-  const liveCurrent = finite(
-    row?.liveCurrent ??
-      result?.actual ??
-      row?.actualResult ??
-      row?.actual
-  );
+  const liveCurrent =
+    finite(row?.liveCurrent) ??
+    marketActualValue(
+      result,
+      row,
+      market.key
+    );
 
   const resultStatus = normalizeResultStatus(
     result?.status ??
+      (
+        typeof result?.correct === "boolean"
+          ? result.correct
+            ? "hit"
+            : "miss"
+          : null
+      ) ??
       row?.resultStatus ??
       row?.resultSymbol
   );
@@ -513,9 +568,14 @@ function normalizeCard(
   const progress =
     finite(row?.liveProgressPct) ??
     (
-      liveCurrent != null && line != null && line > 0
-        ? Math.max(0, Math.min(200, (liveCurrent / line) * 100))
-        : null
+      isBinaryEventMarket(market.key) &&
+      liveCurrent != null
+        ? liveCurrent >= 1
+          ? 100
+          : 0
+        : liveCurrent != null && line != null && line > 0
+          ? Math.max(0, Math.min(200, (liveCurrent / line) * 100))
+          : null
     );
 
   const lineupConfirmed =
@@ -618,7 +678,16 @@ function normalizeCard(
     modelProjection: projection,
     modelProbability: probability,
     giScore: gi,
-    prediction: pickText(row, line, projection, probability),
+    prediction:
+      isBinaryEventMarket(market.key) &&
+      probability != null
+        ? "YES"
+        : pickText(
+            row,
+            line,
+            projection,
+            probability
+          ),
     summary: String(
       row?.summary ??
         row?.why ??
@@ -641,6 +710,7 @@ function normalizeCard(
 }
 
 const PRICE_ONLY_MARKETS = new Set([
+  "home_runs",
   "anytime_td",
   "first_td",
   "q1_anytime_td",
@@ -898,23 +968,32 @@ function PlayerCard({
     (
       state === "final" &&
       current != null &&
-      card.sportsbookLine != null &&
-      card.prediction !== "—"
-        ? card.prediction === "UNDER"
-          ? current < card.sportsbookLine
-            ? "hit"
-            : current === card.sportsbookLine
-              ? "push"
-              : "miss"
-          : current > card.sportsbookLine
-            ? "hit"
-            : current === card.sportsbookLine
-              ? "push"
-              : "miss"
-        : ""
+      binaryEvent
+        ? current >= 1
+          ? "hit"
+          : "miss"
+        : state === "final" &&
+            current != null &&
+            card.sportsbookLine != null &&
+            card.prediction !== "—"
+          ? card.prediction === "UNDER"
+            ? current < card.sportsbookLine
+              ? "hit"
+              : current === card.sportsbookLine
+                ? "push"
+                : "miss"
+            : current > card.sportsbookLine
+              ? "hit"
+              : current === card.sportsbookLine
+                ? "push"
+                : "miss"
+          : ""
     );
 
   const reasons = splitReasons(card.summary);
+  const binaryEvent =
+    isBinaryEventMarket(card.market);
+
   const lineMovement =
     card.openingLine != null && card.sportsbookLine != null
       ? card.sportsbookLine - card.openingLine
@@ -987,11 +1066,17 @@ function PlayerCard({
 
       <div className={styles.faceMetrics}>
         <div>
-          <span>{card.marketLabel}</span>
+          <span>
+            {binaryEvent
+              ? "Home Run Prop"
+              : card.marketLabel}
+          </span>
           <strong>
-            {card.sportsbookLine == null
-              ? "Line —"
-              : `O/U ${shortNumber(card.sportsbookLine)}`}
+            {binaryEvent
+              ? "HR YES"
+              : card.sportsbookLine == null
+                ? "Line —"
+                : `O/U ${shortNumber(card.sportsbookLine)}`}
           </strong>
         </div>
 
@@ -1001,7 +1086,8 @@ function PlayerCard({
             className={
               card.prediction === "UNDER"
                 ? styles.under
-                : card.prediction === "OVER"
+                : card.prediction === "OVER" ||
+                    card.prediction === "YES"
                   ? styles.over
                   : ""
             }
@@ -1011,8 +1097,18 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>Model Proj.</span>
-          <strong>{shortNumber(card.modelProjection)}</strong>
+          <span>
+            {binaryEvent
+              ? "HR Probability"
+              : "Model Proj."}
+          </span>
+          <strong>
+            {binaryEvent
+              ? card.modelProbability == null
+                ? "—"
+                : `${shortNumber(card.modelProbability)}%`
+              : shortNumber(card.modelProjection)}
+          </strong>
         </div>
 
         <div>
@@ -1039,9 +1135,13 @@ function PlayerCard({
             <span>
               {current == null
                 ? "Live stat pending"
-                : card.sportsbookLine != null
-                  ? `${shortNumber(current)} / ${shortNumber(card.sportsbookLine)} · ${shortNumber(Math.max(0, card.sportsbookLine - current))} to line`
-                  : `${shortNumber(current)} current`}
+                : binaryEvent
+                  ? current >= 1
+                    ? `✅ ${shortNumber(current)} HR`
+                    : "0 HR · live"
+                  : card.sportsbookLine != null
+                    ? `${shortNumber(current)} / ${shortNumber(card.sportsbookLine)} · ${shortNumber(Math.max(0, card.sportsbookLine - current))} to line`
+                    : `${shortNumber(current)} current`}
             </span>
           </div>
           <div className={styles.progressTrack}>
@@ -1077,13 +1177,31 @@ function PlayerCard({
           <div className={styles.expandedHeader}>
             <div>
               <b>{card.marketLabel}</b>
-              <span>O/U</span>
-              <strong>{shortNumber(card.sportsbookLine)}</strong>
+              <span>
+                {binaryEvent
+                  ? "Binary market"
+                  : "O/U"}
+              </span>
+              <strong>
+                {binaryEvent
+                  ? "YES"
+                  : shortNumber(card.sportsbookLine)}
+              </strong>
             </div>
             <div>
-              <b>Sach Projection</b>
+              <b>
+                {binaryEvent
+                  ? "HR Probability"
+                  : "Sach Projection"}
+              </b>
               <span>Model</span>
-              <strong>{shortNumber(card.modelProjection)}</strong>
+              <strong>
+                {binaryEvent
+                  ? card.modelProbability == null
+                    ? "—"
+                    : `${shortNumber(card.modelProbability)}%`
+                  : shortNumber(card.modelProjection)}
+              </strong>
             </div>
             <div>
               <b>{state === "pregame" ? "Edge" : "Actual"}</b>
@@ -1318,6 +1436,39 @@ function prefetchJson(url: string) {
       .finally(() => rankingJsonInflight.delete(url));
     rankingJsonInflight.set(url, work);
   }
+}
+
+export function warmDefaultRankingCaches() {
+  if (typeof window === "undefined") return;
+
+  /*
+    These are the first views a user sees after entering each sport.
+    Warm them in the SAME module cache used by PlayerRankingsPanel so
+    navigation does not wait until after the destination dashboard mounts.
+    CFB goes first because it has the heaviest first-load board.
+  */
+  const urls = [
+    "/api/cfb/rankings-board?market=passing_yards&slate=all",
+    "/api/cfb/rankings-board?market=passing_yards&slate=early",
+    "/api/cfb/rankings-board?market=passing_yards&slate=afternoon",
+    "/api/cfb/rankings-board?market=passing_yards&slate=evening",
+    "/api/mlb/rankings",
+    "/api/mlb/performance",
+    "/api/mlb/schedule",
+    "/api/nfl/rankings?market=passing_yards",
+    "/api/nba/rankings?market=points",
+    "/api/wnba/rankings?market=points",
+    "/api/nhl/rankings?market=shots_on_goal",
+    "/api/cbb/rankings?market=points",
+    "/api/soccer/dashboard?league=eng.1",
+  ];
+
+  urls.forEach((url, index) => {
+    window.setTimeout(
+      () => prefetchJson(url),
+      index * 120
+    );
+  });
 }
 
 function findMlbGame(row: any, games: any[]) {

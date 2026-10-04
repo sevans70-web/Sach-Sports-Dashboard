@@ -1,0 +1,42 @@
+/*
+  Sach Sports portal no-flash guard — v63
+
+  The legacy dashboard sections remain in the HTML as portal hosts for now.
+  Hide their legacy children from the FIRST browser paint. The shared portal
+  roots are the only children allowed to render inside those hosts.
+
+  This removes:
+    old rankings -> new rankings flash
+    old performance -> new performance flash
+*/
+
+section.rankings > :not(.ssPlayerRankingsRoot),
+section.performance > :not(.ssPredictionPerformanceRoot),
+section.performanceSection > :not(.ssPredictionPerformanceRoot),
+.cfbShell section.section:has(> .rankHeader) > :not(.ssPlayerRankingsRoot) {
+  display: none !important;
+}
+
+section.rankings > .ssPlayerRankingsRoot,
+section.performance > .ssPredictionPerformanceRoot,
+section.performanceSection > .ssPredictionPerformanceRoot,
+.cfbShell section.section:has(> .rankHeader) > .ssPlayerRankingsRoot {
+  display: block !important;
+}
+
+/* Reserve a small stable host footprint before hydration so the page does not
+   collapse upward and then jump down when the portal attaches. */
+section.rankings,
+section.performance,
+section.performanceSection,
+.cfbShell section.section:has(> .rankHeader) {
+  min-height: 72px;
+}
+
+/* Once the shared component is attached, let it control its natural height. */
+section.rankings:has(> .ssPlayerRankingsRoot),
+section.performance:has(> .ssPredictionPerformanceRoot),
+section.performanceSection:has(> .ssPredictionPerformanceRoot),
+.cfbShell section.section:has(> .ssPlayerRankingsRoot) {
+  min-height: 0;
+}

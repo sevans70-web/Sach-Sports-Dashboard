@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import {
@@ -29,7 +29,12 @@ export function PredictionPerformancePortal() {
   const sport = sportFromPath(pathname);
   const [host, setHost] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!sport) {
+      setHost(null);
+      return;
+    }
+
     let current: HTMLElement | null = null;
     let observer: MutationObserver | null = null;
     let stopped = false;
@@ -57,7 +62,11 @@ export function PredictionPerformancePortal() {
       observer = new MutationObserver(() => {
         if (findHost()) observer?.disconnect();
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
     }
 
     return () => {
@@ -66,8 +75,12 @@ export function PredictionPerformancePortal() {
       current?.classList.remove("ssPerformanceHost");
       setHost(null);
     };
-  }, [pathname]);
+  }, [pathname, sport]);
 
   if (!sport || !host) return null;
-  return createPortal(<PredictionPerformancePanel sport={sport} />, host);
+
+  return createPortal(
+    <PredictionPerformancePanel sport={sport} />,
+    host
+  );
 }

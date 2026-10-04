@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import {
@@ -45,8 +45,11 @@ export function PlayerRankingsPortal() {
   const sport = sportFromPath(pathname);
   const [host, setHost] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (!sport) return;
+  useLayoutEffect(() => {
+    if (!sport) {
+      setHost(null);
+      return;
+    }
 
     let current: HTMLElement | null = null;
     let observer: MutationObserver | null = null;
