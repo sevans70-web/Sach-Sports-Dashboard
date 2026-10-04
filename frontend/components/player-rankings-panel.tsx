@@ -963,6 +963,9 @@ function PlayerCard({
       ? card.modelProjection - card.sportsbookLine
       : null;
 
+  const binaryEvent =
+    isBinaryEventMarket(card.market);
+
   const result =
     card.resultStatus ||
     (
@@ -991,8 +994,6 @@ function PlayerCard({
     );
 
   const reasons = splitReasons(card.summary);
-  const binaryEvent =
-    isBinaryEventMarket(card.market);
 
   const lineMovement =
     card.openingLine != null && card.sportsbookLine != null
