@@ -199,47 +199,92 @@ async function mlbGames() {
 
 async function soccerGames(league: string) {
   const now = new Date();
-  const start = new Date(now.getTime() - 1 * 86_400_000);
-  const end = new Date(now.getTime() + 10 * 86_400_000);
-  const response = await fetch(
-    `https://site.api.espn.com/apis/site/v2/sports/soccer/${encodeURIComponent(league)}/scoreboard?dates=${compactDay(start)}-${compactDay(end)}&limit=300`,
-    { cache: "no-store", headers: { "User-Agent": "Sach-Sports/1.0" } },
+
+  /*
+    ESPN's soccer scoreboard intermittently rejects long date-range requests.
+    Pull the same window one calendar day at a time, then dedupe by event ID.
+    This keeps the main-dashboard preview on the same source behavior as the
+    full Game Slate and prevents "Schedule temporarily unavailable" while the
+    slate itself has games.
+  */
+  const dates = Array.from({ length: 12 }, (_, index) => {
+    const d = new Date(now);
+    d.setUTCDate(d.getUTCDate() - 1 + index);
+    return compactDay(d);
+  });
+
+  const payloads = await Promise.all(
+    dates.map((date) =>
+      fetch(
+        `https://site.api.espn.com/apis/site/v2/sports/soccer/${encodeURIComponent(
+          league
+        )}/scoreboard?dates=${date}&limit=300`,
+        {
+          cache: "no-store",
+          headers: { "User-Agent": "Sach-Sports/1.0" },
+        }
+      )
+        .then((response) => (response.ok ? response.json() : { events: [] }))
+        .catch(() => ({ events: [] }))
+    )
   );
-  if (!response.ok) throw new Error(`Soccer schedule ${response.status}`);
-  const payload = await response.json();
+
+  const seen = new Set<string>();
   const games: Game[] = [];
 
-  for (const event of payload?.events || []) {
-    const comp = event?.competitions?.[0] || {};
-    const away = (comp?.competitors || []).find((x: any) => x?.homeAway === "away") || {};
-    const home = (comp?.competitors || []).find((x: any) => x?.homeAway === "home") || {};
-    const type = event?.status?.type || {};
-    const state: "pre" | "in" | "post" =
-      String(type?.state || "").toLowerCase() === "in"
-        ? "in"
-        : (type?.completed || String(type?.state || "").toLowerCase() === "post")
-          ? "post"
-          : "pre";
-    const id = String(event?.id || "");
-    const awayName = String(away?.team?.displayName || "Away");
-    const homeName = String(home?.team?.displayName || "Home");
-    games.push({
-      id,
-      date: String(event?.date || ""),
-      awayTeam: awayName,
-      awayAbbr: String(away?.team?.abbreviation || "").trim() || acronym(awayName),
-      awayLogo: away?.team?.logo || null,
-      awayScore: state === "pre" ? null : away?.score ?? null,
-      homeTeam: homeName,
-      homeAbbr: String(home?.team?.abbreviation || "").trim() || acronym(homeName),
-      homeLogo: home?.team?.logo || null,
-      homeScore: state === "pre" ? null : home?.score ?? null,
-      state,
-      status: String(type?.shortDetail || type?.description || (state === "post" ? "Final" : state === "in" ? "Live" : "Scheduled")),
-      href: `/soccer/games/${encodeURIComponent(id)}?league=${encodeURIComponent(league)}`,
-    });
+  for (const payload of payloads) {
+    for (const event of payload?.events || []) {
+      const id = String(event?.id || "");
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+
+      const comp = event?.competitions?.[0] || {};
+      const away =
+        (comp?.competitors || []).find((x: any) => x?.homeAway === "away") || {};
+      const home =
+        (comp?.competitors || []).find((x: any) => x?.homeAway === "home") || {};
+      const fullStatus = event?.status || {};
+      const type = fullStatus?.type || {};
+
+      const state: "pre" | "in" | "post" =
+        String(type?.state || "").toLowerCase() === "in"
+          ? "in"
+          : type?.completed || String(type?.state || "").toLowerCase() === "post"
+            ? "post"
+            : "pre";
+
+      const awayName = String(away?.team?.displayName || "Away");
+      const homeName = String(home?.team?.displayName || "Home");
+
+      games.push({
+        id,
+        date: String(event?.date || ""),
+        awayTeam: awayName,
+        awayAbbr:
+          String(away?.team?.abbreviation || "").trim() || acronym(awayName),
+        awayLogo: away?.team?.logo || null,
+        awayScore: state === "pre" ? null : away?.score ?? null,
+        homeTeam: homeName,
+        homeAbbr:
+          String(home?.team?.abbreviation || "").trim() || acronym(homeName),
+        homeLogo: home?.team?.logo || null,
+        homeScore: state === "pre" ? null : home?.score ?? null,
+        state,
+        status: String(
+          type?.shortDetail ||
+            type?.description ||
+            (state === "post" ? "Final" : state === "in" ? "Live" : "Scheduled")
+        ),
+        href: `/soccer/games/${encodeURIComponent(id)}?league=${encodeURIComponent(
+          league
+        )}`,
+      });
+    }
   }
-  return games.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  return games.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
 }
 
 function previewPriority(state: Game["state"]) {

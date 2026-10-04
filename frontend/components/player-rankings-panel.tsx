@@ -190,7 +190,7 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         key: "Props",
         label: "Props",
         icon: "🏀",
-        markets: [...BASKETBALL, { key: "first_basket", label: "First Basket", icon: "1️⃣" }],
+        markets: BASKETBALL,
       },
     ],
   },
@@ -281,13 +281,19 @@ function initials(name: string) {
   ).toUpperCase();
 }
 
-function pickText(row: any, line: number | null, projection: number | null) {
+function pickText(
+  row: any,
+  line: number | null,
+  projection: number | null,
+  probability: number | null = null
+) {
   const direct = String(
     row?.prediction ?? row?.pickSide ?? row?.pick ?? ""
   ).toUpperCase();
 
   if (direct) return direct;
   if (line != null && projection != null) return projection >= line ? "OVER" : "UNDER";
+  if (line != null && probability != null) return probability >= 50 ? "OVER" : "UNDER";
   return "—";
 }
 
@@ -612,7 +618,7 @@ function normalizeCard(
     modelProjection: projection,
     modelProbability: probability,
     giScore: gi,
-    prediction: pickText(row, line, projection),
+    prediction: pickText(row, line, projection, probability),
     summary: String(
       row?.summary ??
         row?.why ??
@@ -632,6 +638,33 @@ function normalizeCard(
     usage: usageRows(row),
     raw: row,
   };
+}
+
+const PRICE_ONLY_MARKETS = new Set([
+  "anytime_td",
+  "first_td",
+  "q1_anytime_td",
+]);
+
+function isGradeablePrediction(card: RankingCard) {
+  if (!card.playerName || card.playerName === "Player") return false;
+
+  if (PRICE_ONLY_MARKETS.has(card.market)) {
+    return (
+      card.prediction !== "—" &&
+      (
+        card.bookmakerCount != null && card.bookmakerCount > 0 ||
+        card.modelProbability != null ||
+        card.sportsbookLine != null
+      )
+    );
+  }
+
+  return (
+    card.sportsbookLine != null &&
+    (card.modelProjection != null || card.modelProbability != null) &&
+    card.prediction !== "—"
+  );
 }
 
 function splitReasons(summary: string) {
@@ -1220,17 +1253,71 @@ function PlayerCard({
   );
 }
 
-async function fetchJson(url: string, signal: AbortSignal) {
+type JsonCacheEntry = {
+  at: number;
+  payload: any;
+};
+
+const rankingJsonCache = new Map<string, JsonCacheEntry>();
+const rankingJsonInflight = new Map<string, Promise<any>>();
+const JSON_FRESH_MS = 45_000;
+const JSON_STALE_MS = 5 * 60_000;
+
+async function networkJson(url: string) {
   const response = await fetch(url, {
     cache: "no-store",
-    signal,
   });
 
   if (!response.ok) {
     throw new Error(`Ranking request failed: ${response.status}`);
   }
 
-  return response.json();
+  const payload = await response.json();
+  rankingJsonCache.set(url, { at: Date.now(), payload });
+  return payload;
+}
+
+async function fetchJson(url: string, signal: AbortSignal) {
+  const cached = rankingJsonCache.get(url);
+  const age = cached ? Date.now() - cached.at : Number.POSITIVE_INFINITY;
+
+  if (cached && age < JSON_FRESH_MS) {
+    return cached.payload;
+  }
+
+  if (cached && age < JSON_STALE_MS) {
+    if (!rankingJsonInflight.has(url)) {
+      const refresh = networkJson(url)
+        .catch(() => cached.payload)
+        .finally(() => rankingJsonInflight.delete(url));
+      rankingJsonInflight.set(url, refresh);
+    }
+    return cached.payload;
+  }
+
+  let running = rankingJsonInflight.get(url);
+  if (!running) {
+    running = networkJson(url).finally(() => rankingJsonInflight.delete(url));
+    rankingJsonInflight.set(url, running);
+  }
+
+  if (signal.aborted) {
+    throw new DOMException("Aborted", "AbortError");
+  }
+
+  return await running;
+}
+
+function prefetchJson(url: string) {
+  const cached = rankingJsonCache.get(url);
+  if (cached && Date.now() - cached.at < JSON_FRESH_MS) return;
+
+  if (!rankingJsonInflight.has(url)) {
+    const work = networkJson(url)
+      .catch(() => null)
+      .finally(() => rankingJsonInflight.delete(url));
+    rankingJsonInflight.set(url, work);
+  }
 }
 
 function findMlbGame(row: any, games: any[]) {
@@ -1487,14 +1574,19 @@ export function PlayerRankingsPanel({
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
 
+  const viewCacheKey = (
+    nextGroup: string,
+    nextMarket: string,
+    nextSlate: CfbSlateKey = cfbSlate
+  ) => `${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : "all"}`;
+
   const resetCfbMarketView = () => {
     if (sport !== "cfb") return;
 
-    setCards([]);
-    setDropped([]);
+    // Keep the existing board visible while the next board is prepared.
+    // This prevents the blank/flicker seen when changing CFB time blocks.
     setError("");
     setLoading(true);
-    setCfbLiveGames([]);
     setFull(false);
     setShowDropped(false);
   };
@@ -1517,11 +1609,8 @@ export function PlayerRankingsPanel({
   const selectCfbSlate = (key: CfbSlateKey) => {
     if (sport !== "cfb" || key === cfbSlate) return;
 
-    setCards([]);
-    setDropped([]);
     setError("");
     setLoading(true);
-    setCfbLiveGames([]);
     setFull(false);
     setShowDropped(false);
     setCfbSlate(key);
@@ -1628,6 +1717,54 @@ export function PlayerRankingsPanel({
       window.clearInterval(interval);
     };
   }, [sport, market.key]);
+
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (sport === "mlb") {
+        prefetchJson("/api/mlb/rankings");
+        prefetchJson("/api/mlb/performance");
+        prefetchJson("/api/mlb/schedule");
+        return;
+      }
+
+      if (sport === "soccer") {
+        prefetchJson(`/api/soccer/dashboard?league=${encodeURIComponent(league)}`);
+        return;
+      }
+
+      if (sport === "cfb") {
+        for (const slate of CFB_SLATES) {
+          prefetchJson(
+            `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(slate.key)}`
+          );
+        }
+
+        for (const item of group.markets) {
+          prefetchJson(
+            `/api/cfb/rankings-board?market=${encodeURIComponent(item.key)}&slate=${encodeURIComponent(cfbSlate)}`
+          );
+        }
+        return;
+      }
+
+      const currentIndex = Math.max(
+        0,
+        group.markets.findIndex((item) => item.key === market.key)
+      );
+
+      const neighbors = [
+        group.markets[currentIndex + 1],
+        group.markets[currentIndex - 1],
+      ].filter(Boolean);
+
+      for (const item of neighbors) {
+        prefetchJson(`/api/${sport}/rankings?market=${encodeURIComponent(item.key)}`);
+      }
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [sport, league, groupKey, market.key, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   useEffect(() => {
@@ -1786,66 +1923,24 @@ export function PlayerRankingsPanel({
           return;
         }
 
-        // Defensive market isolation: normalized cards are stamped with
-        // the market used for this request. Never allow a stale/mismatched
-        // card set to enter the current board.
-        const isolated =
-          sport === "cfb"
-            ? normalized.filter(
-                (card) => {
-                  if (
-                    card.market !==
-                    requestedMarket
-                  ) {
-                    return false;
-                  }
+        // Prediction boards contain only actionable, gradeable predictions.
+        // Model-only rows remain research data and never enter Top 25.
+        const isolated = normalized.filter((card) => {
+          if (card.market !== requestedMarket) return false;
 
-                  const isTdMarket =
-                    requestedMarket ===
-                      "anytime_td" ||
-                    requestedMarket ===
-                      "first_td";
+          if (sport === "cfb" && card.raw?.marketBacked !== true) {
+            return false;
+          }
 
-                  const marketBacked =
-                    card.raw
-                      ?.marketBacked ===
-                    true;
-
-                  if (!marketBacked) {
-                    return false;
-                  }
-
-                  if (isTdMarket) {
-                    return (
-                      card.sportsbookLine !=
-                        null ||
-                      card.raw
-                        ?.sportsbookProbability !=
-                        null ||
-                      Number(
-                        card.raw
-                          ?.bookmakerCount ||
-                          0
-                      ) > 0
-                    );
-                  }
-
-                  return (
-                    card.sportsbookLine !=
-                      null &&
-                    card.modelProjection !=
-                      null
-                  );
-                }
-              )
-            : normalized;
+          return isGradeablePrediction(card);
+        });
 
         setCards(isolated);
         setDropped(rawDropped);
       } catch (cause) {
         if (!alive || controller.signal.aborted) return;
-        setCards([]);
-        setDropped([]);
+        // Keep the last good board on screen. A background refresh failure
+        // should never turn the ranking section into a blank panel.
         setError(
           cause instanceof Error
             ? cause.message
@@ -1872,6 +1967,84 @@ export function PlayerRankingsPanel({
       window.clearInterval(interval);
     };
   }, [sport, groupKey, marketKey, league, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (sport !== "nhl" || !cards.length || !sharedStatusGames.length) return;
+
+    const liveGames = sharedStatusGames.filter(
+      (game) => String(game.state || "").toLowerCase() === "in" && game.id
+    );
+    if (!liveGames.length) return;
+
+    let cancelled = false;
+
+    const run = async () => {
+      const payloads = await Promise.all(
+        liveGames.map(async (game) => {
+          try {
+            const response = await fetch(
+              `/api/nhl/live-player-stats?gameId=${encodeURIComponent(String(game.id))}`,
+              { cache: "no-store" }
+            );
+            return response.ok
+              ? { game, payload: await response.json() }
+              : { game, payload: null };
+          } catch {
+            return { game, payload: null };
+          }
+        })
+      );
+
+      if (cancelled) return;
+
+      setCards((previous) =>
+        previous.map((card) => {
+          const game = sharedGameForCard(card, liveGames);
+          if (!game) return card;
+
+          const payload = payloads.find(
+            (entry) => String(entry.game.id) === String(game.id)
+          )?.payload;
+
+          const row =
+            (payload?.rows || []).find(
+              (item: any) => String(item.playerId || "") === String(card.playerId || "")
+            ) ||
+            (payload?.rows || []).find(
+              (item: any) => clean(item.playerName) === clean(card.playerName)
+            );
+
+          const current = finite(row?.stats?.[card.market]);
+          if (current == null) return card;
+
+          const progress =
+            card.sportsbookLine != null && card.sportsbookLine > 0
+              ? Math.max(0, Math.min(200, (current / card.sportsbookLine) * 100))
+              : card.liveProgressPct;
+
+          return {
+            ...card,
+            liveCurrent: current,
+            liveProgressPct: progress,
+            raw: {
+              ...(card.raw || {}),
+              liveCurrent: current,
+              liveProgressPct: progress,
+            },
+          };
+        })
+      );
+    };
+
+    run();
+    const timer = window.setInterval(run, 15_000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [sport, market.key, cards.length, sharedStatusGames]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   const displayCards = useMemo(() => {
     const withStatus = cards.map((card) => {
@@ -2021,8 +2194,15 @@ export function PlayerRankingsPanel({
       ) : null}
 
       {loading && !displayCards.length ? (
-        <div className={styles.state}>
-          Loading {market.label} player intelligence…
+        <div className={styles.skeletonStack} aria-label={`Loading ${market.label} rankings`}>
+          {[0, 1, 2].map((item) => (
+            <div className={styles.skeletonCard} key={item}>
+              <i />
+              <span />
+              <b />
+              <em />
+            </div>
+          ))}
         </div>
       ) : null}
 

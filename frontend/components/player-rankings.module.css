@@ -968,3 +968,94 @@
     border-radius: 16px;
   }
 }
+
+
+/* v62 smooth-loading + typography cleanup */
+.skeletonStack {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.skeletonCard {
+  display: grid;
+  grid-template-columns: 34px 58px 1fr 44px;
+  gap: 8px;
+  align-items: center;
+  min-height: 112px;
+  border: 1px solid #303431;
+  border-left: 5px solid rgba(229, 187, 69, .62);
+  border-radius: 15px;
+  padding: 12px 10px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.02) 20%,
+      rgba(229,187,69,.06) 50%,
+      rgba(255,255,255,.02) 80%
+    ),
+    #101210;
+  background-size: 220% 100%;
+  animation: rankingPulse 1.3s ease-in-out infinite;
+}
+
+.skeletonCard i,
+.skeletonCard span,
+.skeletonCard b,
+.skeletonCard em {
+  display: block;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+}
+
+.skeletonCard i {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.skeletonCard span {
+  width: 56px;
+  height: 56px;
+}
+
+.skeletonCard b {
+  width: 82%;
+  height: 14px;
+}
+
+.skeletonCard em {
+  width: 38px;
+  height: 38px;
+}
+
+@keyframes rankingPulse {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (max-width: 430px) {
+  .identityTop strong {
+    font-size: 15px;
+  }
+
+  .identity > span {
+    font-size: 11px;
+  }
+
+  .identity > small {
+    font-size: 10px;
+  }
+
+  .faceMetrics span {
+    font-size: 7.5px;
+  }
+
+  .faceMetrics strong {
+    font-size: 11.5px;
+  }
+
+  .intelButton {
+    font-size: 11px;
+  }
+}

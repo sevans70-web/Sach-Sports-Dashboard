@@ -895,6 +895,80 @@ async function nhlGameDetail(
       }
     }
 
+    let finalPlayers = [
+      ...new Map(
+        players.map(
+          (player) => [
+            player.playerId,
+            player,
+          ]
+        )
+      ).values(),
+    ];
+
+    if (!finalPlayers.length && team?.abbrev) {
+      try {
+        const rosterPayload = await fetchJson(
+          `https://api-web.nhle.com/v1/roster/${encodeURIComponent(
+            String(team.abbrev)
+          )}/current`
+        );
+
+        const source = [
+          ...(rosterPayload?.forwards || []),
+          ...(rosterPayload?.defensemen || []),
+          ...(rosterPayload?.goalies || []),
+        ];
+
+        finalPlayers = source
+          .map((row: any) => {
+            const id = text(
+              row?.id ??
+              row?.playerId
+            );
+
+            if (!id) return null;
+
+            const name = [
+              text(row?.firstName?.default),
+              text(row?.lastName?.default),
+            ]
+              .filter(Boolean)
+              .join(" ") ||
+              text(row?.name?.default) ||
+              "Player";
+
+            return {
+              playerId: id,
+              playerName: name,
+              position: text(
+                row?.positionCode ||
+                row?.position ||
+                ""
+              ),
+              starter: Boolean(row?.starter),
+              active: true,
+              headshot: text(row?.headshot || ""),
+            } as RosterPlayer;
+          })
+          .filter(
+            (
+              player: RosterPlayer | null
+            ): player is RosterPlayer =>
+              Boolean(player)
+          );
+      } catch {}
+    }
+
+    finalPlayers.sort(
+      (a, b) =>
+        Number(b.starter) -
+          Number(a.starter) ||
+        a.playerName.localeCompare(
+          b.playerName
+        )
+    );
+
     rosters.push({
       teamId: text(team?.id),
       teamName: text(
@@ -910,16 +984,7 @@ async function nhlGameDetail(
         team?.logo || ""
       ),
       side,
-      players: [
-        ...new Map(
-          players.map(
-            (player) => [
-              player.playerId,
-              player,
-            ]
-          )
-        ).values(),
-      ],
+      players: finalPlayers,
     });
   }
 

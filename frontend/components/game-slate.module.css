@@ -1539,3 +1539,204 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+
+/* ==========================================================
+   v62 cleanup — typography, compact controls and bubble UI
+   ========================================================== */
+
+.dateStrip {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 36px;
+  gap: 5px;
+  margin: 7px 0 11px;
+}
+
+.dateStrip button {
+  min-height: 40px;
+  border-radius: 8px;
+  padding: 4px 5px;
+}
+
+.dateStrip button strong {
+  font-size: 10px;
+  line-height: 1;
+}
+
+.dateStrip button span {
+  margin-top: 2px;
+  font-size: 8px;
+}
+
+.calendarButton {
+  min-height: 40px !important;
+  font-size: 15px !important;
+}
+
+.gameMeta {
+  padding: 7px 10px 6px;
+  font-size: 10px;
+}
+
+.gameMeta strong {
+  font-size: 10px;
+}
+
+.compactTeam b {
+  font-size: 11px;
+}
+
+.compactTeam small {
+  font-size: 8px;
+}
+
+.propStatus {
+  padding: 1px 10px 7px;
+  font-size: 9px;
+}
+
+.expandButton {
+  width: calc(100% - 18px);
+  margin: 1px 9px 9px;
+  min-height: 34px;
+  border: 1px solid #b78d2e;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background:
+    linear-gradient(180deg, rgba(55, 42, 13, .45), rgba(7, 8, 7, .96));
+  font-size: 10px;
+  box-shadow: inset 0 0 12px rgba(230, 183, 56, .03);
+}
+
+.intelTabs {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 6px 0 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.intelTabs button {
+  flex: 0 0 auto;
+  border: 1px solid #504733;
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: #0b0d0b;
+  color: #d5d5d3;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.intelTabs .activeIntelTab {
+  color: #17120a;
+  border-color: #e2b842;
+  background: linear-gradient(180deg, #f2d36a, #d5a52f);
+  box-shadow: inset 0 1px rgba(255, 247, 204, .35);
+}
+
+.teamSwitch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin: 2px 0 8px;
+}
+
+.teamSwitch button {
+  min-width: 0;
+  border: 1px solid #5a503b;
+  border-radius: 8px;
+  padding: 7px 6px;
+  background:
+    linear-gradient(180deg, #141713, #0b0d0b);
+  color: #d6d6d4;
+  font: inherit;
+  font-size: 8.5px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teamSwitch .activeTeamSwitch {
+  color: #161207;
+  border-color: #e4ba43;
+  background: linear-gradient(180deg, #f2d067, #d9aa32);
+}
+
+.rosterTools {
+  display: block;
+}
+
+.teamTables {
+  margin-top: 7px;
+}
+
+.searchBox {
+  display: none;
+}
+
+.panelTitle h4 {
+  font-size: 13px;
+}
+
+.intelHeadline > strong {
+  font-size: 12px;
+}
+
+.intelHeadline > p,
+.contextCopy,
+.smallMuted {
+  font-size: 9px;
+}
+
+.rankHeader,
+.compactRankRow {
+  grid-template-columns: 20px minmax(98px, 1.45fr) 30px 42px 46px 38px;
+}
+
+.compactRankRow {
+  font-size: 7.5px;
+}
+
+.compactPlayer b {
+  font-size: 7.5px;
+}
+
+.rosterRow span b {
+  font-size: 9px;
+}
+
+.rosterRow span small {
+  font-size: 7.5px;
+}
+
+@media (max-width: 430px) {
+  .dateStrip {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 34px;
+  }
+
+  .dateStrip button,
+  .calendarButton {
+    min-height: 38px !important;
+  }
+
+  .intelTabs button {
+    padding: 6px 9px;
+    font-size: 8.5px;
+  }
+
+  .teamSwitch button {
+    font-size: 8px;
+    padding: 7px 5px;
+  }
+
+  .compactTeam b {
+    font-size: 10px;
+  }
+
+  .propStatus {
+    font-size: 8.5px;
+  }
+}

@@ -1,34 +1,21 @@
-import Link from "next/link";
-import {NflPlayerHistory} from "@/components/nfl-player-history";
-import {getNflAthleteDetails,getEspnNflSchedule} from "@/lib/nfl-server";
-import type {NflMarketKey} from "@/lib/nfl";
-import {NFL_MARKETS} from "@/lib/nfl";
-export const dynamic="force-dynamic";
-function norm(v:string){return v.toLowerCase().replace(/[^a-z0-9]/g,"")}
-function label(k:NflMarketKey){return NFL_MARKETS.find(x=>x[0]===k)?.[2]||"Player Intelligence"}
-function whyText(name:string,market:NflMarketKey,line:string,projection:string,prob:string){
- const ln=Number(line),pr=Number(projection),pb=Number(prob);const edge=Number.isFinite(ln)&&Number.isFinite(pr)?pr-ln:null;
- const edgeText=edge==null?"":` The model is ${Math.abs(edge).toFixed(1)} ${edge>=0?"above":"below"} the current sportsbook line.`;
- const probText=Number.isFinite(pb)?` Current model probability is ${pb.toFixed(1)}%.`:"";
- const q1=market.startsWith("q1_")?" This is a first-quarter market, so only Q1 production counts toward the result.":"";
- return `${name} ranks here because the GI score combines the current sportsbook line with verified recent NFL production, matchup context, sample reliability and market support.${edgeText}${probText}${q1}`;
-}
-export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){
- const{id}=await params,qs=await searchParams;const get=(k:string)=>typeof qs[k]==="string"?String(qs[k]):"";
- const[details,schedule]=await Promise.all([getNflAthleteDetails(id),getEspnNflSchedule()]);
- const name=details.name!=="NFL Player"?details.name:(get("name")||"NFL Player"),team=details.teamName||get("team"),matchup=get("matchup"),img=details.headshot||get("img"),position=details.position||get("position");
- const requested=(get("market")||"passing_yards") as NflMarketKey,market=NFL_MARKETS.some(x=>x[0]===requested)?requested:"passing_yards";
- const gi=get("gi")||"—",prob=get("prob")||"—",line=get("line")||"—",projection=get("projection")||"—";
- const teamId=String(details.teamId||get("teamId")||""),teamKey=norm(team);
- const game=schedule.find((g:any)=>teamId&&(String(g.awayTeamId)===teamId||String(g.homeTeamId)===teamId))||schedule.find((g:any)=>teamKey&&(norm(String(g.awayTeam||""))===teamKey||norm(String(g.homeTeam||""))===teamKey));
- const state=String(game?.state||"pre").toLowerCase(),completed=Boolean(game?.completed)||state==="post",live=state==="in"&&!completed;const status=completed?"FINAL":live?"LIVE":"SCHEDULED",detail=game?(live||completed?`${game.awayTeam} ${game.awayScore??0} · ${game.homeTeam} ${game.homeScore??0}`:`${game.awayTeam} @ ${game.homeTeam}`):(matchup||"Matchup pending");const teamLogo=game?(String(game.awayTeamId)===teamId?game.awayLogo:game.homeLogo):"";
- return <main className="p"><div className="topbar"><Link href="/" className="menu">▦⌄</Link><Link className="back" href="/nfl">← Back to NFL</Link></div>
- <section className="head"><div className="visual">{img?<img src={img} alt=""/>:<div className="avatar">NFL</div>}{teamLogo?<img className="logo" src={teamLogo} alt=""/>:null}</div><div><h1>{name}</h1><p>{team}{position?` · ${position}`:""}</p>{matchup?<b>{matchup}</b>:null}</div></section>
- <section className={`game ${live?"live":completed?"final":""}`}><div><small>GAME STATUS</small><strong>{status}</strong><span>{game?.status||"Game status pending"}</span></div><div className="gd">{detail}</div></section>
- <section className="strip"><b>{label(market)}</b><span>GI {gi}{prob!=="—"?` · ${prob}%`:""}</span></section>
- <div className="metrics"><article><span>SPORTSBOOK LINE</span><b>{line}</b></article><article><span>MODEL PROJECTION</span><b>{projection}</b></article><article><span>SEASON</span><b>2026</b></article></div>
- <section className="why"><h3>Why This Player Ranks Here</h3><p>{whyText(name,market,line,projection,prob)}</p></section>
- {details.teamId?<Link className="roster" href={`/nfl/team/${encodeURIComponent(details.teamId)}?name=${encodeURIComponent(team)}&logo=${encodeURIComponent(teamLogo||"")}`}>Open {team} roster →</Link>:null}
- <NflPlayerHistory playerId={id} playerName={name} market={market} marketLabel={label(market)} line={line}/>
- <style>{`.p{max-width:780px;margin:0 auto;padding:8px 14px 72px;color:#fff}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.menu{display:grid;place-items:center;width:44px;height:44px;border:2px solid #20df7f;border-radius:13px;background:#0c0e0d;color:#fff;text-decoration:none}.back{padding:8px 12px;border:1.5px solid #34373d;border-radius:12px;background:#101112;color:#fff;text-decoration:none;font-size:13px}.head{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center;border:1px solid #34373d;border-radius:15px;padding:12px;background:#111214}.visual{position:relative;width:68px;height:68px}.head img,.avatar{width:64px;height:64px;border-radius:50%;border:3px solid #d9b85d;object-fit:cover}.avatar{display:grid;place-items:center;color:#d9b85d;font-weight:900}.head .logo{position:absolute;right:-3px;bottom:-3px;width:26px;height:26px;border:2px solid #20df7f;background:#111214;object-fit:contain}.head h1{margin:0;font-size:24px}.head p{color:#a9acb3;margin:3px 0;font-size:13px}.head b{color:#d9b85d;font-size:13px}.game{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:center;margin:10px 0 0;border:1.5px solid #d9b85d;border-radius:12px;padding:10px 12px;background:#0d0f10}.game.live{border-color:#20df7f}.game.final{border-color:#4b4f55}.game small{display:block;color:#8f949c;font-size:9px}.game strong{display:block;color:#d9b85d;font-size:15px}.game.live strong{color:#20df7f}.game span{color:#a9acb3;font-size:10px}.gd{text-align:right;font-size:11px;font-weight:850}.strip{display:flex;justify-content:space-between;margin:10px 0;border:1px solid #20df7f;border-radius:11px;padding:10px 12px;background:#111214;font-size:14px}.strip span{color:#d9b85d;font-weight:900}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.metrics article{border:1px solid #34373d;border-left:3px solid #20df7f;border-radius:10px;padding:9px;background:#111214}.metrics span{display:block;color:#9da1a8;font-size:9px}.metrics b{display:block;margin-top:4px;font-size:15px}.why{border:1px solid #d9b85d;border-radius:12px;padding:12px;margin-top:12px;background:#101112}.why h3{color:#d9b85d;margin:0 0 6px;font-size:18px}.why p{line-height:1.4;color:#d7d8db;font-size:13px;margin:0}.roster{display:block;margin-top:10px;border:1.5px solid #34373d;border-radius:12px;padding:10px;text-align:center;color:#fff;text-decoration:none;background:#0d0f10;font-size:13px}@media(max-width:600px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.metrics article{padding:8px 5px}.metrics span{font-size:8px}.metrics b{font-size:13px}.game{grid-template-columns:1fr}.gd{text-align:left}}`}</style></main>
+import { UnifiedPlayerCard } from "@/components/unified-player-card";
+
+export const dynamic = "force-dynamic";
+
+export default async function NFLPlayerPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<Record<string, string>> | Record<string, string>;
+  searchParams: Promise<Record<string, string | string[] | undefined>> | Record<string, string | string[] | undefined>;
+}) {
+  const resolvedParams = await params;
+  const resolvedSearch = await searchParams;
+  return (
+    <UnifiedPlayerCard
+      sport="nfl"
+      playerId={String(resolvedParams.id || "")}
+      query={resolvedSearch}
+    />
+  );
 }

@@ -66,6 +66,10 @@ type RankingRow = {
   giScore?: number | null;
   modelProbability?: number | null;
   headshot?: string;
+  prediction?: string;
+  actual?: number | null;
+  gameState?: string;
+  gameStatus?: string;
 };
 
 type InjuryRow = {
@@ -173,6 +177,28 @@ const MARKET_CONFIG: Record<GameSlateSport, Array<[string, string]>> = {
     ["pts_rebs_asts", "PRA"],
   ],
 };
+
+type CachedGameDetail = {
+  at: number;
+  payload: DetailPayload;
+};
+
+type CachedGameRankings = {
+  at: number;
+  rows: RankingRow[];
+};
+
+const gameDetailCache = new Map<string, CachedGameDetail>();
+const gameRankingCache = new Map<string, CachedGameRankings>();
+const GAME_CACHE_MS = 60_000;
+
+function gameCacheKey(
+  sport: GameSlateSport,
+  league: string,
+  gameId: string
+) {
+  return `${sport}|${league}|${gameId}`;
+}
 
 const clean = (value: unknown) =>
   String(value || "")
@@ -326,7 +352,13 @@ function playerHref(
     projection: String(row.modelProjection ?? ""),
     gi: String(row.giScore ?? ""),
     prob: String(row.modelProbability ?? ""),
+    pick: row.prediction || "",
+    position: row.position || "",
+    state: row.gameState || game.state || "",
+    status: row.gameStatus || game.status || "",
+    actual: String(row.actual ?? ""),
     img: row.headshot || "",
+    mode: "prediction",
   });
 
   return `/${sport}/player/${id}?${qs.toString()}`;
@@ -342,7 +374,11 @@ function rosterPlayerHref(
     name: player.playerName,
     team: roster.teamName,
     matchup: `${game.awayTeam} @ ${game.homeTeam}`,
+    position: player.position || "",
+    state: game.state || "",
+    status: game.status || "",
     img: player.headshot || "",
+    mode: "profile",
   });
 
   return `/${sport}/player/${encodeURIComponent(
@@ -456,20 +492,56 @@ function normalizeRankingRow(
       raw?.photo_url ??
       ""
     ),
+    prediction: String(
+      raw?.prediction ??
+      raw?.pickSide ??
+      raw?.pick ??
+      ""
+    ).toUpperCase() || undefined,
+    actual: finiteNumber(
+      raw?.actual ??
+      raw?.actualResult ??
+      raw?.liveCurrent
+    ),
+    gameState: String(
+      raw?.gameState ??
+      raw?.state ??
+      ""
+    ) || undefined,
+    gameStatus: String(
+      raw?.gameStatus ??
+      raw?.status ??
+      ""
+    ) || undefined,
     market,
     marketLabel,
   };
 }
 
 function usefulRankingRow(row: RankingRow) {
-  return Boolean(
-    row.playerName &&
-    row.playerName !== "Player" &&
-    (
-      row.giScore != null ||
-      row.modelProjection != null ||
+  return gradeableRankingRow(row);
+}
+
+const PRICE_ONLY_MARKETS = new Set([
+  "anytime_td",
+  "first_td",
+  "q1_anytime_td",
+]);
+
+function gradeableRankingRow(row: RankingRow) {
+  if (!row.playerName || row.playerName === "Player") return false;
+
+  if (PRICE_ONLY_MARKETS.has(String(row.market || ""))) {
+    return (
+      row.prediction != null ||
+      row.modelProbability != null ||
       row.sportsbookLine != null
-    )
+    );
+  }
+
+  return (
+    row.sportsbookLine != null &&
+    (row.modelProjection != null || row.modelProbability != null)
   );
 }
 
@@ -499,6 +571,13 @@ async function fetchRankings(
   game: Game,
   signal: AbortSignal
 ): Promise<RankingRow[]> {
+  const cacheKey = gameCacheKey(sport, league, game.id);
+  const cached = gameRankingCache.get(cacheKey);
+
+  if (cached && Date.now() - cached.at < GAME_CACHE_MS) {
+    return cached.rows;
+  }
+
   const markets = MARKET_CONFIG[sport];
 
   if (sport === "mlb") {
@@ -529,7 +608,7 @@ async function fetchRankings(
       }
     }
 
-    return rows
+    const result = rows
       .filter(usefulRankingRow)
       .filter((row) => gameMatchesRow(game, row))
       .sort(
@@ -538,6 +617,9 @@ async function fetchRankings(
           Number(a.giScore || 0)
       )
       .slice(0, 28);
+
+    gameRankingCache.set(cacheKey, { at: Date.now(), rows: result });
+    return result;
   }
 
   if (sport === "soccer") {
@@ -571,7 +653,7 @@ async function fetchRankings(
       }
     }
 
-    return rows
+    const result = rows
       .filter(usefulRankingRow)
       .filter((row) => gameMatchesRow(game, row))
       .sort(
@@ -580,6 +662,9 @@ async function fetchRankings(
           Number(a.giScore || 0)
       )
       .slice(0, 28);
+
+    gameRankingCache.set(cacheKey, { at: Date.now(), rows: result });
+    return result;
   }
 
   const blocks = await Promise.all(
@@ -615,7 +700,7 @@ async function fetchRankings(
     })
   );
 
-  return blocks
+  const result = blocks
     .flat()
     .filter(usefulRankingRow)
     .filter((row) => gameMatchesRow(game, row))
@@ -625,6 +710,9 @@ async function fetchRankings(
         Number(a.giScore || 0)
     )
     .slice(0, 32);
+
+  gameRankingCache.set(cacheKey, { at: Date.now(), rows: result });
+  return result;
 }
 
 function TeamLogo({
@@ -856,14 +944,26 @@ function ExpandedGame({
   const [tab, setTab] = useState<DetailTab>("overview");
   const [rosterSide, setRosterSide] =
     useState<"away" | "home">("away");
+  const [rankingSide, setRankingSide] =
+    useState<"away" | "home">("away");
   const [showFullRoster, setShowFullRoster] = useState(false);
-  const [search, setSearch] = useState("");
   const [position, setPosition] = useState("All");
 
   useEffect(() => {
     const controller = new AbortController();
+    const cacheKey = gameCacheKey(sport, league, game.id);
+    const cachedDetail = gameDetailCache.get(cacheKey);
+    const cachedRankings = gameRankingCache.get(cacheKey);
 
-    setLoading(true);
+    if (cachedDetail && Date.now() - cachedDetail.at < GAME_CACHE_MS) {
+      setDetail(cachedDetail.payload);
+    }
+
+    if (cachedRankings && Date.now() - cachedRankings.at < GAME_CACHE_MS) {
+      setRankings(cachedRankings.rows);
+    }
+
+    setLoading(!(cachedDetail && cachedRankings));
 
     Promise.all([
       fetch(
@@ -877,18 +977,19 @@ function ExpandedGame({
           signal: controller.signal,
         }
       )
-        .then((response) =>
-          response.ok
-            ? response.json()
-            : {}
-        )
-        .catch(() => ({})),
+        .then(async (response) => {
+          if (!response.ok) return cachedDetail?.payload || {};
+          const payload = await response.json();
+          gameDetailCache.set(cacheKey, { at: Date.now(), payload });
+          return payload;
+        })
+        .catch(() => cachedDetail?.payload || {}),
       fetchRankings(
         sport,
         league,
         game,
         controller.signal
-      ).catch(() => []),
+      ).catch(() => cachedRankings?.rows || []),
     ]).then(([nextDetail, nextRankings]) => {
       if (controller.signal.aborted) return;
 
@@ -948,19 +1049,11 @@ function ExpandedGame({
   ];
 
   const filteredRows = rankings.filter((row) => {
-    const query = clean(search);
-
-    const matchesSearch =
-      !query ||
-      clean(row.playerName).includes(query) ||
-      clean(row.teamName).includes(query) ||
-      clean(row.marketLabel || row.market).includes(query);
-
     const matchesPosition =
       position === "All" ||
       String(row.position || "").toUpperCase() === position;
 
-    return matchesSearch && matchesPosition;
+    return gradeableRankingRow(row) && matchesPosition;
   });
 
   const filteredAway = dedupePlayers(
@@ -975,14 +1068,7 @@ function ExpandedGame({
     )
   );
 
-  const rosterQuery = clean(search);
-
-  const rosterPlayers = (activeRoster?.players || []).filter(
-    (player) =>
-      !rosterQuery ||
-      clean(player.playerName).includes(rosterQuery) ||
-      clean(player.position).includes(rosterQuery)
-  );
+  const rosterPlayers = activeRoster?.players || [];
 
   const visibleRoster = showFullRoster
     ? rosterPlayers
@@ -1261,15 +1347,21 @@ function ExpandedGame({
               <h4>Player Rankings</h4>
             </div>
 
-            <div className={styles.searchBox}>
-              <span>⌕</span>
-              <input
-                value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
-                placeholder="Search players, team or market…"
-              />
+            <div className={styles.teamSwitch}>
+              <button
+                type="button"
+                className={rankingSide === "away" ? styles.activeTeamSwitch : ""}
+                onClick={() => setRankingSide("away")}
+              >
+                {game.awayTeam} ({game.awayAbbr})
+              </button>
+              <button
+                type="button"
+                className={rankingSide === "home" ? styles.activeTeamSwitch : ""}
+                onClick={() => setRankingSide("home")}
+              >
+                {game.homeTeam} ({game.homeAbbr})
+              </button>
             </div>
 
             <div className={styles.positionPills}>
@@ -1292,15 +1384,8 @@ function ExpandedGame({
               <TeamRankingTable
                 sport={sport}
                 game={game}
-                side="away"
-                rows={filteredAway}
-              />
-
-              <TeamRankingTable
-                sport={sport}
-                game={game}
-                side="home"
-                rows={filteredHome}
+                side={rankingSide}
+                rows={rankingSide === "away" ? filteredAway : filteredHome}
               />
             </div>
           </section>
@@ -1316,11 +1401,11 @@ function ExpandedGame({
             </div>
 
             <div className={styles.rosterTools}>
-              <div className={styles.teamPills}>
+              <div className={styles.teamSwitch}>
                 <button
                   className={
                     rosterSide === "away"
-                      ? styles.activePill
+                      ? styles.activeTeamSwitch
                       : ""
                   }
                   onClick={() => {
@@ -1328,13 +1413,13 @@ function ExpandedGame({
                     setShowFullRoster(false);
                   }}
                 >
-                  {game.awayAbbr}
+                  {game.awayTeam} ({game.awayAbbr})
                 </button>
 
                 <button
                   className={
                     rosterSide === "home"
-                      ? styles.activePill
+                      ? styles.activeTeamSwitch
                       : ""
                   }
                   onClick={() => {
@@ -1342,19 +1427,8 @@ function ExpandedGame({
                     setShowFullRoster(false);
                   }}
                 >
-                  {game.homeAbbr}
+                  {game.homeTeam} ({game.homeAbbr})
                 </button>
-              </div>
-
-              <div className={styles.searchBox}>
-                <span>⌕</span>
-                <input
-                  value={search}
-                  onChange={(event) =>
-                    setSearch(event.target.value)
-                  }
-                  placeholder="Search roster…"
-                />
               </div>
             </div>
 
@@ -1428,26 +1502,10 @@ function ExpandedGame({
               <h4>Available Prop Intelligence</h4>
             </div>
 
-            {rankings.filter(
-              (row) =>
-                row.playerName &&
-                (
-                  row.sportsbookLine != null ||
-                  row.modelProjection != null ||
-                  row.giScore != null
-                )
-            ).length ? (
+            {rankings.filter(gradeableRankingRow).length ? (
               <div className={styles.propGrid}>
                 {rankings
-                  .filter(
-                    (row) =>
-                      row.playerName &&
-                      (
-                        row.sportsbookLine != null ||
-                        row.modelProjection != null ||
-                        row.giScore != null
-                      )
-                  )
+                  .filter(gradeableRankingRow)
                   .slice(0, 12)
                   .map((row, index) => (
                   <Link
@@ -1654,23 +1712,41 @@ export function GameSlatePage({
   useEffect(() => {
     if (!dates.length) return;
 
-    const today = localDay(
-      new Date().toISOString()
-    );
+    const today = localDay(new Date().toISOString());
 
-    if (
-      selectedDay &&
-      dates.includes(selectedDay)
-    ) {
+    if (selectedDay && dates.includes(selectedDay)) {
       return;
     }
 
+    const liveDay = games
+      .filter((game) => game.state === "in")
+      .map((game) => localDay(game.date))
+      .find(Boolean);
+
+    const futureDay = games
+      .filter(
+        (game) =>
+          game.state === "pre" &&
+          game.date &&
+          new Date(game.date).getTime() >= Date.now()
+      )
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .map((game) => localDay(game.date))
+      .find(Boolean);
+
+    const pastDay = [...dates]
+      .filter((date) => date < today)
+      .sort()
+      .at(-1);
+
     setSelectedDay(
-      dates.includes(today)
-        ? today
-        : dates[0]
+      liveDay ||
+      (dates.includes(today) ? today : "") ||
+      futureDay ||
+      pastDay ||
+      dates[0]
     );
-  }, [dates, selectedDay]);
+  }, [dates, selectedDay, games]);
 
   useEffect(() => {
     try {
@@ -1708,6 +1784,43 @@ export function GameSlatePage({
     games.find(
       (game) => game.id === open
     ) || null;
+
+  useEffect(() => {
+    if (!visibleGames.length) return;
+
+    const controller = new AbortController();
+    const targets = visibleGames.slice(0, 6);
+
+    for (const game of targets) {
+      const cacheKey = gameCacheKey(sport, league, game.id);
+      const cachedDetail = gameDetailCache.get(cacheKey);
+
+      if (!cachedDetail || Date.now() - cachedDetail.at >= GAME_CACHE_MS) {
+        fetch(
+          `/api/game-slate-detail?sport=${encodeURIComponent(
+            sport
+          )}&gameId=${encodeURIComponent(
+            game.id
+          )}&league=${encodeURIComponent(league)}`,
+          {
+            cache: "no-store",
+            signal: controller.signal,
+          }
+        )
+          .then((response) => response.ok ? response.json() : null)
+          .then((payload) => {
+            if (payload) {
+              gameDetailCache.set(cacheKey, { at: Date.now(), payload });
+            }
+          })
+          .catch(() => {});
+      }
+
+      fetchRankings(sport, league, game, controller.signal).catch(() => {});
+    }
+
+    return () => controller.abort();
+  }, [sport, league, selectedDay, visibleGames.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectedLabel =
     selectedDay
