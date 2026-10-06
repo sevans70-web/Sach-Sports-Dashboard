@@ -532,6 +532,99 @@ export async function GET(req: NextRequest) {
         });
       }
 
+      // Keep the active soccer slate useful before sportsbooks publish props.
+      // These are model-watch rows only: no line, odds or betting result is invented.
+      if (!rows.length) {
+        for (const player of rosterPlayers) {
+          const position = String(player?.position || "").toUpperCase();
+          if (metric === "saves" && position !== "GK" && position !== "G") continue;
+          if (metric !== "saves" && (position === "GK" || position === "G")) continue;
+
+          const team = String(player?.team || "");
+          if (!team) continue;
+
+          const game = upcoming.find((candidate: any) => {
+            const wanted = normalizeName(team);
+            return (
+              normalizeName(candidate?.homeTeam || "") === wanted ||
+              normalizeName(candidate?.awayTeam || "") === wanted
+            );
+          });
+          if (!game) continue;
+
+          const recentAll = findPlayerHistory(
+            player?.playerName || player?.name || "",
+            appearancesByPlayer,
+            team,
+          )
+            .sort((a, b) => String(a.gameDate).localeCompare(String(b.gameDate)))
+            .slice(-5);
+
+          const recent =
+            metric === "saves"
+              ? recentAll.filter((row) => row.position === "GK" || Number(row.saves) > 0)
+              : recentAll.filter((row) => row.position !== "GK");
+
+          if (!recent.length) continue;
+
+          const gamesN = recent.length;
+          const avg =
+            recent.reduce((sum, row) => sum + Number(row[metric] || 0), 0) / gamesN;
+          const avgMinutes =
+            recent.reduce((sum, row) => sum + Number(row.minutes || 0), 0) / gamesN;
+          const starts = recent.filter((row) => row.starter).length;
+          const startRate = starts / gamesN;
+          const per90 = (avg * 90) / Math.max(avgMinutes, 20);
+          const expected = expectedMinutes(avgMinutes, startRate);
+          const projection = Math.max(
+            0,
+            0.58 * avg + 0.42 * per90 * (expected / 90),
+          );
+          const giScore = Math.max(
+            0,
+            Math.min(
+              100,
+              50 +
+                Math.min(gamesN / 5, 1) * 14 +
+                Math.min(startRate, 1) * 12 +
+                Math.min(projection, 4) * 4,
+            ),
+          );
+          const last = recent[recent.length - 1];
+
+          rows.push({
+            playerId: last?.playerId || player?.playerId || `model:${normalizeName(player?.playerName || player?.name || "")}`,
+            playerName: player?.playerName || player?.name || "",
+            photoUrl: last?.photoUrl || player?.photoUrl || "",
+            teamId: last?.teamId || player?.teamId || "",
+            team,
+            position: last?.position || player?.position || "",
+            matchup: `${game.awayTeam} @ ${game.homeTeam}`,
+            kickoff: game.kickoff,
+            gameId: game.gameId,
+            games: gamesN,
+            avgMetric: Number(avg.toFixed(2)),
+            lastMetric: Number(last?.[metric] || 0),
+            avgMinutes: Number(avgMinutes.toFixed(1)),
+            expectedMinutes: Number(expected.toFixed(1)),
+            startRate: Number(startRate.toFixed(2)),
+            projection: Number(projection.toFixed(2)),
+            modelTarget: Number(projection.toFixed(2)),
+            modelProbability: null,
+            giScore: Number(giScore.toFixed(1)),
+            availability: startRate >= 0.8 ? "Likely starter" : "Lineup watch",
+            sportsbook: "",
+            marketLine: null,
+            overOdds: null,
+            underOdds: null,
+            marketBacked: false,
+            earlyModel: true,
+            why:
+              `Model watch · Last ${gamesN}: ${avg.toFixed(2)}/match · sportsbook line pending`,
+          });
+        }
+      }
+
       rankings[metric] = rows
         .sort(
           (a, b) =>
