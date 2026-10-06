@@ -680,6 +680,7 @@ function normalizeCard(
     giScore: gi,
     prediction:
       isBinaryEventMarket(market.key) &&
+      line == null &&
       probability != null
         ? "YES"
         : pickText(
@@ -718,6 +719,13 @@ const PRICE_ONLY_MARKETS = new Set([
 
 function isGradeablePrediction(card: RankingCard) {
   if (!card.playerName || card.playerName === "Player") return false;
+
+  if (
+    card.raw?.marketBacked === false &&
+    card.modelProjection != null
+  ) {
+    return true;
+  }
 
   if (PRICE_ONLY_MARKETS.has(card.market)) {
     return (
@@ -1720,6 +1728,7 @@ export function PlayerRankingsPanel({
   const [error, setError] = useState("");
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
+  const [nflSlate, setNflSlate] = useState<CfbSlateKey>("all");
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
   const [sharedStatusGames, setSharedStatusGames] = useState<SharedStatusGame[]>([]);
   const rankingRequestSeq = useRef(0);
@@ -1768,11 +1777,19 @@ export function PlayerRankingsPanel({
     setCfbSlate(key);
   };
 
+  const selectNflSlate = (key: CfbSlateKey) => {
+    if (sport !== "nfl" || key === nflSlate) return;
+    setFull(false);
+    setShowDropped(false);
+    setNflSlate(key);
+  };
+
   useEffect(() => {
     const next = config.groups[0];
     setGroupKey(next.key);
     setMarketKey(next.markets[0].key);
     setCfbSlate("all");
+    setNflSlate("all");
     setFull(false);
   }, [sport]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -2080,7 +2097,11 @@ export function PlayerRankingsPanel({
         const isolated = normalized.filter((card) => {
           if (card.market !== requestedMarket) return false;
 
-          if (sport === "cfb" && card.raw?.marketBacked !== true) {
+          if (
+            sport === "cfb" &&
+            card.raw?.marketBacked !== true &&
+            card.raw?.earlyModel !== true
+          ) {
             return false;
           }
 
@@ -2199,15 +2220,40 @@ export function PlayerRankingsPanel({
 
 
   const displayCards = useMemo(() => {
-    const withStatus = cards.map((card) => {
-      const sharedGame = sharedGameForCard(card, sharedStatusGames);
-      let next = applySharedGameStatus(card, sharedGame);
-      if (sport === "cfb") {
-        const cfbGame = cfbGameForCard(next, cfbLiveGames);
-        next = applyCfbLiveState(next, cfbGame);
-      }
-      return next;
-    });
+    const activeDays = new Set(
+      sharedStatusGames
+        .map((game) => torontoDay(game.date || ""))
+        .filter(Boolean)
+    );
+
+    const withStatus = cards
+      .map((card) => {
+        const sharedGame = sharedGameForCard(card, sharedStatusGames);
+        let next = applySharedGameStatus(card, sharedGame);
+        if (sport === "cfb") {
+          const cfbGame = cfbGameForCard(next, cfbLiveGames);
+          next = applyCfbLiveState(next, cfbGame);
+        }
+        return next;
+      })
+      .filter((card) => {
+        if (!sharedStatusGames.length) return true;
+
+        if (sharedGameForCard(card, sharedStatusGames)) return true;
+
+        const cardDay = card.gameTime ? torontoDay(card.gameTime) : "";
+        return Boolean(cardDay && activeDays.has(cardDay));
+      });
+
+    if (sport === "nfl") {
+      return withStatus
+        .filter((card) => {
+          if (nflSlate === "all") return true;
+          if (!card.gameTime) return false;
+          return slateForTime(card.gameTime) === nflSlate;
+        })
+        .sort((a, b) => a.rank - b.rank);
+    }
 
     if (sport !== "cfb") return withStatus;
 
@@ -2222,7 +2268,7 @@ export function PlayerRankingsPanel({
         }
         return a.rank - b.rank;
       });
-  }, [sport, market.key, cfbSlate, cards, cfbLiveGames, sharedStatusGames]);
+  }, [sport, market.key, cfbSlate, nflSlate, cards, cfbLiveGames, sharedStatusGames]);
 
   const visible = full
     ? displayCards
@@ -2248,9 +2294,9 @@ export function PlayerRankingsPanel({
 
     if (sport === "mlb") return group.label;
     if (sport === "cfb") return `${group.label} · ${cfbSlateLabel(cfbSlate)}`;
-    if (sport === "nfl") return group.label;
+    if (sport === "nfl") return `${group.label} · ${cfbSlateLabel(nflSlate)}`;
     return config.label;
-  }, [sport, group.label, league, config.label, cfbSlate]);
+  }, [sport, group.label, league, config.label, cfbSlate, nflSlate]);
 
   return (
     <div className={`ssPlayerRankingsRoot ${styles.root}`}>
@@ -2273,6 +2319,23 @@ export function PlayerRankingsPanel({
                 key={item.key}
                 className={item.key === cfbSlate ? styles.activeTab : ""}
                 onClick={() => selectCfbSlate(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {sport === "nfl" ? (
+        <div className={styles.tabsFrame}>
+          <div className={styles.tabs}>
+            {CFB_SLATES.map((item) => (
+              <button
+                type="button"
+                key={item.key}
+                className={item.key === nflSlate ? styles.activeTab : ""}
+                onClick={() => selectNflSlate(item.key)}
               >
                 {item.label}
               </button>
