@@ -1633,6 +1633,22 @@ function cfbSlateLabel(value: CfbSlateKey) {
   return CFB_SLATES.find((item) => item.key === value)?.label || "All Day";
 }
 
+function rankingSlateForTime(value: string): Exclude<CfbSlateKey, "all"> {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "early";
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Toronto",
+    hour: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+
+  const hour = Number(parts.find((item) => item.type === "hour")?.value || 0);
+  if (hour < 15) return "early";
+  if (hour < 19) return "afternoon";
+  return "evening";
+}
+
 function cfbGameForCard(card: RankingCard, games: CfbLiveGame[]) {
   const wanted = clean(card.matchup);
   return games.find((game) => clean(game.matchup) === wanted) || null;
@@ -2250,7 +2266,7 @@ export function PlayerRankingsPanel({
         .filter((card) => {
           if (nflSlate === "all") return true;
           if (!card.gameTime) return false;
-          return slateForTime(card.gameTime) === nflSlate;
+          return rankingSlateForTime(card.gameTime) === nflSlate;
         })
         .sort((a, b) => a.rank - b.rank);
     }
