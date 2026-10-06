@@ -1,16 +1,28 @@
 .shell {
+  position: relative;
   max-width: 780px;
   margin: 0 auto;
-  padding: 0 14px 72px;
+  padding: 0 12px 72px;
   color: #f7f7f4;
+  min-height: 100vh;
+}
+
+.goldWash {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 8% -7%, rgba(226, 181, 59, .16), transparent 27rem),
+    linear-gradient(180deg, rgba(82, 58, 10, .09), transparent 34rem);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 2px 6px;
-  border-bottom: 1px solid rgba(225, 181, 61, .24);
+  padding: 8px 2px 6px;
+  border-bottom: 1px solid rgba(225, 181, 61, .25);
 }
 
 .brand img {
@@ -20,48 +32,70 @@
 }
 
 .brand strong {
-  font-size: 19px;
-  letter-spacing: .03em;
+  font-size: 18px;
+  letter-spacing: .035em;
 }
 
 .brand strong span {
   color: #e5bb45;
 }
 
+.utilityRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
 .back {
-  margin: 14px 0;
-  border: 1px solid #5a5e64;
-  border-radius: 11px;
-  padding: 9px 13px;
-  background: #0c0e0f;
+  border: 1px solid #997528;
+  border-radius: 9px;
+  padding: 7px 10px;
+  background: linear-gradient(180deg, rgba(38, 31, 14, .72), #0a0b0a);
   color: #f5f5f4;
   font: inherit;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.modePrediction,
+.modeResearch {
+  border: 1px solid #72591f;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #e4bb45;
+  background: rgba(225, 181, 61, .055);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .identityCard,
 .statusCard,
 .marketBar,
-.profileCard,
 .why,
 .historySection,
 .resultCard {
-  border: 1px solid #35393d;
-  border-radius: 16px;
-  background: #101214;
+  border: 1px solid #4a4025;
+  border-radius: 13px;
+  background:
+    linear-gradient(118deg, rgba(94, 66, 10, .08), rgba(13, 15, 14, .98) 42%);
+  box-shadow: inset 0 0 16px rgba(225, 181, 61, .018);
 }
 
 .identityCard {
   display: grid;
-  grid-template-columns: 94px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
-  padding: 16px;
+  padding: 13px;
 }
 
 .photo {
-  width: 86px;
-  height: 86px;
+  width: 76px;
+  height: 76px;
   border: 3px solid #e2b946;
   border-radius: 50%;
   background: #0a0c0c;
@@ -80,50 +114,58 @@
   width: 100%;
   height: 100%;
   color: #e2b946;
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 900;
+}
+
+.identity {
+  min-width: 0;
 }
 
 .identity small {
   color: #e2b946;
+  font-size: 9px;
   font-weight: 900;
-  letter-spacing: .1em;
+  letter-spacing: .12em;
 }
 
 .identity h1 {
   margin: 3px 0;
-  font-size: 32px;
+  font-size: 25px;
   line-height: 1.04;
 }
 
 .identity p {
   margin: 0;
   color: #a8abb0;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .identity strong {
   display: block;
-  margin-top: 6px;
+  margin-top: 5px;
   color: #e1bd56;
-  font-size: 16px;
+  font-size: 13px;
+  line-height: 1.28;
 }
 
 .statusCard {
-  margin-top: 14px;
-  padding: 13px 15px;
+  margin-top: 10px;
+  padding: 10px 12px;
 }
 
 .statusCard span {
   color: #979ba1;
-  font-size: 11px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .05em;
 }
 
 .statusCard strong {
   display: block;
-  margin-top: 3px;
+  margin-top: 2px;
   color: #e2b946;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .statusCard.live {
@@ -135,60 +177,78 @@
 }
 
 .statusCard p {
-  margin: 5px 0 0;
+  margin: 3px 0 0;
   color: #d2d3d4;
+  font-size: 11px;
 }
 
 .marketBar {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 14px;
-  padding: 13px 15px;
+  align-items: end;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-color: #c39a32;
+}
+
+.liveMarket {
   border-color: #00df78;
 }
 
-.marketBar strong {
-  text-transform: capitalize;
-  font-size: 18px;
+.marketBar div span {
+  display: block;
+  color: #92959a;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
 }
 
-.marketBar span {
+.marketBar div strong {
+  display: block;
+  margin-top: 2px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.marketBar > b {
   color: #e2b946;
-  font-size: 16px;
-  font-weight: 900;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
-.metrics {
+.metrics,
+.researchMetrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 9px;
-  margin-top: 9px;
+  gap: 7px;
+  margin-top: 7px;
 }
 
-.metrics article {
+.metrics article,
+.researchMetrics article {
   min-width: 0;
-  border: 1px solid #3a3d42;
-  border-left: 6px solid #00df78;
-  border-radius: 13px;
-  padding: 12px 13px;
-  background: #111315;
+  border: 1px solid #35383c;
+  border-left: 4px solid #d6aa36;
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: #0e1010;
 }
 
 .metrics span,
-.profileMetrics span {
+.researchMetrics span {
   display: block;
-  color: #9da0a6;
-  font-size: 10px;
+  color: #96999f;
+  font-size: 7px;
   text-transform: uppercase;
 }
 
 .metrics strong,
-.profileMetrics strong {
+.researchMetrics strong {
   display: block;
-  margin-top: 5px;
+  margin-top: 3px;
   overflow-wrap: anywhere;
-  font-size: 21px;
+  font-size: 15px;
 }
 
 .pick {
@@ -196,174 +256,190 @@
 }
 
 .resultCard {
-  margin-top: 12px;
-  padding: 13px 15px;
+  margin-top: 9px;
+  padding: 10px 12px;
   border-color: #00df78;
 }
 
 .resultCard span {
   color: #00df78;
-  font-size: 11px;
+  font-size: 8px;
   font-weight: 900;
 }
 
 .resultCard strong {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
+  font-size: 12px;
 }
 
-.why,
-.profileCard {
-  margin-top: 14px;
-  padding: 16px;
-  border-color: #d0aa3c;
+.why {
+  margin-top: 10px;
+  padding: 13px;
+  border-color: #c9a038;
 }
 
 .why h2,
-.profileCard h2,
 .historySection h2 {
   margin: 0;
   color: #e2b946;
-  font-size: 22px;
+  font-size: 17px;
 }
 
-.why p,
-.profileCard p {
-  margin: 12px 0 0;
-  color: #d2d3d6;
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-.profileMetrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.profileMetrics > div {
-  border: 1px solid #34373c;
-  border-radius: 11px;
-  padding: 11px 12px;
-  background: #0d0f11;
+.why p {
+  margin: 8px 0 0;
+  color: #d0d1d3;
+  font-size: 11px;
+  line-height: 1.48;
 }
 
 .historySection {
-  margin-top: 16px;
-  padding: 14px;
+  margin-top: 12px;
+  padding: 11px;
 }
 
 .historyTabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-bottom: 14px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .historyTabs button {
-  border: 1px solid #373a40;
-  padding: 9px;
-  background: #111319;
-  color: #fff;
+  flex: 1;
+  border: 1px solid #5f512d;
+  border-radius: 999px;
+  padding: 7px 8px;
+  background: #0b0d0c;
+  color: #e8e8e6;
   font: inherit;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 850;
 }
 
 .historyTabs .activeHistory {
   color: #17120a;
   border-color: #e2b946;
-  background: #e2b946;
+  background: linear-gradient(180deg, #f0cd54, #d8a832);
 }
 
-.historySection h2 {
+.historyHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 10px;
+}
+
+.historyHeading small {
+  color: #8f9297;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.historyHeading h2 {
+  margin-top: 2px;
   color: #fff;
-  font-size: 20px;
-  text-transform: capitalize;
+  font-size: 17px;
+}
+
+.historyHeading > strong {
+  color: #dfb643;
+  font-size: 10px;
+  text-align: right;
 }
 
 .chart {
   display: flex;
   align-items: end;
-  gap: 12px;
-  min-height: 220px;
-  margin-top: 14px;
+  gap: 9px;
+  min-height: 190px;
+  margin-top: 11px;
   overflow-x: auto;
   border: 1px solid #34373d;
-  border-radius: 14px;
-  padding: 18px 14px 12px;
-  background: #0d0f10;
+  border-radius: 11px;
+  padding: 14px 10px 10px;
+  background: #0b0d0c;
 }
 
 .barSlot {
   flex: 0 0 48px;
-  height: 180px;
+  height: 155px;
   display: grid;
-  grid-template-rows: 22px 1fr 22px;
+  grid-template-rows: 18px 1fr 16px 22px;
   align-items: end;
   text-align: center;
 }
 
 .barSlot b {
   align-self: start;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .barSlot i {
   display: block;
-  width: 30px;
+  width: 26px;
   min-height: 8px;
   margin: 0 auto;
-  border-radius: 8px 8px 3px 3px;
+  border-radius: 7px 7px 3px 3px;
   background: #61d28a;
 }
 
 .barSlot span {
   color: #95989e;
-  font-size: 9px;
+  font-size: 7px;
+}
+
+.barSlot em {
+  overflow: hidden;
+  color: #777b81;
+  font-size: 6px;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .historyEmpty {
-  margin-top: 14px;
+  margin-top: 11px;
   border: 1px solid #34373d;
-  border-radius: 12px;
-  padding: 18px;
+  border-radius: 10px;
+  padding: 14px;
   color: #9da0a5;
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 @media (max-width: 430px) {
   .shell {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .identityCard {
-    grid-template-columns: 78px minmax(0, 1fr);
-    gap: 12px;
-    padding: 13px;
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px;
   }
 
   .photo {
-    width: 72px;
-    height: 72px;
+    width: 66px;
+    height: 66px;
   }
 
   .identity h1 {
-    font-size: 27px;
+    font-size: 22px;
   }
 
   .identity p,
   .identity strong {
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .metrics strong,
-  .profileMetrics strong {
-    font-size: 18px;
+  .researchMetrics strong {
+    font-size: 14px;
   }
 
-  .why p,
-  .profileCard p {
-    font-size: 14px;
+  .why p {
+    font-size: 10.5px;
   }
 }

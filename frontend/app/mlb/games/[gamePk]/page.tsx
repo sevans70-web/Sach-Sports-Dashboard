@@ -1,2 +1,13 @@
-import { MlbGame } from "@/components/mlb-game";
-export default async function Page({params}:{params:Promise<{gamePk:string}>}){const {gamePk}=await params; return <main className="pageShell mlbPage"><MlbGame gamePk={gamePk}/></main>}
+import { redirect } from "next/navigation";
+
+export default async function LegacyGameRedirect({
+  params,
+}: {
+  params: Promise<{ gamePk: string }>;
+}) {
+  const route = await params;
+  redirect(
+    "/mlb/games?game=" +
+      encodeURIComponent(route.gamePk)
+  );
+}

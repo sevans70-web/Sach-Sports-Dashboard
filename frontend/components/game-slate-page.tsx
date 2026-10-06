@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SportsNav } from "@/components/dashboard-chrome";
 import styles from "./game-slate.module.css";
 
@@ -364,17 +364,85 @@ function playerHref(
   return `/${sport}/player/${id}?${qs.toString()}`;
 }
 
+function researchMarketForPlayer(
+  sport: GameSlateSport,
+  position: string
+) {
+  const pos = String(position || "").toUpperCase();
+
+  if (sport === "mlb") {
+    return ["P", "SP", "RP"].includes(pos)
+      ? "strikeouts"
+      : "hits";
+  }
+
+  if (sport === "nfl") {
+    if (pos === "QB") return "passing_yards";
+    if (pos === "RB" || pos === "FB") return "rushing_yards";
+    if (pos === "WR" || pos === "TE") return "receiving_yards";
+    if (
+      ["S", "FS", "SS", "CB", "DB", "LB", "ILB", "OLB", "MLB", "DE", "DT", "DL"].includes(pos)
+    ) {
+      return "tackles_assists";
+    }
+    return "anytime_td";
+  }
+
+  if (sport === "cfb") {
+    if (pos === "QB") return "passing_yards";
+    if (pos === "RB" || pos === "FB") return "rushing_yards";
+    if (pos === "WR" || pos === "TE") return "receiving_yards";
+    return "anytime_td";
+  }
+
+  if (sport === "nba" || sport === "wnba" || sport === "cbb") {
+    return "points";
+  }
+
+  if (sport === "nhl") {
+    return pos === "G" ? "goalie_saves" : "shots_on_goal";
+  }
+
+  if (sport === "soccer") {
+    return pos === "GK" || pos === "G" ? "saves" : "shots";
+  }
+
+  return "";
+}
+
+function sameRosterPlayer(
+  row: RankingRow,
+  player: RosterPlayer
+) {
+  const rowId = String(row.playerId || "");
+  const playerId = String(player.playerId || "");
+
+  if (rowId && playerId && rowId === playerId) {
+    return true;
+  }
+
+  return clean(row.playerName) === clean(player.playerName);
+}
+
 function rosterPlayerHref(
   sport: GameSlateSport,
   player: RosterPlayer,
   roster: Roster,
-  game: Game
+  game: Game,
+  prediction?: RankingRow
 ) {
+  if (prediction && gradeableRankingRow(prediction)) {
+    return playerHref(sport, prediction, game);
+  }
   const qs = new URLSearchParams({
     name: player.playerName,
     team: roster.teamName,
     matchup: `${game.awayTeam} @ ${game.homeTeam}`,
     position: player.position || "",
+    market: researchMarketForPlayer(
+      sport,
+      player.position
+    ),
     state: game.state || "",
     status: game.status || "",
     img: player.headshot || "",
@@ -523,6 +591,7 @@ function usefulRankingRow(row: RankingRow) {
 }
 
 const PRICE_ONLY_MARKETS = new Set([
+  "home_runs",
   "anytime_td",
   "first_td",
   "q1_anytime_td",
@@ -1445,7 +1514,13 @@ function ExpandedGame({
                     sport,
                     player,
                     activeRoster,
-                    game
+                    game,
+                    rankings.find((row) =>
+                      sameRosterPlayer(
+                        row,
+                        player
+                      )
+                    )
                   )}
                   key={player.playerId}
                   className={styles.rosterRow}
@@ -1629,6 +1704,7 @@ export function GameSlatePage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const requestedGameRef = useRef<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -1747,6 +1823,41 @@ export function GameSlatePage({
       dates[0]
     );
   }, [dates, selectedDay, games]);
+
+  useEffect(() => {
+    if (requestedGameRef.current === null) {
+      try {
+        requestedGameRef.current =
+          new URLSearchParams(
+            window.location.search
+          ).get("game") || "";
+      } catch {
+        requestedGameRef.current = "";
+      }
+    }
+
+    const requestedGame =
+      requestedGameRef.current || "";
+
+    if (!requestedGame || !games.length) {
+      return;
+    }
+
+    const match = games.find(
+      (game) =>
+        String(game.id) ===
+        String(requestedGame)
+    );
+
+    if (!match) return;
+
+    setSelectedDay(localDay(match.date));
+    setOpen(match.id);
+
+    // Consume the request once so closing Game Intelligence
+    // does not immediately reopen it.
+    requestedGameRef.current = "";
+  }, [games]);
 
   useEffect(() => {
     try {

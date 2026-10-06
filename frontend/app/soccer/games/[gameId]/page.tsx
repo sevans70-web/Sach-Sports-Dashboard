@@ -1,7 +1,6 @@
-import { SoccerGame } from "@/components/soccer-game";
-import "../../soccer.css";
+import { redirect } from "next/navigation";
 
-export default async function SoccerGamePage({
+export default async function LegacySoccerGameRedirect({
   params,
   searchParams,
 }: {
@@ -10,9 +9,15 @@ export default async function SoccerGamePage({
 }) {
   const route = await params;
   const query = await searchParams;
-  return (
-    <main className="pageShell mlbPage soccerPage">
-      <SoccerGame gameId={route.gameId} league={query.league || "eng.1"} />
-    </main>
+
+  const paramsOut =
+    new URLSearchParams({
+      game: route.gameId,
+      league:
+        query.league || "eng.1",
+    });
+
+  redirect(
+    `/soccer/games?${paramsOut.toString()}`
   );
 }
