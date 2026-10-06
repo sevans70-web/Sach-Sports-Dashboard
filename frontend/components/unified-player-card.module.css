@@ -77,7 +77,8 @@
 .marketBar,
 .why,
 .historySection,
-.resultCard {
+.resultCard,
+.playCard {
   border: 1px solid #4a4025;
   border-radius: 13px;
   background:
@@ -253,6 +254,96 @@
 
 .pick {
   color: #e2b946;
+}
+
+.metricNote {
+  display: block;
+  margin-top: 3px;
+  color: #d6a94a;
+  font-size: 8px;
+  font-weight: 750;
+  text-transform: none;
+}
+
+.playCard {
+  margin-top: 9px;
+  padding: 12px;
+  border-color: #8d642d;
+  background:
+    linear-gradient(120deg, rgba(119, 55, 20, .12), rgba(29, 9, 28, .96) 48%),
+    #0d0d0d;
+}
+
+.playHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(226, 185, 70, .22);
+}
+
+.playHead small {
+  color: #d69b55;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.playHead h2 {
+  margin: 2px 0 0;
+  color: #fff;
+  font-size: 17px;
+}
+
+.playHead > strong {
+  color: #f2c65b;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.playRows > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(226, 185, 70, .16);
+}
+
+.playRows > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.playRows span b,
+.playRows span small {
+  display: block;
+}
+
+.playRows span b {
+  color: #f5f2ee;
+  font-size: 12px;
+}
+
+.playRows span small {
+  margin-top: 2px;
+  color: #9e969e;
+  font-size: 8px;
+}
+
+.playRows > div > strong {
+  color: #fff;
+  font-size: 13px;
+  text-align: right;
+}
+
+.resultMiss {
+  border-color: #e35b62;
+}
+
+.resultMiss span {
+  color: #e35b62;
 }
 
 .resultCard {
