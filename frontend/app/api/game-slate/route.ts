@@ -433,6 +433,15 @@ async function soccerGames(league:string) {
   return games.sort((a,b)=>new Date(a.date).getTime()-new Date(b.date).getTime());
 }
 
+function slateSort(games:Game[]) {
+  const stateOrder:Record<Game["state"],number> = { in:0, pre:1, post:2 };
+  return [...games].sort((a,b) => {
+    const stateDelta = stateOrder[a.state] - stateOrder[b.state];
+    if (stateDelta) return stateDelta;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+}
+
 function dailyWindow(games:Game[]) {
   const today = localDay(new Date());
   const todays = games.filter(g => g.date && localDay(g.date) === today);
@@ -444,9 +453,12 @@ function dailyWindow(games:Game[]) {
   const nextDay = future.length ? localDay(future[0].date) : "";
   const next = nextDay ? future.filter(g => localDay(g.date) === nextDay) : [];
 
-  if(todays.length) return [...todays, ...next];
-  if(next.length) return next;
-  return games.filter(g => g.state !== "post").slice(0,20);
+  // The dashboard is a current-slate surface, not a weekly archive.
+  // Keep today's live/scheduled/final games, then the next playable day.
+  // Finals are always pushed below live and upcoming games.
+  if(todays.length) return slateSort([...todays, ...next]);
+  if(next.length) return slateSort(next);
+  return slateSort(games.filter(g => g.state !== "post").slice(0,20));
 }
 
 export async function GET(req:NextRequest) {
@@ -473,7 +485,7 @@ export async function GET(req:NextRequest) {
 
     if(sport === "nfl" || sport === "cfb") {
       const football = await espnFootball(sport);
-      games = football.games;
+      games = dailyWindow(football.games);
       weekNumber = football.weekNumber;
     } else if(sport === "mlb") {
       games = dailyWindow(await mlbGames());
