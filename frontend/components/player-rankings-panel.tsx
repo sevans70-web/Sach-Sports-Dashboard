@@ -1971,12 +1971,12 @@ export function PlayerRankingsPanel({
         let soccerGames: any[] = [];
 
         if (sport === "mlb") {
-          const [rankingPayload, performancePayload, schedulePayload] =
-            await Promise.all([
-              fetchJson("/api/mlb/rankings", controller.signal),
-              fetchJson("/api/mlb/performance", controller.signal).catch(() => null),
-              fetchJson("/api/mlb/schedule", controller.signal).catch(() => null),
-            ]);
+          // Rankings are the critical path. Performance and schedule are
+          // secondary decoration and must never hold the cards on screen.
+          const rankingPayload = await fetchJson(
+            "/api/mlb/rankings",
+            controller.signal
+          );
 
           rawRows =
             (
@@ -1992,15 +1992,22 @@ export function PlayerRankingsPanel({
                 : rankingPayload?.batterDropped?.[market.key]
             ) || [];
 
-          performance = {
-            predictions: mlbResultRows(
-              performancePayload,
-              group.key,
-              market.key
-            ),
-          };
+          const cachedPerformance = rankingJsonCache.get("/api/mlb/performance")?.payload;
+          const cachedSchedule = rankingJsonCache.get("/api/mlb/schedule")?.payload;
 
-          schedule = schedulePayload?.games || [];
+          performance = cachedPerformance
+            ? {
+                predictions: mlbResultRows(
+                  cachedPerformance,
+                  group.key,
+                  market.key
+                ),
+              }
+            : null;
+          schedule = cachedSchedule?.games || [];
+
+          prefetchJson("/api/mlb/performance");
+          prefetchJson("/api/mlb/schedule");
         } else if (sport === "soccer") {
           const payload = await fetchJson(
             `/api/soccer/dashboard?league=${encodeURIComponent(league)}`,
@@ -2015,25 +2022,19 @@ export function PlayerRankingsPanel({
               ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
               : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
 
-          const rankingPromise = fetchJson(
+          // Never make rankings wait for grading/performance data.
+          const rankingPayload = await fetchJson(
             rankingUrl,
             controller.signal
           );
 
-          const performancePromise = fetchJson(
-            `/api/${sport}/performance?period=Today&market=${encodeURIComponent(market.key)}`,
-            controller.signal
-          ).catch(() => null);
-
-          const [rankingPayload, performancePayload] =
-            await Promise.all([
-              rankingPromise,
-              performancePromise,
-            ]);
-
           rawRows = rankingPayload?.rows || [];
           rawDropped = rankingPayload?.dropped || [];
-          performance = performancePayload;
+
+          const performanceUrl =
+            `/api/${sport}/performance?period=Today&market=${encodeURIComponent(market.key)}`;
+          performance = rankingJsonCache.get(performanceUrl)?.payload || null;
+          prefetchJson(performanceUrl);
         }
 
         const normalized = rawRows
