@@ -506,21 +506,6 @@ export function UnifiedPlayerCard({
     };
   }, [visibleHistory, line, effectivePick]);
 
-  const result = useMemo(() => {
-    if (!final || actual == null || line == null || !effectivePick) {
-      return "";
-    }
-
-    if (actual === line) return "PUSH";
-
-    const hit =
-      effectivePick === "UNDER"
-        ? actual < line
-        : actual > line;
-
-    return hit ? "HIT" : "MISS";
-  }, [final, actual, line, effectivePick]);
-
   const chartMax = Math.max(
     1,
     ...visibleHistory.map(
@@ -538,6 +523,21 @@ export function UnifiedPlayerCard({
   const final =
     gameState === "post" ||
     gameState === "final";
+
+  const result = useMemo(() => {
+    if (!final || actual == null || line == null || !effectivePick) {
+      return "";
+    }
+
+    if (actual === line) return "PUSH";
+
+    const hit =
+      effectivePick === "UNDER"
+        ? actual < line
+        : actual > line;
+
+    return hit ? "HIT" : "MISS";
+  }, [final, actual, line, effectivePick]);
 
   const scheduled =
     !live && !final;
