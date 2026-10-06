@@ -399,7 +399,7 @@ export function UnifiedPlayerCard({
                     point?.opponent || ""
                   ),
                 }))
-                .filter((point) =>
+                .filter((point: HistoryPoint) =>
                   Number.isFinite(
                     point.value
                   )
@@ -416,7 +416,7 @@ export function UnifiedPlayerCard({
                         Number(value),
                     })
                   )
-                  .filter((point) =>
+                  .filter((point: HistoryPoint) =>
                     Number.isFinite(
                       point.value
                     )
@@ -445,7 +445,7 @@ export function UnifiedPlayerCard({
                       })
                     )
                     .filter(
-                      (point) =>
+                      (point: HistoryPoint) =>
                         Number.isFinite(
                           point.value
                         )
