@@ -553,7 +553,7 @@ export async function GET(req: NextRequest) {
           if (!game) continue;
 
           const recentAll = findPlayerHistory(
-            player?.playerName || player?.name || "",
+            player?.playerName || "",
             appearancesByPlayer,
             team,
           )
@@ -593,8 +593,8 @@ export async function GET(req: NextRequest) {
           const last = recent[recent.length - 1];
 
           rows.push({
-            playerId: last?.playerId || player?.playerId || `model:${normalizeName(player?.playerName || player?.name || "")}`,
-            playerName: player?.playerName || player?.name || "",
+            playerId: last?.playerId || player?.playerId || `model:${normalizeName(player?.playerName || "")}`,
+            playerName: player?.playerName || "",
             photoUrl: last?.photoUrl || player?.photoUrl || "",
             teamId: last?.teamId || player?.teamId || "",
             team,
