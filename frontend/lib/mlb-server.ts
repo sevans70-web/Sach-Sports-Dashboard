@@ -430,13 +430,22 @@ export async function getRankings() {
 
   const batter:Record<string,RankingRow[]> = batterHasToday ? {...sourceBatter} : (fallback?.batter || sourceBatter);
   if(fallback?.batter?.home_runs_pool?.length) batter.home_runs_pool=fallback.batter.home_runs_pool;
-  // Batter strikeouts were added after the stored intelligence schema.
-  // Always fill the category from the Next.js ranking engine when the snapshot
-  // has no completed strikeout ranking.
-  if((!Array.isArray(batter.batter_strikeouts)||!batter.batter_strikeouts.length)&&fallback?.batter?.batter_strikeouts?.length){
-    batter.batter_strikeouts=fallback.batter.batter_strikeouts;
+
+  // A snapshot can be dated today while only one market (commonly HR) has
+  // actually populated. Fill EACH missing market from the live Next.js engine
+  // instead of treating the entire batter/pitcher snapshot as complete.
+  for (const key of ["home_runs","hits","total_bases","runs","rbis","walks","stolen_bases","hits_runs_rbis","batter_strikeouts"]) {
+    if ((!Array.isArray(batter[key]) || !batter[key].length) && fallback?.batter?.[key]?.length) {
+      batter[key] = fallback.batter[key];
+    }
   }
-  const pitcher:Record<string,RankingRow[]> = pitcherHasToday ? sourcePitcher : (fallback?.pitcher || sourcePitcher);
+
+  const pitcher:Record<string,RankingRow[]> = pitcherHasToday ? {...sourcePitcher} : (fallback?.pitcher || sourcePitcher);
+  for (const key of ["strikeouts","outs_recorded","hits_allowed","walks_allowed","earned_runs"]) {
+    if ((!Array.isArray(pitcher[key]) || !pitcher[key].length) && fallback?.pitcher?.[key]?.length) {
+      pitcher[key] = fallback.pitcher[key];
+    }
+  }
   const batterDropped = batterHasToday ? sourceBatterDropped : (fallback?.batterDropped || sourceBatterDropped);
   const pitcherDropped = pitcherHasToday ? sourcePitcherDropped : (fallback?.pitcherDropped || sourcePitcherDropped);
   const usingNextFallback = Boolean(fallback && (!batterHasToday || !pitcherHasToday));
