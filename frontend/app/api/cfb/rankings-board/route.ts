@@ -206,11 +206,14 @@ function gradeableBoardRow(
 ) {
   if (
     !row ||
-    row.marketBacked !== true ||
     !row.playerName ||
     !row.matchup
   ) {
     return false;
+  }
+
+  if (row.marketBacked !== true) {
+    return row.earlyModel === true && finiteNumber(row.modelProjection ?? row.perGame);
   }
 
   /*
@@ -681,25 +684,26 @@ function gameStarted(
 function targetGameDay(
   schedule: any[]
 ) {
-  const today =
-    day(new Date());
+  const today = day(new Date());
 
-  const todayGames =
-    schedule.filter(
-      (game: any) =>
-        day(
-          game.date ||
-          game.gameTime ||
-          ""
-        ) === today
-    );
+  const playable = schedule.filter((game: any) => {
+    const state = String(game?.state || "").toLowerCase();
+    return !game?.completed && state !== "post" && state !== "final";
+  });
 
-  if (todayGames.length) {
-    return today;
-  }
+  const todayGames = playable.filter(
+    (game: any) =>
+      day(
+        game.date ||
+        game.gameTime ||
+        ""
+      ) === today
+  );
+
+  if (todayGames.length) return today;
 
   const futureDays =
-    schedule
+    playable
       .map(
         (game: any) =>
           day(
@@ -714,10 +718,7 @@ function targetGameDay(
       )
       .sort();
 
-  return (
-    futureDays[0] ||
-    today
-  );
+  return futureDays[0] || today;
 }
 
 async function prefetchRosters(
@@ -1167,11 +1168,21 @@ async function buildFreshBoard(
       }
     );
 
-  /*
-    Top 25 is prediction-only. Do not backfill empty sportsbook
-    markets with roster players or model-only projections.
-  */
-  const raw = scopedRaw;
+  // If books have not posted the selected market yet, keep the current
+  // slate populated with a clearly marked model-watch board. These rows
+  // never receive a fake sportsbook line and are not graded as bets.
+  const fallbackRaw =
+    scopedRaw.length
+      ? []
+      : await rosterFallbackRows(
+          market,
+          schedule,
+          [],
+          gameDay,
+          slate
+        );
+
+  const raw = [...scopedRaw, ...fallbackRaw];
 
   const candidateLimit =
     slate === "all"
@@ -1314,7 +1325,9 @@ async function buildFreshBoard(
                   market
                 } prediction using ${recent.games} verified historical game${recent.games === 1 ? "" : "s"} and ${row.bookmakerCount || 0} sportsbook${(row.bookmakerCount || 0) === 1 ? "" : "s"}.`,
               marketBacked:
-                true,
+                row.earlyModel !== true,
+              earlyModel:
+                row.earlyModel === true,
             },
             schedule
           );
