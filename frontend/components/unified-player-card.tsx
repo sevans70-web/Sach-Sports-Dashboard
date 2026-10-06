@@ -337,6 +337,13 @@ export function UnifiedPlayerCard({
       ? projection - line
       : null;
 
+  const edgePct =
+    line != null &&
+    line !== 0 &&
+    projection != null
+      ? ((projection - line) / Math.abs(line)) * 100
+      : null;
+
   useEffect(() => {
     if (
       !playerId ||
@@ -481,6 +488,38 @@ export function UnifiedPlayerCard({
         history.slice(-span),
       [history, span]
     );
+
+  const replay = useMemo(() => {
+    if (!visibleHistory.length || line == null || !effectivePick) {
+      return null;
+    }
+
+    const under = effectivePick === "UNDER";
+    const hits = visibleHistory.filter((point) =>
+      under ? point.value < line : point.value > line
+    ).length;
+
+    return {
+      hits,
+      total: visibleHistory.length,
+      pct: Math.round((hits / visibleHistory.length) * 100),
+    };
+  }, [visibleHistory, line, effectivePick]);
+
+  const result = useMemo(() => {
+    if (!final || actual == null || line == null || !effectivePick) {
+      return "";
+    }
+
+    if (actual === line) return "PUSH";
+
+    const hit =
+      effectivePick === "UNDER"
+        ? actual < line
+        : actual > line;
+
+    return hit ? "HIT" : "MISS";
+  }, [final, actual, line, effectivePick]);
 
   const chartMax = Math.max(
     1,
@@ -690,29 +729,64 @@ export function UnifiedPlayerCard({
               <strong>
                 {edge == null
                   ? "—"
-                  : `${
-                      edge >= 0
-                        ? "+"
-                        : ""
-                    }${fmt(edge)}`}
+                  : `${edge >= 0 ? "+" : ""}${fmt(edge)}`}
               </strong>
+              {edgePct != null ? (
+                <small className={styles.metricNote}>
+                  {Math.abs(edgePct).toFixed(0)}% {edgePct >= 0 ? "above" : "below"} line
+                </small>
+              ) : null}
             </article>
+          </section>
+
+          <section className={styles.playCard}>
+            <div className={styles.playHead}>
+              <div>
+                <small>SACH PLAY</small>
+                <h2>{marketLabel(researchMarket)}</h2>
+              </div>
+              <strong>{effectivePick || "—"} {fmt(line)}</strong>
+            </div>
+
+            <div className={styles.playRows}>
+              <div>
+                <span>
+                  <b>Main Play</b>
+                  <small>sportsbook-backed line</small>
+                </span>
+                <strong>{effectivePick || "—"} {fmt(line)}</strong>
+              </div>
+              <div>
+                <span>
+                  <b>Model Target</b>
+                  <small>Sach projection</small>
+                </span>
+                <strong>{fmt(projection)}</strong>
+              </div>
+              <div>
+                <span>
+                  <b>Recent Replay</b>
+                  <small>Last {span} at this line</small>
+                </span>
+                <strong>
+                  {replay
+                    ? `${replay.hits}/${replay.total} · ${replay.pct}%`
+                    : "Waiting for verified history"}
+                </strong>
+              </div>
+            </div>
           </section>
 
           {final ? (
             <section
-              className={
-                styles.resultCard
-              }
+              className={`${styles.resultCard} ${result === "MISS" ? styles.resultMiss : ""}`}
             >
               <span>RESULT</span>
 
               <strong>
                 {actual == null
                   ? "Actual stat not attached yet"
-                  : `Actual ${fmt(
-                      actual
-                    )}`}
+                  : `${result === "HIT" ? "✅ HIT" : result === "MISS" ? "❌ MISS" : result === "PUSH" ? "➖ PUSH" : "FINAL"} · Actual ${fmt(actual)}`}
               </strong>
             </section>
           ) : null}
