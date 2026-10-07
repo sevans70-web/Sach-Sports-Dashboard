@@ -1879,15 +1879,24 @@ export async function GET(
         "evening",
       ];
 
-      const blocks = await Promise.all(
-        blockKeys.map((key) =>
-          timeout(
-            getPayload(market, key),
-            12_000,
-            null as BoardPayload | null
-          )
-        )
+      // Build the all-day board once. Building three independent boards
+      // repeats roster + player-history work and is the main reason CFB can sit
+      // on "Checking the next slate..." for many seconds.
+      const allPayload = await timeout(
+        getPayload(market, "all"),
+        7_000,
+        null as BoardPayload | null
       );
+      const blocks = allPayload
+        ? blockKeys.map((key) => ({
+            ...allPayload,
+            slate: key,
+            slateLabel: SLATE_LABELS[key],
+            rows: (allPayload.rows || []).filter((row: any) =>
+              inSlate(String(row.gameTime || ""), key)
+            ),
+          }))
+        : [];
 
       const usable = blocks.filter(
         (block): block is BoardPayload => Boolean(block)
