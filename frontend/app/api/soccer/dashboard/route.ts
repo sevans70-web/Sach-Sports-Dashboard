@@ -37,6 +37,12 @@ const ALLOWED = new Set([
   "fra.1",
 ]);
 
+const g = globalThis as typeof globalThis & {
+  __sachSoccerDashboardCache?: Map<string,{at:number;payload:any}>;
+};
+const soccerCache = g.__sachSoccerDashboardCache || (g.__sachSoccerDashboardCache = new Map());
+const SOCCER_CACHE_MS = 5 * 60_000;
+
 type Metric = SoccerPropMetric;
 
 const PROP_LABELS: Record<Metric, string> = {
@@ -211,6 +217,13 @@ export async function GET(req: NextRequest) {
 
   if (!ALLOWED.has(league)) {
     return NextResponse.json({ success: false, error: "Unsupported league" }, { status: 400 });
+  }
+
+  const cached = soccerCache.get(league);
+  if (cached && Date.now() - cached.at < SOCCER_CACHE_MS) {
+    return NextResponse.json({ ...cached.payload, cached: true }, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+    });
   }
 
   const now = new Date();
@@ -693,7 +706,7 @@ export async function GET(req: NextRequest) {
       return acc;
     }, {});
 
-    return NextResponse.json({
+    const payload = {
       success: true,
       league,
       leagueSlug: league,
@@ -726,6 +739,10 @@ export async function GET(req: NextRequest) {
         coreAppearancesParsed: coreHistoryRows.length,
       },
       errors,
+    };
+    soccerCache.set(league, { at: Date.now(), payload });
+    return NextResponse.json(payload, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
     });
   } catch (error: any) {
     return NextResponse.json({
