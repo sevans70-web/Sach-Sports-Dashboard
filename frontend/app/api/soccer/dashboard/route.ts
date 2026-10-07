@@ -578,7 +578,43 @@ export async function GET(req: NextRequest) {
               ? recentAll.filter((row) => row.position === "GK" || Number(row.saves) > 0)
               : recentAll.filter((row) => row.position !== "GK");
 
-          if (!recent.length) continue;
+          // ESPN soccer player history is incomplete for some leagues.
+          // Keep current-slate roster players visible even when their detailed
+          // stat history has not arrived yet; mark them as model-watch only.
+          if (!recent.length) {
+            const playerName = player?.playerName || "";
+            if (!playerName) continue;
+            rows.push({
+              playerId: player?.playerId || `model:${normalizeName(playerName)}`,
+              playerName,
+              photoUrl: player?.photoUrl || "",
+              teamId: player?.teamId || "",
+              team,
+              position: player?.position || "",
+              matchup: `${game.awayTeam} @ ${game.homeTeam}`,
+              kickoff: game.kickoff,
+              gameId: game.gameId,
+              games: 0,
+              avgMetric: 0,
+              lastMetric: 0,
+              avgMinutes: 0,
+              expectedMinutes: 0,
+              startRate: 0,
+              projection: 0,
+              modelTarget: null,
+              modelProbability: null,
+              giScore: 50,
+              availability: "History loading",
+              sportsbook: "",
+              marketLine: null,
+              overOdds: null,
+              underOdds: null,
+              marketBacked: false,
+              earlyModel: true,
+              why: "Current-slate roster watch · sportsbook line and detailed history pending",
+            });
+            continue;
+          }
 
           const gamesN = recent.length;
           const avg =
