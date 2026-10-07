@@ -55,12 +55,30 @@ function gameForRow(games:any[],team:string,b:any){
 }
 
 function baselineRows(overview:any,market:CbbMarketKey){
- 
- return (overview.players||[]).map((p:any)=>{
+ const today=torontoCbbDay(new Date());
+ const playable=(overview.games||[]).filter((g:any)=>{
+   const gameDay=torontoCbbDay(g.tipoff||"");
+   return g.state!=="post" && gameDay>=today;
+ }).sort((a:any,b:any)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
+ const nextDay=playable.length?torontoCbbDay(playable[0].tipoff||""):"";
+ const nextGames=nextDay?playable.filter((g:any)=>torontoCbbDay(g.tipoff||"")===nextDay):[];
+ const gameByTeam=new Map<string,any>();
+ for(const g of nextGames){
+   if(g.awayAbbr)gameByTeam.set(String(g.awayAbbr).toUpperCase(),g);
+   if(g.homeAbbr)gameByTeam.set(String(g.homeAbbr).toUpperCase(),g);
+ }
+ const candidates=(overview.players||[]).map((p:any)=>{
    const baseline=playerBaseline(p,market);if(baseline==null||Number(p?.gamesPlayed||0)<20)return null;
+   const team=String(p.team||"").toUpperCase();
+   const game=gameByTeam.get(team);
+   // During the active season, a model-watch row must belong to the next
+   // scheduled slate. Outside the schedule window, keep the baseline board.
+   if(nextGames.length&&!game)return null;
    const reliability=Math.min(1,Math.max(0,Number(p?.gamesPlayed||0)/82));
-   return{playerId:p.playerId,playerName:p.playerName,teamName:p.team||"CBB",teamLogo:"",matchup:"2025–26 regular-season baseline",gameTime:"",gameId:"",gameState:"pre",gameStatus:"Baseline",headshot:cbbHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((baseline*10+reliability)*10)/10,prediction:null,marketBacked:false,summary:`2025–26 statistical baseline ${baseline.toFixed(1)}. This offseason ranking is model-only and is not saved or graded as a sportsbook prediction.`};
+   const matchup=game?`${game.awayTeam} @ ${game.homeTeam}`:"2025–26 regular-season baseline";
+   return{playerId:p.playerId,playerName:p.playerName,teamName:p.team||"CBB",teamLogo:game?(String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo)||"":"",matchup,gameTime:game?.tipoff||"",gameId:game?.gameId||"",gameState:game?.state||"pre",gameStatus:game?.status||(game?"Scheduled":"Baseline"),headshot:cbbHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((baseline*10+reliability)*10)/10,prediction:null,marketBacked:false,earlyModel:true,summary:game?`Next-slate model watch · 2025–26 baseline ${baseline.toFixed(1)} · sportsbook line pending`:`2025–26 statistical baseline ${baseline.toFixed(1)}. This offseason ranking is model-only and is not saved or graded as a sportsbook prediction.`};
  }).filter(Boolean).sort((a:any,b:any)=>Number(b.modelProjection||0)-Number(a.modelProjection||0)||Number(b.giScore||0)-Number(a.giScore||0)).slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+ return candidates;
 }
 
 function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
