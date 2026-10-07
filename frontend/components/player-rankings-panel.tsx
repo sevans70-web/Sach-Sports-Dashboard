@@ -1458,11 +1458,7 @@ export function warmDefaultRankingCaches() {
   */
   const urls = [
     "/api/cfb/rankings-board?market=passing_yards&slate=all",
-    "/api/cfb/rankings-board?market=passing_yards&slate=early",
-    "/api/cfb/rankings-board?market=passing_yards&slate=afternoon",
-    "/api/cfb/rankings-board?market=passing_yards&slate=evening",
     "/api/mlb/rankings",
-    "/api/mlb/performance",
     "/api/mlb/schedule",
     "/api/nfl/rankings?market=passing_yards",
     "/api/nba/rankings?market=points",
@@ -1908,7 +1904,6 @@ export function PlayerRankingsPanel({
     const timer = window.setTimeout(() => {
       if (sport === "mlb") {
         prefetchJson("/api/mlb/rankings");
-        prefetchJson("/api/mlb/performance");
         prefetchJson("/api/mlb/schedule");
         return;
       }
@@ -1919,17 +1914,12 @@ export function PlayerRankingsPanel({
       }
 
       if (sport === "cfb") {
-        for (const slate of CFB_SLATES) {
-          prefetchJson(
-            `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(slate.key)}`
-          );
-        }
-
-        for (const item of group.markets) {
-          prefetchJson(
-            `/api/cfb/rankings-board?market=${encodeURIComponent(item.key)}&slate=${encodeURIComponent(cfbSlate)}`
-          );
-        }
+        // Do not fan out every market/slate in the background. The board route
+        // already derives time blocks from one all-day payload; fan-out was
+        // multiplying the same expensive roster/history work.
+        prefetchJson(
+          `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(cfbSlate)}`
+        );
         return;
       }
 
@@ -2034,7 +2024,9 @@ export function PlayerRankingsPanel({
           const performanceUrl =
             `/api/${sport}/performance?period=Today&market=${encodeURIComponent(market.key)}`;
           performance = rankingJsonCache.get(performanceUrl)?.payload || null;
-          prefetchJson(performanceUrl);
+          // Performance is secondary to the ranking board. Do not start a
+          // second expensive request while CFB is still assembling its slate.
+          if (sport !== "cfb") prefetchJson(performanceUrl);
         }
 
         const normalized = rawRows
