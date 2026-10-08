@@ -7,7 +7,7 @@ import "./home-showcase.css";
 type Game={id:string;date:string;awayAbbr:string;homeAbbr:string;awayLogo?:string|null;homeLogo?:string|null;awayRecord?:string;homeRecord?:string;state:"pre"|"in"|"post";status:string;awayScore?:string|number|null;homeScore?:string|number|null};
 type Sport="nfl"|"cfb"|"nba"|"wnba"|"nhl";
 type Item=Game&{sport:Sport};
-const SPORTS:{slug:Sport;name:string;icon:string}[]=[{slug:"nfl",name:"NFL",icon:"🏈"},{slug:"cfb",name:"CFB",icon:"🏈"},{slug:"nba",name:"NBA",icon:"🏀"},{slug:"wnba",name:"WNBA",icon:"🏀"},{slug:"nhl",name:"NHL",icon:"🏒"}];
+const SPORTS:{slug:Sport;name:string;icon:string}[]=[{slug:"nfl",name:"NFL",icon:"🏈"},{slug:"nhl",name:"NHL",icon:"🏒"},{slug:"nba",name:"NBA",icon:"🏀"},{slug:"cfb",name:"CFB",icon:"🏈"},{slug:"wnba",name:"WNBA",icon:"🏀"}];
 const localDay=(d:Date)=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
 const dateLabel=(d:string)=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric"}).format(new Date(d));
 const timeLabel=(d:string)=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"}).format(new Date(d))+" ET";
