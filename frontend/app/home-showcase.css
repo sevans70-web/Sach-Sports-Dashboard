@@ -82,3 +82,11 @@
 .shSearchResults>a{display:flex;justify-content:space-between;gap:10px;padding:12px 5px;border-bottom:1px solid #44341e;font-size:13px}
 .shSearchResults span,.shSearchResults p{color:#bfb3a2}
 @media(max-width:650px){.shHeaderIcons{right:0;gap:1px;font-size:25px}.shBrand{margin-right:52px}.shSearchResults>a{flex-direction:column;gap:3px}}
+
+/* Homepage polish: remove text baked into dashboard hero art by using a tight athlete-side crop. */
+.shSportCard{background-size:cover,auto 165%;background-position:center,98% center}
+.shSportCard:before{background:linear-gradient(90deg,#0004,transparent 75%)}
+.shSportCard:after{background:linear-gradient(0deg,#000 0%,#000b 18%,transparent 62%)}
+.shHeroArtwork .shHeroAthlete{background-size:auto 125%;background-position:right center}
+.shHeroArtwork .shHeroAthlete:after{background:linear-gradient(90deg,#000b,transparent 55%)}
+@media(max-width:650px){.shSportCard{background-size:cover,auto 160%;background-position:center,100% center}.shHeroArtwork .shHeroAthlete{background-size:auto 125%}}
