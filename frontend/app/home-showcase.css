@@ -63,3 +63,7 @@
 .shBottomSection .shPanelHeading h2{margin:0;color:#f8f8f8;line-height:1.2}
 .shBottomSection .shGameList,.shBottomSection .shPredList{flex:0 0 auto}
 @media(max-width:650px){.shBottomSection .shPanel{min-height:0;padding:14px 12px}.shBottomSection .shPanelHeading h2{font-size:clamp(17px,4.5vw,23px)}}
+
+/* Align homepage header with sport dashboards; compact hero on phones. */
+.shHeader{border-bottom:0}
+@media(max-width:650px){.shHero{min-height:195px;align-items:flex-start}.shHeroContent{padding-top:22px}.shHero h1{margin-top:9px}}
