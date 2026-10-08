@@ -328,12 +328,12 @@ export async function GET(req:NextRequest){
   const active=owlsRows.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
-  const built=await Promise.all(active.slice(0,60).map(async(row:any)=>{
+  const built=await Promise.all(active.slice(0,150).map(async(row:any)=>{
    const profile=await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
    const pos=String(profile.position||"").toUpperCase();
-   const qbOnly=market==="qb_rushing_yards";
-   const nonQbRush=market==="rushing_yards";
-   if(qbOnly&&pos!=="QB")return null;
+   const qbOnly=market==="qb_rushing_yards"||market==="q1_qb_rushing_yards";
+   const nonQbRush=market==="rushing_yards"||market==="q1_rushing_yards";
+   if(qbOnly&&pos&&pos!=="QB")return null;
    if(nonQbRush&&pos==="QB")return null;
    const m=await model(profile.id,market);
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
