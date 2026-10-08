@@ -31,3 +31,28 @@
 .shSportBottom{gap:0}
 .shSportCard:after{background:linear-gradient(transparent 32%,#000 100%)}
 @media(max-width:650px){.shStatHead b{width:30px;height:30px}.shStatHead b svg{width:21px;height:21px}.shPendingMetric{font-size:12px!important}.shStats small{line-height:1.25}.shSportBottom strong{font-size:22px}}
+
+/* Cinematic Sach artwork sourced from the existing Intelligence Centers.
+   Only the image's right-hand athlete half is used, so existing baked-in
+   headline lettering from dashboard hero assets stays out of view. */
+.shHero{background:radial-gradient(ellipse at 76% 45%,#42260b 0%,#080604 63%,#000 100%);isolation:isolate}
+.shHero:after{background:linear-gradient(90deg,#000 0%,#000 29%,rgba(0,0,0,.90) 45%,rgba(0,0,0,.22) 85%);z-index:1}
+.shHeroContent{z-index:3}
+.shHeroArtwork{display:flex;position:absolute;inset:0 0 0 34%;width:auto;bottom:0;right:0;gap:0;filter:none;overflow:hidden;z-index:0}
+.shHeroArtwork .shHeroAthlete{display:block;position:relative;flex:1;height:100%;font-size:0!important;transform:none!important;background-repeat:no-repeat;background-size:auto 100%;background-position:right center;filter:contrast(1.08) saturate(1.12)}
+.shHeroFootball{background-image:url("/hero/nfl.webp")}
+.shHeroBasketball{background-image:url("/hero/nba.webp")}
+.shHeroHockey{background-image:url("/hero/nhl.webp")}
+.shHeroArtwork .shHeroAthlete:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0007,transparent 40%,#0002)}
+.shSport-nfl{background-image:linear-gradient(0deg,#000 0%,transparent 75%),url("/hero/nfl.webp")}
+.shSport-nhl{background-image:linear-gradient(0deg,#000 0%,transparent 75%),url("/hero/nhl.webp")}
+.shSport-nba{background-image:linear-gradient(0deg,#000 0%,transparent 75%),url("/hero/nba.webp")}
+.shSport-cfb{background-image:linear-gradient(0deg,#000 0%,transparent 75%),url("/hero/cfb.webp")}
+.shSport-wnba{background-image:linear-gradient(0deg,#000 0%,transparent 75%),url("/hero/wnba.webp")}
+.shSportCard{background-size:cover,auto 100%;background-position:center,right center}
+.shSportCard:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0003,transparent 60%);pointer-events:none}
+.shGameEmpty{justify-content:space-between;color:#d5c7a6;gap:15px}
+.shGameEmpty strong{color:#e9ba64}
+.shPredictionMissing{border-color:#514530}
+.shPredictionMissing .shPlayerFallback{font-weight:900;color:#e5bd72;font-size:14px}
+@media(max-width:650px){.shHeroArtwork{left:34%;opacity:.9}.shHeroArtwork .shHeroAthlete{background-size:auto 100%}.shHero:after{background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.97) 26%,rgba(0,0,0,.7) 56%,rgba(0,0,0,.2) 100%)}.shSportCard{background-size:cover,auto 100%;background-position:center,83% center}}
