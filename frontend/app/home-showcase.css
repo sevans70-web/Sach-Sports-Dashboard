@@ -56,3 +56,10 @@
 .shPredictionMissing{border-color:#514530}
 .shPredictionMissing .shPlayerFallback{font-weight:900;color:#e5bd72;font-size:14px}
 @media(max-width:650px){.shHeroArtwork{left:34%;opacity:.9}.shHeroArtwork .shHeroAthlete{background-size:auto 100%}.shHero:after{background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.97) 26%,rgba(0,0,0,.7) 56%,rgba(0,0,0,.2) 100%)}.shSportCard{background-size:cover,auto 100%;background-position:center,83% center}}
+
+/* Homepage panel headings belong inside their gold containers. */
+.shBottomSection .shPanel{min-height:0;gap:14px}
+.shBottomSection .shPanelHeading{margin:0 0 2px;padding:0;display:flex;align-items:center}
+.shBottomSection .shPanelHeading h2{margin:0;color:#f8f8f8;line-height:1.2}
+.shBottomSection .shGameList,.shBottomSection .shPredList{flex:0 0 auto}
+@media(max-width:650px){.shBottomSection .shPanel{min-height:0;padding:14px 12px}.shBottomSection .shPanelHeading h2{font-size:clamp(17px,4.5vw,23px)}}
