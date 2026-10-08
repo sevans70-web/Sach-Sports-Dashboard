@@ -67,3 +67,18 @@
 /* Align homepage header with sport dashboards; compact hero on phones. */
 .shHeader{border-bottom:0}
 @media(max-width:650px){.shHero{min-height:195px;align-items:flex-start}.shHeroContent{padding-top:22px}.shHero h1{margin-top:9px}}
+
+/* Functional mobile header controls */
+.shHeaderIcons{z-index:8;gap:10px}
+.shHeaderIcons button{background:transparent;border:0;color:#e8b85c;font:inherit;cursor:pointer;padding:7px;line-height:1}
+.shOverlayMenu,.shSearchPanel{position:relative;z-index:20;background:#100d08;border:1px solid #cda355;border-radius:12px;padding:12px;margin:0 0 12px;box-shadow:0 14px 28px #0009}
+.shOverlayMenu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.shOverlayMenu a,.shOverlayMenu button{display:block;border:1px solid #6d512b;border-radius:8px;padding:11px;color:#f1cf87;background:#0a0908;font-weight:700;text-align:left;font-size:13px}
+.shSearchPanel label{display:block;color:#e6bf70;font-size:13px;font-weight:800;margin-bottom:9px}
+.shSearchInputRow{display:flex;gap:8px}
+.shSearchInputRow input{flex:1;min-width:0;background:#050505;border:1px solid #ad8a4a;border-radius:8px;color:white;padding:12px;font-size:16px}
+.shSearchInputRow button{background:#1b160d;color:#f2d38d;border:1px solid #ad8a4a;border-radius:8px;padding:0 14px}
+.shSearchResults{max-height:300px;overflow-y:auto}
+.shSearchResults>a{display:flex;justify-content:space-between;gap:10px;padding:12px 5px;border-bottom:1px solid #44341e;font-size:13px}
+.shSearchResults span,.shSearchResults p{color:#bfb3a2}
+@media(max-width:650px){.shHeaderIcons{right:0;gap:1px;font-size:25px}.shBrand{margin-right:52px}.shSearchResults>a{flex-direction:column;gap:3px}}
