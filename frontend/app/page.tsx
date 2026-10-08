@@ -28,20 +28,20 @@ export default function HomePage() {
         <section className="sachHomeHero">
           <div className="sachHeroGlow" />
           <div className="sachHeroCopy">
-            <span className="sachKicker">WELCOME TO SACH SPORTS</span>
-            <h1>YOUR GAME.<br /><em>OUR INTELLIGENCE.</em></h1>
-            <p>Smarter insights. Sharper predictions. Every edge matters.</p>
-            <a href="#active-sports" className="sachGoldButton">EXPLORE THE ACTION <span aria-hidden="true">↗</span></a>
+            <span className="sachKicker">SPORTS INTELLIGENCE PLATFORM</span>
+            <h1>YOUR <em>GAME.</em><br />OUR INTELLIGENCE.</h1>
+            <p>Player data · Game context · Smarter predictions</p>
+            
           </div>
         </section>
 
         <section id="active-sports" className="sachHomeSection">
-          <div className="sachSectionHeading"><div><span className="sachKicker">CHOOSE YOUR LEAGUE</span><h2>ACTIVE SPORTS</h2></div><span className="sachSectionMeta">5 INTELLIGENCE CENTERS</span></div>
+          <div className="sachSectionHeading"><div><span className="sachKicker"></span><h2>ACTIVE INTELLIGENCE CENTERS</h2></div><span className="sachSectionMeta">5 INTELLIGENCE CENTERS</span></div>
           <div className="sachSportTiles">
             {activeSports.map(sport => (
               <Link href={`/${sport.slug}`} key={sport.slug} className="sachSportTile" aria-label={sport.detail}>
                 <Image src={sport.image} alt="" fill sizes="(max-width: 600px) 20vw, 220px" className="sachSportImage" />
-                <span className="sachSportShade" /><strong>{sport.label}</strong><span className="sachTileArrow" aria-hidden="true">↗</span>
+                <span className="sachSportShade" /><span className="sachTileLabel"><strong>{sport.label}</strong><small>Intelligence Center</small></span><span className="sachTileArrow" aria-hidden="true">›</span>
               </Link>
             ))}
           </div>
@@ -106,6 +106,25 @@ export default function HomePage() {
         .sachQuickLinks a,.sachOutlineButton{border:1px solid #a7833c;border-radius:6px;padding:10px 13px;font-size:11px;font-weight:900;color:#f1d17b!important;background:#14110b;margin-top:0}
         .sachOutlineButton{margin-top:8px}.sachHomeFooter{text-align:center;color:#85724a;letter-spacing:.15em;font-size:10px;padding-top:45px}
         @media(max-width:600px){.sachHomeInner{padding:8px 11px 40px}.sachBrand img{width:46px;height:46px}.sachHeaderTag{font-size:7px;max-width:76px}.sachHomeNav{gap:4px}.sachHomeNav a{padding:9px 3px;font-size:10px}.sachHomeHero{min-height:300px}.sachHeroCopy{padding:27px 18px}.sachHomeHero h1{font-size:clamp(31px,8vw,47px)}.sachHomeSection{margin-top:26px}.sachSectionMeta{font-size:8px}.sachSportTiles{gap:5px}.sachSportTile{min-height:112px;border-radius:6px}.sachSportTile strong{font-size:12px}.sachTileArrow{font-size:10px;right:4px}.sachIntelligenceGrid{gap:6px}.sachIntelligenceGrid>div{min-height:110px;padding:12px 6px}.sachIntelligenceGrid small,.sachIntelligenceGrid span{font-size:9px}.sachIntelligenceGrid strong{font-size:25px}}
+.sachHome{background:#030303}
+.sachHomeHeader{justify-content:center;position:relative;min-height:85px}
+.sachBrand img{width:78px;height:78px}
+.sachBrand strong{font-size:clamp(23px,4vw,40px)}
+.sachHeaderTag{position:absolute;right:4px}
+.sachHomeNav{justify-content:center}
+.sachHomeNav a{background:transparent;border:0;color:#fff;font-size:14px}
+.sachHomeNav a.current{border-radius:30px}
+.sachHomeHero{min-height:295px;background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.95) 44%,rgba(0,0,0,.5) 100%),url('/hero/nfl.webp') center/cover}
+.sachHomeHero h1{font-size:clamp(30px,5.7vw,60px)}
+.sachSportTile{min-height:185px;justify-content:flex-start;padding:12px}
+.sachSportImage{filter:brightness(.55)}
+.sachSportShade{background:linear-gradient(0deg,#000 0%,rgba(0,0,0,.85) 32%,rgba(0,0,0,.5) 100%)}
+.sachTileLabel{position:relative;z-index:1;display:flex;flex-direction:column;gap:5px}
+.sachTileLabel strong{font-size:24px;color:#fff}
+.sachTileLabel small{font-size:12px;color:#f0d18b}
+.sachTileArrow{top:auto;bottom:10px;right:8px;border:2px solid #e6ba61;border-radius:50%;height:30px;width:30px;display:grid;place-items:center;font-size:23px}
+.sachHomeSection:has(.sachIntelligenceGrid){border:2px solid #caa04e;border-radius:13px;padding:15px;background:#110e08}
+@media(max-width:600px){.sachHomeHeader{min-height:65px}.sachBrand img{width:55px;height:55px}.sachBrand strong{font-size:22px}.sachHomeNav a{font-size:11px}.sachHomeHero{min-height:245px}.sachHeroCopy{padding:19px}.sachHomeHero h1{font-size:clamp(27px,6vw,38px)}.sachSportTile{min-height:135px;padding:6px}.sachTileLabel strong{font-size:15px}.sachTileLabel small{font-size:9px}.sachTileArrow{width:18px;height:18px;font-size:13px;right:4px;bottom:5px;border-width:1px}}
       `}</style>
     </main>
   );
