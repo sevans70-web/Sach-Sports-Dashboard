@@ -99,7 +99,7 @@ const HERO_ART: Record<SportKey, string> = {
 
 function BrandBar() {
   return (
-    <div className="ssBrand" aria-label="Sach Sports">
+    <Link href="/" className="ssBrand" aria-label="Go to Sach Sports homepage" style={{textDecoration:"none",color:"inherit"}}>
       <img
         className="ssBrandLogo"
         src="/brand/sach-sports-crown-logo.png"
@@ -110,13 +110,14 @@ function BrandBar() {
         <span className="gold">SACH</span>
         <span className="white"> SPORTS</span>
       </div>
-    </div>
+    </Link>
   );
 }
 
 export function SportsNav({ active }: { active: SportKey }) {
   return (
     <nav className="ssSportsNav" aria-label="Sports dashboards">
+      <Link href="/" className="ssHomeNavLink" style={{color:"#f3cc70",fontWeight:900}}>HOME</Link>
       {SPORTS.map((s) => (
         <Link key={s.key} href={s.href} className={s.key === active ? "active" : ""}>
           {s.label}
