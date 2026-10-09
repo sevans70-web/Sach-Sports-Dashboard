@@ -35,11 +35,25 @@ function candidateMarket(o:any,m:CfbMarketKey){return [o.category,o.market,o.mar
 
 export type CfbOwlsRow={eventId:string;matchup:string;gameTime:string;playerName:string;teamName:string;line:number|null;price:number|null;prob:number|null;bookmakerCount:number};
 
+let cachedPayload:{at:number;value:any}|null=null;
+let inflight:Promise<any>|null=null;
+let backoffUntil=0;
+async function sharedPayload(){
+ if(cachedPayload&&Date.now()-cachedPayload.at<10*60_000)return cachedPayload.value;
+ if(Date.now()<backoffUntil){if(cachedPayload)return cachedPayload.value;throw new Error("CFB odds provider rate limited");}
+ if(inflight)return inflight;
+ inflight=(async()=>{
+  const key=process.env.OWLS_INSIGHT_API_KEY;
+  if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
+  const r=await fetch(OWLS_URL,{headers:{Authorization:"Bearer "+key,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
+  if(r.status===429){const seconds=Number(r.headers.get("retry-after"));backoffUntil=Date.now()+(Number.isFinite(seconds)&&seconds>0?Math.min(seconds*1000,3600000):15*60_000);if(cachedPayload)return cachedPayload.value;}
+  if(!r.ok)throw new Error("Owls Insight returned "+r.status);
+  const value=await r.json();cachedPayload={at:Date.now(),value};backoffUntil=0;return value;
+ })();
+ try{return await inflight}finally{inflight=null}
+}
 export async function getOwlsCfbRows(market:CfbMarketKey):Promise<CfbOwlsRow[]>{
-  const key=process.env.OWLS_INSIGHT_API_KEY;if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
-  const r=await fetch(OWLS_URL,{headers:{Authorization:`Bearer ${key}`,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
-  if(!r.ok)throw new Error(`Owls Insight returned ${r.status}`);
-  const payload=await r.json(),raw:any[]=[],seen=new Set<any>();
+  const payload=await sharedPayload(),raw:any[]=[],seen=new Set<any>();
   const walk=(v:any,ctx:Ctx)=>{
     if(Array.isArray(v)){for(const x of v)walk(x,ctx);return}
     if(!v||typeof v!=="object"||seen.has(v))return;seen.add(v);const c=nextContext(v,ctx);
