@@ -52,7 +52,7 @@ function useJson<T>(url:string,fallback:T,intervalMs=60000){
       if(running)return;
       running=true;
       controller=new AbortController();
-      const timer=setTimeout(()=>controller?.abort(),12000);
+      const timer=setTimeout(()=>controller?.abort(),30000);
       try{
         const response=await fetch(url,{cache:"no-store",signal:controller.signal});
         const value=await response.json();
@@ -226,13 +226,6 @@ export default function CfbDashboard(){
   const rankMarkets=rankGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
   const active=meta(rankMarket);
 
-  useEffect(()=>{
-    let active=true;
-    Promise.allSettled(CFB_MARKETS.map(([key])=>fetch(`/api/cfb/rankings?market=${key}`,{cache:"no-store"})))
-      .then(()=>{if(active)setCaptureTick(Date.now())})
-      .catch(()=>{});
-    return()=>{active=false};
-  },[]);
 
   useEffect(()=>{
     if(!perfMarkets.includes(perfMarket))setPerfMarket(perfMarkets[0]);
