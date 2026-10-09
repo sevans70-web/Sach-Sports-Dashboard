@@ -249,7 +249,8 @@ export default function CfbDashboard(){
   const finals=s.data.games.filter((g:any)=>g.completed).length;
   const gameCount=s.data.filterMode==="schedule_fallback"?s.data.games.length:s.data.qualifiedCount;
   const cfbSlateCount=Math.max(1,new Set(s.data.games.filter((g:any)=>!g.completed).map((g:any)=>cfbSlate(g.date||g.gameTime))).size||1);
-  const cfbRankedCount=r.data.success?(rows.length>=25?cfbSlateCount*25:rows.length):0;
+  const cfbRankedCount=r.data.success?rows.length:0;
+  const cfbPredictionCount=r.data.success?rows.filter(row=>row.marketBacked===true&&row.sportsbookLine!=null&&Number(row.bookmakerCount||0)>0).length:0;
 
   return <main className="cfbShell">
     <IntelligenceHero sport="cfb"/>
@@ -264,8 +265,8 @@ export default function CfbDashboard(){
       title="CFB Snapshot"
       metrics={[
         { label:"Games", value:gameCount, detail:snapshotGameDetail(gameCount,liveGames,finals), tone:"green", icon:"games" },
-        { label:"Ranked Players", value:cfbRankedCount, detail:`Across ${cfbSlateCount} slate${cfbSlateCount===1?"":"s"}`, icon:"ranked" },
-        { label:"Predictions", value:cfbRankedCount, detail:"Players", tone:"gold", icon:"predictions" },
+        { label:"Ranked Players", value:cfbRankedCount, detail:"Current selected market", icon:"ranked" },
+        { label:"Predictions", value:cfbPredictionCount, detail:"Verified sportsbook lines", tone:"gold", icon:"predictions" },
       ]}
     />
 
