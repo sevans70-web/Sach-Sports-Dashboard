@@ -218,7 +218,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   // Enrich a pool larger than 25. Some roster players will not have enough
   // verified history for this market, so slicing to 25 before modeling caused
   // the visible ranking to collapse to 3-4 players.
-  const candidateLimit=earlyMode?70:45;
+  const candidateLimit=earlyMode?45:35;
   const candidates=active
     .map((row:any)=>({...row,_seed:cfbGiScore(row.prob??50,row.bookmakerCount||0,0)}))
     .sort((a:any,b:any)=>b._seed-a._seed)
@@ -387,7 +387,7 @@ export async function GET(req:NextRequest){
   const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as CfbMarketKey;
   if(!CFB_MARKETS.some(x=>x[0]===market))return NextResponse.json({success:false,error:"Unsupported CFB market"},{status:400});
   try{
-    const payload=await timeout(getPayload(market),9000,null as RankingPayload|null);
+    const payload=await timeout(getPayload(market),27000,null as RankingPayload|null);
     const cached=rankingCache.get(market);
     if(payload)return NextResponse.json(payload);
     if(cached)return NextResponse.json({...cached.payload,cached:true,stale:true});
