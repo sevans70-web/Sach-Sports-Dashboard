@@ -233,6 +233,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const earlyConfidence=row.earlyModel&&m.projection!=null
       ?Math.round(Math.min(84,58+Math.min(26,m.games*2.6))*10)/10
       :null;
+    const verifiedMarket=Number(row.bookmakerCount||0)>0&&(row.line!=null||row.prob!=null);
     const rankingProbability=probability??row.prob??earlyConfidence??50;
     return {
       rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,
@@ -244,10 +245,10 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
       sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount||0,
       perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,
       seasonTotal:null,gamesPlayed:m.games,season:2026,
-      summary:row.earlyModel
+      summary:!verifiedMarket
         ?`Early Sach projection using ${m.games} verified historical game${m.games===1?"":"s"}. Sportsbook player props have not posted yet; no line or odds were invented.`
         :`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount||0} sportsbook${(row.bookmakerCount||0)===1?"":"s"}.`,
-      marketBacked:!row.earlyModel,
+      marketBacked:verifiedMarket,
     };
   }));
 
