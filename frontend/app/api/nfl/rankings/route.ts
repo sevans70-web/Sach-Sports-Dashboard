@@ -63,11 +63,36 @@ function categoryMatches(v:any,m:NflMarketKey){const x=norm(v);return OWLS_MARKE
 function easternDayKey(v:Date|string){const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`}
 function rowGameTime(row:any,schedule:any[]){if(row.gameTime)return String(row.gameTime);const t=cleanName(String(row.matchup||""));const g=schedule.find(x=>cleanName(`${x.awayTeam} @ ${x.homeTeam}`)===t);return g?.date?String(g.date):""}
 
+let owlsSnapshot:{expires:number;games:any[]}|null=null;
+let owlsInFlight:Promise<any[]>|null=null;
+let owlsBackoffUntil=0;
+async function sharedOwlsGames(){
+ if(owlsSnapshot&&owlsSnapshot.expires>Date.now())return owlsSnapshot.games;
+ if(Date.now()<owlsBackoffUntil){
+  if(owlsSnapshot)return owlsSnapshot.games;
+  throw new Error("Owls Insight rate limited (429); waiting for cooldown");
+ }
+ if(owlsInFlight)return owlsInFlight;
+ owlsInFlight=(async()=>{
+  const key=process.env.OWLS_INSIGHT_API_KEY;
+  if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
+  const r=await fetch(OWLS_URL,{headers:{Authorization:"Bearer "+key,Accept:"application/json"},cache:"no-store"});
+  if(r.status===429){
+   const retry=Number(r.headers.get("retry-after"));
+   owlsBackoffUntil=Date.now()+(Number.isFinite(retry)&&retry>0?Math.min(retry*1000,3600000):15*60_000);
+   if(owlsSnapshot)return owlsSnapshot.games;
+  }
+  if(!r.ok)throw new Error("Owls Insight returned "+r.status);
+  const payload=await r.json();
+  const games=Array.isArray(payload?.data)?payload.data:[];
+  owlsSnapshot={games,expires:Date.now()+10*60_000};
+  owlsBackoffUntil=0;
+  return games;
+ })();
+ try{return await owlsInFlight}finally{owlsInFlight=null}
+}
 async function fetchOwlsRows(market:NflMarketKey){
- const key=process.env.OWLS_INSIGHT_API_KEY;if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
- const r=await fetch(OWLS_URL,{headers:{Authorization:`Bearer ${key}`,Accept:"application/json"},cache:"no-store"});
- if(!r.ok)throw new Error(`Owls Insight returned ${r.status}`);
- const payload=await r.json(),games=Array.isArray(payload?.data)?payload.data:[],grouped=new Map<string,any>();
+ const games=await sharedOwlsGames(),grouped=new Map<string,any>();
  for(const game of games){
   const away=String(game.awayTeam||game.away_team||""),home=String(game.homeTeam||game.home_team||"");
   const matchup=away&&home?`${away} @ ${home}`:String(game.name||""),gameTime=String(game.commenceTime||game.commence_time||game.startTime||game.date||"");
