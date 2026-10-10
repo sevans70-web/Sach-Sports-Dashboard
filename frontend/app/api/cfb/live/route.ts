@@ -19,7 +19,7 @@ const MARKET_LABELS:Record<CfbMarketKey,string[]>={
 
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 
-async function fetchJson(url:string,ms=5000){
+async function fetchJson(url:string,ms=8000){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),ms);
 
@@ -160,7 +160,12 @@ export async function GET(req:NextRequest){
 
   try{
     const schedule=await getEspnCfbSchedule();
-    const active=schedule.filter((game:any)=>game.state==="in"||game.completed);
+    // Prioritize today's live games. Fetching every completed game across the
+    // multi-week schedule exhausts the response time before live stats arrive.
+    const today=new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+    const easternDay=(date:string)=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(date));
+    const active=schedule.filter((game:any)=>game.state==="in"||(game.completed&&easternDay(game.date)===today))
+      .sort((a:any,b:any)=>Number(b.state==="in")-Number(a.state==="in"));
 
     const games=await Promise.all(
       active.map(async(game:any)=>{
