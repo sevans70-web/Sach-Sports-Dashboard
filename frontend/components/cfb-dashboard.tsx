@@ -133,7 +133,13 @@ function quarterLabel(value?:string){
 }
 
 function liveFor(row:Row,live:LiveResponse){
-  const game=live.games?.find(g=>clean(g.matchup)===clean(row.matchup));
+  const game=live.games?.find(g=>clean(g.matchup)===clean(row.matchup))
+    ||live.games?.find(g=>{
+      const teams=String(g.matchup||"").split(" @ ");
+      const target=String(row.matchup||"").split(" @ ");
+      return teams.length===2&&target.length===2
+        &&clean(teams[0])===clean(target[0])&&clean(teams[1])===clean(target[1]);
+    });
   if(!game)return null;
   const stat=game.rows?.find(x=>
     (row.playerId&&String(x.playerId)===String(row.playerId))||
@@ -173,7 +179,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       <span>{row.teamName}{row.position?` · ${row.position}`:""}</span>
       {row.matchup?<span>{row.matchup}</span>:null}
       {row.gameTime?<span className="gameTime">🗓️ {gameTime(row.gameTime)}</span>:null}
-      {lg?.state==="in"?<div className="livePanel"><div className="liveHeader">● LIVE · {quarterLabel(lg.quarter)}{lg.clock?` · ${lg.clock}`:""}</div><div className="liveCurrent">Current: <b>{actual??"—"} {unit(market)}</b></div><div className="progressTrack"><div className="progressFill" style={{width:`${progress}%`}}/></div></div>:null}
+      {lg?.state==="in"?<div className="livePanel"><div className="liveHeader">● LIVE · {quarterLabel(lg.quarter)}{lg.clock?` · ${lg.clock}`:""}</div><div className="liveCurrent">Current: <b>{actual??"—"} {unit(market)}</b></div><div className="progressTrack" role="progressbar" aria-label="Live player progress toward model projection" aria-valuemin={0} aria-valuemax={100} aria-valuenow={actual==null?undefined:progress}><div className="progressFill" style={{width:`${progress}%`}}/></div><div className="progressNote">{actual==null?"Awaiting verified player statistics":row.modelProjection!=null?`${Number(actual)} / ${Number(row.modelProjection).toFixed(1)} projected ${unit(market)} · ${progress.toFixed(0)}%`:"Projection unavailable"}</div></div>:null}
       {lg?.completed?<div className="finalPanel"><div className="finalHeader">RESULT <span className="resultSymbol">{row.resultSymbol||derivedSymbol}</span></div><div>Actual: <b>{actual??row.actualResult??"—"} {unit(market)}</b></div><div className="resultText">{derivedResult==="hit"?"HIT":derivedResult==="miss"?"MISS":derivedResult.toUpperCase()}</div></div>:null}
       <p className="projectionLine"><b>Sach Prediction:</b> {proj}</p>
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
@@ -398,7 +404,7 @@ export default function CfbDashboard(){
       .liveCurrent{margin-top:7px;color:#fff}
       .liveCurrent b{display:inline;margin:0}
       .progressTrack{height:10px;border-radius:999px;background:#3b3f44;margin-top:10px;overflow:hidden}
-      .progressFill{height:100%;background:#20df7f;border-radius:999px}
+      .progressFill{height:100%;background:#20df7f;border-radius:999px;transition:width .35s ease}.progressNote{font-size:12px;color:#d1d5db;margin-top:6px}
       .finalPanel{margin-top:12px;border:2px solid #34373d;border-radius:16px;padding:12px}
       .finalPanel.hit{border-color:#20df7f}
       .finalPanel.miss{border-color:#ff6b6b}
