@@ -155,7 +155,8 @@ export async function getCfbMarketRows(market:CfbMarketKey){
         leagueID:"NCAAF",
         oddsAvailable:"true",
         finalized:"false",
-        startsAfter:now.toISOString(),
+        // Include games already underway; live props must not vanish at kickoff.
+        startsAfter:new Date(now.getTime()-24*60*60*1000).toISOString(),
         startsBefore:end.toISOString(),
         limit:"100",
       });
