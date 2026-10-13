@@ -633,17 +633,25 @@ export async function buildNbaMarketRankings(
 }
 
 export async function captureAllNbaMarkets(){
- const [payload,overview]=await Promise.all([
+ // A sportsbook outage must not abort the entire capture request before
+ // per-market fallbacks and diagnostics can run.
+ const [oddsResult,overviewResult]=await Promise.allSettled([
   fetchOwlsPayload(),
   loadNbaOverview()
  ]);
+ const providerError=oddsResult.status==="rejected"
+  ?String(oddsResult.reason?.message||oddsResult.reason):null;
+ const overviewError=overviewResult.status==="rejected"
+  ?String(overviewResult.reason?.message||overviewResult.reason):null;
+ const payload=oddsResult.status==="fulfilled"?oddsResult.value:null;
+ const overview=overviewResult.status==="fulfilled"?overviewResult.value:null;
 
  const results=await Promise.all(
   NBA_MARKETS.map(async([market])=>{
    try{
     return await buildNbaMarketRankings(
      market,
-     {payload,overview}
+     payload&&overview?{payload,overview}:undefined
     );
    }catch(e:any){
     return{
@@ -661,6 +669,8 @@ export async function captureAllNbaMarkets(){
   success:results.some(
    (x:any)=>x.success&&x.saved!==false
   ),
+  providerError,
+  overviewError,
   markets:results.map((x:any)=>({
    market:x.market,
    rows:x.rows?.length||0,
