@@ -46,7 +46,9 @@ export async function GET(){
       const matchup=`${g.awayTeam} @ ${g.homeTeam}`,sach=sachByMatchup.get(cleanName(matchup));
       return {...g,matchup,availableProps:[],propQualified:false,sachProjectionMarkets:sach?.markets||[],sachProjectionCount:sach?.players.size||0};
     });
-    const games=merged.length?merged:remaining;
-    return NextResponse.json({success:true,games:orderGames(games),qualifiedCount:merged.length,filterMode:merged.length?"prop_qualified":"schedule_fallback",updatedAt:new Date().toISOString()});
+    // Always retain ESPN scheduled games, including games without posted player props.
+    // Previously any qualified matchup hid every unqualified game from the slate.
+    const games=[...merged,...remaining];
+    return NextResponse.json({success:true,games:orderGames(games),qualifiedCount:merged.length,filterMode:merged.length?"all_games_with_prop_flags":"schedule_fallback",updatedAt:new Date().toISOString()});
   }catch(e){return NextResponse.json({success:false,games:[],qualifiedCount:0,filterMode:"error",error:e instanceof Error?e.message:"CFB schedule unavailable"},{status:500})}
 }
