@@ -56,7 +56,9 @@ function Card({row,market}:{row:Row;market:NbaMarketKey}){
 
       {row.gameState==="in"?<div className="liveProgress"><b>● LIVE</b><span>{row.gameStatus||"In progress"}</span></div>:row.gameState==="post"?<p className="finalResult"><b>FINAL</b><span>Final stat grading updates from saved prediction history.</span></p>:null}
 
-      <p className="projectionLine"><b>Sach Prediction:</b> {prediction}</p>
+      <p className="projectionLine"><b>Sportsbook Line:</b> {row.sportsbookLine == null ? "Not available" : fmt(row.sportsbookLine)}</p>
+      <p className="projectionLine"><b>Sach Pick:</b> {row.prediction && row.sportsbookLine != null ? `${row.prediction} ${fmt(row.sportsbookLine)}` : "Awaiting verified sportsbook line"}</p>
+      <p className="projectionLine"><b>Model Projection:</b> {prediction}</p>
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
     </div>
 
