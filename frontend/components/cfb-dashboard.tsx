@@ -219,13 +219,10 @@ export default function CfbDashboard(){
   const perf=useJson<CfbPerformanceResponse>(`/api/cfb/performance?period=${period}&group=${perfGroup}&market=${perfMarket}&capture=${captureTick}`,{success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null},20000);
 
   const rows=useMemo(()=>{
-    const source=r.data.rows||[];
-    const valid=source.filter((row:Row)=>{
-      if(rankMarket==="first_td")return row.modelProbability!=null&&Number.isFinite(Number(row.modelProbability));
-      return row.modelProjection!=null&&Number.isFinite(Number(row.modelProjection));
-    });
-    return valid.map((row:Row,index:number)=>({...row,rank:index+1}));
-  },[r.data,rankMarket]);
+    // Show verified roster candidates even while a model projection is unavailable.
+    // Missing projections/lines must remain blank rather than hiding the player.
+    return (r.data.rows||[]).map((row:Row,index:number)=>({...row,rank:index+1}));
+  },[r.data]);
   const saturdayTabs=torontoParts().weekday==="Sat";
   const slateRows=useMemo(()=>{if(!saturdayTabs||slate==="All Day")return rows;return rows.filter(row=>cfbSlate(row.gameTime)===slate).map((row,index)=>({...row,rank:index+1}));},[rows,slate,saturdayTabs]);
   const perfMarkets=perfGroup==="QB"?QB_MARKETS:OFFENSE_MARKETS;
