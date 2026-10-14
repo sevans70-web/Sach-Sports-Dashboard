@@ -246,7 +246,7 @@ export default function CfbDashboard(){
 
   const liveGames=s.data.games.filter((g:any)=>g.state==="in").length;
   const finals=s.data.games.filter((g:any)=>g.completed).length;
-  const gameCount=s.data.filterMode==="schedule_fallback"?s.data.games.length:s.data.qualifiedCount;
+  const gameCount=s.data.games.length;
   const cfbSlateCount=Math.max(1,new Set(s.data.games.filter((g:any)=>!g.completed).map((g:any)=>cfbSlate(g.date||g.gameTime))).size||1);
   const cfbRankedCount=r.data.success?rows.length:0;
   const cfbPredictionCount=r.data.success?rows.filter(row=>row.marketBacked===true&&row.sportsbookLine!=null&&Number(row.bookmakerCount||0)>0).length:0;
