@@ -126,48 +126,13 @@ function boardForMarket(payload:any,market:NbaMarketKey){
  }));
 }
 
-/*
-  Ranking window:
-  - any remaining game TODAY, plus
-  - the NEXT scheduled NBA date.
-  This lets Sunday props appear before Saturday is finished, while preventing
-  unrelated league-wide players from filling the board.
-*/
+/* Only games scheduled for today's Toronto/Eastern calendar date belong in
+   today's NBA Top 25. Tomorrow's games remain available in the schedule. */
 function rankingSlateGames(overview:any){
- const games=(overview.games||[])
-  .filter((g:any)=>g?.tipoff)
-  .sort((a:any,b:any)=>
-    new Date(a.tipoff).getTime()-new Date(b.tipoff).getTime()
-  );
-
  const today=torontoNbaDay(new Date());
-
- const todayGames=games.filter((g:any)=>
-  torontoNbaDay(g.tipoff)===today &&
-  g.state!=="post"
- );
-
- const futureAfterToday=games.filter((g:any)=>{
-  if(g.state==="post")return false;
-  const d=torontoNbaDay(g.tipoff);
-  return d>today && new Date(g.tipoff).getTime()>Date.now();
- });
-
- const nextDay=futureAfterToday.length
-  ?torontoNbaDay(futureAfterToday[0].tipoff)
-  :"";
-
- const nextGames=nextDay
-  ?futureAfterToday.filter((g:any)=>torontoNbaDay(g.tipoff)===nextDay)
-  :[];
-
- const seen=new Set<string>();
- return [...todayGames,...nextGames].filter((g:any)=>{
-  const id=String(g.gameId||"");
-  if(!id||seen.has(id))return false;
-  seen.add(id);
-  return true;
- });
+ return (overview.games||[])
+  .filter((game:any)=>game?.tipoff&&torontoNbaDay(game.tipoff)===today)
+  .sort((a:any,b:any)=>new Date(a.tipoff).getTime()-new Date(b.tipoff).getTime());
 }
 
 type SlateRosterEntry={
