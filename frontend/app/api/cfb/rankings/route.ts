@@ -148,7 +148,7 @@ function allowedPositions(market:CfbMarketKey){
 async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:any[]){
   const today=day(new Date());
   const upcoming=schedule
-    .filter((g:any)=>g.state==="pre"&&day(g.date)>=today)
+    .filter((g:any)=>(g.state==="pre"||g.state==="in")&&day(g.date)>=today)
     .sort((a:any,b:any)=>new Date(a.date).getTime()-new Date(b.date).getTime());
   const seen=new Set(existing.map((r:any)=>`${cleanName(r.playerName)}|${cleanName(r.matchup)}`));
   const positions=allowedPositions(market);
