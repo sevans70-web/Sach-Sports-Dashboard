@@ -29,6 +29,14 @@ export async function buildNhlRankings(m:NhlMarketKey){
 
 export async function captureAllNhlMarkets(){
  const markets=(await import("@/lib/nhl")).NHL_MARKETS.map(x=>x[0]);
- const results=[] as any[];for(const market of markets){const r=await buildNhlRankings(market);results.push({market,count:r.rows.length,locked:Boolean((r as any).locked)})}
- return {success:true,markets:results,updatedAt:new Date().toISOString()};
+ const results:any[]=[];
+ for(const market of markets){
+  try{
+   const r=await buildNhlRankings(market);
+   const backed=r.rows.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.prediction).length;
+   results.push({market,count:r.rows.length,verifiedPredictions:backed,locked:Boolean((r as any).locked)});
+  }catch(e){results.push({market,count:0,verifiedPredictions:0,error:e instanceof Error?e.message:String(e)});}
+ }
+ const verifiedPredictions=results.reduce((sum:number,r:any)=>sum+r.verifiedPredictions,0);
+ return {success:results.every(x=>!x.error)&&verifiedPredictions>0,verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:verifiedPredictions===0?"No verified NHL sportsbook predictions available for capture":undefined};
 }
