@@ -492,8 +492,8 @@ export async function buildNbaMarketRankings(
   const overview=shared?.overview??await loadNbaOverview();
 
   const slate=rankingSlateGames(overview);
-  const slateDays=[
-   ...new Set(
+  const slateDays:string[]=[
+   ...new Set<string>(
     slate
      .map((x:any)=>torontoNbaDay(x.tipoff||""))
      .filter(Boolean)
