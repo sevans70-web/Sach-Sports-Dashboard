@@ -1,21 +1,20 @@
 // Run inside the Railway service: node scripts/backup-to-drive.mjs
 // Streams files directly from the mounted volume to Google Drive without staging a second copy.
-import {createSign,createHash} from "node:crypto";
 import {promises as fs,createReadStream} from "node:fs";
 import path from "node:path";
 const root=process.env.RAILWAY_VOLUME_MOUNT_PATH||"/data";
 const folder=process.env.BACKUP_DRIVE_FOLDER_ID;
-const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-if(!folder||!raw)throw Error("Backup configuration missing");
-const credentials=JSON.parse(raw);
-const b64=o=>Buffer.from(JSON.stringify(o)).toString("base64url");
-const now=Math.floor(Date.now()/1000);
-const assertion=b64({alg:"RS256",typ:"JWT"})+"."+b64({iss:credentials.client_email,scope:"https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive",aud:"https://oauth2.googleapis.com/token",iat:now,exp:now+3500});
-const sign=createSign("RSA-SHA256");sign.update(assertion);sign.end();
-const jwt=assertion+"."+sign.sign(credentials.private_key,"base64url");
-const tokenResponse=await fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({grant_type:"urn:ietf:params:oauth:grant-type:jwt-bearer",assertion:jwt})});
-if(!tokenResponse.ok)throw Error("Google authentication failed: "+tokenResponse.status);
+const clientId=process.env.GOOGLE_OAUTH_CLIENT_ID;
+const clientSecret=process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+const refreshToken=process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
+if(!folder||!clientId||!clientSecret||!refreshToken)throw Error("OAuth backup configuration missing: BACKUP_DRIVE_FOLDER_ID and GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN required");
+const tokenResponse=await fetch("https://oauth2.googleapis.com/token",{
+ method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},
+ body:new URLSearchParams({client_id:clientId,client_secret:clientSecret,refresh_token:refreshToken,grant_type:"refresh_token"})
+});
+if(!tokenResponse.ok)throw Error("Google OAuth refresh failed: HTTP "+tokenResponse.status+" (check consent testing status and refresh token)");
 const {access_token:token}=await tokenResponse.json();
+if(!token)throw Error("Google OAuth did not return an access token");
 const auth={Authorization:"Bearer "+token};
 async function api(url,options={}){const r=await fetch(url,{...options,headers:{...auth,...options.headers}});if(!r.ok)throw Error("Drive API "+r.status+": "+(await r.text()).slice(0,300));return r;}
 const query=async q=>(await (await api("https://www.googleapis.com/drive/v3/files?fields=nextPageToken,files(id,name,mimeType,size,md5Checksum)&page_size=1000&q="+encodeURIComponent(q))).json()).files;
