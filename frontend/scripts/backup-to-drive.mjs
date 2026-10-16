@@ -21,9 +21,24 @@ const auth={Authorization:"Bearer "+token};
 async function api(url,options={}){const r=await fetch(url,{...options,headers:{...auth,...options.headers}});if(!r.ok)throw Error("Drive API "+r.status+": "+(await r.text()).slice(0,300));return r;}
 const query=async q=>(await (await api("https://www.googleapis.com/drive/v3/files?fields=nextPageToken,files(id,name,mimeType,size,md5Checksum)&pageSize=1000&q="+encodeURIComponent(q))).json()).files;
 async function directory(name,parent){const safe=name.replaceAll("'","\\'");const matches=await query("'"+parent+"' in parents and name = '"+safe+"' and mimeType = 'application/vnd.google-apps.folder' and trashed = false");if(matches.length)return matches[0].id;const r=await api("https://www.googleapis.com/drive/v3/files?fields=id",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name,mimeType:"application/vnd.google-apps.folder",parents:[parent]})});return (await r.json()).id;}
-const backup=await directory("railway-"+new Date().toISOString().replace(/[:.]/g,"-"),folder);
+// Resume the newest backup folder instead of creating duplicate full backups.
+const existing=await query("'"+folder+"' in parents and mimeType = 'application/vnd.google-apps.folder' and name contains 'railway-' and trashed = false");
+const previous=existing.filter(x=>x.name.startsWith("railway-")).sort((a,b)=>b.name.localeCompare(a.name))[0];
+const backup=previous?.id||await directory("railway-"+new Date().toISOString().replace(/[:.]/g,"-"),folder);
+console.log("BACKUP_FOLDER",backup,previous?"RESUMING":"NEW");
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function retryUpload(fn,label){
+ let last;
+ for(let attempt=1;attempt<=5;attempt++){
+  try{return await fn();}
+  catch(e){last=e;console.error("BACKUP_RETRY",label,"attempt",attempt,String(e));if(attempt<5)await sleep(Math.min(30000,1000*2**attempt));}
+ }
+ throw last;
+}
 let count=0,total=0,errors=[];
 async function walk(dir,parent){
+ const remote=await query("'"+parent+"' in parents and trashed = false");
+ const remoteFiles=new Map(remote.filter(f=>f.mimeType!== "application/vnd.google-apps.folder").map(f=>[f.name,f]));
  for(const entry of await fs.readdir(dir,{withFileTypes:true})){
   const full=path.join(dir,entry.name);
   if(entry.isSymbolicLink())continue;
@@ -31,6 +46,8 @@ async function walk(dir,parent){
   if(!entry.isFile())continue;
   try{
    const stat=await fs.stat(full);const size=stat.size;
+   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){count++;total+=size;console.log("BACKUP_SKIP",path.relative(root,full),size);continue;}
+   await retryUpload(async()=>{
    const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name:entry.name,parents:[parent]})});
    const location=session.headers.get("location");if(!location)throw Error("Missing upload session");
    let result;
@@ -48,6 +65,7 @@ async function walk(dir,parent){
     }
    }
    if(Number(result.size)!==size)throw Error("Uploaded file size mismatch");
+   });
    count++;total+=size;console.log("BACKUP_OK",path.relative(root,full),size);
   }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}
  }
