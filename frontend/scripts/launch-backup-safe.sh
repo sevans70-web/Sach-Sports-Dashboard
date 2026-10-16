@@ -1,9 +1,25 @@
 #!/bin/sh
-# Keep the dashboard in the foreground and isolate backup failures.
+# Compatible with Railpack's standalone runtime and repository build directory.
+set -eu
+if [ -f server.js ]; then
+  SERVER=server.js
+  BACKUP=scripts/backup-to-drive.mjs
+elif [ -f .next/standalone/server.js ]; then
+  SERVER=.next/standalone/server.js
+  BACKUP=.next/standalone/scripts/backup-to-drive.mjs
+else
+  echo "FATAL: dashboard server.js not found" >&2
+  exit 1
+fi
+# Always prioritize starting the dashboard. Backup failure must not stop it.
 (
   sleep 90
-  echo "BACKUP_START"
-  node .next/standalone/scripts/backup-to-drive.mjs
-  echo "BACKUP_EXIT_CODE=$?"
+  if [ -f "$BACKUP" ]; then
+    echo "BACKUP_START"
+    node "$BACKUP"
+    echo "BACKUP_EXIT_CODE=$?"
+  else
+    echo "BACKUP_FAILED: packaged script missing at $BACKUP" >&2
+  fi
 ) &
-exec node .next/standalone/server.js
+exec node "$SERVER"
