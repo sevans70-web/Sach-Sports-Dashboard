@@ -1,10 +1,9 @@
 #!/bin/sh
-# Keep the dashboard as foreground process; backup failures do not stop it.
+# Keep the dashboard in the foreground and isolate backup failures.
 (
   sleep 90
-  echo "BACKUP_START: starting Railway volume upload"
-  node scripts/backup-to-drive.mjs
-  code=$?
-  echo "BACKUP_EXIT_CODE=$code"
+  echo "BACKUP_START"
+  node .next/standalone/scripts/backup-to-drive.mjs
+  echo "BACKUP_EXIT_CODE=$?"
 ) &
 exec node .next/standalone/server.js
