@@ -39,7 +39,7 @@ async function retryUpload(fn,label){
 let count=0,total=0,errors=[],deletionCandidates=[];
 const cutoff=new Date();cutoff.setUTCHours(0,0,0,0);cutoff.setUTCDate(cutoff.getUTCDate()-6);
 async function md5File(file){const hash=createHash("md5");for await(const chunk of createReadStream(file))hash.update(chunk);return hash.digest("hex");}
-function historicalDate(rel){if(!rel.startsWith("sach-history/"))return null;const base=path.basename(rel);const dates=[...base.matchAll(/(?:^|[^0-9])(20\\d{2}-\\d{2}-\\d{2})(?=[^0-9]|$)/g)];if(!dates.length)return null;const d=dates[dates.length-1][1];const date=new Date(d+"T00:00:00Z");return !Number.isNaN(date.valueOf())&&date.toISOString().slice(0,10)===d?date:null;}
+function historicalDate(rel){if(!rel.startsWith("sach-history/"))return null;const base=path.basename(rel);const dates=[...base.matchAll(/(?:^|[^0-9])(20\d{2}-\d{2}-\d{2})(?=[^0-9]|$)/g)];if(!dates.length)return null;const d=dates[dates.length-1][1];const date=new Date(d+"T00:00:00Z");return !Number.isNaN(date.valueOf())&&date.toISOString().slice(0,10)===d?date:null;}
 async function markForCleanup(full,rel,size,remoteFile){const date=historicalDate(rel);if(!date||date>=cutoff)return;if(!remoteFile||Number(remoteFile.size)!==size||!remoteFile.md5Checksum)return;const localHash=await md5File(full);if(localHash===remoteFile.md5Checksum)deletionCandidates.push({full,rel,size,localHash});else console.error("CLEANUP_HASH_MISMATCH",rel);}
 
 async function walk(dir,parent){
