@@ -3,6 +3,8 @@
 import {promises as fs,createReadStream} from "node:fs";
 import path from "node:path";
 const root=process.env.RAILWAY_VOLUME_MOUNT_PATH||"/data";
+const rootStat=await fs.stat(root);
+if(!rootStat.isDirectory())throw Error("Railway backup source is not a directory: "+root);
 const folder=process.env.BACKUP_DRIVE_FOLDER_ID;
 const clientId=process.env.GOOGLE_OAUTH_CLIENT_ID;
 const clientSecret=process.env.GOOGLE_OAUTH_CLIENT_SECRET;
@@ -17,7 +19,7 @@ const {access_token:token}=await tokenResponse.json();
 if(!token)throw Error("Google OAuth did not return an access token");
 const auth={Authorization:"Bearer "+token};
 async function api(url,options={}){const r=await fetch(url,{...options,headers:{...auth,...options.headers}});if(!r.ok)throw Error("Drive API "+r.status+": "+(await r.text()).slice(0,300));return r;}
-const query=async q=>(await (await api("https://www.googleapis.com/drive/v3/files?fields=nextPageToken,files(id,name,mimeType,size,md5Checksum)&page_size=1000&q="+encodeURIComponent(q))).json()).files;
+const query=async q=>(await (await api("https://www.googleapis.com/drive/v3/files?fields=nextPageToken,files(id,name,mimeType,size,md5Checksum)&pageSize=1000&q="+encodeURIComponent(q))).json()).files;
 async function directory(name,parent){const safe=name.replaceAll("'","\\'");const matches=await query("'"+parent+"' in parents and name = '"+safe+"' and mimeType = 'application/vnd.google-apps.folder' and trashed = false");if(matches.length)return matches[0].id;const r=await api("https://www.googleapis.com/drive/v3/files?fields=id",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name,mimeType:"application/vnd.google-apps.folder",parents:[parent]})});return (await r.json()).id;}
 const backup=await directory("railway-"+new Date().toISOString().replace(/[:.]/g,"-"),folder);
 let count=0,total=0,errors=[];
