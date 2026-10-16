@@ -9,4 +9,4 @@ cp scripts/launch-backup-safe.sh .next/standalone/launch-backup-safe.sh
 test -f .next/standalone/server.js
 test -f .next/standalone/scripts/backup-to-drive.mjs
 test -f .next/standalone/launch-backup-safe.sh
-echo "BACKUP_PACKAGE_OK"
+echo "BACKUP_PACKAGE_OK: launcher and Google Drive backup script bundled"
