@@ -20,4 +20,5 @@ fi
     echo "BACKUP_FAILED: packaged script missing at $BACKUP" >&2
   fi
 ) &
+export HOSTNAME=0.0.0.0
 exec node "$SERVER"
