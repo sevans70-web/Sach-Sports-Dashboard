@@ -1,6 +1,5 @@
 #!/bin/sh
-# Compatible with Railpack's standalone runtime and repository build directory.
-set -eu
+# Keep the dashboard as the foreground process; report backup errors separately.
 if [ -f server.js ]; then
   SERVER=server.js
   BACKUP=scripts/backup-to-drive.mjs
@@ -11,7 +10,6 @@ else
   echo "FATAL: dashboard server.js not found" >&2
   exit 1
 fi
-# Always prioritize starting the dashboard. Backup failure must not stop it.
 (
   sleep 90
   if [ -f "$BACKUP" ]; then
