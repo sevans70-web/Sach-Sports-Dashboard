@@ -1,4 +1,4 @@
-// Run inside the Railway service: node scripts/backup-to-drive.mjs
+// Railway startup launches this script after the dashboard server starts.\n// Run inside the Railway service: node scripts/backup-to-drive.mjs
 // Streams files directly from the mounted volume to Google Drive without staging a second copy.
 import {promises as fs,createReadStream} from "node:fs";
 import path from "node:path";
