@@ -2,6 +2,7 @@
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
+import {rankingCardState} from "@/lib/ranking-card-state";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -448,32 +449,7 @@ function deriveState(row: any, result: any): CardState {
       row?.status
   );
 
-  const state = String(
-    row?.gameState ??
-      row?.state ??
-      ""
-  ).toLowerCase();
-
-  if (
-    ["hit", "miss", "push", "void"].includes(status) ||
-    state === "post" ||
-    state === "final" ||
-    row?.completed === true ||
-    row?.isFinal === true
-  ) {
-    return "final";
-  }
-
-  if (
-    state === "in" ||
-    state === "live" ||
-    row?.isLive === true ||
-    row?.result_live === true
-  ) {
-    return "live";
-  }
-
-  return "pregame";
+  return rankingCardState(row,status);
 }
 
 function statusSymbol(status: string) {

@@ -1342,7 +1342,7 @@ async function lockBoard(
     )).map(row=>{
       const result=retainedResults.get(rowKey(row));
       return result ? {...row,actualResult:result.actualResult??row.actualResult,liveCurrent:result.liveCurrent??row.liveCurrent,
-        resultStatus:result.resultStatus||row.resultStatus,recoveredAfterStart:result.recoveredAfterStart??row.recoveredAfterStart} : row;
+        resultStatus:result.recoveredAfterStart&&!row.recoveredAfterStart?row.resultStatus:(result.resultStatus||row.resultStatus)} : row;
     });
 
   const lockedMap =
