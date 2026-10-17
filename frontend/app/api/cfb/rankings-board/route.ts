@@ -16,7 +16,7 @@ import {
   getEspnCfbSchedule,
 } from "@/lib/cfb-server";
 import { getOwlsCfbRows } from "@/lib/cfb-owls";
-import {footballQuoteFields} from "@/lib/football-book-quotes";
+import {footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {footballHistoryValues} from "@/lib/football-history";
 import {
   cfbGiScore,
@@ -219,6 +219,8 @@ function gradeableBoardRow(
   if (row.marketBacked !== true) {
     return row.earlyModel === true && finiteNumber(row.modelProjection ?? row.perGame);
   }
+
+  if (row.quoteVersion === 1 && (!/^\d+$/.test(String(row.playerId || "")) || !row.gameId)) return false;
 
   /*
     TD scorer markets are sportsbook-backed by price/probability
@@ -1086,6 +1088,7 @@ async function buildFreshBoard(
   const scopedRaw =
     initialRaw.filter(
       (row: any) => {
+        if (row.quoteVersion === 1 && !footballQuoteGame(row, schedule)) return false;
         const gameTime =
           rowGameTime(
             row,
@@ -1159,6 +1162,8 @@ async function buildFreshBoard(
               row,
               schedule
             );
+
+          if (row.quoteVersion === 1 && !profile.id) return null;
 
           const recent =
             await model(

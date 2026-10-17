@@ -1,12 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadTs} from './load-ts.mjs';
-const {footballBookRows,footballQuoteFields}=await loadTs(new URL('../lib/football-book-quotes.ts',import.meta.url));
+const {footballBookRows,footballQuoteFields,footballQuoteGame}=await loadTs(new URL('../lib/football-book-quotes.ts',import.meta.url));
 const now=Date.parse('2026-10-17T23:10:00Z');
 const quote=(more={})=>({playerName:'Drew Mestemaker',category:'passing_yards',line:289.5,overPrice:104,underPrice:-131,lastUpdate:'2026-10-17T23:09:00Z',...more});
 const book=(key,props)=>({key,title:key,lastUpdate:'2026-10-17T23:09:00Z',props});
 const game=(books,more={})=>({gameId:'okst-hou',awayTeam:'Oklahoma State Cowboys',homeTeam:'Houston Cougars',commenceTime:'2026-10-17T23:30:00Z',books,...more});
 const rows=(books,market='passing_yards',more={})=>footballBookRows({data:[game(books,more)]},market,[market],now);
+test('quote fixture must match official teams and kickoff, never a feed-update timestamp',()=>{
+ const row=rows([book('pinnacle',[quote()])])[0],scheduled={id:'a',awayTeam:'Oklahoma State Cowboys',homeTeam:'Houston Cougars',date:'2026-10-17T23:30:00Z'};
+ assert.equal(footballQuoteGame(row,[scheduled]).id,'a');
+ assert.equal(footballQuoteGame({...row,gameTime:'2026-10-17T23:18:00Z'},[scheduled]),undefined);
+ assert.equal(footballQuoteGame({...row,matchup:'Oklahoma State Cowboys @ Another Team'},[scheduled]),undefined);
+ assert.equal(footballQuoteGame({...row,gameTime:'2026-10-24T23:30:00Z'},[scheduled]),undefined);
+});
 
 test('Drew regression: reject DraftKings 170 milestone and retain real two-sided 289.5 with exact prices',()=>{
  const result=rows([book('draftkings',[quote({playerName:'Drew Mestemaker (OKST)',line:170,overPrice:-2900,underPrice:null,marketStructure:'milestone'})]),book('pinnacle',[quote()]),book('fanduel',[quote({overPrice:-112,underPrice:-112})])]);

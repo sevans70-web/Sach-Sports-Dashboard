@@ -83,3 +83,13 @@ export function footballQuoteFields(row: any) {
     overPrice: row.overPrice, underPrice: row.underPrice, quoteUpdatedAt: row.quoteUpdatedAt,
     lineType: row.lineType, quoteId: row.quoteId, quoteUrl: row.quoteUrl};
 }
+
+/** A provider timestamp is not evidence of kickoff. Require the same official
+ * away/home fixture and kickoff before using a quote as a recommendation. */
+export function footballQuoteGame(row: any, schedule: any[]) {
+  const matchup = norm(row.matchup);
+  const time = Date.parse(row.gameTime || "");
+  if (!matchup || !Number.isFinite(time)) return undefined;
+  return schedule.find(game => norm(`${game.awayTeam} @ ${game.homeTeam}`) === matchup &&
+    Number.isFinite(Date.parse(game.date)) && Math.abs(Date.parse(game.date) - time) <= 5 * 60_000);
+}

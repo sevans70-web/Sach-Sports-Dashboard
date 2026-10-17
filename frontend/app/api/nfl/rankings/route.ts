@@ -1,5 +1,5 @@
 import {getOwlsPayload} from "@/lib/owls-provider";
-import {footballBookRows,footballQuoteFields} from "@/lib/football-book-quotes";
+import {footballBookRows,footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName,safeNumber} from "@/lib/nfl";
@@ -343,11 +343,13 @@ export async function GET(req:NextRequest){
     return [];
   }),getEspnNflSchedule()]),today=easternDayKey(new Date());
   const candidates=owlsRows.length?owlsRows:await modelOnlyRows(market,schedule);
-  const active=candidates.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
+  const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
   const built=await Promise.all(active.slice(0,150).map(async(row:any)=>{
    const profile=row.profile||await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
+   const quoteGame=row.quoteVersion===1?footballQuoteGame(row,schedule):null;
+   if(row.quoteVersion===1&&(!profile.id||!quoteGame||![String(quoteGame.awayTeamId),String(quoteGame.homeTeamId)].includes(String(profile.teamId))))return null;
    const pos=String(profile.position||"").toUpperCase();
    const qbOnly=market==="qb_rushing_yards"||market==="q1_qb_rushing_yards";
    const nonQbRush=market==="rushing_yards"||market==="q1_rushing_yards";

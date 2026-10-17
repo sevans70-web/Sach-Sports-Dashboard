@@ -5,7 +5,7 @@ import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbRankings,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
-import {footballQuoteFields} from "@/lib/football-book-quotes";
+import {footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
 import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions} from "@/lib/cfb-history";
 
@@ -213,7 +213,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const supplement=await timeout(rosterFallbackRows(market,schedule,raw),6500,[]);
     raw=[...raw,...supplement];
   }
-  const active=raw.filter((row:any)=>{const t=rowGameTime(row,schedule);const k=t?day(t):"";return !k||k>=today});
+  const active=raw.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);const k=t?day(t):"";return !k||k>=today});
 
   // Enrich a pool larger than 25. Some roster players will not have enough
   // verified history for this market, so slicing to 25 before modeling caused
@@ -228,6 +228,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
 
   const enriched=await Promise.all(candidates.map(async(row:any)=>{
     const profile=playerFromRosters(row,schedule);
+    if(row.quoteVersion===1&&!profile.id)return null;
     const m=await model(profile.id,market);
     const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
     const earlyConfidence=row.earlyModel&&m.projection!=null
@@ -253,7 +254,8 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     };
   }));
 
-  const validEnriched=enriched.filter((row:any)=>{
+  const validEnriched=enriched.filter((row): row is NonNullable<typeof row>=>{
+    if(!row)return false;
     const value=Number(row.modelProjection);
     return row.modelProjection!=null&&Number.isFinite(value)&&value>=0;
   });
