@@ -80,13 +80,8 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     { key: "pts_rebs_asts", label: "PRA", icon: "📊", market: "pts_rebs_asts" },
     { key: "steals", label: "Steals", icon: "🖐️", market: "steals" },
     { key: "blocks", label: "Blocks", icon: "🧱", market: "blocks" },
-    {
-      key: "q1",
-      label: "Q1",
-      icon: "⏱️",
-      available: false,
-      note: "Q1 is built into the NBA performance design. Results will populate when the NBA Q1 market feed is connected.",
-    },
+    {key:"first_basket",label:"First Basket",icon:"1️⃣",market:"first_basket"},
+    ...["points","rebounds","assists","threes_made","pts_rebs_asts"].map(key=>({key:"q1_"+key,label:"Q1 "+({points:"Points",rebounds:"REB",assists:"AST",threes_made:"3PT",pts_rebs_asts:"PRA"} as Record<string,string>)[key],icon:"⏱️",market:"q1_"+key})),
   ],
   wnba: [
     { key: "points", label: "Points", icon: "🏀", market: "points" },

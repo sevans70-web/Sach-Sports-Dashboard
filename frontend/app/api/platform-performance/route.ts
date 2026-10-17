@@ -7,7 +7,7 @@ import {GET as nhl} from "../nhl/performance/route";
 import {GET as cbb} from "../cbb/performance/route";
 import {GET as soccer} from "../soccer/performance/route";
 import {GET as mlb} from "../mlb/performance/route";
-import {DASHBOARD_SPORTS,DEFAULT_MARKETS,dashboardDay} from "@/lib/dashboard-contract";
+import {VISIBLE_SPORTS,DEFAULT_MARKETS,dashboardDay} from "@/lib/dashboard-contract";
 export const dynamic="force-dynamic";
 let cached:{at:number,payload:any}|null=null,pending:Promise<any>|null=null;
 const handlers:Record<string,any>={nfl,cfb,nba,wnba,nhl,cbb,soccer,mlb};
@@ -15,7 +15,7 @@ export async function GET(req:NextRequest){
  if(cached&&Date.now()-cached.at<60_000)return NextResponse.json(cached.payload);
  if(!pending)pending=(async()=>{
   const sports:any[]=[];
-  for(let i=0;i<DASHBOARD_SPORTS.length;i+=3)await Promise.all(DASHBOARD_SPORTS.slice(i,i+3).map(async sport=>{
+  for(let i=0;i<VISIBLE_SPORTS.length;i+=3)await Promise.all(VISIBLE_SPORTS.slice(i,i+3).map(async sport=>{
    try{
     let timer:ReturnType<typeof setTimeout>|undefined;
     let response:Response;

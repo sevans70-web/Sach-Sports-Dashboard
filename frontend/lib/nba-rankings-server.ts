@@ -30,23 +30,6 @@ function americanProb(v:any){
  return Math.round((n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100))*1000)/10;
 }
 
-function marketMatches(v:any,m:NbaMarketKey){
- const x=norm(v);
- const aliases:Record<NbaMarketKey,string[]>={
-  points:["points","playerpoints"],
-  rebounds:["rebounds","playerrebounds"],
-  assists:["assists","playerassists"],
-  threes_made:["threesmade","threepointersmade","3pointersmade"],
-  pts_rebs_asts:["ptsrebsasts","pointsreboundsassists","pra"],
-  pts_rebs:["ptsrebs","pointsrebounds"],
-  pts_asts:["ptsasts","pointsassists"],
-  rebs_asts:["rebsasts","reboundsassists"],
-  steals:["steals"],
-  blocks:["blocks"],
-  first_basket:["firstbasket","firstfieldgoal","firstfieldgoalscorer","firstscorer","firstbasketmade"],
- };
- return aliases[m].includes(x);
-}
 
 export function torontoNbaDay(v:Date|string){
  const d=typeof v==="string"?new Date(v):v;
@@ -58,7 +41,12 @@ export function torontoNbaDay(v:Date|string){
  return `${get("year")}-${get("month")}-${get("day")}`;
 }
 
-async function fetchOwlsPayload(){return getOwlsPayload("nba")}
+async function fetchOwlsPayload(){
+ const [owls,sgo]=await Promise.allSettled([getOwlsPayload("nba"),getSgoSupplement("NBA")]);
+ const primary=owls.status==="fulfilled"?owls.value:null,extra=sgo.status==="fulfilled"?sgo.value:null;
+ if(!primary&&!extra?.data?.length)throw new Error("NBA odds feeds are unavailable.");
+ return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],feedWarning:extra?.warning||null};
+}
 
 function boardForMarket(payload:any,market:NbaMarketKey){
  const games=Array.isArray(payload?.data)?payload.data:[];
@@ -74,7 +62,7 @@ function boardForMarket(payload:any,market:NbaMarketKey){
 
   for(const book of Array.isArray(game.books)?game.books:[]){
    for(const prop of Array.isArray(book.props)?book.props:[]){
-    if(!marketMatches(prop.category??prop.market??prop.type,market))continue;
+    if(!basketballMarketMatches(prop,market))continue;
 
     const playerName=String(
      prop.playerName||prop.player_name||prop.name||""
@@ -360,6 +348,7 @@ async function rowsForMarket(
    sportsbookLine:b.line,
    bookmakerCount:b.bookmakerCount,
    modelProjection:firstBasket?null:projection,
+   projectionMethod:market.startsWith("q1_")?"pace_estimate":firstBasket?"market_implied":"season_baseline",
    modelProbability,
    giScore:gi,
    prediction:
@@ -377,7 +366,7 @@ async function rowsForMarket(
      ?`Current-roster First Basket candidate backed by ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"}${modelProbability!=null?` with ${modelProbability.toFixed(1)}% market-implied probability`:""}.`
      :projection==null||edge==null
        ?`Current-roster player with a verified sportsbook line ${b.line}. Historical baseline is still loading.`
-       :`Current-roster ${rosterTeam} player · 2025–26 baseline ${projection.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} represented.`,
+       :`Current-roster ${rosterTeam} player · ${market.startsWith("q1_")?"Q1 pace estimate (full-game baseline ÷ 4, not quarter-trained)":"2025–26 baseline"} ${projection.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} represented.`,
   };
  }).filter(Boolean) as any[];
 
@@ -446,7 +435,7 @@ async function rowsForMarket(
    lineupConfirmed:Boolean(rosterPlayer.starter),
    summary:
     `${rosterTeam||roster.teamName} current-roster player for the today/next NBA slate · `+
-    `2025–26 baseline ${projection.toFixed(1)}. `+
+    `${market.startsWith("q1_")?"Q1 pace estimate (full-game baseline ÷ 4, not quarter-trained)":"2025–26 baseline"} ${projection.toFixed(1)}. `+
     `No verified sportsbook line is available yet, so this row is model-only and is not saved or graded.`,
   };
  }).filter(Boolean) as any[];
@@ -508,7 +497,7 @@ export async function buildNbaMarketRankings(
 
   if(ranked.length){
    const marketBacked=ranked.filter(
-    (x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.modelProjection!=null&&x.prediction
+    (x:any)=>verifiedNbaPrediction(x,market)
    );
 
    const saved=
@@ -521,6 +510,9 @@ export async function buildNbaMarketRankings(
     market,
     rows:ranked,
     saved,
+    feedWarning:payload?.feedWarning||null,
+    verifiedPredictions:marketBacked.length,
+    warning:market.startsWith("q1_")?"Q1 projections are pace estimates (full-game baseline ÷ 4), not quarter-trained averages. Only verified Q1 book lines are saved.":market==="first_basket"?"Probabilities are sportsbook-implied, not an independent first-basket model.":undefined,
     updatedAt:new Date().toISOString(),
     source:
      marketBacked.length
@@ -626,7 +618,7 @@ export async function captureAllNbaMarkets(){
   ),
   providerError,
   overviewError,
-  verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.marketBacked&&r.sportsbookLine!=null&&r.prediction&&r.modelProjection!=null&&r.resultStatus!=="void").length:0),0),
+  verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>verifiedNbaPrediction(r,x.market)).length:0),0),
   markets:results.map((x:any)=>({
    market:x.market,
    rows:x.rows?.length||0,
@@ -637,3 +629,5 @@ export async function captureAllNbaMarkets(){
   updatedAt:new Date().toISOString()
  };
 }
+import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
+import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";

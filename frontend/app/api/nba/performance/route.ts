@@ -33,7 +33,7 @@ async function finalsForDay(day:string){
   const ids=new Set<string>();
   for(const e of p?.events||[]){
     const state=String(e?.status?.type?.state||"");
-    if(state==="post"||Boolean(e?.status?.type?.completed))ids.add(String(e?.id||""));
+    if(state==="in"||state==="post"||Boolean(e?.status?.type?.completed))ids.add(String(e?.id||""));
   }
   return ids;
 }
@@ -84,7 +84,8 @@ function firstBasketActual(payload:any,p:SavedNbaPrediction){
   return null;
 }
 function summaryActual(payload:any,p:SavedNbaPrediction,market:NbaMarketKey){
-  if(market==="first_basket")return firstBasketActual(payload,p);
+  if(market==="first_basket")return basketballFirstBasketActual(payload,p);
+  if(market.startsWith("q1_"))return basketballQ1Actual(payload,p,market);
   return basketballSummaryActual(payload,p,market);
 }
 
@@ -138,10 +139,12 @@ export async function GET(req:NextRequest){
 
         let gamePayload=summaryCache.get(String(p.gameId));
         if(gamePayload===undefined){gamePayload=await summary(String(p.gameId));summaryCache.set(String(p.gameId),gamePayload)}
+        const complete=gamePayload?.header?.competitions?.[0]?.status?.type?.completed===true;
+        if(!market.startsWith("q1_")&&market!=="first_basket"&&!complete){graded.push(p);continue}
         let a=summaryActual(gamePayload,p,market);
 
         // Fallback for older saved records or an ESPN summary that temporarily omits a player row.
-        if(a==null&&/^\d+$/.test(String(p.playerId||""))){
+        if(a==null&&!market.startsWith("q1_")&&market!=="first_basket"&&/^\d+$/.test(String(p.playerId||""))){
           let logPayload=gamelogCache.get(String(p.playerId));
           if(logPayload===undefined){logPayload=await gamelog(String(p.playerId));gamelogCache.set(String(p.playerId),logPayload)}
           a=basketballLogActual(logPayload,p,market,day);
@@ -165,3 +168,4 @@ export async function GET(req:NextRequest){
     updatedAt:new Date().toISOString()
   },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }
+import {basketballQ1Actual,basketballFirstBasketActual} from "@/lib/basketball-period-settlement";

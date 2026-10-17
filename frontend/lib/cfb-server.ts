@@ -26,7 +26,7 @@ const SGO_STATS:Record<CfbMarketKey,string[]>={
   receiving_yards:["receiving_yards","receivingYards","receiving yards","reception_yards","receptionYards","player_reception_yds"],
   receptions:["receptions","receiving_receptions","receivingReceptions","player_receptions"],
   anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
-  first_td:["firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
+  first_td:["firstTouchdownScorer","first_touchdown_scorer","firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
 };
 
 function normSgo(v:any){
@@ -142,8 +142,8 @@ function sgoOdds(e:any){
 }
 function sgoMatchup(e:any){
   const t=e.teams||{};
-  const away=e.awayTeamName||e.awayTeam||t.away?.name;
-  const home=e.homeTeamName||e.homeTeam||t.home?.name;
+  const away=e.awayTeamName||e.awayTeam||t.away?.names?.long||t.away?.name;
+  const home=e.homeTeamName||e.homeTeam||t.home?.names?.long||t.home?.name;
   return away&&home?`${away} @ ${home}`:String(e.name||e.eventName||"");
 }
 
@@ -169,7 +169,7 @@ export async function getCfbMarketRows(market:CfbMarketKey){
           const side=String(o.sideID||o.sideId||o.side||o.outcome||"").toLowerCase();
           if(!["anytime_td","first_td"].includes(market)&&side&&side!=="over")continue;
           if(["anytime_td","first_td"].includes(market)&&["no","under"].includes(side))continue;
-          const playerName=sgoPlayerName(o);
+          const playerName=sgoPlayerName(o)||supplementPlayerName(e,o);
           if(!playerName)continue;
           const line=sgoLine(o);
           const price=sgoPrice(o);
@@ -549,3 +549,4 @@ export async function getCfbGameIntelligence(gameId:string,availableProps:CfbMar
     leaders,
   };
 }
+import {sgoPlayerName as supplementPlayerName} from "@/lib/sgo-supplement";

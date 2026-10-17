@@ -8,6 +8,7 @@ export const NBA_MARKETS = [
   ["threes_made","3-Pointers Made","3PM"],["pts_rebs_asts","Points + Rebounds + Assists","PRA"],
   ["pts_rebs","Points + Rebounds","P+R"],["pts_asts","Points + Assists","P+A"],
   ["rebs_asts","Rebounds + Assists","R+A"],["steals","Steals","STL"],["blocks","Blocks","BLK"],["first_basket","First Basket","1ST"],
+  ["q1_points","Q1 Points","1Q PTS"],["q1_rebounds","Q1 Rebounds","1Q REB"],["q1_assists","Q1 Assists","1Q AST"],["q1_threes_made","Q1 3-Pointers","1Q 3PM"],["q1_pts_rebs_asts","Q1 PRA","1Q PRA"],
 ] as const;
 export type NbaMarketKey=(typeof NBA_MARKETS)[number][0];
 
@@ -59,7 +60,10 @@ export async function loadNbaOverview():Promise<NbaOverview>{const warnings:stri
 export function nbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/nba/players/full/${playerId}.png`}
 export function cleanNbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:NbaPlayer|undefined,market:NbaMarketKey):number|null{
- if(!p)return null;const a=p.pointsPerGame,r=p.reboundsPerGame,s=p.assistsPerGame;
+ if(!p)return null;
+ // Explicit pace estimate, not a measured quarter average; shown as such on rows.
+ if(market.startsWith("q1_")){const full=playerBaseline(p,market.slice(3) as NbaMarketKey);return full==null?null:Math.round(full/4*10)/10}
+ const a=p.pointsPerGame,r=p.reboundsPerGame,s=p.assistsPerGame;
  const sum=(...xs:(number|null)[])=>xs.some(x=>x==null)?null:xs.reduce<number>((t,x)=>t+(x??0),0);
  return market==="first_basket"?null:market==="points"?a:market==="rebounds"?r:market==="assists"?s:market==="threes_made"?p.threesPerGame:market==="pts_rebs_asts"?sum(a,r,s):market==="pts_rebs"?sum(a,r):market==="pts_asts"?sum(a,s):market==="rebs_asts"?sum(r,s):market==="steals"?p.stealsPerGame:p.blocksPerGame;
 }

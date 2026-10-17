@@ -1,5 +1,7 @@
 export const DASHBOARD_SPORTS = ["mlb","nfl","cfb","nba","wnba","nhl","soccer","cbb"] as const;
 export type DashboardSport = typeof DASHBOARD_SPORTS[number];
+// Pause public discovery, not historical storage or settlement.
+export const VISIBLE_SPORTS: readonly DashboardSport[] = ["nfl","cfb","nba","wnba","nhl","cbb"];
 export const DEFAULT_MARKETS:Record<DashboardSport,string>={mlb:"home_runs",nfl:"passing_yards",cfb:"passing_yards",nba:"points",wnba:"points",nhl:"shots_on_goal",soccer:"shots_on_target",cbb:"points"};
 export function dashboardDay(value:Date|string){
  const d=value instanceof Date?value:new Date(value);if(!Number.isFinite(d.getTime()))return "";

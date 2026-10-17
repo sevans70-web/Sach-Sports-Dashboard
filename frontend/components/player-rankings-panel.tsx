@@ -108,14 +108,7 @@ const NFL_OFFENSE: Market[] = [
 const NFL_Q1: Market[] = [
   { key: "q1_passing_yards", label: "Q1 Passing Yards", icon: "⏱️" },
   { key: "q1_receiving_yards", label: "Q1 Receiving Yards", icon: "⏱️" },
-  { key: "q1_receptions", label: "Q1 Receptions", icon: "⏱️" },
-  { key: "q1_qb_rushing_yards", label: "Q1 QB Rush Yards", icon: "⏱️" },
   { key: "q1_rushing_yards", label: "Q1 Rushing Yards", icon: "⏱️" },
-  { key: "q1_pass_attempts", label: "Q1 Pass Attempts", icon: "⏱️" },
-  { key: "q1_pass_completions", label: "Q1 Pass Completions", icon: "⏱️" },
-  { key: "q1_rushing_receiving_yards", label: "Q1 Rush + Rec", icon: "⏱️" },
-  { key: "q1_anytime_td", label: "Q1 Anytime TD", icon: "⏱️" },
-  { key: "q1_rush_attempts", label: "Q1 Rush Attempts", icon: "⏱️" },
 ];
 
 const CFB_QB: Market[] = [
@@ -191,8 +184,9 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         key: "Props",
         label: "Props",
         icon: "🏀",
-        markets: BASKETBALL,
+        markets: [...BASKETBALL,{key:"first_basket",label:"First Basket",icon:"1️⃣"}],
       },
+      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists","threes_made","pts_rebs_asts"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
     ],
   },
   wnba: {
@@ -692,6 +686,7 @@ const PRICE_ONLY_MARKETS = new Set([
   "home_runs",
   "anytime_td",
   "first_td",
+  "first_basket",
   "q1_anytime_td",
 ]);
 
@@ -1561,7 +1556,7 @@ function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null)
   const gameStatus = String(game.status || (state === "in" ? "In Progress" : "Final"));
   return {
     ...card,
-    lineupStatus: "Confirmed" as const,
+    lineupStatus: card.lineupStatus,
     gameState: state,
     gameStatus,
     raw: {
@@ -1571,8 +1566,8 @@ function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null)
       isLive: state === "in",
       isFinal: state === "post",
       completed: state === "post",
-      lineupConfirmed: true,
-      confirmed: true,
+      lineupConfirmed: card.raw?.lineupConfirmed===true,
+      confirmed: card.raw?.confirmed===true,
     },
   };
 }

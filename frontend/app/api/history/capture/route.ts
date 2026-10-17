@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
-import { NFL_MARKETS } from "@/lib/nfl";
+import { NFL_ACTIVE_MARKETS } from "@/lib/nfl";
 import { CFB_MARKETS } from "@/lib/cfb";
 import { BATTER_MARKETS, PITCHER_MARKETS } from "@/lib/mlb";
 import {
@@ -213,7 +213,7 @@ async function captureSport(
 
   if (sport === "nfl") {
     results.push(
-      ...(await marketSet(origin, sport, "/api/nfl/rankings", NFL_MARKETS, day)),
+      ...(await marketSet(origin, sport, "/api/nfl/rankings", NFL_ACTIVE_MARKETS, day)),
     );
   } else if (sport === "cfb") {
     results.push(

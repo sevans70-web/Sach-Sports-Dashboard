@@ -22,7 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <SiteHeader />
-        {children}
+        <div className="ssRouteSurface">{children}</div>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
-import { NFL_MARKETS, type NflMarketKey, type NflRankingRow, type NflRosterPlayer, cleanName, safeNumber } from "@/lib/nfl";
+import { NFL_MARKETS, NFL_ACTIVE_MARKETS, type NflMarketKey, type NflRankingRow, type NflRosterPlayer, cleanName, safeNumber } from "@/lib/nfl";
 
 const ESPN_SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 const ESPN_STATISTICS="https://site.api.espn.com/apis/site/v2/sports/football/nfl/statistics";
@@ -32,7 +32,7 @@ const SGO_STATS:Record<NflMarketKey,string[]>={
   receptions:["receptions","receiving_receptions","receivingReceptions","player_receptions"],
   rushing_receiving_yards:["rushing_receiving_yards","rushingReceivingYards","rush+receiving yards","rush_receiving_yds","rushing+receiving yards"],
   anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
-  first_td:["firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
+  first_td:["firstTouchdownScorer","first_touchdown_scorer","firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
   q1_passing_yards:["passing_yards_1q","passing1qyards","1q passing yards","first quarter passing yards"],
   q1_receiving_yards:["receiving_yards_1q","receiving1qyards","1q receiving yards","first quarter receiving yards"],
   q1_receptions:["receptions_1q","receptions1q","1q receptions","first quarter receptions"],
@@ -234,8 +234,8 @@ function sgoOdds(e:any){
 }
 function sgoMatchup(e:any){
   const t=e.teams||{};
-  const away=e.awayTeamName||e.awayTeam||t.away?.name;
-  const home=e.homeTeamName||e.homeTeam||t.home?.name;
+  const away=e.awayTeamName||e.awayTeam||t.away?.names?.long||t.away?.name;
+  const home=e.homeTeamName||e.homeTeam||t.home?.names?.long||t.home?.name;
   return away&&home?`${away} @ ${home}`:String(e.name||e.eventName||"");
 }
 
@@ -260,7 +260,7 @@ export async function getNflMarketRows(market:NflMarketKey){
           const side=String(o.sideID||o.sideId||o.side||o.outcome||"").toLowerCase();
           if(!["anytime_td","first_td"].includes(market)&&side&&side!=="over")continue;
           if(["anytime_td","first_td"].includes(market)&&["no","under"].includes(side))continue;
-          const playerName=sgoPlayerName(o);
+          const playerName=sgoPlayerName(o)||supplementPlayerName(e,o);
           if(!playerName)continue;
           const line=sgoLine(o);
           const price=sgoPrice(o);
@@ -522,7 +522,7 @@ export async function getNflRankings(market:NflMarketKey):Promise<NflRankingRow[
 }
 
 export async function getPropQualifiedGames(){
-  const markets:NflMarketKey[]=NFL_MARKETS.map(x=>x[0]);
+  const markets:NflMarketKey[]=NFL_ACTIVE_MARKETS.map(x=>x[0]);
   const all=await Promise.all(markets.map(async m=>[m,await getNflMarketRows(m)] as const));
   const map=new Map<string,{matchup:string;props:NflMarketKey[]}>();
   for(const [m,rows] of all){
@@ -656,3 +656,4 @@ export async function getNflGameIntelligence(gameId:string,availableProps:NflMar
     leaders,
   };
 }
+import {sgoPlayerName as supplementPlayerName} from "@/lib/sgo-supplement";

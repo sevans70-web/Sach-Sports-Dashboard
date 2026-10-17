@@ -118,7 +118,7 @@ export function SportsNav({ active }: { active: SportKey }) {
   return (
     <nav className="ssSportsNav" aria-label="Sports dashboards">
       <Link href="/" className="ssHomeNavLink" style={{color:"#f3cc70",fontWeight:900}}>HOME</Link>
-      {SPORTS.map((s) => (
+      {SPORTS.filter(s=>VISIBLE_SPORTS.includes(s.key)).map((s) => (
         <Link key={s.key} href={s.href} className={s.key === active ? "active" : ""}>
           {s.label}
         </Link>
@@ -368,3 +368,4 @@ export function UpdatedStamp({ value, preview=true }: { value?: string | Date | 
     </>
   );
 }
+import {VISIBLE_SPORTS} from "@/lib/dashboard-contract";

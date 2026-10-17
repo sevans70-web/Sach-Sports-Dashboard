@@ -11,7 +11,7 @@ const MARKET_ALIASES:Record<CfbMarketKey,string[]>={
   receiving_yards:["receiving_yards","receivingyards","reception_yards","receptionyards","player_reception_yds"],
   receptions:["receptions","receiving_receptions","receivingreceptions","player_receptions"],
   anytime_td:["anytime_td","anytime_touchdown","anytime_touchdown_scorer","touchdown_scorer","touchdowns","player_anytime_td"],
-  first_td:["first_td","first_touchdown","first_touchdown_scorer","first_scorer","player_1st_td"],
+  first_td:["first_td","first_td_scorer","firstTouchdownScorer","first_touchdown","first_touchdown_scorer","first_scorer","player_1st_td"],
 };
 
 function norm(v:any){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}
