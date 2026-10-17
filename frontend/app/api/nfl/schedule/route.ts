@@ -32,7 +32,7 @@ export async function GET(){
 
     // Keep the weekly slate visible. Live games rise to the top, upcoming games
     // follow, and completed games stay visible at the bottom as FINAL.
-    const baseGames=orderGames(qualified.length?qualified:decorated);
+    const baseGames=orderGames(decorated);
     const rosterCache=new Map<string,Promise<any>>();
     const roster=(id:string)=>{
       if(!id)return Promise.resolve({players:[]});
@@ -45,7 +45,7 @@ export async function GET(){
       return {...g,awayQb:firstQb(awayRoster),homeQb:firstQb(homeRoster)};
     }));
     const totalLineups=games.length*2;
-    const confirmedLineups=games.filter((g:any)=>g.state==="in"||g.completed||g.state==="post").length*2;
+    const confirmedLineups=games.reduce((n:number,g:any)=>n+Number(g.awayLineupConfirmed===true)+Number(g.homeLineupConfirmed===true),0);
     const weekNumber=games.map((g:any)=>Number(g.weekNumber||0)).find((n:number)=>n>0)||null;
 
     return NextResponse.json({
@@ -56,7 +56,7 @@ export async function GET(){
       confirmedLineups,
       pendingLineups:Math.max(0,totalLineups-confirmedLineups),
       weekNumber,
-      filterMode:qualified.length?"prop_qualified":"schedule_fallback",
+      filterMode:"full_week",
       updatedAt:new Date().toISOString(),
     });
   }catch(e){

@@ -141,13 +141,13 @@ export async function GET(req:NextRequest){
               changed=true;
             }else{
               const actual=actualFor(payload,row);
-              if(actual==null){
+              if(actual==null&&!findPlayer(payload,row)){
                 // A final box score with no player row means the wager is not
                 // scoreable from an appearance; keep it out of hit rate.
                 row.status="void";
                 row.gradedAt=new Date().toISOString();
                 changed=true;
-              }else{
+              }else if(actual!=null){
                 row.actual=actual;
                 row.status=settle(row,actual);
                 row.gradedAt=new Date().toISOString();

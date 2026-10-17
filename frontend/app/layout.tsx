@@ -3,9 +3,8 @@ import "./globals.css";
 import "./theme.css";
 import "./history-ui-fixes.css";
 import "./portal-no-flash.css";
-import { PredictionPerformancePortal } from "@/components/prediction-performance-portal";
-import { PlayerRankingsPortal } from "@/components/player-rankings-portal";
-import { RoutePreloader } from "@/components/route-preloader";
+import {SiteHeader} from "@/components/site-header";
+import "./dashboard-shell.css";
 
 export const metadata: Metadata = {
   title: "Sach Sports",
@@ -22,10 +21,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <RoutePreloader />
+        <SiteHeader />
         {children}
-        <PredictionPerformancePortal />
-        <PlayerRankingsPortal />
       </body>
     </html>
   );

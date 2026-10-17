@@ -1,4 +1,2 @@
-import {NhlDashboard} from "@/components/nhl-dashboard";
-import {loadNhlOverview} from "@/lib/nhl";
-export const dynamic="force-dynamic";
-export default async function NhlPage(){const data=await loadNhlOverview();return <NhlDashboard data={data}/>}
+import {SportsDashboard} from "@/components/sports-dashboard";
+export default function Page(){return <SportsDashboard sport="nhl"/>}

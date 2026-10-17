@@ -1,3 +1,4 @@
+import {basketballSummaryActual,basketballLogActual} from "@/lib/basketball-settlement";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -84,14 +85,7 @@ function firstBasketActual(payload:any,p:SavedNbaPrediction){
 }
 function summaryActual(payload:any,p:SavedNbaPrediction,market:NbaMarketKey){
   if(market==="first_basket")return firstBasketActual(payload,p);
-  const pts=()=>statFromSummary(payload,p,["PTS","Points"]);
-  const reb=()=>statFromSummary(payload,p,["REB","Rebounds"]);
-  const ast=()=>statFromSummary(payload,p,["AST","Assists"]);
-  const threes=()=>statFromSummary(payload,p,["3PM","3PT","3PTM","Three Point Field Goals Made"]);
-  const stl=()=>statFromSummary(payload,p,["STL","Steals"]);
-  const blk=()=>statFromSummary(payload,p,["BLK","Blocks"]);
-  const add=(...xs:(number|null)[])=>xs.some(x=>x==null)?null:xs.reduce<number>((a,b)=>a+(b??0),0);
-  return market==="points"?pts():market==="rebounds"?reb():market==="assists"?ast():market==="threes_made"?threes():market==="steals"?stl():market==="blocks"?blk():market==="pts_rebs_asts"?add(pts(),reb(),ast()):market==="pts_rebs"?add(pts(),reb()):market==="pts_asts"?add(pts(),ast()):add(reb(),ast());
+  return basketballSummaryActual(payload,p,market);
 }
 
 function gamelogIndexes(payload:any,market:NbaMarketKey){
@@ -150,7 +144,7 @@ export async function GET(req:NextRequest){
         if(a==null&&/^\d+$/.test(String(p.playerId||""))){
           let logPayload=gamelogCache.get(String(p.playerId));
           if(logPayload===undefined){logPayload=await gamelog(String(p.playerId));gamelogCache.set(String(p.playerId),logPayload)}
-          a=gamelogActual(logPayload,market,day);
+          a=basketballLogActual(logPayload,p,market,day);
         }
         if(a==null){graded.push(p);continue}
         graded.push({...p,actual:a,status:settle(p,a),gradedAt:new Date().toISOString()} as SavedNbaPrediction);

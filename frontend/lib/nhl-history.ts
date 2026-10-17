@@ -1,5 +1,6 @@
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {cleanNhlName,type NhlMarketKey} from "@/lib/nhl";
+import {withHistoryLock} from "@/lib/history-lock";
 
 export type SavedNhlPrediction={
   key:string; gameDate:string; gameTime:string; gameId:string; matchup:string; market:NhlMarketKey;
@@ -34,8 +35,13 @@ export async function getNhlPredictions(m:NhlMarketKey,day:string){
   return {connected:true,writable:true,predictions};
 }
 
-export async function saveNhlSlate(m:NhlMarketKey,rows:any[],slateStarted:boolean){
-  const day=nhlDay(new Date()), old=await getNhlPredictions(m,day), now=new Date().toISOString();
+export async function saveNhlSlate(m:NhlMarketKey,rows:any[],_slateStarted:boolean){
+  const groups=new Map<string,any[]>();for(const row of rows.slice(0,25)){const day=nhlDay(row.gameTime||new Date()),group=groups.get(day)||[];group.push(row);groups.set(day,group)}
+  const results=await Promise.all([...groups].map(([day,bucket])=>withHistoryLock(`nhl|${m}|${day}`,()=>saveNhlDay(m,bucket,day))));
+  return {ok:results.every(r=>r.ok),predictions:results.flatMap(r=>r.predictions)};
+}
+async function saveNhlDay(m:NhlMarketKey,rows:any[],day:string){
+  const old=await getNhlPredictions(m,day), now=new Date().toISOString();
   const existing=new Map(old.predictions.map(p=>[p.key,p]));
   const next:SavedNhlPrediction[]=[];
   for(const row of rows.slice(0,25)){
@@ -43,22 +49,29 @@ export async function saveNhlSlate(m:NhlMarketKey,rows:any[],slateStarted:boolea
     const key=`${day}|${m}|${row.playerId}|${cleanNhlName(row.matchup||"")}`;
     const prior=existing.get(key);
     const rowStarted=row.gameState==="in"||row.gameState==="post"||Boolean(row.gameTime&&Date.parse(row.gameTime)<=Date.now()&&!/postponed|delayed/i.test(row.gameStatus||""));
-    if(slateStarted&&prior){next.push(prior.frozenAt?prior:{...prior,frozenAt:now});continue}
+    const priorStarted=Boolean(prior?.gameTime&&Date.parse(prior.gameTime)<=Date.now());
+    if(prior&&(rowStarted||priorStarted||prior.status!=="pending")){next.push(prior.frozenAt?prior:{...prior,frozenAt:now});continue}
     next.push({
       key,gameDate:day,gameTime:String(row.gameTime||""),gameId:String(row.gameId||""),matchup:String(row.matchup||""),market:m,
       playerId:String(row.playerId),playerName:String(row.playerName||""),teamName:String(row.teamName||""),teamLogo:String(row.teamLogo||""),headshot:String(row.headshot||""),
       sportsbookLine:row.sportsbookLine==null?null:Number(row.sportsbookLine),modelProjection:row.modelProjection==null?null:Number(row.modelProjection),modelProbability:row.modelProbability==null?null:Number(row.modelProbability),
       pickSide:row.prediction==="OVER"||row.prediction==="UNDER"?row.prediction:null,giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),rank:Number(row.rank||0)||null,
-      savedAt:now,status:rowStarted?"void":"pending",actual:null,gradedAt:rowStarted?now:null,frozenAt:slateStarted?now:null,recoveredAfterStart:rowStarted||undefined
+      savedAt:now,status:rowStarted?"void":"pending",actual:null,gradedAt:rowStarted?now:null,frozenAt:rowStarted?now:null,recoveredAfterStart:rowStarted||undefined
     });
   }
-  // Once the slate starts, never replace the frozen Top 25 with a fresh board.
-  const out=slateStarted&&old.predictions.length?old.predictions.map(p=>p.frozenAt?p:{...p,frozenAt:now}):next;
+  // Lock each game at its own puck drop. An earlier game must not freeze
+  // unposted lines for all later games. Keep every older record in history.
+  const merged=new Map(old.predictions.map(p=>[p.key,p]));for(const p of next)merged.set(p.key,p);
+  const out=[...merged.values()];
   runtime.set(rk(m,day),out);
   const ok=await writeDurableHistory("nhl",String(m),day,out);
   return {ok,predictions:out};
 }
 
 export async function saveNhlGrades(m:NhlMarketKey,day:string,predictions:SavedNhlPrediction[]){
-  runtime.set(rk(m,day),predictions);return writeDurableHistory("nhl",String(m),day,predictions);
+ return withHistoryLock(`nhl|${m}|${day}`,async()=>{
+  const current=await getNhlPredictions(m,day),merged=new Map(current.predictions.map(p=>[p.key,p]));
+  for(const p of predictions){const old=merged.get(p.key);if(!old)merged.set(p.key,p);else if(old.status==="pending"&&p.status!=="pending")merged.set(p.key,{...old,status:p.status,actual:p.actual,gradedAt:p.gradedAt});}
+  const out=[...merged.values()];runtime.set(rk(m,day),out);return writeDurableHistory("nhl",String(m),day,out);
+ });
 }

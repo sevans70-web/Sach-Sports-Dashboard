@@ -132,8 +132,6 @@ export function IntelligenceHero({ sport }: { sport: SportKey }) {
 
   return (
     <>
-      <BrandBar />
-      <SportsNav active={sport} />
       <section
         className={`ssHero ssHero-${sport} ssHeroFinal`}
         aria-label={`${c.title}. ${c.message}`}
@@ -141,6 +139,8 @@ export function IntelligenceHero({ sport }: { sport: SportKey }) {
       >
         <img
           className="ssHeroFinalImage"
+          width={871}
+          height={490}
           src={HERO_ART[sport]}
           alt={`${c.title}. ${c.message}`}
         />
@@ -197,7 +197,7 @@ function statusText(game: PreviewGame) {
   return "Scheduled";
 }
 
-function GamesPreviewCard({ game }: { game: PreviewGame }) {
+export function GamesPreviewCard({ game }: { game: PreviewGame }) {
   const when = localWhen(game.date);
   const awayAbbr = shortTeamAbbr(game.awayAbbr);
   const homeAbbr = shortTeamAbbr(game.homeAbbr);
@@ -339,7 +339,7 @@ function AutoGamesPreview() {
   return sport ? <GamesPreview sport={sport} /> : null;
 }
 
-export function UpdatedStamp({ value }: { value?: string | Date | null }) {
+export function UpdatedStamp({ value, preview=true }: { value?: string | Date | null; preview?:boolean }) {
   const candidate = value ? new Date(value) : null;
   const hasTimestamp = Boolean(candidate && !Number.isNaN(candidate.getTime()));
   const d = hasTimestamp ? candidate! : new Date(0);
@@ -364,7 +364,7 @@ export function UpdatedStamp({ value }: { value?: string | Date | null }) {
         </svg>
         <span>{hasTimestamp ? `Last updated ${date} at ${time} ET` : "Waiting for current data…"}</span>
       </div>
-      <AutoGamesPreview />
+      {preview ? <AutoGamesPreview /> : null}
     </>
   );
 }

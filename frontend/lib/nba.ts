@@ -1,4 +1,5 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {statNumber} from "@/lib/provider-fetch";
 export const NBA_SEASON = "2026"; // 2025-26 completed regular-season baseline
 
 export const NBA_MARKETS = [
@@ -25,7 +26,7 @@ const totalAliases={minutesPerGame:["minutes","min"],pointsPerGame:["points","pt
 function record(v:unknown):JsonRecord{return v&&typeof v==="object"&&!Array.isArray(v)?v as JsonRecord:{}}
 function list(v:unknown):unknown[]{return Array.isArray(v)?v:[]}
 function text(v:unknown):string{return typeof v==="string"||typeof v==="number"?String(v):""}
-function number(v:unknown):number|null{if(typeof v==="number"&&Number.isFinite(v))return v;const n=Number(String(v??"").replaceAll(",",""));return Number.isFinite(n)?n:null}
+function number(v:unknown):number|null{return statNumber(v)}
 function normalized(v:unknown):string{return text(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
 function firstStat(stats:Map<string,number>,aliases:readonly string[]):number|null{for(const alias of aliases){const v=stats.get(alias);if(v!==undefined)return v}return null}
 function perGame(stats:Map<string,number>,field:keyof typeof averageAliases,games:number|null):number|null{const avg=firstStat(stats,averageAliases[field]);if(avg!==null)return avg;const total=firstStat(stats,totalAliases[field]);return total!==null&&games&&games>0?total/games:null}
@@ -36,7 +37,7 @@ async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{const
 async function loadPlayers():Promise<NbaPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:NBA_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
-async function loadGames():Promise<NbaGame[]>{
+export async function loadNbaGames():Promise<NbaGame[]>{
  // ESPN's scoreboard endpoint is reliable for a single YYYYMMDD date. Large
  // date ranges can return an empty events array during the preseason/offseason,
  // so query individual days instead. This window includes recent games for live/
@@ -53,7 +54,7 @@ async function loadGames():Promise<NbaGame[]>{
  }
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
-export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadNbaGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
 export function nbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/nba/players/full/${playerId}.png`}
 export function cleanNbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:NbaPlayer|undefined,market:NbaMarketKey):number|null{

@@ -1,9 +1,12 @@
 import {cleanCbbName,loadCbbOverview,playerBaseline,type CbbMarketKey,CBB_MARKETS,cbbHeadshot} from "@/lib/cbb";
 import {getCbbPredictions,saveCbbPredictions} from "@/lib/cbb-history";
+import {getOwlsPayload} from "@/lib/owls-provider";
+import {nullableNumber} from "@/lib/provider-fetch";
+import {activeRankingSlate} from "@/lib/active-ranking-slate";
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/cbb/props";
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
-const safe=(v:any)=>{const n=Number(v);return Number.isFinite(n)?n:null};
+const safe=nullableNumber;
 function median(xs:number[]){const a=xs.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2}
 function americanProb(v:any){const n=Number(v);if(!Number.isFinite(n)||n===0)return null;return Math.round((n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100))*1000)/10}
 function marketMatches(v:any,m:CbbMarketKey){const x=norm(v);const aliases:Record<CbbMarketKey,string[]>={
@@ -18,10 +21,7 @@ export function torontoCbbDay(v:Date|string){
 }
 
 async function fetchOwlsPayload(){
- const key=process.env.OWLS_INSIGHT_API_KEY;if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
- const r=await fetch(OWLS_URL,{headers:{Authorization:`Bearer ${key}`,Accept:"application/json"},cache:"no-store"});
- if(!r.ok)throw new Error(`Owls Insight returned ${r.status}`);
- return r.json();
+ return getOwlsPayload("cbb");
 }
 
 function boardForMarket(payload:any,market:CbbMarketKey){
@@ -85,8 +85,8 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
  const board=boardForMarket(payload,market);const byName=new Map(overview.players.map((p:any)=>[cleanCbbName(p.playerName),p]));const today=torontoCbbDay(new Date());
  const uniqueBoard=[...board.reduce((acc:Map<string,any>,b:any)=>{const key=cleanCbbName(b.playerName);const existing=acc.get(key);if(!existing||Number(b.bookmakerCount||0)>Number(existing.bookmakerCount||0))acc.set(key,b);return acc},new Map<string,any>()).values()] as any[];
  const rows=uniqueBoard.map((b:any)=>{
-  const p:any=byName.get(cleanCbbName(b.playerName));const team=String(b.playerTeam||p?.team||"").toUpperCase();const game=gameForRow(overview.games,team,b);if(!game)return null;
-  const gameDay=torontoCbbDay(game.tipoff||"");const active=game.state==="in"||(gameDay===today&&game.state!=="post");if(!active)return null;
+  const p:any=byName.get(cleanCbbName(b.playerName));const team=String(b.playerTeam||p?.team||"").toUpperCase();const game=gameForRow(activeRankingSlate(overview.games,torontoCbbDay),team,b);if(!game)return null;
+  const gameDay=torontoCbbDay(game.tipoff||"");if(b.gameTime&&torontoCbbDay(b.gameTime)!==gameDay)return null;
   const actualMatchup=`${game.awayTeam} @ ${game.homeTeam}`,actualTime=game.tipoff||b.gameTime,teamLogo=String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo;
   const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;
   const reliability=Math.min(1,Math.max(0,(p?.gamesPlayed??0)/30));const edgePct=edge!=null&&b.line?Math.min(1,Math.abs(edge)/Math.max(1,Math.abs(b.line))):0;

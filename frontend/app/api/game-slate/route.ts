@@ -1,9 +1,11 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
-import { loadNbaOverview } from "@/lib/nba";
-import { loadWnbaOverview } from "@/lib/wnba";
-import { loadNhlOverview } from "@/lib/nhl";
-import { loadCbbOverview } from "@/lib/cbb";
+import { loadNbaGames } from "@/lib/nba";
+import { loadWnbaGames } from "@/lib/wnba";
+import { loadNhlGames } from "@/lib/nhl";
+import { loadCbbGames } from "@/lib/cbb";
+import {getEspnNflSchedule} from "@/lib/nfl-server";
+import {dashboardSlate} from "@/lib/dashboard-contract";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -440,24 +442,7 @@ function slateSort(games:Game[]) {
   });
 }
 
-function dailyWindow(games:Game[]) {
-  const today = localDay(new Date());
-  const todays = games.filter(g => g.date && localDay(g.date) === today);
-
-  const future = games
-    .filter(g => g.date && localDay(g.date) > today && g.state === "pre")
-    .sort((a,b)=>new Date(a.date).getTime()-new Date(b.date).getTime());
-
-  const nextDay = future.length ? localDay(future[0].date) : "";
-  const next = nextDay ? future.filter(g => localDay(g.date) === nextDay) : [];
-
-  // The dashboard is a current-slate surface, not a weekly archive.
-  // Keep today's live/scheduled/final games, then the next playable day.
-  // Finals are always pushed below live and upcoming games.
-  if(todays.length) return slateSort([...todays, ...next]);
-  if(next.length) return slateSort(next);
-  return slateSort(games.filter(g => g.state !== "post").slice(0,20));
-}
+const dailyWindow=dashboardSlate<Game>;
 
 export async function GET(req:NextRequest) {
   const sport = String(
@@ -481,7 +466,10 @@ export async function GET(req:NextRequest) {
     let games:Game[] = [];
     let weekNumber:number|null = null;
 
-    if(sport === "nfl" || sport === "cfb") {
+    if(sport === "nfl") {
+      games=(await getEspnNflSchedule()).map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)}));
+      weekNumber=games.find(g=>g.weekNumber)?.weekNumber||null;
+    } else if(sport === "cfb") {
       const football = await espnFootball(sport);
       games = dailyWindow(football.games);
       weekNumber = football.weekNumber;
@@ -493,25 +481,25 @@ export async function GET(req:NextRequest) {
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "nba",
-          (await loadNbaOverview()).games.map(game => fromOverview("nba", game))
+          (await loadNbaGames()).map(game => fromOverview("nba", game))
         )
       );
     } else if(sport === "wnba") {
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "wnba",
-          (await loadWnbaOverview()).games.map(game => fromOverview("wnba", game))
+          (await loadWnbaGames()).map(game => fromOverview("wnba", game))
         )
       );
     } else if(sport === "nhl") {
       games = dailyWindow(
-        (await loadNhlOverview()).games.map(game => fromOverview("nhl", game))
+        (await loadNhlGames()).map(game => fromOverview("nhl", game))
       );
     } else if(sport === "cbb") {
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "cbb",
-          (await loadCbbOverview()).games.map(game => fromOverview("cbb", game))
+          (await loadCbbGames()).map(game => fromOverview("cbb", game))
         )
       );
     }

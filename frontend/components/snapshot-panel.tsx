@@ -162,7 +162,7 @@ export function SnapshotPanel(props: {
 }) {
   const { title, metrics, alert } = props;
   const sport = sportFromTitle(title);
-  const helperText = "Always confirm starting lineup";
+  const helperText = props.note || "Always confirm starting lineup";
 
   return (
     <>

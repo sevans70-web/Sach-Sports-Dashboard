@@ -1,4 +1,7 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {statNumber} from "@/lib/provider-fetch";
+import {activeRankingSlate} from "@/lib/active-ranking-slate";
+import {dashboardDay} from "@/lib/dashboard-contract";
 export const CBB_SEASON = "2026"; // 2025-26 completed regular-season baseline
 
 export const CBB_MARKETS = [
@@ -14,7 +17,7 @@ export type CbbPlayer={
   pointsPerGame:number|null;reboundsPerGame:number|null;assistsPerGame:number|null;threesPerGame:number|null;
   stealsPerGame:number|null;blocksPerGame:number|null
 };
-export type CbbGame={gameId:string;tipoff:string|null;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
+export type CbbGame={gameId:string;tipoff:string|null;awayTeamId?:string;homeTeamId?:string;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
 export type CbbOverview={season:string;updatedAt:string;players:CbbPlayer[];games:CbbGame[];warnings:string[]};
 
 type JsonRecord=Record<string,unknown>;
@@ -25,7 +28,7 @@ const totalAliases={minutesPerGame:["minutes","min"],pointsPerGame:["points","pt
 function record(v:unknown):JsonRecord{return v&&typeof v==="object"&&!Array.isArray(v)?v as JsonRecord:{}}
 function list(v:unknown):unknown[]{return Array.isArray(v)?v:[]}
 function text(v:unknown):string{return typeof v==="string"||typeof v==="number"?String(v):""}
-function number(v:unknown):number|null{if(typeof v==="number"&&Number.isFinite(v))return v;const n=Number(String(v??"").replaceAll(",",""));return Number.isFinite(n)?n:null}
+function number(v:unknown):number|null{return statNumber(v)}
 function normalized(v:unknown):string{return text(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
 function firstStat(stats:Map<string,number>,aliases:readonly string[]):number|null{for(const alias of aliases){const v=stats.get(alias);if(v!==undefined)return v}return null}
 function perGame(stats:Map<string,number>,field:keyof typeof averageAliases,games:number|null):number|null{const avg=firstStat(stats,averageAliases[field]);if(avg!==null)return avg;const total=firstStat(stats,totalAliases[field]);return total!==null&&games&&games>0?total/games:null}
@@ -36,24 +39,49 @@ async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{const
 async function loadPlayers():Promise<CbbPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:CBB_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
-async function loadGames():Promise<CbbGame[]>{
+export async function loadCbbGames():Promise<CbbGame[]>{
  // ESPN's scoreboard endpoint is reliable for a single YYYYMMDD date. Large
  // date ranges can return an empty events array during the preseason/offseason,
  // so query individual days instead. This window includes recent games for live/
  // final state plus the next 45 days, which comfortably reaches the next slate.
  const now=new Date();
  const dates=Array.from({length:48},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
- const payloads=await Promise.all(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,900).catch(()=>({events:[]} as JsonRecord))));
+ const payloads=await Promise.all(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&groups=50&limit=1000`,60).catch(()=>({events:[]} as JsonRecord))));
  const seen=new Set<string>();const games:CbbGame[]=[];
  for(const payload of payloads)for(const v of list(payload.events)){
   const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;
   const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;
   const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);
-  seen.add(id);games.push({gameId:id,tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
+  seen.add(id);games.push({gameId:id,awayTeamId:text(at.id),homeTeamId:text(ht.id),tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
  }
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
-export async function loadCbbOverview():Promise<CbbOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("college basketball player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The college basketball schedule is temporarily unavailable.");return{season:CBB_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+async function currentSlatePlayers(players:CbbPlayer[],games:CbbGame[]){
+ const active=activeRankingSlate(games,dashboardDay),teams=new Map<string,string>();
+ for(const g of active){if(g.awayTeamId)teams.set(g.awayTeamId,g.awayAbbr);if(g.homeTeamId)teams.set(g.homeTeamId,g.homeAbbr);}
+ if(!teams.size)return [];
+ const rosters=new Map<string,string>();let successful=0;
+ const entries=[...teams];
+ for(let i=0;i<entries.length;i+=6)await Promise.all(entries.slice(i,i+6).map(async([id,abbr])=>{
+  try{
+   const p=await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/${id}/roster`,900);
+   const walk=(items:any[])=>{for(const item of items){if(Array.isArray(item?.items))walk(item.items);const athlete=item.athlete||item;if(athlete?.id)rosters.set(String(athlete.id),abbr)}};
+   walk(Array.isArray(p.athletes)?p.athletes:[]);successful++;
+  }catch{}
+ }));
+ // Historical leaders who were drafted or transferred must not be attached to
+ // their old college. Only current provider roster membership verifies a team.
+ return successful?players.filter(p=>rosters.has(String(p.playerId))).map(p=>({...p,team:rosters.get(String(p.playerId))!})):[];
+}
+export async function loadCbbOverview():Promise<CbbOverview>{
+ const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadCbbGames()]);
+ const baseline=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];
+ if(pr.status==="rejected")warnings.push("College basketball player statistics are temporarily unavailable.");
+ if(gr.status==="rejected")warnings.push("The college basketball schedule is temporarily unavailable.");
+ const players=await currentSlatePlayers(baseline,games);
+ if(baseline.length&&!players.length)warnings.push("No current-roster player baseline is available for the next slate. Historical players are excluded.");
+ return {season:CBB_SEASON,updatedAt:new Date().toISOString(),players,games,warnings};
+}
 export function cbbHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/cbb/players/full/${playerId}.png`}
 export function cleanCbbName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:CbbPlayer|undefined,market:CbbMarketKey):number|null{

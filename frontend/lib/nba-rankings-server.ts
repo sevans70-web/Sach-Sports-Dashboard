@@ -1,4 +1,5 @@
 import {getOwlsPayload} from "@/lib/owls-provider";
+import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {
@@ -121,10 +122,7 @@ function boardForMarket(payload:any,market:NbaMarketKey){
 /* Only games scheduled for today's Toronto/Eastern calendar date belong in
    today's NBA Top 25. Tomorrow's games remain available in the schedule. */
 function rankingSlateGames(overview:any){
- const today=torontoNbaDay(new Date());
- return (overview.games||[])
-  .filter((game:any)=>game?.tipoff&&torontoNbaDay(game.tipoff)===today)
-  .sort((a:any,b:any)=>new Date(a.tipoff).getTime()-new Date(b.tipoff).getTime());
+ return activeRankingSlate<any>(overview.games||[],torontoNbaDay);
 }
 
 type SlateRosterEntry={

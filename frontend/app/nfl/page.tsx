@@ -1,1 +1,2 @@
-import NflDashboard from "@/components/nfl-dashboard";export const dynamic="force-dynamic";export default function NflPage(){return <NflDashboard/>}
+import {SportsDashboard} from "@/components/sports-dashboard";
+export default function Page(){return <SportsDashboard sport="nfl"/>}

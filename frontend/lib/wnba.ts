@@ -1,4 +1,5 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {statNumber} from "@/lib/provider-fetch";
 export const WNBA_SEASON = "2026";
 
 export const WNBA_MARKETS = [
@@ -25,7 +26,7 @@ const totalAliases={minutesPerGame:["minutes","min"],pointsPerGame:["points","pt
 function record(v:unknown):JsonRecord{return v&&typeof v==="object"&&!Array.isArray(v)?v as JsonRecord:{}}
 function list(v:unknown):unknown[]{return Array.isArray(v)?v:[]}
 function text(v:unknown):string{return typeof v==="string"||typeof v==="number"?String(v):""}
-function number(v:unknown):number|null{if(typeof v==="number"&&Number.isFinite(v))return v;const n=Number(String(v??"").replaceAll(",",""));return Number.isFinite(n)?n:null}
+function number(v:unknown):number|null{return statNumber(v)}
 function normalized(v:unknown):string{return text(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
 function firstStat(stats:Map<string,number>,aliases:readonly string[]):number|null{for(const alias of aliases){const v=stats.get(alias);if(v!==undefined)return v}return null}
 function perGame(stats:Map<string,number>,field:keyof typeof averageAliases,games:number|null):number|null{const avg=firstStat(stats,averageAliases[field]);if(avg!==null)return avg;const total=firstStat(stats,totalAliases[field]);return total!==null&&games&&games>0?total/games:null}
@@ -36,13 +37,13 @@ async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{const
 async function loadPlayers():Promise<WnbaPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:WNBA_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
-async function loadGames():Promise<WnbaGame[]>{
+export async function loadWnbaGames():Promise<WnbaGame[]>{
  const now=new Date();const days=Array.from({length:17},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()+i-2);return dateKey(d)});
  const payloads=await Promise.all(days.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,300).catch(()=>({events:[]} as JsonRecord))));
  const seen=new Set<string>();const games:WnbaGame[]=[];for(const payload of payloads)for(const v of list(payload.events)){const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);seen.add(id);games.push({gameId:id,tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});}
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
-export async function loadWnbaOverview():Promise<WnbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("WNBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The WNBA schedule is temporarily unavailable.");return{season:WNBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+export async function loadWnbaOverview():Promise<WnbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadWnbaGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("WNBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The WNBA schedule is temporarily unavailable.");return{season:WNBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
 export function wnbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/wnba/players/full/${playerId}.png`}
 export function cleanWnbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:WnbaPlayer|undefined,market:WnbaMarketKey):number|null{

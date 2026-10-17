@@ -3,6 +3,7 @@ import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {cleanNhlName,loadNhlOverview,nhlHeadshot,playerBaseline,todaysNhlGames,type NhlMarketKey} from "@/lib/nhl";
 import {getNhlPredictions,nhlDay,saveNhlSlate} from "@/lib/nhl-history";
+import {activeRankingSlate} from "@/lib/active-ranking-slate";
 const OWLS_URL="https://api.owlsinsight.com/api/v1/nhl/props";
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const num=(v:any)=>{return nullableNumber(v)};
@@ -12,22 +13,20 @@ async function owls(){return getOwlsPayload("nhl")}
 function board(payload:any,m:NhlMarketKey){const map=new Map<string,any>();for(const g of Array.isArray(payload?.data)?payload.data:[]){const away=String(g.awayTeam||g.away_team||""),home=String(g.homeTeam||g.home_team||""),matchup=away&&home?`${away} @ ${home}`:String(g.name||""),gameTime=String(g.commenceTime||g.commence_time||g.startTime||g.date||"");for(const book of Array.isArray(g.books)?g.books:[])for(const p of Array.isArray(book.props)?book.props:[]){if(!match(p.category??p.market??p.type,m))continue;const playerName=String(p.playerName||p.player_name||p.name||"").trim(),line=num(p.line??p.point??p.total);if(!playerName||line==null)continue;const k=`${cleanNhlName(playerName)}|${cleanNhlName(matchup)}`,cur=map.get(k)||{playerName,matchup,gameTime,lines:[],books:new Set<string>()};cur.lines.push(line);cur.books.add(String(book.key||book.name||"book"));map.set(k,cur)}}return [...map.values()].map((x:any)=>({...x,line:median(x.lines),bookmakerCount:x.books.size}))}
 export async function buildNhlRankings(m:NhlMarketKey){
  const [overview,payload]=await Promise.all([loadNhlOverview(),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
- const todayGames=todaysNhlGames(overview.games),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
+ const todayGames=activeRankingSlate(overview.games,nhlDay),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
  for(const x of b){const p=byName.get(cleanNhlName(x.playerName));if(!p||!activeTeams.has(p.team))continue;const game=todayGames.find(g=>[g.awayAbbr,g.homeAbbr].includes(p.team));if(!game)continue;const base=playerBaseline(p,m),edge=base!=null&&x.line!=null?base-x.line:null,reliability=Math.min(1,(p.gamesPlayed||0)/30),gi=Math.round((55+Math.min(25,Math.abs(edge||0)*7)+reliability*15)*10)/10;rows.push({playerId:p.playerId,playerName:p.playerName,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:x.line,bookmakerCount:x.bookmakerCount,modelProjection:base,modelProbability:edge==null?null:Math.max(50,Math.min(82,Math.round((55+Math.abs(edge)*5+reliability*5)*10)/10)),giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:`${overview.season} baseline ${base==null?"loading":base.toFixed(2)} vs verified line ${x.line}. GI adds recent-season sample reliability, role and active matchup context.`})}
  const used=new Set(rows.map(x=>cleanNhlName(x.playerName)));
  for(const p of [...overview.players].sort((a,b)=>(playerBaseline(b,m)??-1)-(playerBaseline(a,m)??-1))){if(rows.length>=25)break;if(used.has(cleanNhlName(p.playerName))||!activeTeams.has(p.team))continue;const base=playerBaseline(p,m);if(base==null)continue;const game=todayGames.find(g=>[g.awayAbbr,g.homeAbbr].includes(p.team));if(!game)continue;rows.push({playerId:p.playerId,playerName:p.playerName,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:null,bookmakerCount:0,modelProjection:base,modelProbability:null,giScore:Math.round((55+Math.min(1,(p.gamesPlayed||0)/30)*15+Math.min(20,base*3))*10)/10,prediction:null,marketBacked:false,summary:`${overview.season} statistical baseline ${base.toFixed(2)}. No verified sportsbook line is currently available, so this is a model-only active-slate ranking and is not graded.`})}
  const ranked=rows.sort((a,b)=>b.giScore-a.giScore).slice(0,25).map((x,i)=>({...x,rank:i+1}));
- const slateStarted=todayGames.some(g=>g.state==="in"||g.state==="post"||(g.tipoff&&Date.parse(g.tipoff)<=Date.now()));
- const day=nhlDay(new Date());
- if(!slateStarted){await saveNhlSlate(m,ranked,false);return{success:true,market:m,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API active-slate model (Owls NHL props unavailable)"}}
- const saved=await getNhlPredictions(m,day);
- const frozen=(saved.predictions.length?saved.predictions:(await saveNhlSlate(m,ranked,true)).predictions).sort((a,b)=>Number(a.rank||999)-Number(b.rank||999)).slice(0,25).map((p,i)=>{
-   const game=todayGames.find(g=>String(g.gameId)===String(p.gameId))||todayGames.find(g=>p.matchup.includes(g.awayTeam)&&p.matchup.includes(g.homeTeam));
-   return {rank:Number(p.rank||0)||i+1,playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamLogo:p.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,gameId:p.gameId,gameState:game?.state||"pre",gameStatus:game?.status||"Scheduled",headshot:p.headshot||"",sportsbookLine:p.sportsbookLine,bookmakerCount:p.bookmakerCount,modelProjection:p.modelProjection,modelProbability:p.modelProbability,giScore:p.giScore,prediction:p.pickSide,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",marketBacked:p.sportsbookLine!=null,frozen:true,lockedAtPuckDrop:true,summary:`Frozen pregame ${m.replaceAll("_"," ")} prediction. Rank, line, projection, confidence and side are locked for today's slate.`};
+ const saved=await saveNhlSlate(m,ranked,false);
+ const byKey=new Map(saved.predictions.map(p=>[String(p.playerId)+"|"+p.gameId,p]));
+ const frozen=ranked.map(row=>{
+   const p=byKey.get(String(row.playerId)+"|"+row.gameId);
+   if(!p)return row;
+   const started=row.gameState==="in"||row.gameState==="post"||Boolean(p.gameTime&&Date.parse(p.gameTime)<=Date.now());
+   return {...row,rank:row.rank,sportsbookLine:p.sportsbookLine,bookmakerCount:p.bookmakerCount,modelProjection:p.modelProjection,modelProbability:p.modelProbability,prediction:p.pickSide,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",marketBacked:p.sportsbookLine!=null,frozen:started,lockedAtPuckDrop:started,summary:started?"Frozen pregame prediction · live game status.":row.summary};
  });
- // Make the lock durable even if the first request arrives right at puck drop.
- await saveNhlSlate(m,frozen,true);
- return{success:true,market:m,rows:frozen,locked:true,updatedAt:new Date().toISOString(),source:"Frozen NHL Top 25 + live NHL game status"};
+ return {success:true,market:m,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
 }
 
 export async function captureAllNhlMarkets(){

@@ -1,5 +1,5 @@
 import {providerFetch} from "@/lib/provider-fetch";
-type Sport="nfl"|"ncaaf"|"nba"|"wnba"|"nhl"|"soccer";
+type Sport="nfl"|"ncaaf"|"nba"|"wnba"|"nhl"|"soccer"|"cbb";
 const cache=new Map<Sport,{expires:number;payload?:any;error?:string}>();
 const pending=new Map<Sport,Promise<any>>();
 /** One short-lived feed snapshot per sport, shared across markets and leagues. */
