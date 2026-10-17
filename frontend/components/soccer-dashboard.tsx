@@ -249,7 +249,7 @@ export function SoccerDashboard() {
         metrics={[
           { label: "Games", value: data.games.length, detail: snapshotGameDetail(data.games.length, liveGames, finalGames), tone: "green", icon: "games" },
           { label: "Lineups", value: `${lineupConfirmed}/${lineupTotal}`, detail: `${lineupConfirmed} confirmed · ${Math.max(0, lineupTotal - lineupConfirmed)} pending`, icon: "lineups" },
-          { label: "Predictions", value: rows.length, detail: "Players", tone: "gold", icon: "predictions" },
+          { label: "Predictions", value: rows.filter(row=>row.marketLine!=null).length, detail: "Verified sportsbook lines", tone: "gold", icon: "predictions" },
         ]}
       />
 

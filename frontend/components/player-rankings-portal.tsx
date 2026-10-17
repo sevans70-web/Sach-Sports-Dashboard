@@ -64,7 +64,13 @@ export function PlayerRankingsPortal() {
         ) as HTMLElement | null) ||
         (sport === "cfb" ? cfbLegacyRankingHost() : null);
 
-      if (!next) return false;
+      if (next === current) return Boolean(next);
+      if (!next) {
+        current?.classList.remove("ssRankingsHost");
+        current = null;
+        setHost(null);
+        return false;
+      }
 
       if (current && current !== next) {
         current.classList.remove("ssRankingsHost");
@@ -76,16 +82,11 @@ export function PlayerRankingsPortal() {
       return true;
     };
 
-    if (!findHost()) {
-      observer = new MutationObserver(() => {
-        if (findHost()) observer?.disconnect();
-      });
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
-    }
+    findHost();
+    // Hydration and client navigation may replace the initial host element.
+    // Keep observing so the shared panel is rebound to the live DOM node.
+    observer = new MutationObserver(findHost);
+    observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       stopped = true;

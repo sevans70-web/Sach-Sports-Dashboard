@@ -340,8 +340,9 @@ function AutoGamesPreview() {
 }
 
 export function UpdatedStamp({ value }: { value?: string | Date | null }) {
-  let d = value ? new Date(value) : new Date();
-  if (Number.isNaN(d.getTime())) d = new Date();
+  const candidate = value ? new Date(value) : null;
+  const hasTimestamp = Boolean(candidate && !Number.isNaN(candidate.getTime()));
+  const d = hasTimestamp ? candidate! : new Date(0);
   const date = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Toronto",
     month: "short",
@@ -361,7 +362,7 @@ export function UpdatedStamp({ value }: { value?: string | Date | null }) {
           <path d="M12 2.75a9.25 9.25 0 1 0 9.25 9.25A9.25 9.25 0 0 0 12 2.75Z" stroke="currentColor" strokeWidth="1.7" />
           <path d="M12 6.8v5.1l3.45 2.05" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <span>{`Last updated ${date} at ${time} ET`}</span>
+        <span>{hasTimestamp ? `Last updated ${date} at ${time} ET` : "Waiting for current data…"}</span>
       </div>
       <AutoGamesPreview />
     </>
