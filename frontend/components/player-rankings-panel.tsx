@@ -2434,6 +2434,10 @@ export function PlayerRankingsPanel({
         <div className={styles.state}>{error}</div>
       ) : null}
 
+      {!loading && displayCards.length > 0 && displayCards.every(card => card.sportsbookLine == null) ? (
+        <div className={styles.state}>Sportsbook lines are unavailable. These are model-watch rankings; betting picks are only saved and graded with verified market data.</div>
+      ) : null}
+
       <div className={styles.cards}>
         {sport === "cfb" && cfbSlate === "all"
           ? cfbAllDayGroups.map((block) => (

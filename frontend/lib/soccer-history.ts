@@ -85,6 +85,11 @@ function statKey(label: unknown): MetricKey | null {
   return map[key] ?? null;
 }
 
+export function soccerPosition(value:unknown){
+ const position=String(value||"").trim().toUpperCase();
+ return ["G","GK","GOALKEEPER","GOALIE"].includes(position)?"GK":position;
+}
+
 function firstString(obj: any, keys: string[]) {
   if (!obj || typeof obj !== "object") return "";
   for (const key of keys) {
@@ -134,7 +139,7 @@ function baseAppearance(
       firstString(athlete?.team, ["displayName", "name"]) ||
       firstString(athleteRow?.team, ["displayName", "name"]) ||
       "",
-    position: String(position || "").toUpperCase(),
+    position: soccerPosition(position),
     starter: Boolean(
       athleteRow?.starter ??
         athleteRow?.isStarter ??
@@ -379,7 +384,7 @@ export function extractRosterPlayers(
         photoUrl: String(athlete?.headshot?.href || athlete?.headshot || ""),
         teamId: context.teamId,
         team: context.team,
-        position: String(position || "").toUpperCase(),
+        position: soccerPosition(position),
       });
       return;
     }

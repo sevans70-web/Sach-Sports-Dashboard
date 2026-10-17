@@ -137,7 +137,7 @@ export function NhlDashboard({data}:{data:NhlOverview}){
       metrics={[
         { label:"Games", value:gamesToday.length, detail:snapshotGameDetail(gamesToday.length,live,finals), tone:"green", icon:"games" },
         { label:"Lineups", value:`${(live+finals)*2}/${gamesToday.length*2}`, detail:`${(live+finals)*2} confirmed · ${Math.max(0,gamesToday.length*2-(live+finals)*2)} pending`, icon:"lineups" },
-        { label:"Predictions", value:r.data.success?rows.length:0, detail:"Players", tone:"gold", icon:"predictions" },
+        { label:"Predictions", value:r.data.success?rows.filter(row=>row.sportsbookLine!=null&&row.prediction).length:0, detail:"Verified sportsbook lines", tone:"gold", icon:"predictions" },
       ]}
     />
 
