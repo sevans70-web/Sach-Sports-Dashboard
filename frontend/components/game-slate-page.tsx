@@ -1708,6 +1708,7 @@ export function GameSlatePage({
 
       const params = new URLSearchParams({
         sport,
+        scope: "calendar",
         league,
       });
 

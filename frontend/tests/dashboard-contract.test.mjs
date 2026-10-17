@@ -13,3 +13,7 @@ test('snapshots count actual distinct verified picks, never multiply a top 25 or
 test('snapshot accepts a genuine zero line but excludes missing lines and other game days',()=>{
  const d=dashboardCounts([{id:'a',date:'2026-10-18T15:00:00Z',state:'pre'}],[{playerId:'1',gameId:'a',sportsbookLine:0,modelProjection:.5},{playerId:'2',gameTime:'2026-10-19T15:00:00Z',sportsbookLine:1,modelProjection:2}]);assert.equal(d.predictions,1);
 });
+test('the full calendar keeps later published games beyond the current dashboard preview',()=>{
+ const now=new Date('2026-10-17T12:00:00-04:00'),games=[{id:'today',date:'2026-10-17T20:00:00Z',state:'pre'},{id:'next',date:'2026-10-18T20:00:00Z',state:'pre'},{id:'later',date:'2026-11-02T20:00:00Z',state:'pre'}];
+ assert.equal(dashboardSlate(games,now).length,2);assert.equal(dashboardSlate(games,now,true).length,3);
+});

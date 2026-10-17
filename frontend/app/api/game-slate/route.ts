@@ -447,7 +447,6 @@ function slateSort(games:Game[]) {
   });
 }
 
-const dailyWindow=dashboardSlate<Game>;
 
 export async function GET(req:NextRequest) {
   const sport = String(
@@ -455,6 +454,8 @@ export async function GET(req:NextRequest) {
   ).toLowerCase() as SportKey;
 
   const league = req.nextUrl.searchParams.get("league") || "eng.1";
+  const calendar=req.nextUrl.searchParams.get("scope")==="calendar";
+  const dailyWindow=(games:Game[])=>dashboardSlate(games,new Date(),calendar);
 
   const allowed:SportKey[] = [
     "mlb","nfl","cfb","nba","wnba","nhl","soccer","cbb"
@@ -472,7 +473,7 @@ export async function GET(req:NextRequest) {
     let weekNumber:number|null = null;
 
     if(sport === "nfl") {
-      games=slateSort((await getEspnNflSchedule()).map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)})));
+      games=calendar?(await espnFootball("nfl")).games:slateSort((await getEspnNflSchedule()).map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)})));
       weekNumber=games.find(g=>g.weekNumber)?.weekNumber||null;
     } else if(sport === "cfb") {
       const football = await espnFootball(sport);
@@ -514,6 +515,7 @@ export async function GET(req:NextRequest) {
       sport,
       league,
       weekNumber,
+      scope:calendar?"calendar":"current",
       games,
       updatedAt:new Date().toISOString(),
     });

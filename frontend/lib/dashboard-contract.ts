@@ -6,13 +6,13 @@ export function dashboardDay(value:Date|string){
  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
  const p=(t:string)=>parts.find(x=>x.type===t)?.value||"";return `${p("year")}-${p("month")}-${p("day")}`;
 }
-export function dashboardSlate<T extends {id?:string;date:string;state:string}>(games:T[],now=new Date()):T[]{
+export function dashboardSlate<T extends {id?:string;date:string;state:string}>(games:T[],now=new Date(),allDates=false):T[]{
  const today=dashboardDay(now),byId=new Map<string,T>();
  for(const g of games)if(g.date&&dashboardDay(g.date))byId.set(g.id||g.date,g);
  const all=[...byId.values()],current=all.filter(g=>g.state==="in"||dashboardDay(g.date)===today);
  const future=all.filter(g=>g.state!=="post"&&dashboardDay(g.date)>today).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
  const next=future[0]?dashboardDay(future[0].date):"";
- const selected=[...current,...future.filter(g=>dashboardDay(g.date)===next)];
+ const selected=allDates?all:[...current,...future.filter(g=>dashboardDay(g.date)===next)];
  const order:Record<string,number>={in:0,pre:1,post:2};
  return selected.sort((a,b)=>(order[a.state]??1)-(order[b.state]??1)||Date.parse(a.date)-Date.parse(b.date));
 }
