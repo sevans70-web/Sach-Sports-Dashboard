@@ -1,4 +1,5 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {successfulPayloads} from "@/lib/provider-batch";
 import {statNumber} from "@/lib/provider-fetch";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {dashboardDay} from "@/lib/dashboard-contract";
@@ -46,7 +47,7 @@ export async function loadCbbGames():Promise<CbbGame[]>{
  // final state plus the next 45 days, which comfortably reaches the next slate.
  const now=new Date();
  const dates=Array.from({length:48},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
- const payloads=await Promise.all(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&groups=50&limit=1000`,60).catch(()=>({events:[]} as JsonRecord))));
+ const payloads=await successfulPayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&groups=50&limit=1000`,60)),"CBB");
  const seen=new Set<string>();const games:CbbGame[]=[];
  for(const payload of payloads)for(const v of list(payload.events)){
   const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;

@@ -809,14 +809,6 @@ function BrandHeader({
 }) {
   return (
     <>
-      <div className={styles.brand}>
-        <img src="/brand/sach-sports-crown-logo.png" alt="" />
-        <strong>
-          <span>SACH</span> SPORTS
-        </strong>
-      </div>
-
-      <SportsNav active={sport} />
     </>
   );
 }

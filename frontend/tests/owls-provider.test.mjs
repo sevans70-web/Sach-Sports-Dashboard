@@ -8,6 +8,7 @@ test('markets share one successful feed request; billing failures enter cooldown
   globalThis.fetch=async()=>{calls++;await new Promise(r=>setTimeout(r,10));return Response.json({data:[{id:'1'}]})};
   const result=await Promise.all([getOwlsPayload('nba'),getOwlsPayload('nba')]);assert.deepEqual(result[0],result[1]);assert.equal(calls,1);
   await getOwlsPayload('nba');assert.equal(calls,1);
+  let requested='';globalThis.fetch=async url=>{requested=String(url);return Response.json({data:[]})};await getOwlsPayload('cbb');assert.match(requested,/\/ncaab\/props$/);
   globalThis.fetch=async()=>{calls++;return new Response('billing unavailable',{status:403})};
   await assert.rejects(getOwlsPayload('soccer'),/403/);await assert.rejects(getOwlsPayload('soccer'),/403/);assert.equal(calls,2);
  }finally{globalThis.fetch=original;if(previous===undefined)delete process.env.OWLS_INSIGHT_API_KEY;else process.env.OWLS_INSIGHT_API_KEY=previous}

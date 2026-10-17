@@ -125,7 +125,7 @@ export async function GET(req:NextRequest){
       for(const prediction of x.predictions){
         const row={...prediction};
 
-        if(row.status==="pending"&&row.gameId){
+        if(row.status==="pending"&&row.gameId&&(!row.gameTime||Date.parse(row.gameTime)<=Date.now())){
           let payload=boxCache.get(String(row.gameId));
           if(payload===undefined){
             payload=await boxscore(String(row.gameId));

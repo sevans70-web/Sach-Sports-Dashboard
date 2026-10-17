@@ -10,7 +10,8 @@ export async function getOwlsPayload(sport:Sport){
  const work=(async()=>{
   const key=process.env.OWLS_INSIGHT_API_KEY?.trim();
   if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
-  const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${sport}/props`,{headers:{Authorization:`Bearer ${key}`,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
+  const providerSport=sport==="cbb"?"ncaab":sport;
+  const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${providerSport}/props`,{headers:{Authorization:`Bearer ${key}`,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
   if(!response.ok){
    const error=`Owls Insight returned ${response.status}`;
    const retry=Number(response.headers.get("retry-after"));

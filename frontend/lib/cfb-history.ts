@@ -1,6 +1,9 @@
 import {promises as fs} from "node:fs";
 import path from "node:path";
 import type {CfbMarketKey} from "@/lib/cfb";
+import {withHistoryLock} from "@/lib/history-lock";
+import {mergePredictionHistory} from "@/lib/prediction-history-write";
+import {randomUUID} from "node:crypto";
 
 export type SavedCfbPrediction={
   key:string; gameDate:string; gameTime:string; matchup:string; market:CfbMarketKey;
@@ -55,17 +58,23 @@ async function writeDisk(
   day:string,
   predictions:SavedCfbPrediction[]
 ){
+ return withHistoryLock(`cfb|${m}|${day}`,async()=>{
   try{
+    predictions=mergePredictionHistory(await readDisk(m,day),predictions);
     await fs.mkdir(DISK_DIR,{recursive:true});
+    const target=diskFile(m,day),temporary=`${target}.${randomUUID()}.tmp`;
     await fs.writeFile(
-      diskFile(m,day),
+      temporary,
       JSON.stringify(predictions),
       "utf8"
     );
+    await fs.rename(temporary,target);
+    runtime.set(storeKey(m,day),predictions);
     return true;
   }catch{
     return false;
   }
+ });
 }
 
 function config(){
@@ -267,6 +276,7 @@ async function writeRow(
   runtime.set(storeKey(m,day),predictions);
 
   const diskOk=await writeDisk(m,day,predictions);
+  predictions=runtime.get(storeKey(m,day))||predictions;
   const {url,keys}=config();
 
   if(!url||!keys.length)return diskOk;

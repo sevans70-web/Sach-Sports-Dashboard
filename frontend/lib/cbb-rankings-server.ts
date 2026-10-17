@@ -109,7 +109,7 @@ export async function buildCbbMarketRankings(market:CbbMarketKey,shared?:{payloa
   let payload:any=shared?.payload??{data:[]};let owlsOk=Boolean(shared?.payload);
   if(!shared){try{payload=await fetchOwlsPayload();owlsOk=true}catch{owlsOk=false}}
   const ranked=rowsForMarket(payload,overview,market);
-  if(ranked.length){const marketBacked=ranked.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null);const saved=marketBacked.length?await saveCbbPredictions(market,marketBacked).catch(()=>false):false;return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:owlsOk?"Owls Insight CBB props + ESPN CBB data":"ESPN 2025–26 baseline fallback"};}
+  if(ranked.length){const marketBacked=ranked.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.modelProjection!=null&&x.prediction);const saved=marketBacked.length?await saveCbbPredictions(market,marketBacked).catch(()=>false):false;return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:owlsOk?"Owls Insight CBB props + ESPN CBB data":"ESPN 2025–26 baseline fallback"};}
   const baseline=baselineRows(overview,market);if(baseline.length)return {success:true,market,rows:baseline,saved:false,updatedAt:new Date().toISOString(),source:"ESPN 2025–26 baseline fallback"};
   throw new Error(owlsOk?`No current ${market} market rows are available.`:"Owls Insight CBB props are not currently available.");
  }catch(e:any){
@@ -121,10 +121,10 @@ export async function buildCbbMarketRankings(market:CbbMarketKey,shared?:{payloa
 }
 
 export async function captureAllCbbMarkets(){
- const [payload,overview]=await Promise.all([fetchOwlsPayload(),loadCbbOverview()]);
+ const [payload,overview]=await Promise.all([fetchOwlsPayload().catch(()=>({data:[]})),loadCbbOverview()]);
  const results=await Promise.all(CBB_MARKETS.map(async([market])=>{
   try{return await buildCbbMarketRankings(market,{payload,overview})}
   catch(e:any){return {success:false,market,rows:[],saved:false,error:String(e?.message||e)}}
  }));
- return {success:results.some(x=>x.success&&x.saved!==false),markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved!==false,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
+ return {success:results.some(x=>x.success&&x.saved===true),verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.marketBacked&&r.sportsbookLine!=null&&r.prediction&&r.modelProjection!=null).length:0),0),warning:results.every(x=>!x.saved)?"No verified CBB sportsbook predictions available for capture":undefined,markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }

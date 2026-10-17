@@ -30,6 +30,8 @@ type Game = {
   status: string;
   venue?: string;
   weekNumber?: number | null;
+  awayLineupConfirmed?:boolean;
+  homeLineupConfirmed?:boolean;
 };
 
 const TORONTO = "America/Toronto";
@@ -199,7 +201,7 @@ async function enrichBasketballLiveStatus(
 
   return Promise.all(
     games.map(async game => {
-      if (game.state !== "in" || !game.id) return game;
+      if (game.state === "pre" || !game.id) return game;
 
       try {
         const payload = await fetchJson(
@@ -209,9 +211,12 @@ async function enrichBasketballLiveStatus(
         const competition = payload?.header?.competitions?.[0] || {};
         const status = competition?.status || payload?.header?.status || {};
         const type = status?.type || {};
+        const confirmed=(abbr:string)=>(payload?.boxscore?.players||[]).some((team:any)=>String(team?.team?.abbreviation||"").toUpperCase()===abbr.toUpperCase()&&(team.statistics||[]).some((group:any)=>(group.athletes||[]).filter((p:any)=>p.starter===true).length>=5));
 
         return {
           ...game,
+          awayLineupConfirmed:confirmed(game.awayAbbr),
+          homeLineupConfirmed:confirmed(game.homeAbbr),
           status: explicitLiveStatus(
             sport,
             status?.period,
@@ -467,7 +472,7 @@ export async function GET(req:NextRequest) {
     let weekNumber:number|null = null;
 
     if(sport === "nfl") {
-      games=(await getEspnNflSchedule()).map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)}));
+      games=slateSort((await getEspnNflSchedule()).map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)})));
       weekNumber=games.find(g=>g.weekNumber)?.weekNumber||null;
     } else if(sport === "cfb") {
       const football = await espnFootball(sport);

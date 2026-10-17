@@ -35,7 +35,7 @@ export async function captureAllNhlMarkets(){
  for(const market of markets){
   try{
    const r=await buildNhlRankings(market);
-   const backed=r.rows.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.prediction).length;
+   const backed=r.rows.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.prediction&&x.resultStatus!=="void").length;
    results.push({market,count:r.rows.length,verifiedPredictions:backed,locked:Boolean((r as any).locked)});
   }catch(e){results.push({market,count:0,verifiedPredictions:0,error:e instanceof Error?e.message:String(e)});}
  }

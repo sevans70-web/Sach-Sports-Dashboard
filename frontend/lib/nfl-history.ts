@@ -1,4 +1,5 @@
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
+import {writePredictionHistory} from "@/lib/prediction-history-write";
 import {cleanName,type NflMarketKey} from "@/lib/nfl";
 
 export type SavedNflPrediction={
@@ -10,7 +11,7 @@ export type SavedNflPrediction={
   giScore:number; bookmakerCount:number; savedAt:string;
   originalRank?:number|null; lastSeenRank?:number|null; lastSeenAt?:string|null;
   status:"pending"|"hit"|"miss"|"push"|"void"; actual:number|null; gradedAt:string|null;
-  recoveredAfterStart?:boolean; frozenAt?:string|null;
+  recoveredAfterStart?:boolean; frozenAt?:string|null; withdrawnFromBoard?:boolean;
 };
 
 const SOURCE_PREFIX="nfl_predictions_";
@@ -48,8 +49,7 @@ function mergeSnapshotPredictions(rows:any[]){
 }
 async function getRow(m:NflMarketKey,day:string){const x=await getRows(m,day),row=x.rows.length?x.rows[0]:null;return {connected:x.connected,writable:x.writable,row,rows:x.rows,reason:x.reason};}
 async function writeRow(m:NflMarketKey,day:string,predictions:SavedNflPrediction[],_id?:string){
- nflRuntime.set(runtimeKey(m,day),predictions);
- return writeDurableHistory("nfl",String(m),day,predictions);
+ return writePredictionHistory("nfl",String(m),day,predictions,rows=>nflRuntime.set(runtimeKey(m,day),rows));
 }
 function teamNick(v:any){const x=cleanName(String(v||""));return x.split(" ").filter(Boolean).pop()||x}
 function matchupParts(v:any){const raw=String(v||"").replace(/\bvs\.?\b/gi,"@").replace(/\bv\b/gi,"@");const parts=raw.split("@").map(x=>cleanName(x)).filter(Boolean);return parts.length===2?parts:[];}
@@ -63,14 +63,14 @@ export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedu
    if(alreadyStarted&&old){if(!old.frozenAt){map.set(old.key,{...old,frozenAt:new Date().toISOString(),lastSeenRank:Number(row.rank||old.lastSeenRank||old.originalRank||0)||null,lastSeenAt:new Date().toISOString()});bucket.changed=true}continue}
    if(alreadyStarted&&!old)continue;
    const now=new Date().toISOString();const line=row.sportsbookLine==null?null:Number(row.sportsbookLine);const projection=row.modelProjection==null?null:Number(row.modelProjection);const probability=row.modelProbability==null?null:Number(row.modelProbability);const pickSide:("OVER"|"UNDER")=(m==="anytime_td"||m==="first_td")?"OVER":(projection!=null&&line!=null&&projection<line?"UNDER":"OVER");
-   if(old){map.set(old.key,{...old,playerName:String(row.playerName||old.playerName),teamName:String(row.teamName||old.teamName),position:String(row.position||old.position||""),teamId:String(row.teamId||old.teamId||""),teamLogo:String(row.teamLogo||old.teamLogo||""),headshot:String(row.headshot||old.headshot||""),gameId:String(old.gameId||gameId),sportsbookLine:line,sportsbookProbability:row.sportsbookProbability==null?old.sportsbookProbability:Number(row.sportsbookProbability),modelProjection:projection,modelProbability:probability,pickSide,giScore:Number(row.giScore||old.giScore||0),bookmakerCount:Number(row.bookmakerCount||old.bookmakerCount||0),savedAt:now,lastSeenRank:Number(row.rank||old.lastSeenRank||old.originalRank||0)||null,lastSeenAt:now,frozenAt:null});bucket.changed=true;continue}
+   if(old){map.set(old.key,{...old,playerName:String(row.playerName||old.playerName),teamName:String(row.teamName||old.teamName),position:String(row.position||old.position||""),teamId:String(row.teamId||old.teamId||""),teamLogo:String(row.teamLogo||old.teamLogo||""),headshot:String(row.headshot||old.headshot||""),gameId:String(old.gameId||gameId),sportsbookLine:line,sportsbookProbability:row.sportsbookProbability==null?old.sportsbookProbability:Number(row.sportsbookProbability),modelProjection:projection,modelProbability:probability,pickSide,giScore:Number(row.giScore||old.giScore||0),bookmakerCount:Number(row.bookmakerCount||old.bookmakerCount||0),status:old.withdrawnFromBoard?"pending":old.status,withdrawnFromBoard:false,gradedAt:old.withdrawnFromBoard?null:old.gradedAt,savedAt:now,lastSeenRank:Number(row.rank||old.lastSeenRank||old.originalRank||0)||null,lastSeenAt:now,frozenAt:null});bucket.changed=true;continue}
    map.set(key,{key,gameDate,gameTime:String(row.gameTime||game?.date||""),matchup:String(row.matchup||""),market:m,playerId:String(row.playerId),playerName:String(row.playerName),teamName:String(row.teamName),position:String(row.position||""),teamId:String(row.teamId||""),teamLogo:String(row.teamLogo||""),headshot:String(row.headshot||""),gameId,sportsbookLine:line,sportsbookProbability:row.sportsbookProbability==null?null:Number(row.sportsbookProbability),modelProjection:projection,modelProbability:probability,pickSide,giScore:Number(row.giScore||0),bookmakerCount:Number(row.bookmakerCount||0),savedAt:now,originalRank:Number(row.rank||0)||null,lastSeenRank:Number(row.rank||0)||null,lastSeenAt:now,status:"pending",actual:null,gradedAt:null,recoveredAfterStart:undefined,frozenAt:null});bucket.changed=true;
  }
  let ok=true;for(const [day,bucket] of buckets){
-   // Before kickoff, history must mirror the CURRENT Top 25 snapshot for this market/day.
-   // Otherwise every player who briefly enters the ranking accumulates as another pending pick.
+   // Retain withdrawn research snapshots in history while excluding them from
+   // pending predictions. A later pregame re-entry can reactivate the record.
    const currentKeys=new Set(rows.filter((row:any)=>nflDay(findScheduleGame(schedule,row)?.date||row.gameTime||new Date())===day).map((row:any)=>`${day}|${m}|${row.playerId}|${row.matchup}`));
-   for(const [key,p] of bucket.map){if(p.status==="pending"&&!p.frozenAt&&p.gameDate===day&&!currentKeys.has(key)){bucket.map.delete(key);bucket.changed=true}}
+   for(const [key,p] of bucket.map){if(p.status==="pending"&&!p.frozenAt&&p.gameDate===day&&!currentKeys.has(key)){bucket.map.set(key,{...p,status:"void",withdrawnFromBoard:true,gradedAt:new Date().toISOString()});bucket.changed=true}}
    const next=[...bucket.map.values()];if(!bucket.changed&&next.length===bucket.saved.length)continue;const wrote=await writeRow(m,day,next,bucket.existing.row?.id);ok=ok&&wrote}return ok;
 }
 export async function getNflPredictions(m:NflMarketKey,day:string){const x=await getRow(m,day);const db=mergeSnapshotPredictions([...(x.rows||[])].reverse());const memory=nflRuntime.get(runtimeKey(m,day))||[];const predictions=mergeSnapshotPredictions([{payload:{predictions:db}},{payload:{predictions:memory}}]);if(predictions.length)nflRuntime.set(runtimeKey(m,day),predictions);return {connected:x.connected||predictions.length>0,writable:x.writable,predictions,id:x.row?.id as string|undefined,snapshotCount:(x.rows||[]).length,storageReason:x.reason};}

@@ -11,7 +11,9 @@ export default function HomeShowcase(){
  const [expanded,setExpanded]=useState(false),[summaries,setSummaries]=useState<Record<string,any>>({}),[loaded,setLoaded]=useState(false),[performance,setPerformance]=useState<any>(null);
  useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{for(let i=0;i<DASHBOARD_SPORTS.length;i+=3){await Promise.all(DASHBOARD_SPORTS.slice(i,i+3).map(async sport=>{try{const d=await fetchDashboardSummary(sport);if(live)setSummaries(s=>({...s,[sport]:d}))}catch{if(live)setSummaries(s=>({...s,[sport]:{sport,success:false}}))}}));}if(live)setLoaded(true)}finally{running=false}};run();const id=setInterval(run,30_000);const grade=()=>fetch("/api/platform-performance",{cache:"no-store"}).then(r=>r.json()).then(d=>{if(live)setPerformance(d)}).catch(()=>{});grade();const grades=setInterval(grade,60_000);return()=>{live=false;clearInterval(id);clearInterval(grades)}},[]);
  const available=Object.values(summaries),games=available.flatMap(d=>(d.previewGames||[]).map((g:any)=>({...g,sport:d.sport}))),predictions=available.flatMap(d=>(d.verifiedRows||[]).map((r:any)=>({...r,sport:d.sport,market:d.market})));
- const allReady=loaded&&available.every(d=>d.scheduleAvailable&&d.rankingsAvailable),today=dashboardDay(new Date());
+ const [today,setToday]=useState("");
+ useEffect(()=>{const update=()=>setToday(dashboardDay(new Date()));update();const id=setInterval(update,60_000);return()=>clearInterval(id)},[]);
+ const allReady=loaded&&available.every(d=>d.scheduleAvailable&&d.rankingsAvailable);
  const total=(field:string)=>available.reduce((n,d)=>n+(Number(d[field])||0),0);
  const featured=[...predictions].sort((a,b)=>Number(b.giScore||0)-Number(a.giScore||0)).slice(0,3);
  const order:Record<string,number>={in:0,pre:1,post:2};const ordered=[...games].sort((a,b)=>(order[a.state]??1)-(order[b.state]??1)||Date.parse(a.date)-Date.parse(b.date)).slice(0,3);

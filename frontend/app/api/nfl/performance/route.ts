@@ -174,6 +174,7 @@ export async function GET(req:NextRequest){
      const got=await getNflPredictions(market,day);connected=connected&&got.connected;writable=writable&&(got.writable!==false);recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
      for(const p of got.predictions){
        if(p.status!=="pending"){all.push(p);continue}
+       if(p.gameTime&&Date.parse(p.gameTime)>Date.now()){all.push(p);continue}
        const game=(p.gameId?schedule.find((g:any)=>String(g.id||"")===String(p.gameId)):null)||schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
        const q1=p.market.startsWith("q1_");
        // Saved gameId is durable. A completed game can disappear from the active weekly schedule after rollover,

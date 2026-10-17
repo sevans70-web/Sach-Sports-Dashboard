@@ -17,7 +17,10 @@ export async function GET(req:NextRequest){
   const sports:any[]=[];
   for(let i=0;i<DASHBOARD_SPORTS.length;i+=3)await Promise.all(DASHBOARD_SPORTS.slice(i,i+3).map(async sport=>{
    try{
-    const response=await handlers[sport](new NextRequest(`${req.nextUrl.origin}/api/${sport}/performance?period=Today&market=${DEFAULT_MARKETS[sport]}&league=eng.1`)),d=await response.json();
+    let timer:ReturnType<typeof setTimeout>|undefined;
+    let response:Response;
+    try{response=await Promise.race([handlers[sport](new NextRequest(`${req.nextUrl.origin}/api/${sport}/performance?period=Today&market=${DEFAULT_MARKETS[sport]}&league=eng.1`)),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error("Grading feed is still updating")),10_000)})]);}finally{clearTimeout(timer)}
+    const d=await response.json();
     if(sport==="mlb"){
      const rows=d.batter?.days?.[dashboardDay(new Date())]?.categories?.home_runs||[],settled=rows.filter((r:any)=>typeof r.correct==="boolean");
      sports.push({sport,connected:d.success!==false,hits:settled.filter((r:any)=>r.correct).length,settled:settled.length,pending:rows.length-settled.length});

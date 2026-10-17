@@ -508,7 +508,7 @@ export async function buildNbaMarketRankings(
 
   if(ranked.length){
    const marketBacked=ranked.filter(
-    (x:any)=>x.marketBacked&&x.sportsbookLine!=null
+    (x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.modelProjection!=null&&x.prediction
    );
 
    const saved=
@@ -626,10 +626,11 @@ export async function captureAllNbaMarkets(){
   ),
   providerError,
   overviewError,
+  verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.marketBacked&&r.sportsbookLine!=null&&r.prediction&&r.modelProjection!=null&&r.resultStatus!=="void").length:0),0),
   markets:results.map((x:any)=>({
    market:x.market,
    rows:x.rows?.length||0,
-   saved:x.saved!==false,
+   saved:x.saved===true,
    success:x.success,
    error:x.error||null
   })),
