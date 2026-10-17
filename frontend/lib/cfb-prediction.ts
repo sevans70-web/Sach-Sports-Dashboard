@@ -16,8 +16,9 @@ export function cfbPredictionProbability(
   if(market==="anytime_td"||market==="first_td"){
     // Current history route does not produce a trustworthy first-TD projection.
     // Until it does, do not relabel the book price as a model probability.
-    if(projection==null)return null;
-    const histP=clamp(projection/100,.03,.97);
+    if(market==="first_td"||projection==null||!Number.isFinite(projection)||projection<0)return null;
+    // Projection is expected touchdowns per game, not a percentage.
+    const histP=clamp(1-Math.exp(-projection),.03,.97);
     return Math.round(clamp(histP*.75+marketP*.25,.05,.95)*1000)/10;
   }
 
@@ -30,8 +31,11 @@ export function cfbPredictionProbability(
     scale=Math.max(18,Math.abs(line)*.28);
   }
 
-  const histP=logistic((projection-line)/scale);
-  const blended=clamp(histP*.75+marketP*.25,.05,.95);
+  const overProbability=logistic((projection-line)/scale);
+  const predictsOver=projection>=line;
+  const histP=predictsOver?overProbability:1-overProbability;
+  const bookP=predictsOver?marketP:1-marketP;
+  const blended=clamp(histP*.75+bookP*.25,.05,.95);
   return Math.round(blended*1000)/10;
 }
 

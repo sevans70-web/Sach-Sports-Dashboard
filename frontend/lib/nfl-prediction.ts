@@ -16,8 +16,9 @@ export function nflPredictionProbability(
   if(market==="anytime_td"||market==="first_td"){
     // Current history route does not produce a trustworthy first-TD projection.
     // Until it does, do not relabel the book price as a model probability.
-    if(projection==null)return null;
-    const histP=clamp(projection/100,.03,.97);
+    if(market==="first_td"||projection==null||!Number.isFinite(projection)||projection<0)return null;
+    // Projection is expected touchdowns per game, not a percentage.
+    const histP=clamp(1-Math.exp(-projection),.03,.97);
     return Math.round(clamp(histP*.75+marketP*.25,.05,.95)*1000)/10;
   }
 

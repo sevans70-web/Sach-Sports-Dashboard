@@ -79,7 +79,10 @@ async function fetchJson(url:string,ms=2500){
     return await r.json();
   }finally{clearTimeout(timer)}
 }
-function history(payload:any,market:CfbMarketKey){return footballHistoryValues(payload,HISTORY_KEYS[market]||[])}
+function history(payload:any,market:CfbMarketKey){
+ const values=footballHistoryValues(payload,HISTORY_KEYS[market]||[]);
+ return market==="anytime_td"&&!values.length?footballHistoryValues(payload,[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]):values;
+}
 
 function projection(vals:number[]){
   const xs=vals.slice(-10);if(!xs.length)return null;

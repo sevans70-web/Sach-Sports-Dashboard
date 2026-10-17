@@ -1,3 +1,4 @@
+import {footballSummaryStat} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName,safeNumber} from "@/lib/cfb";
@@ -107,37 +108,7 @@ function statIndex(labels:any[],market:CfbMarketKey){
   return -1;
 }
 
-function actualFromSummary(
-  payload:any,
-  market:CfbMarketKey,
-  playerId:string,
-  playerName:string
-){
-  if(!payload||market==="first_td")return null;
-
-  for(const team of Array.isArray(payload?.boxscore?.players)?payload.boxscore.players:[]){
-    for(const group of team?.statistics||[]){
-      const index=statIndex(
-        Array.isArray(group?.labels)?group.labels:[],
-        market
-      );
-      if(index<0)continue;
-
-      for(const row of group?.athletes||[]){
-        const athlete=row?.athlete||{};
-        const id=String(athlete.id||"");
-        const name=cleanName(athlete.displayName||athlete.fullName||"");
-
-        if((playerId&&id===playerId)||name===cleanName(playerName)){
-          const value=safeNumber((row?.stats||[])[index]);
-          if(value!=null)return Number(value);
-        }
-      }
-    }
-  }
-
-  return null;
-}
+function actualFromSummary(payload:any,market:CfbMarketKey,playerId:string,playerName:string){return footballSummaryStat(payload,market,playerId,playerName)}
 
 function firstTdResult(payload:any,playerName:string){
   const plays=Array.isArray(payload?.scoringPlays)?payload.scoringPlays:[];
