@@ -1727,10 +1727,8 @@ export function PlayerRankingsPanel({
   ) => `${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : "all"}`;
 
   const resetCfbMarketView = () => {
-    if (sport !== "cfb") return;
-
-    // Keep the existing board visible while the next board is prepared.
-    // This prevents the blank/flicker seen when changing CFB time blocks.
+    // Set loading in the same render as the selected tab. The previous
+    // market must never appear under the new title, even for one frame.
     setError("");
     setLoading(true);
     setFull(false);
@@ -2208,7 +2206,7 @@ export function PlayerRankingsPanel({
         .filter(Boolean)
     );
 
-    const withStatus = cards
+    const withStatus = cards.filter(card=>card.market===market.key)
       .map((card) => {
         const sharedGame = sharedGameForCard(card, sharedStatusGames);
         let next = applySharedGameStatus(card, sharedGame);
