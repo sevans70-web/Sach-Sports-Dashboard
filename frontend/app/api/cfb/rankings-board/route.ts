@@ -1,4 +1,5 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -1351,7 +1352,7 @@ async function buildFreshBoard(
       Number(a.giScore || 0)
   );
 
-  return valid
+  return uniqueRankingRows(valid)
     .slice(0, 25)
     .map(
       (row: any, index: number) => ({
@@ -1576,7 +1577,7 @@ async function lockBoard(
     );
 
   const rows =
-    merged
+    uniqueRankingRows(merged)
       .sort(
         (a: any, b: any) =>
           Number(a.rank) -

@@ -4,6 +4,10 @@ const {basketballQ1Actual:q1,basketballFirstBasketActual:first}=await loadTs(new
 const {VISIBLE_SPORTS}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
 const {NFL_ACTIVE_MARKETS}=await loadTs(new URL('../lib/nfl.ts',import.meta.url));
 const {playerBaseline}=await loadTs(new URL('../lib/nba.ts',import.meta.url));
+const {uniqueRankingRows}=await loadTs(new URL('../lib/unique-ranking-rows.ts',import.meta.url));
+test('provider names with college suffixes collapse by roster ID without losing other games',()=>{
+ const rows=[{playerId:'1',playerName:'Player',matchup:'A @ B',gameTime:'2026-10-17T19:00:00Z',frozen:true},{playerId:'1',playerName:'Player (OSU)',matchup:'A @ B',gameTime:'2026-10-17T19:00:00Z'},{playerId:'1',playerName:'Player',matchup:'A @ C',gameTime:'2026-10-24T19:00:00Z'}];assert.equal(uniqueRankingRows(rows).length,2);assert.equal(uniqueRankingRows(rows)[0].frozen,true);
+});
 test('public sports exclude MLB/soccer; active NFL Q1 has exactly the three yardage markets',()=>{
  assert.deepEqual(VISIBLE_SPORTS,['nfl','cfb','nba','wnba','nhl','cbb']);assert.deepEqual(NFL_ACTIVE_MARKETS.map(x=>x[0]).filter(x=>x.startsWith('q1_')),['q1_passing_yards','q1_receiving_yards','q1_rushing_yards']);
 });

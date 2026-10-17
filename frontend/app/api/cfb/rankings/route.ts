@@ -1,5 +1,6 @@
 import {footballHistoryValues} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
 import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbRankings,getCfbTeamRoster} from "@/lib/cfb-server";
@@ -255,7 +256,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     return row.modelProjection!=null&&Number.isFinite(value)&&value>=0;
   });
   validEnriched.sort((a,b)=>b.giScore-a.giScore);
-  let ranked:any[]=validEnriched.slice(0,25).map((r,i)=>({...r,rank:i+1}));
+  let ranked:any[]=uniqueRankingRows(validEnriched).slice(0,25).map((r,i)=>({...r,rank:i+1}));
 
   // Capture the previous visible Top 25 BEFORE kickoff-lock logic uses it.
   const previous=rankingCache.get(market)?.payload?.rows||[];
@@ -319,7 +320,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     if(lockedRanks.has(slot))continue;
     finalRows.push({...fresh[freshIndex++],rank:slot});
   }
-  ranked=finalRows
+  ranked=uniqueRankingRows(finalRows)
     .sort((a:any,b:any)=>Number(a.rank||999)-Number(b.rank||999))
     .slice(0,25);
 

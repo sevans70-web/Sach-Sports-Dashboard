@@ -1,4 +1,5 @@
 import {getOwlsPayload} from "@/lib/owls-provider";
+import {nbaPropMatchesGame} from "@/lib/nba-game-match";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -187,26 +188,8 @@ async function loadSlateContext(overview:any):Promise<SlateContext>{
 }
 
 function chooseRosterEntry(entries:SlateRosterEntry[],b:any){
- if(!entries.length)return undefined;
-
- const propDay=torontoNbaDay(b?.gameTime||"");
-
- if(propDay){
-  const same=entries.find(
-   (entry)=>torontoNbaDay(entry.game?.tipoff||"")===propDay
-  );
-  if(same)return same;
- }
-
- const target=new Date(b?.gameTime||0).getTime();
- if(Number.isFinite(target)&&target>0){
-  return [...entries].sort((a,c)=>
-   Math.abs(new Date(a.game?.tipoff||0).getTime()-target)-
-   Math.abs(new Date(c.game?.tipoff||0).getTime()-target)
-  )[0];
- }
-
- return entries[0];
+ const matching=entries.filter(entry=>nbaPropMatchesGame(b,entry.game));
+ return matching.length===1?matching[0]:undefined;
 }
 
 function baselineGi(player:any,starter:boolean){

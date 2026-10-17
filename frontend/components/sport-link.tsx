@@ -10,7 +10,8 @@ export function SportLink(props:ComponentProps<typeof Link>){
  useEffect(()=>{finish.current?.();finish.current=null},[pathname]);
  useEffect(()=>()=>{finish.current?.()},[]);
  const warm=()=>{const sport=String(props.href).split("/")[1] as DashboardSport;if(VISIBLE_SPORTS.includes(sport))fetchDashboardSummary(sport).catch(()=>{})};
- return <Link {...props} prefetch onPointerEnter={warm} onFocus={warm} onNavigate={event=>{
+ const scroll=props.scroll??!/^\/(?:nfl|cfb|nba|wnba|nhl|cbb)\/?$/.test(String(props.href));
+ return <Link {...props} scroll={scroll} prefetch onPointerEnter={warm} onFocus={warm} onNavigate={event=>{
   if(typeof props.href!=="string"||props.href===pathname)return;
   const doc=document as Document&{startViewTransition?:(update:()=>Promise<void>)=>{finished:Promise<void>}};
   if(!doc.startViewTransition||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -18,7 +19,7 @@ export function SportLink(props:ComponentProps<typeof Link>){
   const transition=doc.startViewTransition(()=>new Promise<void>(resolve=>{
    const timer=window.setTimeout(resolve,1500);
    finish.current=()=>{window.clearTimeout(timer);resolve()};
-   router.push(props.href as string,{scroll:false});
+   router.push(props.href as string,{scroll});
   }));
   transition.finished.catch(()=>{});
  }}/>

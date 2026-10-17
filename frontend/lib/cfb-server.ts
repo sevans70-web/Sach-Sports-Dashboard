@@ -151,17 +151,7 @@ export async function getCfbMarketRows(market:CfbMarketKey){
   const sgoKey=process.env.SPORTSGAMEODDS_API_KEY||process.env.SPORTS_GAME_ODDS_API_KEY||process.env.SPORTSGAMEODDS_KEY;
   if(sgoKey){
     try{
-      const now=new Date(),end=new Date(now.getTime()+10*86400000);
-      const qs=new URLSearchParams({
-        leagueID:"NCAAF",
-        oddsAvailable:"true",
-        finalized:"false",
-        // Include games already underway; live props must not vanish at kickoff.
-        startsAfter:new Date(now.getTime()-24*60*60*1000).toISOString(),
-        startsBefore:end.toISOString(),
-        limit:"100",
-      });
-      const p=await json(`https://api.sportsgameodds.com/v2/events?${qs}`,{headers:{"x-api-key":sgoKey}});
+      const p=await getSgoSupplement("NCAAF");
       const rows:any[]=[];
       for(const e of p.data||[]){
         for(const o of sgoOdds(e)){
@@ -549,4 +539,4 @@ export async function getCfbGameIntelligence(gameId:string,availableProps:CfbMar
     leaders,
   };
 }
-import {sgoPlayerName as supplementPlayerName} from "@/lib/sgo-supplement";
+import {getSgoSupplement,sgoPlayerName as supplementPlayerName} from "@/lib/sgo-supplement";

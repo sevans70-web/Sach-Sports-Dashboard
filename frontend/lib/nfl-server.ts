@@ -243,16 +243,7 @@ export async function getNflMarketRows(market:NflMarketKey){
   const sgoKey=process.env.SPORTSGAMEODDS_API_KEY||process.env.SPORTS_GAME_ODDS_API_KEY||process.env.SPORTSGAMEODDS_KEY;
   if(sgoKey){
     try{
-      const now=new Date(),end=new Date(now.getTime()+10*86400000);
-      const qs=new URLSearchParams({
-        leagueID:"NFL",
-        oddsAvailable:"true",
-        finalized:"false",
-        startsAfter:now.toISOString(),
-        startsBefore:end.toISOString(),
-        limit:"100",
-      });
-      const p=await json(`https://api.sportsgameodds.com/v2/events?${qs}`,{headers:{"x-api-key":sgoKey}});
+      const p=await getSgoSupplement("NFL");
       const rows:any[]=[];
       for(const e of p.data||[]){
         for(const o of sgoOdds(e)){
@@ -656,4 +647,4 @@ export async function getNflGameIntelligence(gameId:string,availableProps:NflMar
     leaders,
   };
 }
-import {sgoPlayerName as supplementPlayerName} from "@/lib/sgo-supplement";
+import {getSgoSupplement,sgoPlayerName as supplementPlayerName} from "@/lib/sgo-supplement";
