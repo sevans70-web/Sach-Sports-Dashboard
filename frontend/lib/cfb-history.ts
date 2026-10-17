@@ -4,6 +4,7 @@ import type {CfbMarketKey} from "@/lib/cfb";
 import {withHistoryLock} from "@/lib/history-lock";
 import {mergePredictionHistory} from "@/lib/prediction-history-write";
 import {randomUUID} from "node:crypto";
+import {footballQuoteFields} from "@/lib/football-book-quotes";
 
 export type SavedCfbPrediction={
   key:string; gameDate:string; gameTime:string; matchup:string; market:CfbMarketKey;
@@ -434,6 +435,7 @@ export async function saveCfbPregamePredictions(
         key,
         {
           key,
+          ...footballQuoteFields(row),
           gameDate,
           gameTime:String(
             row.gameTime||

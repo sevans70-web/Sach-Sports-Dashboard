@@ -26,5 +26,13 @@ test('sport history writers retain late first captures as void and keep genuine 
   const cfb=await loadTs(new URL('../lib/cfb-history.ts',import.meta.url));
   await cfb.saveCfbPregamePredictions('passing_yards',[{playerId:'44',playerName:'Late Football',matchup:'E @ F',gameTime:now,gameId:'d',sportsbookLine:250.5,modelProjection:270,modelProbability:65,marketBacked:true,rank:1}],[{id:'d',awayTeam:'E',homeTeam:'F',date:now,state:'in'}]);
   assert.equal(cfb.getRuntimeCfbPredictions('passing_yards',cfb.cfbDay(now)).predictions[0].status,'void');
+  const time=new Date(Date.now()+3600000).toISOString();
+  const metadata={quoteVersion:1,sportsbook:'Pinnacle',sportsbookKey:'pinnacle',lineType:'main',overPrice:104,underPrice:-131,quoteUpdatedAt:now,quoteId:'main-1'};
+  const row={...metadata,playerId:'45',playerName:'Verified Football',matchup:'G @ H',gameTime:time,gameId:'e',sportsbookLine:289.5,modelProjection:296.5,modelProbability:53,marketBacked:true,rank:1};
+  const schedule=[{id:'e',awayTeam:'G',homeTeam:'H',date:time,state:'pre'}];
+  await cfb.saveCfbPregamePredictions('passing_yards',[row],schedule);
+  await cfb.saveCfbPregamePredictions('passing_yards',[{...row,sportsbookLine:170,sportsbook:'Bad replacement'}],[{...schedule[0],state:'in'}]);
+  const locked=cfb.getRuntimeCfbPredictions('passing_yards',cfb.cfbDay(time)).predictions.find(p=>p.playerId==='45');
+  assert.equal(locked.sportsbookLine,289.5);assert.equal(locked.sportsbook,'Pinnacle');assert.equal(locked.overPrice,104);assert.equal(locked.quoteId,'main-1');
  }finally{if(previous===undefined)delete process.env.SACH_HISTORY_DIR;else process.env.SACH_HISTORY_DIR=previous;await rm(root,{recursive:true,force:true})}
 });

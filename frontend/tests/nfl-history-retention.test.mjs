@@ -3,11 +3,15 @@ test('NFL keeps withdrawn pregame board entries in history and can reactivate th
  const root=await mkdtemp(path.join(os.tmpdir(),'sach-nfl-history-')),previous=process.env.SACH_HISTORY_DIR;process.env.SACH_HISTORY_DIR=root;
  try{
   const api=await loadTs(new URL('../lib/nfl-history.ts',import.meta.url)),time=new Date(Date.now()+3600000).toISOString(),schedule=[{id:'a',date:time,state:'pre',awayTeam:'A',homeTeam:'B'}];
-  const row={playerId:'1',playerName:'First',gameId:'a',gameTime:time,matchup:'A @ B',sportsbookLine:200,modelProjection:210,rank:1},other={...row,playerId:'2',playerName:'Other'};
+  const row={playerId:'1',playerName:'First',gameId:'a',gameTime:time,matchup:'A @ B',sportsbookLine:200,modelProjection:210,rank:1,quoteVersion:1,sportsbook:'FanDuel',sportsbookKey:'fanduel',lineType:'main',overPrice:-110,underPrice:-110,quoteUpdatedAt:new Date().toISOString(),quoteId:'nfl-main'},other={...row,playerId:'2',playerName:'Other'};
   await api.saveNflPregamePredictions('passing_yards',[row,other],schedule);
   await api.saveNflPregamePredictions('passing_yards',[row],schedule);
   let records=(await api.getNflPredictions('passing_yards',api.nflDay(time))).predictions;assert.equal(records.length,2);assert.equal(records.find(p=>p.playerId==='2').status,'void');
   await api.saveNflPregamePredictions('passing_yards',[row,other],schedule);
   records=(await api.getNflPredictions('passing_yards',api.nflDay(time))).predictions;assert.equal(records.length,2);assert.equal(records.find(p=>p.playerId==='2').status,'pending');
+  assert.equal(records[0].quoteVersion,1);assert.equal(records[0].sportsbook,'FanDuel');assert.equal(records[0].underPrice,-110);
+  await api.saveNflPregamePredictions('passing_yards',[{...row,sportsbookLine:100,sportsbook:'Replacement'}],[{...schedule[0],state:'in'}]);
+  records=(await api.getNflPredictions('passing_yards',api.nflDay(time))).predictions;
+  assert.equal(records.find(p=>p.playerId==='1').sportsbookLine,200);assert.equal(records.find(p=>p.playerId==='1').sportsbook,'FanDuel');
  }finally{if(previous===undefined)delete process.env.SACH_HISTORY_DIR;else process.env.SACH_HISTORY_DIR=previous;await rm(root,{recursive:true,force:true})}
 });

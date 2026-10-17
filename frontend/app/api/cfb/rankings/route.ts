@@ -5,6 +5,7 @@ import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbRankings,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
+import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {cfbPredictionProbability,cfbGiScore} from "@/lib/cfb-prediction";
 import {saveCfbPregamePredictions,getCfbResultMap,getCfbPredictions} from "@/lib/cfb-history";
 
@@ -189,7 +190,7 @@ async function marketRows(market:CfbMarketKey){
   }catch{}
   const earlyPromise=timeout(getCfbRankings(market,[]),6000,[]);
   const sportsbook=await timeout(getCfbMarketRows(market),4000,[]);
-  if(sportsbook.length)return sportsbook;
+  if(sportsbook.some((row:any)=>row.quoteVersion===1))return sportsbook.filter((row:any)=>row.quoteVersion===1);
 
   // First seed the early pool with verified ESPN statistical leaders. The
   // build step supplements this with scheduled-team rosters so a thin leader
@@ -235,6 +236,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const verifiedMarket=Number(row.bookmakerCount||0)>0&&(row.line!=null||row.prob!=null);
     const rankingProbability=probability??row.prob??earlyConfidence??50;
     return {
+      ...footballQuoteFields(row),
       rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,
       teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,
       headshot:profile.headshot,teamLogo:profile.teamLogo,matchup:row.matchup,
@@ -293,7 +295,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
       rank:p.rank??prev?.rank??99,
       playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,
       position:p.position||prev?.position||"",matchup:p.matchup,gameTime:p.gameTime,
-      sportsbookLine:p.sportsbookLine,modelProjection:p.modelProjection,
+      ...footballQuoteFields(p),sportsbookLine:p.sportsbookLine,modelProjection:p.modelProjection,
       modelProbability:p.modelProbability,giScore:p.giScore,
       bookmakerCount:p.bookmakerCount||prev?.bookmakerCount||0,
       perGame:p.modelProjection,marketBacked:true,frozen:true,lockedAtKickoff:true,

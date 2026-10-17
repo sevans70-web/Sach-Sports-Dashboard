@@ -16,6 +16,8 @@ import {
   getEspnCfbSchedule,
 } from "@/lib/cfb-server";
 import { getOwlsCfbRows } from "@/lib/cfb-owls";
+import {footballQuoteFields} from "@/lib/football-book-quotes";
+import {footballHistoryValues} from "@/lib/football-history";
 import {
   cfbGiScore,
   cfbPredictionProbability,
@@ -410,77 +412,8 @@ async function fetchJson(
   }
 }
 
-function history(
-  payload: any,
-  market: CfbMarketKey
-) {
-  const names = (
-    Array.isArray(payload?.names)
-      ? payload.names
-      : []
-  ).map(norm);
-
-  let index = -1;
-
-  for (
-    const wanted of
-      HISTORY_KEYS[market] || []
-  ) {
-    index = names.findIndex(
-      (name: string) =>
-        name === wanted
-    );
-
-    if (index >= 0) break;
-  }
-
-  if (index < 0) return [];
-
-  const values: number[] = [];
-  const seen = new Set<string>();
-
-  for (
-    const seasonType of
-      payload?.seasonTypes || []
-  ) {
-    for (
-      const category of
-        seasonType?.categories || []
-    ) {
-      if (category?.type !== "event") {
-        continue;
-      }
-
-      for (
-        const event of
-          category?.events || []
-      ) {
-        const id = String(
-          event?.eventId || ""
-        );
-
-        if (
-          !id ||
-          seen.has(id)
-        ) {
-          continue;
-        }
-
-        const value = Number(
-          Array.isArray(event?.stats)
-            ? event.stats[index]
-            : Number.NaN
-        );
-
-        if (Number.isFinite(value)) {
-          seen.add(id);
-          values.push(value);
-        }
-      }
-    }
-  }
-
-  return values;
+function history(payload: any, market: CfbMarketKey) {
+  return footballHistoryValues(payload, HISTORY_KEYS[market] || []);
 }
 
 function projection(
@@ -934,8 +867,8 @@ async function marketRows(
       []
     );
 
-  if (sportsbook.length) {
-    return sportsbook;
+  if (sportsbook.some((row:any) => row.quoteVersion === 1)) {
+    return sportsbook.filter((row:any) => row.quoteVersion === 1);
   }
 
   /*
@@ -1264,6 +1197,7 @@ async function buildFreshBoard(
 
           return decorateGameState(
             {
+              ...footballQuoteFields(row),
               rank: 0,
               playerId:
                 profile.id ||

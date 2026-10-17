@@ -512,6 +512,7 @@ function normalizeCard(
   );
 
   const gi = finite(row?.giScore ?? row?.gi_score ?? row?.score);
+  const unverifiedFootballLine = (sport === "cfb" || sport === "nfl") && line != null && row?.quoteVersion !== 1;
   const movement = movementFrom(row);
   const actual = marketActualValue(
     result,
@@ -648,10 +649,10 @@ function normalizeCard(
         row?.open_line
     ),
     modelProjection: projection,
-    modelProbability: probability,
-    giScore: gi,
+    modelProbability: unverifiedFootballLine ? null : probability,
+    giScore: unverifiedFootballLine ? null : gi,
     prediction:
-      isBinaryEventMarket(market.key) &&
+      unverifiedFootballLine ? "Unverified" : isBinaryEventMarket(market.key) &&
       line == null &&
       probability != null
         ? "YES"
@@ -661,7 +662,7 @@ function normalizeCard(
             projection,
             probability
           ),
-    summary: String(
+    summary: unverifiedFootballLine ? "This original line lacks saved bookmaker and market-type verification. It is retained for history and is not a verified recommendation." : String(
       row?.summary ??
         row?.why ??
         row?.ranking_reason ??
@@ -1063,7 +1064,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>Sach Prediction</span>
+          <span>Sach Pick</span>
           <strong
             className={
               card.prediction === "UNDER"
@@ -1074,7 +1075,9 @@ function PlayerCard({
                   : ""
             }
           >
-            {card.prediction}
+            {(sport === "cfb" || sport === "nfl") && ["OVER", "UNDER"].includes(card.prediction) && card.sportsbookLine != null
+              ? `${card.prediction} ${shortNumber(card.sportsbookLine)}`
+              : card.prediction}
           </strong>
         </div>
 
@@ -1082,7 +1085,7 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : "Model Proj."}
+              : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
           </span>
           <strong>
             {binaryEvent
@@ -1098,6 +1101,15 @@ function PlayerCard({
           <strong>{shortNumber(card.giScore)}</strong>
         </div>
       </div>
+
+      {(sport === "cfb" || sport === "nfl") && card.sportsbookLine != null ? (
+        <div className={styles.faceFooter}>
+          <p>{card.raw?.quoteVersion === 1
+            ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? "Scorer market" : "Main O/U"} · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
+            : "Original line unverified · retained for history; no verified recommendation."}</p>
+          {card.raw?.quoteVersion === 1 ? <p>The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line.</p> : null}
+        </div>
+      ) : null}
 
       {state === "pregame" ? (
         <div className={styles.faceFooter}>
@@ -1134,7 +1146,7 @@ function PlayerCard({
 
       {state === "final" ? (
         <div className={`${styles.resultStrip} ${result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{statusSymbol(result)}</strong>
+          <strong>{(sport === "cfb" || sport === "nfl") && card.raw?.quoteVersion !== 1 ? "LINE UNVERIFIED" : statusSymbol(result)}</strong>
           <span>
             Actual {shortNumber(current)}
             {card.sportsbookLine != null && current != null
