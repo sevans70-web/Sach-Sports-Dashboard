@@ -153,6 +153,20 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  }catch{}
  return {id:"",headshot:"",teamName:teamName||"NFL",teamId:"",position:"",teamLogo:""};
 }
+async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
+ if(market==="first_td"||market.startsWith("q1_"))return [];
+ const positions=market.startsWith("passing")||market==="qb_rushing_yards"?new Set(["QB"]):
+   market.startsWith("rushing")?new Set(["RB","FB"]):new Set(["WR","TE","RB","FB"]);
+ const games=schedule.filter(g=>g.state==="pre"&&easternDayKey(g.date)>=easternDayKey(new Date()));
+ const jobs=games.flatMap(g=>[{g,id:String(g.awayTeamId),name:g.awayTeam},{g,id:String(g.homeTeamId),name:g.homeTeam}]);
+ return (await Promise.all(jobs.map(async({g,id,name})=>{
+  const roster=await cachedRoster(id);
+  return roster.players.filter((p:any)=>positions.has(String(p.position).toUpperCase())).slice(0,market.startsWith("passing")?5:6).map((p:any)=>({
+   playerName:p.name,teamName:name,matchup:`${g.awayTeam} @ ${g.homeTeam}`,gameTime:g.date,line:null,prob:null,bookmakerCount:0,earlyModel:true,
+   profile:{id:p.id,headshot:p.headshot,teamName:name,teamId:id,position:p.position,teamLogo:roster.teamLogo}
+  }));
+ }))).flat();
+}
 async function fetchLog(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0","Accept":"application/json, text/plain, */*","Origin":"https://www.espn.com","Referer":"https://www.espn.com/"}});if(!r.ok)throw 0;return r.json()}
 function statIndex(payload:any,market:NflMarketKey){
  const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);
@@ -164,22 +178,30 @@ function statIndex(payload:any,market:NflMarketKey){
 }
 function history(payload:any,market:NflMarketKey){
  const ix=statIndex(payload,market);
- if(ix<0)return [];
- const vals:number[]=[];const seen=new Set<string>();
+ const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);
+ const combined:Partial<Record<NflMarketKey,string[][]>>={
+  passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],
+  rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],
+  anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]],
+ };
+ const components=(combined[market]||[]).map(aliases=>names.findIndex((name:string)=>aliases.includes(name))).filter(i=>i>=0);
+ if(ix<0&&!components.length)return [];
+ const vals:{value:number;date:string}[]=[];const seen=new Set<string>();
  for(const st of payload?.seasonTypes||[]){
    for(const c of st?.categories||[]){
      if(c?.type!=="event")continue;
      for(const ev of c?.events||[]){
        const eventId=String(ev?.eventId||"");
        if(!eventId||seen.has(eventId))continue;
-       const raw=Array.isArray(ev?.stats)?ev.stats[ix]:undefined;
-       const value=Number(raw);
-       if(!Number.isFinite(value))continue;
-       seen.add(eventId);vals.push(value);
+       const stats=Array.isArray(ev?.stats)?ev.stats:[];
+       const parts=components.map(i=>safeNumber(stats[i])).filter((x):x is number=>x!=null);
+       const value=components.length?(parts.length?parts.reduce((a,b)=>a+b,0):null):safeNumber(stats[ix]);
+       if(value==null)continue;
+       seen.add(eventId);vals.push({value,date:String(payload?.events?.[eventId]?.gameDate||payload?.events?.[eventId]?.date||eventId)});
      }
    }
  }
- return vals;
+ return vals.sort((a,b)=>a.date.localeCompare(b.date)).map(x=>x.value);
 }
 function projection(vals:number[]){const xs=vals.slice(-10);if(!xs.length)return null;let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});return Math.round(sum/w*10)/10}
 async function model(id:string,market:NflMarketKey){
@@ -203,7 +225,7 @@ function matchupGame(schedule:any[],matchup:string){
  return schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===wanted);
 }
 function numStat(v:any){
- const n=Number(String(v??"").replace(/[^0-9.-]/g,""));
+ const raw=String(v??"").replace(/[^0-9.-]/g,"");if(!raw)return null;const n=Number(raw);
  return Number.isFinite(n)?n:null;
 }
 function statFromSummary(payload:any,playerId:string,playerName:string,category:string,label:string){
@@ -355,28 +377,31 @@ export async function GET(req:NextRequest){
     providerError=e instanceof Error?e.message:String(e);
     return getNflMarketRows(market).catch(()=>[]);
   }),getEspnNflSchedule()]),today=easternDayKey(new Date());
-  const active=owlsRows.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
+  const candidates=owlsRows.length?owlsRows:await modelOnlyRows(market,schedule);
+  const active=candidates.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
   const built=await Promise.all(active.slice(0,150).map(async(row:any)=>{
-   const profile=await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
+   const profile=row.profile||await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
    const pos=String(profile.position||"").toUpperCase();
    const qbOnly=market==="qb_rushing_yards"||market==="q1_qb_rushing_yards";
    const nonQbRush=market==="rushing_yards"||market==="q1_rushing_yards";
    if(qbOnly&&pos&&pos!=="QB")return null;
    if(nonQbRush&&pos==="QB")return null;
    const m=await model(profile.id,market);
+   if(row.earlyModel&&(m.projection==null||m.games<2))return null;
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
    const game=matchupGame(schedule,row.matchup);
-   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
+   return {rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
      const label=NFL_MARKETS.find(x=>x[0]===market)?.[2]||market;
      const edge=row.line!=null&&m.projection!=null?Number(m.projection)-Number(row.line):null;
      const edgeText=edge==null?"":` The model sits ${Math.abs(edge).toFixed(1)} ${edge>=0?"above":"below"} the current line.`;
      const probText=probability!=null?` Model probability is ${Number(probability).toFixed(0)}%.`:"";
      const q1=market.startsWith("q1_")?" This is a first-quarter market and is graded only on Q1 production.":"";
+     if(row.earlyModel)return `Sach model watch: ${m.games} verified recent games support a ${m.projection} ${label} baseline. Sportsbook line unavailable; this row is not a wager prediction and is not graded.`;
      return `${label}: ${m.games} verified recent game${m.games===1?"":"s"} and ${row.bookmakerCount} sportsbook${row.bookmakerCount===1?"":"s"} support the ranking.${edgeText}${probText}${q1}`;
-   })(),marketBacked:true};
+   })(),marketBacked:!row.earlyModel};
   }));
   // Resolve sportsbook naming variants (for example "Travis Etienne" and
   // "Travis Etienne Jr.") to one athlete before ranking.  Prefer the row with
@@ -384,9 +409,9 @@ export async function GET(req:NextRequest){
   const resolved=built.filter(Boolean) as any[];
   const unique=new Map<string,any>();
   for(const row of resolved){
-    const key=String(row.playerId||cleanName(row.playerName));
+    const key=row.marketBacked===false&&["passing_yards","passing_tds","passing_rushing_yards"].includes(market)?`${row.teamId}|${row.gameId}`:String(row.playerId||cleanName(row.playerName));
     const prior=unique.get(key);
-    if(!prior||Number(row.bookmakerCount||0)>Number(prior.bookmakerCount||0)||(Number(row.bookmakerCount||0)===Number(prior.bookmakerCount||0)&&Number(row.giScore||0)>Number(prior.giScore||0))) unique.set(key,row);
+    if(!prior||(row.marketBacked===false&&Number(row.modelProjection)>Number(prior.modelProjection))||Number(row.bookmakerCount||0)>Number(prior.bookmakerCount||0)||(Number(row.bookmakerCount||0)===Number(prior.bookmakerCount||0)&&Number(row.giScore||0)>Number(prior.giScore||0))) unique.set(key,row);
   }
   const rows=[...unique.values()];
   // Rolling slate priority: today's playable slate gets a meaningful boost without excluding
@@ -442,6 +467,6 @@ export async function GET(req:NextRequest){
   const future=futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
   for(let slot=1;slot<=25&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
   merged.sort((a:any,b:any)=>Number(a.rank)-Number(b.rank));
-  return NextResponse.json({success:merged.length>0,providerError,degraded:Boolean(providerError),source:providerError?"Available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:true,validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
+  return NextResponse.json({success:merged.length>0,providerError,degraded:Boolean(providerError),source:providerError?"Sach model watch + available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:merged.every(r=>r.marketBacked),validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
  }catch(e){console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }

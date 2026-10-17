@@ -26,7 +26,7 @@ function actualFrom(payload:any,m:NflMarketKey,day:string){
  for(const st of payload.seasonTypes||[])for(const c of st.categories||[])if(c?.type==="event")for(const ev of c.events||[]){
    const id=String(ev?.eventId||""); const meta=events[id]||{};
    const date=meta?.gameDate||meta?.date||meta?.startDate||ev?.gameDate||ev?.date||"";
-   if(date&&nflDay(date)!==day)continue;
+   if(!date||nflDay(date)!==day)continue;
    const v=Number(Array.isArray(ev.stats)?ev.stats[ix]:NaN);if(Number.isFinite(v))return v;
  }
  return null;
@@ -38,7 +38,7 @@ function settle(p:SavedNflPrediction,actual:number){
  const side=p.pickSide||(p.modelProjection!=null&&p.modelProjection<p.sportsbookLine?"UNDER":"OVER");
  return side==="UNDER"?(actual<p.sportsbookLine?"hit":"miss"):(actual>p.sportsbookLine?"hit":"miss");
 }
-function numStat(v:any){const n=Number(String(v??"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:null}
+function numStat(v:any){const raw=String(v??"").replace(/[^0-9.-]/g,"");if(!raw)return null;const n=Number(raw);return Number.isFinite(n)?n:null}
 function statFromSummary(payload:any,playerId:string,playerName:string,category:string,label:string){
  const wantedId=String(playerId||""),wantedName=cleanName(playerName),wantedCategory=cleanName(category),wantedLabel=cleanName(label);
  for(const team of payload?.boxscore?.players||[])for(const group of team?.statistics||[]){
@@ -188,7 +188,7 @@ export async function GET(req:NextRequest){
        let actual=payload?summaryActual(payload,p):null;
        // ESPN's athlete gamelog can lag behind the final whistle. Use it only as a fallback for full-game markets.
        if(actual==null&&!q1&&p.market!=="first_td"){
-         const logPayload=await log(p.playerId,Number(p.gameDate.slice(0,4))||2026);
+         const logPayload=/^\d+$/.test(p.playerId)?await log(p.playerId,Number(p.gameDate.slice(0,4))||2026):null;
          actual=actualFrom(logPayload,p.market,p.gameDate);
        }
        if(actual!=null){p.actual=actual;p.status=settle(p,actual);p.gradedAt=new Date().toISOString();changed=true}

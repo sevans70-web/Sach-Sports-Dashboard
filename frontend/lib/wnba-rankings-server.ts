@@ -88,7 +88,7 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
    return{playerId:p.playerId,playerName:p.playerName,teamName:p.team||"WNBA",teamLogo:String(game.awayAbbr).toUpperCase()===team?game.awayLogo||"":game.homeLogo||"",matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:wnbaHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((50+reliability*15)*10)/10,prediction:null,marketBacked:false,summary:`2026 statistical baseline ${baseline.toFixed(1)}. No verified sportsbook line is currently available, so this player is ranked as a model-only eligible candidate and is not saved for grading.`};
  }).filter(Boolean) as any[];
  rows.sort((a:any,b:any)=>b.giScore-a.giScore);
- fillers.sort((a:any,b:any)=>b.giScore-a.giScore);
+ fillers.sort((a:any,b:any)=>b.modelProjection-a.modelProjection||b.giScore-a.giScore);
  return [...rows,...fillers].slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
 }
 
@@ -96,7 +96,8 @@ export async function buildWnbaMarketRankings(market:WnbaMarketKey,shared?:{payl
  try{
   const source=shared??{payload:await fetchOwlsPayload().catch(()=>({data:[]})),overview:await loadWnbaOverview()};
   const ranked=rowsForMarket(source.payload,source.overview,market);
-  const saved=await saveWnbaPredictions(market,ranked).catch(()=>false);
+  const verified=ranked.filter((x:any)=>x.sportsbookLine!=null);
+  const saved=verified.length>0?await saveWnbaPredictions(market,verified).catch(()=>false):false;
   return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:ranked.some((x:any)=>x.sportsbookLine!=null)?"Owls Insight WNBA props + ESPN":"ESPN WNBA model watch",verifiedPredictions:ranked.filter((x:any)=>x.sportsbookLine!=null).length};
  }catch(e:any){
   const today=torontoWnbaDay(new Date());
@@ -112,5 +113,5 @@ export async function captureAllWnbaMarkets(){
   try{return await buildWnbaMarketRankings(market,{payload,overview})}
   catch(e:any){return {success:false,market,rows:[],saved:false,error:String(e?.message||e)}}
  }));
- return {success:results.some(x=>x.success&&x.saved!==false),markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved!==false,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
+ return {success:results.some(x=>x.success&&x.saved!==false),verifiedPredictions:results.reduce((n,x)=>n+((x as any).verifiedPredictions||0),0),warning:results.every(x=>!x.saved)?"No verified WNBA sportsbook predictions available for capture":undefined,markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved!==false,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
