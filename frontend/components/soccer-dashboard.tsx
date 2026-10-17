@@ -77,7 +77,7 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
         <strong className="origName">{row.playerName}</strong>
         <div className="origMatch">{row.team} · {row.matchup}</div>
         <div className="origProp">
-          <b>Sach Prediction:</b> {row.projection.toFixed(2)} {unit}
+          <b>Sach Prediction:</b> {row.projection==null?"—":row.projection.toFixed(2)} {unit}
         </div>
         <div className="origProp">
           <b>Confidence:</b> {pct(row.modelProbability)}

@@ -1,7 +1,10 @@
+import {getOwlsPayload} from "@/lib/owls-provider";
+import {captureSoccerPredictions} from "@/lib/soccer-predictions";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import {
   buildHistoryIndex,
+  hasSoccerMetric,
   extractAppearances,
   extractRosterPlayers,
   findPlayerHistory,
@@ -42,7 +45,7 @@ const g = globalThis as typeof globalThis & {
   __sachSoccerDashboardCache?: Map<string,{at:number;payload:any}>;
 };
 const soccerCache = g.__sachSoccerDashboardCache || (g.__sachSoccerDashboardCache = new Map());
-const SOCCER_CACHE_MS = 5 * 60_000;
+const SOCCER_CACHE_MS = 60_000;
 
 type Metric = SoccerPropMetric;
 
@@ -124,47 +127,9 @@ async function fetchEspnJson(url: string) {
   return response.json();
 }
 
-async function fetchOwlsProps(errors: string[]) {
-  const apiKey = process.env.OWLS_INSIGHT_API_KEY;
-  if (!apiKey) {
-    errors.push("OWLS_INSIGHT_API_KEY is missing from Railway.");
-    return { rows: [] as OwlsSoccerProp[], meta: null };
-  }
-
-  try {
-    const response = await fetch(OWLS_PROPS_URL, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    });
-
-    const text = await response.text();
-    let payload: any;
-
-    try {
-      payload = JSON.parse(text);
-    } catch {
-      errors.push(`Owls soccer props returned non-JSON (${response.status}).`);
-      return { rows: [] as OwlsSoccerProp[], meta: null };
-    }
-
-    if (!response.ok) {
-      errors.push(
-        `Owls soccer props ${response.status}: ${payload?.error || payload?.message || response.statusText}`,
-      );
-      return { rows: [] as OwlsSoccerProp[], meta: payload?.meta ?? null };
-    }
-
-    return {
-      rows: parseOwlsSoccerProps(payload),
-      meta: payload?.meta ?? null,
-    };
-  } catch (error: any) {
-    errors.push(`Owls soccer props: ${error?.message || error}`);
-    return { rows: [] as OwlsSoccerProp[], meta: null };
-  }
+async function fetchOwlsProps(errors:string[]){
+ try{const payload=await getOwlsPayload("soccer");return {rows:parseOwlsSoccerProps(payload),meta:payload?.meta??null}}
+ catch(error){errors.push(error instanceof Error?error.message:String(error));return {rows:[] as OwlsSoccerProp[],meta:null}}
 }
 
 function popularityScore(home: string, away: string) {
@@ -460,6 +425,7 @@ export async function GET(req: NextRequest) {
           appearancesByPlayer,
           selected.team || rosterMatch?.team || "",
         )
+          .filter(row=>hasSoccerMetric(row,metric))
           .sort((a, b) => String(a.gameDate).localeCompare(String(b.gameDate)))
           .slice(-5);
 
@@ -481,8 +447,8 @@ export async function GET(req: NextRequest) {
 
         const starts = recent.filter((row) => row.starter).length;
         const startRate = gamesN > 0 ? starts / gamesN : 0;
-        const per90 = gamesN > 0 ? (avg * 90) / Math.max(avgMinutes, 20) : 0;
-        const expected = gamesN > 0 ? expectedMinutes(avgMinutes, startRate) : 0;
+        const per90 = gamesN > 0 ? avgMinutes>0 ? (avg * 90) / Math.max(avgMinutes, 20) : avg : 0;
+        const expected = gamesN > 0 ? (avgMinutes>0?expectedMinutes(avgMinutes, startRate):90) : 0;
         const statProjection =
           gamesN > 0
             ? Math.max(0, 0.58 * avg + 0.42 * per90 * (expected / 90))
@@ -499,13 +465,15 @@ export async function GET(req: NextRequest) {
             ? marketProbability * 0.6 + statProbability * 0.4
             : marketProbability ?? statProbability ?? 50;
 
+        const pickSide=statProjection<selected.line?"UNDER":"OVER";
+        const pickProbability=pickSide==="UNDER"?100-probability:probability;
         const sampleScore = Math.min(gamesN / 5, 1) * 8;
         const bookScore = Math.min(new Set(pairs.map((x) => x.prop.book)).size / 4, 1) * 8;
         const starterScore = gamesN > 0 ? Math.min(startRate, 1) * 6 : 0;
 
         const giScore = Math.max(
           0,
-          Math.min(100, probability * 0.78 + sampleScore + bookScore + starterScore),
+          Math.min(100, pickProbability * 0.78 + sampleScore + bookScore + starterScore),
         );
 
         const last = recent[recent.length - 1];
@@ -533,7 +501,9 @@ export async function GET(req: NextRequest) {
           startRate: Number(startRate.toFixed(2)),
           projection: Number(statProjection.toFixed(2)),
           modelTarget: selected.line,
-          modelProbability: Number(probability.toFixed(1)),
+          modelProbability: Number(pickProbability.toFixed(1)),
+          prediction: pickSide,
+          overProbability: probability,
           giScore: Number(giScore.toFixed(1)),
           availability:
             gamesN === 0
@@ -579,6 +549,7 @@ export async function GET(req: NextRequest) {
             appearancesByPlayer,
             team,
           )
+            .filter(row=>hasSoccerMetric(row,metric))
             .sort((a, b) => String(a.gameDate).localeCompare(String(b.gameDate)))
             .slice(-5);
 
@@ -609,7 +580,7 @@ export async function GET(req: NextRequest) {
               avgMinutes: 0,
               expectedMinutes: 0,
               startRate: 0,
-              projection: 0,
+              projection: null,
               modelTarget: null,
               modelProbability: null,
               giScore: 50,
@@ -632,8 +603,8 @@ export async function GET(req: NextRequest) {
             recent.reduce((sum, row) => sum + Number(row.minutes || 0), 0) / gamesN;
           const starts = recent.filter((row) => row.starter).length;
           const startRate = starts / gamesN;
-          const per90 = (avg * 90) / Math.max(avgMinutes, 20);
-          const expected = expectedMinutes(avgMinutes, startRate);
+          const per90 = avgMinutes>0 ? (avg * 90) / Math.max(avgMinutes, 20) : avg;
+          const expected = (avgMinutes>0?expectedMinutes(avgMinutes, startRate):90);
           const projection = Math.max(
             0,
             0.58 * avg + 0.42 * per90 * (expected / 90),
@@ -751,7 +722,9 @@ export async function GET(req: NextRequest) {
       return acc;
     }, {});
 
+    const pregameCapture=await captureSoccerPredictions(league,rankings);
     const payload = {
+      pregameCapture,
       success: true,
       league,
       leagueSlug: league,

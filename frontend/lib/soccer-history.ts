@@ -9,7 +9,9 @@ export type SoccerAppearance = {
   teamId: string;
   team: string;
   position: string;
+  played?: boolean;
   starter: boolean;
+  availableMetrics?: MetricKey[];
   minutes: number;
   shots: number;
   shots_on_target: number;
@@ -27,7 +29,7 @@ export type SoccerRosterPlayer = {
   position: string;
 };
 
-type MetricKey =
+export type MetricKey =
   | "minutes"
   | "shots"
   | "shots_on_target"
@@ -47,7 +49,7 @@ function num(value: unknown) {
 }
 
 function statKey(label: unknown): MetricKey | null {
-  const key = String(label ?? "")
+  const key = String((label && typeof label === "object") ? ((label as any).name || (label as any).abbreviation || (label as any).displayName || "") : label ?? "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "");
 
@@ -59,6 +61,10 @@ function statKey(label: unknown): MetricKey | null {
     sh: "shots",
     shots: "shots",
     totalshots: "shots",
+    totalgoals: "goals",
+    goalassists: "assists",
+    minutesplayed: "minutes",
+    totalminutes: "minutes",
     shotstotal: "shots",
     shotattempts: "shots",
     attempts: "shots",
@@ -140,12 +146,14 @@ function baseAppearance(
       firstString(athleteRow?.team, ["displayName", "name"]) ||
       "",
     position: soccerPosition(position),
+    played: Array.isArray(athleteRow?.stats)&&athleteRow.stats.some((s:any)=>s.name==="appearances")?Number(athleteRow.stats.find((s:any)=>s.name==="appearances").value)>0:undefined,
     starter: Boolean(
       athleteRow?.starter ??
         athleteRow?.isStarter ??
         athleteRow?.starting ??
         athleteRow?.lineupStatus === "starter",
     ),
+    availableMetrics: [],
     minutes: 0,
     shots: 0,
     shots_on_target: 0,
@@ -155,33 +163,43 @@ function baseAppearance(
   };
 }
 
+export function hasSoccerMetric(row:SoccerAppearance,metric:MetricKey){return Boolean(row.availableMetrics?.includes(metric))}
+function setMetric(target:SoccerAppearance,key:MetricKey,value:unknown){
+ if(value==null || String(value).trim()==="" || !Number.isFinite(Number(value)))return false;
+ target[key]=Number(value);
+ target.availableMetrics ||= [];
+ if(!target.availableMetrics.includes(key))target.availableMetrics.push(key);
+ return true;
+}
 function applyLabelStats(target: SoccerAppearance, labels: unknown[], values: unknown[]) {
   let found = 0;
   labels.forEach((label, index) => {
     const key = statKey(label);
     if (!key) return;
-    target[key] = num(values[index]);
-    found += 1;
+    if(setMetric(target,key,values[index]))found += 1;
   });
   return found;
 }
 
 function applyObjectStats(target: SoccerAppearance, stats: any) {
-  if (!stats || typeof stats !== "object" || Array.isArray(stats)) return 0;
+  if (!stats || typeof stats !== "object") return 0;
+  if(Array.isArray(stats))return stats.reduce((count,entry)=>{
+   const key=statKey(entry?.name||entry?.abbreviation||entry?.displayName);
+   return count+Number(Boolean(key&&setMetric(target,key,entry?.value??entry?.displayValue)));
+  },0);
   let found = 0;
 
   for (const [rawKey, rawValue] of Object.entries(stats)) {
     const key = statKey(rawKey);
     if (!key) continue;
-    target[key] = num(rawValue);
-    found += 1;
+    if(setMetric(target,key,rawValue))found += 1;
   }
 
   return found;
 }
 
 function pushIfUseful(out: SoccerAppearance[], row: SoccerAppearance, found: number) {
-  if (!row.playerName) return;
+  if (!row.playerName || row.played===false) return;
   if (found > 0 || row.starter) out.push(row);
 }
 
@@ -217,6 +235,7 @@ function parsePlayerBlocks(
         found += applyLabelStats(row, labels, athleteRow?.stats || athleteRow?.values || []);
         found += applyObjectStats(row, athleteRow?.statistics);
         found += applyObjectStats(row, athleteRow?.statsMap);
+        found += applyObjectStats(row, athleteRow?.stats);
         pushIfUseful(out, row, found);
       }
     }
@@ -258,6 +277,7 @@ function parseRosterStyle(
       found += applyLabelStats(row, labels, values);
       found += applyObjectStats(row, athleteRow?.statistics);
       found += applyObjectStats(row, athleteRow?.statsMap);
+        found += applyObjectStats(row, athleteRow?.stats);
       pushIfUseful(out, row, found);
     }
   }
@@ -313,6 +333,7 @@ function dedupeAppearances(rows: SoccerAppearance[]) {
     next.team = next.team || row.team;
     next.position = next.position || row.position;
     next.starter = next.starter || row.starter;
+    next.availableMetrics=[...new Set([...(existing.availableMetrics||[]),...(row.availableMetrics||[])])];
 
     for (const keyName of [
       "minutes",
@@ -562,8 +583,7 @@ function extractCoreStatName(entry: any) {
 function applyCoreStat(target: SoccerAppearance, rawName: unknown, rawValue: unknown) {
   const key = statKey(rawName);
   if (!key) return false;
-  target[key] = numericStat(rawValue);
-  return true;
+  return setMetric(target,key,rawValue);
 }
 
 function collectCoreStats(node: any, target: SoccerAppearance, depth = 0): number {
@@ -721,7 +741,8 @@ export function extractStatisticsLogAppearances(
       team: player.team,
       position: player.position,
       starter: Boolean(item?.starter ?? item?.isStarter ?? item?.started),
-      minutes: 0,
+      availableMetrics: [],
+    minutes: 0,
       shots: 0,
       shots_on_target: 0,
       goals: 0,

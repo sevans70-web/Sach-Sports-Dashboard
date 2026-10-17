@@ -1,3 +1,4 @@
+import {getOwlsPayload} from "@/lib/owls-provider";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {
@@ -56,18 +57,7 @@ export function torontoNbaDay(v:Date|string){
  return `${get("year")}-${get("month")}-${get("day")}`;
 }
 
-async function fetchOwlsPayload(){
- const key=process.env.OWLS_INSIGHT_API_KEY;
- if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
-
- const r=await fetch(OWLS_URL,{
-  headers:{Authorization:`Bearer ${key}`,Accept:"application/json"},
-  cache:"no-store"
- });
-
- if(!r.ok)throw new Error(`Owls Insight returned ${r.status}`);
- return r.json();
-}
+async function fetchOwlsPayload(){return getOwlsPayload("nba")}
 
 function boardForMarket(payload:any,market:NbaMarketKey){
  const games=Array.isArray(payload?.data)?payload.data:[];

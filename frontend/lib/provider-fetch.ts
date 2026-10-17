@@ -42,3 +42,9 @@ export function nullableNumber(value:unknown):number|null {
   if(value==null || typeof value==="boolean" || (typeof value==="string" && !value.trim()))return null;
   const n=Number(value);return Number.isFinite(n)?n:null;
 }
+
+/** Box-score values: an absent stat is unknown; a reported zero is a result. */
+export function statNumber(value:unknown):number|null {
+ if(value==null||typeof value==="boolean")return null;
+ return nullableNumber(String(value).replaceAll(",","").trim());
+}

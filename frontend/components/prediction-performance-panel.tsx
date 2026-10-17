@@ -106,17 +106,11 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     { key: "goalie_saves", label: "Goalie Saves", icon: "🧤", market: "goalie_saves" },
   ],
   soccer: [
-    {
-      key: "shots_on_target",
-      label: "Shots on Target",
-      icon: "🎯",
-      available: false,
-      note: "Soccer category performance is ready visually. Results will populate when soccer prediction-history grading is connected.",
-    },
-    { key: "shots", label: "Shots", icon: "👟", available: false },
-    { key: "saves", label: "Saves", icon: "🧤", available: false },
-    { key: "goals", label: "Goals", icon: "⚽", available: false },
-    { key: "assists", label: "Assists", icon: "🅰️", available: false },
+    {key:"shots_on_target",label:"Shots on Target",icon:"🎯",market:"shots_on_target"},
+    {key:"shots",label:"Shots",icon:"👟",market:"shots"},
+    {key:"saves",label:"Saves",icon:"🧤",market:"saves"},
+    {key:"goals",label:"Goals",icon:"⚽",market:"goals"},
+    {key:"assists",label:"Assists",icon:"🅰️",market:"assists"},
   ],
   cbb: [
     { key: "points", label: "Points", icon: "🏀", market: "points" },
@@ -317,6 +311,7 @@ function categoryResultLabel(_sport: PerformanceSport, category: CategoryConfig)
 export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport }) {
   const categories = CONFIG[sport];
   const [period, setPeriod] = useState<Period>("Today");
+  const [league,setLeague]=useState("eng.1");
   const [categoryKey, setCategoryKey] = useState(categories[0]?.key || "");
   const [overall, setOverall] = useState<PerformanceStat>(ZERO);
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
@@ -330,13 +325,24 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     setCategoryKey(categories[0]?.key || "");
   }, [sport]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(()=>{
+    if(sport!=="soccer")return;
+    const select=document.querySelector(".soccerLeagueRow select") as HTMLSelectElement|null;
+    if(!select)return;
+    const sync=()=>setLeague(select.value||"eng.1");sync();
+    select.addEventListener("change",sync);return()=>select.removeEventListener("change",sync);
+  },[sport]);
+
   useEffect(() => {
     if (!activeCategory) return;
 
     const controller = new AbortController();
     let alive = true;
 
+    let running=false;
     const run = async () => {
+      if(running)return;
+      running=true;
       setLoading(true);
 
       try {
@@ -376,22 +382,16 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           return;
         }
 
-        if (sport === "soccer") {
-          if (!alive) return;
-          setOverall(ZERO);
-          setCategoryStat(ZERO);
-          return;
-        }
-
+        const scope=sport==="soccer"?`&league=${encodeURIComponent(league)}`:"";
         const overallPayload = await fetchJson(
-          `/api/${sport}/performance?period=${encodeURIComponent(period)}`,
+          `/api/${sport}/performance?period=${encodeURIComponent(period)}${scope}`,
           controller.signal
         );
 
         let selected = ZERO;
         if (activeCategory.available !== false && activeCategory.market) {
           const marketPayload = await fetchJson(
-            `/api/${sport}/performance?period=${encodeURIComponent(period)}&market=${encodeURIComponent(activeCategory.market)}`,
+            `/api/${sport}/performance?period=${encodeURIComponent(period)}&market=${encodeURIComponent(activeCategory.market)}${scope}`,
             controller.signal
           );
           selected = normalizeStat(marketPayload);
@@ -405,16 +405,19 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         setOverall(ZERO);
         setCategoryStat(ZERO);
       } finally {
+        running=false;
         if (alive) setLoading(false);
       }
     };
 
     run();
+    const refresh=window.setInterval(run,60_000);
     return () => {
+      window.clearInterval(refresh);
       alive = false;
       controller.abort();
     };
-  }, [sport, period, categoryKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sport, period, categoryKey,league]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const categoryNote = useMemo(() => {
     if (activeCategory?.note) return activeCategory.note;

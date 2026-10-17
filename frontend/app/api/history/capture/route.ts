@@ -199,7 +199,7 @@ function gradingRoutes(sport: Sport, deep: boolean) {
       return [`/api/cbb/performance?period=${period}`];
 
     case "soccer":
-      return [];
+      return [`/api/soccer/performance?period=${period}`];
   }
 }
 
@@ -238,6 +238,7 @@ async function captureSport(
   } else if (sport === "cbb") {
     results.push(await directCapture(origin, sport, "/api/cbb/capture", day));
   } else if (sport === "soccer") {
+    results.push(await directCapture(origin,sport,"/api/soccer/capture",day));
     results.push(
       await captureArchive(
         origin,

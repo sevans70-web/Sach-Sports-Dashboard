@@ -1,3 +1,4 @@
+import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName} from "@/lib/nfl";
@@ -27,7 +28,7 @@ function actualFrom(payload:any,m:NflMarketKey,day:string){
    const id=String(ev?.eventId||""); const meta=events[id]||{};
    const date=meta?.gameDate||meta?.date||meta?.startDate||ev?.gameDate||ev?.date||"";
    if(!date||nflDay(date)!==day)continue;
-   const v=Number(Array.isArray(ev.stats)?ev.stats[ix]:NaN);if(Number.isFinite(v))return v;
+   const v=statNumber(Array.isArray(ev.stats)?ev.stats[ix]:null);if(v!=null)return v;
  }
  return null;
 }

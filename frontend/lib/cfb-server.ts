@@ -353,8 +353,8 @@ function findMatchupForTeam(schedule:any[],teamName:string,teamId?:string){
   }:null;
 }
 
-export async function getCfbRankings(market:CfbMarketKey):Promise<CfbRankingRow[]>{
-  const marketRows=await getCfbMarketRows(market);
+export async function getCfbRankings(market:CfbMarketKey,knownMarketRows?:any[]):Promise<CfbRankingRow[]>{
+  const marketRows=knownMarketRows??await getCfbMarketRows(market);
   const out:CfbRankingRow[]=[];
   for(const r of marketRows.slice(0,50)){
     const profile=await espnProfile(r.playerName);

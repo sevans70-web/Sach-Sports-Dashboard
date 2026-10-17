@@ -1,3 +1,4 @@
+import {getOwlsPayload} from "@/lib/owls-provider";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {cleanNhlName,loadNhlOverview,nhlHeadshot,playerBaseline,todaysNhlGames,type NhlMarketKey} from "@/lib/nhl";
@@ -7,7 +8,7 @@ const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const num=(v:any)=>{return nullableNumber(v)};
 const median=(xs:number[])=>{const a=xs.filter(Number.isFinite).sort((a,b)=>a-b);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2};
 function match(v:any,m:NhlMarketKey){const x=norm(v);const a:Record<NhlMarketKey,string[]>={shots_on_goal:["shotsongoal","playershotsongoal","shots"],points:["points","playerpoints"],goals:["goals","playergoals","anytimegoalscorer"],assists:["assists","playerassists"],blocked_shots:["blockedshots","blocks","playerblockedshots"],goalie_saves:["goaliesaves","saves","playersaves"]};return a[m].includes(x)}
-async function owls(){const key=process.env.OWLS_INSIGHT_API_KEY;if(!key)return null;const r=await fetch(OWLS_URL,{headers:{Authorization:`Bearer ${key}`,Accept:"application/json"},cache:"no-store"});if(!r.ok)return null;return r.json()}
+async function owls(){return getOwlsPayload("nhl")}
 function board(payload:any,m:NhlMarketKey){const map=new Map<string,any>();for(const g of Array.isArray(payload?.data)?payload.data:[]){const away=String(g.awayTeam||g.away_team||""),home=String(g.homeTeam||g.home_team||""),matchup=away&&home?`${away} @ ${home}`:String(g.name||""),gameTime=String(g.commenceTime||g.commence_time||g.startTime||g.date||"");for(const book of Array.isArray(g.books)?g.books:[])for(const p of Array.isArray(book.props)?book.props:[]){if(!match(p.category??p.market??p.type,m))continue;const playerName=String(p.playerName||p.player_name||p.name||"").trim(),line=num(p.line??p.point??p.total);if(!playerName||line==null)continue;const k=`${cleanNhlName(playerName)}|${cleanNhlName(matchup)}`,cur=map.get(k)||{playerName,matchup,gameTime,lines:[],books:new Set<string>()};cur.lines.push(line);cur.books.add(String(book.key||book.name||"book"));map.set(k,cur)}}return [...map.values()].map((x:any)=>({...x,line:median(x.lines),bookmakerCount:x.books.size}))}
 export async function buildNhlRankings(m:NhlMarketKey){
  const [overview,payload]=await Promise.all([loadNhlOverview(),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));

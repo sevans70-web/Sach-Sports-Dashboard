@@ -46,7 +46,7 @@ const inflight=g.__sachCfbRankingInflight||(g.__sachCfbRankingInflight=new Map()
 const modelCache=g.__sachCfbModelCache||(g.__sachCfbModelCache=new Map());
 const rosterCache=g.__sachCfbRosterCache||(g.__sachCfbRosterCache=new Map());
 
-const FRESH_MS=5*60*1000;
+const FRESH_MS=60*1000;
 const STALE_MS=30*60*1000;
 const MODEL_MS=30*60*1000;
 const ROSTER_MS=60*60*1000;
@@ -66,7 +66,9 @@ function rowGameTime(row:any,schedule:any[]){
   return game?.date?String(game.date):"";
 }
 async function timeout<T>(promise:Promise<T>,ms:number,fallback:T):Promise<T>{
-  return Promise.race([promise,new Promise<T>(resolve=>setTimeout(()=>resolve(fallback),ms))]);
+  let timer:ReturnType<typeof setTimeout>|undefined;
+  try{return await Promise.race([promise,new Promise<T>(resolve=>{timer=setTimeout(()=>resolve(fallback),ms)})]);}
+  finally{if(timer)clearTimeout(timer)}
 }
 async function fetchJson(url:string,ms=2500){
   const c=new AbortController(),timer=setTimeout(()=>c.abort(),ms);
@@ -190,13 +192,14 @@ async function marketRows(market:CfbMarketKey){
     const rows=await timeout(getOwlsCfbRows(market),4000,[]);
     if(rows.length)return rows;
   }catch{}
+  const earlyPromise=timeout(getCfbRankings(market,[]),6000,[]);
   const sportsbook=await timeout(getCfbMarketRows(market),4000,[]);
   if(sportsbook.length)return sportsbook;
 
   // First seed the early pool with verified ESPN statistical leaders. The
   // build step supplements this with scheduled-team rosters so a thin leader
   // feed cannot collapse the ranking to only a few players.
-  const early=await timeout(getCfbRankings(market),6000,[]);
+  const early=await earlyPromise;
   return early
     .filter((row:any)=>row.matchup&&row.gameTime)
     .map((row:any)=>({

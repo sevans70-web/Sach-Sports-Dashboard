@@ -1,4 +1,5 @@
 "use client";
+import {matchingPredictionResult} from "@/lib/prediction-results";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -385,27 +386,7 @@ function usageRows(row: any) {
     }));
 }
 
-function resultForPlayer(payload: any, row: any) {
-  const rows = [
-    ...(Array.isArray(payload?.predictions) ? payload.predictions : []),
-    ...(Array.isArray(payload?.results) ? payload.results : []),
-  ];
-
-  const id = String(row?.playerId ?? row?.player_id ?? row?.batter_id ?? "");
-  const name = clean(row?.playerName ?? row?.player_name ?? row?.player);
-
-  return (
-    rows.find((item: any) => {
-      const itemId = String(item?.playerId ?? item?.player_id ?? item?.batter_id ?? "");
-      return id && itemId && id === itemId;
-    }) ||
-    rows.find((item: any) => {
-      const itemName = clean(item?.playerName ?? item?.player_name ?? item?.player);
-      return name && itemName === name;
-    }) ||
-    null
-  );
-}
+function resultForPlayer(payload:any,row:any){return matchingPredictionResult(payload,row)}
 
 function normalizeResultStatus(value: any) {
   const status = String(value || "").toLowerCase();
@@ -583,10 +564,7 @@ function normalizeCard(
     row?.lineupConfirmed === true ||
     row?.confirmed === true ||
     row?.starterConfirmed === true ||
-    row?.frozen === true ||
-    row?.lockedAtKickoff === true ||
-    row?.lockedAtPuckDrop === true ||
-    String(row?.availability || "").toLowerCase().includes("start");
+    /^(confirmed|confirmed starter)$/i.test(String(row?.availability||""));
 
   const gameState =
     String(
@@ -2006,6 +1984,9 @@ export function PlayerRankingsPanel({
 
           rawRows = payload?.rankings?.[market.key] || [];
           soccerGames = payload?.games || [];
+          const resultUrl=`/api/soccer/performance?period=Week&market=${encodeURIComponent(market.key)}&league=${encodeURIComponent(league)}`;
+          performance=rankingJsonCache.get(resultUrl)?.payload||null;
+          prefetchJson(resultUrl);
         } else {
           const rankingUrl =
             sport === "cfb"
@@ -2075,10 +2056,7 @@ export function PlayerRankingsPanel({
                   gameStatus: game?.status || "",
                   completed: Boolean(game?.completed),
                   summary: row?.why,
-                  lineupConfirmed:
-                    String(row?.availability || "")
-                      .toLowerCase()
-                      .includes("start"),
+                  lineupConfirmed: row?.lineupConfirmed === true || /^confirmed starter$/i.test(String(row?.availability||"")),
                 };
               }
             }

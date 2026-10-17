@@ -52,7 +52,7 @@ export type SoccerRanking = {
   avgMinutes: number;
   expectedMinutes: number;
   startRate: number;
-  projection: number;
+  projection: number | null;
   modelTarget: number;
   modelProbability: number;
   giScore: number;

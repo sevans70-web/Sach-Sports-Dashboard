@@ -1,3 +1,4 @@
+import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {WNBA_MARKETS,type WnbaMarketKey,cleanWnbaName} from "@/lib/wnba";
@@ -38,7 +39,7 @@ async function finalsForDay(day:string){
 async function summary(gameId:string){return json(`${SUMMARY}?event=${encodeURIComponent(gameId)}`,8000)}
 async function gamelog(playerId:string){return json(`${ATHLETE_BASE}/${encodeURIComponent(playerId)}/gamelog?season=2026`,6500)}
 
-function numberValue(v:any){const n=Number(String(v??"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:null}
+function numberValue(v:any){return statNumber(v)}
 function statFromSummary(payload:any,p:SavedWnbaPrediction,labelAliases:string[]){
   const wantedId=String(p.playerId||"");
   const wantedName=cleanWnbaName(p.playerName||"");
