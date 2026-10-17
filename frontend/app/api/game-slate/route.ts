@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { loadNbaOverview } from "@/lib/nba";
 import { loadWnbaOverview } from "@/lib/wnba";
@@ -225,19 +226,16 @@ async function enrichBasketballLiveStatus(
 
 async function espnFootball(sport:"nfl"|"cfb") {
   const path = sport === "nfl" ? "football/nfl" : "football/college-football";
-  const response = await fetch(
-    `https://site.api.espn.com/apis/site/v2/sports/${path}/scoreboard?limit=300`,
-    {
-      cache:"no-store",
-      headers:{"User-Agent":"Sach-Sports/1.0"},
-    }
-  );
-
-  if(!response.ok) {
-    throw new Error(`${sport} schedule ${response.status}`);
-  }
-
-  const payload = await response.json();
+  const now = new Date();
+  const dates=Array.from({length:16},(_,i)=>localDay(new Date(now.getTime()+(i-1)*86400000)).replaceAll("-",""));
+  const boards=await Promise.allSettled(dates.map(date=>fetchJson(
+    `https://site.api.espn.com/apis/site/v2/sports/${path}/scoreboard?limit=300${sport==="cfb"?"&groups=80":""}&dates=${date}`
+  )));
+  const good=boards.flatMap(x=>x.status==="fulfilled"?[x.value]:[]);
+  if(!good.length)throw new Error(`${sport} schedule providers unavailable`);
+  const events=new Map<string,any>();
+  for(const board of good)for(const event of board.events||[])events.set(String(event.id),event);
+  const payload={...good[0],events:[...events.values()]};
   const weekNumber = Number(payload?.week?.number || 0) || null;
 
   const games:Game[] = (payload?.events || []).map((event:any) => {

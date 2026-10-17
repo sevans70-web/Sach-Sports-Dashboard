@@ -1,3 +1,5 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {nullableNumber} from "@/lib/provider-fetch";
 import {
   cleanNbaName,
   loadNbaGameRosters,
@@ -11,7 +13,7 @@ import {getNbaPredictions,saveNbaPredictions} from "@/lib/nba-history";
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/nba/props";
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
-const safe=(v:any)=>{const n=Number(v);return Number.isFinite(n)?n:null};
+const safe=(v:any)=>{return nullableNumber(v)};
 
 function median(xs:number[]){
  const a=xs.filter(Number.isFinite).sort((x,y)=>x-y);

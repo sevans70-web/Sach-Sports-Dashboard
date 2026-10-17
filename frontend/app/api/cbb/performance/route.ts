@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {CBB_MARKETS,type CbbMarketKey,cleanCbbName} from "@/lib/cbb";
 import {getCbbPredictions,saveCbbGrades,cbbDay,type SavedCbbPrediction} from "@/lib/cbb-history";

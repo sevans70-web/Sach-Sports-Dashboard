@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import {
   buildHistoryIndex,
@@ -233,9 +234,17 @@ export async function GET(req: NextRequest) {
 
   try {
     const [board, owls] = await Promise.all([
-      fetchEspnJson(
-        `${ESPN_BASE}/${league}/scoreboard?dates=${ymd(start)}-${ymd(end)}&limit=500`,
-      ),
+      (async()=>{
+        const days=Array.from({length:11},(_,i)=>new Date(now.getTime()+(i-2)*86_400_000));
+        const boards=await Promise.allSettled(days.map(date=>fetchEspnJson(
+          `${ESPN_BASE}/${league}/scoreboard?dates=${ymd(date)}&limit=100`
+        )));
+        const good=boards.flatMap(x=>x.status==="fulfilled"?[x.value]:[]);
+        if(!good.length)throw new Error("Soccer schedule providers unavailable");
+        const events=new Map<string,any>();
+        for(const board of good)for(const event of board.events||[])events.set(String(event.id),event);
+        return {events:[...events.values()]};
+      })(),
       fetchOwlsProps(errors),
     ]);
 

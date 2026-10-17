@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {WNBA_MARKETS,type WnbaMarketKey,cleanWnbaName} from "@/lib/wnba";
 import {getWnbaPredictions,saveWnbaGrades,wnbaDay,type SavedWnbaPrediction} from "@/lib/wnba-history";

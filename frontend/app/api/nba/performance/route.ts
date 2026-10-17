@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NBA_MARKETS,type NbaMarketKey,cleanNbaName} from "@/lib/nba";
 import {getNbaPredictions,saveNbaGrades,nbaDay,type SavedNbaPrediction} from "@/lib/nba-history";

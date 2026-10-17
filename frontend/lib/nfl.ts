@@ -1,3 +1,4 @@
+import {nullableNumber} from "@/lib/provider-fetch";
 export const NFL_MARKETS = [
   ["passing_yards", "🏈", "Passing Yards"],
   ["passing_tds", "🎯", "Passing TDs"],
@@ -78,6 +79,5 @@ export function cleanName(v:string){
   return v.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/gi," ").trim().toLowerCase();
 }
 export function safeNumber(v:unknown){
-  const n=Number(v);
-  return Number.isFinite(n)?n:null;
+  return nullableNumber(v);
 }

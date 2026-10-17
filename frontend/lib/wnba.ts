@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 export const WNBA_SEASON = "2026";
 
 export const WNBA_MARKETS = [

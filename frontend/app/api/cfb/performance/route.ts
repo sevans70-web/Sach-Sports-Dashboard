@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName,safeNumber} from "@/lib/cfb";
 import {cfbDay,getCfbPredictions,getCfbPredictionsForDays,saveGradedCfbPredictions,type SavedCfbPrediction} from "@/lib/cfb-history";

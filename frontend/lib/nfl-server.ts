@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NFL_MARKETS, type NflMarketKey, type NflRankingRow, type NflRosterPlayer, cleanName, safeNumber } from "@/lib/nfl";
 
 const ESPN_SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";

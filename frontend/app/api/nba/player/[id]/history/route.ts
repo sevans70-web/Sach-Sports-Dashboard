@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import type {NbaMarketKey} from "@/lib/nba";
 export const dynamic="force-dynamic"; export const revalidate=0;

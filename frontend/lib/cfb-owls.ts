@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {type CfbMarketKey, cleanName, safeNumber} from "@/lib/cfb";
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/ncaaf/props";

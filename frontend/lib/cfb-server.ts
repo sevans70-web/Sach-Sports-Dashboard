@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { CFB_MARKETS, type CfbMarketKey, type CfbRankingRow, type CfbRosterPlayer, cleanName, safeNumber } from "@/lib/cfb";
 
 const ESPN_SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard";

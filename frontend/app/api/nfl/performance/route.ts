@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName} from "@/lib/nfl";
 import {getEspnNflSchedule} from "@/lib/nfl-server";

@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 export const NHL_MARKETS = [
   ["shots_on_goal","Shots on Goal","SOG"],
   ["points","Points","PTS"],

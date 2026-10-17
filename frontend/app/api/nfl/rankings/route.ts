@@ -1,6 +1,7 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName,safeNumber} from "@/lib/nfl";
-import {getEspnNflSchedule,getNflTeamRoster} from "@/lib/nfl-server";
+import {getEspnNflSchedule,getNflTeamRoster,getNflMarketRows} from "@/lib/nfl-server";
 import {nflPredictionProbability,nflGiScore} from "@/lib/nfl-prediction";
 import {saveNflPregamePredictions,getNflResultMap,getNflPredictions,type SavedNflPrediction} from "@/lib/nfl-history";
 
@@ -349,7 +350,11 @@ export async function GET(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
  if(!NFL_MARKETS.some(x=>x[0]===market))return NextResponse.json({success:false,error:"Unsupported NFL market"},{status:400});
  try{
-  const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market),getEspnNflSchedule()]),today=easternDayKey(new Date());
+  let providerError:string|null=null;
+  const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market).catch(async(e)=>{
+    providerError=e instanceof Error?e.message:String(e);
+    return getNflMarketRows(market).catch(()=>[]);
+  }),getEspnNflSchedule()]),today=easternDayKey(new Date());
   const active=owlsRows.filter((row:any)=>{const t=rowGameTime(row,schedule);if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
@@ -437,6 +442,6 @@ export async function GET(req:NextRequest){
   const future=futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
   for(let slot=1;slot<=25&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
   merged.sort((a:any,b:any)=>Number(a.rank)-Number(b.rank));
-  return NextResponse.json({success:true,source:"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:true,validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
+  return NextResponse.json({success:merged.length>0,providerError,degraded:Boolean(providerError),source:providerError?"Available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:true,validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
  }catch(e){console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }

@@ -1,3 +1,5 @@
+import {nullableNumber} from "@/lib/provider-fetch";
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NHL_MARKETS,type NhlMarketKey} from "@/lib/nhl";
 import {getNhlPredictions,nhlDay,saveNhlGrades,type SavedNhlPrediction} from "@/lib/nhl-history";
@@ -44,8 +46,7 @@ function finalGame(payload:any){
 }
 
 function num(v:any){
-  const n=Number(v);
-  return Number.isFinite(n)?n:null;
+  return nullableNumber(v);
 }
 
 function parseSaves(v:any){
@@ -131,7 +132,7 @@ export async function GET(req:NextRequest){
             boxCache.set(String(row.gameId),payload);
           }
 
-          if(payload&&finalGame(payload)){
+          if(payload&&finalGame(payload)&&payload?.playerByGameStats?.homeTeam&&payload?.playerByGameStats?.awayTeam){
             // Model-only cards are useful rankings, but they are not betting
             // performance. Finalize them as void so they never inflate Pending.
             if(row.sportsbookLine==null||!row.pickSide){

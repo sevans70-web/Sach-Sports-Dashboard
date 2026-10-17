@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { loadNbaOverview } from "@/lib/nba";
 import { loadWnbaOverview } from "@/lib/wnba";

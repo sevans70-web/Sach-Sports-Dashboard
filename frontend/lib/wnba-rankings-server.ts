@@ -1,9 +1,11 @@
+import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {nullableNumber} from "@/lib/provider-fetch";
 import {cleanWnbaName,loadWnbaOverview,playerBaseline,type WnbaMarketKey,WNBA_MARKETS,wnbaHeadshot} from "@/lib/wnba";
 import {getWnbaPredictions,saveWnbaPredictions} from "@/lib/wnba-history";
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/wnba/props";
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
-const safe=(v:any)=>{const n=Number(v);return Number.isFinite(n)?n:null};
+const safe=(v:any)=>{return nullableNumber(v)};
 function median(xs:number[]){const a=xs.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2}
 function americanProb(v:any){const n=Number(v);if(!Number.isFinite(n)||n===0)return null;return Math.round((n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100))*1000)/10}
 function marketMatches(v:any,m:WnbaMarketKey){const x=norm(v);const aliases:Record<WnbaMarketKey,string[]>={
@@ -92,10 +94,10 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
 
 export async function buildWnbaMarketRankings(market:WnbaMarketKey,shared?:{payload:any;overview:any}){
  try{
-  const source=shared??{payload:await fetchOwlsPayload(),overview:await loadWnbaOverview()};
+  const source=shared??{payload:await fetchOwlsPayload().catch(()=>({data:[]})),overview:await loadWnbaOverview()};
   const ranked=rowsForMarket(source.payload,source.overview,market);
   const saved=await saveWnbaPredictions(market,ranked).catch(()=>false);
-  return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:"Owls Insight WNBA props + ESPN WNBA schedule/status"};
+  return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:ranked.some((x:any)=>x.sportsbookLine!=null)?"Owls Insight WNBA props + ESPN":"ESPN WNBA model watch",verifiedPredictions:ranked.filter((x:any)=>x.sportsbookLine!=null).length};
  }catch(e:any){
   const today=torontoWnbaDay(new Date());
   const saved=await getWnbaPredictions(market,today).catch(()=>({connected:false,predictions:[]} as any));
@@ -105,7 +107,7 @@ export async function buildWnbaMarketRankings(market:WnbaMarketKey,shared?:{payl
 }
 
 export async function captureAllWnbaMarkets(){
- const [payload,overview]=await Promise.all([fetchOwlsPayload(),loadWnbaOverview()]);
+ const [payload,overview]=await Promise.all([fetchOwlsPayload().catch(()=>({data:[]})),loadWnbaOverview()]);
  const results=await Promise.all(WNBA_MARKETS.map(async([market])=>{
   try{return await buildWnbaMarketRankings(market,{payload,overview})}
   catch(e:any){return {success:false,market,rows:[],saved:false,error:String(e?.message||e)}}
