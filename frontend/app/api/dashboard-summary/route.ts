@@ -30,7 +30,7 @@ export async function GET(req:NextRequest){
    const slate=slateResult.status==="fulfilled"?slateResult.value:{success:false,games:[],error:"Schedule unavailable"};
    const ranking=rankResult.status==="fulfilled"?rankResult.value:{success:false,rows:[],error:"Rankings unavailable"};
    const rows=sport==="soccer"?(ranking.rankings?.[market]||[]):sport==="mlb"?(ranking.batter?.[market]||[]):ranking.rows||[];
-   const counts=dashboardCounts(slate.games||[],rows);
+   const counts=dashboardCounts(slate.games||[],rows,sport==="cfb"||sport==="nfl");
    const payload={success:slate.success!==false,sport,league,market,scope:"Current slate · default ranking market",weekNumber:slate.weekNumber,...counts,previewGames:slate.games||[],scheduleAvailable:slate.success!==false,rankingsAvailable:ranking.success!==false,warning:[slate.error,ranking.error].filter(Boolean).join(" · ")||null,updatedAt:new Date().toISOString()};
    // Failed feeds retry promptly and never become a durable fallback.
    cache.set(key,{expires:Date.now()+(payload.rankingsAvailable&&payload.scheduleAvailable?30_000:5_000),payload});

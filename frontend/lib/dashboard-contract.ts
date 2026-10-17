@@ -18,7 +18,7 @@ export function dashboardSlate<T extends {id?:string;date:string;state:string}>(
  const order:Record<string,number>={in:0,pre:1,post:2};
  return selected.sort((a,b)=>(order[a.state]??1)-(order[b.state]??1)||Date.parse(a.date)-Date.parse(b.date));
 }
-export function dashboardCounts(games:any[],rows:any[]){
+export function dashboardCounts(games:any[],rows:any[],requireFootballQuote=false){
  const gameIds=new Set(games.map(g=>String(g.id||g.gameId||""))),days=new Set(games.map(g=>dashboardDay(g.date||g.tipoff||"")));
  const unique=new Map<string,any>();
  for(const row of rows){
@@ -31,7 +31,7 @@ export function dashboardCounts(games:any[],rows:any[]){
   unique.set(`${player}|${id||dashboardDay(time)}`,{...row,sportsbookLine:line,modelProjection:projection,prediction:side});
  }
  const ranked=[...unique.values()];
- const props=ranked.filter(r=>{const line=r.sportsbookLine??r.marketLine??r.line;return line!==null&&line!==undefined&&line!==""&&Number.isFinite(Number(line))&&r.marketBacked!==false&&!r.earlyModel});
+ const props=ranked.filter(r=>{const line=r.sportsbookLine??r.marketLine??r.line;return (!requireFootballQuote||r.quoteVersion===1)&&line!==null&&line!==undefined&&line!==""&&Number.isFinite(Number(line))&&r.marketBacked!==false&&!r.earlyModel});
  const predictions=props.filter(r=>{const projection=r.modelProjection??r.projection;const side=r.prediction??r.pickSide;return projection!==null&&projection!==undefined&&Number.isFinite(Number(projection))&&(side==="OVER"||side==="UNDER")&&r.resultStatus!=="void";});
  // A game having started does not prove that a provider published a lineup.
  const confirmed=games.reduce((n,g)=>n+Number(g.awayLineupConfirmed===true)+Number(g.homeLineupConfirmed===true),0);
