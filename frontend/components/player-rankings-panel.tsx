@@ -1,5 +1,7 @@
 "use client";
 import {matchingPredictionResult} from "@/lib/prediction-results";
+import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
+import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -950,6 +952,7 @@ function PlayerCard({
   const binaryEvent =
     isBinaryEventMarket(card.market);
   const footballScorer = (sport === "cfb" || sport === "nfl") && ["anytime_td", "first_td", "q1_anytime_td"].includes(card.market);
+  const unverifiedFootballResult = (sport === "cfb" || sport === "nfl") && (card.raw?.quoteVersion !== 1 || card.raw?.recoveredAfterStart === true);
 
   const result =
     card.resultStatus ||
@@ -1148,11 +1151,11 @@ function PlayerCard({
       ) : null}
 
       {state === "final" ? (
-        <div className={`${styles.resultStrip} ${result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{(sport === "cfb" || sport === "nfl") && card.raw?.quoteVersion !== 1 ? "LINE UNVERIFIED" : statusSymbol(result)}</strong>
+        <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
+          <strong>{unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "LATE CAPTURE" : "LINE UNVERIFIED" : statusSymbol(result)}</strong>
           <span>
             Actual {shortNumber(current)}
-            {card.sportsbookLine != null && current != null
+            {!unverifiedFootballResult && card.sportsbookLine != null && current != null
               ? ` · ${current - card.sportsbookLine >= 0 ? "+" : ""}${shortNumber(current - card.sportsbookLine)} vs line`
               : ""}
           </span>
@@ -1375,6 +1378,7 @@ type JsonCacheEntry = {
 
 const rankingJsonCache = new Map<string, JsonCacheEntry>();
 const rankingJsonInflight = new Map<string, Promise<any>>();
+const rankingViewCache = new Map<string,{at:number;cards:RankingCard[];dropped:any[]}>();
 const JSON_FRESH_MS = 45_000;
 const JSON_STALE_MS = 5 * 60_000;
 
@@ -1389,6 +1393,11 @@ async function networkJson(url: string) {
 
   const payload = await response.json();
   rankingJsonCache.set(url, { at: Date.now(), payload });
+  // Warm the visible preview while the user is still on the prior category.
+  for (const row of (payload?.rows || []).slice(0,15)) {
+    if (row.headshot) void prepareRankingImage(row.headshot);
+    if (row.teamLogo) void prepareRankingImage(row.teamLogo);
+  }
   return payload;
 }
 
@@ -1731,6 +1740,7 @@ export function PlayerRankingsPanel({
   const [nflSlate, setNflSlate] = useState<CfbSlateKey>("all");
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
   const [sharedStatusGames, setSharedStatusGames] = useState<SharedStatusGame[]>([]);
+  const [blockExpanded,setBlockExpanded] = useState<Record<string,boolean>>({});
   const rankingRequestSeq = useRef(0);
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
@@ -1739,7 +1749,12 @@ export function PlayerRankingsPanel({
     nextGroup: string,
     nextMarket: string,
     nextSlate: CfbSlateKey = cfbSlate
-  ) => `${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : "all"}`;
+  ) => `${torontoDay()}|${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : "all"}`;
+
+  const restoreView = (nextGroup:string,nextMarket:string,nextSlate:CfbSlateKey=cfbSlate) => {
+    const saved=rankingViewCache.get(viewCacheKey(nextGroup,nextMarket,nextSlate));
+    if(saved&&Date.now()-saved.at<JSON_STALE_MS){setCards(saved.cards);setDropped(saved.dropped);setLoading(false);}
+  };
 
   const resetCfbMarketView = () => {
     // Set loading in the same render as the selected tab. The previous
@@ -1756,6 +1771,7 @@ export function PlayerRankingsPanel({
     resetCfbMarketView();
     setGroupKey(item.key);
     setMarketKey(item.markets[0].key);
+    restoreView(item.key,item.markets[0].key);
   };
 
   const selectMarket = (key: string) => {
@@ -1763,6 +1779,7 @@ export function PlayerRankingsPanel({
 
     resetCfbMarketView();
     setMarketKey(key);
+    restoreView(group.key,key);
   };
 
   const selectCfbSlate = (key: CfbSlateKey) => {
@@ -1773,6 +1790,7 @@ export function PlayerRankingsPanel({
     setFull(false);
     setShowDropped(false);
     setCfbSlate(key);
+    restoreView(group.key,market.key,key);
   };
 
   const selectNflSlate = (key: CfbSlateKey) => {
@@ -1900,12 +1918,13 @@ export function PlayerRankingsPanel({
       }
 
       if (sport === "cfb") {
-        // Do not fan out every market/slate in the background. The board route
-        // already derives time blocks from one all-day payload; fan-out was
-        // multiplying the same expensive roster/history work.
-        prefetchJson(
-          `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(cfbSlate)}`
-        );
+        // Warm one likely next category, after the current request finishes.
+        const currentUrl=`/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(cfbSlate)}`;
+        prefetchJson(currentUrl);
+        const nextMarket=group.key===config.groups[0].key
+          ?config.groups[1]?.markets[0]
+          :group.markets[group.markets.findIndex(item=>item.key===market.key)+1];
+        if(nextMarket)void(rankingJsonInflight.get(currentUrl)||Promise.resolve()).then(()=>prefetchJson(`/api/cfb/rankings-board?market=${encodeURIComponent(nextMarket.key)}&slate=${encodeURIComponent(cfbSlate)}`));
         return;
       }
 
@@ -2103,7 +2122,10 @@ export function PlayerRankingsPanel({
           return isGradeablePrediction(card);
         });
 
-        setCards(isolated);
+        const staged = await stageRankingImages(isolated);
+        if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
+        rankingViewCache.set(viewCacheKey(group.key,requestedMarket,requestedCfbSlate),{at:Date.now(),cards:staged,dropped:rawDropped});
+        setCards(staged);
         setDropped(rawDropped);
       } catch (cause) {
         if (!alive || controller.signal.aborted) return;
@@ -2271,15 +2293,7 @@ export function PlayerRankingsPanel({
 
   const cfbAllDayGroups = useMemo(() => {
     if (sport !== "cfb" || cfbSlate !== "all") return [];
-    return ([
-      ["early", "Noon / Early"],
-      ["afternoon", "Afternoon"],
-      ["evening", "Evening"],
-    ] as const).map(([key, label]) => ({
-      key,
-      label,
-      rows: displayCards.filter((card) => card.raw?.slateKey === key),
-    }));
+    return rankingTimeBlocks(displayCards);
   }, [sport, cfbSlate, displayCards]);
 
   const sourceText = useMemo(() => {
@@ -2427,15 +2441,20 @@ export function PlayerRankingsPanel({
       <div className={styles.cards}>
         {sport === "cfb" && cfbSlate === "all"
           ? cfbAllDayGroups.map((block) => (
-              <div key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(229,187,69,.35)", padding: "8px 2px", marginBottom: 8 }}>
+              <section key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
+                <button type="button" aria-expanded={blockExpanded[`${market.key}|${block.key}`] ?? !block.completed}
+                  aria-controls={`cfb-block-${block.key}`}
+                  onClick={()=>setBlockExpanded(previous=>({...previous,[`${market.key}|${block.key}`]:!(previous[`${market.key}|${block.key}`]??!block.completed)}))}
+                  style={{ display: "flex", width:"100%", background:"transparent", cursor:"pointer", border:0, textAlign:"left", justifyContent: "space-between", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(229,187,69,.35)", padding: "8px 2px", marginBottom: 8 }}>
                   <strong style={{ color: "#e5bb45" }}>{block.label}</strong>
-                  <span style={{ color: "#9da1a8", fontSize: 11 }}>Top {block.rows.length}</span>
-                </div>
-                {(full ? block.rows : block.rows.slice(0, 5)).map((card) => (
-                  <PlayerCard key={`${sport}-${market.key}-${block.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />
-                ))}
-              </div>
+                  <span style={{ color: "#9da1a8", fontSize: 11 }}>{block.completed?"Final · ":""}{block.rows.length} saved · {(blockExpanded[`${market.key}|${block.key}`]??!block.completed)?"Collapse ⌃":"Expand ›"}</span>
+                </button>
+                {(blockExpanded[`${market.key}|${block.key}`]??!block.completed) ? <div id={`cfb-block-${block.key}`}>
+                  {(full ? block.rows : block.rows.slice(0, 5)).map((card) => (
+                    <PlayerCard key={`${sport}-${market.key}-${block.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />
+                  ))}
+                </div> : null}
+              </section>
             ))
           : visible.map((card) => (
               <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />

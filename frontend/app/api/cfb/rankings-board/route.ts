@@ -18,6 +18,8 @@ import {
 import { getOwlsCfbRows } from "@/lib/cfb-owls";
 import {footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {footballHistoryValues} from "@/lib/football-history";
+import {getLocalCfbPredictions,getCfbPredictions} from "@/lib/cfb-history";
+import {retainedCfbRows} from "@/lib/cfb-retained-board";
 import {
   cfbGiScore,
   cfbPredictionProbability,
@@ -622,6 +624,8 @@ function targetGameDay(
   schedule: any[]
 ) {
   const today = day(new Date());
+  // Finished games belong to today's board until Toronto midnight.
+  if (schedule.some(game => day(game.date || game.gameTime || "") === today)) return today;
 
   const playable = schedule.filter((game: any) => {
     const state = String(game?.state || "").toLowerCase();
@@ -1306,7 +1310,8 @@ async function lockBoard(
   slate: SlateKey,
   gameDay: string,
   fresh: any[],
-  schedule: any[]
+  schedule: any[],
+  retained: any[] = []
 ) {
   const state =
     await readBoardState(
@@ -1319,18 +1324,26 @@ async function lockBoard(
     Older Railway board files may contain model-only rows from the
     previous fallback behavior. Purge them before applying kickoff locks.
   */
-  const previous =
-    (
+  const retainedResults = new Map(retained.map(row=>[rowKey(row),row]));
+  const previous = uniqueRankingRows(
+    [
+      ...(
       Array.isArray(state?.rows)
         ? state!.rows
         : []
-    ).filter(
+      ),
+      ...retained,
+    ].filter(
       (row: any) =>
         gradeableBoardRow(
           row,
           market
         )
-    );
+    )).map(row=>{
+      const result=retainedResults.get(rowKey(row));
+      return result ? {...row,actualResult:result.actualResult??row.actualResult,liveCurrent:result.liveCurrent??row.liveCurrent,
+        resultStatus:result.resultStatus||row.resultStatus,recoveredAfterStart:result.recoveredAfterStart??row.recoveredAfterStart} : row;
+    });
 
   const lockedMap =
     new Map<string, any>();
@@ -1389,7 +1402,7 @@ async function lockBoard(
           {
             ...row,
             frozen: true,
-            lockedAtKickoff: true,
+            lockedAtKickoff: row.recoveredAfterStart !== true,
             lineupConfirmed: true,
             summary:
               row.summary ||
@@ -1596,13 +1609,22 @@ async function build(
   const gameDay =
     targetGameDay(schedule);
 
-  const fresh =
-    await buildFreshBoard(
+  const blockGames = schedule.filter(game => day(game.date || "") === gameDay && inSlate(game.date,slate));
+  const completed = blockGames.length > 0 && blockGames.every(game => game.completed || game.state === "post");
+  const freshWork = completed ? Promise.resolve([]) : buildFreshBoard(
       market,
       slate,
       schedule,
       gameDay
     );
+
+  let recorded = await getLocalCfbPredictions(market,gameDay);
+  if (!recorded.length) recorded = (await timeout(getCfbPredictions(market,gameDay),2500,{predictions:[],connected:false,id:undefined})).predictions;
+  const allState = slate === "all" ? null : await readBoardState(market,"all",gameDay);
+  const priorAllRows = [...(allState?.rows || []), ...Object.values(allState?.locked || {})]
+    .filter(row => inSlate(String(row.gameTime || ""),slate) && day(row.gameTime || "") === gameDay);
+  const retained = [...priorAllRows,...retainedCfbRows(recorded,schedule,gameDay,slate)];
+  const fresh = await freshWork;
 
   const locked =
     await lockBoard(
@@ -1610,7 +1632,8 @@ async function build(
       slate,
       gameDay,
       fresh,
-      schedule
+      schedule,
+      retained
     );
 
   const rows =
@@ -1659,12 +1682,25 @@ async function build(
 async function getPayload(
   market: CfbMarketKey,
   slate: SlateKey
-) {
+):Promise<BoardPayload> {
   const key =
-    `${market}|${slate}`;
+    `${day(new Date())}|${market}|${slate}`;
 
   const cached =
     cache.get(key);
+
+  // A process restart must not make users wait for player-history enrichment
+  // before seeing an already-saved board. Refresh it in the background.
+  if (!cached) {
+    const saved=await readBoardState(market,slate,day(new Date()));
+    const rows=(saved?.rows||[]).filter(row=>gradeableBoardRow(row,market)&&
+      (Date.parse(row.gameTime||"")<=Date.now() || (row.quoteVersion===1&&Date.now()-Date.parse(row.quoteUpdatedAt||"")<15*60_000)));
+    if(rows.length){
+      cache.set(key,{at:Date.now()-FRESH_MS,payload:{success:true,source:"Saved CFB daily board",market,slate,slateLabel:SLATE_LABELS[slate],
+        rows,sportsbookOnly:rows.every(row=>row.marketBacked===true),validRankingCount:rows.length,updatedAt:saved!.updatedAt,lockSource:"Railway volume"}});
+      return getPayload(market,slate);
+    }
+  }
 
   const age =
     cached
@@ -1820,24 +1856,11 @@ export async function GET(
         "evening",
       ];
 
-      // Build the all-day board once. Building three independent boards
-      // repeats roster + player-history work and is the main reason CFB can sit
-      // on "Checking the next slate..." for many seconds.
-      const allPayload = await timeout(
-        getPayload(market, "all"),
-        7_000,
-        null as BoardPayload | null
-      );
-      const blocks = allPayload
-        ? blockKeys.map((key) => ({
-            ...allPayload,
-            slate: key,
-            slateLabel: SLATE_LABELS[key],
-            rows: (allPayload.rows || []).filter((row: any) =>
-              inSlate(String(row.gameTime || ""), key)
-            ),
-          }))
-        : [];
+      // Each block owns its original daily Top 25. Splitting one current
+      // list loses completed games after books remove their props.
+      const blocks = await Promise.all(blockKeys.map(key =>
+        timeout(getPayload(market,key),12_000,null as BoardPayload | null)
+      ));
 
       const usable = blocks.filter(
         (block): block is BoardPayload => Boolean(block)
@@ -1894,7 +1917,7 @@ export async function GET(
 
     const cached =
       cache.get(
-        `${market}|${slate}`
+        `${day(new Date())}|${market}|${slate}`
       );
 
     if (cached) {

@@ -507,6 +507,12 @@
   color: var(--red);
 }
 
+.unverifiedStrip {
+  border-color: #757981;
+  background: rgba(117,121,129,.08);
+}
+.unverifiedStrip strong { color: #c6c8cc; }
+
 .intelButton {
   display: flex;
   align-items: center;
