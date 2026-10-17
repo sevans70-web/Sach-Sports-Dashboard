@@ -512,7 +512,9 @@ function normalizeCard(
   );
 
   const gi = finite(row?.giScore ?? row?.gi_score ?? row?.score);
-  const unverifiedFootballLine = (sport === "cfb" || sport === "nfl") && line != null && row?.quoteVersion !== 1;
+  const football = sport === "cfb" || sport === "nfl";
+  const footballScorer = football && ["anytime_td", "first_td", "q1_anytime_td"].includes(market.key);
+  const unverifiedFootballLine = football && (line != null || row?.marketBacked === true) && row?.quoteVersion !== 1;
   const movement = movementFrom(row);
   const actual = marketActualValue(
     result,
@@ -652,7 +654,7 @@ function normalizeCard(
     modelProbability: unverifiedFootballLine ? null : probability,
     giScore: unverifiedFootballLine ? null : gi,
     prediction:
-      unverifiedFootballLine ? "Unverified" : isBinaryEventMarket(market.key) &&
+      unverifiedFootballLine ? "Unverified" : footballScorer ? (row?.quoteVersion === 1 ? "YES" : "—") : isBinaryEventMarket(market.key) &&
       line == null &&
       probability != null
         ? "YES"
@@ -947,6 +949,7 @@ function PlayerCard({
 
   const binaryEvent =
     isBinaryEventMarket(card.market);
+  const footballScorer = (sport === "cfb" || sport === "nfl") && ["anytime_td", "first_td", "q1_anytime_td"].includes(card.market);
 
   const result =
     card.resultStatus ||
@@ -1050,12 +1053,12 @@ function PlayerCard({
       <div className={styles.faceMetrics}>
         <div>
           <span>
-            {binaryEvent
+            {footballScorer ? "Scorer Market" : binaryEvent
               ? "Home Run Prop"
               : card.marketLabel}
           </span>
           <strong>
-            {binaryEvent
+            {footballScorer ? "YES" : binaryEvent
               ? "HR YES"
               : card.sportsbookLine == null
                 ? "Line —"
@@ -1102,7 +1105,7 @@ function PlayerCard({
         </div>
       </div>
 
-      {(sport === "cfb" || sport === "nfl") && card.sportsbookLine != null ? (
+      {(sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
             ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? "Scorer market" : "Main O/U"} · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
