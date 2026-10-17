@@ -1,3 +1,4 @@
+import {footballHistoryValues} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
@@ -78,18 +79,8 @@ async function fetchJson(url:string,ms=2500){
     return await r.json();
   }finally{clearTimeout(timer)}
 }
-function history(payload:any,market:CfbMarketKey){
-  const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);let ix=-1;
-  for(const wanted of HISTORY_KEYS[market]||[]){ix=names.findIndex((n:string)=>n===wanted);if(ix>=0)break}
-  if(ix<0)return [];
-  const vals:number[]=[];const seen=new Set<string>();
-  for(const st of payload?.seasonTypes||[])for(const c of st?.categories||[])if(c?.type==="event")for(const ev of c?.events||[]){
-    const id=String(ev?.eventId||"");if(!id||seen.has(id))continue;
-    const v=Number(Array.isArray(ev?.stats)?ev.stats[ix]:NaN);
-    if(Number.isFinite(v)){seen.add(id);vals.push(v)}
-  }
-  return vals;
-}
+function history(payload:any,market:CfbMarketKey){return footballHistoryValues(payload,HISTORY_KEYS[market]||[])}
+
 function projection(vals:number[]){
   const xs=vals.slice(-10);if(!xs.length)return null;
   let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});
