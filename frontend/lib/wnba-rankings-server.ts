@@ -1,3 +1,4 @@
+import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -53,10 +54,11 @@ function gameForRow(games:any[],team:string,b:any){
 
 function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
  const board=boardForMarket(payload,market);const byName=new Map(overview.players.map((p:any)=>[cleanWnbaName(p.playerName),p]));const today=torontoWnbaDay(new Date());
+ const activeGames:any[]=activeRankingSlate(overview.games,torontoWnbaDay);
  const uniqueBoard=[...board.reduce((acc:Map<string,any>,b:any)=>{const key=cleanWnbaName(b.playerName);const existing=acc.get(key);if(!existing||Number(b.bookmakerCount||0)>Number(existing.bookmakerCount||0))acc.set(key,b);return acc},new Map<string,any>()).values()] as any[];
  const rows=uniqueBoard.map((b:any)=>{
-  const p:any=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();const game=gameForRow(overview.games,team,b);if(!game)return null;
-  const gameDay=torontoWnbaDay(game.tipoff||"");const active=game.state==="in"||(gameDay===today&&game.state!=="post");if(!active)return null;
+  const p:any=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();const game=gameForRow(activeGames,team,b);if(!game)return null;
+  const gameDay=torontoWnbaDay(game.tipoff||""),propDay=torontoWnbaDay(b.gameTime||"");if(propDay&&propDay!==gameDay)return null;
   const actualMatchup=`${game.awayTeam} @ ${game.homeTeam}`,actualTime=game.tipoff||b.gameTime,teamLogo=String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo;
   const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;
   const reliability=Math.min(1,Math.max(0,(p?.gamesPlayed??0)/30));const edgePct=edge!=null&&b.line?Math.min(1,Math.abs(edge)/Math.max(1,Math.abs(b.line))):0;
@@ -69,10 +71,6 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
  // whose teams have an active game today. Model-only fillers are NEVER persisted as
  // sportsbook predictions because sportsbookLine remains null.
  const used=new Set(rows.map((x:any)=>cleanWnbaName(x.playerName)));
- const activeGames=overview.games.filter((g:any)=>{
-   const gameDay=torontoWnbaDay(g.tipoff||"");
-   return g.state==="in"||(gameDay===today&&g.state!=="post");
- });
  const activeTeams=new Set(activeGames.flatMap((g:any)=>[String(g.awayAbbr||"").toUpperCase(),String(g.homeAbbr||"").toUpperCase()]));
  const fillers=overview.players.map((p:any)=>{
    const team=String(p?.team||"").toUpperCase();
@@ -92,9 +90,9 @@ export async function buildWnbaMarketRankings(market:WnbaMarketKey,shared?:{payl
  try{
   const source=shared??{payload:await fetchOwlsPayload().catch(()=>({data:[]})),overview:await loadWnbaOverview()};
   const ranked=rowsForMarket(source.payload,source.overview,market);
-  const verified=ranked.filter((x:any)=>x.sportsbookLine!=null);
+  const verified=ranked.filter((x:any)=>x.sportsbookLine!=null&&x.prediction&&x.modelProjection!=null);
   const saved=verified.length>0?await saveWnbaPredictions(market,verified).catch(()=>false):false;
-  return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:ranked.some((x:any)=>x.sportsbookLine!=null)?"Owls Insight WNBA props + ESPN":"ESPN WNBA model watch",verifiedPredictions:ranked.filter((x:any)=>x.sportsbookLine!=null).length};
+  return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:ranked.some((x:any)=>x.sportsbookLine!=null)?"Owls Insight WNBA props + ESPN":"ESPN WNBA model watch",verifiedPredictions:verified.length};
  }catch(e:any){
   const today=torontoWnbaDay(new Date());
   const saved=await getWnbaPredictions(market,today).catch(()=>({connected:false,predictions:[]} as any));

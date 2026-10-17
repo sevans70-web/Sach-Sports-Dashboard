@@ -388,7 +388,7 @@ export async function saveCfbPregamePredictions(
         HARD FREEZE:
         If a pregame record exists, never replace its rank/prediction after
         kickoff. If no durable pregame record exists, the first live snapshot
-        becomes the permanent kickoff snapshot instead of being skipped.
+        is retained as void research history, never a pregame betting result.
       */
       if(started&&old){
         if(!old.frozenAt){
@@ -453,9 +453,9 @@ export async function saveCfbPregamePredictions(
           status:
             old?.status&&old.status!=="pending"
               ?old.status
-              :"pending",
+              :started?"void":"pending",
           actual:old?.actual??null,
-          gradedAt:old?.gradedAt??null,
+          gradedAt:old?.gradedAt??(started?now:null),
           frozenAt:
             started
               ?(old?.frozenAt||now)
