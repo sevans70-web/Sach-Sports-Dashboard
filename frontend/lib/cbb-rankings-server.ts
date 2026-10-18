@@ -1,4 +1,5 @@
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {cleanCbbName,loadCbbOverview,playerBaseline,type CbbMarketKey,CBB_MARKETS,cbbHeadshot} from "@/lib/cbb";
@@ -111,7 +112,8 @@ export async function captureAllCbbMarkets(){
   try{return await buildCbbMarketRankings(market,{payload,overview})}
   catch(e:any){return {success:false,market,rows:[],saved:false,error:String(e?.message||e)}}
  }));
- return {success:results.some(x=>x.success&&x.saved===true),verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.marketBacked&&r.sportsbookLine!=null&&r.prediction&&r.modelProjection!=null).length:0),0),warning:results.every(x=>!x.saved)?"No verified CBB sportsbook predictions available for capture":undefined,markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
+ const research=await archiveResearchBoards("cbb",results);
+ return {...research,success:research.researchArchived||results.some(x=>x.success&&x.saved===true),verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.recommendationEligible===true).length:0),0),warning:"Research snapshots archived separately; no validated CBB betting picks are available.",markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
 
 export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbMarketRankingsRaw>){return guardRankingPayload(await buildCbbMarketRankingsRaw(...args),"cbb")}

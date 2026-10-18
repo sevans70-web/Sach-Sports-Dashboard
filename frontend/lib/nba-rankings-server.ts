@@ -1,4 +1,5 @@
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
@@ -541,8 +542,11 @@ export async function captureAllNbaMarkets(){
   })
  );
 
+ const research=await archiveResearchBoards("nba",results);
  return{
-  success:results.some(
+  ...research,
+  warning:"Research snapshots are archived separately; validated betting picks remain withheld.",
+  success:research.researchArchived||results.some(
    (x:any)=>x.success&&x.saved!==false
   ),
   providerError,

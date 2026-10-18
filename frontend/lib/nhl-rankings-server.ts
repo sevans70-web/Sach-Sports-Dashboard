@@ -1,4 +1,5 @@
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
@@ -37,16 +38,18 @@ async function buildNhlRankingsRaw(m:NhlMarketKey){
 
 export async function captureAllNhlMarkets(){
  const markets=(await import("@/lib/nhl")).NHL_MARKETS.map(x=>x[0]);
- const results:any[]=[];
+ const results:any[]=[],boards:any[]=[];
  for(const market of markets){
   try{
    const r=await buildNhlRankings(market);
+   boards.push(r);
    const backed=r.rows.filter((x:any)=>x.recommendationEligible===true&&x.resultStatus!=="void").length;
    results.push({market,count:r.rows.length,verifiedPredictions:backed,locked:Boolean((r as any).locked)});
   }catch(e){results.push({market,count:0,verifiedPredictions:0,error:e instanceof Error?e.message:String(e)});}
  }
  const verifiedPredictions=results.reduce((sum:number,r:any)=>sum+r.verifiedPredictions,0);
- return {success:results.every(x=>!x.error)&&verifiedPredictions>0,verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:verifiedPredictions===0?"No verified NHL sportsbook predictions available for capture":undefined};
+ const research=await archiveResearchBoards("nhl",boards);
+ return {...research,success:research.researchArchived||(results.every(x=>!x.error)&&verifiedPredictions>0),verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:"Research snapshots archived separately; no validated NHL betting picks are available."};
 }
 
 export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return guardRankingPayload(await buildNhlRankingsRaw(...args),"nhl")}

@@ -1,4 +1,5 @@
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
@@ -93,7 +94,8 @@ export async function captureAllWnbaMarkets(){
   try{return await buildWnbaMarketRankings(market,{payload,overview})}
   catch(e:any){return {success:false,market,rows:[],saved:false,error:String(e?.message||e)}}
  }));
- return {success:results.some(x=>x.success&&x.saved!==false),verifiedPredictions:results.reduce((n,x)=>n+((x as any).verifiedPredictions||0),0),warning:results.every(x=>!x.saved)?"No verified WNBA sportsbook predictions available for capture":undefined,markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved!==false,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
+ const research=await archiveResearchBoards("wnba",results);
+ return {...research,success:research.researchArchived||results.some(x=>x.success&&x.saved!==false),verifiedPredictions:results.reduce((n,x)=>n+((x as any).verifiedPredictions||0),0),warning:"Research snapshots archived separately; no validated WNBA betting picks are available.",markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
 
 export async function buildWnbaMarketRankings(...args:Parameters<typeof buildWnbaMarketRankingsRaw>){return guardRankingPayload(await buildWnbaMarketRankingsRaw(...args),"wnba")}
