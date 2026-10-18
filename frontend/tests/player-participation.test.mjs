@@ -39,3 +39,20 @@ test('ranking refresh preserves confirmed participation only for the exact playe
  assert.equal(playerAvailability(retainParticipation(row,previous)).label,'Playing');
  for(const other of [{...row,gameId:'B'},{...row,playerId:'2'}])assert.deepEqual(retainParticipation(other,previous),other);
 });
+test('one face badge progresses pending, confirmed, LIVE, FINAL across every active sport',async()=>{
+ const {cardStatusBadge}=await loadTs(new URL('../lib/player-participation.ts',import.meta.url));
+ for(const sport of ['nfl','cfb','nba','wnba','cbb','nhl']){
+  const row={sport,gameState:'pre'};
+  assert.equal(cardStatusBadge(row,'pregame').label,'Lineup pending');
+  assert.equal(cardStatusBadge({...row,starterConfirmed:true},'pregame').label,'Lineup confirmed');
+  for(const confirmed of [true,false]){
+   assert.equal(cardStatusBadge({...row,lineupConfirmed:confirmed},'live').label,'LIVE');
+   assert.equal(cardStatusBadge({...row,lineupConfirmed:confirmed},'final').label,'FINAL');
+  }
+  assert.equal(cardStatusBadge({...row,participationConfirmed:true},'pregame').label,'Lineup pending');
+  assert.equal(cardStatusBadge({...row,availability:'Out'},'live').notice,'Out');
+  assert.equal(cardStatusBadge({...row,availability:'Inactive'},'live').notice,'Inactive');
+  assert.equal(cardStatusBadge({...row,didNotPlay:true},'final').notice,'DNP');
+  assert.equal(cardStatusBadge({...row,liveCurrent:0},'final').notice,null);
+ }
+});

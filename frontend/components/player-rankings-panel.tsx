@@ -1,5 +1,5 @@
 "use client";
-import {playerAvailability,applyParticipationEvidence,retainParticipation} from "@/lib/player-participation";
+import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
@@ -907,6 +907,8 @@ function PlayerCard({
     actual: card.actual,
   });
 
+  const statusBadge=cardStatusBadge({...card.raw,gameState:card.gameState},state);
+
   const current =
     state === "live"
       ? card.liveCurrent
@@ -992,8 +994,6 @@ function PlayerCard({
         <div className={styles.identity}>
           <div className={styles.identityTop}>
             <strong>{card.playerName}</strong>
-            {state === "live" ? <b className={styles.liveBadge}>LIVE</b> : null}
-            {state === "final" ? <b className={styles.finalBadge}>Final</b> : null}
           </div>
 
           <span>
@@ -1003,22 +1003,21 @@ function PlayerCard({
           </span>
 
           <small>
-            {state === "live"
-              ? `LIVE · ${card.gameStatus || "In Progress"}`
-              : state === "final"
-                ? "Final"
-                : gameTimeLabel(card.gameTime)}
+            {state === "live" ? card.gameStatus || "In Progress" : gameTimeLabel(card.gameTime)}
           </small>
 
           <em
             className={
-              card.lineupStatus === "Confirmed"
-                ? styles.confirmed
-                : styles.pending
+              statusBadge.tone === "live" ? styles.liveBadge
+                : statusBadge.tone === "final" ? styles.finalBadge
+                : statusBadge.tone === "confirmed" ? styles.confirmed : styles.pending
             }
+            data-card-status={statusBadge.tone}
+            aria-label={`${card.playerName} status: ${statusBadge.label}`}
           >
-            {playerAvailability({...card.raw,gameState:card.gameState}).label}
+            {statusBadge.label}
           </em>
+          {statusBadge.notice ? <span className={styles.playerStatusNotice}>{statusBadge.notice}</span> : null}
         </div>
 
         <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
@@ -1113,7 +1112,7 @@ function PlayerCard({
       {state === "live" ? (
         <div className={`${styles.liveStrip} ${researchOnly ? styles.unverifiedStrip : ""}`}>
           <div>
-            <strong>LIVE · {card.gameStatus || "In Progress"}</strong>
+            <strong>{card.marketLabel} · current</strong>
             <span>
               {current == null
                 ? "Live stat pending"
@@ -2133,16 +2132,22 @@ export function PlayerRankingsPanel({
   useEffect(() => {
     if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
 
-    const liveGames = sharedStatusGames.filter(
-      (game) => ["in","post"].includes(String(game.state || "").toLowerCase()) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
+    const statusGames = sharedStatusGames.filter(
+      (game) => (["in","post"].includes(String(game.state || "").toLowerCase()) || (game.state==="pre" && Date.parse(game.date||"")-Date.now()<=2*60*60_000 && Date.parse(game.date||"")>Date.now())) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
     );
-    if (!liveGames.length) return;
+    if (!statusGames.length) return;
 
     let cancelled = false;
+    const pregameFetched=new Map<string,number>();
 
     const run = async () => {
       const payloads = await Promise.all(
-        liveGames.map(async (game) => {
+        statusGames.map(async (game) => {
+          if(game.state==="pre"){
+            const last=pregameFetched.get(String(game.id))||0;
+            if(Date.now()-last<60_000)return {game,payload:null};
+            pregameFetched.set(String(game.id),Date.now());
+          }
           try {
             const response = await fetch(
               sport === "nfl" || sport === "cfb" ? `/api/football/live-player-stats?sport=${sport}&gameId=${encodeURIComponent(String(game.id))}` : sport === "nhl" ? `/api/nhl/live-player-stats?gameId=${encodeURIComponent(String(game.id))}` : `/api/basketball/live-player-stats?sport=${sport}&gameId=${encodeURIComponent(String(game.id))}`,
@@ -2161,7 +2166,7 @@ export function PlayerRankingsPanel({
 
       setCards((previous) =>
         previous.map((card) => {
-          const game = sharedGameForCard(card, liveGames);
+          const game = sharedGameForCard(card, statusGames);
           if (!game) return card;
 
           const payload = payloads.find(

@@ -51,3 +51,18 @@ export function retainParticipation(row:any,previous:any){
  if(!row?.gameId||String(row.gameId)!==String(previous?.participationGameId)||String(row.playerId)!==String(previous?.playerId))return row;
  return {...row,participationConfirmed:row.participationConfirmed===true||previous.participationConfirmed===true,starterConfirmed:row.starterConfirmed===true||previous.starterConfirmed===true,participationGameId:String(row.gameId)};
 }
+/** One face-card badge follows the game lifecycle; participation stays in details. */
+export function cardStatusBadge(row:any,state:'pregame'|'live'|'final'){
+ const availability=playerAvailability(row);
+ const notice=playerStatusNotice(row,state);
+ if(state==='final')return {label:'FINAL',tone:'final',notice};
+ if(state==='live')return {label:'LIVE',tone:'live',notice};
+ return {label:availability.confirmed?'Lineup confirmed':'Lineup pending',tone:availability.confirmed?'confirmed':'pending',notice};
+}
+export function playerStatusNotice(row:any,state:'pregame'|'live'|'final'){
+ const values=[row?.availability,row?.injuryStatus,row?.injury_status,row?.playerStatus,row?.injury?.status];
+ if(row?.inactive===true||values.some(v=>/^inactive$/i.test(String(v||''))))return 'Inactive';
+ if(row?.isOut===true||values.some(v=>/^out$/i.test(String(v||''))))return 'Out';
+ if(values.some(v=>/^(dnp|did not play)$/i.test(String(v||'')))||(state==='final'&&row?.didNotPlay===true))return 'DNP';
+ return null;
+}

@@ -1071,3 +1071,11 @@
 /* Live observation bars stay green across every sport and card type. */
 .researchProgress i { background: var(--green); }
 .progressCaption { display: block; margin-top: 4px; color: #c6c8cc; font-size: 10px; }
+
+.identity > .playerStatusNotice {
+  display: block;
+  color: #ff929c;
+  font-size: 10px;
+  font-weight: 800;
+  margin-top: 4px;
+}
