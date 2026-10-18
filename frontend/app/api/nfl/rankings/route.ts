@@ -1,3 +1,4 @@
+import {espnParticipation} from "@/lib/player-participation";
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
@@ -292,10 +293,11 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
   const g=matchupGame(schedule,row.matchup);
   if(!g)return row;
   const payload=summaries.get(String(g.id));
+  const participant=payload&&String(payload?.header?.id)===String(g.id)?espnParticipation(payload,"nfl").find(p=>p.playerId===String(row.playerId)):null;
   const current=payload?currentMarketStat(payload,market,row.playerId,row.playerName):null;
   const line=Number(row.sportsbookLine);
   const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
-  return {...row,gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
+  return {...row,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
  });
 }
 
@@ -392,7 +394,7 @@ export async function GET(req:NextRequest){
     const key=`${p.playerId}|${p.gameId||cleanName(p.matchup)}`;
     const live=liveByKey.get(key) as any;
     const margin=p.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
-    return {...footballQuoteFields(p),rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),liveCurrent:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
+    return {...footballQuoteFields(p),rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),participationConfirmed:live?.participationConfirmed===true,starterConfirmed:live?.starterConfirmed===true,participationGameId:String(g?.id||p.gameId||""),liveCurrent:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
   });
   const futureCurrent=liveRows.filter((r:any)=>!started(currentGameFor(r)));
   const lockedKeys=new Set(frozenStarted.map((r:any)=>`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));

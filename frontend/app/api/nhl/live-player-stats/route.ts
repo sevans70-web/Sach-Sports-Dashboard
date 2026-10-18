@@ -1,3 +1,4 @@
+import {nhlParticipation} from "@/lib/player-participation";
 import {nhlObservedRows} from "@/lib/observed-player-stats";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
@@ -41,6 +42,7 @@ export async function GET(req: NextRequest) {
         success: true,
         gameId,
         rows,
+        participants:nhlParticipation(payload),
         state: ["OFF","FINAL"].includes(String(payload.gameState))?"post":["LIVE","CRIT"].includes(String(payload.gameState))?"in":"pre",
         updatedAt: new Date().toISOString(),
       },

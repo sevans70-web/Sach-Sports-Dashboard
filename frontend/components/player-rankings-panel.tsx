@@ -1,4 +1,5 @@
 "use client";
+import {playerAvailability,applyParticipationEvidence,retainParticipation} from "@/lib/player-participation";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
@@ -537,12 +538,7 @@ function normalizeCard(
           : null
     );
 
-  const lineupConfirmed =
-    row?.lineup_confirmed === true ||
-    row?.lineupConfirmed === true ||
-    row?.confirmed === true ||
-    row?.starterConfirmed === true ||
-    /^(confirmed|confirmed starter)$/i.test(String(row?.availability||""));
+  const lineupConfirmed = playerAvailability(row).confirmed;
 
   const gameState =
     String(
@@ -1021,7 +1017,7 @@ function PlayerCard({
                 : styles.pending
             }
           >
-            {card.lineupStatus === "Pending" ? "Lineup pending" : card.lineupStatus}
+            {playerAvailability({...card.raw,gameState:card.gameState}).label}
           </em>
         </div>
 
@@ -1344,11 +1340,7 @@ function PlayerCard({
             <div className={styles.reasonList}>
               <p>
                 <span>✓</span>
-                {state === "final"
-                  ? "Game completed; original prediction is preserved."
-                  : card.lineupStatus === "Confirmed"
-                    ? "Starting status confirmed / prediction locked when required."
-                    : "Starting status is still pending confirmation."}
+                {playerAvailability({...card.raw,gameState:card.gameState}).detail}
               </p>
               {card.bookmakerCount != null ? (
                 <p>
@@ -2101,7 +2093,11 @@ export function PlayerRankingsPanel({
         const staged = await stageRankingImages(isolated);
         if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
         rankingViewCache.set(viewCacheKey(group.key,requestedMarket,requestedCfbSlate),{at:Date.now(),cards:staged,dropped:rawDropped});
-        setCards(staged);
+        setCards(previous=>staged.map(card=>{
+          const old=previous.find(p=>p.playerId===card.playerId&&p.raw?.gameId===card.raw?.gameId);
+          const raw=retainParticipation(card.raw,old?.raw);
+          return {...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"};
+        }));
         setDropped(rawDropped);
       } catch (cause) {
         if (!alive || controller.signal.aborted) return;
@@ -2135,7 +2131,7 @@ export function PlayerRankingsPanel({
   }, [sport, groupKey, marketKey, league, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!["nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
+    if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
 
     const liveGames = sharedStatusGames.filter(
       (game) => ["in","post"].includes(String(game.state || "").toLowerCase()) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
@@ -2149,7 +2145,7 @@ export function PlayerRankingsPanel({
         liveGames.map(async (game) => {
           try {
             const response = await fetch(
-              sport === "nhl" ? `/api/nhl/live-player-stats?gameId=${encodeURIComponent(String(game.id))}` : `/api/basketball/live-player-stats?sport=${sport}&gameId=${encodeURIComponent(String(game.id))}`,
+              sport === "nfl" || sport === "cfb" ? `/api/football/live-player-stats?sport=${sport}&gameId=${encodeURIComponent(String(game.id))}` : sport === "nhl" ? `/api/nhl/live-player-stats?gameId=${encodeURIComponent(String(game.id))}` : `/api/basketball/live-player-stats?sport=${sport}&gameId=${encodeURIComponent(String(game.id))}`,
               { cache: "no-store" }
             );
             return response.ok
@@ -2174,8 +2170,11 @@ export function PlayerRankingsPanel({
 
           const row = (payload?.rows || []).find((item:any)=>String(item.playerId||"")===String(card.playerId||""));
 
+          const participant = payload?.success===true && String(payload.gameId)===String(game.id)
+            ? (payload.participants||[]).find((p:any)=>String(p.playerId)===String(card.playerId)) : null;
+          const updatedRaw=applyParticipationEvidence({...card.raw,gameId:String(game.id),playerId:card.playerId},payload,String(game.id));
           const current = finite(row?.stats?.[card.market]);
-          if (current == null) return card;
+          if (current == null) return participant ? {...card,raw:updatedRaw,lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
 
           const progress =
             card.sportsbookLine != null && card.sportsbookLine > 0
@@ -2184,11 +2183,12 @@ export function PlayerRankingsPanel({
 
           return {
             ...card,
+            lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending",
             liveCurrent: game.state === "in" ? current : card.liveCurrent,
             actual: game.state === "post" ? current : card.actual,
             liveProgressPct: progress,
             raw: {
-              ...(card.raw || {}),
+              ...updatedRaw,
               liveCurrent: game.state === "in" ? current : card.liveCurrent,
               actualResult: game.state === "post" ? current : card.actual,
               liveStatsUpdatedAt: payload.updatedAt,
