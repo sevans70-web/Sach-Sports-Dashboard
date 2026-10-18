@@ -1,0 +1,51 @@
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import { ADMIN_EMAIL, ADMIN_SPORTS, adminResultCounts } from "@/lib/admin-policy";
+import styles from "./admin.module.css";
+const label = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase());
+const when = (value: string | null) => value ? new Date(value).toLocaleString("en-CA", { timeZone: "America/Toronto" }) + " ET" : "Not recorded";
+const symbols: Record<string, string> = { hit: "✓ Hit", miss: "✕ Miss", push: "= Push", pending: "Pending", void: "Void / withdrawn", unknown: "Unknown" };
+export function AdminDashboard() {
+  const [sport, setSport] = useState("nfl"), [period, setPeriod] = useState("Today"), [outcome, setOutcome] = useState("all"), [market, setMarket] = useState("all"), [query, setQuery] = useState("");
+  const [records, setRecords] = useState<any[]>([]), [overview, setOverview] = useState<any>(null), [loading, setLoading] = useState(true), [error, setError] = useState(""), [version, setVersion] = useState(0);
+  const [password, setPassword] = useState(""), [accountMessage, setAccountMessage] = useState(""), [saving, setSaving] = useState(false);
+  const [updated, setUpdated] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true; const controller = new AbortController();
+    setLoading(true); setError(""); setRecords([]); setUpdated(null);
+    fetch(`/api/admin/records?sport=${sport}&period=${period}`, { cache: "no-store", signal: controller.signal }).then(async r => {
+      if (r.status === 401) { window.location.replace("/admin/login"); return null; }
+      const d = await r.json(); if (!r.ok) throw Error(d.error || "History unavailable."); return d;
+    }).then(d => { if (live && d) { setRecords(d.records); setUpdated(d.updatedAt); } }).catch(e => { if (live) setError(e.message); }).finally(() => { if (live) setLoading(false); });
+    return () => { live = false; controller.abort(); };
+  }, [sport, period, version]);
+  useEffect(() => {
+    const refresh = () => fetch("/api/admin/auth", { cache: "no-store" }).then(r => { if (r.status === 401) window.location.replace("/admin/login"); }).catch(() => {});
+    fetch("/api/admin/overview", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(setOverview).catch(() => {});
+    const timer = setInterval(refresh, 10 * 60000); return () => clearInterval(timer);
+  }, []);
+  const scoped = useMemo(() => records.filter(r => (market === "all" || r.market === market) && `${r.player} ${r.team} ${r.matchup}`.toLowerCase().includes(query.trim().toLowerCase())), [records, market, query]);
+  const counts = adminResultCounts(scoped);
+  const shown = scoped.filter(r => outcome === "all" || outcome === "settled" && ["hit", "miss", "push"].includes(r.status) || r.status === outcome);
+  async function logout() { await fetch("/api/admin/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "logout" }) }); window.location.replace("/admin/login"); }
+  async function savePassword(e: React.FormEvent) {
+    e.preventDefault(); setSaving(true); setAccountMessage("");
+    try { const r = await fetch("/api/admin/password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) }); const d = await r.json(); if (!r.ok) throw Error(d.error); setAccountMessage("Password saved. Use it for your next sign-in."); setPassword(""); } catch (e) { setAccountMessage(e instanceof Error ? e.message : "Could not save password."); } finally { setSaving(false); }
+  }
+  return <main className={styles.root}>
+    <header className={styles.heading}><div><p className={styles.eyebrow}>PRIVATE · ADMINISTRATOR</p><h1>Dashboard control room</h1><p>{ADMIN_EMAIL}</p></div><button onClick={() => void logout()} className={styles.secondary}>Sign out</button></header>
+    <section className={styles.panel}><h2>Result inspector</h2><p>Open any result to inspect the saved call, line, actual and timestamps. Historical research results are separate from validated betting picks.</p>
+      <nav className={styles.tabs} aria-label="Admin sports">{ADMIN_SPORTS.map(s => <button key={s} aria-pressed={sport === s} onClick={() => { setSport(s); setMarket("all"); setOutcome("all"); }}>{s.toUpperCase()}</button>)}</nav>
+      <div className={styles.filters}><label>Period<select value={period} onChange={e => setPeriod(e.target.value)}>{["Today", "Yesterday", "Week"].map(p => <option key={p}>{p}</option>)}</select></label><label>Category<select value={market} onChange={e => setMarket(e.target.value)}><option value="all">All categories</option>{[...new Set(records.map(r => r.market))].sort().map(m => <option key={m} value={m}>{label(m)}</option>)}</select></label><label>Find player or game<input type="search" placeholder="Player, team or matchup" value={query} onChange={e => setQuery(e.target.value)} /></label><button disabled={loading} onClick={() => setVersion(v => v + 1)}>Refresh results</button></div>
+      <div className={styles.metrics} aria-label="Result filters">{[{ key: "settled", title: "Settled", value: counts.settled }, { key: "hit", title: "Hits", value: counts.hits }, { key: "miss", title: "Misses", value: counts.misses }, { key: "push", title: "Pushes", value: counts.pushes }, { key: "pending", title: "Pending", value: counts.pending }, { key: "void", title: "Void / withdrawn", value: counts.void }].map(m => <button key={m.key} aria-pressed={outcome === m.key} onClick={() => setOutcome(m.key)}><span>{m.title}</span><strong>{loading || error ? "—" : m.value}</strong></button>)}</div>
+      {!loading && !error ? <p>Research hit rate: {counts.hitRate == null ? "—" : `${counts.hitRate}%`} · {counts.hits} hits / {counts.hits + counts.misses} decisions. Pushes excluded. {counts.total} total records in the selected scope.</p> : null}
+      <div className={styles.tabs}><button aria-pressed={outcome === "all"} onClick={() => setOutcome("all")}>All results</button><span>{loading ? "Loading complete history…" : error || `${shown.length} records shown · updated ${when(updated)}`}</span></div>
+      {error ? <p role="alert" className={styles.notice}>{error}</p> : null}
+      {!loading && !error && !shown.length ? <p>No saved records match these filters.</p> : null}
+      <div className={styles.records}>{shown.map((r, i) => <details key={`${r.key}|${i}`} className={styles.record}><summary><span><strong>{r.player}</strong><small>{label(r.market)} · {r.matchup}</small></span><b className={r.status === "hit" ? styles.hit : r.status === "miss" ? styles.miss : ""}>{symbols[r.status]}</b><span>{r.side || "No saved side"} {r.line ?? "—"}<small>Actual {r.actual ?? "not reported"}</small></span></summary><dl><dt>Saved call</dt><dd>{r.side || "Not recorded"} · line {r.line ?? "not recorded"}</dd><dt>Official actual</dt><dd>{r.actual ?? "Not reported"}</dd><dt>Saved</dt><dd>{when(r.savedAt)}</dd><dt>Game start</dt><dd>{when(r.gameTime)}</dd><dt>Graded</dt><dd>{when(r.gradedAt)}</dd><dt>Source</dt><dd>{r.sportsbook || "Bookmaker not recorded"} · {r.quoteVerified ? "Quote provenance verified" : "Quote provenance unverified"}</dd><dt>Quote updated</dt><dd>{when(r.quoteUpdatedAt)}</dd><dt>Classification</dt><dd>{r.verifiedPick ? "Validated pick" : "Historical research"}</dd><dt>Review</dt><dd>{r.reason || "No review reason recorded"}{r.recoveredAfterStart ? " · Recovered after start" : ""}{r.withdrawn ? " · Withdrawn from board" : ""}</dd><dt>Fixture / player ID</dt><dd>{r.gameId || "Missing"} / {r.playerId || "Missing"}</dd></dl></details>)}</div>
+    </section>
+    <div className={styles.columns}><section className={styles.panel}><h2>GI and model readiness</h2><p>{overview?.models?.status || "Loading readiness…"}</p>{overview?.models ? <><p>{overview.models.evidence}</p><ul>{overview.models.missing.map((s: string) => <li key={s}>{s}</li>)}</ul><a href="https://github.com/sevans70-web/Sach-Sports-Dashboard/tree/nextjs-migration/frontend/model-research/2026-10-18" target="_blank" rel="noreferrer">Open backtest report</a></> : null}</section>
+    <section className={styles.panel}><h2>Capture and storage</h2>{overview ? <><p>History storage: {overview.storageReadable ? "Readable" : "Unavailable"}</p><p>Drive backup configuration: {overview.backupConfigured ? "Present" : "Incomplete"}</p><p>{overview.backupVerification}</p><p>Last capture details:</p><pre>{overview.capture ? JSON.stringify(overview.capture, null, 2) : "No capture manifest available"}</pre><p>Release: {overview.commit.slice(0, 8)}</p></> : <p>Loading operations…</p>}</section></div>
+    <section className={styles.panel}><h2>Your account</h2><p>After signing in through email, you can set your own password here. Tester invitations are not enabled yet.</p><form onSubmit={savePassword} className={styles.account}><label>New password<input type="password" autoComplete="new-password" minLength={12} maxLength={128} value={password} onChange={e => setPassword(e.target.value)} required /></label><button disabled={saving}>{saving ? "Saving…" : "Save password"}</button></form>{accountMessage ? <p role="status">{accountMessage}</p> : null}</section>
+  </main>;
+}
