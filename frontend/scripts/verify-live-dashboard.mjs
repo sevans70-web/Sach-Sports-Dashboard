@@ -45,7 +45,9 @@ await pool(['nba','wnba','nhl','cbb'],async sport=>{
  const r=await request(`/api/${sport}/capture${sport==='soccer'?'?league=eng.1':''}`,'POST'),d=r.data||{},check={path:r.path,http:r.http,ms:r.ms,success:d.success,verifiedPredictions:d.verifiedPredictions,markets:d.markets,leagues:d.leagues,warning:d.warning,error:r.error||d.error||null};report.checks.push(check);console.log(JSON.stringify(check));
 },2);
 report.finishedAt=new Date().toISOString();
-report.pass=report.summaries.every(s=>s.contract==='pass')&&report.markets.every(r=>r.http===200&&r.success!==false&&r.unique!==false&&r.semanticIssues.length===0)&&report.checks.every(r=>r.http===200);
+report.unavailableMarkets=report.markets.filter(r=>r.success===false||r.rows===0).map(r=>({path:r.path,error:r.error}));
+report.quoteGaps=report.markets.filter(r=>r.backed===0).map(r=>r.path);
+report.pass=report.summaries.every(s=>s.contract==='pass')&&report.markets.every(r=>r.http===200&&(r.success!==false||r.rows===0)&&r.unique!==false&&r.semanticIssues.length===0)&&report.checks.every(r=>r.http===200);
 if(process.argv[3])await writeFile(process.argv[3],JSON.stringify(report,null,2));
 console.log(JSON.stringify({pass:report.pass,markets:report.markets.length,httpErrors:report.markets.filter(r=>r.http!==200),summaryFailures:report.summaries.filter(s=>s.contract!=='pass')}));
 if(!report.pass)process.exitCode=1;

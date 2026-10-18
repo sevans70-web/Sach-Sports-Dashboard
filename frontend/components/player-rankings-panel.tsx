@@ -1249,7 +1249,7 @@ function PlayerCard({
           )}
 
           <section className={styles.intelSection}>
-            <h4>{state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
+            <h4>{researchOnly ? "Research Context" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
             <div className={styles.reasonList}>
               {(reasons.length ? reasons : [card.summary]).map((reason, index) => (
                 <p key={`${reason}-${index}`}>
@@ -1324,11 +1324,11 @@ function PlayerCard({
               <div className={styles.lineMovement}>
                 <div>
                   <span>Open</span>
-                  <strong>{shortNumber(card.openingLine ?? card.sportsbookLine)}</strong>
+                  <strong>{shortNumber(card.openingLine)}</strong>
                 </div>
                 <b>→</b>
                 <div>
-                  <span>{state === "pregame" ? "Current" : "Close"}</span>
+                  <span>{researchOnly ? "Recorded quote" : state === "pregame" ? "Current" : "Close"}</span>
                   <strong>{shortNumber(card.sportsbookLine)}</strong>
                 </div>
                 {lineMovement != null && lineMovement !== 0 ? (
