@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import {gameIntelligence} from "@/lib/card-intelligence";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -20,6 +21,10 @@ type PreviewGame = {
   homeScore?: number | string | null;
   state: "pre" | "in" | "post";
   status: string;
+  awayRecord?:string;
+  homeRecord?:string;
+  venue?:string;
+  sport?:string;
 };
 
 type GamesPreviewResponse = {
@@ -222,6 +227,7 @@ export function GamesPreviewCard({ game }: { game: PreviewGame }) {
         {game.state === "in" ? <i aria-hidden="true" /> : null}
         {statusText(game)}
       </div>
+      <small className="ssGameContext">{gameIntelligence({...game,sport:game.sport||(game.href.includes("/nhl")?"nhl":"")})[0]}</small>
     </Link>
   );
 }

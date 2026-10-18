@@ -22,6 +22,7 @@ type PerformanceStat = {
   pending: number;
   total: number;
   hitRate: number | null;
+  research?:{total:number;awaitingResult:number;completed:number;void:number};
 };
 
 type CategoryConfig = {
@@ -132,6 +133,7 @@ function normalizeStat(payload: any): PerformanceStat {
       : Number(rawRate);
 
   return {
+    research:payload?.researchSummary,
     connected: payload?.connected !== false && payload?.success !== false,
     hits,
     settled,
@@ -150,6 +152,7 @@ function combineStats(stats: PerformanceStat[]): PerformanceStat {
   const total = usable.reduce((sum, s) => sum + s.total, 0);
 
   return {
+    research:{total:usable.reduce((n,s)=>n+(s.research?.total||0),0),awaitingResult:usable.reduce((n,s)=>n+(s.research?.awaitingResult||0),0),completed:usable.reduce((n,s)=>n+(s.research?.completed||0),0),void:usable.reduce((n,s)=>n+(s.research?.void||0),0)},
     connected: usable.some((s) => s.connected),
     hits,
     settled,
@@ -290,9 +293,9 @@ function PerformanceCards({
       <article className={styles.metricCard}>
         <span className={styles.hourglass} aria-hidden="true">⌛</span>
         <div className={styles.metricCopy}>
-          <span>Pending</span>
+          <span>Verified pending</span>
           <strong>{numberOrDash(stat.pending, stat.connected)}</strong>
-          <small>In Progress</small>
+          <small>{stat.pending?"Awaiting verified settlement":"No validated picks awaiting results"}</small>
         </div>
       </article>
     </div>
@@ -418,7 +421,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     if (activeCategory?.note) return activeCategory.note;
     if (loading) return "Loading prediction history…";
     if (!categoryStat.connected || categoryStat.total === 0) {
-      return `No saved ${activeCategory?.label || ""} predictions for this period yet.`;
+      return categoryStat.research?.total ? `${categoryStat.research.total} saved research records: ${categoryStat.research.awaitingResult} awaiting result. No validated ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
     }
     return "";
   }, [activeCategory, categoryStat, loading]);
@@ -449,6 +452,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         </div>
 
         <PerformanceCards stat={overall} />
+        {overall.connected&&overall.research? <div className={styles.researchTracking} aria-label="Research history tracking"><strong>Research history · separate from betting performance</strong><span>{overall.research.awaitingResult} awaiting result · {overall.research.completed} with recorded results · {overall.research.void} void/withdrawn · {overall.research.total} total</span><small>These are saved historical research records, not validated picks or a count of every visible card.</small></div>:null}
       </section>
 
       <section className={styles.categoryPanel}>

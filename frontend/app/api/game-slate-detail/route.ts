@@ -335,7 +335,7 @@ function espnContext(summary: any) {
         : Number(odds.overUnder),
     weather: text(
       weather?.displayValue ||
-        weather?.conditionId ||
+        weather?.condition?.text ||
         ""
     ),
     broadcast: (

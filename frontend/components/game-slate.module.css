@@ -1740,3 +1740,6 @@
     font-size: 8.5px;
   }
 }
+
+.propCard > small { grid-column: 1 / -1; line-height: 1.5; color: #c4c4c9; font-size: 12px; }
+.compactRankRow > strong { font-size: 11px; overflow-wrap: anywhere; }

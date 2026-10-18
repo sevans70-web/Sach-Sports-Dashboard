@@ -571,3 +571,7 @@
 .categoryIdentity strong {
   line-height: 1.15;
 }
+
+.researchTracking { display: grid; gap: 7px; margin-top: 14px; padding: 14px; border: 1px solid #675725; border-radius: 12px; color: #dedbd2; font-size: 13px; }
+.researchTracking strong { color: #e8bf43; }
+.researchTracking small { color: #a6a6ad; line-height: 1.5; }

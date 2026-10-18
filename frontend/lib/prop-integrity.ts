@@ -68,8 +68,11 @@ export function guardPerformancePayload(payload:any,sport:string){
   const key=Array.isArray(payload?.predictions)?"predictions":Array.isArray(payload?.results)?"results":null;
   if(!key)return payload;
   const history=payload[key],eligible=history.filter((r:any)=>eligiblePropPrediction(r,Date.now(),true));
+  const research=history.filter((r:any)=>!eligiblePropPrediction(r,Date.now(),true));
+  const researchSummary={total:research.length,awaitingResult:research.filter((r:any)=>r.status==="pending"&&r.withdrawnFromBoard!==true).length,completed:research.filter((r:any)=>["hit","miss","push"].includes(r.status)).length,void:research.filter((r:any)=>r.status==="void"||r.withdrawnFromBoard===true).length};
   const hits=eligible.filter((r:any)=>r.status==="hit").length,misses=eligible.filter((r:any)=>r.status==="miss").length;
   return {...payload,integrityVersion:PROP_INTEGRITY_VERSION,warning:PROP_REVIEW_NOTICE,
+    researchSummary,
     historicalEntries:history.length,excludedResearchEntries:history.length-eligible.length,
     total:eligible.length,hits,misses,settled:hits+misses,pushes:eligible.filter((r:any)=>r.status==="push").length,
     pending:eligible.filter((r:any)=>r.status==="pending").length,hitRate:hits+misses?Math.round(hits/(hits+misses)*1000)/10:null,

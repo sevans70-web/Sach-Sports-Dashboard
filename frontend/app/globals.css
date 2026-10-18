@@ -1193,3 +1193,5 @@
     font-size:23px !important;
   }
 }
+
+.ssGameContext { display: block; color: #b8b8bf; font-size: 11px; line-height: 1.5; margin-top: 10px; }

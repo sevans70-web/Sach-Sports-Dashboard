@@ -1,5 +1,7 @@
 "use client";
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
+import {propIntelligence} from "@/lib/card-intelligence";
+import {trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
@@ -957,7 +959,8 @@ function PlayerCard({
           : ""
     );
 
-  const reasons = splitReasons(card.summary);
+  const intelligence=propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market);
+  const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 
   const lineMovement =
     card.openingLine != null && card.sportsbookLine != null
@@ -994,6 +997,7 @@ function PlayerCard({
         <div className={styles.identity}>
           <div className={styles.identityTop}>
             <strong>{card.playerName}</strong>
+            {movementLabel(card) ? <b className={`${styles.movement} ${movementClass(card)}`} title={card.raw?.movementScope}>{movementLabel(card)}</b> : null}
           </div>
 
           <span>
@@ -1022,7 +1026,7 @@ function PlayerCard({
 
         <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>{researchOnly ? "Research" : "GI"}</span>
-          <strong>{shortNumber(card.giScore)}</strong>
+          <strong title={researchOnly?intelligence.giReason:undefined}>{shortNumber(card.giScore)}</strong>
         </div>
       </div>
 
@@ -1077,14 +1081,15 @@ function PlayerCard({
 
         <div>
           <span>GI Score</span>
-          <strong>{shortNumber(card.giScore)}</strong>
+          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?intelligence.giReason:undefined}>{researchOnly?"Unvalidated":shortNumber(card.giScore)}</strong>
         </div>
       </div>
 
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>{card.raw.sportsbook} · {card.raw.lineType === "scorer" ? "Scorer quote" : "Main O/U"} · Over {card.raw.overPrice}{card.raw.underPrice == null ? "" : ` / Under ${card.raw.underPrice}`} · Quote {new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET</p> : null}
-          <p>{card.summary}</p>
+          <p>{researchOnly?intelligence.face:card.summary}</p>
+          {researchOnly ? <p className={styles.decisionNote}>{intelligence.decision}</p> : null}
 
           {researchOnly && card.raw.archivedOriginal?.sportsbookLine != null && !card.raw.quoteVerified ? <details><summary>Original recorded value — not a verified betting line</summary><p>{shortNumber(card.raw.archivedOriginal.sportsbookLine)} · Original records preserved; excluded from verified results.</p></details> : null}
         </div>
@@ -1099,11 +1104,6 @@ function PlayerCard({
 
       {state === "pregame" && !card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
-          {movementLabel(card) ? (
-            <span className={`${styles.movement} ${movementClass(card)}`}>
-              {movementLabel(card)}
-            </span>
-          ) : null}
           <p>{card.summary}</p>
 
         </div>
@@ -1201,11 +1201,11 @@ function PlayerCard({
             <div>
               <b>GI</b>
               <span>Score</span>
-              <strong>{shortNumber(card.giScore)}</strong>
+              <strong title={researchOnly?intelligence.giReason:undefined}>{shortNumber(card.giScore)}</strong>
             </div>
           </div>
 
-          {researchOnly ? <div className={styles.faceFooter}><p>NO PICK · {card.raw.reviewReason}. Historical baselines and book-implied prices are not calibrated win probabilities.</p></div> : state === "pregame" ? (
+          {researchOnly ? <div className={styles.faceFooter}><p>{intelligence.decision}. {intelligence.giReason}</p></div> : state === "pregame" ? (
             <div className={styles.predictionBanner}>
               <div>
                 <span>PREDICTION:</span>
@@ -1243,8 +1243,9 @@ function PlayerCard({
           )}
 
           <section className={styles.intelSection}>
-            <h4>{researchOnly ? "Research Context" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
+            <h4>{researchOnly ? "Why This Prop Is on the Board" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
             <div className={styles.reasonList}>
+              {researchOnly ? <p>{intelligence.rankingBasis}</p> : null}
               {(reasons.length ? reasons : [card.summary]).map((reason, index) => (
                 <p key={`${reason}-${index}`}>
                   <span>✓</span>
@@ -1290,7 +1291,7 @@ function PlayerCard({
             <h4>{state === "live" ? "Matchup (Live)" : state === "final" ? "Matchup Result" : "Matchup"}</h4>
             <div className={styles.matchupBox}>
               <strong>{card.matchup || "Matchup context"}</strong>
-              <p>{card.summary}</p>
+              <p>{researchOnly?intelligence.missing:card.summary}</p>
           {researchOnly && card.raw.researchCohort?.observations ? <details><summary>Research sample: {card.raw.researchCohort.games} comparable appearances · {card.raw.researchCohort.excluded} excluded</summary>
             <p>{card.raw.researchCohort.methodology}</p>
             {card.raw.researchCohort.observations.map((game:any) => <p key={game.eventId}>{game.date.slice(0,10)} · {shortNumber(game.value)} · {game.workload == null ? "Workload unavailable" : `${game.workload} pass attempts`} · {game.included ? "Included" : String(game.reason).replaceAll("_", " ")}</p>)}
@@ -2004,6 +2005,12 @@ export function PlayerRankingsPanel({
           if (sport !== "cfb") prefetchJson(performanceUrl);
         }
 
+        const movementScope=[sport,league,requestedMarket,requestedCfbSlate,torontoDay(new Date().toISOString())].join("|");
+        try{
+          const stored=window.localStorage.getItem("sach-rank-movement|"+movementScope);
+          const tracked=trackRankBoard(rawRows,stored?JSON.parse(stored) as RankBoard:null,movementScope);
+          rawRows=tracked.rows;window.localStorage.setItem("sach-rank-movement|"+movementScope,JSON.stringify(tracked.board));
+        }catch{rawRows=trackRankBoard(rawRows,null,movementScope).rows}
         const normalized = rawRows
           .slice(0, sport === "cfb" && requestedCfbSlate === "all" ? 75 : 25)
           .map((row: any) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import {gameIntelligence,propIntelligence,gameRankingEvidence} from "@/lib/card-intelligence";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SportsNav } from "@/components/dashboard-chrome";
 import styles from "./game-slate.module.css";
@@ -70,6 +71,11 @@ type RankingRow = {
   actual?: number | null;
   gameState?: string;
   gameStatus?: string;
+  researchOnly?:boolean;
+  recommendationEligible?:boolean;
+  quoteVerified?:boolean;
+  gameId?:string;
+  summary?:string;
 };
 
 type InjuryRow = {
@@ -527,32 +533,7 @@ function normalizeRankingRow(
       raw?.pos ??
       ""
     ),
-    sportsbookLine: finiteNumber(
-      raw?.sportsbookLine ??
-      raw?.sportsbook_line ??
-      raw?.marketLine ??
-      raw?.market_line ??
-      raw?.line
-    ),
-    modelProjection: finiteNumber(
-      raw?.modelProjection ??
-      raw?.model_projection ??
-      raw?.projection ??
-      raw?.perGame ??
-      raw?.modelTarget
-    ),
-    giScore: finiteNumber(
-      raw?.giScore ??
-      raw?.gi_score ??
-      raw?.score
-    ),
-    modelProbability: finiteNumber(
-      raw?.modelProbability ??
-      raw?.model_probability ??
-      raw?.probability ??
-      raw?.home_run_probability ??
-      raw?.hr_probability
-    ),
+    ...gameRankingEvidence(raw,market),
     headshot: String(
       raw?.headshot ??
       raw?.headshot_url ??
@@ -599,6 +580,7 @@ const PRICE_ONLY_MARKETS = new Set([
 
 function gradeableRankingRow(row: RankingRow) {
   if (!row.playerName || row.playerName === "Player") return false;
+  if(row.researchOnly===true)return !!row.playerId;
 
   if (PRICE_ONLY_MARKETS.has(String(row.market || ""))) {
     return (
@@ -864,13 +846,13 @@ function PlayerWatchCard({
             <li>
               GI{" "}
               {row.giScore == null
-                ? "—"
+                ? row.researchOnly?"Unvalidated":"—"
                 : Number(row.giScore).toFixed(1)}
             </li>
             <li>
               {row.modelProjection == null
-                ? "Projection building"
-                : `Projection ${Number(
+                ? "Historical baseline unavailable"
+                : `${row.researchOnly?"Historical baseline":"Forecast"} ${Number(
                     row.modelProjection
                   ).toFixed(1)}`}
             </li>
@@ -933,7 +915,7 @@ function TeamRankingTable({
         <span>Player</span>
         <span>Pos</span>
         <span>Line</span>
-        <span>Proj</span>
+        <span>Baseline / forecast</span>
         <span>GI</span>
       </div>
 
@@ -972,7 +954,7 @@ function TeamRankingTable({
 
             <strong>
               {row.giScore == null
-                ? "—"
+                ? row.researchOnly?"Unvalidated":"—"
                 : Number(row.giScore).toFixed(1)}
             </strong>
           </Link>
@@ -984,7 +966,7 @@ function TeamRankingTable({
       )}
 
       <div className={styles.teamRankFooter}>
-        Top game-specific Sach rankings
+        Game-specific research rankings · GI/picks require model validation
       </div>
     </section>
   );
@@ -1166,19 +1148,10 @@ function ExpandedGame({
       ? "—"
       : String(context.total);
   const weather =
-    context.weather || "Indoor / feed pending";
+    context.weather || "Conditions not supplied";
 
-  const overviewCopy =
-    context.spread !== undefined ||
-    context.total != null
-      ? `Current market context lists ${
-          context.spread || "no posted spread"
-        }${
-          context.total != null
-            ? ` with a game total of ${context.total}`
-            : ""
-        }. Player rankings below use the current Sach model and available sportsbook data.`
-      : `Matchup intelligence is connected. Team context, ranked players and roster information update as the provider feeds publish them.`;
+  const matchupFacts=gameIntelligence({...game,sport},context,injuries);
+  const overviewCopy=matchupFacts.join(" ");
 
   const trendRows = [...rankings]
     .filter(
@@ -1566,7 +1539,7 @@ function ExpandedGame({
           <section className={styles.goldPanel}>
             <div className={styles.panelTitle}>
               <span>◈</span>
-              <h4>Available Prop Intelligence</h4>
+              <h4>Prop Research and Verified Picks</h4>
             </div>
 
             {rankings.filter(gradeableRankingRow).length ? (
@@ -1595,7 +1568,7 @@ function ExpandedGame({
                     </span>
 
                     <span>
-                      Proj{" "}
+                      {row.researchOnly?"Baseline":"Forecast"}{" "}
                       <strong>
                         {row.modelProjection == null
                           ? "—"
@@ -1608,17 +1581,19 @@ function ExpandedGame({
                     <em>
                       GI{" "}
                       {row.giScore == null
-                        ? "—"
+                        ? row.researchOnly?"Unvalidated":"—"
                         : Number(
                             row.giScore
                           ).toFixed(1)}
                     </em>
+                    <small>{propIntelligence(row,sport,String(row.market||"")).face}</small>
+                    <small>{row.researchOnly?"NO PICK · forecast model unvalidated":row.prediction}</small>
                   </Link>
                 ))}
               </div>
             ) : (
               <div className={styles.miniEmpty}>
-                Player-prop rankings have not populated for this matchup yet.
+                No research rows or verified picks are currently attached to this fixture.
               </div>
             )}
           </section>
@@ -1630,8 +1605,9 @@ function ExpandedGame({
           <section className={styles.goldPanel}>
             <div className={styles.panelTitle}>
               <span>▥</span>
-              <h4>Model Edge Trends</h4>
+              <h4>Historical Baseline vs Recorded Line</h4>
             </div>
+            <p>Research comparisons only. These differences are not validated forecast edges.</p>
 
             {trendRows.length ? (
               <div className={styles.trendList}>
@@ -1671,7 +1647,7 @@ function ExpandedGame({
               </div>
             ) : (
               <div className={styles.miniEmpty}>
-                Trend comparisons will populate once both a sportsbook line and model projection are available.
+                Comparisons require a recorded line and historical baseline. A baseline difference is not a validated betting edge.
               </div>
             )}
           </section>
@@ -2211,9 +2187,7 @@ export function GameSlatePage({
                   }`}
                 >
                   <span>ⓘ</span>
-                  {live
-                    ? "Player props active · live status updating"
-                    : "Player props and rankings available inside Game Intelligence"}
+                  {gameIntelligence({...game,sport})[0]}
                 </div>
 
                 <button
