@@ -1,3 +1,4 @@
+import {nhlObservedActual,nhlObservedRows} from "@/lib/observed-player-stats";
 import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -46,54 +47,7 @@ function finalGame(payload:any){
   return state==="FINAL"||state==="OFF"||Boolean(payload?.gameOutcome);
 }
 
-function num(v:any){
-  return nullableNumber(v);
-}
-
-function parseSaves(v:any){
-  const direct=num(v);
-  if(direct!=null)return direct;
-  const text=String(v??"");
-  const first=text.match(/(\d+)\s*\/\s*(\d+)/);
-  return first?Number(first[1]):null;
-}
-
-function findPlayer(payload:any,p:SavedNhlPrediction){
-  const root=payload?.playerByGameStats||{};
-  const wantedId=String(p.playerId||"");
-  const teams=[root?.awayTeam,root?.homeTeam];
-  for(const team of teams){
-    for(const groupName of ["forwards","defense","goalies"]){
-      for(const row of Array.isArray(team?.[groupName])?team[groupName]:[]){
-        if(String(row?.playerId||"")===wantedId)return row;
-      }
-    }
-  }
-  return null;
-}
-
-function actualFor(payload:any,p:SavedNhlPrediction){
-  const row=findPlayer(payload,p);
-  if(!row)return null;
-
-  if(p.market==="shots_on_goal")return num(row?.sog??row?.shots);
-  if(p.market==="goals")return num(row?.goals);
-  if(p.market==="assists")return num(row?.assists);
-  if(p.market==="points"){
-    const direct=num(row?.points);
-    if(direct!=null)return direct;
-    const g=num(row?.goals),a=num(row?.assists);
-    return g!=null&&a!=null?g+a:null;
-  }
-  if(p.market==="blocked_shots")return num(row?.blockedShots??row?.blocks);
-
-  const direct=num(row?.saves);
-  if(direct!=null)return direct;
-  const saveShots=parseSaves(row?.saveShotsAgainst);
-  if(saveShots!=null)return saveShots;
-  const shotsAgainst=num(row?.shotsAgainst),goalsAgainst=num(row?.goalsAgainst);
-  return shotsAgainst!=null&&goalsAgainst!=null?shotsAgainst-goalsAgainst:null;
-}
+function actualFor(payload:any,p:SavedNhlPrediction){return nhlObservedActual(payload,p.playerId,p.market)}
 
 function settle(p:SavedNhlPrediction,actual:number){
   if(p.sportsbookLine==null||!p.pickSide)return "void";
@@ -142,7 +96,7 @@ export async function GET(req:NextRequest){
               changed=true;
             }else{
               const actual=actualFor(payload,row);
-              if(actual==null&&!findPlayer(payload,row)){
+              if(actual==null&&!nhlObservedRows(payload).some(player=>player.playerId===String(row.playerId))){
                 // A final box score with no player row means the wager is not
                 // scoreable from an appearance; keep it out of hit rate.
                 row.status="void";

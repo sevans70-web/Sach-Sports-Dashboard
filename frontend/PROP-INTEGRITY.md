@@ -45,3 +45,11 @@ Still unfinished, explicitly:
 Run an offline report with `node scripts/backtest-workload.mjs observations.json report.json` from `frontend`. Never reconstruct pregame features from final box scores or certify archived unverified lines with today's quotes. The model registry remains empty.
 
 Current-roster follow-up: live roster comparison found one WNBA and three NHL rows whose historical team was not confirmed by the current official roster. WNBA now retains official numeric team IDs from schedules; WNBA and NHL overview players are joined to current active-slate rosters by player ID, remapped after transfers, and withheld on missing/conflicting membership or unavailable rosters. Old statistics, archived cards and grades remain untouched. Roster membership does not establish expected minutes, starting status, or confirmed goalie availability.
+
+## Observed-stat tracking follow-up (2026-10-18)
+
+- Live research cards with a verified numeric line and a reported actual regain a neutral progress bar. It measures actual/line, capped visually at the threshold, and is explicitly independent of pick confidence. Missing actuals, absent/nonpositive thresholds and scorer markets do not get invented percentages. The displayed actual continues above the threshold.
+- NHL live stats now read the official `playerByGameStats.awayTeam/homeTeam` contract, including goalie save fractions and reported zeroes. NHL grading reuses the same adapter. Absent statistics remain unknown; explicit nonappearances do not become zero-stat games.
+- NBA/WNBA/CBB observed-stat polling works independently of saved wagering records, including final actuals. Quarter actuals require completed, complete quarter play-by-play; no full-game scaling. It does not enable a quarter forecasting model.
+- Status and stat joins require exact official fixture identity; legacy records require matching kickoff time and team context. A live/completed game involving the same team on another day cannot change a card's state. CFB no longer treats a live game itself as confirmation of each player's lineup status.
+- No model is promoted, historical grade recertification performed, or storage/backup/retention configuration changed by this bundle.

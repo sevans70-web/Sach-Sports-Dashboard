@@ -6,3 +6,27 @@ export function rankingCardState(row:any,status:string):"pregame"|"live"|"final"
   if(state==='pre'||state==='scheduled')return 'pregame';
   return ['hit','miss','push','void'].includes(status)?'final':'pregame';
 }
+
+/** Observed distance toward a numeric threshold, never a pick probability.
+ * Unknown statistics and scorer outcomes cannot produce a percentage. */
+export function rankingLineProgress(actual:unknown,line:unknown,market:string){
+ if(actual==null||line==null||(typeof actual==="string"&&!actual.trim())||(typeof line==="string"&&!line.trim())||typeof actual==="boolean"||typeof line==="boolean")return null;
+ if(/(?:first|anytime|home_runs)/.test(market))return null;
+ const value=Number(actual),threshold=Number(line);
+ if(!Number.isFinite(value)||!Number.isFinite(threshold)||threshold<=0)return null;
+ return {actual:value,line:threshold,percent:Math.max(0,Math.min(100,value/threshold*100)),remaining:Math.max(0,threshold-value)};
+}
+
+/** A current/final score must belong to this exact fixture, not just this team. */
+export function rankingGameForRow<T extends {id?:string;gameId?:string;date?:string;tipoff?:string|null;awayTeam?:string;homeTeam?:string;awayAbbr?:string;homeAbbr?:string}>(row:any,games:T[]):T|null{
+ const id=String(row?.gameId||row?.game_id||"");
+ if(id)return games.find(g=>String(g.id||g.gameId||"")===id)||null;
+ const time=Date.parse(row?.gameTime||""),norm=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+ if(!Number.isFinite(time))return null;
+ const matchup=norm(row.matchup),team=norm(row.teamName||row.team);
+ return games.find(g=>{
+  const delta=Math.abs(time-Date.parse(g.date||g.tipoff||""));if(!Number.isFinite(delta)||delta>5*60_000)return false;
+  const away=[norm(g.awayTeam),norm(g.awayAbbr)].filter(Boolean),home=[norm(g.homeTeam),norm(g.homeAbbr)].filter(Boolean);
+  return matchup?away.some(n=>matchup.includes(n))&&home.some(n=>matchup.includes(n)):[...away,...home].includes(team);
+ })||null;
+}

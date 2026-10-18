@@ -3,7 +3,7 @@ import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
-import {rankingCardState} from "@/lib/ranking-card-state";
+import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -918,12 +918,8 @@ function PlayerCard({
         ? card.actual
         : null;
 
-  const progress =
-    card.sportsbookLine != null &&
-    current != null &&
-    card.sportsbookLine > 0
-      ? Math.max(0, Math.min(100, (current / card.sportsbookLine) * 100))
-      : Math.max(0, Math.min(100, card.liveProgressPct || 0));
+  const observedProgress=rankingLineProgress(current,card.sportsbookLine,card.market);
+  const progress=observedProgress?.percent??0;
 
   const edge =
     card.modelProjection != null && card.sportsbookLine != null
@@ -1025,7 +1021,7 @@ function PlayerCard({
                 : styles.pending
             }
           >
-            {card.lineupStatus}
+            {card.lineupStatus === "Pending" ? "Lineup pending" : card.lineupStatus}
           </em>
         </div>
 
@@ -1125,7 +1121,7 @@ function PlayerCard({
             <span>
               {current == null
                 ? "Live stat pending"
-                : researchOnly ? `${shortNumber(current)} current · research only` : binaryEvent
+                : researchOnly ? observedProgress ? `${shortNumber(current)} / ${shortNumber(observedProgress.line)} · ${shortNumber(observedProgress.remaining)} to line` : `${shortNumber(current)} current · research only` : binaryEvent
                   ? current >= 1
                     ? `✅ ${shortNumber(current)} HR`
                     : "0 HR · live"
@@ -1134,9 +1130,12 @@ function PlayerCard({
                     : `${shortNumber(current)} current`}
             </span>
           </div>
-          {!researchOnly ? <div className={styles.progressTrack}>
-            <i style={{ width: `${progress}%` }} />
-          </div> : null}
+          {observedProgress ? <>
+            <div className={`${styles.progressTrack} ${researchOnly ? styles.researchProgress : ""}`} role="progressbar" aria-label={`${card.playerName} ${card.marketLabel} toward recorded line`} aria-valuemin={0} aria-valuemax={observedProgress.line} aria-valuenow={Math.max(0,Math.min(observedProgress.line,current!))} aria-valuetext={`${shortNumber(current)} of ${shortNumber(observedProgress.line)}; observed statistic, not a win probability`}>
+              <i style={{ width: `${progress}%` }} />
+            </div>
+            <small className={styles.progressCaption}>Toward recorded line{researchOnly ? " · research only" : ""}</small>
+          </> : null}
         </div>
       ) : null}
 
@@ -1554,17 +1553,7 @@ type SharedStatusGame = {
 };
 
 function sharedGameForCard(card: RankingCard, games: SharedStatusGame[]) {
-  const matchup = clean(card.matchup);
-  const team = clean(card.teamName);
-  return games.find((game) => {
-    const away = [clean(game.awayTeam), clean(game.awayAbbr)].filter(Boolean);
-    const home = [clean(game.homeTeam), clean(game.homeAbbr)].filter(Boolean);
-    const matchupMatches =
-      away.some((value) => matchup.includes(value)) &&
-      home.some((value) => matchup.includes(value));
-    if (matchupMatches) return true;
-    return [...away, ...home].some((value) => value && team === value);
-  }) || null;
+  return rankingGameForRow({...card.raw,matchup:card.matchup,teamName:card.teamName,gameTime:card.gameTime},games);
 }
 
 function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null) {
@@ -1637,19 +1626,15 @@ function rankingSlateForTime(value: string): Exclude<CfbSlateKey, "all"> {
 }
 
 function cfbGameForCard(card: RankingCard, games: CfbLiveGame[]) {
-  const wanted = clean(card.matchup);
-  return games.find((game) => clean(game.matchup) === wanted) || null;
+  const id=String(card.raw?.gameId||"");
+  return id?games.find(game=>String(game.gameId||"")===id)||null:null;
 }
 
 function cfbLivePlayerValue(game: CfbLiveGame | null, card: RankingCard) {
   if (!game) return null;
 
   const id = String(card.playerId || "");
-  const name = clean(card.playerName);
-
-  const row =
-    (game.rows || []).find((item) => id && String(item.playerId || "") === id) ||
-    (game.rows || []).find((item) => name && clean(item.playerName) === name);
+  const row = (game.rows || []).find((item)=>id&&String(item.playerId||"")===id);
 
   return finite(row?.value);
 }
@@ -1683,7 +1668,6 @@ function applyCfbLiveState(card: RankingCard, game: CfbLiveGame | null) {
 
   return {
     ...card,
-    lineupStatus: "Confirmed" as const,
     gameState: isFinal ? "post" : "in",
     gameStatus,
     liveCurrent: isLive ? value : card.liveCurrent,
@@ -1696,8 +1680,6 @@ function applyCfbLiveState(card: RankingCard, game: CfbLiveGame | null) {
       isLive,
       isFinal,
       completed: isFinal,
-      lineupConfirmed: true,
-      confirmed: true,
       liveCurrent: isLive ? value : card.liveCurrent,
       actualResult: isFinal && value != null ? value : card.actual,
       liveProgressPct,
@@ -2153,10 +2135,10 @@ export function PlayerRankingsPanel({
   }, [sport, groupKey, marketKey, league, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (sport !== "nhl" || !cards.length || !sharedStatusGames.length) return;
+    if (!["nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
 
     const liveGames = sharedStatusGames.filter(
-      (game) => String(game.state || "").toLowerCase() === "in" && game.id
+      (game) => ["in","post"].includes(String(game.state || "").toLowerCase()) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
     );
     if (!liveGames.length) return;
 
@@ -2167,7 +2149,7 @@ export function PlayerRankingsPanel({
         liveGames.map(async (game) => {
           try {
             const response = await fetch(
-              `/api/nhl/live-player-stats?gameId=${encodeURIComponent(String(game.id))}`,
+              sport === "nhl" ? `/api/nhl/live-player-stats?gameId=${encodeURIComponent(String(game.id))}` : `/api/basketball/live-player-stats?sport=${sport}&gameId=${encodeURIComponent(String(game.id))}`,
               { cache: "no-store" }
             );
             return response.ok
@@ -2190,13 +2172,7 @@ export function PlayerRankingsPanel({
             (entry) => String(entry.game.id) === String(game.id)
           )?.payload;
 
-          const row =
-            (payload?.rows || []).find(
-              (item: any) => String(item.playerId || "") === String(card.playerId || "")
-            ) ||
-            (payload?.rows || []).find(
-              (item: any) => clean(item.playerName) === clean(card.playerName)
-            );
+          const row = (payload?.rows || []).find((item:any)=>String(item.playerId||"")===String(card.playerId||""));
 
           const current = finite(row?.stats?.[card.market]);
           if (current == null) return card;
@@ -2208,11 +2184,14 @@ export function PlayerRankingsPanel({
 
           return {
             ...card,
-            liveCurrent: current,
+            liveCurrent: game.state === "in" ? current : card.liveCurrent,
+            actual: game.state === "post" ? current : card.actual,
             liveProgressPct: progress,
             raw: {
               ...(card.raw || {}),
-              liveCurrent: current,
+              liveCurrent: game.state === "in" ? current : card.liveCurrent,
+              actualResult: game.state === "post" ? current : card.actual,
+              liveStatsUpdatedAt: payload.updatedAt,
               liveProgressPct: progress,
             },
           };

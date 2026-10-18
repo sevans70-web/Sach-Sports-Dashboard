@@ -1067,3 +1067,7 @@
     font-size: 11px;
   }
 }
+
+/* Neutral observation tracking is independent of recommendation eligibility. */
+.researchProgress i { background: #d0b567; }
+.progressCaption { display: block; margin-top: 4px; color: #c6c8cc; font-size: 10px; }
