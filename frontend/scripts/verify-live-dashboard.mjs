@@ -25,7 +25,18 @@ await pool(paths,async path=>{
  const ids=rows.map(x=>[x.playerId||x.player_id||x.playerName,x.gameId||x.game_pk||x.gameTime,x.market||''].join('|'));
  // MLB/soccer combine independent market boards; uniqueness belongs within a board.
  const unique=path.includes('/mlb/')||path.includes('/soccer/')?null:new Set(ids).size===ids.length;
- const result={path,http:r.http,ms:r.ms,success:d.success,rows:rows.length,backed:rows.filter(x=>(x.sportsbookLine??x.marketLine)!=null).length,unique,error:r.error||d.error||null};report.markets.push(result);console.log(JSON.stringify(result));
+ const issues=[];
+ for(const row of rows){
+  if(row.integrityVersion!==1)issues.push('missing integrity contract');
+  if(row.recommendationEligible!==true&&(row.prediction!=='NO PICK'||row.giScore!=null||row.modelProbability!=null))issues.push('unsupported recommendation exposed');
+  if(!row.quoteVerified&&row.sportsbookLine!=null)issues.push('unverified main betting line exposed');
+  if(row.researchOnly&&path.includes('market=q1_')&&row.modelProjection!=null)issues.push('unvalidated quarter projection exposed');
+  for(const game of row.researchCohort?.observations||[])if(game.included){
+   if(Date.parse(game.date)>=Date.parse(row.gameTime))issues.push('research sample leaks game result');
+   if(game.reason!=null)issues.push('excluded appearance included');
+  }
+ }
+ const result={path,http:r.http,ms:r.ms,success:d.success,semanticIssues:[...new Set(issues)],rows:rows.length,backed:rows.filter(x=>(x.sportsbookLine??x.marketLine)!=null).length,unique,error:r.error||d.error||null};report.markets.push(result);console.log(JSON.stringify(result));
 });
 await pool(['/api/health','/api/history/status','/api/platform-performance',...sports.filter(s=>s!=='mlb').map(s=>`/api/${s}/performance?period=Week`)],async path=>{
  const r=await request(path),d=r.data||{},check={path,http:r.http,ms:r.ms,success:d.success,connected:d.connected,storageOk:d.storage?.ok,hits:d.hits,settled:d.settled,pending:d.pending,total:d.total,error:r.error||d.error||null};report.checks.push(check);console.log(JSON.stringify(check));
@@ -34,7 +45,7 @@ await pool(['nba','wnba','nhl','cbb'],async sport=>{
  const r=await request(`/api/${sport}/capture${sport==='soccer'?'?league=eng.1':''}`,'POST'),d=r.data||{},check={path:r.path,http:r.http,ms:r.ms,success:d.success,verifiedPredictions:d.verifiedPredictions,markets:d.markets,leagues:d.leagues,warning:d.warning,error:r.error||d.error||null};report.checks.push(check);console.log(JSON.stringify(check));
 },2);
 report.finishedAt=new Date().toISOString();
-report.pass=report.summaries.every(s=>s.contract==='pass')&&report.markets.every(r=>r.http===200&&r.unique!==false)&&report.checks.every(r=>r.http===200);
+report.pass=report.summaries.every(s=>s.contract==='pass')&&report.markets.every(r=>r.http===200&&r.success!==false&&r.unique!==false&&r.semanticIssues.length===0)&&report.checks.every(r=>r.http===200);
 if(process.argv[3])await writeFile(process.argv[3],JSON.stringify(report,null,2));
 console.log(JSON.stringify({pass:report.pass,markets:report.markets.length,httpErrors:report.markets.filter(r=>r.http!==200),summaryFailures:report.summaries.filter(s=>s.contract!=='pass')}));
 if(!report.pass)process.exitCode=1;

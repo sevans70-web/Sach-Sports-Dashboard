@@ -153,208 +153,7 @@ const NHL: Market[] = [
 const SOCCER: Market[] = [
   { key: "shots_on_target", label: "Shots on Target", icon: "🎯" },
   { key: "shots", label: "Shots", icon: "👟" },
-  { key: "saves", label: "Goalkeeper Saves", icon: "🧤" },
-  { key: "goals", label: "Goals", icon: "⚽" },
-  { key: "assists", label: "Assists", icon: "🅰️" },
-];
-
-const CONFIG: Record<RankingsSport, SportConfig> = {
-  mlb: {
-    label: "MLB",
-    groups: [
-      { key: "Batter", label: "Batter", icon: "⚾", markets: MLB_BATTER },
-      { key: "Pitcher", label: "Pitcher", icon: "🥎", markets: MLB_PITCHER },
-    ],
-  },
-  nfl: {
-    label: "NFL",
-    groups: [
-      { key: "QB", label: "QB", icon: "🏈", markets: NFL_QB },
-      { key: "Offense", label: "Offense", icon: "🏃", markets: NFL_OFFENSE },
-      { key: "Q1", label: "Q1", icon: "⏱️", markets: NFL_Q1 },
-    ],
-  },
-  cfb: {
-    label: "CFB",
-    groups: [
-      { key: "QB", label: "QB", icon: "🏈", markets: CFB_QB },
-      { key: "Offense", label: "Offense", icon: "🏃", markets: CFB_OFFENSE },
-    ],
-  },
-  nba: {
-    label: "NBA",
-    groups: [
-      {
-        key: "Props",
-        label: "Props",
-        icon: "🏀",
-        markets: [...BASKETBALL,{key:"first_basket",label:"First Basket",icon:"1️⃣"}],
-      },
-      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists","threes_made","pts_rebs_asts"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
-    ],
-  },
-  wnba: {
-    label: "WNBA",
-    groups: [{ key: "Props", label: "Props", icon: "🏀", markets: BASKETBALL }],
-  },
-  nhl: {
-    label: "NHL",
-    groups: [{ key: "Props", label: "Props", icon: "🏒", markets: NHL }],
-  },
-  soccer: {
-    label: "Soccer",
-    groups: [{ key: "Props", label: "Props", icon: "⚽", markets: SOCCER }],
-  },
-  cbb: {
-    label: "CBB",
-    groups: [{ key: "Props", label: "Props", icon: "🏀", markets: BASKETBALL }],
-  },
-};
-
-const LEAGUES = [
-  ["Premier League", "eng.1"],
-  ["MLS", "usa.1"],
-  ["Champions League", "uefa.champions"],
-  ["La Liga", "esp.1"],
-  ["Serie A", "ita.1"],
-  ["Bundesliga", "ger.1"],
-  ["Ligue 1", "fra.1"],
-] as const;
-
-function finite(value: any): number | null {
-  if (value == null || value === "") return null;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
-}
-
-function clean(value: any) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function torontoDay(value: Date | string | number = new Date()) {
-  const date = value instanceof Date ? value : new Date(value);
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Toronto",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-
-  const get = (type: string) =>
-    parts.find((part) => part.type === type)?.value || "";
-
-  return `${get("year")}-${get("month")}-${get("day")}`;
-}
-
-function gameTimeLabel(value: string) {
-  if (!value) return "Game time TBD";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Toronto",
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
-  }).format(date);
-}
-
-function shortNumber(value: number | null, digits = 1) {
-  if (value == null) return "—";
-  return Number.isInteger(value) ? String(value) : value.toFixed(digits);
-}
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return "SS";
-  return (
-    parts.length === 1
-      ? parts[0].slice(0, 2)
-      : `${parts[0][0]}${parts[parts.length - 1][0]}`
-  ).toUpperCase();
-}
-
-function pickText(
-  row: any,
-  line: number | null,
-  projection: number | null,
-  probability: number | null = null
-) {
-  const direct = String(
-    row?.prediction ?? row?.pickSide ?? row?.pick ?? ""
-  ).toUpperCase();
-
-  if (direct) return direct;
-  if (line != null && projection != null) return projection >= line ? "OVER" : "UNDER";
-  if (line != null && probability != null) return probability >= 50 ? "OVER" : "UNDER";
-  return "—";
-}
-
-function movementFrom(row: any) {
-  const raw = row?.movement;
-
-  if (typeof raw === "number") {
-    if (raw > 0) return { movement: "up" as const, amount: Math.abs(raw) };
-    if (raw < 0) return { movement: "down" as const, amount: Math.abs(raw) };
-    return { movement: "same" as const, amount: null };
-  }
-
-  const value = String(raw || "").toLowerCase();
-
-  if (value === "new") return { movement: "new" as const, amount: null };
-  if (value === "up") {
-    const previous = finite(row?.previousRank);
-    const current = finite(row?.rank);
-    return {
-      movement: "up" as const,
-      amount: previous != null && current != null ? Math.max(1, previous - current) : 1,
-    };
-  }
-  if (value === "down") {
-    const previous = finite(row?.previousRank);
-    const current = finite(row?.rank);
-    return {
-      movement: "down" as const,
-      amount: previous != null && current != null ? Math.max(1, current - previous) : 1,
-    };
-  }
-
-  if (value === "new") return { movement: "new" as const, amount: null };
-  if (String(raw || "").toUpperCase() === "NEW") {
-    return { movement: "new" as const, amount: null };
-  }
-
-  return { movement: "same" as const, amount: null };
-}
-
-function recentValues(row: any): number[] {
-  const candidates = [
-    row?.recentValues,
-    row?.recent_values,
-    row?.last10,
-    row?.last_10,
-    row?.recentGames,
-    row?.recent_games,
-    row?.gameLog,
-  ];
-
-  for (const candidate of candidates) {
-    if (!Array.isArray(candidate)) continue;
-
-    const values = candidate
-      .map((item: any) =>
-        finite(
-          typeof item === "number"
-            ? item
-            : item?.value ?? item?.actual ?? item?.stat ?? item?.result
-        )
-      )
+  { key: "…1588 tokens truncated… )
       .filter((value): value is number => value != null);
 
     if (values.length) return values.slice(-20);
@@ -1094,6 +893,7 @@ function PlayerCard({
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>{card.raw.sportsbook} · {card.raw.lineType === "scorer" ? "Scorer quote" : "Main O/U"} · Over {card.raw.overPrice}{card.raw.underPrice == null ? "" : ` / Under ${card.raw.underPrice}`} · Quote {new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET</p> : null}
           <p>{card.summary}</p>
+
           {researchOnly && card.raw.archivedOriginal?.sportsbookLine != null && !card.raw.quoteVerified ? <details><summary>Original recorded value — not a verified betting line</summary><p>{shortNumber(card.raw.archivedOriginal.sportsbookLine)} · Original records preserved; excluded from verified results.</p></details> : null}
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
@@ -1113,6 +913,7 @@ function PlayerCard({
             </span>
           ) : null}
           <p>{card.summary}</p>
+
         </div>
       ) : null}
 
@@ -1295,6 +1096,10 @@ function PlayerCard({
             <div className={styles.matchupBox}>
               <strong>{card.matchup || "Matchup context"}</strong>
               <p>{card.summary}</p>
+          {researchOnly && card.raw.researchCohort?.observations ? <details><summary>Research sample: {card.raw.researchCohort.games} comparable appearances · {card.raw.researchCohort.excluded} excluded</summary>
+            <p>{card.raw.researchCohort.methodology}</p>
+            {card.raw.researchCohort.observations.map((game:any) => <p key={game.eventId}>{game.date.slice(0,10)} · {shortNumber(game.value)} · {game.workload == null ? "Workload unavailable" : `${game.workload} pass attempts`} · {game.included ? "Included" : String(game.reason).replaceAll("_", " ")}</p>)}
+          </details> : null}
             </div>
           </section>
 

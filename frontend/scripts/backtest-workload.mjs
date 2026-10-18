@@ -1,0 +1,10 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {loadTs} from '../tests/load-ts.mjs';
+const {walkForwardBacktest}=await loadTs(new URL('../lib/workload-forecast.ts',import.meta.url));
+const [input,output]=process.argv.slice(2);
+if(!input||!output)throw new Error('Usage: node scripts/backtest-workload.mjs pregame-observations.json report.json');
+const rows=JSON.parse(await readFile(input,'utf8'));
+if(!Array.isArray(rows))throw new Error('Expected an array of dated pregame observations; archived baseline cards cannot supply missing context.');
+const report=walkForwardBacktest(rows);
+await writeFile(output,JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));

@@ -1,3 +1,4 @@
+import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
@@ -18,7 +19,6 @@ import {
 } from "@/lib/cfb-server";
 import { getOwlsCfbRows } from "@/lib/cfb-owls";
 import {footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
-import {footballHistoryValues} from "@/lib/football-history";
 import {getLocalCfbPredictions,getCfbPredictions} from "@/lib/cfb-history";
 import {retainedCfbRows} from "@/lib/cfb-retained-board";
 import {
@@ -417,105 +417,15 @@ async function fetchJson(
   }
 }
 
-function history(payload: any, market: CfbMarketKey) {
-  return footballHistoryValues(payload, HISTORY_KEYS[market] || []);
-}
-
-function projection(
-  values: number[]
-) {
-  const recent = values.slice(-10);
-
-  if (!recent.length) return null;
-
-  let total = 0;
-  let weight = 0;
-
-  recent.forEach(
-    (value, index) => {
-      const currentWeight =
-        index + 1;
-
-      total +=
-        value * currentWeight;
-
-      weight += currentWeight;
-    }
-  );
-
-  return Math.round(
-    (total / weight) * 10
-  ) / 10;
-}
-
-async function model(
-  playerId: string,
-  market: CfbMarketKey
-) {
-  if (
-    !playerId ||
-    market === "first_td"
-  ) {
-    return {
-      projection: null,
-      games: 0,
-    };
-  }
-
-  const key =
-    `${playerId}|${market}`;
-
-  const cached =
-    modelCache.get(key);
-
-  if (
-    cached &&
-    Date.now() - cached.at < MODEL_MS
-  ) {
-    return {
-      projection: cached.projection,
-      games: cached.games,
-    };
-  }
-
-  const blocks =
-    await Promise.all(
-      [2025, 2026].map(
-        async (season) => {
-          try {
-            const payload =
-              await fetchJson(
-                `${ATHLETE_BASE}/${encodeURIComponent(playerId)}/gamelog?season=${season}`,
-                2500
-              );
-
-            return history(
-              payload,
-              market
-            );
-          } catch {
-            return [];
-          }
-        }
-      )
-    );
-
-  const values = blocks.flat();
-
-  const result = {
-    projection: projection(values),
-    games: values.length,
-  };
-
-  modelCache.set(
-    key,
-    {
-      at: Date.now(),
-      ...result,
-    }
-  );
-
-  return result;
+async function model(id:string,market:CfbMarketKey,asOf:string){
+ if(!id||market==="first_td"||market.startsWith("q1_"))return {projection:null,games:0};
+ const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
+ const season=Number(cutoff.slice(0,4));
+ try{
+  const payload=await fetchJson(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,2500);
+  const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
+  return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
+ }catch{return {projection:null,games:0}}
 }
 
 async function roster(
@@ -1173,7 +1083,8 @@ async function buildFreshBoard(
           const recent =
             await model(
               profile.id,
-              market
+              market,
+              row.gameTime || rowGameTime(row,schedule)
             );
 
           const probability =
@@ -1258,6 +1169,7 @@ async function buildFreshBoard(
                 recent.projection,
               projectionGames:
                 recent.games,
+              researchCohort: recent,
               seasonTotal: null,
               gamesPlayed:
                 recent.games,

@@ -1,6 +1,6 @@
 import {eligiblePropPrediction} from "@/lib/prop-integrity";
 const norm=(v:unknown)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
-const aliases:Record<string,string[]>={points:["points","playerpoints"],rebounds:["rebounds","playerrebounds"],assists:["assists","playerassists"],threes_made:["threesmade","threepointersmade","threepointfieldgoalsmade","3pointersmade"],pts_rebs_asts:["ptsrebsasts","pointsreboundsassists","pra"],pts_rebs:["ptsrebs","pointsrebounds"],pts_asts:["ptsasts","pointsassists"],rebs_asts:["rebsasts","reboundsassists"],steals:["steals"],blocks:["blocks"],first_basket:["firstbasket","firstscorer","firstpointscorer"]};
+const aliases:Record<string,string[]>={points:["points","playerpoints"],rebounds:["rebounds","playerrebounds"],assists:["assists","playerassists"],threes_made:["threesmade","threepointersmade","threepointfieldgoalsmade","3pointersmade"],pts_rebs_asts:["ptsrebsasts","pointsreboundsassists","pra"],pts_rebs:["ptsrebs","pointsrebounds"],pts_asts:["ptsasts","pointsassists"],rebs_asts:["rebsasts","reboundsassists"],steals:["steals"],blocks:["blocks"],first_basket:["firstbasket","firstscorer","firstpointscorer","playerfirstbasket","playerfirstbasketballscorer"]};
 /** Period is mandatory for quarter props; never reuse full-game lines. */
 export function basketballMarketMatches(prop:any,market:string){
  const quarter=market.startsWith("q1_"),base=quarter?market.slice(3):market;

@@ -44,3 +44,41 @@ export function footballSummaryStat(payload:any,market:string,playerId:string,pl
  }
  return found?total:null;
 }
+
+/** Dated observations for research and future walk-forward evaluation. No zero
+ * is discarded based on its outcome. Workload exclusions remain inspectable. */
+export function footballResearchSample(payload:any,aliases:readonly (string|readonly string[])[],market:string,asOf:string,season:number){
+ const norm=(v:unknown)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
+ const names=(payload?.names||[]).map(norm);
+ const groups=Array.isArray(aliases[0])?aliases as readonly (readonly string[])[]:[aliases as readonly string[]];
+ const indices=groups.map(group=>group.map(norm).map(alias=>names.indexOf(alias)).find(index=>index>=0)??-1);
+ const passing=["passing_yards","passing_tds","pass_completions","passing_rushing_yards"].includes(market);
+ const attempts=names.findIndex((name:string)=>["passingattempts","passattempts","attempts"].includes(name));
+ const cutoff=Math.min(Date.parse(asOf),Date.now());
+ const seen=new Set<string>();
+ const observations:{eventId:string;date:string;value:number|null;workload:number|null;included:boolean;reason:string|null}[]=[];
+ for(const st of payload?.seasonTypes||[])for(const category of st?.categories||[]){
+  if(category?.type!=="event")continue;
+  for(const event of category.events||[]){
+   const eventId=String(event.eventId||"");if(!eventId||seen.has(eventId))continue;seen.add(eventId);
+   const meta=payload?.events?.[eventId];
+   const date=String(meta?.gameDate||meta?.date||event.gameDate||event.date||"");
+   const time=Date.parse(date),stats=event.stats||[];
+   const parts=indices.map(index=>index<0?null:statNumber(stats[index]));
+   const value=parts.length&&parts.every((v):v is number=>v!=null)?(parts as number[]).reduce((a,b)=>a+b,0):null;
+   const workload=attempts<0?null:statNumber(stats[attempts]);
+   // Ten attempts is a transparent research cohort filter, NOT a starter model.
+   // It never converts a zero into a missing result or certifies a future role.
+   const reason=!Number.isFinite(time)?"undated":!Number.isFinite(cutoff)||time>=cutoff?"not_pregame":
+    Number(date.slice(0,4))!==season?"previous_season":value==null?"missing_stat":
+    passing&&workload==null?"missing_workload":passing&&workload!<10?"limited_passing_role":null;
+   observations.push({eventId,date,value,workload,included:reason==null,reason});
+  }
+ }
+ observations.sort((a,b)=>a.date.localeCompare(b.date));
+ const included=observations.filter(x=>x.included).slice(-10);
+ const weight=included.reduce((sum,_,i)=>sum+i+1,0);
+ const projection=included.length>=3?Math.round(included.reduce((sum,x,i)=>sum+x.value!*(i+1),0)/weight*10)/10:null;
+ return {projection,games:included.length,observations,excluded:observations.filter(x=>!x.included).length,
+  methodology:"Current-season pregame research cohort; passing appearances require at least 10 attempts; minimum 3 games. Not a role forecast."};
+}

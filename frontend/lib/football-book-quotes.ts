@@ -36,8 +36,19 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
       const sportsbookKey = String(book.key || "");
       if (!sportsbookKey) continue;
       for (const prop of Array.isArray(book.props) ? book.props : []) {
-        if (!categories.has(norm(prop.category ?? prop.market ?? prop.type))) continue;
+        const category = norm(prop.category ?? prop.market ?? prop.type);
         const period = norm(prop.periodID ?? prop.periodId ?? prop.period ?? "");
+        const quarter = market.startsWith("q1_");
+        const base = market.replace(/^q1_/, "");
+        const q1Period = ["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period);
+        const baseAliases:Record<string,string[]> = {
+          passing_yards:["passingyards","passyards","playerpassingyards"],
+          rushing_yards:["rushingyards","rushyards","playerrushingyards"],
+          receiving_yards:["receivingyards","receptionyards","playerreceivingyards"],
+        };
+        const bases=baseAliases[base]||[norm(base)];
+        const explicitQuarter=quarter&&bases.some(name=>["q1"+name,name+"q1","1q"+name,name+"1q","firstquarter"+name,name+"firstquarter"].includes(category));
+        if (!categories.has(category) && !explicitQuarter && !(quarter && q1Period && bases.includes(category))) continue;
         if (period && (market.startsWith("q1_") ? !["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period) : !["game", "fullgame", "ft", "0"].includes(period))) continue;
         const playerName = String(prop.playerName || prop.player_name || "").trim();
         const quoteUpdatedAt = String(prop.lastUpdate || book.lastUpdate || "");

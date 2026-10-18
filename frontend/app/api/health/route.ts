@@ -9,6 +9,8 @@ export async function GET() {
       ok: true,
       service: "sach-sports-dashboard",
       status: "ready",
+      commit: process.env.RAILWAY_GIT_COMMIT_SHA || null,
+      forecastRelease: "workload-research-v1",
     },
     {
       status: 200,

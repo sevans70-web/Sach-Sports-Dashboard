@@ -1,3 +1,4 @@
+import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {footballBookRows,footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
@@ -132,51 +133,17 @@ async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
  }))).flat();
 }
 async function fetchLog(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0","Accept":"application/json, text/plain, */*","Origin":"https://www.espn.com","Referer":"https://www.espn.com/"}});if(!r.ok)throw 0;return r.json()}
-function statIndex(payload:any,market:NflMarketKey){
- const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);
- for(const wanted of HISTORY_KEYS[market]||[]){
-   const i=names.findIndex((n:string)=>n===wanted);
-   if(i>=0)return i;
- }
- return -1;
+async function model(id:string,market:NflMarketKey,asOf:string){
+ if(!id||market==="first_td"||market.startsWith("q1_"))return {projection:null,games:0};
+ const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
+ const season=Number(cutoff.slice(0,4));
+ try{
+  const payload=await fetchLog(id,season);
+  const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
+  return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
+ }catch{return {projection:null,games:0}}
 }
-function history(payload:any,market:NflMarketKey){
- const ix=statIndex(payload,market);
- const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);
- const combined:Partial<Record<NflMarketKey,string[][]>>={
-  passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],
-  rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],
-  anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]],
- };
- const components=(combined[market]||[]).map(aliases=>names.findIndex((name:string)=>aliases.includes(name))).filter(i=>i>=0);
- if(ix<0&&!components.length)return [];
- const vals:{value:number;date:string}[]=[];const seen=new Set<string>();
- for(const st of payload?.seasonTypes||[]){
-   for(const c of st?.categories||[]){
-     if(c?.type!=="event")continue;
-     for(const ev of c?.events||[]){
-       const eventId=String(ev?.eventId||"");
-       if(!eventId||seen.has(eventId))continue;
-       const stats=Array.isArray(ev?.stats)?ev.stats:[];
-       const parts=components.map(i=>safeNumber(stats[i])).filter((x):x is number=>x!=null);
-       const value=components.length?(parts.length?parts.reduce((a,b)=>a+b,0):null):safeNumber(stats[ix]);
-       if(value==null)continue;
-       seen.add(eventId);vals.push({value,date:String(payload?.events?.[eventId]?.gameDate||payload?.events?.[eventId]?.date||eventId)});
-     }
-   }
- }
- return vals.sort((a,b)=>a.date.localeCompare(b.date)).map(x=>x.value);
-}
-function projection(vals:number[]){const xs=vals.slice(-10);if(!xs.length)return null;let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});return Math.round(sum/w*10)/10}
-async function model(id:string,market:NflMarketKey){
- if(!id||market==="first_td")return {projection:null,games:0};
- const cacheKey=`${id}|${market}`;const hit=modelCache.get(cacheKey);if(hit&&hit.expires>Date.now())return hit.value;
- const blocks=await Promise.all([2025,2026].map(async y=>{try{return history(await fetchLog(id,y),market)}catch{return []}}));
- const vals=blocks.flat();
- let projected=projection(vals);
- if(projected!=null&&market.startsWith("q1_")) projected=Math.round(projected*0.25*10)/10;
- const value={projection:projected,games:vals.length};modelCache.set(cacheKey,{expires:Date.now()+CACHE_TTL_MS,value});return value;
-}
+
 function teamLogo(profile:any,row:any,schedule:any[]){
  const team=cleanName(profile.teamName||row.teamName||"");
  const g=schedule.find((x:any)=>cleanName(x.awayTeam)===team||cleanName(x.homeTeam)===team);
@@ -356,12 +323,12 @@ export async function GET(req:NextRequest){
    const nonQbRush=market==="rushing_yards"||market==="q1_rushing_yards";
    if(qbOnly&&pos&&pos!=="QB")return null;
    if(nonQbRush&&pos==="QB")return null;
-   const m=await model(profile.id,market);
+   const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
    if(row.earlyModel&&(m.projection==null||m.games<2))return null;
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
    const game=matchupGame(schedule,row.matchup);
-   return {...footballQuoteFields(row),rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
+   return {...footballQuoteFields(row),rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
      const label=NFL_MARKETS.find(x=>x[0]===market)?.[2]||market;
      const edge=row.line!=null&&m.projection!=null?Number(m.projection)-Number(row.line):null;
      const edgeText=edge==null?"":` The model sits ${Math.abs(edge).toFixed(1)} ${edge>=0?"above":"below"} the current line.`;

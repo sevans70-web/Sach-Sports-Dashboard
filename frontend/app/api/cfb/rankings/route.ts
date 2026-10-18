@@ -1,5 +1,5 @@
+import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
-import {footballHistoryValues} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
 import {NextRequest,NextResponse} from "next/server";
@@ -82,28 +82,17 @@ async function fetchJson(url:string,ms=2500){
     return await r.json();
   }finally{clearTimeout(timer)}
 }
-function history(payload:any,market:CfbMarketKey){
- const values=footballHistoryValues(payload,HISTORY_KEYS[market]||[]);
- return market==="anytime_td"&&!values.length?footballHistoryValues(payload,[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]):values;
+async function model(id:string,market:CfbMarketKey,asOf:string){
+ if(!id||market==="first_td"||market.startsWith("q1_"))return {projection:null,games:0};
+ const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
+ const season=Number(cutoff.slice(0,4));
+ try{
+  const payload=await fetchJson(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,2500);
+  const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
+  return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
+ }catch{return {projection:null,games:0}}
 }
 
-function projection(vals:number[]){
-  const xs=vals.slice(-10);if(!xs.length)return null;
-  let sum=0,w=0;xs.forEach((v,i)=>{const k=i+1;sum+=v*k;w+=k});
-  return Math.round(sum/w*10)/10;
-}
-async function model(id:string,market:CfbMarketKey){
-  if(!id||market==="first_td")return {projection:null,games:0};
-  const key=`${id}|${market}`,hit=modelCache.get(key);
-  if(hit&&Date.now()-hit.at<MODEL_MS)return {projection:hit.projection,games:hit.games};
-  const blocks=await Promise.all([2025,2026].map(async y=>{
-    try{return history(await fetchJson(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${y}`,2500),market)}
-    catch{return []}
-  }));
-  const vals=blocks.flat(),value={projection:projection(vals),games:vals.length};
-  modelCache.set(key,{at:Date.now(),...value});
-  return value;
-}
 async function roster(teamId:string){
   const hit=rosterCache.get(teamId);
   if(hit&&Date.now()-hit.at<ROSTER_MS)return hit.value;
@@ -230,7 +219,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   const enriched=await Promise.all(candidates.map(async(row:any)=>{
     const profile=playerFromRosters(row,schedule);
     if(row.quoteVersion===1&&!profile.id)return null;
-    const m=await model(profile.id,market);
+    const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
     const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
     const earlyConfidence=row.earlyModel&&m.projection!=null
       ?Math.round(Math.min(84,58+Math.min(26,m.games*2.6))*10)/10
@@ -246,7 +235,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
       giScore:cfbGiScore(rankingProbability,row.bookmakerCount||0,m.games),
       modelProbability:probability??earlyConfidence??rankingProbability,sportsbookLine:row.line,
       sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount||0,
-      perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,
+      perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,
       seasonTotal:null,gamesPlayed:m.games,season:2026,
       summary:!verifiedMarket
         ?`Early Sach projection using ${m.games} verified historical game${m.games===1?"":"s"}. Sportsbook player props have not posted yet; no line or odds were invented.`

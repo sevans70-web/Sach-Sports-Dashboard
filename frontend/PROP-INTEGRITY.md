@@ -23,3 +23,23 @@ Old snapshots cannot be retrospectively certified from a current bookmaker quote
 ## Storage boundary
 
 No changes to Railway storage, volumes, settings, Google Drive backup integration, seven-day retention, or historical data deletion. Existing archival capture continues under its existing policy. Local regression fixtures use isolated temporary directories only.
+
+## Workload research bundle (2026-10-18 UTC)
+
+Implemented:
+
+- NFL and both CFB ranking builders read current-season, dated pregame observations only. Passing research excludes appearances below ten attempts and abstains without three qualifying appearances or known attempts. All observed values, including full-workload zeros and exclusions, remain in `researchCohort` and the expanded card. The ten-attempt rule is a **research cohort heuristic**, not a validated starter/role model. No historical files are changed.
+- Combined-stat research requires all component statistics. Missing data are not treated as zero.
+- NFL no longer computes Q1 research values from full-game/4. Q1 quote matching accepts a base yardage category with an explicit Q1 period or an explicit Q1 category; missing/contradictory periods do not authorize full-game substitution.
+- `lib/workload-forecast.ts` and `scripts/backtest-workload.mjs` provide an **offline experimental** ridge regression and chronological evaluation path. Football features include expected workload, efficiency, opponent, injury, teammates, weather and game script; basketball requires minutes/usage/rotation/opponent; hockey requires ice time/lines/power play and confirmed goalie context. Q1 requires independently supplied period workload. New roles require at least three prior same-role records. Unknown context and scorer markets abstain. Every training result must have finalized before the target features were frozen.
+- Evaluation reports coverage/abstentions, sport/market/period/season MAE and RMSE, and exact-quote settlement/ROI only where supplied quotes include traceable provenance and timing. Model fitting uses training-only normalization. Duplicate observations fail. The CLI never registers a model.
+
+Still unfinished, explicitly:
+
+- The offline pipeline has regression tests with **synthetic fixtures**, not a real historical accuracy backtest. No frozen historical feature dataset has been assembled or audited for these models. No calibration, validated accuracy, or betting profitability is claimed.
+- Sport/market-specific workload estimators, provider ingestion of historical role/availability/weather/rotation/goalie context, and live integration remain required. Passing attempts alone cannot establish a player's current starting role.
+- Genuine Q1 forecasting requires actual Q1 workload/context histories. First-basket and touchdown scorer models require separate event models. They remain unsupported.
+- Matching repairs do not guarantee providers supply qualifying NFL Q1 or NBA first-basket quotes. Live coverage must be reported separately from parser tests.
+- Schedule/roster/grading truth must be checked against official event records; API availability and internal count consistency are narrower checks.
+
+Run an offline report with `node scripts/backtest-workload.mjs observations.json report.json` from `frontend`. Never reconstruct pregame features from final box scores or certify archived unverified lines with today's quotes. The model registry remains empty.
