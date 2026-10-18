@@ -44,7 +44,10 @@ export async function POST(req: NextRequest) {
     if (action === "email") {
       const redirect = `${dashboardOrigin(req)}/admin/login`;
       const { error } = await client.auth.signInWithOtp({ email: ADMIN_EMAIL, options: { shouldCreateUser: true, emailRedirectTo: redirect } });
-      if (error) return adminJson({ error: "The sign-in email could not be sent. Email delivery or allowed redirect settings may need attention." }, 502);
+      if (error) {
+        console.error("[admin-auth] sign-in email failed", { code: error.code, status: error.status, message: error.message });
+        return adminJson({ error: "The sign-in email could not be sent. Email delivery or allowed redirect settings may need attention." }, 502);
+      }
       return adminJson({ success: true, message: `Check ${ADMIN_EMAIL} for a sign-in link or verification code.` });
     }
     let session: any;
