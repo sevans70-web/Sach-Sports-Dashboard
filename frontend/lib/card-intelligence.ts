@@ -1,3 +1,4 @@
+import {rankingGameForRow} from "@/lib/ranking-card-state";
 const number=(v:any)=>v==null||(typeof v==='string'&&!v.trim())||typeof v==='boolean'?null:Number.isFinite(Number(v))?Number(v):null;
 const fmt=(v:number)=>Number(v.toFixed(1)).toString();
 export function propIntelligence(row:any,sport:string,market:string){
@@ -38,4 +39,14 @@ export function gameIntelligence(game:any,context:any={},injuries:any[]=[]){
 export function gameRankingEvidence(row:any,market:string){
  if(row.integrityVersion===1)return {sportsbookLine:row.quoteVerified===true?number(row.sportsbookLine):null,modelProjection:row.researchOnly&&market.startsWith('q1_')?null:number(row.modelProjection),giScore:row.recommendationEligible===true?number(row.giScore):null,modelProbability:row.recommendationEligible===true?number(row.modelProbability):null};
  return {sportsbookLine:number(row.sportsbookLine??row.sportsbook_line??row.marketLine??row.market_line??row.line),modelProjection:number(row.modelProjection??row.model_projection??row.projection??row.perGame??row.modelTarget),giScore:number(row.giScore??row.gi_score??row.score),modelProbability:number(row.modelProbability??row.model_probability??row.probability??row.home_run_probability??row.hr_probability)};
+}
+
+export function gameRankingMatches(row:any,game:any){return rankingGameForRow(row,[game])!=null}
+export function gameRankingTeam(row:any,side:'away'|'home',game:any){
+ if(!gameRankingMatches(row,game))return false;
+ const expectedId=String(game[side+'TeamId']||'');
+ if(row.teamId&&expectedId)return String(row.teamId)===expectedId;
+ const clean=(v:any)=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const names=[row.teamName,row.teamAbbr,row.team_abbreviation].map(clean).filter(Boolean),targets=[game[side+'Team'],game[side+'Abbr']].map(clean).filter(Boolean);
+ return names.some(n=>targets.includes(n));
 }

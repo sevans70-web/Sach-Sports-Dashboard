@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {gameIntelligence,propIntelligence,gameRankingEvidence} from "@/lib/card-intelligence";
+import {gameIntelligence,propIntelligence,gameRankingEvidence,gameRankingMatches,gameRankingTeam} from "@/lib/card-intelligence";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SportsNav } from "@/components/dashboard-chrome";
 import styles from "./game-slate.module.css";
@@ -301,44 +301,8 @@ function initials(name: string) {
   ).toUpperCase();
 }
 
-function gameMatchesRow(game: Game, row: RankingRow) {
-  const matchup = clean(row.matchup);
-  const team = clean(row.teamName);
-  const away = [clean(game.awayTeam), clean(game.awayAbbr)].filter(Boolean);
-  const home = [clean(game.homeTeam), clean(game.homeAbbr)].filter(Boolean);
-
-  if (
-    away.some((value) => matchup.includes(value)) &&
-    home.some((value) => matchup.includes(value))
-  ) {
-    return true;
-  }
-
-  return [...away, ...home].some(
-    (value) =>
-      value &&
-      (team === value || team.includes(value) || value.includes(team))
-  );
-}
-
-function rowBelongsTo(
-  row: RankingRow,
-  side: "away" | "home",
-  game: Game
-) {
-  const targets =
-    side === "away"
-      ? [clean(game.awayTeam), clean(game.awayAbbr)]
-      : [clean(game.homeTeam), clean(game.homeAbbr)];
-
-  const team = clean(row.teamName);
-
-  return targets.some(
-    (value) =>
-      value &&
-      (team === value || team.includes(value) || value.includes(team))
-  );
-}
+function gameMatchesRow(game:Game,row:RankingRow){return gameRankingMatches(row,game)}
+function rowBelongsTo(row:RankingRow,side:"away"|"home",game:Game){return gameRankingTeam(row,side,game)}
 
 function playerHref(
   sport: GameSlateSport,

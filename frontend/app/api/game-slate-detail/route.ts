@@ -389,6 +389,7 @@ async function espnGameDetail(
       gameId
     )}`
   );
+  if(String(summary?.header?.id||"")!==String(gameId))throw new Error("Official game detail fixture identity mismatch");
 
   const competition =
     summary?.header?.competitions?.[0] ||

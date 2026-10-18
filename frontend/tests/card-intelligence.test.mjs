@@ -26,3 +26,13 @@ test('game intelligence never resurrects suppressed quotes, Q1 scaling, heuristi
  assert.deepEqual(gameRankingEvidence({integrityVersion:1,researchOnly:true,recommendationEligible:false,quoteVerified:false,sportsbookLine:null,modelProjection:null,giScore:null,modelProbability:null,line:45,perGame:60,score:98,probability:90},'q1_points'),{sportsbookLine:null,modelProjection:null,giScore:null,modelProbability:null});
  assert.equal(gameRankingEvidence({integrityVersion:1,researchOnly:true,quoteVerified:true,sportsbookLine:10.5,modelProjection:12},'points').sportsbookLine,10.5);
 });
+test('game ranking joins reject blank-team and shared-substring leaks and repeated fixtures',async()=>{
+ const {gameRankingMatches,gameRankingTeam}=await loadTs(new URL('../lib/card-intelligence.ts',import.meta.url));
+ const game={id:'CHI-ATL',date:'2026-10-18T17:00:00Z',awayTeam:'Chicago Bears',awayAbbr:'CHI',awayTeamId:'3',homeTeam:'Atlanta Falcons',homeAbbr:'ATL',homeTeamId:'1'};
+ assert.equal(gameRankingMatches({playerName:'Patrick Mahomes',teamName:'',gameId:'KC-LAC'},game),false);
+ assert.equal(gameRankingMatches({teamName:''},game),false);
+ assert.equal(gameRankingTeam({gameId:game.id,teamName:'Kansas City Chiefs'},'away',game),false);
+ assert.equal(gameRankingTeam({gameId:game.id,teamId:'1',teamName:'Atlanta Falcons'},'home',game),true);
+ assert.equal(gameRankingTeam({gameId:game.id,teamName:''},'away',game),false);
+ assert.equal(gameRankingMatches({teamName:'Atlanta Falcons',gameTime:'2026-10-11T17:00:00Z'},game),false);
+});
