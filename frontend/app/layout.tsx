@@ -4,6 +4,7 @@ import "./theme.css";
 import "./history-ui-fixes.css";
 import "./portal-no-flash.css";
 import {SiteHeader} from "@/components/site-header";
+import {AdminAuthReturn} from "@/components/admin-auth-return";
 import "./dashboard-shell.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
+        <AdminAuthReturn />
         <SiteHeader />
         <div className="ssRouteSurface">{children}</div>
       </body>

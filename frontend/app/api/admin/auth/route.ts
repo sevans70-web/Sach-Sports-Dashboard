@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { ACCESS_COOKIE, REFRESH_COOKIE, adminJson, allowAuthAttempt, authClient, clearAdminSession, currentAdmin, dashboardOrigin, mutationAllowed, setAdminSession } from "@/lib/admin-auth";
 import { ADMIN_EMAIL, isAdminUser } from "@/lib/admin-policy";
+import { adminEmailLink } from "@/lib/admin-auth-return";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -36,10 +37,10 @@ export async function POST(req: NextRequest) {
       if (token) { const client = authClient(); await client.auth.admin.signOut(token, "local").catch(() => {}); }
       return clearAdminSession(adminJson({ success: true }));
     }
-    if (!["password", "email", "verify", "callback"].includes(action)) return adminJson({ error: "Unsupported sign-in action." }, 400);
+    if (!["password", "email", "verify", "callback", "link", "email-link"].includes(action)) return adminJson({ error: "Unsupported sign-in action." }, 400);
     if (!allowAuthAttempt(req, action)) return adminJson({ error: "Too many attempts. Please wait ten minutes before trying again." }, 429);
     const email = String(body.email || "").trim().toLowerCase();
-    if (action !== "callback" && email !== ADMIN_EMAIL) return adminJson({ error: "This account does not have administrator access." }, 403);
+    if (!["callback", "link", "email-link"].includes(action) && email !== ADMIN_EMAIL) return adminJson({ error: "This account does not have administrator access." }, 403);
     const client = authClient();
     if (action === "email") {
       const redirect = `${dashboardOrigin(req)}/admin/login`;
@@ -51,7 +52,15 @@ export async function POST(req: NextRequest) {
       return adminJson({ success: true, message: `Check ${ADMIN_EMAIL} for a sign-in link or verification code.` });
     }
     let session: any;
-    if (action === "callback") {
+    if (action === "link" || action === "email-link") {
+      const parsed = action === "email-link" ? adminEmailLink(String(body.emailLink || ""), process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "") : null;
+      if (action === "email-link" && !parsed) return adminJson({ error: "That is not a sign-in link from this dashboard's email provider. Copy the link from your newest sign-in email." }, 400);
+      const tokenHash = parsed?.tokenHash || String(body.tokenHash || ""), type = parsed?.type || String(body.type || "email");
+      if (!tokenHash || tokenHash.length > 1024 || !["email", "signup", "magiclink", "recovery", "invite"].includes(type)) return adminJson({ error: "This sign-in link is invalid or expired." }, 401);
+      const { data, error } = await client.auth.verifyOtp({ token_hash: tokenHash, type: type as "email" | "signup" | "magiclink" | "recovery" | "invite" });
+      if (error || !isAdminUser(data.user)) return adminJson({ error: "This sign-in link is invalid or expired. Request a fresh sign-in email." }, 401);
+      session = data.session;
+    } else if (action === "callback") {
       const token = String(body.accessToken || ""), refresh = String(body.refreshToken || "");
       if (!token || !refresh || token.length > 8000 || refresh.length > 8000 || !await currentAdmin(token)) return adminJson({ error: "This sign-in link is invalid or expired." }, 401);
       const { data, error } = await client.auth.setSession({ access_token: token, refresh_token: refresh });

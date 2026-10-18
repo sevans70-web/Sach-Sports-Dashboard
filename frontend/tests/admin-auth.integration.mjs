@@ -17,6 +17,10 @@ const provider=http.createServer(async(req,res)=>{
  const body=text?JSON.parse(text):{};res.setHeader('content-type','application/json');
  const send=(status,data)=>{res.statusCode=status;res.end(JSON.stringify(data));};
  if(req.url.startsWith('/auth/v1/settings'))return send(200,{external:{email:true}});
+ if(req.url.startsWith('/auth/v1/verify')){
+  if(!['valid-hash','outsider-hash'].includes(body.token_hash))return send(401,{message:'Expired link'});
+  return send(200,{access_token:body.token_hash==='valid-hash'?access:outsider,refresh_token:'test-refresh',expires_in:3600,token_type:'bearer',user:body.token_hash==='valid-hash'?user:{...user,email:'tester@example.test'}});
+ }
  if(req.url.startsWith('/auth/v1/user')){
   const token=req.headers.authorization?.replace('Bearer ','');
   if(![access,outsider].includes(token))return send(401,{message:'Invalid token'});
@@ -49,6 +53,7 @@ test('production routes enforce admin authentication, safe cookies and request o
  try{
   let ready=false;for(let i=0;i<100;i++){try{if((await request('/admin/login')).status===200){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.ok(ready,output);
   assert.equal((await request('/admin')).status,307);
+  const loginHtml=await(await request('/admin/login')).text();assert.equal(loginHtml.includes('type="password"'),false);assert.ok(loginHtml.includes('Email me a sign-in link'));
   const readiness=await request('/api/admin/auth');assert.equal(readiness.status,401);assert.equal((await readiness.json()).configured,true);
   for(const route of ['/api/admin/records','/api/admin/overview'])assert.equal((await request(route)).status,401);
   assert.equal((await post({action:'password',email,password:'correct-test-password'},{})).status,403);
@@ -63,6 +68,11 @@ test('production routes enforce admin authentication, safe cookies and request o
   const overview=await request('/api/admin/overview',{headers:{Cookie:cookie}});assert.equal(overview.status,200);assert.match(overview.headers.get('cache-control'),/no-store/);
   assert.equal((await request('/api/admin/overview',{headers:{Cookie:`sach-admin-access=${outsider}`}})).status,401);
   const callback=await post({action:'callback',accessToken:outsider,refreshToken:'test-refresh'});assert.equal(callback.status,401);
+  const hashLink=await post({action:'link',tokenHash:'valid-hash',type:'signup'});assert.equal(hashLink.status,200);assert.equal(hashLink.headers.getSetCookie().length,2);
+  assert.equal((await post({action:'link',tokenHash:'outsider-hash',type:'email'})).status,401);
+  assert.equal((await post({action:'link',tokenHash:'valid-hash',type:'email_change'})).status,401);
+  const pastedLink=await post({action:'email-link',emailLink:`http://127.0.0.1:${providerPort}/auth/v1/verify?token=valid-hash&type=signup&redirect_to=http://localhost:3000`});assert.equal(pastedLink.status,200);assert.equal(pastedLink.headers.getSetCookie().length,2);
+  assert.equal((await post({action:'email-link',emailLink:'https://evil.example/auth/v1/verify?token=valid-hash&type=email'})).status,400);
   const refreshed=await request('/api/admin/auth',{headers:{Cookie:'sach-admin-refresh=test-refresh','Sec-Fetch-Site':'same-origin'}});assert.equal(refreshed.status,200);assert.equal(refreshed.headers.getSetCookie().length,2);
   const records=await request('/api/admin/records?sport=nba&period=Today',{headers:{Cookie:cookie}});assert.equal(records.status,200);const inspected=await records.json();assert.deepEqual(inspected.counts,{total:105,hits:102,misses:1,pushes:1,settled:104,pending:0,void:1,unknown:0,hitRate:99});assert.equal(inspected.records.find(r=>r.status==='hit').actual,12);assert.equal(inspected.records.find(r=>r.status==='miss').side,'OVER');assert.equal(inspected.records.find(r=>r.status==='miss').verifiedPick,false);
   assert.equal((await request('/api/admin/records?sport=mlb',{headers:{Cookie:cookie}})).status,400);
