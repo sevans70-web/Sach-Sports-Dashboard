@@ -19,7 +19,15 @@ test('movement tracks rises, falls, entry, reload persistence and isolated board
  assert.equal(trackRankBoard(next.rows,next.board,'nfl|passing|today').rows[0].movement,'up');assert.equal(trackRankBoard(next.rows,next.board,'nba|points|today').rows[0].movement,'same');assert.equal(trackRankBoard([{playerId:1,gameId:'OTHER',rank:1}],next.board,'nfl|passing|today').rows[0].movement,'new');
 });
 test('verified pending remains independent of unvalidated historical records and withdrawn snapshots',()=>{
- const r=guardPerformancePayload({predictions:[{status:'pending'},{status:'hit'},{status:'pending',withdrawnFromBoard:true},{status:'void'}]},'nfl');assert.equal(r.pending,0);assert.equal(r.total,0);assert.deepEqual(r.researchSummary,{total:4,awaitingResult:1,completed:1,void:2});assert.equal(r.predictions[0].historicalStatus,'pending');assert.equal(r.predictions[0].status,'research');
+ const r=guardPerformancePayload({predictions:[{status:'pending'},{status:'hit'},{status:'pending',withdrawnFromBoard:true},{status:'void'}]},'nfl');assert.equal(r.pending,0);assert.equal(r.total,0);assert.deepEqual(r.researchSummary,{total:4,awaitingResult:1,completed:1,hits:1,misses:0,pushes:0,hitRate:100,void:2});assert.equal(r.predictions[0].historicalStatus,'pending');assert.equal(r.predictions[0].status,'research');
+});
+test('all active sports expose disjoint historical research decisions without certifying a model',()=>{
+ for(const sport of ['nfl','cfb','nba','wnba','cbb','nhl']){
+ const rows=[{status:'hit'},{status:'miss'},{status:'push'},{status:'pending'},{status:'hit',withdrawnFromBoard:true},{status:'void'}];
+ const before=JSON.stringify(rows),r=guardPerformancePayload({predictions:rows},sport);
+ assert.deepEqual(r.researchSummary,{total:6,awaitingResult:1,completed:3,hits:1,misses:1,pushes:1,hitRate:50,void:2});
+ assert.equal(r.settled,0);assert.equal(r.pending,0);assert.equal(JSON.stringify(rows),before);
+ }
 });
 test('game intelligence never resurrects suppressed quotes, Q1 scaling, heuristic GI or probability from aliases',async()=>{
  const {gameRankingEvidence}=await loadTs(new URL('../lib/card-intelligence.ts',import.meta.url));

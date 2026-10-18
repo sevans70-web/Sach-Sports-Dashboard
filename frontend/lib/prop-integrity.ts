@@ -69,7 +69,11 @@ export function guardPerformancePayload(payload:any,sport:string){
   if(!key)return payload;
   const history=payload[key],eligible=history.filter((r:any)=>eligiblePropPrediction(r,Date.now(),true));
   const research=history.filter((r:any)=>!eligiblePropPrediction(r,Date.now(),true));
-  const researchSummary={total:research.length,awaitingResult:research.filter((r:any)=>r.status==="pending"&&r.withdrawnFromBoard!==true).length,completed:research.filter((r:any)=>["hit","miss","push"].includes(r.status)).length,void:research.filter((r:any)=>r.status==="void"||r.withdrawnFromBoard===true).length};
+  const activeResearch=research.filter((r:any)=>r.withdrawnFromBoard!==true&&r.status!=="void");
+  const researchHits=activeResearch.filter((r:any)=>r.status==="hit").length;
+  const researchMisses=activeResearch.filter((r:any)=>r.status==="miss").length;
+  const researchPushes=activeResearch.filter((r:any)=>r.status==="push").length;
+  const researchSummary={total:research.length,awaitingResult:activeResearch.filter((r:any)=>r.status==="pending").length,completed:researchHits+researchMisses+researchPushes,hits:researchHits,misses:researchMisses,pushes:researchPushes,hitRate:researchHits+researchMisses?Math.round(researchHits/(researchHits+researchMisses)*1000)/10:null,void:research.length-activeResearch.length};
   const hits=eligible.filter((r:any)=>r.status==="hit").length,misses=eligible.filter((r:any)=>r.status==="miss").length;
   return {...payload,integrityVersion:PROP_INTEGRITY_VERSION,warning:PROP_REVIEW_NOTICE,
     researchSummary,

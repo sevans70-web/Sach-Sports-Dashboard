@@ -22,7 +22,8 @@ type PerformanceStat = {
   pending: number;
   total: number;
   hitRate: number | null;
-  research?:{total:number;awaitingResult:number;completed:number;void:number};
+  pushes?:number;
+  research?:{total:number;awaitingResult:number;completed:number;void:number;hits:number;misses:number;pushes:number;hitRate:number|null};
 };
 
 type CategoryConfig = {
@@ -134,6 +135,7 @@ function normalizeStat(payload: any): PerformanceStat {
 
   return {
     research:payload?.researchSummary,
+    pushes:Number(payload?.pushes||0),
     connected: payload?.connected !== false && payload?.success !== false,
     hits,
     settled,
@@ -152,7 +154,8 @@ function combineStats(stats: PerformanceStat[]): PerformanceStat {
   const total = usable.reduce((sum, s) => sum + s.total, 0);
 
   return {
-    research:{total:usable.reduce((n,s)=>n+(s.research?.total||0),0),awaitingResult:usable.reduce((n,s)=>n+(s.research?.awaitingResult||0),0),completed:usable.reduce((n,s)=>n+(s.research?.completed||0),0),void:usable.reduce((n,s)=>n+(s.research?.void||0),0)},
+    research:combineResearch(usable),
+    pushes:usable.reduce((n,s)=>n+(s.pushes||0),0),
     connected: usable.some((s) => s.connected),
     hits,
     settled,
@@ -162,6 +165,15 @@ function combineStats(stats: PerformanceStat[]): PerformanceStat {
   };
 }
 
+function combineResearch(stats:PerformanceStat[]):NonNullable<PerformanceStat["research"]>{
+ const sum=(key:"total"|"awaitingResult"|"completed"|"void"|"hits"|"misses"|"pushes")=>stats.reduce((n,s)=>n+(s.research?.[key]||0),0);
+ const hits=sum("hits"),misses=sum("misses");
+ return {total:sum("total"),awaitingResult:sum("awaitingResult"),completed:sum("completed"),void:sum("void"),hits,misses,pushes:sum("pushes"),hitRate:hits+misses?Math.round(hits/(hits+misses)*1000)/10:null};
+}
+function researchStat(stat:PerformanceStat):PerformanceStat{
+ const r=stat.research;
+ return {...stat,hits:r?.hits||0,settled:r?.completed||0,pending:r?.awaitingResult||0,total:r?.total||0,pushes:r?.pushes||0,hitRate:r?.hitRate??null};
+}
 function torontoDay(offset = 0) {
   const d = new Date(Date.now() + offset * 86400000);
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -248,11 +260,13 @@ function rateOrDash(value: number | null, connected: boolean) {
 function PerformanceCards({
   stat,
   compact = false,
+  research = false,
 }: {
   stat: PerformanceStat;
   compact?: boolean;
+  research?: boolean;
 }) {
-  const losses = Math.max(0, stat.settled - stat.hits);
+  const losses = Math.max(0, stat.settled - stat.hits-(stat.pushes||0));
   const rate = stat.hitRate == null ? 0 : Math.max(0, Math.min(100, stat.hitRate));
 
   return (
@@ -264,10 +278,10 @@ function PerformanceCards({
           style={{ "--rate": `${rate * 3.6}deg` } as React.CSSProperties}
         />
         <div className={styles.metricCopy}>
-          <span>Hit Rate</span>
+          <span>{research?"Research hit rate":"Hit Rate"}</span>
           <strong>{rateOrDash(stat.hitRate, stat.connected)}</strong>
           <small>
-            {stat.connected ? `${stat.hits} / ${stat.settled}` : "No graded data"}
+            {stat.connected ? `${stat.hits} / ${stat.settled-(stat.pushes||0)} decisions` : "Data unavailable"}
           </small>
         </div>
       </article>
@@ -275,13 +289,14 @@ function PerformanceCards({
       <article className={styles.metricCard}>
         <span className={styles.metricIcon} aria-hidden="true">✓</span>
         <div className={styles.metricCopy}>
-          <span>Settled</span>
+          <span>{research?"Research settled":"Settled"}</span>
           <strong>{numberOrDash(stat.settled, stat.connected)}</strong>
           <small>
             {stat.connected ? (
               <>
                 <b className={styles.winText}>{stat.hits} Wins</b>
                 <b className={styles.lossText}>{losses} Losses</b>
+                {stat.pushes?<b>{stat.pushes} Pushes</b>:null}
               </>
             ) : (
               "No graded data"
@@ -293,9 +308,9 @@ function PerformanceCards({
       <article className={styles.metricCard}>
         <span className={styles.hourglass} aria-hidden="true">⌛</span>
         <div className={styles.metricCopy}>
-          <span>Verified pending</span>
+          <span>{research?"Research pending":"Verified pending"}</span>
           <strong>{numberOrDash(stat.pending, stat.connected)}</strong>
-          <small>{stat.pending?"Awaiting verified settlement":"No validated picks awaiting results"}</small>
+          <small>{!stat.connected?"Data unavailable":stat.pending?"Awaiting game results":research?"No research calls awaiting results":"No validated picks awaiting results"}</small>
         </div>
       </article>
     </div>
@@ -315,6 +330,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
   const [loading, setLoading] = useState(true);
   const [categoryOpen, setCategoryOpen] = useState(true);
+  const [scope,setScope]=useState<"research"|"validated">("research");
+  const researchView=scope==="research"&&!["mlb","soccer"].includes(sport);
 
   const activeCategory =
     categories.find((category) => category.key === categoryKey) || categories[0];
@@ -420,11 +437,12 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const categoryNote = useMemo(() => {
     if (activeCategory?.note) return activeCategory.note;
     if (loading) return "Loading prediction history…";
+    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.completed} settled · ${r.awaitingResult} pending · ${r.void} void/withdrawn · ${r.total} saved research records. Historical research only.`:"No saved research for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved research records: ${categoryStat.research.awaitingResult} awaiting result. No validated ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
     }
     return "";
-  }, [activeCategory, categoryStat, loading]);
+  }, [activeCategory, categoryStat, loading,researchView]);
 
   if (!activeCategory) return null;
 
@@ -436,7 +454,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           Prediction Performance
         </h2>
 
-        {!["mlb", "soccer"].includes(sport) ? <p>Verified recommendations only. Earlier baseline-based picks remain in historical records but are excluded from these totals while model validation is pending.</p> : null}
+        {!["mlb", "soccer"].includes(sport) ? <><div className={styles.periodTabs} aria-label="Performance record type">{(["research","validated"] as const).map(value=><button key={value} type="button" aria-pressed={scope===value} className={scope===value?styles.activeTab:""} onClick={()=>setScope(value)}>{value==="research"?"Saved research":"Validated picks"}</button>)}</div><p>{researchView?"Results of saved historical research calls. These models are unvalidated; research results do not establish betting accuracy. Pending counts saved calls awaiting results, not every visible card.":"Validated recommendations only. Research calls are excluded. No forecasting model is validated yet, so verified totals remain zero."}</p></> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
           {PERIODS.map((item) => (
@@ -451,7 +469,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           ))}
         </div>
 
-        <PerformanceCards stat={overall} />
+        <PerformanceCards stat={researchView?researchStat(overall):overall} research={researchView} />
         {overall.connected&&overall.research? <div className={styles.researchTracking} aria-label="Research history tracking"><strong>Research history · separate from betting performance</strong><span>{overall.research.awaitingResult} awaiting result · {overall.research.completed} with recorded results · {overall.research.void} void/withdrawn · {overall.research.total} total</span><small>These are saved historical research records, not validated picks or a count of every visible card.</small></div>:null}
       </section>
 
@@ -499,7 +517,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                 </div>
               </div>
 
-              <PerformanceCards stat={categoryStat} compact />
+              <PerformanceCards stat={researchView?researchStat(categoryStat):categoryStat} research={researchView} compact />
 
               {categoryNote ? <p className={styles.categoryNote}>{categoryNote}</p> : null}
             </div>
