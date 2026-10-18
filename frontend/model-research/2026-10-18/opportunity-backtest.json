@@ -1,0 +1,536 @@
+{
+  "modelId": "opportunity-point-candidate-v1",
+  "validatedForBetting": false,
+  "giEnabled": false,
+  "observations": 48848,
+  "groups": [
+    {
+      "group": "cbb|assists",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 378,
+      "targetAppearances": 717,
+      "forecasts": 641,
+      "coverage": 0.8940027894002789,
+      "modelMae": 1.2713745134153709,
+      "baselineMae": 1.278249961167278,
+      "maeImprovementPct": 0.5378797544127065,
+      "rmse": 1.7280626415560016,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 69,
+        "prior_workload_role_uncertain": 7
+      }
+    },
+    {
+      "group": "cbb|blocks",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 378,
+      "targetAppearances": 717,
+      "forecasts": 641,
+      "coverage": 0.8940027894002789,
+      "modelMae": 0.48772184732205526,
+      "baselineMae": 0.4835582254459007,
+      "maeImprovementPct": -0.8610383728485164,
+      "rmse": 0.7277499517469981,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 69,
+        "prior_workload_role_uncertain": 7
+      }
+    },
+    {
+      "group": "cbb|points",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 378,
+      "targetAppearances": 717,
+      "forecasts": 641,
+      "coverage": 0.8940027894002789,
+      "modelMae": 5.159403963620728,
+      "baselineMae": 5.125194895241697,
+      "maeImprovementPct": -0.6674686344277603,
+      "rmse": 6.61264063328488,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 69,
+        "prior_workload_role_uncertain": 7
+      }
+    },
+    {
+      "group": "cbb|rebounds",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 378,
+      "targetAppearances": 717,
+      "forecasts": 641,
+      "coverage": 0.8940027894002789,
+      "modelMae": 2.0313349264805187,
+      "baselineMae": 2.0212911373597793,
+      "maeImprovementPct": -0.49689967640479005,
+      "rmse": 2.7233537814788877,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 69,
+        "prior_workload_role_uncertain": 7
+      }
+    },
+    {
+      "group": "cbb|steals",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 378,
+      "targetAppearances": 717,
+      "forecasts": 641,
+      "coverage": 0.8940027894002789,
+      "modelMae": 0.8341036334676302,
+      "baselineMae": 0.880807067780547,
+      "maeImprovementPct": 5.302345544365335,
+      "rmse": 1.081179375142687,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 69,
+        "prior_workload_role_uncertain": 7
+      }
+    },
+    {
+      "group": "cbb|threes_made",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 378,
+      "targetAppearances": 717,
+      "forecasts": 641,
+      "coverage": 0.8940027894002789,
+      "modelMae": 1.0753320834781783,
+      "baselineMae": 1.0441409864186755,
+      "maeImprovementPct": -2.9872495635370035,
+      "rmse": 1.3737767711087656,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 69,
+        "prior_workload_role_uncertain": 7
+      }
+    },
+    {
+      "group": "cfb|passing_yards",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 31,
+      "targetAppearances": 41,
+      "forecasts": 0,
+      "coverage": 0,
+      "modelMae": null,
+      "baselineMae": null,
+      "maeImprovementPct": null,
+      "rmse": null,
+      "lowWorkloadTargetAppearances": 0,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 24,
+        "insufficient_training": 16,
+        "prior_workload_role_uncertain": 1
+      }
+    },
+    {
+      "group": "cfb|rushing_yards",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 117,
+      "targetAppearances": 219,
+      "forecasts": 62,
+      "coverage": 0.2831050228310502,
+      "modelMae": 23.230749138387832,
+      "baselineMae": 25.6241935483871,
+      "maeImprovementPct": 9.340564827843812,
+      "rmse": 31.48890632974872,
+      "lowWorkloadTargetAppearances": 7,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 129,
+        "prior_workload_role_uncertain": 28
+      }
+    },
+    {
+      "group": "nba|assists",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 1246,
+      "targetAppearances": 1903,
+      "forecasts": 1768,
+      "coverage": 0.929059379926432,
+      "modelMae": 1.5035207984627632,
+      "baselineMae": 1.5200924484012688,
+      "maeImprovementPct": 1.0901738217260748,
+      "rmse": 2.002266618542509,
+      "lowWorkloadTargetAppearances": 6,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 113,
+        "prior_workload_role_uncertain": 22
+      }
+    },
+    {
+      "group": "nba|blocks",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 1246,
+      "targetAppearances": 1903,
+      "forecasts": 1768,
+      "coverage": 0.929059379926432,
+      "modelMae": 0.6197415335105704,
+      "baselineMae": 0.6050516068898406,
+      "maeImprovementPct": -2.427879945024971,
+      "rmse": 0.8179452534088787,
+      "lowWorkloadTargetAppearances": 6,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 113,
+        "prior_workload_role_uncertain": 22
+      }
+    },
+    {
+      "group": "nba|points",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 1246,
+      "targetAppearances": 1903,
+      "forecasts": 1768,
+      "coverage": 0.929059379926432,
+      "modelMae": 5.073765530348105,
+      "baselineMae": 5.09281196744431,
+      "maeImprovementPct": 0.3739866544839833,
+      "rmse": 6.496206534741183,
+      "lowWorkloadTargetAppearances": 6,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 113,
+        "prior_workload_role_uncertain": 22
+      }
+    },
+    {
+      "group": "nba|rebounds",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 1246,
+      "targetAppearances": 1903,
+      "forecasts": 1768,
+      "coverage": 0.929059379926432,
+      "modelMae": 2.120196073660175,
+      "baselineMae": 2.14834960790843,
+      "maeImprovementPct": 1.310472659785784,
+      "rmse": 2.8072948949832908,
+      "lowWorkloadTargetAppearances": 6,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 113,
+        "prior_workload_role_uncertain": 22
+      }
+    },
+    {
+      "group": "nba|steals",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 1246,
+      "targetAppearances": 1903,
+      "forecasts": 1768,
+      "coverage": 0.929059379926432,
+      "modelMae": 0.823215816997604,
+      "baselineMae": 0.8519701295436579,
+      "maeImprovementPct": 3.3750376391077923,
+      "rmse": 1.0543473253774676,
+      "lowWorkloadTargetAppearances": 6,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 113,
+        "prior_workload_role_uncertain": 22
+      }
+    },
+    {
+      "group": "nba|threes_made",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 1246,
+      "targetAppearances": 1903,
+      "forecasts": 1768,
+      "coverage": 0.929059379926432,
+      "modelMae": 1.0104342175972905,
+      "baselineMae": 0.9772303268626799,
+      "maeImprovementPct": -3.397754840581857,
+      "rmse": 1.3504088150277394,
+      "lowWorkloadTargetAppearances": 6,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 113,
+        "prior_workload_role_uncertain": 22
+      }
+    },
+    {
+      "group": "nfl|passing_yards",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 246,
+      "targetAppearances": 106,
+      "forecasts": 35,
+      "coverage": 0.330188679245283,
+      "modelMae": 67.84211002998428,
+      "baselineMae": 68.86571428571428,
+      "maeImprovementPct": 1.4863771709143982,
+      "rmse": 80.64807843296416,
+      "lowWorkloadTargetAppearances": 0,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 71
+      }
+    },
+    {
+      "group": "nfl|receiving_yards",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 582,
+      "targetAppearances": 295,
+      "forecasts": 87,
+      "coverage": 0.29491525423728815,
+      "modelMae": 25.819185248364683,
+      "baselineMae": 27.107279693486586,
+      "maeImprovementPct": 4.751839578470907,
+      "rmse": 33.81513002624019,
+      "lowWorkloadTargetAppearances": 25,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 189,
+        "prior_workload_role_uncertain": 19
+      }
+    },
+    {
+      "group": "nfl|receptions",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 582,
+      "targetAppearances": 295,
+      "forecasts": 87,
+      "coverage": 0.29491525423728815,
+      "modelMae": 1.8924642903411162,
+      "baselineMae": 2.0015325670498076,
+      "maeImprovementPct": 5.449238173998561,
+      "rmse": 2.5516741023659315,
+      "lowWorkloadTargetAppearances": 25,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 189,
+        "prior_workload_role_uncertain": 19
+      }
+    },
+    {
+      "group": "nfl|rushing_yards",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 546,
+      "targetAppearances": 401,
+      "forecasts": 80,
+      "coverage": 0.19950124688279303,
+      "modelMae": 18.89903060323607,
+      "baselineMae": 17.68041666666667,
+      "maeImprovementPct": -6.892450328203432,
+      "rmse": 26.5582280466476,
+      "lowWorkloadTargetAppearances": 21,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 260,
+        "prior_workload_role_uncertain": 61
+      }
+    },
+    {
+      "group": "nhl|assists",
+      "trainSeason": "20242025",
+      "testSeason": "20252026",
+      "trainingExamples": 692,
+      "targetAppearances": 786,
+      "forecasts": 746,
+      "coverage": 0.9491094147582697,
+      "modelMae": 0.6478672721961224,
+      "baselineMae": 0.6718194004387034,
+      "maeImprovementPct": 3.5652629600961276,
+      "rmse": 0.7996278251591179,
+      "lowWorkloadTargetAppearances": 0,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 40
+      }
+    },
+    {
+      "group": "nhl|goalie_saves",
+      "trainSeason": "20242025",
+      "testSeason": "20252026",
+      "trainingExamples": 231,
+      "targetAppearances": 326,
+      "forecasts": 292,
+      "coverage": 0.8957055214723927,
+      "modelMae": 6.1875292419107115,
+      "baselineMae": 6.309025183340255,
+      "maeImprovementPct": 1.9257482400033576,
+      "rmse": 7.920009324586338,
+      "lowWorkloadTargetAppearances": 1,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 29,
+        "prior_workload_role_uncertain": 5
+      }
+    },
+    {
+      "group": "nhl|goals",
+      "trainSeason": "20242025",
+      "testSeason": "20252026",
+      "trainingExamples": 692,
+      "targetAppearances": 786,
+      "forecasts": 746,
+      "coverage": 0.9491094147582697,
+      "modelMae": 0.4779175920210892,
+      "baselineMae": 0.4714059399045997,
+      "maeImprovementPct": -1.3813258521535074,
+      "rmse": 0.5878419347293473,
+      "lowWorkloadTargetAppearances": 0,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 40
+      }
+    },
+    {
+      "group": "nhl|points",
+      "trainSeason": "20242025",
+      "testSeason": "20252026",
+      "trainingExamples": 692,
+      "targetAppearances": 786,
+      "forecasts": 746,
+      "coverage": 0.9491094147582697,
+      "modelMae": 0.7829367941604558,
+      "baselineMae": 0.8386094766121576,
+      "maeImprovementPct": 6.638689879419216,
+      "rmse": 0.9959812091281829,
+      "lowWorkloadTargetAppearances": 0,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 40
+      }
+    },
+    {
+      "group": "nhl|shots_on_goal",
+      "trainSeason": "20242025",
+      "testSeason": "20252026",
+      "trainingExamples": 692,
+      "targetAppearances": 786,
+      "forecasts": 746,
+      "coverage": 0.9491094147582697,
+      "modelMae": 1.4387944829179742,
+      "baselineMae": 1.5165058281010027,
+      "maeImprovementPct": 5.124368383096825,
+      "rmse": 1.8195315350076513,
+      "lowWorkloadTargetAppearances": 0,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 40
+      }
+    },
+    {
+      "group": "wnba|assists",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 608,
+      "targetAppearances": 1001,
+      "forecasts": 863,
+      "coverage": 0.8621378621378621,
+      "modelMae": 1.2887805570643291,
+      "baselineMae": 1.2360374143688166,
+      "maeImprovementPct": -4.267115386830408,
+      "rmse": 1.6983130580187578,
+      "lowWorkloadTargetAppearances": 31,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 89,
+        "prior_workload_role_uncertain": 49
+      }
+    },
+    {
+      "group": "wnba|blocks",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 608,
+      "targetAppearances": 1001,
+      "forecasts": 863,
+      "coverage": 0.8621378621378621,
+      "modelMae": 0.5110899958728072,
+      "baselineMae": 0.4616004441033411,
+      "maeImprovementPct": -10.721296394244069,
+      "rmse": 0.7413000869687094,
+      "lowWorkloadTargetAppearances": 31,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 89,
+        "prior_workload_role_uncertain": 49
+      }
+    },
+    {
+      "group": "wnba|points",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 608,
+      "targetAppearances": 1001,
+      "forecasts": 863,
+      "coverage": 0.8621378621378621,
+      "modelMae": 4.489450478063915,
+      "baselineMae": 4.445510476391123,
+      "maeImprovementPct": -0.9884129596847396,
+      "rmse": 5.632060631994644,
+      "lowWorkloadTargetAppearances": 31,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 89,
+        "prior_workload_role_uncertain": 49
+      }
+    },
+    {
+      "group": "wnba|rebounds",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 608,
+      "targetAppearances": 1001,
+      "forecasts": 863,
+      "coverage": 0.8621378621378621,
+      "modelMae": 1.8749706247790132,
+      "baselineMae": 1.7775117505129074,
+      "maeImprovementPct": -5.482882137796483,
+      "rmse": 2.419487876884911,
+      "lowWorkloadTargetAppearances": 31,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 89,
+        "prior_workload_role_uncertain": 49
+      }
+    },
+    {
+      "group": "wnba|steals",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 608,
+      "targetAppearances": 1001,
+      "forecasts": 863,
+      "coverage": 0.8621378621378621,
+      "modelMae": 0.7950848827963086,
+      "baselineMae": 0.8134918126806889,
+      "maeImprovementPct": 2.2627062248757235,
+      "rmse": 1.0586747548663784,
+      "lowWorkloadTargetAppearances": 31,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 89,
+        "prior_workload_role_uncertain": 49
+      }
+    },
+    {
+      "group": "wnba|threes_made",
+      "trainSeason": "2025",
+      "testSeason": "2026",
+      "trainingExamples": 608,
+      "targetAppearances": 1001,
+      "forecasts": 863,
+      "coverage": 0.8621378621378621,
+      "modelMae": 0.8617879942898953,
+      "baselineMae": 0.8466474879568735,
+      "maeImprovementPct": -1.788289287854475,
+      "rmse": 1.1366342522645738,
+      "lowWorkloadTargetAppearances": 31,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 89,
+        "prior_workload_role_uncertain": 49
+      }
+    }
+  ],
+  "limitations": [
+    "Current ranking-board player selection introduces survivorship/selection bias.",
+    "Historical logs are current revisions, not frozen historical data vintages.",
+    "48-hour result-availability lag is a research convention; exact historical publication timestamps are unavailable.",
+    "No historical injury, depth chart, weather forecast, game script, rotation, goalie or exact-price calibration is established.",
+    "Point error comparison does not establish win probability, calibrated edge, GI, or profit.",
+    "Quarter and scorer models are not evaluated."
+  ],
+  "sourceDataSha256": "e62214920aeafa0974d5f1317cd8f16e46608aba126fdf59398779685a3656e1",
+  "collectionErrors": 0
+}

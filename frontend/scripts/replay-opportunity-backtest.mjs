@@ -1,0 +1,18 @@
+import {readFile} from 'node:fs/promises';
+import {gunzipSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {loadTs} from '../tests/load-ts.mjs';
+const root=process.argv[2]||new URL('../model-research/2026-10-18/',import.meta.url).pathname;
+const manifest=JSON.parse(await readFile(root+'/source-manifest.json','utf8'));
+const compressed=await readFile(root+'/opportunity-observations.json.gz');
+const hash=b=>createHash('sha256').update(b).digest('hex');
+assert.equal(hash(compressed),manifest.compressedSha256,'Compressed source digest mismatch');
+const data=gunzipSync(compressed);assert.equal(hash(data),manifest.dataSha256,'Observation digest mismatch');
+const {evaluateOpportunityModels}=await loadTs(new URL('../lib/opportunity-backtest.ts',import.meta.url));
+const replay=evaluateOpportunityModels(JSON.parse(data));
+const saved=JSON.parse(await readFile(root+'/opportunity-backtest.json','utf8'));
+assert.deepEqual(replay.groups,saved.groups,'Backtest results changed');
+assert.equal(replay.observations,manifest.observations);
+assert.equal(replay.giEnabled,false);assert.equal(replay.validatedForBetting,false);
+console.log(JSON.stringify({reproduced:true,observations:replay.observations,groups:replay.groups.length,giEnabled:false}));
