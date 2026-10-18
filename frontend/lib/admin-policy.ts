@@ -18,6 +18,7 @@ export function adminResult(row: any) {
     line: original.sportsbookLine ?? row.sportsbookLine ?? null, actual: row.actual ?? null,
     status: ["hit", "miss", "push", "pending", "void"].includes(status) ? status : "unknown",
     savedAt: row.savedAt || null, gradedAt: row.gradedAt || null,
+    gradeRevisions: Array.isArray(row.gradeRevisions) ? row.gradeRevisions : [],
     verifiedPick: row.recommendationEligible === true, quoteVerified: row.quoteVerified === true,
     sportsbook: row.sportsbook || null, quoteUpdatedAt: row.quoteUpdatedAt || null,
     reason: row.reviewReason || null, withdrawn: row.withdrawnFromBoard === true,

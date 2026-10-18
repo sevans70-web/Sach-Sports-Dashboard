@@ -1,3 +1,4 @@
+import {correctedGrade} from "@/lib/grade-reconciliation";
 import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {cleanNhlName,type NhlMarketKey} from "@/lib/nhl";
@@ -27,7 +28,7 @@ export async function getNhlPredictions(m:NhlMarketKey,day:string){
   for(const p of [...disk,...mem]){
     if(!p?.key)continue; const old=map.get(p.key);
     if(!old){map.set(p.key,p);continue}
-    if(old.status!=="pending"){continue}
+    if(old.status!=="pending"){const correction=correctedGrade(old,p);if(correction)map.set(p.key,correction);continue}
     if(p.status!=="pending"||(!old.frozenAt&&p.frozenAt)){map.set(p.key,{...old,...p});continue}
     if(old.frozenAt&&!p.frozenAt)continue;
     map.set(p.key,Date.parse(p.savedAt||"")>=Date.parse(old.savedAt||"")?{...old,...p}:old);
@@ -75,7 +76,7 @@ async function saveNhlDay(m:NhlMarketKey,rows:any[],day:string){
 export async function saveNhlGrades(m:NhlMarketKey,day:string,predictions:SavedNhlPrediction[]){
  return withHistoryLock(`nhl|${m}|${day}`,async()=>{
   const current=await getNhlPredictions(m,day),merged=new Map(current.predictions.map(p=>[p.key,p]));
-  for(const p of predictions){const old=merged.get(p.key);if(!old)merged.set(p.key,p);else if(old.status==="pending"&&p.status!=="pending")merged.set(p.key,{...old,status:p.status,actual:p.actual,gradedAt:p.gradedAt});}
+  for(const p of predictions){const old=merged.get(p.key);if(!old)merged.set(p.key,p);else if(correctedGrade(old,p))merged.set(p.key,correctedGrade(old,p)!);else if(old.status==="pending"&&p.status!=="pending")merged.set(p.key,{...old,status:p.status,actual:p.actual,gradedAt:p.gradedAt});}
   const out=[...merged.values()];runtime.set(rk(m,day),out);return writeDurableHistory("nhl",String(m),day,out);
  });
 }

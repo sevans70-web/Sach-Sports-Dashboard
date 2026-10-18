@@ -1,3 +1,4 @@
+import {correctedGrade} from "@/lib/grade-reconciliation";
 import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {writePredictionHistory} from "@/lib/prediction-history-write";
@@ -40,7 +41,7 @@ async function getRows(m:NflMarketKey,day:string){
 function mergeSnapshotPredictions(rows:any[]){
  const merged=new Map<string,SavedNflPrediction>();
  for(const row of rows){for(const raw of Array.isArray(row?.payload?.predictions)?row.payload.predictions:[]){if(!raw?.key)continue;const next=raw as SavedNflPrediction,old=merged.get(next.key);if(!old){merged.set(next.key,{...next});continue}
-   if(old.status!=="pending"){merged.set(next.key,old);continue}
+   if(old.status!=="pending"){merged.set(next.key,correctedGrade(old,next)||old);continue}
    if(next.status!=="pending"){merged.set(next.key,{...old,...next});continue}
    const oldFrozen=Boolean(old.frozenAt),nextFrozen=Boolean(next.frozenAt);
    if(oldFrozen&&!nextFrozen){merged.set(next.key,old);continue}

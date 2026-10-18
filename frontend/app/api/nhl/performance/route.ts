@@ -1,4 +1,5 @@
 import {nhlObservedActual,nhlObservedRows} from "@/lib/observed-player-stats";
+import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
 import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -80,6 +81,13 @@ export async function GET(req:NextRequest){
       for(const prediction of x.predictions){
         const row={...prediction};
 
+        if(["hit","miss","push"].includes(row.status)&&row.gameId){
+          let payload=boxCache.get(String(row.gameId));
+          if(payload===undefined){payload=await boxscore(String(row.gameId));boxCache.set(String(row.gameId),payload)}
+          const corrected=reconcileOfficialGrade(row,payload,"nhl");
+          if(corrected!==row){Object.assign(row,corrected);changed=true}
+        }
+
         if(row.status==="pending"&&row.gameId&&(!row.gameTime||Date.parse(row.gameTime)<=Date.now())){
           let payload=boxCache.get(String(row.gameId));
           if(payload===undefined){
@@ -134,7 +142,7 @@ export async function GET(req:NextRequest){
     pending,
     total:gradeable.length,
     hitRate:settled.length?Math.round(hits/settled.length*1000)/10:null,
-    results:gradeable.sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt))).slice(0,100),
+    results:gradeable.sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt))),
     updatedAt:new Date().toISOString()
   },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }

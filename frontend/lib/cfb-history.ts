@@ -1,3 +1,4 @@
+import {correctedGrade} from "@/lib/grade-reconciliation";
 import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {promises as fs} from "node:fs";
 import path from "node:path";
@@ -194,7 +195,7 @@ function mergePredictions(
     }
 
     if(old.status!=="pending"){
-      m.set(x.key,old);
+      m.set(x.key,correctedGrade(old,x)||old);
       continue;
     }
 

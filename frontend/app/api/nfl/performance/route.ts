@@ -1,4 +1,6 @@
 import {guardPerformancePayload} from "@/lib/prop-integrity";
+import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
+import {footballObservedRows} from "@/lib/football-observed-stats";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -174,7 +176,15 @@ export async function GET(req:NextRequest){
    for(const day of days)for(const market of markets){
      const got=await getNflPredictions(market,day);connected=connected&&got.connected;writable=writable&&(got.writable!==false);recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
      for(const p of got.predictions){
-       if(p.status!=="pending"){all.push(p);continue}
+       if(p.status!=="pending"){
+         if(["hit","miss","push"].includes(p.status)&&p.gameId&&!p.market.startsWith("q1_")&&p.market!=="first_td"){
+           let payload=summaryCache.get(String(p.gameId));
+           if(payload===undefined){payload=await getSummary(String(p.gameId));summaryCache.set(String(p.gameId),payload)}
+           const corrected=reconcileOfficialGrade(p,payload,"nfl");
+           if(corrected!==p){Object.assign(p,corrected);changed=true}
+         }
+         all.push(p);continue;
+       }
        if(p.gameTime&&Date.parse(p.gameTime)>Date.now()){all.push(p);continue}
        const game=(p.gameId?schedule.find((g:any)=>String(g.id||"")===String(p.gameId)):null)||schedule.find((g:any)=>cleanName(`${g.awayTeam} @ ${g.homeTeam}`)===cleanName(p.matchup));
        const q1=p.market.startsWith("q1_");
@@ -188,12 +198,9 @@ export async function GET(req:NextRequest){
        const fullGameFinal=Boolean(game?.completed||game?.state==="post"||summaryState.completed);
        if(!q1&&!fullGameFinal){all.push(p);continue}
        if(q1&&(!payload||!(q1IsFinal(payload,game)||summaryState.period>=2||summaryState.completed))){all.push(p);continue}
-       let actual=payload?summaryActual(payload,p):null;
-       // ESPN's athlete gamelog can lag behind the final whistle. Use it only as a fallback for full-game markets.
-       if(actual==null&&!q1&&p.market!=="first_td"){
-         const logPayload=/^\d+$/.test(p.playerId)?await log(p.playerId,Number(p.gameDate.slice(0,4))||2026):null;
-         actual=actualFrom(logPayload,p.market,p.gameDate);
-       }
+       let actual=payload?(q1||p.market==="first_td"?summaryActual(payload,p):footballObservedRows(payload).find(row=>row.playerId===String(p.playerId))?.stats[p.market]??null):null;
+       // Missing official player/market evidence stays unknown. Day-only gamelog
+       // fallbacks and partial combined totals must not create a settled result.
        if(actual!=null){p.actual=actual;p.status=settle(p,actual);p.gradedAt=new Date().toISOString();changed=true}
        all.push(p);
      }

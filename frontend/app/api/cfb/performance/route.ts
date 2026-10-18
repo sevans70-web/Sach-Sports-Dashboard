@@ -1,4 +1,5 @@
 import {guardPerformancePayload} from "@/lib/prop-integrity";
+import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
 import {footballSummaryStat} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -309,7 +310,13 @@ export async function GET(req:NextRequest){
       const [market,day]=bucket.split("|") as [CfbMarketKey,string];
 
       for(const prediction of predictions){
-        if(prediction.status!=="pending")continue;
+        if(prediction.status!=="pending"){
+          if(["hit","miss","push"].includes(prediction.status)&&prediction.gameId&&market!=="first_td"){
+            const corrected=reconcileOfficialGrade(prediction,await summaryForGame(String(prediction.gameId)),"cfb");
+            if(corrected!==prediction){Object.assign(prediction,corrected);changedBuckets.add(bucket)}
+          }
+          continue;
+        }
         if(!gameStarted(prediction))continue;
 
         let gameId=String(prediction.gameId||"");

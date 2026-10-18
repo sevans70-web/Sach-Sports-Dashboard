@@ -1,4 +1,5 @@
 import {guardPerformancePayload} from "@/lib/prop-integrity";
+import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
 import {basketballSummaryActual,basketballLogActual} from "@/lib/basketball-settlement";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -135,7 +136,12 @@ export async function GET(req:NextRequest){
       let changed=false;
       const graded:SavedNbaPrediction[]=[];
       for(const p of x.predictions){
-        if(p.status!=="pending"){graded.push(p);continue}
+        if(p.status!=="pending"){
+          let payload=summaryCache.get(String(p.gameId));
+          if(["hit","miss","push"].includes(p.status)&&p.gameId&&!market.startsWith("q1_")&&market!=="first_basket"&&payload===undefined){payload=await summary(String(p.gameId));summaryCache.set(String(p.gameId),payload)}
+          const corrected=reconcileOfficialGrade(p,payload,"nba");if(corrected!==p)changed=true;
+          graded.push(corrected);continue;
+        }
         if(!p.gameId||!finals.has(String(p.gameId))){graded.push(p);continue}
 
         let gamePayload=summaryCache.get(String(p.gameId));
@@ -165,7 +171,7 @@ export async function GET(req:NextRequest){
   return performanceJson({
     connected,hits,settled:settledRows.length,pending,total:all.length,
     hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
-    results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)).slice(0,100),
+    results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)),
     updatedAt:new Date().toISOString()
   },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }
