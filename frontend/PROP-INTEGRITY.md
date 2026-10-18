@@ -22,7 +22,7 @@ Old snapshots cannot be retrospectively certified from a current bookmaker quote
 
 ## Storage boundary
 
-Performance panels default to an explicitly labeled Saved research view across NFL, CFB, NBA, WNBA, CBB and NHL. Historical wins, losses, pushes, settled and awaiting-result counts are visible in overall and category tiles. A separate Validated picks view retains eligibility restrictions. Withdrawn records are disjoint from active research results; pushes count as settled but do not enter the hit-rate denominator. No research entry is promoted to a validated recommendation.
+Public performance panels show explicitly labeled historical research results across NFL, CFB, NBA, WNBA, CBB and NHL, without Saved research / Validated picks mode buttons. Historical wins, losses, pushes, settled and awaiting-result counts are visible in overall and category tiles. Server-side validated performance retains eligibility restrictions. Withdrawn records are disjoint from active research results; pushes count as settled but do not enter the hit-rate denominator. No research entry is promoted to a validated recommendation.
 
 No changes to Railway storage, volumes, settings, Google Drive backup integration, seven-day retention, or historical data deletion. Existing archival capture continues under its existing policy. Local regression fixtures use isolated temporary directories only.
 

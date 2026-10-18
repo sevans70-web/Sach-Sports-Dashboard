@@ -330,8 +330,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
   const [loading, setLoading] = useState(true);
   const [categoryOpen, setCategoryOpen] = useState(true);
-  const [scope,setScope]=useState<"research"|"validated">("research");
-  const researchView=scope==="research"&&!["mlb","soccer"].includes(sport);
+  const researchView=!["mlb","soccer"].includes(sport);
 
   const activeCategory =
     categories.find((category) => category.key === categoryKey) || categories[0];
@@ -454,7 +453,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           Prediction Performance
         </h2>
 
-        {!["mlb", "soccer"].includes(sport) ? <><div className={styles.periodTabs} aria-label="Performance record type">{(["research","validated"] as const).map(value=><button key={value} type="button" aria-pressed={scope===value} className={scope===value?styles.activeTab:""} onClick={()=>setScope(value)}>{value==="research"?"Saved research":"Validated picks"}</button>)}</div><p>{researchView?"Results of saved historical research calls. These models are unvalidated; research results do not establish betting accuracy. Pending counts saved calls awaiting results, not every visible card.":"Validated recommendations only. Research calls are excluded. No forecasting model is validated yet, so verified totals remain zero."}</p></> : null}
+        {researchView ? <p>Historical research results from saved calls. These models are not yet validated. Pending means saved calls awaiting game results.</p> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
           {PERIODS.map((item) => (
