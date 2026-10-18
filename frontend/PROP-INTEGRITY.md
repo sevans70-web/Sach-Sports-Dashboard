@@ -84,4 +84,22 @@ Validation: 107 automated tests pass, including temporal research facts, absent 
 
 Game Intelligence also respects intentional integrity-null values: legacy `line`, `perGame`, `score` and probability aliases cannot restore an unverified quote, scaled quarter estimate or suppressed GI/probability. Regression coverage checks those exact fallback cases.
 
+### 18 October: live/final lifecycle and switching follow-up
+
+The NFL/CFB live football endpoint now returns official player statistics, not only participation flags. Initial NFL ranks and the CFB live route share the adapter. It separates passing/rushing/receiving categories, retains reported zeroes and negative yards, splits passing attempts/completions correctly and excludes passing TDs from own-player scorer totals. Missing categories remain unknown. An absent player-category entry is zero only for a confirmed participant when that additive team table reconciles fully to its official total. No Q1 stat is manufactured from full-game data.
+
+Verified numeric lines regain green live progress from these observed values. Anytime TD shows `1+ TD`, an observed TD count and progress toward one TD; it does not turn an anytime market into an invented multiple-TD line. A yardage card with no verified line shows its actual yards and explains why line progress cannot be calculated. Spears' legacy recorded line is unverified and is not restored to the betting field merely to draw a bar.
+
+Final research cards show a factual above/below/on-line outcome. Where an explicit original research side was saved before kickoff and the quote is verified, the card shows a research-only check/X/push. Hutchinson's saved research OVER 14.5 with actual 10 is a research miss. These historical research outcomes remain excluded from verified betting performance; no new recommendation is reconstructed from a baseline. Missing actuals or unverified quotes do not acquire fabricated grades.
+
+Game slates sort live, scheduled, then final in both API and date-filtered UI. Final games remain accessible at the bottom. First observation of a rank board establishes a comparison baseline, without marking every card NEW. Only entries into a previously observed board receive NEW; changed ranks retain up/down comparisons. The movement storage key is versioned so the earlier all-NEW baseline is not carried forward.
+
+Category selection invalidates old request generations synchronously. Background updates no longer toggle loading and remove/reinsert the research notice; notices stay stable during cold category loading. Cards use player/fixture identity rather than rank as their React key. Live-updated cards are written back to view caches, pictures are staged before publication, and the previous grid height is reserved while a new category loads. This prevents stale request responses, rank remounts and loading-layout oscillation during switching. Live browser checks are required before declaring the observed flicker resolved.
+
+Rushing TDs is removed from public NFL tabs and active capture markets. Its market definition, historical records and explicit history/grading access remain intact. MLB/soccer stay hidden. Storage, backup and retention settings are unchanged.
+
+Forecast/GI status remains unfinished: this bundle repairs observed statistics, display/settlement explanations and navigation, without registering a forecasting model or certifying heuristic scores. Existing retrospective point-model results remain mixed and do not establish calibrated betting probabilities.
+
+Validation for this follow-up: 115 automated checks cover the Spears receiving-yard regression, reported zero/missing-category/reconciled-table behavior, passing-vs-own TD separation, original research hit/miss semantics, TD target progress, final-last sorting, first-board movement baseline and historical access after removing rushing TDs. Official live/final summary smoke checks included Spears, Henry, Hutchinson and a completed CFB game. The production build passed; deployment and browser observations are reported separately from these code checks.
+
 Live verification also exposed a game filter that matched blank team names and shared substrings (e.g. CHI/Chiefs), allowing an unrelated player into a fixture. Game Intelligence now requires exact fixture identity (or dated legacy matching) and exact team ID/name/abbreviation membership; unknown team names do not match either side. ESPN game detail also rejects mismatched header event IDs.

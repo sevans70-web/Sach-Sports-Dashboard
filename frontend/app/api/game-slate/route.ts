@@ -6,6 +6,7 @@ import { loadNhlGames } from "@/lib/nhl";
 import { loadCbbGames } from "@/lib/cbb";
 import {getEspnNflSchedule} from "@/lib/nfl-server";
 import {dashboardSlate} from "@/lib/dashboard-contract";
+import {playableSlateOrder} from "@/lib/ranking-card-state";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -516,7 +517,7 @@ export async function GET(req:NextRequest) {
       league,
       weekNumber,
       scope:calendar?"calendar":"current",
-      games,
+      games:playableSlateOrder(games),
       updatedAt:new Date().toISOString(),
     });
   } catch(error) {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {gameIntelligence,propIntelligence,gameRankingEvidence,gameRankingMatches,gameRankingTeam} from "@/lib/card-intelligence";
+import {playableSlateOrder} from "@/lib/ranking-card-state";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SportsNav } from "@/components/dashboard-chrome";
 import styles from "./game-slate.module.css";
@@ -1818,11 +1819,11 @@ export function GameSlatePage({
     addDay(dateBase, 2),
   ];
 
-  const visibleGames = games.filter(
+  const visibleGames = playableSlateOrder(games.filter(
     (game) =>
       !selectedDay ||
       localDay(game.date) === selectedDay
-  );
+  ));
 
   const activeGame =
     games.find(

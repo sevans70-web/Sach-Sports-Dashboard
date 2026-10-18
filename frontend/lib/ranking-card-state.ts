@@ -7,6 +7,12 @@ export function rankingCardState(row:any,status:string):"pregame"|"live"|"final"
   return ['hit','miss','push','void'].includes(status)?'final':'pregame';
 }
 
+/** Always put completed games after live and scheduled games within a date. */
+export function playableSlateOrder<T extends {state:string;date:string;id?:string}>(games:T[]):T[]{
+ const priority:Record<string,number>={in:0,live:0,pre:1,scheduled:1,post:2,final:2};
+ return [...games].sort((a,b)=>(priority[a.state]??1)-(priority[b.state]??1)||Date.parse(a.date)-Date.parse(b.date)||String(a.id||'').localeCompare(String(b.id||'')));
+}
+
 /** Observed distance toward a numeric threshold, never a pick probability.
  * Unknown statistics and scorer outcomes cannot produce a percentage. */
 export function rankingLineProgress(actual:unknown,line:unknown,market:string){

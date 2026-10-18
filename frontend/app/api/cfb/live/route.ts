@@ -1,22 +1,13 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
-import {type CfbMarketKey,cleanName,safeNumber} from "@/lib/cfb";
+import {type CfbMarketKey} from "@/lib/cfb";
 import {getEspnCfbSchedule} from "@/lib/cfb-server";
+import {footballObservedRows} from "@/lib/football-observed-stats";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
 
 const SUMMARY="https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary";
-
-const MARKET_LABELS:Record<CfbMarketKey,string[]>={
-  passing_yards:["passingyards","passing yards","pass yds","yds"],
-  pass_completions:["completions","passing completions","cmp"],
-  rushing_yards:["rushingyards","rushing yards","rush yds","car-yds"],
-  receiving_yards:["receivingyards","receiving yards","rec yds"],
-  receptions:["receptions","rec"],
-  anytime_td:["totaltouchdowns","touchdowns","td"],
-  first_td:["first touchdown","firsttd"],
-};
 
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 
@@ -38,51 +29,8 @@ async function fetchJson(url:string,ms=8000){
   }
 }
 
-function statIndex(labels:any[],market:CfbMarketKey){
-  const normalized=labels.map(norm);
-  const aliases=MARKET_LABELS[market].map(norm);
-
-  for(const alias of aliases){
-    const exact=normalized.findIndex((x:string)=>x===alias);
-    if(exact>=0)return exact;
-  }
-
-  for(const alias of aliases){
-    const partial=normalized.findIndex(
-      (x:string)=>x&&(x.includes(alias)||alias.includes(x))
-    );
-    if(partial>=0)return partial;
-  }
-
-  return -1;
-}
-
 function extractPlayerStats(payload:any,market:CfbMarketKey){
-  const out:Array<{playerId:string;playerName:string;value:number}>=[];
-  const teams=Array.isArray(payload?.boxscore?.players)?payload.boxscore.players:[];
-
-  for(const team of teams){
-    for(const group of team?.statistics||[]){
-      const labels=Array.isArray(group?.labels)?group.labels:[];
-      const idx=statIndex(labels,market);
-      if(idx<0)continue;
-
-      for(const row of group?.athletes||[]){
-        const athlete=row?.athlete||{};
-        const stats=Array.isArray(row?.stats)?row.stats:[];
-        const value=safeNumber(stats[idx]);
-        if(value==null)continue;
-
-        out.push({
-          playerId:String(athlete.id||""),
-          playerName:String(athlete.displayName||athlete.fullName||""),
-          value:Number(value),
-        });
-      }
-    }
-  }
-
-  return out;
+  return footballObservedRows(payload).filter(row=>row.stats[market]!=null).map(row=>({playerId:row.playerId,playerName:row.playerName,value:row.stats[market]!}));
 }
 
 function extractFirstTd(payload:any){
@@ -177,6 +125,7 @@ export async function GET(req:NextRequest){
           const payload=await fetchJson(
             `${SUMMARY}?event=${encodeURIComponent(game.id)}`
           );
+          if(String(payload?.header?.id||"")!==String(game.id))throw new Error("CFB live fixture identity mismatch");
 
           const rows=
             market==="first_td"

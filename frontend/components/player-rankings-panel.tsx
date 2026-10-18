@@ -7,6 +7,7 @@ import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
+import {cardObservedProgress,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -108,7 +109,6 @@ const NFL_OFFENSE: Market[] = [
   { key: "receiving_yards", label: "Receiving Yards", icon: "🙌" },
   { key: "receptions", label: "Receptions", icon: "🧤" },
   { key: "rushing_yards", label: "Rushing Yards", icon: "🏃" },
-  { key: "rushing_tds", label: "Rushing TDs", icon: "🏁" },
   { key: "rushing_receiving_yards", label: "Rush + Receiving", icon: "🔀" },
 ];
 
@@ -660,7 +660,7 @@ function normalizeCard(
     liveProgressPct: progress,
     recentValues: recentValues(row),
     usage: usageRows(row),
-    raw: row,
+    raw: {...row,originalResearchPick:row.originalResearchPick||result?.archivedOriginal?.prediction,originalResearchSavedAt:row.originalResearchSavedAt||result?.savedAt},
   };
 }
 
@@ -918,7 +918,8 @@ function PlayerCard({
         ? card.actual
         : null;
 
-  const observedProgress=rankingLineProgress(current,card.sportsbookLine,card.market);
+  const observedProgress=cardObservedProgress(current,card.sportsbookLine,card.market);
+  const researchOutcome=researchFinalOutcome(card.raw,current,card.sportsbookLine,card.market);
   const progress=observedProgress?.percent??0;
 
   const edge =
@@ -969,6 +970,8 @@ function PlayerCard({
 
   return (
     <article
+      data-ranking-market={card.market}
+      data-ranking-player={card.playerId}
       className={`${styles.card} ${
         state === "live"
           ? styles.liveCard
@@ -1033,12 +1036,12 @@ function PlayerCard({
       <div className={styles.faceMetrics}>
         <div>
           <span>
-            {researchOnly && !card.raw?.quoteVerified ? "Book line unavailable" : footballScorer ? "Scorer Market" : binaryEvent
+            {footballScorer ? "TD target" : researchOnly && !card.raw?.quoteVerified ? "Book line unavailable" : binaryEvent
               ? "Home Run Prop"
               : card.marketLabel}
           </span>
           <strong>
-            {researchOnly && !card.raw?.quoteVerified ? "Not verified" : footballScorer ? "YES" : binaryEvent
+            {footballScorer ? scorerTarget(card.market) : researchOnly && !card.raw?.quoteVerified ? "Not verified" : binaryEvent
               ? "HR YES"
               : card.sportsbookLine == null
                 ? "Line —"
@@ -1116,7 +1119,7 @@ function PlayerCard({
             <span>
               {current == null
                 ? "Live stat pending"
-                : researchOnly ? observedProgress ? `${shortNumber(current)} / ${shortNumber(observedProgress.line)} · ${shortNumber(observedProgress.remaining)} to line` : `${shortNumber(current)} current · research only` : binaryEvent
+                : card.market==="anytime_td" ? `${shortNumber(current)} TD · target 1+` : researchOnly ? observedProgress ? `${shortNumber(current)} / ${shortNumber(observedProgress.line)} · ${shortNumber(observedProgress.remaining)} to line` : `${shortNumber(current)} current · verified line unavailable` : binaryEvent
                   ? current >= 1
                     ? `✅ ${shortNumber(current)} HR`
                     : "0 HR · live"
@@ -1126,19 +1129,20 @@ function PlayerCard({
             </span>
           </div>
           {observedProgress ? <>
-            <div className={`${styles.progressTrack} ${researchOnly ? styles.researchProgress : ""}`} role="progressbar" aria-label={`${card.playerName} ${card.marketLabel} toward recorded line`} aria-valuemin={0} aria-valuemax={observedProgress.line} aria-valuenow={Math.max(0,Math.min(observedProgress.line,current!))} aria-valuetext={`${shortNumber(current)} of ${shortNumber(observedProgress.line)}; observed statistic, not a win probability`}>
+            <div className={`${styles.progressTrack} ${researchOnly ? styles.researchProgress : ""}`} role="progressbar" aria-label={`${card.playerName} ${card.marketLabel} ${card.market==="anytime_td"?"toward 1+ touchdown target":"toward recorded line"}`} aria-valuemin={0} aria-valuemax={observedProgress.line} aria-valuenow={Math.max(0,Math.min(observedProgress.line,current!))} aria-valuetext={`${shortNumber(current)} of ${shortNumber(observedProgress.line)}; observed statistic, not a win probability`}>
               <i style={{ width: `${progress}%` }} />
             </div>
-            <small className={styles.progressCaption}>Toward recorded line{researchOnly ? " · research only" : ""}</small>
+            <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":"Toward recorded line"}{researchOnly ? " · research only" : ""}</small>
           </> : null}
+          {current!=null&&!observedProgress&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
         </div>
       ) : null}
 
       {state === "final" ? (
         <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{researchOnly ? "RESEARCH · NOT GRADED" : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "LATE CAPTURE" : "LINE UNVERIFIED" : statusSymbol(result)}</strong>
+          <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "LATE CAPTURE" : "LINE UNVERIFIED" : statusSymbol(result)}</strong>
           <span>
-            Actual {shortNumber(current)}
+            {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
             {!unverifiedFootballResult && card.sportsbookLine != null && current != null
               ? ` · ${current - card.sportsbookLine >= 0 ? "+" : ""}${shortNumber(current - card.sportsbookLine)} vs line`
               : ""}
@@ -1162,12 +1166,12 @@ function PlayerCard({
             <div>
               <b>{card.marketLabel}</b>
               <span>
-                {binaryEvent
+                {footballScorer?"TD target":binaryEvent
                   ? "Binary market"
                   : "O/U"}
               </span>
               <strong>
-                {binaryEvent
+                {footballScorer?scorerTarget(card.market):binaryEvent
                   ? "YES"
                   : shortNumber(card.sportsbookLine)}
               </strong>
@@ -1702,6 +1706,8 @@ export function PlayerRankingsPanel({
   const [showDropped, setShowDropped] = useState(false);
   const [full, setFull] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pendingHeight,setPendingHeight]=useState(0);
+  const cardsRegionRef=useRef<HTMLDivElement|null>(null);
   const [error, setError] = useState("");
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
@@ -1724,10 +1730,17 @@ export function PlayerRankingsPanel({
     if(saved&&Date.now()-saved.at<JSON_STALE_MS){setCards(saved.cards);setDropped(saved.dropped);setLoading(false);}
   };
 
+  useEffect(()=>{
+    if(!cards.length||cards.some(card=>card.market!==market.key))return;
+    rankingViewCache.set(viewCacheKey(group.key,market.key,cfbSlate),{at:Date.now(),cards,dropped});
+  },[cards,dropped,sport,league,group.key,market.key,cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const resetCfbMarketView = () => {
     // Set loading in the same render as the selected tab. The previous
     // market must never appear under the new title, even for one frame.
+    rankingRequestSeq.current+=1;
     setError("");
+    setPendingHeight(cardsRegionRef.current?.getBoundingClientRect().height||0);
     setLoading(true);
     setFull(false);
     setShowDropped(false);
@@ -1753,10 +1766,7 @@ export function PlayerRankingsPanel({
   const selectCfbSlate = (key: CfbSlateKey) => {
     if (sport !== "cfb" || key === cfbSlate) return;
 
-    setError("");
-    setLoading(true);
-    setFull(false);
-    setShowDropped(false);
+    resetCfbMarketView();
     setCfbSlate(key);
     restoreView(group.key,market.key,key);
   };
@@ -1922,8 +1932,10 @@ export function PlayerRankingsPanel({
     const requestedMarket = market.key;
     const requestedCfbSlate = cfbSlate;
 
+    let running=false;
     const run = async () => {
-      setLoading(true);
+      if(running)return;
+      running=true;
       setError("");
 
       try {
@@ -2007,9 +2019,9 @@ export function PlayerRankingsPanel({
 
         const movementScope=[sport,league,requestedMarket,requestedCfbSlate,torontoDay(new Date().toISOString())].join("|");
         try{
-          const stored=window.localStorage.getItem("sach-rank-movement|"+movementScope);
+          const stored=window.localStorage.getItem("sach-rank-movement-v2|"+movementScope);
           const tracked=trackRankBoard(rawRows,stored?JSON.parse(stored) as RankBoard:null,movementScope);
-          rawRows=tracked.rows;window.localStorage.setItem("sach-rank-movement|"+movementScope,JSON.stringify(tracked.board));
+          rawRows=tracked.rows;window.localStorage.setItem("sach-rank-movement-v2|"+movementScope,JSON.stringify(tracked.board));
         }catch{rawRows=trackRankBoard(rawRows,null,movementScope).rows}
         const normalized = rawRows
           .slice(0, sport === "cfb" && requestedCfbSlate === "all" ? 75 : 25)
@@ -2106,7 +2118,7 @@ export function PlayerRankingsPanel({
         }));
         setDropped(rawDropped);
       } catch (cause) {
-        if (!alive || controller.signal.aborted) return;
+        if (!alive || controller.signal.aborted || requestId!==rankingRequestSeq.current) return;
         // Keep the last good board on screen. A background refresh failure
         // should never turn the ranking section into a blank panel.
         setError(
@@ -2115,6 +2127,7 @@ export function PlayerRankingsPanel({
             : "Player rankings are temporarily unavailable."
         );
       } finally {
+        running=false;
         if (
           alive &&
           requestId === rankingRequestSeq.current &&
@@ -2185,7 +2198,7 @@ export function PlayerRankingsPanel({
           const participant = payload?.success===true && String(payload.gameId)===String(game.id)
             ? (payload.participants||[]).find((p:any)=>String(p.playerId)===String(card.playerId)) : null;
           const updatedRaw=applyParticipationEvidence({...card.raw,gameId:String(game.id),playerId:card.playerId},payload,String(game.id));
-          const current = finite(row?.stats?.[card.market]);
+          const current = payload?.success===true&&String(payload.gameId)===String(game.id)?finite(row?.stats?.[card.market]):null;
           if (current == null) return participant ? {...card,raw:updatedRaw,lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
 
           const progress =
@@ -2196,13 +2209,15 @@ export function PlayerRankingsPanel({
           return {
             ...card,
             lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending",
+            gameState:payload.state==="post"?"post":String(game.state||card.gameState),
             liveCurrent: game.state === "in" ? current : card.liveCurrent,
-            actual: game.state === "post" ? current : card.actual,
+            actual: payload.state === "post" || game.state === "post" ? current : card.actual,
             liveProgressPct: progress,
             raw: {
               ...updatedRaw,
+              gameState:payload.state==="post"?"post":String(game.state||card.gameState),
               liveCurrent: game.state === "in" ? current : card.liveCurrent,
-              actualResult: game.state === "post" ? current : card.actual,
+              actualResult: payload.state === "post" || game.state === "post" ? current : card.actual,
               liveStatsUpdatedAt: payload.updatedAt,
               liveProgressPct: progress,
             },
@@ -2402,30 +2417,20 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {loading && !displayCards.length ? (
-        <div className={styles.skeletonStack} aria-label={`Loading ${market.label} rankings`}>
-          {[0, 1, 2].map((item) => (
-            <div className={styles.skeletonCard} key={item}>
-              <i />
-              <span />
-              <b />
-              <em />
-            </div>
-          ))}
-        </div>
-      ) : null}
-
       {error ? (
         <div className={styles.state}>{error}</div>
       ) : null}
 
-      {!loading && displayCards.some(card => card.raw?.researchOnly) ? (
+      {(loading&&!["mlb","soccer"].includes(sport))||displayCards.some(card => card.raw?.researchOnly) ? (
         <div className={styles.state}>Research rankings — picks and GI are withheld until the forecast is validated. A sportsbook quote is not proof of prediction accuracy. Q1 forecasts require quarter-specific data, not full-game totals divided by four.</div>
       ) : !loading && displayCards.length > 0 && displayCards.every(card => card.sportsbookLine == null) ? (
         <div className={styles.state}>Sportsbook lines are unavailable. These are model-watch rankings; betting picks are only saved and graded with verified market data.</div>
       ) : null}
 
-      <div className={styles.cards}>
+      <div className={styles.cards} ref={cardsRegionRef} style={loading&&pendingHeight?{minHeight:pendingHeight}:undefined} aria-busy={loading}>
+        {loading&&!displayCards.length?<div className={styles.skeletonStack} aria-label={`Loading ${market.label} rankings`}>
+          {[0,1,2].map(item=><div className={styles.skeletonCard} key={item}><i/><span/><b/><em/></div>)}
+        </div>:null}
         {sport === "cfb" && cfbSlate === "all"
           ? cfbAllDayGroups.map((block) => (
               <section key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
@@ -2438,13 +2443,13 @@ export function PlayerRankingsPanel({
                 </button>
                 {(blockExpanded[`${market.key}|${block.key}`]??!block.completed) ? <div id={`cfb-block-${block.key}`}>
                   {(full ? block.rows : block.rows.slice(0, 5)).map((card) => (
-                    <PlayerCard key={`${sport}-${market.key}-${block.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />
+                    <PlayerCard key={`${sport}-${market.key}-${block.key}-${card.playerId}-${card.raw?.gameId}`} card={card} sport={sport} league={league} />
                   ))}
                 </div> : null}
               </section>
             ))
           : visible.map((card) => (
-              <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.rank}`} card={card} sport={sport} league={league} />
+              <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.raw?.gameId}`} card={card} sport={sport} league={league} />
             ))}
       </div>
 

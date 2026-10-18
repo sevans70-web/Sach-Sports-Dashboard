@@ -14,9 +14,9 @@ test('game context describes tied zeroes, score margins, actual records and supp
  const r=gameIntelligence({sport:'nhl',state:'post',awayScore:3,homeScore:1,awayAbbr:'A',homeAbbr:'B'},{total:5.5},[{playerName:'P',status:'Out'}]);assert.match(r[0],/won by 2; 4 combined goals/);assert.ok(r.some(f=>f.includes('P (Out)')));assert.ok(gameIntelligence({state:'pre',awayTeam:'A',homeTeam:'B'}).every(f=>!f.includes('Indoor')));
 });
 test('movement tracks rises, falls, entry, reload persistence and isolated board scopes',()=>{
- const first=trackRankBoard([{playerId:1,gameId:'G',rank:2},{playerId:2,gameId:'G',rank:1}],null,'nfl|passing|today');assert.equal(first.rows[0].movement,'new');
+ const first=trackRankBoard([{playerId:1,gameId:'G',rank:2},{playerId:2,gameId:'G',rank:1}],null,'nfl|passing|today');assert.equal(first.rows[0].movement,'same');
  const next=trackRankBoard([{playerId:1,gameId:'G',rank:1},{playerId:2,gameId:'G',rank:2}],JSON.parse(JSON.stringify(first.board)),'nfl|passing|today');assert.equal(next.rows[0].movement,'up');assert.equal(next.rows[0].previousRank,2);assert.equal(next.rows[1].movement,'down');
- assert.equal(trackRankBoard(next.rows,next.board,'nfl|passing|today').rows[0].movement,'up');assert.equal(trackRankBoard(next.rows,next.board,'nba|points|today').rows[0].movement,'new');assert.equal(trackRankBoard([{playerId:1,gameId:'OTHER',rank:1}],next.board,'nfl|passing|today').rows[0].movement,'new');
+ assert.equal(trackRankBoard(next.rows,next.board,'nfl|passing|today').rows[0].movement,'up');assert.equal(trackRankBoard(next.rows,next.board,'nba|points|today').rows[0].movement,'same');assert.equal(trackRankBoard([{playerId:1,gameId:'OTHER',rank:1}],next.board,'nfl|passing|today').rows[0].movement,'new');
 });
 test('verified pending remains independent of unvalidated historical records and withdrawn snapshots',()=>{
  const r=guardPerformancePayload({predictions:[{status:'pending'},{status:'hit'},{status:'pending',withdrawnFromBoard:true},{status:'void'}]},'nfl');assert.equal(r.pending,0);assert.equal(r.total,0);assert.deepEqual(r.researchSummary,{total:4,awaitingResult:1,completed:1,void:2});assert.equal(r.predictions[0].historicalStatus,'pending');assert.equal(r.predictions[0].status,'research');

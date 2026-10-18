@@ -24,7 +24,7 @@ export const NFL_MARKETS = [
 ] as const;
 
 export type NflMarketKey = typeof NFL_MARKETS[number][0];
-export const NFL_ACTIVE_MARKETS = NFL_MARKETS.filter(([key]) => !key.startsWith("q1_") || ["q1_passing_yards","q1_rushing_yards","q1_receiving_yards"].includes(key));
+export const NFL_ACTIVE_MARKETS = NFL_MARKETS.filter(([key]) => key!=="rushing_tds"&&(!key.startsWith("q1_") || ["q1_passing_yards","q1_rushing_yards","q1_receiving_yards"].includes(key)));
 
 export type NflRankingRow = {
   rank:number;

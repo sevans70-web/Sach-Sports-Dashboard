@@ -11,7 +11,7 @@ type ScheduleResponse={success:boolean;games:any[];qualifiedCount:number;filterM
 type RankingResponse={success:boolean;error?:string;market?:NflMarketKey;rows:NflRankingRow[];updatedAt?:string;historySaved?:boolean;historyConnected?:boolean;historyWritable?:boolean};
 
 const QB_MARKETS:NflMarketKey[]=["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"];
-const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
+const OFFENSE_MARKETS:NflMarketKey[]=["rushing_yards","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"];
 const Q1_MARKETS:NflMarketKey[]=NFL_MARKETS.map(m=>m[0]).filter(k=>k.startsWith("q1_"));
 
 function useJson<T>(url:string,fallback:T,intervalMs=90_000){

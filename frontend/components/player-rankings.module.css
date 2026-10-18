@@ -500,6 +500,9 @@
   font-size: 13px;
 }
 
+.resultStrip { flex-wrap: wrap; align-items: flex-start; }
+.resultStrip > span { flex: 1 1 180px; line-height: 1.4; }
+
 .missStrip {
   border-color: rgba(255, 64, 90, .58);
   background: rgba(255, 64, 90, .07);
@@ -1082,4 +1085,4 @@
 
 .decisionNote { color: var(--gold); font-size: 11px; }
 .identityTop .movement { flex: 0 0 auto; font-size: 10px; padding: 3px 5px; }
-.unvalidatedMetric { font-size: 11px !important; line-height: 1.3; white-space: normal; overflow-wrap: anywhere; }
+.faceMetrics strong.unvalidatedMetric { font-size: 11px !important; line-height: 1.3; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
