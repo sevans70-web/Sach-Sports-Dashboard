@@ -43,3 +43,5 @@ Still unfinished, explicitly:
 - Schedule/roster/grading truth must be checked against official event records; API availability and internal count consistency are narrower checks.
 
 Run an offline report with `node scripts/backtest-workload.mjs observations.json report.json` from `frontend`. Never reconstruct pregame features from final box scores or certify archived unverified lines with today's quotes. The model registry remains empty.
+
+Current-roster follow-up: live roster comparison found one WNBA and three NHL rows whose historical team was not confirmed by the current official roster. WNBA now retains official numeric team IDs from schedules; WNBA and NHL overview players are joined to current active-slate rosters by player ID, remapped after transfers, and withheld on missing/conflicting membership or unavailable rosters. Old statistics, archived cards and grades remain untouched. Roster membership does not establish expected minutes, starting status, or confirmed goalie availability.

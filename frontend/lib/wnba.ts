@@ -1,3 +1,6 @@
+import {currentRosterPlayers,espnRosterIds} from "@/lib/current-roster";
+import {activeRankingSlate} from "@/lib/active-ranking-slate";
+import {dashboardDay} from "@/lib/dashboard-contract";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {successfulPayloads} from "@/lib/provider-batch";
 import {statNumber} from "@/lib/provider-fetch";
@@ -16,7 +19,7 @@ export type WnbaPlayer={
   pointsPerGame:number|null;reboundsPerGame:number|null;assistsPerGame:number|null;threesPerGame:number|null;
   stealsPerGame:number|null;blocksPerGame:number|null
 };
-export type WnbaGame={gameId:string;tipoff:string|null;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
+export type WnbaGame={gameId:string;awayTeamId?:string;homeTeamId?:string;tipoff:string|null;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
 export type WnbaOverview={season:string;updatedAt:string;players:WnbaPlayer[];games:WnbaGame[];warnings:string[]};
 
 type JsonRecord=Record<string,unknown>;
@@ -41,10 +44,19 @@ function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(li
 export async function loadWnbaGames():Promise<WnbaGame[]>{
  const now=new Date();const days=Array.from({length:17},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()+i-2);return dateKey(d)});
  const payloads=await successfulPayloads(days.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,60)),"WNBA");
- const seen=new Set<string>();const games:WnbaGame[]=[];for(const payload of payloads)for(const v of list(payload.events)){const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);seen.add(id);games.push({gameId:id,tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});}
+ const seen=new Set<string>();const games:WnbaGame[]=[];for(const payload of payloads)for(const v of list(payload.events)){const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);seen.add(id);games.push({gameId:id,awayTeamId:text(at.id),homeTeamId:text(ht.id),tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});}
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
-export async function loadWnbaOverview():Promise<WnbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadWnbaGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("WNBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The WNBA schedule is temporarily unavailable.");return{season:WNBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+export async function loadWnbaOverview():Promise<WnbaOverview>{
+ const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadWnbaGames()]);
+ const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];
+ if(pr.status==="rejected")warnings.push("WNBA player statistics are temporarily unavailable.");
+ if(gr.status==="rejected")warnings.push("The WNBA schedule is temporarily unavailable.");
+ const teams=activeRankingSlate(games,dashboardDay).flatMap(game=>[{id:game.awayTeamId||"",abbr:game.awayAbbr},{id:game.homeTeamId||"",abbr:game.homeAbbr}]);
+ const roster=await currentRosterPlayers(players,teams,async id=>espnRosterIds(await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/teams/${id}/roster`,900)));
+ if(roster.unavailableTeams.length)warnings.push(`Current WNBA rosters unavailable: ${roster.unavailableTeams.join(", ")}. Unverified players are withheld.`);
+ return {season:WNBA_SEASON,updatedAt:new Date().toISOString(),players:roster.players,games,warnings};
+}
 export function wnbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/wnba/players/full/${playerId}.png`}
 export function cleanWnbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:WnbaPlayer|undefined,market:WnbaMarketKey):number|null{
