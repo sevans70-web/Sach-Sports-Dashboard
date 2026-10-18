@@ -1,3 +1,4 @@
+import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {writePredictionHistory} from "@/lib/prediction-history-write";
 import {cleanWnbaName,type WnbaMarketKey} from "@/lib/wnba";
@@ -14,6 +15,9 @@ function merge(rows:any[]){const map=new Map<string,SavedWnbaPrediction>();for(c
 async function write(m:WnbaMarketKey,day:string,predictions:SavedWnbaPrediction[],_id?:string){return writePredictionHistory("wnba",String(m),day,predictions,rows=>runtime.set(rk(m,day),rows))}
 export async function getWnbaPredictions(m:WnbaMarketKey,day:string){const x=await read(m,day);const db=merge(x.rows),mem=runtime.get(rk(m,day))||[],predictions=merge([{payload:{predictions:db}},{payload:{predictions:mem}}]);if(predictions.length)runtime.set(rk(m,day),predictions);return{connected:x.connected||predictions.length>0,predictions,id:x.rows?.[0]?.id as string|undefined}}
 export async function saveWnbaPredictions(m:WnbaMarketKey,rows:any[]){
+ rows=rows.filter(row=>eligiblePropPrediction(row));
+ if(!rows.length)return false;
+
  const today=wnbaDay(new Date()),buckets=new Map<string,{id?:string;map:Map<string,SavedWnbaPrediction>}>();
  for(const row of rows){const day=wnbaDay(row.gameTime||new Date());if(!day||day<today||row.sportsbookLine==null||!row.playerId)continue;let b=buckets.get(day);if(!b){const old=await getWnbaPredictions(m,day);b={id:old.id,map:new Map(old.predictions.map(x=>[x.key,x]))};buckets.set(day,b)}const key=`${day}|${m}|${row.playerId}|${cleanWnbaName(row.matchup||"")}`;const old=b.map.get(key);const started=row.gameState==="in"||row.gameState==="post"||row.gameStatus==="Final"||Boolean(row.gameTime&&Date.parse(row.gameTime)<=Date.now()&&!/postponed|delayed/i.test(row.gameStatus||""));
    if(started&&old){if(!old.frozenAt)b.map.set(key,{...old,frozenAt:new Date().toISOString()});continue}

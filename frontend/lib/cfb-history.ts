@@ -1,3 +1,4 @@
+import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {promises as fs} from "node:fs";
 import path from "node:path";
 import type {CfbMarketKey} from "@/lib/cfb";
@@ -330,6 +331,9 @@ export async function saveCfbPregamePredictions(
   rows:any[],
   schedule:any[]
 ){
+ rows=rows.filter(row=>eligiblePropPrediction(row));
+ if(!rows.length)return false;
+
   const today=cfbDay(new Date());
   const grouped=new Map<string,any[]>();
 

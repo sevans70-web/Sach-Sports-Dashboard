@@ -1,3 +1,4 @@
+import {guardRankingPayload} from "@/lib/prop-integrity";
 import { NextRequest, NextResponse } from "next/server";
 import {
   type WnbaMarketKey,
@@ -148,7 +149,7 @@ export async function GET(req: NextRequest) {
   ) as WnbaMarketKey;
 
   if (!allowed.has(market)) {
-    return NextResponse.json(
+    return rankingJson(
       {
         success: false,
         rows: [],
@@ -162,7 +163,7 @@ export async function GET(req: NextRequest) {
     const result = await buildWnbaMarketRankings(market);
 
     if (Array.isArray(result?.rows) && result.rows.length) {
-      return NextResponse.json(result, {
+      return rankingJson(result, {
         status: 200,
         headers: {
           "Cache-Control":
@@ -173,7 +174,7 @@ export async function GET(req: NextRequest) {
 
     const fallback = await nextSlateFallback(market);
 
-    return NextResponse.json(
+    return rankingJson(
       {
         ...result,
         success: fallback.length > 0,
@@ -195,7 +196,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     const fallback = await nextSlateFallback(market).catch(() => []);
 
-    return NextResponse.json(
+    return rankingJson(
       {
         success: fallback.length > 0,
         market,
@@ -214,3 +215,5 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"wnba"),init)}

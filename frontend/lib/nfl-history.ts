@@ -1,3 +1,4 @@
+import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {writePredictionHistory} from "@/lib/prediction-history-write";
 import {cleanName,type NflMarketKey} from "@/lib/nfl";
@@ -58,6 +59,9 @@ function sameTeam(a:any,b:any){const x=cleanName(String(a||"")),y=cleanName(Stri
 function sameMatchup(a:any,b:any){const aa=matchupParts(a),bb=matchupParts(b);if(aa.length===2&&bb.length===2)return sameTeam(aa[0],bb[0])&&sameTeam(aa[1],bb[1]);return cleanName(String(a||""))===cleanName(String(b||""));}
 function findScheduleGame(schedule:any[],row:any){if(row?.gameId){const byId=schedule.find((g:any)=>String(g?.id||"")===String(row.gameId));if(byId)return byId}return schedule.find((g:any)=>sameMatchup(`${g.awayTeam} @ ${g.homeTeam}`,row?.matchup));}
 export async function saveNflPregamePredictions(m:NflMarketKey,rows:any[],schedule:any[]){
+ rows=rows.filter(row=>eligiblePropPrediction(row));
+ if(!rows.length)return false;
+
  const today=nflDay(new Date());const buckets=new Map<string,{existing:any,saved:SavedNflPrediction[],map:Map<string,SavedNflPrediction>,changed:boolean}>();
  const ensure=async(day:string)=>{let b=buckets.get(day);if(b)return b;const existing=await getRow(m,day);const saved=mergeSnapshotPredictions([...(existing.rows||[])].reverse());b={existing,saved,map:new Map(saved.map(x=>[x.key,x])),changed:false};buckets.set(day,b);return b};
  for(const row of rows){const game=findScheduleGame(schedule,row);const tdMarket=m==="anytime_td"||m==="first_td";if(!row.playerId||(!tdMarket&&row.sportsbookLine==null)||(tdMarket&&row.sportsbookLine==null&&row.sportsbookProbability==null))continue;const gameDate=nflDay(game?.date||row.gameTime||new Date());if(!gameDate||gameDate<today)continue;const bucket=await ensure(gameDate);const {map,saved}=bucket;const gameId=String(row.gameId||game?.id||"");const key=`${gameDate}|${m}|${row.playerId}|${row.matchup}`;const old=map.get(key)||saved.find(x=>x.playerId===String(row.playerId)&&((gameId&&x.gameId===gameId)||sameMatchup(x.matchup,row.matchup)));const alreadyStarted=Boolean(game?.state==="in"||game?.completed||game?.state==="post");

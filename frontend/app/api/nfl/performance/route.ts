@@ -1,3 +1,4 @@
+import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -200,7 +201,9 @@ export async function GET(req:NextRequest){
    }
    const scoped=marketParam?all:all.filter(p=>groupMarkets.has(p.market));
    const settled=scoped.filter(p=>p.status==="hit"||p.status==="miss"),hits=scoped.filter(p=>p.status==="hit").length,pending=scoped.filter(p=>p.status==="pending").length;
-   return NextResponse.json({success:true,connected,writable,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
+   return performanceJson({success:true,connected,writable,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
      hitRate:settled.length?Math.round(hits/settled.length*1000)/10:null,recoveredSnapshots,predictions:scoped.sort((a,b)=>b.savedAt.localeCompare(a.savedAt))},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
- }catch(e){return NextResponse.json({success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null,predictions:[],error:e instanceof Error?e.message:"NFL performance unavailable"},{status:500,headers:{"Cache-Control":"no-store"}})}
+ }catch(e){return performanceJson({success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null,predictions:[],error:e instanceof Error?e.message:"NFL performance unavailable"},{status:500,headers:{"Cache-Control":"no-store"}})}
 }
+
+function performanceJson(payload:any,init?:ResponseInit){return NextResponse.json(guardPerformancePayload(payload,"nfl"),init)}

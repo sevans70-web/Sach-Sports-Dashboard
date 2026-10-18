@@ -1,3 +1,4 @@
+import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {basketballSummaryActual,basketballLogActual} from "@/lib/basketball-settlement";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -96,7 +97,7 @@ function settle(p:SavedWnbaPrediction,a:number){
 export async function GET(req:NextRequest){
   const marketParam=req.nextUrl.searchParams.get("market") as WnbaMarketKey|null;
   const period=req.nextUrl.searchParams.get("period")||"Today";
-  if(marketParam&&!allowed.has(marketParam))return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
+  if(marketParam&&!allowed.has(marketParam))return performanceJson({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
   const markets:WnbaMarketKey[]=marketParam?[marketParam]:MARKET_KEYS;
   let connected=false;
   const all:SavedWnbaPrediction[]=[];
@@ -139,10 +140,12 @@ export async function GET(req:NextRequest){
   const settledRows=all.filter(x=>x.status==="hit"||x.status==="miss");
   const hits=settledRows.filter(x=>x.status==="hit").length;
   const pending=all.filter(x=>x.status==="pending").length;
-  return NextResponse.json({
+  return performanceJson({
     connected,hits,settled:settledRows.length,pending,total:all.length,
     hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
     results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)).slice(0,100),
     updatedAt:new Date().toISOString()
   },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }
+
+function performanceJson(payload:any,init?:ResponseInit){return NextResponse.json(guardPerformancePayload(payload,"wnba"),init)}

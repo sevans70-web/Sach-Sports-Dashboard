@@ -1,3 +1,6 @@
+import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {footballQuoteFields} from "@/lib/football-book-quotes";
+import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {nbaPropMatchesGame} from "@/lib/nba-game-match";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
@@ -49,64 +52,7 @@ async function fetchOwlsPayload(){
  return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],feedWarning:extra?.warning||null};
 }
 
-function boardForMarket(payload:any,market:NbaMarketKey){
- const games=Array.isArray(payload?.data)?payload.data:[];
- const grouped=new Map<string,any>();
-
- for(const game of games){
-  const away=String(game.awayTeam||game.away_team||"");
-  const home=String(game.homeTeam||game.home_team||"");
-  const matchup=away&&home?`${away} @ ${home}`:String(game.name||"");
-  const gameTime=String(
-   game.commenceTime||game.commence_time||game.startTime||game.date||""
-  );
-
-  for(const book of Array.isArray(game.books)?game.books:[]){
-   for(const prop of Array.isArray(book.props)?book.props:[]){
-    if(!basketballMarketMatches(prop,market))continue;
-
-    const playerName=String(
-     prop.playerName||prop.player_name||prop.name||""
-    ).trim();
-    if(!playerName)continue;
-
-    const playerTeam=String(
-      prop.teamAbbr||prop.team_abbr||prop.team||
-      prop.playerTeam||prop.player_team||""
-    ).toUpperCase();
-
-    const line=safe(prop.line??prop.point??prop.total);
-    if(line==null&&market!=="first_basket")continue;
-
-    const over=safe(
-      prop.overPrice??prop.over_price??prop.overOdds??prop.over_odds??
-      prop.price??prop.odds??prop.americanOdds
-    );
-
-    const k=`${cleanNbaName(playerName)}|${cleanNbaName(matchup)}`;
-    const cur=grouped.get(k)??{
-      playerName,playerTeam,matchup,gameTime,
-      lines:[],prices:[],books:new Set<string>()
-    };
-
-    if(line!=null)cur.lines.push(line);
-    if(over!=null)cur.prices.push(over);
-    cur.books.add(String(book.key||book.name||book.title||"book"));
-    grouped.set(k,cur);
-   }
-  }
- }
-
- return [...grouped.values()].map((x:any)=>({
-  playerName:x.playerName,
-  playerTeam:x.playerTeam,
-  matchup:x.matchup,
-  gameTime:x.gameTime,
-  line:median(x.lines),
-  bookProbability:americanProb(median(x.prices)),
-  bookmakerCount:x.books.size,
- }));
-}
+function boardForMarket(payload:any,market:NbaMarketKey){return mainMarketQuotes(payload,market,p=>basketballMarketMatches(p,market))}
 
 /* Only games scheduled for today's Toronto/Eastern calendar date belong in
    today's NBA Top 25. Tomorrow's games remain available in the schedule. */
@@ -188,7 +134,7 @@ async function loadSlateContext(overview:any):Promise<SlateContext>{
 }
 
 function chooseRosterEntry(entries:SlateRosterEntry[],b:any){
- const matching=entries.filter(entry=>nbaPropMatchesGame(b,entry.game));
+ const matching=entries.filter(entry=>nbaPropMatchesGame(b,entry.game)&&quoteMatchesFixture(b,entry.game));
  return matching.length===1?matching[0]:undefined;
 }
 
@@ -328,7 +274,7 @@ async function rowsForMarket(
    gameState:game.state||"pre",
    gameStatus:game.status||"Scheduled",
    headshot:rosterPlayer.headshot||nbaHeadshot(rosterPlayer.playerId),
-   sportsbookLine:b.line,
+   ...footballQuoteFields(b),sportsbookLine:b.line,
    bookmakerCount:b.bookmakerCount,
    modelProjection:firstBasket?null:projection,
    projectionMethod:market.startsWith("q1_")?"pace_estimate":firstBasket?"market_implied":"season_baseline",
@@ -444,7 +390,7 @@ async function rowsForMarket(
  return merged.map((x:any,i:number)=>({...x,rank:i+1}));
 }
 
-export async function buildNbaMarketRankings(
+async function buildNbaMarketRankingsRaw(
  market:NbaMarketKey,
  shared?:{payload:any;overview:any}
 ){
@@ -614,3 +560,5 @@ export async function captureAllNbaMarkets(){
 }
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
+
+export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){return guardRankingPayload(await buildNbaMarketRankingsRaw(...args),"nba")}

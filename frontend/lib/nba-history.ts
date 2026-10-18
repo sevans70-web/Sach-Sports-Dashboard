@@ -1,3 +1,4 @@
+import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {writePredictionHistory} from "@/lib/prediction-history-write";
 import {cleanNbaName,type NbaMarketKey} from "@/lib/nba";
@@ -14,6 +15,9 @@ function merge(rows:any[]){const map=new Map<string,SavedNbaPrediction>();for(co
 async function write(m:NbaMarketKey,day:string,predictions:SavedNbaPrediction[],_id?:string){return writePredictionHistory("nba",String(m),day,predictions,rows=>runtime.set(rk(m,day),rows))}
 export async function getNbaPredictions(m:NbaMarketKey,day:string){const x=await read(m,day);const db=merge(x.rows),mem=runtime.get(rk(m,day))||[],predictions=merge([{payload:{predictions:db}},{payload:{predictions:mem}}]);if(predictions.length)runtime.set(rk(m,day),predictions);return{connected:x.connected||predictions.length>0,predictions,id:x.rows?.[0]?.id as string|undefined}}
 export async function saveNbaPredictions(m:NbaMarketKey,rows:any[]){
+ rows=rows.filter(row=>eligiblePropPrediction(row));
+ if(!rows.length)return false;
+
  const today=nbaDay(new Date()),buckets=new Map<string,{id?:string;map:Map<string,SavedNbaPrediction>}>();
  for(const row of rows){const day=nbaDay(row.gameTime||new Date());if(!day||day<today||(row.sportsbookLine==null&&m!=="first_basket")||!row.playerId)continue;let b=buckets.get(day);if(!b){const old=await getNbaPredictions(m,day);b={id:old.id,map:new Map(old.predictions.map(x=>[x.key,x]))};buckets.set(day,b)}const key=`${day}|${m}|${row.playerId}|${cleanNbaName(row.matchup||"")}`;const old=b.map.get(key);const started=row.gameState==="in"||row.gameState==="post"||row.gameStatus==="Final"||Boolean(row.gameTime&&Date.parse(row.gameTime)<=Date.now()&&!/postponed|delayed/i.test(row.gameStatus||""));
    if(started&&old){if(!old.frozenAt)b.map.set(key,{...old,frozenAt:new Date().toISOString()});continue}

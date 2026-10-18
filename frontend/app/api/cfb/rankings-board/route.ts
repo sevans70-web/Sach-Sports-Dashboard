@@ -1,3 +1,4 @@
+import {guardRankingPayload} from "@/lib/prop-integrity";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
 import { NextRequest, NextResponse } from "next/server";
@@ -1838,7 +1839,7 @@ export async function GET(
         item[0] === market
     )
   ) {
-    return NextResponse.json(
+    return rankingJson(
       {
         success: false,
         error:
@@ -1874,7 +1875,7 @@ export async function GET(
         }))
       );
 
-      return NextResponse.json(
+      return rankingJson(
         {
           success: usable.length > 0,
           source: "CFB independent time-block boards",
@@ -1904,7 +1905,7 @@ export async function GET(
       );
 
     if (payload) {
-      return NextResponse.json(
+      return rankingJson(
         payload,
         {
           headers: {
@@ -1921,7 +1922,7 @@ export async function GET(
       );
 
     if (cached) {
-      return NextResponse.json(
+      return rankingJson(
         {
           ...cached.payload,
           cached: true,
@@ -1930,7 +1931,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(
+    return rankingJson(
       {
         success: false,
         source:
@@ -1954,7 +1955,7 @@ export async function GET(
       );
 
     if (cached) {
-      return NextResponse.json(
+      return rankingJson(
         {
           ...cached.payload,
           cached: true,
@@ -1963,7 +1964,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(
+    return rankingJson(
       {
         success: false,
         source:
@@ -1984,3 +1985,5 @@ export async function GET(
     );
   }
 }
+
+function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"cfb"),init)}

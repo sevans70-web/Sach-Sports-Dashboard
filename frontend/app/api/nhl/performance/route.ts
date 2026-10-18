@@ -1,3 +1,4 @@
+import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -107,7 +108,7 @@ export async function GET(req:NextRequest){
   const period=req.nextUrl.searchParams.get("period")||"Today";
 
   if(p&&!allowed.has(p)){
-    return NextResponse.json({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
+    return performanceJson({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
   }
 
   const use=p?[p]:markets;
@@ -171,7 +172,7 @@ export async function GET(req:NextRequest){
   const hits=settled.filter(x=>x.status==="hit").length;
   const pending=gradeable.filter(x=>x.status==="pending").length;
 
-  return NextResponse.json({
+  return performanceJson({
     success:true,
     connected:connected||gradeable.length>0,
     hits,
@@ -183,3 +184,5 @@ export async function GET(req:NextRequest){
     updatedAt:new Date().toISOString()
   },{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }
+
+function performanceJson(payload:any,init?:ResponseInit){return NextResponse.json(guardPerformancePayload(payload,"nhl"),init)}

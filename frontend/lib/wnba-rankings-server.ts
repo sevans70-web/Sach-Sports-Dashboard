@@ -1,3 +1,6 @@
+import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {footballQuoteFields} from "@/lib/football-book-quotes";
+import {guardRankingPayload} from "@/lib/prop-integrity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -23,24 +26,7 @@ export function torontoWnbaDay(v:Date|string){
 
 async function fetchOwlsPayload(){return getOwlsPayload("wnba")}
 
-function boardForMarket(payload:any,market:WnbaMarketKey){
- const games=Array.isArray(payload?.data)?payload.data:[];const grouped=new Map<string,any>();
- for(const game of games){
-  const away=String(game.awayTeam||game.away_team||""),home=String(game.homeTeam||game.home_team||"");
-  const matchup=away&&home?`${away} @ ${home}`:String(game.name||"");
-  const gameTime=String(game.commenceTime||game.commence_time||game.startTime||game.date||"");
-  for(const book of Array.isArray(game.books)?game.books:[])for(const prop of Array.isArray(book.props)?book.props:[]){
-   if(!marketMatches(prop.category??prop.market??prop.type,market))continue;
-   const playerName=String(prop.playerName||prop.player_name||prop.name||"").trim();if(!playerName)continue;
-   const line=safe(prop.line??prop.point??prop.total);if(line==null)continue;
-   const over=safe(prop.overPrice??prop.over_price??prop.overOdds??prop.over_odds);
-   const k=`${cleanWnbaName(playerName)}|${cleanWnbaName(matchup)}`;
-   const cur=grouped.get(k)??{playerName,matchup,gameTime,lines:[],prices:[],books:new Set<string>()};
-   cur.lines.push(line);if(over!=null)cur.prices.push(over);cur.books.add(String(book.key||book.name||book.title||"book"));grouped.set(k,cur);
-  }
- }
- return [...grouped.values()].map((x:any)=>({playerName:x.playerName,matchup:x.matchup,gameTime:x.gameTime,line:median(x.lines),bookProbability:americanProb(median(x.prices)),bookmakerCount:x.books.size}));
-}
+function boardForMarket(payload:any,market:WnbaMarketKey){return mainMarketQuotes(payload,market,p=>marketMatches(p.category??p.market??p.type,market))}
 
 function gameForRow(games:any[],team:string,b:any){
  const teamGames=games.filter(g=>[g.awayAbbr,g.homeAbbr].map((x:any)=>String(x).toUpperCase()).includes(team));
@@ -57,13 +43,13 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
  const activeGames:any[]=activeRankingSlate(overview.games,torontoWnbaDay);
  const uniqueBoard=[...board.reduce((acc:Map<string,any>,b:any)=>{const key=cleanWnbaName(b.playerName);const existing=acc.get(key);if(!existing||Number(b.bookmakerCount||0)>Number(existing.bookmakerCount||0))acc.set(key,b);return acc},new Map<string,any>()).values()] as any[];
  const rows=uniqueBoard.map((b:any)=>{
-  const p:any=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();const game=gameForRow(activeGames,team,b);if(!game)return null;
+  const p:any=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();const game=gameForRow(activeGames,team,b);if(!game||!quoteMatchesFixture(b,game))return null;
   const gameDay=torontoWnbaDay(game.tipoff||""),propDay=torontoWnbaDay(b.gameTime||"");if(propDay&&propDay!==gameDay)return null;
   const actualMatchup=`${game.awayTeam} @ ${game.homeTeam}`,actualTime=game.tipoff||b.gameTime,teamLogo=String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo;
   const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;
   const reliability=Math.min(1,Math.max(0,(p?.gamesPlayed??0)/30));const edgePct=edge!=null&&b.line?Math.min(1,Math.abs(edge)/Math.max(1,Math.abs(b.line))):0;
   const gi=Math.round((50+edgePct*35+reliability*15)*10)/10;const modelProbability=edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10));
-  return{playerId:p?.playerId||cleanWnbaName(b.playerName),playerName:b.playerName,teamName:p?.team||"WNBA",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?wnbaHeadshot(p.playerId):"",sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2026 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
+  return{playerId:p?.playerId||cleanWnbaName(b.playerName),playerName:b.playerName,teamName:p?.team||"WNBA",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?wnbaHeadshot(p.playerId):"",...footballQuoteFields(b),sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2026 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
  }).filter(Boolean) as any[];
 
  // Owls can expose only a small market-backed board (often five players). Keep those
@@ -86,7 +72,7 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
  return [...rows,...fillers].slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
 }
 
-export async function buildWnbaMarketRankings(market:WnbaMarketKey,shared?:{payload:any;overview:any}){
+async function buildWnbaMarketRankingsRaw(market:WnbaMarketKey,shared?:{payload:any;overview:any}){
  try{
   const source=shared??{payload:await fetchOwlsPayload().catch(()=>({data:[]})),overview:await loadWnbaOverview()};
   const ranked=rowsForMarket(source.payload,source.overview,market);
@@ -109,3 +95,5 @@ export async function captureAllWnbaMarkets(){
  }));
  return {success:results.some(x=>x.success&&x.saved!==false),verifiedPredictions:results.reduce((n,x)=>n+((x as any).verifiedPredictions||0),0),warning:results.every(x=>!x.saved)?"No verified WNBA sportsbook predictions available for capture":undefined,markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved!==false,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
+
+export async function buildWnbaMarketRankings(...args:Parameters<typeof buildWnbaMarketRankingsRaw>){return guardRankingPayload(await buildWnbaMarketRankingsRaw(...args),"wnba")}

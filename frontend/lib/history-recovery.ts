@@ -186,6 +186,9 @@ function convertRow(
   row: any,
   index: number,
 ) {
+  // New research snapshots are observational archives, not pregame wagers.
+  // Never recover them into prediction history via a default OVER fallback.
+  if(row?.researchOnly===true || row?.recommendationEligible===false) return null;
   const sportsbookLine = safeNumber(
     row?.sportsbookLine ?? row?.line ?? row?.referenceLine,
   );

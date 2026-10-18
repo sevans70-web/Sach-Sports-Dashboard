@@ -364,6 +364,8 @@
   overflow: hidden;
 }
 
+.researchGi strong { border-color: #686b72; color: #c6c8cc; }
+
 .faceMetrics > div {
   min-width: 0;
   padding: 7px 6px;

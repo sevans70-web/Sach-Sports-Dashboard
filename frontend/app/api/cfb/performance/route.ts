@@ -1,3 +1,4 @@
+import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {footballSummaryStat} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -229,7 +230,7 @@ export async function GET(req:NextRequest){
       :null;
 
   if(marketParam&&!validMarket){
-    return NextResponse.json(
+    return performanceJson(
       {
         success:false,
         connected:false,
@@ -415,7 +416,7 @@ export async function GET(req:NextRequest){
       )
     ].sort();
 
-    return NextResponse.json(
+    return performanceJson(
       {
         success:true,
         connected:batch.connected||gradeable.length>0,
@@ -445,7 +446,7 @@ export async function GET(req:NextRequest){
       }
     );
   }catch(error){
-    return NextResponse.json(
+    return performanceJson(
       {
         success:false,
         connected:false,
@@ -468,3 +469,5 @@ export async function GET(req:NextRequest){
     );
   }
 }
+
+function performanceJson(payload:any,init?:ResponseInit){return NextResponse.json(guardPerformancePayload(payload,"cfb"),init)}

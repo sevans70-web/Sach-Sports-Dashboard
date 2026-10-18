@@ -1,3 +1,4 @@
+import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
 import {cleanNhlName,type NhlMarketKey} from "@/lib/nhl";
 import {withHistoryLock} from "@/lib/history-lock";
@@ -36,6 +37,9 @@ export async function getNhlPredictions(m:NhlMarketKey,day:string){
 }
 
 export async function saveNhlSlate(m:NhlMarketKey,rows:any[],_slateStarted:boolean){
+ rows=rows.filter(row=>eligiblePropPrediction(row));
+ if(!rows.length)return {ok:false,predictions:[]};
+
   const groups=new Map<string,any[]>();for(const row of rows.slice(0,25)){const day=nhlDay(row.gameTime||new Date()),group=groups.get(day)||[];group.push(row);groups.set(day,group)}
   const results=await Promise.all([...groups].map(([day,bucket])=>withHistoryLock(`nhl|${m}|${day}`,()=>saveNhlDay(m,bucket,day))));
   return {ok:results.every(r=>r.ok),predictions:results.flatMap(r=>r.predictions)};

@@ -433,6 +433,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           Prediction Performance
         </h2>
 
+        {!["mlb", "soccer"].includes(sport) ? <p>Verified recommendations only. Earlier baseline-based picks remain in historical records but are excluded from these totals while model validation is pending.</p> : null}
+
         <div className={styles.periodTabs} aria-label="Prediction performance period">
           {PERIODS.map((item) => (
             <button

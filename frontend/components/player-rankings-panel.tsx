@@ -1,4 +1,5 @@
 "use client";
+import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
@@ -467,7 +468,9 @@ function normalizeCard(
   result: any,
   game?: any
 ): RankingCard {
-  const line = finite(
+  const integritySport = !["mlb", "soccer"].includes(sport);
+  if (integritySport) row = integrityRow(row, sport, market.key);
+  const line = integritySport && !row.quoteVerified ? null : finite(
     row?.sportsbookLine ??
       row?.sportsbook_line ??
       row?.marketLine ??
@@ -628,11 +631,11 @@ function normalizeCard(
         row?.openLine ??
         row?.open_line
     ),
-    modelProjection: projection,
-    modelProbability: unverifiedFootballLine ? null : probability,
-    giScore: unverifiedFootballLine ? null : gi,
+    modelProjection: row?.researchOnly && market.key.startsWith("q1_") ? null : projection,
+    modelProbability: row?.researchOnly || unverifiedFootballLine ? null : probability,
+    giScore: row?.researchOnly || unverifiedFootballLine ? null : gi,
     prediction:
-      unverifiedFootballLine ? "Unverified" : footballScorer ? (row?.quoteVersion === 1 ? "YES" : "—") : isBinaryEventMarket(market.key) &&
+      row?.researchOnly ? "NO PICK" : unverifiedFootballLine ? "Unverified" : footballScorer ? (row?.quoteVersion === 1 ? "YES" : "—") : isBinaryEventMarket(market.key) &&
       line == null &&
       probability != null
         ? "YES"
@@ -642,7 +645,7 @@ function normalizeCard(
             projection,
             probability
           ),
-    summary: unverifiedFootballLine ? "This original line lacks saved bookmaker and market-type verification. It is retained for history and is not a verified recommendation." : String(
+    summary: row?.researchOnly ? row.summary : unverifiedFootballLine ? "This original line lacks saved bookmaker and market-type verification. It is retained for history and is not a verified recommendation." : String(
       row?.summary ??
         row?.why ??
         row?.ranking_reason ??
@@ -673,6 +676,8 @@ const PRICE_ONLY_MARKETS = new Set([
 
 function isGradeablePrediction(card: RankingCard) {
   if (!card.playerName || card.playerName === "Player") return false;
+  // Research stays browsable, including missing-line and Q1 candidates.
+  if (card.raw?.researchOnly) return true;
 
   if (
     card.raw?.marketBacked === false &&
@@ -928,7 +933,8 @@ function PlayerCard({
   const binaryEvent =
     isBinaryEventMarket(card.market);
   const footballScorer = (sport === "cfb" || sport === "nfl") && ["anytime_td", "first_td", "q1_anytime_td"].includes(card.market);
-  const unverifiedFootballResult = (sport === "cfb" || sport === "nfl") && (card.raw?.quoteVersion !== 1 || card.raw?.recoveredAfterStart === true);
+  const researchOnly = card.raw?.researchOnly === true;
+  const unverifiedFootballResult = researchOnly || (sport === "cfb" || sport === "nfl") && (card.raw?.quoteVersion !== 1 || card.raw?.recoveredAfterStart === true);
 
   const result =
     card.resultStatus ||
@@ -1023,8 +1029,8 @@ function PlayerCard({
           </em>
         </div>
 
-        <div className={styles.gi}>
-          <span>GI</span>
+        <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
+          <span>{researchOnly ? "Research" : "GI"}</span>
           <strong>{shortNumber(card.giScore)}</strong>
         </div>
       </div>
@@ -1032,12 +1038,12 @@ function PlayerCard({
       <div className={styles.faceMetrics}>
         <div>
           <span>
-            {footballScorer ? "Scorer Market" : binaryEvent
+            {researchOnly && !card.raw?.quoteVerified ? "Book line unavailable" : footballScorer ? "Scorer Market" : binaryEvent
               ? "Home Run Prop"
               : card.marketLabel}
           </span>
           <strong>
-            {footballScorer ? "YES" : binaryEvent
+            {researchOnly && !card.raw?.quoteVerified ? "Not verified" : footballScorer ? "YES" : binaryEvent
               ? "HR YES"
               : card.sportsbookLine == null
                 ? "Line —"
@@ -1067,7 +1073,7 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
+              : researchOnly ? "Past-game baseline" : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
           </span>
           <strong>
             {binaryEvent
@@ -1084,7 +1090,13 @@ function PlayerCard({
         </div>
       </div>
 
-      {(sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
+      {card.raw?.integrityVersion ? (
+        <div className={styles.faceFooter}>
+          {card.raw.quoteVerified ? <p>{card.raw.sportsbook} · {card.raw.lineType === "scorer" ? "Scorer quote" : "Main O/U"} · Over {card.raw.overPrice}{card.raw.underPrice == null ? "" : ` / Under ${card.raw.underPrice}`} · Quote {new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET</p> : null}
+          <p>{card.summary}</p>
+          {researchOnly && card.raw.archivedOriginal?.sportsbookLine != null && !card.raw.quoteVerified ? <details><summary>Original recorded value — not a verified betting line</summary><p>{shortNumber(card.raw.archivedOriginal.sportsbookLine)} · Original records preserved; excluded from verified results.</p></details> : null}
+        </div>
+      ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
             ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? "Scorer market" : "Main O/U"} · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
@@ -1093,7 +1105,7 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {state === "pregame" ? (
+      {state === "pregame" && !card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {movementLabel(card) ? (
             <span className={`${styles.movement} ${movementClass(card)}`}>
@@ -1105,13 +1117,13 @@ function PlayerCard({
       ) : null}
 
       {state === "live" ? (
-        <div className={styles.liveStrip}>
+        <div className={`${styles.liveStrip} ${researchOnly ? styles.unverifiedStrip : ""}`}>
           <div>
             <strong>LIVE · {card.gameStatus || "In Progress"}</strong>
             <span>
               {current == null
                 ? "Live stat pending"
-                : binaryEvent
+                : researchOnly ? `${shortNumber(current)} current · research only` : binaryEvent
                   ? current >= 1
                     ? `✅ ${shortNumber(current)} HR`
                     : "0 HR · live"
@@ -1120,15 +1132,15 @@ function PlayerCard({
                     : `${shortNumber(current)} current`}
             </span>
           </div>
-          <div className={styles.progressTrack}>
+          {!researchOnly ? <div className={styles.progressTrack}>
             <i style={{ width: `${progress}%` }} />
-          </div>
+          </div> : null}
         </div>
       ) : null}
 
       {state === "final" ? (
         <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "LATE CAPTURE" : "LINE UNVERIFIED" : statusSymbol(result)}</strong>
+          <strong>{researchOnly ? "RESEARCH · NOT GRADED" : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "LATE CAPTURE" : "LINE UNVERIFIED" : statusSymbol(result)}</strong>
           <span>
             Actual {shortNumber(current)}
             {!unverifiedFootballResult && card.sportsbookLine != null && current != null
@@ -1168,9 +1180,9 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : "Sach Projection"}
+                  : researchOnly ? "Past-game baseline" : "Sach Projection"}
               </b>
-              <span>Model</span>
+              <span>{researchOnly ? "Not a validated forecast" : "Model"}</span>
               <strong>
                 {binaryEvent
                   ? card.modelProbability == null
@@ -1180,7 +1192,7 @@ function PlayerCard({
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? "Edge" : "Actual"}</b>
+              <b>{state === "pregame" ? researchOnly ? "Baseline difference" : "Edge" : "Actual"}</b>
               <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"
@@ -1197,7 +1209,7 @@ function PlayerCard({
             </div>
           </div>
 
-          {state === "pregame" ? (
+          {researchOnly ? <div className={styles.faceFooter}><p>NO PICK · {card.raw.reviewReason}. Historical baselines and book-implied prices are not calibrated win probabilities.</p></div> : state === "pregame" ? (
             <div className={styles.predictionBanner}>
               <div>
                 <span>PREDICTION:</span>
@@ -2410,7 +2422,9 @@ export function PlayerRankingsPanel({
         <div className={styles.state}>{error}</div>
       ) : null}
 
-      {!loading && displayCards.length > 0 && displayCards.every(card => card.sportsbookLine == null) ? (
+      {!loading && displayCards.some(card => card.raw?.researchOnly) ? (
+        <div className={styles.state}>Research rankings — picks and GI are withheld until the forecast is validated. A sportsbook quote is not proof of prediction accuracy. Q1 forecasts require quarter-specific data, not full-game totals divided by four.</div>
+      ) : !loading && displayCards.length > 0 && displayCards.every(card => card.sportsbookLine == null) ? (
         <div className={styles.state}>Sportsbook lines are unavailable. These are model-watch rankings; betting picks are only saved and graded with verified market data.</div>
       ) : null}
 

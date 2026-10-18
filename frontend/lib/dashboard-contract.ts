@@ -1,3 +1,4 @@
+import {eligiblePropPrediction,verifiedPropQuote} from "@/lib/prop-integrity";
 export const DASHBOARD_SPORTS = ["mlb","nfl","cfb","nba","wnba","nhl","soccer","cbb"] as const;
 export type DashboardSport = typeof DASHBOARD_SPORTS[number];
 // Pause public discovery, not historical storage or settlement.
@@ -31,8 +32,8 @@ export function dashboardCounts(games:any[],rows:any[],requireFootballQuote=fals
   unique.set(`${player}|${id||dashboardDay(time)}`,{...row,sportsbookLine:line,modelProjection:projection,prediction:side});
  }
  const ranked=[...unique.values()];
- const props=ranked.filter(r=>{const line=r.sportsbookLine??r.marketLine??r.line;return (!requireFootballQuote||r.quoteVersion===1)&&line!==null&&line!==undefined&&line!==""&&Number.isFinite(Number(line))&&r.marketBacked!==false&&!r.earlyModel});
- const predictions=props.filter(r=>{const projection=r.modelProjection??r.projection;const side=r.prediction??r.pickSide;return projection!==null&&projection!==undefined&&Number.isFinite(Number(projection))&&(side==="OVER"||side==="UNDER")&&r.resultStatus!=="void";});
+ const props=ranked.filter(r=>verifiedPropQuote(r)&&r.marketBacked!==false&&!r.earlyModel);
+ const predictions=props.filter(r=>eligiblePropPrediction(r)&&r.resultStatus!=="void");
  // A game having started does not prove that a provider published a lineup.
  const confirmed=games.reduce((n,g)=>n+Number(g.awayLineupConfirmed===true)+Number(g.homeLineupConfirmed===true),0);
  return {games:games.length,live:games.filter(g=>g.state==="in").length,finals:games.filter(g=>g.state==="post").length,lineups:games.length*2,confirmedLineups:confirmed,pendingLineups:games.length*2-confirmed,rankedPlayers:ranked.length,playerProps:props.length,predictions:predictions.length,verifiedRows:predictions};

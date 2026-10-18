@@ -15,7 +15,7 @@ export type FootballBookRow = {
   line: number | null; price: number; prob: number; bookmakerCount: number;
   quoteVersion: number; sportsbook: string; sportsbookKey: string;
   overPrice: number; underPrice: number | null; quoteUpdatedAt: string;
-  lineType: "main" | "scorer"; quoteId: string; quoteUrl: string;
+  lineType: "main" | "scorer"; quoteId: string; quoteUrl: string; capturedAt: string;
 };
 
 /** Read only the provider's game -> book -> prop contract, never nested alternateLines.
@@ -38,7 +38,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
       for (const prop of Array.isArray(book.props) ? book.props : []) {
         if (!categories.has(norm(prop.category ?? prop.market ?? prop.type))) continue;
         const period = norm(prop.periodID ?? prop.periodId ?? prop.period ?? "");
-        if (period && (market.startsWith("q1_") ? !["1q", "q1", "firstquarter"].includes(period) : !["game", "fullgame", "ft"].includes(period))) continue;
+        if (period && (market.startsWith("q1_") ? !["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period) : !["game", "fullgame", "ft", "0"].includes(period))) continue;
         const playerName = String(prop.playerName || prop.player_name || "").trim();
         const quoteUpdatedAt = String(prop.lastUpdate || book.lastUpdate || "");
         const updated = Date.parse(quoteUpdatedAt);
@@ -61,7 +61,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
           price: overPrice, prob, bookmakerCount: 1, quoteVersion: FOOTBALL_QUOTE_VERSION,
           sportsbook: String(book.title || book.name || sportsbookKey), sportsbookKey,
           overPrice, underPrice, quoteUpdatedAt, lineType: binary ? "scorer" : "main",
-          quoteId: String(prop.propId || ""), quoteUrl: String(prop.event_link || book.event_link || ""),
+          quoteId: String(prop.propId || ""), quoteUrl: String(prop.event_link || book.event_link || ""), capturedAt: new Date(now).toISOString(),
         };
         const key = `${playerKey(playerName)}|${norm(matchup)}|${gameTime}|${market}`;
         grouped.set(key, [...(grouped.get(key) || []), row]);
@@ -81,7 +81,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
 export function footballQuoteFields(row: any) {
   return {quoteVersion: row.quoteVersion, sportsbook: row.sportsbook, sportsbookKey: row.sportsbookKey,
     overPrice: row.overPrice, underPrice: row.underPrice, quoteUpdatedAt: row.quoteUpdatedAt,
-    lineType: row.lineType, quoteId: row.quoteId, quoteUrl: row.quoteUrl};
+    lineType: row.lineType, quoteId: row.quoteId, quoteUrl: row.quoteUrl, capturedAt: row.capturedAt || row.savedAt};
 }
 
 /** A provider timestamp is not evidence of kickoff. Require the same official

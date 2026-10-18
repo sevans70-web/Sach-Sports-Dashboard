@@ -1,3 +1,4 @@
+import {guardRankingPayload} from "@/lib/prop-integrity";
 import {footballHistoryValues} from "@/lib/football-history";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
@@ -388,16 +389,18 @@ async function getPayload(market:CfbMarketKey){
 
 export async function GET(req:NextRequest){
   const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as CfbMarketKey;
-  if(!CFB_MARKETS.some(x=>x[0]===market))return NextResponse.json({success:false,error:"Unsupported CFB market"},{status:400});
+  if(!CFB_MARKETS.some(x=>x[0]===market))return rankingJson({success:false,error:"Unsupported CFB market"},{status:400});
   try{
     const payload=await timeout(getPayload(market),27000,null as RankingPayload|null);
     const cached=rankingCache.get(market);
-    if(payload)return NextResponse.json(payload);
-    if(cached)return NextResponse.json({...cached.payload,cached:true,stale:true});
-    return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:"CFB ranking build timed out; retrying from cache."},{status:503});
+    if(payload)return rankingJson(payload);
+    if(cached)return rankingJson({...cached.payload,cached:true,stale:true});
+    return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:"CFB ranking build timed out; retrying from cache."},{status:503});
   }catch(e){
     const cached=rankingCache.get(market);
-    if(cached)return NextResponse.json({...cached.payload,cached:true,stale:true});
-    return NextResponse.json({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"CFB rankings unavailable"},{status:500});
+    if(cached)return rankingJson({...cached.payload,cached:true,stale:true});
+    return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"CFB rankings unavailable"},{status:500});
   }
 }
+
+function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"cfb"),init)}

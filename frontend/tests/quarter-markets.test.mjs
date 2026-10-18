@@ -14,8 +14,8 @@ test('public sports exclude MLB/soccer; active NFL Q1 has exactly the three yard
 test('basketball period matching never leaks a full game, half or team total into Q1',()=>{
  assert.equal(match({category:'points'},'q1_points'),false);assert.equal(match({category:'points',periodID:'1q'},'q1_points'),true);assert.equal(match({category:'points_1q'},'q1_points'),true);assert.equal(match({category:'points',periodID:'1h'},'q1_points'),false);assert.equal(match({category:'points',periodID:'1q'},'points'),false);assert.equal(match({category:'first_field_goal'},'first_basket'),false);assert.equal(match({category:'firstBasket'},'first_basket'),true);
 });
-test('first-basket price-only predictions capture without a numeric O/U; research never captures',()=>{
- assert.equal(verified({marketBacked:true,prediction:'FIRST BASKET',modelProbability:12},'first_basket'),true);assert.equal(verified({marketBacked:false,prediction:'OVER',modelProjection:5,sportsbookLine:4.5},'q1_points'),false);assert.equal(verified({marketBacked:true,prediction:'OVER',modelProjection:5,sportsbookLine:4.5},'q1_points'),true);
+test('book-implied first basket and scaled Q1 estimates are not validated predictions',()=>{
+ assert.equal(verified({marketBacked:true,prediction:'FIRST BASKET',modelProbability:12},'first_basket'),false);assert.equal(verified({marketBacked:false,prediction:'OVER',modelProjection:5,sportsbookLine:4.5},'q1_points'),false);assert.equal(verified({marketBacked:true,prediction:'OVER',modelProjection:5,sportsbookLine:4.5},'q1_points'),false);
  assert.equal(playerBaseline({pointsPerGame:24},'q1_points'),6);assert.equal(playerBaseline({pointsPerGame:null},'q1_points'),null);
 });
 function payload(){return {header:{competitions:[{status:{period:2,type:{completed:false}},competitors:[{linescores:[{value:4}]},{linescores:[{value:3}]}]}]},plays:[

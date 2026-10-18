@@ -1,38 +1,29 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import {mkdtemp,rm} from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import {loadTs} from './load-ts.mjs';
-test('sport history writers retain late first captures as void and keep genuine pregame values locked',async()=>{
- const root=await mkdtemp(path.join(os.tmpdir(),'sach-pregame-test-')),previous=process.env.SACH_HISTORY_DIR;process.env.SACH_HISTORY_DIR=root;
+import test from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,rm} from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {loadTs} from './load-ts.mjs';
+test('every active sport refuses unvalidated new picks, even with a valid quote or spoofed validation flag',async()=>{
+ const root=await mkdtemp(path.join(os.tmpdir(),'sach-integrity-capture-')),previous=process.env.SACH_HISTORY_DIR;process.env.SACH_HISTORY_DIR=root;
  try{
+  const now=new Date().toISOString(),time=new Date(Date.now()+3600000).toISOString();
+  const row={playerId:'1',playerName:'Research',gameId:'a',matchup:'A @ B',gameTime:time,gameState:'pre',sportsbookLine:10.5,modelProjection:12,prediction:'OVER',rank:1,quoteVersion:1,sportsbook:'FanDuel',sportsbookKey:'fanduel',lineType:'main',overPrice:-110,underPrice:-110,quoteUpdatedAt:now,forecastModelId:'fake',forecastValidation:{passed:true}};
   for(const [sport,title]of [['nba','Nba'],['wnba','Wnba'],['cbb','Cbb']]){
-   const api=await loadTs(new URL(`../lib/${sport}-history.ts`,import.meta.url));
-   const now=new Date().toISOString(),late={playerId:'1',playerName:'Late',gameTime:now,gameState:'in',gameId:'a',matchup:'A @ B',sportsbookLine:10.5,modelProjection:12,prediction:'OVER',rank:1};
-   await api[`save${title}Predictions`]('points',[late]);
-   let records=await api[`get${title}Predictions`]('points',api[`${sport}Day`](now));
-   assert.equal(records.predictions.find(p=>p.playerId==='1').status,'void',sport);
-   const time=new Date(Date.now()+3600000).toISOString(),pregame={...late,playerId:'2',playerName:'Pregame',gameId:'b',gameTime:time,gameState:'pre'};
-   await api[`save${title}Predictions`]('points',[pregame]);
-   await api[`save${title}Predictions`]('points',[{...pregame,gameState:'in',sportsbookLine:99.5,modelProjection:100}]);
-   records=await api[`get${title}Predictions`]('points',api[`${sport}Day`](time));
-   const locked=records.predictions.find(p=>p.playerId==='2');assert.equal(locked.sportsbookLine,10.5,sport);assert.equal(locked.modelProjection,12,sport);assert.equal(locked.status,'pending',sport);
+   const api=await loadTs(new URL('../lib/'+sport+'-history.ts',import.meta.url));
+   assert.equal(await api['save'+title+'Predictions']('points',[row]),false);
+   const records=await api['get'+title+'Predictions']('points',api[sport+'Day'](time));assert.equal(records.predictions.length,0,sport);
   }
-  const now=new Date().toISOString();
-  const nhl=await loadTs(new URL('../lib/nhl-history.ts',import.meta.url));
-  await nhl.saveNhlSlate('shots_on_goal',[{playerId:'33',playerName:'Late Hockey',gameId:'c',gameTime:now,gameState:'in',matchup:'C @ D',sportsbookLine:2.5,modelProjection:3,prediction:'OVER'}],true);
-  assert.equal((await nhl.getNhlPredictions('shots_on_goal',nhl.nhlDay(now))).predictions[0].status,'void');
-  const cfb=await loadTs(new URL('../lib/cfb-history.ts',import.meta.url));
-  await cfb.saveCfbPregamePredictions('passing_yards',[{playerId:'44',playerName:'Late Football',matchup:'E @ F',gameTime:now,gameId:'d',sportsbookLine:250.5,modelProjection:270,modelProbability:65,marketBacked:true,rank:1}],[{id:'d',awayTeam:'E',homeTeam:'F',date:now,state:'in'}]);
-  assert.equal(cfb.getRuntimeCfbPredictions('passing_yards',cfb.cfbDay(now)).predictions[0].status,'void');
+  const nhl=await loadTs(new URL('../lib/nhl-history.ts',import.meta.url));assert.equal((await nhl.saveNhlSlate('shots_on_goal',[row],false)).ok,false);
+  const cfb=await loadTs(new URL('../lib/cfb-history.ts',import.meta.url));assert.equal(await cfb.saveCfbPregamePredictions('passing_yards',[row],[]),false);
+  const nfl=await loadTs(new URL('../lib/nfl-history.ts',import.meta.url));assert.equal(await nfl.saveNflPregamePredictions('passing_yards',[row],[]),false);
+ }finally{if(previous===undefined)delete process.env.SACH_HISTORY_DIR;else process.env.SACH_HISTORY_DIR=previous;await rm(root,{recursive:true,force:true})}
+});
+test('rejected research captures do not overwrite original saved basketball values or grades',async()=>{
+ const root=await mkdtemp(path.join(os.tmpdir(),'sach-integrity-history-')),previous=process.env.SACH_HISTORY_DIR;process.env.SACH_HISTORY_DIR=root;
+ try{
   const time=new Date(Date.now()+3600000).toISOString();
-  const metadata={quoteVersion:1,sportsbook:'Pinnacle',sportsbookKey:'pinnacle',lineType:'main',overPrice:104,underPrice:-131,quoteUpdatedAt:now,quoteId:'main-1'};
-  const row={...metadata,playerId:'45',playerName:'Verified Football',matchup:'G @ H',gameTime:time,gameId:'e',sportsbookLine:289.5,modelProjection:296.5,modelProbability:53,marketBacked:true,rank:1};
-  const schedule=[{id:'e',awayTeam:'G',homeTeam:'H',date:time,state:'pre'}];
-  await cfb.saveCfbPregamePredictions('passing_yards',[row],schedule);
-  await cfb.saveCfbPregamePredictions('passing_yards',[{...row,sportsbookLine:170,sportsbook:'Bad replacement'}],[{...schedule[0],state:'in'}]);
-  const locked=cfb.getRuntimeCfbPredictions('passing_yards',cfb.cfbDay(time)).predictions.find(p=>p.playerId==='45');
-  assert.equal(locked.sportsbookLine,289.5);assert.equal(locked.sportsbook,'Pinnacle');assert.equal(locked.overPrice,104);assert.equal(locked.quoteId,'main-1');
+  for(const [sport,title]of [['nba','Nba'],['wnba','Wnba'],['cbb','Cbb']]){
+   const api=await loadTs(new URL('../lib/'+sport+'-history.ts',import.meta.url)),day=api[sport+'Day'](time);
+   const original={key:'saved',playerId:'1',playerName:'Original',gameId:'a',gameDate:day,gameTime:time,matchup:'A @ B',market:'points',sportsbookLine:10.5,modelProjection:12,pickSide:'OVER',giScore:80,bookmakerCount:1,savedAt:new Date().toISOString(),status:'hit',actual:15,frozenAt:new Date().toISOString()};
+   await api['save'+title+'Grades']('points',day,[original]);
+   await api['save'+title+'Predictions']('points',[{...original,sportsbookLine:99.5,prediction:'UNDER'}]);
+   const records=await api['get'+title+'Predictions']('points',day);assert.deepEqual(records.predictions,[original]);
+  }
  }finally{if(previous===undefined)delete process.env.SACH_HISTORY_DIR;else process.env.SACH_HISTORY_DIR=previous;await rm(root,{recursive:true,force:true})}
 });
