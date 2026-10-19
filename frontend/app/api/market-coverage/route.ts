@@ -10,11 +10,15 @@ export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport');if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
  if(req.nextUrl.searchParams.get('mode')==='included-results'){
   // Explicit public-field allowlist: never forward arbitrary provider bodies.
-  const fields=['eventId','event_id','gameId','game_id','date','startTime','gameTime','player','playerName','category','propType','book','line','isMain','isMainLine','overPrice','underPrice','updatedAt','lastUpdate','actual','final','verdict','result','count','playerCount','entryCount'];
+  const fields=['eventId','event_id','gameId','game_id','date','startTime','gameTime','player','playerName','category','propType','book','sportsbook','line','isMain','isMainLine','overPrice','underPrice','updatedAt','lastUpdate','recordedAt','capturedAt','actual','final','verdict','result','count','playerCount','entryCount','entries','players','finalEntries'];
+  const example=(r:any,depth=0):any=>Object.fromEntries([
+   ...fields.filter(k=>['string','number','boolean'].includes(typeof r?.[k])).map(k=>[k,r[k]]),
+   ...depth<2?['closing','books','lines','outcomes','results','entries'].filter(k=>r?.[k]&&typeof r[k]==='object').map(k=>[k,{keys:Object.keys(r[k]).slice(0,30),sample:Array.isArray(r[k])?r[k].slice(0,2).map((v:any)=>example(v,depth+1)):example(r[k],depth+1)}]):[],
+  ]);
   const describe=(p:any)=>{
    const container=p?.data??p;
-   const rows=Array.isArray(container)?container:Array.isArray(container?.games)?container.games:Array.isArray(container?.props)?container.props:Array.isArray(container?.results)?container.results:[];
-   return {keys:Object.keys(p||{}),dataKeys:container&&!Array.isArray(container)?Object.keys(container):null,count:rows.length,examples:rows.slice(0,2).map((r:any)=>Object.fromEntries(fields.filter(k=>['string','number','boolean'].includes(typeof r?.[k])).map(k=>[k,r[k]]))),rowKeys:rows[0]?Object.keys(rows[0]):[]};
+   const rows=Array.isArray(container)?container:Array.isArray(container?.games)?container.games:Array.isArray(container?.props)?container.props:Array.isArray(container?.results)?container.results:Array.isArray(container?.entries)?container.entries:[];
+   return {keys:Object.keys(p||{}),dataKeys:container&&!Array.isArray(container)?Object.keys(container):null,count:rows.length,examples:rows.slice(0,2).map((r:any)=>example(r)),rowKeys:rows[0]?Object.keys(rows[0]):[]};
   };
   const sample=await getOwlsIncludedResultsSample(sport).then(p=>({date:p.date,gameId:p.gameId,discovery:describe(p.discovery),results:describe(p.response)}),e=>({error:String(e?.message||'Included results unavailable')}));
   return NextResponse.json({sport,sample,scope:'Discovery only; provider verdicts do not validate forecasts or establish frozen quote provenance.',updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});

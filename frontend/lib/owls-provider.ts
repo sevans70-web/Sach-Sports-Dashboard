@@ -23,8 +23,9 @@ export async function getOwlsIncludedResultsSample(sport:'nfl'|'nba'){
   const games=Array.isArray(discovery?.data)?discovery.data:discovery?.data?.games??discovery?.games;
   const first=Array.isArray(games)?games[0]:null;
   const id=first?.eventId??first?.event_id??first?.gameId??first?.game_id;
-  // Only documented sport-prefixed event IDs, never a URL or arbitrary string.
-  const gameId=typeof id==='string'&&new RegExp(`^${sport}:[A-Za-z0-9@_-]{1,100}$`).test(id)?id:null;
+  // Provider event IDs can contain full team names, including spaces. They
+  // remain query values, never paths/URLs; forbid control characters and bound size.
+  const gameId=typeof id==='string'&&id.startsWith(sport+':')&&id.length<=200&&!/[\x00-\x1f\x7f]/.test(id)?id:null;
   const response=gameId?await read({game_id:gameId,confirmed_only:'true',category:sport==='nba'?'points':'passing_yards'}):null;
   const payload={date,gameId,discovery,response};sourceCache.set(tag,{expires:Date.now()+3600_000,payload});return payload;
  })();sourcePending.set(tag,work);try{return await work}finally{sourcePending.delete(tag)}

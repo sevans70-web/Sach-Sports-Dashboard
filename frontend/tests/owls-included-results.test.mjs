@@ -8,11 +8,11 @@ test('included results use fixed documented queries, collapse requests and cache
  globalThis.fetch=async(input,init)=>{
   const url=new URL(input);calls.push(url);assert.equal(init.headers.Authorization,'Bearer test-only');
   assert.equal(url.pathname,'/api/v1/nba/props/results');
-  return Response.json(url.searchParams.has('date')?{data:{games:[{eventId:'nba:BOS@SAC-20260401'},{eventId:'nba:OTHER'}]}}:{data:{results:[{line:20.5}]}});
+  return Response.json(url.searchParams.has('date')?{data:{games:[{eventId:'nba:Boston Celtics@Sacramento Kings-20260401'},{eventId:'nba:OTHER'}]}}:{data:{results:[{line:20.5}]}});
  };
  try{
   const [a,b]=await Promise.all([getOwlsIncludedResultsSample('nba'),getOwlsIncludedResultsSample('nba')]);
-  assert.deepEqual(a,b);assert.equal(calls.length,2);assert.equal(a.gameId,'nba:BOS@SAC-20260401');
+  assert.deepEqual(a,b);assert.equal(calls.length,2);assert.equal(a.gameId,'nba:Boston Celtics@Sacramento Kings-20260401');
   assert.equal(calls[0].searchParams.get('date'),'2026-04-01');assert.equal(calls[1].searchParams.get('confirmed_only'),'true');assert.equal(calls[1].searchParams.get('category'),'points');
   await getOwlsIncludedResultsSample('nba');assert.equal(calls.length,2);
  }finally{globalThis.fetch=fetch;if(key===undefined)delete process.env.OWLS_INSIGHT_API_KEY;else process.env.OWLS_INSIGHT_API_KEY=key}
