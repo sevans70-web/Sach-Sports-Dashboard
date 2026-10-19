@@ -1,5 +1,20 @@
 # Cross-sport prop integrity repair
 
+### 19 October: existing Rookie subscription and quote evidence
+
+Rookie is a paid Owls plan. Its documented props, graded results and single-prop
+line-movement history are distinct from the MVP historical backfill archive.
+An archive 403 does not establish overdue billing, a broken current prop feed,
+or that an upgrade will validate GI. Account invoices have not been inspected.
+
+The bounded included-results diagnostic now audits `capturePhase` and explicit
+`marketStructure`: game-end (`archive`) prices are excluded from pregame evidence,
+and missing structure stays unknown. Provider Over/Under verdicts are never
+treated as the hit/miss of a saved Sach recommendation. It checks four fixed NFL
+weeks for coverage and one fixed player/book history for recorded timestamps,
+with caching, permission-failure cooldown and no paid-plan fallback. This is
+source qualification; it does not register or promote a forecasting model.
+
 ### 19 October: final-result card presentation and refresh authority
 
 Completed cards across NFL, CFB, NBA, WNBA, CBB and NHL now show `Final result` and the actual statistic in the primary stat grid. Pregame history remains in expanded analysis rather than competing with the final total on the face. The research result strip identifies the saved side/line and final stat concisely; it does not create a validated recommendation. Official final checks confirmed Huntley 165 passing yards, McKee 215 and Stafford 222; Huntley/McKee correctly missed their saved UNDER lines.

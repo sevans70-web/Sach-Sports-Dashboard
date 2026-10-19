@@ -5,7 +5,8 @@ const pending=new Map<Sport,Promise<any>>();
 const sourceCache=new Map<string,{expires:number;payload?:any;error?:string}>();
 const sourcePending=new Map<string,Promise<any>>();
 /** Included graded-results capability, NOT the restricted MVP history archive.
- * Two fixed dates, at most two reads per sport/hour, no caller-controlled query.
+ * Fixed dates, at most six reads for NFL and three for NBA per hour.
+ * No caller-controlled query or paid-plan fallback.
  * A provider grade is discovery evidence only, never model-validation evidence. */
 export async function getOwlsIncludedResultsSample(sport:'nfl'|'nba'){
  const tag='included-results-'+sport,hit=sourceCache.get(tag);
@@ -13,13 +14,20 @@ export async function getOwlsIncludedResultsSample(sport:'nfl'|'nba'){
  const running=sourcePending.get(tag);if(running)return running;
  const work=(async()=>{
   const key=process.env.OWLS_INSIGHT_API_KEY?.trim();if(!key)throw Error('Book feed is not configured');
-  const read=async(query:Record<string,string>)=>{
-   const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${sport}/props/results?`+new URLSearchParams(query),{headers:{Authorization:`Bearer ${key}`,'x-api-key':key,Accept:'application/json'},cache:'no-store'});
-   if(!response.ok){const error=`Included prop results returned ${response.status}`;const retry=Number(response.headers.get('retry-after'));sourceCache.set(tag,{expires:Date.now()+Math.max(3600_000,Number.isFinite(retry)?Math.min(86400_000,retry*1000):0),error});throw Error(error)}
+  const read=async(query:Record<string,string>,endpoint:'results'|'history'='results')=>{
+   const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${sport}/props/${endpoint}?`+new URLSearchParams(query),{headers:{Authorization:`Bearer ${key}`,'x-api-key':key,Accept:'application/json'},cache:'no-store'});
+   if(!response.ok){const error=`Included prop ${endpoint} returned ${response.status}`;const retry=Number(response.headers.get('retry-after'));sourceCache.set(tag,{expires:Date.now()+Math.max(3600_000,Number.isFinite(retry)?Math.min(86400_000,retry*1000):0),error});throw Error(error)}
    return response.json();
   };
   const date=sport==='nba'?'2026-04-01':'2026-10-18';
   const discovery=await read({date});
+  // Check a predetermined consecutive set of NFL weeks. Selection never uses
+  // a player, outcome, forecast, or profitability to choose a historical date.
+  const olderDays=[];
+  if(sport==='nfl')for(const olderDate of ['2026-10-11','2026-10-04','2026-09-27']){
+   const day=await read({date:olderDate});const rows=Array.isArray(day?.data)?day.data:[];
+   olderDays.push({date:olderDate,games:rows.length,truncated:day?.meta?.gamesTruncated===true,confirmedEntries:rows.reduce((n:number,r:any)=>n+(Number.isFinite(r?.finalEntries)?r.finalEntries:0),0)});
+  }
   const games=Array.isArray(discovery?.data)?discovery.data:discovery?.data?.games??discovery?.games;
   const first=Array.isArray(games)?games[0]:null;
   const id=first?.eventId??first?.event_id??first?.gameId??first?.game_id;
@@ -27,7 +35,10 @@ export async function getOwlsIncludedResultsSample(sport:'nfl'|'nba'){
   // remain query values, never paths/URLs; forbid control characters and bound size.
   const gameId=typeof id==='string'&&id.startsWith(sport+':')&&id.length<=200&&!/[\x00-\x1f\x7f]/.test(id)?id:null;
   const response=gameId?await read({game_id:gameId,confirmed_only:'true',category:sport==='nba'?'points':'passing_yards'}):null;
-  const payload={date,gameId,discovery,response};sourceCache.set(tag,{expires:Date.now()+3600_000,payload});return payload;
+  const entries=Array.isArray(response?.data)?response.data:[];
+  const player=entries.find((r:any)=>r?.status==='ok'&&r?.final===true&&typeof r?.playerName==='string'&&r.playerName.length<=150);
+  const priceHistory=gameId&&player?await read({game_id:gameId,player:player.playerName,category:sport==='nba'?'points':'passing_yards',book:'pinnacle'},'history').catch((e:any)=>({error:String(e?.message||'Included price history unavailable')})):null;
+  const payload={date,gameId,discovery,olderDays,response,priceHistory};sourceCache.set(tag,{expires:Date.now()+3600_000,payload});return payload;
  })();sourcePending.set(tag,work);try{return await work}finally{sourcePending.delete(tag)}
 }
 /** Two fixed, bounded archive probes for model-data coverage. No caller-supplied
