@@ -11,7 +11,7 @@ const cache=new Map<string,{until:number;value?:any;error?:string}>();
 const pending=new Map<string,Promise<any>>();
 let cooldown=0;
 async function read(sport:'nfl'|'nba',endpoint:'results'|'history'|'trends',query:Record<string,string>){
- const key=sport+'/'+endpoint+'?'+new URLSearchParams(query),hit=cache.get(key);
+ const key=sport+'/props/'+endpoint+'?'+new URLSearchParams(query),hit=cache.get(key);
  if(hit&&hit.until>Date.now()){if(hit.error)throw Error(hit.error);return hit.value}
  if(cooldown>Date.now())throw Error('Included research source is cooling down');
  if(pending.has(key))return pending.get(key);

@@ -11,3 +11,13 @@ test('fixed window rejects arbitrary dates before any network request',async()=>
  await assert.rejects(includedResearchSource('nfl',-1,null,null),/Invalid research day/);
  await assert.rejects(includedResearchSource('nba',99,null,null),/Invalid research day/);
 });
+test('source requests use included prop routes and retain named quote fields only',async()=>{
+ const original=globalThis.fetch,token=process.env.OWLS_INSIGHT_API_KEY;process.env.OWLS_INSIGHT_API_KEY='test';
+ const urls=[];globalThis.fetch=async url=>{urls.push(String(url));const u=new URL(url);
+  if(u.searchParams.has('date'))return Response.json({success:true,data:[{gameId:'nfl:A@B-20260906'}]});
+  if(u.pathname.endsWith('/results'))return Response.json({success:true,data:[{playerId:'1',playerName:'A',category:'passing_yards'}]});
+  return Response.json({success:true,data:{gameId:'nfl:A@B-20260906',player:'A',category:'passing_yards',book:'pinnacle',history:[{line:'200.5',overPrice:-110,underPrice:-110,timestamp:'2026-09-06T10:00:00Z',secret:'omit'}]}});
+ };
+ try{const result=await includedResearchSource('nfl',0,0,0);assert.equal(urls.length,3);assert.ok(urls.every(u=>u.includes('/nfl/props/')));assert.equal(result.history[0].secret,undefined);assert.equal(result.history[0].line,'200.5')}
+ finally{globalThis.fetch=original;if(token===undefined)delete process.env.OWLS_INSIGHT_API_KEY;else process.env.OWLS_INSIGHT_API_KEY=token}
+});
