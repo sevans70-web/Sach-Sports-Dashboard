@@ -10,6 +10,7 @@ import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
 import {voidRecordNote,recordNoteFields} from '@/lib/record-notes';
+import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -406,6 +407,8 @@ function marketActualValue(
   marketKey: string
 ) {
   if(marketKey.startsWith('q1_')&&row?.quarterObservationChecked===true)return finite(row.observedQuarterValue);
+  const officialFinal=finalCardObservation(row,marketKey);
+  if(officialFinal)return officialFinal.value;
   const mlbActual: Record<string, any> = {
     home_runs:
       result?.actual_home_runs ??
@@ -1071,12 +1074,12 @@ function PlayerCard({
 
         <div>
           <span>
-            {binaryEvent
+            {state === 'final' ? 'Final result' : binaryEvent
               ? "HR Probability"
               : researchOnly ? context.recentLabel : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
           </span>
           <strong>
-            {binaryEvent
+            {state === 'final' ? shortNumber(current) : binaryEvent
               ? card.modelProbability == null
                 ? "—"
                 : `${shortNumber(card.modelProbability)}%`
@@ -1672,6 +1675,7 @@ function applyCfbLiveState(card: RankingCard, game: CfbLiveGame | null) {
       completed: isFinal,
       liveCurrent: isLive ? value : card.liveCurrent,
       actualResult: isFinal && value != null ? value : card.actual,
+      ...(isFinal&&value!=null?{officialFinalObservation:{sport:'cfb',gameId:String(game.gameId),playerId:String(card.playerId),market:card.market,value,at:new Date().toISOString()}}:{}),
       liveProgressPct,
       frozen: true,
       lockedAtKickoff: true,
@@ -2104,11 +2108,12 @@ export function PlayerRankingsPanel({
 
         const staged = await stageRankingImages(isolated);
         if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
-        rankingViewCache.set(viewCacheKey(group.key,requestedMarket,requestedCfbSlate),{at:Date.now(),cards:staged,dropped:rawDropped});
+        // The cards effect caches the merged state after official final
+        // observations are retained; never publish the stale staged board.
         setCards(previous=>staged.map(card=>{
-          const old=previous.find(p=>p.playerId===card.playerId&&p.raw?.gameId===card.raw?.gameId);
+          const old=previous.find(p=>p.playerId===card.playerId&&p.market===card.market&&String(p.raw?.gameId||'')===String(card.raw?.gameId||''));
           const raw=retainParticipation(card.raw,old?.raw);
-          return {...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"};
+          return retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
         }));
         setDropped(rawDropped);
       } catch (cause) {
@@ -2196,7 +2201,7 @@ export function PlayerRankingsPanel({
           const current = payload?.success===true&&String(payload.gameId)===String(game.id)?finite(row?.stats?.[card.market]):null;
           if (current == null) {
             const checkedQuarter=['nfl','cfb'].includes(sport)&&card.market.startsWith('q1_')&&row?.stats&&Object.hasOwn(row.stats,card.market);
-            return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,...(checkedQuarter?{actual:null,liveCurrent:null,liveProgressPct:null}:{}),raw:{...updatedRaw,...(checkedQuarter?{quarterObservationChecked:true,observedQuarterValue:null,actualResult:null,liveCurrent:null}: {})},lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
+            return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,...(checkedQuarter?{actual:null,liveCurrent:null,liveProgressPct:null}:{}),raw:{...updatedRaw,...(checkedQuarter?{quarterObservationChecked:true,observedQuarterValue:null,actualResult:null,liveCurrent:null,officialFinalObservation:null}: {})},lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
           }
 
           const progress =
@@ -2217,6 +2222,7 @@ export function PlayerRankingsPanel({
               gameState:payload.state==="post"?"post":String(game.state||card.gameState),
               liveCurrent: game.state === "in" ? current : card.liveCurrent,
               actualResult: payload.state === "post" || game.state === "post" ? current : card.actual,
+              ...(payload.state==='post'||game.state==='post'?{officialFinalObservation:{sport,gameId:String(game.id),playerId:String(card.playerId),market:card.market,value:current,at:payload.updatedAt||new Date().toISOString()}}:{}),
               liveStatsUpdatedAt: payload.updatedAt,
               liveProgressPct: progress,
             },

@@ -20,7 +20,7 @@ test('zero missing-category totals require a participating player and a fully re
 });
 test('Hutchinson original saved research OVER gets a research X, without inventing a validated betting pick',()=>{
  const row={quoteVerified:true,frozen:true,originalResearchPick:'OVER',originalResearchSavedAt:'2026-10-18T03:10:34Z',gameTime:'2026-10-18T13:30:00Z'};
- const r=researchFinalOutcome(row,10,14.5,'receiving_yards');assert.match(r.label,/❌ RESEARCH OVER MISSED/);assert.match(r.detail,/excluded from betting performance/);
+ const r=researchFinalOutcome(row,10,14.5,'receiving_yards');assert.match(r.label,/❌ RESEARCH OVER MISSED/);assert.equal(r.detail,'Final 10 yards · saved OVER 14.5');
  assert.match(researchFinalOutcome({...row,originalResearchPick:'UNDER'},10,14.5,'receiving_yards').label,/✅ RESEARCH UNDER MET/);
  assert.equal(researchFinalOutcome({...row,originalResearchPick:null},10,14.5,'receiving_yards').label,'FINISHED BELOW LINE');
  assert.equal(researchFinalOutcome({...row,originalResearchSavedAt:'2026-10-18T14:00Z'},10,14.5,'receiving_yards').label,'FINISHED BELOW LINE');

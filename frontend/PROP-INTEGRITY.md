@@ -1,5 +1,13 @@
 # Cross-sport prop integrity repair
 
+### 19 October: final-result card presentation and refresh authority
+
+Completed cards across NFL, CFB, NBA, WNBA, CBB and NHL now show `Final result` and the actual statistic in the primary stat grid. Pregame history remains in expanded analysis rather than competing with the final total on the face. The research result strip identifies the saved side/line and final stat concisely; it does not create a validated recommendation. Official final checks confirmed Huntley 165 passing yards, McKee 215 and Stafford 222; Huntley/McKee correctly missed their saved UNDER lines.
+
+Exact-fixture official final observations now survive stale board/performance refreshes. Observations are scoped to sport, fixture, player and market, accept reported zero/negative values, and yield to later official revisions. A newly unreconciled quarter remains unknown rather than regaining an old result from a cache. Numeric lines, saved sides, historical records, GI eligibility, backups and retention are unchanged.
+
+Verification compared all 22 currently final NFL passing cards against exact-fixture official player boxscores: all 22 matched. The other five default boards had no current final cards at inspection; cross-sport refresh retention, zero/negative results, mismatched identities and later revisions are covered by shared regression tests. The full suite has 172 passing tests.
+
 ### 19 October: executable workload probability engine
 
 Follow-up: three experimental native NFL Q1 yardage distributions are now fitted from 13,454 reconciled quarter observations across 624 completed games. Quarter workload counts distinguish attempts/carries/targets/receptions, reconcile to official totals and retain prior full-game role volume separately. No full-game division is used. Coverage remains low (passing four eligible later-period forecasts, rushing 27, receiving 152), and none is approved. A separate evaluation against preserved pregame NFL quotes yielded 74 eligible exact-price forecasts with independently checked official finals. The fitted model artifact matches the earlier artifact byte for byte. Receiving/rushing probabilities perform worse than the bookmaker benchmark, so GI and picks remain disabled. Reproducible reports and limitations are in the `nfl-quarter-population` and `nfl-saved-quotes` research folders. Current provider checks returned historical-price 403 and supplemental-feed 429; stored Q1 quotes did not qualify. No model was registered or historical data recertified.

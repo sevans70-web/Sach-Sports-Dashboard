@@ -18,7 +18,7 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
  const values=(cohort.length?cohort.map((p:any)=>Number(p.value)):history).filter(Number.isFinite).slice(-5);
  const count=values.length,average=count?values.reduce((a:number,b:number)=>a+b,0)/count:null;
  const line=row.quoteVerified===true?num(row.sportsbookLine):null,facts:string[]=[];
- const unit=market.includes('yards')?'yards':market.includes('points')?'points':market.includes('rebounds')?'rebounds':market.includes('assists')?'assists':market==='shots_on_goal'?'shots on goal':market==='goalie_saves'?'saves':market==='receptions'?'receptions':'per game';
+ const unit=cardStatUnit(market);
  if(count){
   facts.push(`Last ${count}: ${values.map(fmt).join(', ')} ${unit}.`);
   if(line!=null&&!/anytime|first/.test(market))facts.push(`${values.filter((v:number)=>v>line).length} of the last ${count} finished above ${fmt(line)}; ${values.filter((v:number)=>v<line).length} below${values.some((v:number)=>v===line)?`, ${values.filter((v:number)=>v===line).length} on the line`:''}.`);
@@ -28,7 +28,9 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
  }
  if(row.availabilityEvidence?.text&&String(row.availabilityEvidence.gameId)===String(row.gameId))facts.push(row.availabilityEvidence.text);
  const actual=num(row.gameState==='post'?row.actualResult:row.liveCurrent);
- if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line!=null?`; ${fmt(Math.abs(actual-line))} ${actual>=line?'above':'below'} the ${fmt(line)} line`:''}.`);
+ if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line==null?'':actual===line?`; on the ${fmt(line)} line`:`; ${fmt(Math.abs(actual-line))} ${actual>line?'above':'below'} the ${fmt(line)} line`}.`);
+ if(row.gameState==='post'&&actual==null)facts.unshift('Final statistic is not available yet.');
  if(!facts.length)facts.push(row.historyLoaded===true?'Recent results are unavailable for this market.':'Loading recent player results…');
- return {facts,face:facts.slice(0,2).join(' '),recentAverage:average,recentCount:count,recentLabel:count?`Last ${count} avg.`:'Recent avg.'};
+ return {facts,face:facts.slice(0,row.gameState==='post'?1:2).join(' '),recentAverage:average,recentCount:count,recentLabel:count?`Last ${count} avg.`:'Recent avg.'};
 }
+import {cardStatUnit} from '@/lib/card-results';
