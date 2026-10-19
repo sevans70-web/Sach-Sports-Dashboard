@@ -1,6 +1,7 @@
 "use client";
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence} from "@/lib/card-intelligence";
+import {datedCardHistory,publicPropContext} from "@/lib/public-prop-context";
 import {trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
@@ -750,7 +751,7 @@ async function loadRecentFormForCard(
   league: string,
   signal: AbortSignal
 ) {
-  const key = `${sport}|${league}|${card.playerId}|${card.market}`;
+  const key = `${sport}|${league}|${card.playerId}|${card.market}|${card.gameTime}`;
   const cached = recentFormCache.get(key);
   if (cached) return cached;
 
@@ -759,7 +760,7 @@ async function loadRecentFormForCard(
   if (NATIVE_HISTORY_SPORTS.has(sport)) {
     url =
       `/api/${sport}/player/${encodeURIComponent(card.playerId)}/history` +
-      `?market=${encodeURIComponent(card.market)}`;
+      `?market=${encodeURIComponent(card.market)}&before=${encodeURIComponent(card.gameTime)}`;
   } else {
     const params = new URLSearchParams({
       sport,
@@ -786,9 +787,7 @@ async function loadRecentFormForCard(
   const payload = await response.json();
 
   const values = Array.isArray(payload?.points)
-    ? payload.points
-        .map((point: any) => Number(point?.value))
-        .filter((value: number) => Number.isFinite(value))
+    ? datedCardHistory(payload.points,card.gameTime,card.market,sport)
     : Array.isArray(payload?.values)
       ? payload.values
           .map((value: any) => Number(value))
@@ -864,24 +863,24 @@ function PlayerCard({
 }) {
   const [open, setOpen] = useState(false);
   const [formSpan, setFormSpan] = useState<5 | 10 | 20>(10);
-  const [historyValues, setHistoryValues] = useState<number[]>(card.recentValues);
+  const [historyValues, setHistoryValues] = useState<number[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [historyLoaded, setHistoryLoaded] = useState(card.recentValues.length >= 20);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
 
   useEffect(() => {
-    setHistoryValues(card.recentValues);
-    setHistoryLoaded(card.recentValues.length >= 20);
-  }, [card.playerId, card.market, card.recentValues.length]);
+    setHistoryValues([]);
+    setHistoryLoaded(false);
+  }, [card.playerId, card.market, card.gameTime]);
 
   useEffect(() => {
-    if (!open || historyLoaded) return;
+    if (historyLoaded) return;
 
     const controller = new AbortController();
     setHistoryLoading(true);
 
     loadRecentFormForCard(card, sport, league, controller.signal)
       .then((values) => {
-        if (values.length) setHistoryValues(values);
+        setHistoryValues(values);
       })
       .catch(() => {})
       .finally(() => {
@@ -893,7 +892,6 @@ function PlayerCard({
 
     return () => controller.abort();
   }, [
-    open,
     historyLoaded,
     sport,
     league,
@@ -901,10 +899,11 @@ function PlayerCard({
     card.playerName,
     card.teamName,
     card.market,
+    card.gameTime,
   ]);
 
   const recentFormValues =
-    (historyValues.length ? historyValues : card.recentValues).slice(-formSpan);
+    historyValues.slice(-formSpan);
   const state = deriveState(card.raw, {
     status: card.resultStatus,
     actual: card.actual,
@@ -923,11 +922,6 @@ function PlayerCard({
   const observedProgress=cardObservedProgress(current,card.sportsbookLine,card.market);
   const researchOutcome=researchFinalOutcome(card.raw,current,card.sportsbookLine,card.market);
   const progress=observedProgress?.percent??0;
-
-  const edge =
-    card.modelProjection != null && card.sportsbookLine != null
-      ? card.modelProjection - card.sportsbookLine
-      : null;
 
   const binaryEvent =
     isBinaryEventMarket(card.market);
@@ -962,7 +956,10 @@ function PlayerCard({
           : ""
     );
 
-  const intelligence=propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market);
+  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime},sport,card.market,historyLoaded?historyValues:[]);
+  const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
+  const displayedAverage=researchOnly?context.recentAverage:card.modelProjection;
+  const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 
   const lineMovement =
@@ -1074,30 +1071,27 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : researchOnly ? "Past-game baseline" : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
+              : researchOnly ? context.recentLabel : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
           </span>
           <strong>
             {binaryEvent
               ? card.modelProbability == null
                 ? "—"
                 : `${shortNumber(card.modelProbability)}%`
-              : shortNumber(card.modelProjection)}
+              : shortNumber(researchOnly?context.recentAverage:card.modelProjection)}
           </strong>
         </div>
 
         <div>
           <span>GI Score</span>
-          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?intelligence.giReason:undefined}>{researchOnly?"Unvalidated":shortNumber(card.giScore)}</strong>
+          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"GI is unavailable until forecasting validation is complete.":undefined}>{researchOnly?"—":shortNumber(card.giScore)}</strong>
         </div>
       </div>
 
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
-          {card.raw.quoteVerified ? <p>{card.raw.sportsbook} · {card.raw.lineType === "scorer" ? "Scorer quote" : "Main O/U"} · Over {card.raw.overPrice}{card.raw.underPrice == null ? "" : ` / Under ${card.raw.underPrice}`} · Quote {new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET</p> : null}
+          {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
           <p>{researchOnly?intelligence.face:card.summary}</p>
-          {researchOnly ? <p className={styles.decisionNote}>{intelligence.decision}</p> : null}
-
-          {researchOnly && card.raw.archivedOriginal?.sportsbookLine != null && !card.raw.quoteVerified ? <details><summary>Original recorded value — not a verified betting line</summary><p>{shortNumber(card.raw.archivedOriginal.sportsbookLine)} · Original records preserved; excluded from verified results.</p></details> : null}
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
@@ -1183,19 +1177,19 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : researchOnly ? "Past-game baseline" : "Sach Projection"}
+                  : researchOnly ? context.recentLabel : "Sach Projection"}
               </b>
-              <span>{researchOnly ? "Not a validated forecast" : "Model"}</span>
+              <span>{researchOnly ? "Recent games" : "Model"}</span>
               <strong>
                 {binaryEvent
                   ? card.modelProbability == null
                     ? "—"
                     : `${shortNumber(card.modelProbability)}%`
-                  : shortNumber(card.modelProjection)}
+                  : shortNumber(researchOnly?context.recentAverage:card.modelProjection)}
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? researchOnly ? "Baseline difference" : "Edge" : "Actual"}</b>
+              <b>{state === "pregame" ? researchOnly ? "Average vs line" : "Edge" : "Actual"}</b>
               <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"
@@ -1212,7 +1206,7 @@ function PlayerCard({
             </div>
           </div>
 
-          {researchOnly ? <div className={styles.faceFooter}><p>{intelligence.decision}. {intelligence.giReason}</p></div> : state === "pregame" ? (
+          {researchOnly ? null : state === "pregame" ? (
             <div className={styles.predictionBanner}>
               <div>
                 <span>PREDICTION:</span>
@@ -1250,9 +1244,8 @@ function PlayerCard({
           )}
 
           <section className={styles.intelSection}>
-            <h4>{researchOnly ? "Why This Prop Is on the Board" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
+            <h4>{researchOnly ? "Player Analysis" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
             <div className={styles.reasonList}>
-              {researchOnly ? <p>{intelligence.rankingBasis}</p> : null}
               {(reasons.length ? reasons : [card.summary]).map((reason, index) => (
                 <p key={`${reason}-${index}`}>
                   <span>✓</span>
@@ -1288,7 +1281,7 @@ function PlayerCard({
               <RecentChart
                 values={recentFormValues}
                 line={card.sportsbookLine}
-                projection={card.modelProjection}
+                projection={displayedAverage}
                 liveValue={state === "live" ? current : null}
               />
             )}
@@ -1298,11 +1291,7 @@ function PlayerCard({
             <h4>{state === "live" ? "Matchup (Live)" : state === "final" ? "Matchup Result" : "Matchup"}</h4>
             <div className={styles.matchupBox}>
               <strong>{card.matchup || "Matchup context"}</strong>
-              <p>{researchOnly?intelligence.missing:card.summary}</p>
-          {researchOnly && card.raw.researchCohort?.observations ? <details><summary>Research sample: {card.raw.researchCohort.games} comparable appearances · {card.raw.researchCohort.excluded} excluded</summary>
-            <p>{card.raw.researchCohort.methodology}</p>
-            {card.raw.researchCohort.observations.map((game:any) => <p key={game.eventId}>{game.date.slice(0,10)} · {shortNumber(game.value)} · {game.workload == null ? "Workload unavailable" : `${game.workload} pass attempts`} · {game.included ? "Included" : String(game.reason).replaceAll("_", " ")}</p>)}
-          </details> : null}
+              <p>{researchOnly?context.face:card.summary}</p>
             </div>
           </section>
 
@@ -2426,7 +2415,7 @@ export function PlayerRankingsPanel({
       ) : null}
 
       {(loading&&!["mlb","soccer"].includes(sport))||displayCards.some(card => card.raw?.researchOnly) ? (
-        <div className={styles.state}>Research rankings — picks and GI are withheld until the forecast is validated. A sportsbook quote is not proof of prediction accuracy. Q1 forecasts require quarter-specific data, not full-game totals divided by four.</div>
+        <div className={styles.state}>Picks and GI are being rebuilt. Explore recent player results and available book lines below.</div>
       ) : !loading && displayCards.length > 0 && displayCards.every(card => card.sportsbookLine == null) ? (
         <div className={styles.state}>Sportsbook lines are unavailable. These are model-watch rankings; betting picks are only saved and graded with verified market data.</div>
       ) : null}

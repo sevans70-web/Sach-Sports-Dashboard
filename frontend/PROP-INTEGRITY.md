@@ -1,5 +1,13 @@
 # Cross-sport prop integrity repair
 
+### 19 October: public card facts and official NFL quarter observations
+
+Public cards now load dated recent results without requiring expansion. The displayed `Last N avg.` is the arithmetic average of those actual results, with the exact count, rather than a stored projection. Football passing samples exclude fewer-than-ten-attempt appearances and prior seasons; future and undated observations are excluded. Bookmaker prices, timestamps, stored-baseline diagnostics and sample-audit details no longer occupy the public card face. The book name and exact verified threshold remain visible. Model validation details remain in admin and this document.
+
+NFL/CFB live football stats now include observed Q1 passing, rushing and receiving yards. The parser requires unique player/team identity, beginning-of-quarter tape, and exact agreement of yards and attempts/carries/catches with the official boxscore. Ambiguous or incomplete tape stays unknown. NFL initial rankings and pending Q1 settlement use that same parser; NFL player history can fetch up to eight completed quarter games before kickoff. These are observed quarter statistics, not a quarter forecast. No full-game division is used.
+
+Read-only market-coverage diagnostics inspect the merged props catalog, the documented separate Bet365 v2 source, and archive availability using the configured server key and shared cache. Raw source buckets are not promoted to betting quotes without a tested adapter. GI, picks, probability calibration and sport/quarter forecast validation remain unfinished; the validated-model registry remains empty.
+
 Scope: NFL, CFB, NBA, WNBA, CBB and NHL. MLB and soccer remain hidden; their stored history is untouched.
 
 ## What is repaired

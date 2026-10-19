@@ -1,5 +1,5 @@
 import {espnParticipation} from "@/lib/player-participation";
-import {footballObservedRows} from "@/lib/football-observed-stats";
+import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
@@ -211,36 +211,6 @@ function participantMatches(participant:any,playerId:string,playerName:string){
  const wanted=cleanName(playerName),last=wanted.split(" ").filter(Boolean).pop()||wanted;
  return Boolean((playerId&&id&&id===String(playerId))||(wanted&&name&&(name===wanted||name.includes(wanted)||wanted.includes(name)))||(last.length>=3&&name.split(" ").includes(last)));
 }
-function q1StatFromSummary(payload:any,playerId:string,playerName:string,kind:"passing"|"rushing"|"receiving"){
- let total=0,matched=false;
- for(const play of quarterOnePlays(payload)){
-   const yards=numStat(play?.statYardage??play?.yards??play?.yardage);
-   const text=String(play?.text||play?.shortText||play?.description||"");
-   const participants=Array.isArray(play?.participants)?play.participants:[];
-   let roleMatch=false;
-   for(const participant of participants){
-     if(!participantMatches(participant,playerId,playerName))continue;
-     const role=cleanName(participant?.type||participant?.role||participant?.statType||participant?.participantType||"");
-     if(kind==="passing"&&(role.includes("passer")||role.includes("passing")||role.includes("pass")))roleMatch=true;
-     if(kind==="rushing"&&(role.includes("rusher")||role.includes("rushing")||role.includes("rush")))roleMatch=true;
-     if(kind==="receiving"&&(role.includes("receiver")||role.includes("receiving")||role.includes("reception")||role.includes("target")))roleMatch=true;
-   }
-   if(!roleMatch){
-     const cleanText=cleanName(text),wanted=cleanName(playerName),last=wanted.split(" ").filter(Boolean).pop()||wanted;
-     const hasName=cleanText.includes(wanted)||(last.length>=3&&cleanText.split(" ").includes(last));
-     if(hasName){
-       if(kind==="passing"&&/\bpass(?:es|ed)?\b/i.test(text)&&!/^.*\bto\b/i.test(text.slice(0,Math.max(0,text.toLowerCase().indexOf(last)))) )roleMatch=true;
-       if(kind==="receiving"&&/\bpass(?:es|ed)?\b.*\bto\b/i.test(text))roleMatch=true;
-       if(kind==="rushing"&&!/\bpass(?:es|ed)?\b/i.test(text)&&( /\bfor\s+-?\d+\s+yards?\b/i.test(text)||/\brun\b|\brush\b/i.test(text)))roleMatch=true;
-     }
-   }
-   if(!roleMatch)continue;
-   let value=yards;
-   if(value==null){const m=text.match(/for\s+(-?\d+)\s+yards?/i);value=m?Number(m[1]):null}
-   if(value!=null&&Number.isFinite(value)){total+=value;matched=true}
- }
- return matched?total:0;
-}
 function firstTdFromSummary(payload:any,playerName:string){
  const plays=Array.isArray(payload?.scoringPlays)?payload.scoringPlays:[];
  const td=plays.find((x:any)=>{
@@ -295,7 +265,7 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
   if(!g)return row;
   const payload=summaries.get(String(g.id));
   const participant=payload&&String(payload?.header?.id)===String(g.id)?espnParticipation(payload,"nfl").find(p=>p.playerId===String(row.playerId)):null;
-  const current=payload&&String(payload?.header?.id)===String(g.id)?footballObservedRows(payload).find(p=>p.playerId===String(row.playerId))?.stats[market]??null:null;
+  const current=payload&&String(payload?.header?.id)===String(g.id)?footballQuarterRows(payload).find(p=>p.playerId===String(row.playerId))?.stats[market]??null:null;
   const line=Number(row.sportsbookLine);
   const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
   return {...row,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};

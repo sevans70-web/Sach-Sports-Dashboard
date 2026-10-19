@@ -1,6 +1,7 @@
 import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
 import {footballObservedRows} from "@/lib/football-observed-stats";
+import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -81,34 +82,6 @@ function participantMatches(participant:any,playerId:string,playerName:string){
  const wanted=cleanName(playerName),last=wanted.split(" ").filter(Boolean).pop()||wanted;
  return Boolean((playerId&&id&&id===String(playerId))||(wanted&&name&&(name===wanted||name.includes(wanted)||wanted.includes(name)))||(last.length>=3&&name.split(" ").includes(last)));
 }
-function q1StatFromSummary(payload:any,playerId:string,playerName:string,kind:"passing"|"rushing"|"receiving"){
- let total=0,matched=false;
- for(const play of quarterOnePlays(payload)){
-   const text=String(play?.text||play?.shortText||play?.description||"");
-   const participants=Array.isArray(play?.participants)?play.participants:[];let roleMatch=false;
-   for(const participant of participants){
-     if(!participantMatches(participant,playerId,playerName))continue;
-     const role=cleanName(participant?.type||participant?.role||participant?.statType||participant?.participantType||"");
-     if(kind==="passing"&&(role.includes("passer")||role.includes("passing")||role.includes("pass")))roleMatch=true;
-     if(kind==="rushing"&&(role.includes("rusher")||role.includes("rushing")||role.includes("rush")))roleMatch=true;
-     if(kind==="receiving"&&(role.includes("receiver")||role.includes("receiving")||role.includes("reception")||role.includes("target")))roleMatch=true;
-   }
-   if(!roleMatch){
-     const cleanText=cleanName(text),wanted=cleanName(playerName),last=wanted.split(" ").filter(Boolean).pop()||wanted;
-     const hasName=cleanText.includes(wanted)||(last.length>=3&&cleanText.split(" ").includes(last));
-     if(hasName){
-       if(kind==="passing"&&/\bpass(?:es|ed)?\b/i.test(text))roleMatch=true;
-       if(kind==="receiving"&&/\bpass(?:es|ed)?\b.*\bto\b/i.test(text))roleMatch=true;
-       if(kind==="rushing"&&!/\bpass(?:es|ed)?\b/i.test(text)&&(/\bfor\s+-?\d+\s+yards?\b/i.test(text)||/\brun\b|\brush\b/i.test(text)))roleMatch=true;
-     }
-   }
-   if(!roleMatch)continue;
-   let yards=numStat(play?.statYardage??play?.yards??play?.yardage);
-   if(yards==null){const m=text.match(/for\s+(-?\d+)\s+yards?/i);yards=m?Number(m[1]):null}
-   if(yards!=null&&Number.isFinite(yards)){total+=yards;matched=true}
- }
- return matched?total:0;
-}
 function q1IsFinal(payload:any,game:any){
  if(game?.completed||game?.state==="post")return true;
  const status=payload?.header?.competitions?.[0]?.status||payload?.header?.competitions?.[0]?.status?.type||{};
@@ -145,9 +118,7 @@ function summaryActual(payload:any,p:SavedNflPrediction){
  if(p.market==="rushing_receiving_yards"){const a=rushY(),b=recY();return a==null&&b==null?null:(a||0)+(b||0)}
  if(p.market==="anytime_td"){const a=rushTd(),b=recTd();return a==null&&b==null?null:(a||0)+(b||0)}
  if(p.market==="first_td")return firstTdFromSummary(payload,p.playerName);
- if(p.market==="q1_passing_yards")return q1StatFromSummary(payload,p.playerId,p.playerName,"passing");
- if(p.market==="q1_receiving_yards")return q1StatFromSummary(payload,p.playerId,p.playerName,"receiving");
- if(p.market==="q1_rushing_yards")return q1StatFromSummary(payload,p.playerId,p.playerName,"rushing");
+ if(["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"].includes(p.market))return footballQuarterRows(payload).find(row=>row.playerId===String(p.playerId))?.stats[p.market]??null;
  return null;
 }
 async function getSummary(gameId:string){try{const r=await fetch(`${ESPN_SUMMARY}?event=${encodeURIComponent(gameId)}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0",Accept:"application/json, text/plain, */*"}});return r.ok?await r.json():null}catch{return null}}

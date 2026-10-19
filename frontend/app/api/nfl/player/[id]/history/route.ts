@@ -1,6 +1,7 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import type {NflMarketKey} from "@/lib/nfl";
+import {footballQuarterRows} from "@/lib/football-quarter-stats";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -80,14 +81,14 @@ function marketIndexes(payload:any,market:HistoryMarket){
     return [
       statIndexFor(payload,["passingyards","passyards"]),
       statIndexFor(payload,["rushingyards","rushyards"])
-    ].filter(i=>i>=0);
+    ];
   }
 
   if(market==="rushing_receiving_yards"){
     return [
       statIndexFor(payload,["rushingyards","rushyards"]),
       statIndexFor(payload,["receivingyards","receptionyards","recyards"])
-    ].filter(i=>i>=0);
+    ];
   }
 
   const ix=statIndexFor(payload,STAT_KEYS[market]||[]);
@@ -96,13 +97,14 @@ function marketIndexes(payload:any,market:HistoryMarket){
 
 function parseSeason(payload:any,season:number,market:HistoryMarket){
   const indexes=marketIndexes(payload,market);
-  if(!indexes.length)return [];
+  if(!indexes.length||indexes.some(i=>i<0))return [];
 
   const events=payload?.events||{};
   const rows:any[]=[];
   const seen=new Set<string>();
 
   for(const st of payload?.seasonTypes||[]){
+    if(Number(st.type)===1)continue;
     for(const category of st?.categories||[]){
       if(category?.type!=="event")continue;
 
@@ -111,10 +113,8 @@ function parseSeason(payload:any,season:number,market:HistoryMarket){
         if(!eventId||seen.has(eventId))continue;
 
         const stats=Array.isArray(ev?.stats)?ev.stats:[];
-        const value=indexes.reduce((sum,ix)=>{
-          const n=Number(stats[ix]);
-          return sum+(Number.isFinite(n)?n:0);
-        },0);
+        if(indexes.some(ix=>stats[ix]==null||String(stats[ix]).trim()===''||!Number.isFinite(Number(stats[ix]))))continue;
+        const value=indexes.reduce((sum,ix)=>sum+Number(stats[ix]),0);
 
         if(!Number.isFinite(value))continue;
 
@@ -131,7 +131,8 @@ function parseSeason(payload:any,season:number,market:HistoryMarket){
             ""
           ),
           atVs:String(meta?.atVs||""),
-          value
+          value,
+          workload:(()=>{const ix=statIndexFor(payload,["passingattempts","passattempts"]);return ix>=0&&stats[ix]!=null&&String(stats[ix]).trim()!==''&&Number.isFinite(Number(stats[ix]))?Number(stats[ix]):null})()
         });
       }
     }
@@ -162,13 +163,20 @@ export async function GET(
   }
 
   if(String(market).startsWith("q1_")){
-    return NextResponse.json({
-      success:true,
-      supported:false,
-      points:[],
-      statLabel:"First Quarter",
-      message:"Dedicated first-quarter game history is not yet available; Q1 results are tracked from live play-by-play."
-    });
+    if(!["q1_passing_yards","q1_rushing_yards","q1_receiving_yards"].includes(String(market)))return NextResponse.json({success:true,supported:false,points:[]});
+    const base=String(market).replace(/^q1_/,"") as HistoryMarket;
+    const logs=await Promise.all([2025,2026].map(async season=>{try{return parseSeason(await fetchLog(id,season),season,base)}catch{return []}}));
+    const cutoff=Date.parse(req.nextUrl.searchParams.get('before')||new Date().toISOString());
+    const games=logs.flat().filter(p=>Date.parse(p.date)<cutoff).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-8);
+    const points=(await Promise.all(games.map(async game=>{
+      try{
+        const r=await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${encodeURIComponent(game.gameId)}`,{cache:'no-store'});if(!r.ok)return null;
+        const payload=await r.json();if(String(payload.header?.id)!==String(game.gameId)||payload.header?.competitions?.[0]?.status?.type?.completed!==true)return null;
+        const value=footballQuarterRows(payload).find(p=>p.playerId===id)?.stats[String(market)];
+        return value==null?null:{...game,value,period:'q1',source:'Official play-by-play reconciled to boxscore'};
+      }catch{return null}
+    }))).filter(p=>p!=null);
+    return NextResponse.json({success:true,supported:true,points,statLabel:'First-quarter yards',message:points.length?'':'No complete, reconciled first-quarter history available.'});
   }
 
   if(!STAT_KEYS[market]){
