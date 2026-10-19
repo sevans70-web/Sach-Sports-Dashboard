@@ -19,8 +19,8 @@ export function footballQuarterRows(payload:any){
  const transitioned=unique.some(p=>Number(p.period?.number??p.period)>=2);
  const status=payload?.header?.competitions?.[0]?.status;
  const complete=q1.some(p=>p.clock?.displayValue==='15:00')&&(transitioned||(Number(status?.period)===1&&status?.type?.state==='in'));
- const totals=new Map<string,{yards:number;count:number;q1:number}>(),bad=new Set<string>();
- const record=(id:string|null,market:string,yards:number,count:number,quarter:number)=>{if(!id)return;const key=id+'|'+market,r=totals.get(key)||{yards:0,count:0,q1:0};r.yards+=yards;r.count+=count;if(quarter===1)r.q1+=yards;totals.set(key,r)};
+ const totals=new Map<string,{yards:number;count:number;q1:number;q1Count:number}>(),bad=new Set<string>();
+ const record=(id:string|null,market:string,yards:number,count:number,quarter:number)=>{if(!id)return;const key=id+'|'+market,r=totals.get(key)||{yards:0,count:0,q1:0,q1Count:0};r.yards+=yards;r.count+=count;if(quarter===1){r.q1+=yards;r.q1Count+=count}totals.set(key,r)};
  for(const play of unique){
   const quarter=Number(play.period?.number??play.period),team=String(play.start?.team?.id||play.team?.id||play.driveTeam||'');
   const raw=String(play.text||play.shortText||''),text=raw.replace(/^.*?reported in as eligible\.\s*/i,'').replace(/^(?:\s*\([^)]*\)\s*)+/,'').trim(),type=String(play.type?.text||'').toLowerCase();
@@ -28,6 +28,11 @@ export function footballQuarterRows(payload:any){
   const pass=text.match(/^(\S+)\s+(?:pass(?:es|ed)?\b|spikes?\b)/i);
   if(pass&&!/sack|two.point|conversion/i.test(type)){
    const passer=identify(team,pass[1]);
+   // A target is independent of a completion. Deflected/intercepted passes
+   // without an identifiable intended receiver remain unresolved; the final
+   // per-player target-count reconciliation below must still pass.
+   const target=text.match(/\b(?:intended for|to)\s+(\S+)/i);
+   if(target)record(identify(team,target[1]),'targets',0,1,quarter);
    const caught=!/incomplete|intercepted|spike|pass thrown away/i.test(text.split(/TOUCHDOWN/i)[0])&&(/pass reception|passing touchdown|pass completion/i.test(type)||/\bto\s+\S+.*\bfor\s+(?:-?\d+\s+yards?|no gain)/i.test(text));
    const yards=caught?value(play.statYardage??play.yards??play.yardage):0;
    if(yards==null){if(passer)bad.add(passer+'|passing_yards');continue}
@@ -50,10 +55,14 @@ export function footballQuarterRows(payload:any){
  return observed.map(row=>{
   const stats={...row.stats},quarterAudit:Record<string,any>={};
   for(const [market,workload] of Object.entries(workloads)){
-   const key=row.playerId+'|'+market,tape=totals.get(key)||{yards:0,count:0,q1:0},actual=row.stats[market],count=row.stats[workload];
-   stats['q1_'+market]=complete&&!bad.has(key)&&actual!=null&&count!=null&&tape.yards===actual&&tape.count===count?tape.q1:null;
-   quarterAudit[market]={parsedYards:tape.yards,officialYards:actual,parsedCount:tape.count,officialCount:count,complete,ambiguousYardage:bad.has(key)};
+   const key=row.playerId+'|'+market,tape=totals.get(key)||{yards:0,count:0,q1:0,q1Count:0},actual=row.stats[market],count=row.stats[workload];
+   const reconciled=complete&&!bad.has(key)&&actual!=null&&count!=null&&tape.yards===actual&&tape.count===count;
+   stats['q1_'+market]=reconciled?tape.q1:null;
+   stats['q1_'+workload]=reconciled?tape.q1Count:null;
+   quarterAudit[market]={parsedYards:tape.yards,officialYards:actual,parsedCount:tape.count,officialCount:count,quarterCount:reconciled?tape.q1Count:null,complete,ambiguousYardage:bad.has(key)};
   }
+  const targets=totals.get(row.playerId+'|targets')||{count:0,q1Count:0};
+  stats.q1_targets=complete&&row.stats.targets!=null&&targets.count===row.stats.targets?targets.q1Count:null;
   return {...row,stats,quarterAudit};
  });
 }

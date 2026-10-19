@@ -1,9 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
 const {footballQuarterRows:q}=await loadTs(new URL('../lib/football-quarter-stats.ts',import.meta.url));
 const {reconcileOfficialGrade}=await loadTs(new URL('../lib/grade-reconciliation.ts',import.meta.url));
+const {footballModelObservations}=await loadTs(new URL('../lib/football-model-observations.ts',import.meta.url));
 function fixture(){return {boxscore:{players:[{team:{id:'1',abbreviation:'A'},statistics:[
  {name:'passing',labels:['C/ATT','YDS'],athletes:[{athlete:{id:'10',displayName:'Alex Smith'},stats:['2/3','30']}]},
- {name:'receiving',labels:['REC','YDS'],athletes:[{athlete:{id:'11',displayName:'Ben Smith'},stats:['2','30']}]},
+ {name:'receiving',labels:['REC','YDS','TGTS'],athletes:[{athlete:{id:'11',displayName:'Ben Smith'},stats:['2','30','3']}]},
  {name:'rushing',labels:['CAR','YDS'],athletes:[{athlete:{id:'12',displayName:'Carl Jones'},stats:['1','-2']}]}]}]},plays:[
  {id:'0',period:{number:1},clock:{displayValue:'15:00'},type:{text:'Kickoff'},text:'Kickoff'},
  {id:'1',period:{number:1},start:{team:{id:'1'}},type:{text:'Pass Reception'},text:'A.Smith pass short right to B.Smith for 10 yards',statYardage:10},
@@ -13,6 +14,23 @@ function fixture(){return {boxscore:{players:[{team:{id:'1',abbreviation:'A'},st
  ]}}
 test('Q1 yards identify passer and receiver separately, preserve negative rush yards and exclude later periods',()=>{
  const rows=q(fixture());assert.equal(rows.find(r=>r.playerId==='10').stats.q1_passing_yards,10);assert.equal(rows.find(r=>r.playerId==='11').stats.q1_receiving_yards,10);assert.equal(rows.find(r=>r.playerId==='12').stats.q1_rushing_yards,-2);
+});
+test('quarter workloads reconcile independently: targets include incompletions while receptions do not',()=>{
+ const rows=q(fixture()),qb=rows.find(r=>r.playerId==='10'),wr=rows.find(r=>r.playerId==='11'),rb=rows.find(r=>r.playerId==='12');
+ assert.equal(qb.stats.q1_pass_attempts,2);assert.equal(qb.stats.pass_attempts,3);
+ assert.equal(wr.stats.q1_targets,2);assert.equal(wr.stats.q1_receptions,1);assert.equal(rb.stats.q1_rush_attempts,1);
+ const p=fixture();p.boxscore.players[0].statistics[1].athletes[0].stats[2]='4';assert.equal(q(p).find(r=>r.playerId==='11').stats.q1_targets,null);
+ p.plays.shift();assert.equal(q(p).find(r=>r.playerId==='10').stats.q1_pass_attempts,null);
+});
+test('quarter model observations retain native quarter outcomes/workload and keep full-game role volume separately',()=>{
+ const p=fixture();p.header={id:'g',season:{year:2025,type:2},competitions:[{date:'2025-10-01T00:00:00Z',status:{type:{completed:true}},competitors:[{team:{id:'1',abbreviation:'A'}},{team:{id:'2',abbreviation:'B'}}]}]};
+ const identity={sport:'nfl',season:'2025',gameId:'g',source:'official',retrievedAt:'2025-10-05T00:00:00Z'};
+ const rows=footballModelObservations(p,identity,'q1'),qb=rows.find(r=>r.market==='q1_passing_yards'),wr=rows.find(r=>r.market==='q1_receiving_yards');
+ assert.equal(qb.actual,10);assert.equal(qb.workload,2);assert.equal(qb.roleWorkload,3);
+ assert.equal(wr.actual,10);assert.equal(wr.workload,2);assert.equal(wr.roleWorkload,3);
+ const zero=structuredClone(p);for(const play of zero.plays)if(play.id!=='0')play.period.number=2;
+ const zeroQb=footballModelObservations(zero,identity,'q1').find(r=>r.market==='q1_passing_yards');assert.equal(zeroQb.actual,0);assert.equal(zeroQb.workload,0);assert.equal(zeroQb.roleWorkload,3);
+ p.plays.pop();assert.equal(footballModelObservations(p,identity,'q1').length,0);
 });
 test('truncated tape, incomplete Q1 and mismatched attempt totals stay unknown',()=>{
  for(const mutate of [p=>p.plays.shift(),p=>p.plays.pop(),p=>p.plays.splice(2,1),p=>p.boxscore.players[0].statistics[0].athletes[0].stats[1]='31']){

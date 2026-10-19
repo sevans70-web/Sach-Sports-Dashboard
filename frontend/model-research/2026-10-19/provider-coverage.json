@@ -1,0 +1,27 @@
+{
+  "scope": "Bounded live source observations, not a guarantee about future or archive-wide coverage",
+  "rows": [
+    {
+      "sport": "nfl",
+      "checkedAt": "2026-10-19T02:10:18.741Z",
+      "archiveValidationSample": {
+        "error": "Archive validation sample returned 403"
+      },
+      "supplementWarning": "Supplemental odds returned 429",
+      "qualifyingQuarterCounts": {
+        "q1_passing_yards": 0,
+        "q1_receiving_yards": 0,
+        "q1_rushing_yards": 0
+      }
+    },
+    {
+      "sport": "nba",
+      "checkedAt": "2026-10-19T02:10:19.720Z",
+      "archiveValidationSample": {
+        "error": "Archive validation sample returned 403"
+      },
+      "supplementWarning": "Supplemental odds rate limit: waiting for provider retry window.",
+      "qualifyingQuarterCounts": null
+    }
+  ]
+}

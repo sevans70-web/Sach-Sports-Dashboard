@@ -1,0 +1,490 @@
+{
+  "modelId": "workload-distribution-candidate-v2",
+  "validatedForBetting": false,
+  "giEnabled": false,
+  "observations": 15411,
+  "reports": [
+    {
+      "group": "nfl|passing_yards",
+      "targetAppearances": 209,
+      "eligibleTargets": 68,
+      "trainingRows": 233,
+      "calibrationRows": 145,
+      "exactQuoteSamples": 18,
+      "validatedForBetting": false,
+      "reason": null,
+      "trainedThrough": "2025-11-28T20:00:00.000Z",
+      "calibrationStartsAt": "2025-11-30T21:25:00.000Z",
+      "calibratedThrough": "2026-01-05T01:20:00.000Z",
+      "forecasts": 68,
+      "mae": 65.70218260849687,
+      "baselineMae": 64.47745098039216,
+      "workloadMae": 6.996951947064208,
+      "crps": 46.25613485346576,
+      "interval80Coverage": 0.8823529411764706,
+      "baselineCrps": 45.06409456529342,
+      "pairedCrpsImprovement": {
+        "clusters": 42,
+        "replicates": 1000,
+        "lower95": -7.412517387975824,
+        "upper95": 4.352880049003713
+      },
+      "meanIntervalWidth": 246.4558823529412,
+      "brier": 0.23606024573919943,
+      "marketBrier": 0.2555544943759921,
+      "candidateBets": 15,
+      "pairedBrierImprovement": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.0481687194133102,
+        "upper95": 0.09035313602831657
+      },
+      "candidateSettled": 15,
+      "candidatePushes": 0,
+      "candidateRoi": 0.15160681780989188,
+      "candidateRoiInterval": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.3159729573329946,
+        "upper95": 0.5680262899135745
+      },
+      "quoteRejections": {
+        "missing_quote": 50
+      },
+      "calibrationBins": [
+        {
+          "from": 0,
+          "to": 0.1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.1,
+          "to": 0.2,
+          "count": 1,
+          "predicted": 0.1724137931034483,
+          "observed": 0
+        },
+        {
+          "from": 0.2,
+          "to": 0.3,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.3,
+          "to": 0.4,
+          "count": 5,
+          "predicted": 0.31724137931034485,
+          "observed": 0.4
+        },
+        {
+          "from": 0.4,
+          "to": 0.5,
+          "count": 2,
+          "predicted": 0.41379310344827586,
+          "observed": 1
+        },
+        {
+          "from": 0.5,
+          "to": 0.6,
+          "count": 5,
+          "predicted": 0.5406896551724139,
+          "observed": 0.6
+        },
+        {
+          "from": 0.6,
+          "to": 0.7,
+          "count": 5,
+          "predicted": 0.6372413793103449,
+          "observed": 0.6
+        },
+        {
+          "from": 0.7,
+          "to": 0.8,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.8,
+          "to": 0.9,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.9,
+          "to": 1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        }
+      ]
+    },
+    {
+      "group": "nfl|receiving_yards",
+      "targetAppearances": 1471,
+      "eligibleTargets": 433,
+      "trainingRows": 1601,
+      "calibrationRows": 1078,
+      "exactQuoteSamples": 22,
+      "validatedForBetting": false,
+      "reason": null,
+      "trainedThrough": "2025-11-28T20:00:00.000Z",
+      "calibrationStartsAt": "2025-11-30T21:05:00.000Z",
+      "calibratedThrough": "2026-01-05T01:20:00.000Z",
+      "forecasts": 433,
+      "mae": 23.87077838922752,
+      "baselineMae": 24.232717474980763,
+      "workloadMae": 2.104671646581612,
+      "crps": 17.083259409175007,
+      "interval80Coverage": 0.6859122401847575,
+      "baselineCrps": 18.063870498627086,
+      "pairedCrpsImprovement": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": 0.44441916703257844,
+        "upper95": 1.500223652509035
+      },
+      "meanIntervalWidth": 57.65357967667436,
+      "brier": 0.3589789785185299,
+      "marketBrier": 0.253555493583993,
+      "candidateBets": 16,
+      "pairedBrierImprovement": {
+        "clusters": 10,
+        "replicates": 1000,
+        "lower95": -0.18728173792077343,
+        "upper95": 0.009297898963848465
+      },
+      "candidateSettled": 16,
+      "candidatePushes": 0,
+      "candidateRoi": -0.27787165056429713,
+      "candidateRoiInterval": null,
+      "quoteRejections": {
+        "missing_quote": 411
+      },
+      "calibrationBins": [
+        {
+          "from": 0,
+          "to": 0.1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.1,
+          "to": 0.2,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.2,
+          "to": 0.3,
+          "count": 3,
+          "predicted": 0.24056895485466914,
+          "observed": 0.6666666666666666
+        },
+        {
+          "from": 0.3,
+          "to": 0.4,
+          "count": 1,
+          "predicted": 0.3654916512059369,
+          "observed": 1
+        },
+        {
+          "from": 0.4,
+          "to": 0.5,
+          "count": 4,
+          "predicted": 0.4851576994434137,
+          "observed": 0.25
+        },
+        {
+          "from": 0.5,
+          "to": 0.6,
+          "count": 2,
+          "predicted": 0.5255102040816326,
+          "observed": 0.5
+        },
+        {
+          "from": 0.6,
+          "to": 0.7,
+          "count": 1,
+          "predicted": 0.6846011131725418,
+          "observed": 0
+        },
+        {
+          "from": 0.7,
+          "to": 0.8,
+          "count": 5,
+          "predicted": 0.774582560296846,
+          "observed": 0.4
+        },
+        {
+          "from": 0.8,
+          "to": 0.9,
+          "count": 4,
+          "predicted": 0.8253710575139146,
+          "observed": 0.5
+        },
+        {
+          "from": 0.9,
+          "to": 1,
+          "count": 2,
+          "predicted": 0.9290352504638218,
+          "observed": 0.5
+        }
+      ]
+    },
+    {
+      "group": "nfl|receptions",
+      "targetAppearances": 1471,
+      "eligibleTargets": 433,
+      "trainingRows": 1601,
+      "calibrationRows": 1078,
+      "exactQuoteSamples": 17,
+      "validatedForBetting": false,
+      "reason": null,
+      "trainedThrough": "2025-11-28T20:00:00.000Z",
+      "calibrationStartsAt": "2025-11-30T21:05:00.000Z",
+      "calibratedThrough": "2026-01-05T01:20:00.000Z",
+      "forecasts": 433,
+      "mae": 1.6302997104238914,
+      "baselineMae": 1.7510392609699776,
+      "workloadMae": 2.095630193436387,
+      "crps": 1.1786611018241318,
+      "interval80Coverage": 0.8290993071593533,
+      "baselineCrps": 1.2779403388956567,
+      "pairedCrpsImprovement": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": 0.055607260328631225,
+        "upper95": 0.15058176294261638
+      },
+      "meanIntervalWidth": 4.240184757505774,
+      "brier": 0.25497928974254563,
+      "marketBrier": 0.24418554576139573,
+      "candidateBets": 14,
+      "pairedBrierImprovement": {
+        "clusters": 10,
+        "replicates": 1000,
+        "lower95": -0.09337962401771766,
+        "upper95": 0.06465024511999433
+      },
+      "candidateSettled": 14,
+      "candidatePushes": 0,
+      "candidateRoi": 0.07870086517083637,
+      "candidateRoiInterval": null,
+      "quoteRejections": {
+        "missing_quote": 416
+      },
+      "calibrationBins": [
+        {
+          "from": 0,
+          "to": 0.1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.1,
+          "to": 0.2,
+          "count": 2,
+          "predicted": 0.15630797773654917,
+          "observed": 0.5
+        },
+        {
+          "from": 0.2,
+          "to": 0.3,
+          "count": 4,
+          "predicted": 0.23562152133580705,
+          "observed": 0.25
+        },
+        {
+          "from": 0.3,
+          "to": 0.4,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.4,
+          "to": 0.5,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.5,
+          "to": 0.6,
+          "count": 3,
+          "predicted": 0.556895485466914,
+          "observed": 0.6666666666666666
+        },
+        {
+          "from": 0.6,
+          "to": 0.7,
+          "count": 1,
+          "predicted": 0.6938775510204082,
+          "observed": 0
+        },
+        {
+          "from": 0.7,
+          "to": 0.8,
+          "count": 2,
+          "predicted": 0.7685528756957328,
+          "observed": 1
+        },
+        {
+          "from": 0.8,
+          "to": 0.9,
+          "count": 5,
+          "predicted": 0.8575139146567718,
+          "observed": 0.6
+        },
+        {
+          "from": 0.9,
+          "to": 1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        }
+      ]
+    },
+    {
+      "group": "nfl|rushing_yards",
+      "targetAppearances": 721,
+      "eligibleTargets": 200,
+      "trainingRows": 744,
+      "calibrationRows": 528,
+      "exactQuoteSamples": 17,
+      "validatedForBetting": false,
+      "reason": null,
+      "trainedThrough": "2025-11-28T20:00:00.000Z",
+      "calibrationStartsAt": "2025-11-30T21:05:00.000Z",
+      "calibratedThrough": "2026-01-05T01:20:00.000Z",
+      "forecasts": 200,
+      "mae": 19.62811786135362,
+      "baselineMae": 19.102499999999992,
+      "workloadMae": 3.1321935591062067,
+      "crps": 14.010689386765371,
+      "interval80Coverage": 0.755,
+      "baselineCrps": 14.170736394484623,
+      "pairedCrpsImprovement": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": -0.5975703718168384,
+        "upper95": 0.946764946272834
+      },
+      "meanIntervalWidth": 57.23,
+      "brier": 0.3963376242370226,
+      "marketBrier": 0.2504873556200437,
+      "candidateBets": 16,
+      "pairedBrierImprovement": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.23890825029423585,
+        "upper95": -0.04131719062059209
+      },
+      "candidateSettled": 16,
+      "candidatePushes": 0,
+      "candidateRoi": -0.5196695708866761,
+      "candidateRoiInterval": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -1,
+        "upper95": -0.09341520467836259
+      },
+      "quoteRejections": {
+        "missing_quote": 183
+      },
+      "calibrationBins": [
+        {
+          "from": 0,
+          "to": 0.1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.1,
+          "to": 0.2,
+          "count": 3,
+          "predicted": 0.178030303030303,
+          "observed": 0.3333333333333333
+        },
+        {
+          "from": 0.2,
+          "to": 0.3,
+          "count": 1,
+          "predicted": 0.2537878787878788,
+          "observed": 0
+        },
+        {
+          "from": 0.3,
+          "to": 0.4,
+          "count": 3,
+          "predicted": 0.3251262626262626,
+          "observed": 1
+        },
+        {
+          "from": 0.4,
+          "to": 0.5,
+          "count": 1,
+          "predicted": 0.4583333333333333,
+          "observed": 1
+        },
+        {
+          "from": 0.5,
+          "to": 0.6,
+          "count": 1,
+          "predicted": 0.5662878787878788,
+          "observed": 0
+        },
+        {
+          "from": 0.6,
+          "to": 0.7,
+          "count": 2,
+          "predicted": 0.6704545454545454,
+          "observed": 0
+        },
+        {
+          "from": 0.7,
+          "to": 0.8,
+          "count": 4,
+          "predicted": 0.7533143939393939,
+          "observed": 0
+        },
+        {
+          "from": 0.8,
+          "to": 0.9,
+          "count": 1,
+          "predicted": 0.8920454545454546,
+          "observed": 0
+        },
+        {
+          "from": 0.9,
+          "to": 1,
+          "count": 1,
+          "predicted": 0.9090909090909091,
+          "observed": 1
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Diagnostic reuse of the v1 evaluation period; not an untouched holdout.",
+    "Current-board population and revised official logs introduce selection and vintage bias.",
+    "Pregame role, injuries, teammates, weather, rotation, matchup and goalie context remain missing.",
+    "A pooled empirical error distribution does not establish player-conditional calibration.",
+    "48-hour publication lag is a convention, not archived publication-time evidence.",
+    "No quarter/scorer support. No probability or GI promotion without exact quotes, independent validation and prospective evidence."
+  ],
+  "sourceDataSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "selectedQuoteCount": 89,
+  "quoteDataSha256": "94b64b19b0ab5d113ab637587d173b3565701301b60e2e401032b5510feb75eb",
+  "modelArtifactsSha256": "8a458cd723bffc09a491aad32ec4b7676a1db2494b4347e3130886a3b88f6948"
+}

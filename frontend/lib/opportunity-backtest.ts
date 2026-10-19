@@ -1,6 +1,6 @@
 /** Retrospective point-forecast research. This module never produces GI/picks.
  * Targets and actual target-game workload are forbidden as model features. */
-export type OpportunityGame={sport:string;season:string;playerId:string;playerName:string;gameId:string;gameTime:string;teamId:string;opponentId:string;market:string;actual:number;workload:number;source:string;retrievedAt:string};
+export type OpportunityGame={sport:string;season:string;playerId:string;playerName:string;gameId:string;gameTime:string;teamId:string;opponentId:string;market:string;actual:number;workload:number;roleWorkload?:number;source:string;retrievedAt:string};
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 function numeric(v:any){if(v==null||typeof v==='boolean'||!String(v).trim())return null;const n=Number(String(v).replaceAll(',',''));return Number.isFinite(n)?n:null}
 function minutes(v:any){const m=String(v??'').match(/^(\d+):(\d{2})$/);return m?Number(m[1])+Number(m[2])/60:numeric(v)}

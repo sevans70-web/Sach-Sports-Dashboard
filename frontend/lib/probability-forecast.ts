@@ -5,6 +5,7 @@ import {opportunityFeatures, type OpportunityGame} from '@/lib/opportunity-backt
 export type LinearModel={means:number[];scales:number[];coefficients:number[]};
 export type DistributionModel={version:1;group:string;trainedThrough:string;calibratedThrough:string;
  workload:LinearModel;rate:LinearModel;residuals:number[];trainingRows:number;calibrationRows:number;
+ rateTrainingRows?:number;
  minimum:number|null;integer:boolean;validatedForBetting:false};
 export type ExactQuote={sport:string;market:string;period:'game'|'q1';gameId:string;playerId:string;
  bookmaker:string;quoteId:string;line:number;overPrice:number;underPrice:number;
@@ -15,18 +16,20 @@ const validTime=(s:string)=>Number.isFinite(Date.parse(s));
 const groupOf=(g:OpportunityGame)=>g.sport+'|'+g.market;
 const outcomeKey=(g:OpportunityGame)=>[g.sport,g.market,g.playerId,g.gameId].join('|');
 const supported=(g:Pick<OpportunityGame,'sport'|'market'>)=>
- ['nfl','cfb'].includes(g.sport)?['passing_yards','rushing_yards','receiving_yards','receptions'].includes(g.market):
+ ['nfl','cfb'].includes(g.sport)?['passing_yards','rushing_yards','receiving_yards','receptions','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'].includes(g.market):
  ['nba','wnba','cbb'].includes(g.sport)?['points','rebounds','assists','threes_made','steals','blocks'].includes(g.market):
  g.sport==='nhl'&&['shots_on_goal','goals','assists','points','goalie_saves'].includes(g.market);
 
 export function probabilityInputs(history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>,availableAt=target.gameTime){
  if(!supported(target))return {features:null,baseline:null,reason:'unsupported_market'};
  let eligible=history;
- if(['nfl','cfb'].includes(target.sport)&&target.market==='passing_yards'){
+ if(['nfl','cfb'].includes(target.sport)&&['passing_yards','q1_passing_yards'].includes(target.market)){
   const prior=history.filter(g=>g.sport===target.sport&&g.market===target.market&&g.playerId===target.playerId&&g.teamId===target.teamId&&g.season===target.season&&Date.parse(g.gameTime)<Date.parse(availableAt)-48*3600000).sort((a,b)=>a.gameTime.localeCompare(b.gameTime));
-  if(prior.at(-1)&&prior.at(-1)!.workload<10)return {features:null,baseline:null,reason:'latest_passing_role_uncertain'};
+  const role=(g:OpportunityGame)=>target.market.startsWith('q1_')?g.roleWorkload:g.workload;
+  const latestRole=prior.at(-1)?role(prior.at(-1)!):null;
+  if(prior.length&&(latestRole==null||latestRole<10))return {features:null,baseline:null,reason:'latest_passing_role_uncertain'};
   // Two-attempt backup appearances cannot depress a starter's yardage mean.
-  eligible=history.filter(g=>g.workload>=10);
+  eligible=history.filter(g=>{const volume=role(g);return volume!=null&&volume>=10});
  }
  return opportunityFeatures(eligible,target,availableAt);
 }
@@ -156,18 +159,23 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   const boundary=dates[Math.floor(dates.length*.65)],boundaryMs=Date.parse(boundary||'');
   // Whole timestamps stay together; 48h embargo prevents a fitting result
   // from being unavailable at the earliest calibration prediction.
-  const train=prior.filter(r=>Date.parse(r.game.gameTime)<boundaryMs-48*3600000&&r.game.workload>0);
+  const train=prior.filter(r=>Date.parse(r.game.gameTime)<boundaryMs-48*3600000&&(market.startsWith('q1_')||r.game.workload>0));
+  const rateTraining=train.filter(r=>r.game.workload>0);
   const calibration=prior.filter(r=>Date.parse(r.game.gameTime)>=boundaryMs);
   const base={group,targetAppearances:source.filter(g=>g.season===testSeason).length,eligibleTargets:test.length,
    trainingRows:train.length,calibrationRows:calibration.length,exactQuoteSamples:0,validatedForBetting:false};
-  if(train.length<100||calibration.length<100){reports.push({...base,reason:'insufficient_training_or_calibration',forecasts:0});continue}
+  if(train.length<100||rateTraining.length<100||calibration.length<100){reports.push({...base,reason:'insufficient_training_or_calibration',forecasts:0});continue}
   const trainedThrough=train.at(-1)!.game.gameTime,calibratedThrough=calibration.at(-1)!.game.gameTime;
   if(test.some(r=>Date.parse(r.game.gameTime)-48*3600000<=Date.parse(calibratedThrough)))throw Error('Calibration/test overlap '+group);
-  const workload=fitLinear(train.map(r=>({x:r.x,y:r.game.workload}))),rate=fitLinear(train.map(r=>({x:r.x,y:r.game.actual/r.game.workload})));
+  // Genuine zero-opportunity quarters train the workload model. Efficiency
+  // fitting alone omits them because actual/zero is undefined. Full-game v2
+  // retains its previously fixed positive-workload fitting protocol.
+  const workload=fitLinear(train.map(r=>({x:r.x,y:r.game.workload}))),rate=fitLinear(rateTraining.map(r=>({x:r.x,y:r.game.actual/r.game.workload})));
   if(!workload||!rate){reports.push({...base,reason:'singular_fit',forecasts:0});continue}
-  const minimum=['passing_yards','rushing_yards','receiving_yards'].includes(market)?null:0;
+  const minimum=['passing_yards','rushing_yards','receiving_yards'].includes(market.replace(/^q1_/,''))?null:0;
   const model:DistributionModel={version:1,group,trainedThrough,calibratedThrough,workload,rate,
    residuals:[],trainingRows:train.length,calibrationRows:calibration.length,minimum,integer:true,validatedForBetting:false};
+  if(market.startsWith('q1_'))model.rateTrainingRows=rateTraining.length;
   model.residuals=calibration.map(r=>r.game.actual-point(model,r.x).projection).sort((a,b)=>a-b);models.push(model);
   const baselineResiduals=calibration.map(r=>r.game.actual-r.baseline).sort((a,b)=>a-b);
   const results=test.map(r=>{
@@ -208,16 +216,18 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    pairedCrpsImprovement:clusteredMeanInterval(results.map(r=>({gameId:r.gameId,value:r.baselineCrps-r.crps}))),
    meanIntervalWidth:results.length?mean(results.map(r=>r.width)):null,exactQuoteSamples:results.filter(r=>!r.quoteIssue).length,
    brier:metric('brier'),marketBrier:metric('marketBrier'),candidateBets:results.filter(r=>r.candidate).length,
+   pairedBrierImprovement:clusteredMeanInterval(results.filter(r=>r.brier!=null&&r.marketBrier!=null).map(r=>({gameId:r.gameId,value:r.marketBrier!-r.brier!}))),
    candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
-   candidateRoi:metric('profit'),quoteRejections,calibrationBins:bins});
+   candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
- return {modelId:'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
+ const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
+ return {modelId:quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
   observations:games.length,models,reports,limitations:[
    'Diagnostic reuse of the v1 evaluation period; not an untouched holdout.',
    'Current-board population and revised official logs introduce selection and vintage bias.',
    'Pregame role, injuries, teammates, weather, rotation, matchup and goalie context remain missing.',
    'A pooled empirical error distribution does not establish player-conditional calibration.',
    '48-hour publication lag is a convention, not archived publication-time evidence.',
-   'No quarter/scorer support. No probability or GI promotion without exact quotes, independent validation and prospective evidence.',
+   quarter?'Quarter forecasts require independently reconciled quarter workload/results; scorer models are unsupported. No probability or GI promotion without exact quotes, independent validation and prospective evidence.':'No quarter/scorer support. No probability or GI promotion without exact quotes, independent validation and prospective evidence.',
   ]};
 }

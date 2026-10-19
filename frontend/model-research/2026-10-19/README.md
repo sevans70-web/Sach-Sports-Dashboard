@@ -8,7 +8,7 @@ This release implements a serializable probability engine and executes it on rea
 
 Fitting uses the first 65% of distinct eligible prior-season timestamps, calibration the remaining 35%, with a 48-hour embargo between them. Each needs at least 100 examples. Later-season outcomes never enter fitted coefficients or calibration residuals. Every target uses only prior same-player/team/season appearances with a conservative 48-hour result availability lag. Passing samples exclude fewer-than-ten-attempt appearances, and a latest known backup appearance causes abstention; low workload in the target outcome remains in evaluation. This repairs a Nelson-like two-attempt zero depressing a starter forecast, while leaving actual current-role confirmation unfinished.
 
-Forecast artifacts retain fitted coefficients, train-only normalization, chronological boundaries, calibration residuals and source digests. An artifact cannot forecast before calibration results were available. Quarter and scorer markets abstain; there is no division by four.
+Forecast artifacts retain fitted coefficients, train-only normalization, chronological boundaries, calibration residuals and source digests. An artifact cannot forecast before calibration results were available. The initial reports below cover full-game markets. The subsequent `nfl-quarter-population` bundle adds three native-quarter candidates from independently reconciled quarter workload/results; there is no division by four. Scorer markets abstain.
 
 Exact-quote evaluation requires the same sport/player/fixture/market/period, a named book, selected main line, both labelled prices, quote ID and timestamped pregame capture. Features are rebuilt at that archived decision time. Unknown/stale/after-start prices cannot enter Brier score, market comparison, calibration bins or ROI. Duplicate observations or multiple selected quotes for one target fail rather than choosing the profitable quote afterward.
 
@@ -31,7 +31,7 @@ Historical roster responses were inspected but rejected as a population source: 
 
 Receiving and receptions improve diagnostic CRPS over the comparison (fixture-bootstrap difference intervals above zero), but receiving-yard intervals substantially under-cover. Passing point error is worse; rushing has no clear distribution improvement. This is a diagnostic comparison, not grounds for promoting any market. The later period overlaps previously inspected v1 outcomes and is explicitly **not a fresh untouched holdout**.
 
-No exact historical quote dataset has been joined to these observations yet. Exact-quote samples are zero; Brier score, betting calibration and ROI remain null. Tests of price arithmetic and joining use synthetic fixtures and are not betting accuracy evidence. The server now has fixed, cached, first-page NBA/NFL archive probes to inspect whether the configured provider can supply labelled two-sided main lines. Coverage is to be verified live, separately from parser tests. No subscription or billing changes are made.
+These original full-game comparisons have zero exact-quote samples, so their Brier scores and ROI remain null. The subsequent `nfl-saved-quotes` bundle independently verifies saved pregame quotes and official results, providing 74 eligible exact-price diagnostic forecasts. Receiving and rushing probabilities perform poorly against the bookmaker benchmark; these results do not justify promotion. Its fitted artifact is byte-identical to the earlier NFL artifact. See that bundle's README for methods, results and limitations. Live bounded archive probes returned 403 for both NBA and NFL; the supplemental live odds feed returned 429. No subscription or billing changes are made.
 
 ## Reproduce
 
@@ -51,6 +51,6 @@ MODEL_SOURCE_CACHE=/tmp/sach-football-population-cache node scripts/collect-foot
 
 ## Still required
 
-Archived pregame roles, availability, available teammates, weather/game script, basketball rotations/minutes context, hockey lines/goalies, genuine quarter/scorer models, exact-price validation, independent future evaluation and prospective monitoring remain incomplete. The empirical error distribution is pooled by market and does not establish calibration for an individual player or role. The six-sport sample is selected from current boards, and all public logs are current revisions. These candidates must not be presented as validated forecasts.
+Archived pregame roles, availability, available teammates, weather/game script, basketball rotations/minutes context, hockey lines/goalies, scorer models, improved quarter coverage, broader exact-price validation, independent future evaluation and prospective monitoring remain incomplete. The empirical error distribution is pooled by market and does not establish calibration for an individual player or role. The six-sport sample is selected from current boards, and all public logs are current revisions. These candidates must not be presented as validated forecasts.
 
 All historical wagering records, research archives, Google Drive backups, seven-day retention and Railway storage settings are unchanged. MLB and soccer remain hidden.

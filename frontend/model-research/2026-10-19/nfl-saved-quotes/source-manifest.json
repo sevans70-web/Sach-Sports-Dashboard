@@ -1,0 +1,111 @@
+{
+  "population": "Original completed-game population plus independently checked final official outcomes for preserved pregame quotes. Quote selection uses provenance only, never old research side/outcome/GI. Targets may be less than 48 hours old; feature availability retains the 48-hour lag.",
+  "observations": 15411,
+  "dataSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "compressedSha256": "13d0abead3b27e87797c8e5deb81a59c83cd8c5b1cc265c87de44a8691084086",
+  "parentSourceDataSha256": "fe3cc06b798492e4876cb824d7739c2ee8e37961e75181e12ba21748872fb073",
+  "selectedQuotes": 89,
+  "rejections": {
+    "withdrawn": 42,
+    "no_reconciled_official_result": 9
+  },
+  "requests": [
+    {
+      "kind": "saved-quote-records",
+      "source": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/performance?period=Today&group=QB",
+      "retrievedAt": "2026-10-19T02:12:51.597Z",
+      "records": 99
+    },
+    {
+      "kind": "saved-quote-records",
+      "source": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/performance?period=Today&group=Offense",
+      "retrievedAt": "2026-10-19T02:12:54.486Z",
+      "records": 255
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873000",
+      "retrievedAt": "2026-10-19T02:12:57.035Z",
+      "observations": 47,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872997",
+      "retrievedAt": "2026-10-19T02:12:57.162Z",
+      "observations": 42,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873002",
+      "retrievedAt": "2026-10-19T02:12:57.305Z",
+      "observations": 38,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873005",
+      "retrievedAt": "2026-10-19T02:12:57.448Z",
+      "observations": 43,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873006",
+      "retrievedAt": "2026-10-19T02:12:57.633Z",
+      "observations": 44,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872996",
+      "retrievedAt": "2026-10-19T02:12:57.816Z",
+      "observations": 47,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873001",
+      "retrievedAt": "2026-10-19T02:12:57.967Z",
+      "observations": 42,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872999",
+      "retrievedAt": "2026-10-19T02:12:58.152Z",
+      "observations": 40,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873007",
+      "retrievedAt": "2026-10-19T02:12:58.265Z",
+      "observations": 0,
+      "completed": false
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872998",
+      "retrievedAt": "2026-10-19T02:12:58.427Z",
+      "observations": 42,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873004",
+      "retrievedAt": "2026-10-19T02:12:58.679Z",
+      "observations": 36,
+      "completed": true
+    },
+    {
+      "kind": "official-result",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873003",
+      "retrievedAt": "2026-10-19T02:12:58.860Z",
+      "observations": 40,
+      "completed": true
+    }
+  ],
+  "errors": []
+}

@@ -31,7 +31,11 @@ test('QB backup appearances cannot create a false low starting expectation, incl
  const baseline=probabilityInputs(history,game(8));
  assert.deepEqual(probabilityInputs([...history,game(1.5,{gameId:'backup',actual:0,workload:2})],game(8)),baseline);
  assert.equal(probabilityInputs([...history,game(6,{actual:0,workload:2})],game(8)).reason,'latest_passing_role_uncertain');
- assert.equal(probabilityInputs(history,game(8,{market:'q1_passing_yards'})).reason,'unsupported_market');
+ assert.equal(probabilityInputs(history,game(8,{market:'q1_passing_yards'})).features,null);
+ const quarters=history.map(g=>({...g,market:'q1_passing_yards',workload:8,roleWorkload:30,actual:50}));
+ assert.ok(probabilityInputs(quarters,game(8,{market:'q1_passing_yards'})).features);
+ assert.deepEqual(probabilityInputs(quarters,game(8,{market:'q1_passing_yards',roleWorkload:2,actual:0,workload:0})),probabilityInputs(quarters,game(8,{market:'q1_passing_yards',roleWorkload:40,actual:300,workload:20})));
+ assert.equal(probabilityInputs(quarters.map(g=>({...g,roleWorkload:2})),game(8,{market:'q1_passing_yards'})).features,null);
 });
 function dataset(){
  const rows=[];
@@ -73,4 +77,9 @@ test('quote evaluation uses archived decision-time features and reports actual p
  const history=Array.from({length:5},(_,i)=>game(i));
  const before=probabilityInputs(history,game(8),'2025-01-25T00:00:00Z');
  assert.deepEqual(before,probabilityInputs(history.slice(0,4),game(8),'2025-01-25T00:00:00Z'));
+});
+test('native quarter workload fitting retains zero-opportunity outcomes while efficiency avoids division by zero',()=>{
+ const rows=dataset().map((g,i)=>({...g,market:'q1_passing_yards',roleWorkload:30,workload:i%8===7?0:8,actual:i%8===7?0:50}));
+ const model=evaluateProbabilityModels(rows).models[0];assert.ok(model);assert.ok(model.trainingRows>model.rateTrainingRows);
+ assert.ok(model.workload.coefficients.every(Number.isFinite));assert.ok(model.rate.coefficients.every(Number.isFinite));
 });

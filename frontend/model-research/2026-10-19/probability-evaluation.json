@@ -33,9 +33,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 641
       },
@@ -141,9 +143,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 641
       },
@@ -249,9 +253,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 641
       },
@@ -357,9 +363,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 641
       },
@@ -465,9 +473,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 641
       },
@@ -573,9 +583,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 641
       },
@@ -703,9 +715,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 1768
       },
@@ -811,9 +825,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 1768
       },
@@ -919,9 +935,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 1768
       },
@@ -1027,9 +1045,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 1768
       },
@@ -1135,9 +1155,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 1768
       },
@@ -1243,9 +1265,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 1768
       },
@@ -1362,9 +1386,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 87
       },
@@ -1470,9 +1496,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 87
       },
@@ -1578,9 +1606,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 80
       },
@@ -1686,9 +1716,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 746
       },
@@ -1805,9 +1837,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 746
       },
@@ -1913,9 +1947,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 746
       },
@@ -2021,9 +2057,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 746
       },
@@ -2129,9 +2167,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 863
       },
@@ -2237,9 +2277,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 863
       },
@@ -2345,9 +2387,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 863
       },
@@ -2453,9 +2497,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 863
       },
@@ -2561,9 +2607,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 863
       },
@@ -2669,9 +2717,11 @@
       "brier": null,
       "marketBrier": null,
       "candidateBets": 0,
+      "pairedBrierImprovement": null,
       "candidateSettled": 0,
       "candidatePushes": 0,
       "candidateRoi": null,
+      "candidateRoiInterval": null,
       "quoteRejections": {
         "missing_quote": 863
       },
