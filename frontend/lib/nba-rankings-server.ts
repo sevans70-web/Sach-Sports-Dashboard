@@ -1,4 +1,5 @@
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
@@ -265,6 +266,7 @@ async function rowsForMarket(
 
   return{
    playerId:rosterPlayer.playerId,
+   teamId:roster.teamId,
    playerName:rosterPlayer.playerName,
    teamName:rosterTeam||roster.teamName||"NBA",
    position:rosterPlayer.position||"",
@@ -345,6 +347,7 @@ async function rowsForMarket(
 
   return{
    playerId:rosterPlayer.playerId,
+   teamId:roster.teamId,
    playerName:rosterPlayer.playerName,
    teamName:rosterTeam||roster.teamName||baseline.team||"NBA",
    position:rosterPlayer.position||"",
@@ -555,6 +558,7 @@ export async function captureAllNbaMarkets(){
   markets:results.map((x:any)=>({
    market:x.market,
    rows:x.rows?.length||0,
+  pregameContextRows:x.pregameContextCount||0,
    saved:x.saved===true,
    success:x.success,
    error:x.error||null
@@ -565,4 +569,4 @@ export async function captureAllNbaMarkets(){
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
-export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){return guardRankingPayload(await buildNbaMarketRankingsRaw(...args),"nba")}
+export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){return guardRankingPayload(await attachBasketballPregameContext(await buildNbaMarketRankingsRaw(...args),'nba'),"nba")}
