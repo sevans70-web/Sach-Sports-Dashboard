@@ -957,7 +957,7 @@ function PlayerCard({
           : ""
     );
 
-  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
+  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const displayedAverage=researchOnly?context.recentAverage:card.modelProjection;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;

@@ -3,6 +3,7 @@ import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
+import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 import {footballBookRows,footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -74,7 +75,10 @@ async function sharedOwlsGames(){
  const payload=await getOwlsPayload("nfl");return Array.isArray(payload?.data)?payload.data:[];
 }
 async function fetchOwlsRows(market:NflMarketKey){
- return footballBookRows(await getOwlsPayload("nfl"),market,OWLS_MARKETS[market]);
+ const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),market.startsWith('q1_')?getSgoSupplement('NFL'):Promise.resolve({data:[]})]);
+ const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
+ if(!primary&&!extra?.data?.length)throw Error('NFL book feeds are unavailable');
+ return footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market]);
 }
 
 async function resolvePlayer(name:string,teamName:string,matchup:string,schedule:any[]){
@@ -366,7 +370,7 @@ export async function GET(req:NextRequest){
     const key=`${p.playerId}|${p.gameId||cleanName(p.matchup)}`;
     const live=liveByKey.get(key) as any;
     const margin=p.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
-    return {...footballQuoteFields(p),originalResearchPick:p.pickSide,originalResearchSavedAt:p.savedAt,rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,researchCohort:live?.researchCohort,...(market.startsWith("q1_")?{quarterObservationChecked:true,observedQuarterValue:live?.liveCurrent??null}:{}),sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),participationConfirmed:live?.participationConfirmed===true,starterConfirmed:live?.starterConfirmed===true,participationGameId:String(g?.id||p.gameId||""),liveCurrent:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
+    return {...footballQuoteFields(p),originalResearchPick:p.pickSide,originalResearchSavedAt:p.savedAt,rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,researchCohort:live?.researchCohort,...(market.startsWith("q1_")?{quarterObservationChecked:true,observedQuarterValue:live?.liveCurrent??null}:{}),sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:market.startsWith("q1_")?live?.liveCurrent??null:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),participationConfirmed:live?.participationConfirmed===true,starterConfirmed:live?.starterConfirmed===true,participationGameId:String(g?.id||p.gameId||""),liveCurrent:market.startsWith("q1_")?live?.liveCurrent??null:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
   });
   const futureCurrent=liveRows.filter((r:any)=>!started(currentGameFor(r)));
   const lockedKeys=new Set(frozenStarted.map((r:any)=>`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));

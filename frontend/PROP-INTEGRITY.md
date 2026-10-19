@@ -12,6 +12,8 @@ Live source inspection at 2026-10-19 01:13 UTC found NFL BetMGM Q1 passing/recei
 
 Final football Q1 corrections now use the reconciled quarter parser and append the previous actual/status to `gradeRevisions`. Unreconciled legacy quarter totals are suppressed on cards instead of overriding a newly checked missing quarter stat; preserved underlying records remain inspectable. Live analysis and progress use the same latest observed value. In a 12-game stored official-summary audit, the conservative parser reconciled 13/23 players with passing attempts, 56/81 rushers and 143/153 receivers with catches. Remaining observations stay unknown; this does not establish complete quarter coverage or a validated forecast.
 
+The configured SportsGameOdds supplement now retains root `byBookmaker` prices rather than publishing a consensus pseudo-book. For O/U, opposing odds must match exact event, player, stat, period, book and threshold, both sides must be available, and the older side timestamp controls freshness. Alternative rungs are never traversed. NFL Q1 and CFB now route these named-book quotes through the shared integrity parser; NBA uses the repaired adapter already connected to its quote builder. First-basket named-book scorer prices are supported when the source explicitly provides that market. Opposing odds are requested explicitly, and shared league polling is cached for five minutes. This repair establishes quote provenance only and does not enable GI/picks.
+
 Scope: NFL, CFB, NBA, WNBA, CBB and NHL. MLB and soccer remain hidden; their stored history is untouched.
 
 ## What is repaired

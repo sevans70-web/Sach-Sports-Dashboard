@@ -63,3 +63,7 @@ test('observed BetMGM Q1 milestone feed is never relabeled as a two-way main O/U
  const result=footballBookRows({data:[game([book('betmgm',[quote({category:base+'_1q',line,overPrice:price,underPrice:undefined,marketStructure:'milestone'})])])]},'q1_'+base,[base+'_1q'],now);assert.equal(result.length,0);
  }
 });
+test('equivalent kickoff timestamp formats from two feeds select one exact quote',()=>{
+ const first=game([book('fanduel',[quote({line:250.5})])]);const second=game([book('pinnacle',[quote({line:249.5})])],{commenceTime:'2026-10-17T23:30:00.000Z'});
+ const r=footballBookRows({data:[first,second]},'passing_yards',['passing_yards'],now);assert.equal(r.length,1);assert.equal(r[0].sportsbookKey,'pinnacle');assert.equal(r[0].line,249.5);
+});

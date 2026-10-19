@@ -1,6 +1,7 @@
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {footballBookRows, type FootballBookRow} from "@/lib/football-book-quotes";
 import {type CfbMarketKey, cleanName} from "@/lib/cfb";
+import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 
 const MARKET_ALIASES:Record<CfbMarketKey,string[]>={
   passing_yards:["passing_yards","passingyards","pass_yards","passyards","player_pass_yds"],
@@ -15,7 +16,12 @@ const MARKET_ALIASES:Record<CfbMarketKey,string[]>={
 
 export type CfbOwlsRow=FootballBookRow;
 
-async function sharedPayload(){return getOwlsPayload("ncaaf")}
+async function sharedPayload(){
+ const [owls,sgo]=await Promise.allSettled([getOwlsPayload('ncaaf'),getSgoSupplement('NCAAF')]);
+ const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
+ if(!primary&&!extra?.data?.length)throw Error('College football book feeds are unavailable');
+ return {data:[...(primary?.data||[]),...sgoBookGames(extra)]};
+}
 export async function getOwlsCfbRows(market:CfbMarketKey):Promise<CfbOwlsRow[]>{
   return footballBookRows(await sharedPayload(),market,MARKET_ALIASES[market]);
 }

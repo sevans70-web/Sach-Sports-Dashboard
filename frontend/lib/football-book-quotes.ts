@@ -76,7 +76,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
           overPrice, underPrice, quoteUpdatedAt, lineType: binary ? "scorer" : "main",
           quoteId: String(prop.propId || ""), quoteUrl: String(prop.event_link || book.event_link || ""), capturedAt: new Date(now).toISOString(),
         };
-        const key = `${playerKey(playerName)}|${norm(matchup)}|${gameTime}|${market}`;
+        const key = `${playerKey(playerName)}|${norm(matchup)}|${Date.parse(gameTime)}|${market}`;
         grouped.set(key, [...(grouped.get(key) || []), row]);
       }
     }
