@@ -8,6 +8,7 @@ import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
+import {voidRecordNote,recordNoteFields} from '@/lib/record-notes';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
@@ -660,7 +661,7 @@ function normalizeCard(
     liveProgressPct: progress,
     recentValues: recentValues(row),
     usage: usageRows(row),
-    raw: {...row,originalResearchPick:row.originalResearchPick||result?.archivedOriginal?.prediction,originalResearchSavedAt:row.originalResearchSavedAt||result?.savedAt},
+    raw: {...row,...recordNoteFields(result),historicalStatus:result?.historicalStatus||row.historicalStatus,originalResearchPick:row.originalResearchPick||result?.archivedOriginal?.prediction,originalResearchSavedAt:row.originalResearchSavedAt||result?.savedAt},
   };
 }
 
@@ -910,6 +911,7 @@ function PlayerCard({
   });
 
   const statusBadge=cardStatusBadge({...card.raw,gameState:card.gameState},state);
+  const voidNote=voidRecordNote({...card.raw,resultStatus:card.resultStatus});
 
   const current =
     state === "live"
@@ -1025,6 +1027,7 @@ function PlayerCard({
             {statusBadge.label}
           </em>
           {statusBadge.notice ? <span className={styles.playerStatusNotice}>{statusBadge.notice}</span> : null}
+          {voidNote ? <span className={styles.playerStatusNotice}>Void: {voidNote.text}</span> : null}
         </div>
 
         <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
@@ -2153,7 +2156,7 @@ export function PlayerRankingsPanel({
     if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
 
     const statusGames = sharedStatusGames.filter(
-      (game) => (["in","post"].includes(String(game.state || "").toLowerCase()) || (game.state==="pre" && Date.parse(game.date||"")-Date.now()<=2*60*60_000 && Date.parse(game.date||"")>Date.now())) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
+      (game) => (["in","post"].includes(String(game.state || "").toLowerCase()) || (game.state==="pre" && Date.parse(game.date||"")>Date.now())) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
     );
     if (!statusGames.length) return;
 
@@ -2165,7 +2168,8 @@ export function PlayerRankingsPanel({
         statusGames.map(async (game) => {
           if(game.state==="pre"){
             const last=pregameFetched.get(String(game.id))||0;
-            if(Date.now()-last<60_000)return {game,payload:null};
+            const refreshMs=Date.parse(game.date||"")-Date.now()>2*60*60_000?5*60_000:60_000;
+            if(Date.now()-last<refreshMs)return {game,payload:null};
             pregameFetched.set(String(game.id),Date.now());
           }
           try {
@@ -2199,7 +2203,7 @@ export function PlayerRankingsPanel({
             ? (payload.participants||[]).find((p:any)=>String(p.playerId)===String(card.playerId)) : null;
           const updatedRaw=applyParticipationEvidence({...card.raw,gameId:String(game.id),playerId:card.playerId},payload,String(game.id));
           const current = payload?.success===true&&String(payload.gameId)===String(game.id)?finite(row?.stats?.[card.market]):null;
-          if (current == null) return participant ? {...card,raw:updatedRaw,lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
+          if (current == null) return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,raw:updatedRaw,lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
 
           const progress =
             card.sportsbookLine != null && card.sportsbookLine > 0

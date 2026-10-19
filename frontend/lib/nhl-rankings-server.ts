@@ -1,3 +1,4 @@
+import {recordNoteFields} from "@/lib/record-notes";
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
@@ -31,7 +32,7 @@ async function buildNhlRankingsRaw(m:NhlMarketKey){
    const p=byKey.get(String(row.playerId)+"|"+row.gameId);
    if(!p)return row;
    const started=row.gameState==="in"||row.gameState==="post"||Boolean(p.gameTime&&Date.parse(p.gameTime)<=Date.now());
-   return {...row,rank:row.rank,sportsbookLine:p.sportsbookLine,bookmakerCount:p.bookmakerCount,modelProjection:p.modelProjection,modelProbability:p.modelProbability,prediction:p.pickSide,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",marketBacked:p.sportsbookLine!=null,frozen:started,lockedAtPuckDrop:started,summary:started?"Frozen pregame prediction · live game status.":row.summary};
+   return {...row,...recordNoteFields(p),rank:row.rank,sportsbookLine:p.sportsbookLine,bookmakerCount:p.bookmakerCount,modelProjection:p.modelProjection,modelProbability:p.modelProbability,prediction:p.pickSide,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",marketBacked:p.sportsbookLine!=null,frozen:started,lockedAtPuckDrop:started,summary:started?"Frozen pregame prediction · live game status.":row.summary};
  });
  return {success:true,market:m,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
 }

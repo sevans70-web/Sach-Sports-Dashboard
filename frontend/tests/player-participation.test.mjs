@@ -50,9 +50,9 @@ test('one face badge progresses pending, confirmed, LIVE, FINAL across every act
    assert.equal(cardStatusBadge({...row,lineupConfirmed:confirmed},'final').label,'FINAL');
   }
   assert.equal(cardStatusBadge({...row,participationConfirmed:true},'pregame').label,'Lineup pending');
-  assert.equal(cardStatusBadge({...row,availability:'Out'},'live').notice,'Out');
-  assert.equal(cardStatusBadge({...row,availability:'Inactive'},'live').notice,'Inactive');
-  assert.equal(cardStatusBadge({...row,didNotPlay:true},'final').notice,'DNP');
+  assert.equal(cardStatusBadge({...row,availability:'Out'},'live').notice,'Reported Out');
+  assert.equal(cardStatusBadge({...row,availability:'Inactive'},'live').notice,'Reported Inactive');
+  assert.equal(cardStatusBadge({...row,didNotPlay:true},'final').notice,'Did not play');
   assert.equal(cardStatusBadge({...row,liveCurrent:0},'final').notice,null);
  }
 });

@@ -1,3 +1,4 @@
+import {voidRecordNote,playerAvailabilityNote} from '@/lib/record-notes';
 export const ADMIN_EMAIL = "sachsportsplatform@gmail.com";
 export const ADMIN_SPORTS = ["nfl", "cfb", "nba", "wnba", "nhl", "cbb"] as const;
 export function isAdminUser(user: any) {
@@ -19,6 +20,7 @@ export function adminResult(row: any) {
     status: ["hit", "miss", "push", "pending", "void"].includes(status) ? status : "unknown",
     savedAt: row.savedAt || null, gradedAt: row.gradedAt || null,
     gradeRevisions: Array.isArray(row.gradeRevisions) ? row.gradeRevisions : [],
+    voidNote: voidRecordNote(row), availabilityNote: playerAvailabilityNote(row),
     verifiedPick: row.recommendationEligible === true, quoteVerified: row.quoteVerified === true,
     sportsbook: row.sportsbook || null, quoteUpdatedAt: row.quoteUpdatedAt || null,
     reason: row.reviewReason || null, withdrawn: row.withdrawnFromBoard === true,

@@ -1,4 +1,5 @@
 import {rankingLineProgress} from "@/lib/ranking-card-state";
+import {voidRecordNote} from '@/lib/record-notes';
 const num=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 export function scorerTarget(market:string){return market==='first_td'?'First TD scorer':market==='first_basket'?'First basket scorer':'1+ TD'}
 export function cardObservedProgress(actual:any,line:any,market:string){
@@ -6,6 +7,7 @@ export function cardObservedProgress(actual:any,line:any,market:string){
 }
 /** Preserve the difference between a historical research outcome and a validated wager. */
 export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
+ const note=voidRecordNote(row);if(note)return {label:'VOID · NOT SCORED',detail:note.text};
  const value=num(actual),threshold=num(line);
  if(value==null)return {label:'FINAL · STAT UNAVAILABLE',detail:'Official final statistic has not been reported.'};
  if(row.quoteVerified!==true||threshold==null)return {label:'FINAL · ACTUAL RECORDED',detail:`Actual ${value} · verified line unavailable; no pick grade.`};

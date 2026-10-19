@@ -11,6 +11,7 @@ export type SavedNhlPrediction={
   pickSide:"OVER"|"UNDER"|null; giScore:number; bookmakerCount:number; rank:number|null;
   savedAt:string; status:"pending"|"hit"|"miss"|"push"|"void"; actual:number|null; gradedAt:string|null;
   frozenAt:string|null; recoveredAfterStart?:boolean;
+  voidReason?:string; voidReasonCode?:string;
 };
 
 const runtime=new Map<string,SavedNhlPrediction[]>();
@@ -76,7 +77,7 @@ async function saveNhlDay(m:NhlMarketKey,rows:any[],day:string){
 export async function saveNhlGrades(m:NhlMarketKey,day:string,predictions:SavedNhlPrediction[]){
  return withHistoryLock(`nhl|${m}|${day}`,async()=>{
   const current=await getNhlPredictions(m,day),merged=new Map(current.predictions.map(p=>[p.key,p]));
-  for(const p of predictions){const old=merged.get(p.key);if(!old)merged.set(p.key,p);else if(correctedGrade(old,p))merged.set(p.key,correctedGrade(old,p)!);else if(old.status==="pending"&&p.status!=="pending")merged.set(p.key,{...old,status:p.status,actual:p.actual,gradedAt:p.gradedAt});}
+  for(const p of predictions){const old=merged.get(p.key);if(!old)merged.set(p.key,p);else if(correctedGrade(old,p))merged.set(p.key,correctedGrade(old,p)!);else if(old.status==="pending"&&p.status!=="pending")merged.set(p.key,{...old,status:p.status,actual:p.actual,gradedAt:p.gradedAt,voidReason:p.voidReason,voidReasonCode:p.voidReasonCode});}
   const out=[...merged.values()];runtime.set(rk(m,day),out);return writeDurableHistory("nhl",String(m),day,out);
  });
 }

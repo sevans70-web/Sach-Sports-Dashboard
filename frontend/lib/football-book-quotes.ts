@@ -1,4 +1,5 @@
 import {nullableNumber} from "@/lib/provider-fetch";
+import {recordNoteFields} from '@/lib/record-notes';
 
 export const FOOTBALL_QUOTE_VERSION = 1;
 const norm = (v: unknown) => String(v ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -90,7 +91,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
 }
 
 export function footballQuoteFields(row: any) {
-  return {quoteVersion: row.quoteVersion, sportsbook: row.sportsbook, sportsbookKey: row.sportsbookKey,
+  return {...recordNoteFields(row),quoteVersion: row.quoteVersion, sportsbook: row.sportsbook, sportsbookKey: row.sportsbookKey,
     overPrice: row.overPrice, underPrice: row.underPrice, quoteUpdatedAt: row.quoteUpdatedAt,
     lineType: row.lineType, quoteId: row.quoteId, quoteUrl: row.quoteUrl, capturedAt: row.capturedAt || row.savedAt};
 }

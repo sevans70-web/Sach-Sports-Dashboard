@@ -1,3 +1,4 @@
+import {playerAvailabilityNote} from '@/lib/record-notes';
 /** Official participation is evidence of playing, not of having started. */
 export type PlayerParticipation={playerId:string;participationConfirmed:boolean;starterConfirmed:boolean};
 const norm=(v:any)=>String(typeof v==='object'?v?.name||v?.abbreviation||v?.displayName||'':v??'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -43,13 +44,14 @@ export function playerAvailability(row:any){
 export function applyParticipationEvidence(row:any,payload:any,gameId:string){
  if(payload?.success!==true||String(payload.gameId)!==String(gameId)||String(row?.gameId||'')!==String(gameId))return row;
  const participant=(payload.participants||[]).find((p:any)=>String(p.playerId)===String(row.playerId));
- if(!participant)return row;
- return {...row,participationConfirmed:row.participationConfirmed===true||(['in','post'].includes(payload.state)&&participant.participationConfirmed===true),starterConfirmed:row.starterConfirmed===true||participant.starterConfirmed===true,participationGameId:gameId};
+ const availability=(payload.availability||[]).find((p:any)=>String(p.playerId)===String(row.playerId));
+ if(!participant&&!availability&&!(Array.isArray(payload.availability)&&String(row.availabilityEvidence?.gameId||'')===String(gameId)))return row;
+ return {...row,...(Array.isArray(payload.availability)?{availabilityEvidence:availability?.note}:{}),participationConfirmed:row.participationConfirmed===true||(['in','post'].includes(payload.state)&&participant?.participationConfirmed===true),starterConfirmed:row.starterConfirmed===true||participant?.starterConfirmed===true,participationGameId:gameId};
 }
 /** Keep established participation through a ranking refresh of the same fixture. */
 export function retainParticipation(row:any,previous:any){
  if(!row?.gameId||String(row.gameId)!==String(previous?.participationGameId)||String(row.playerId)!==String(previous?.playerId))return row;
- return {...row,participationConfirmed:row.participationConfirmed===true||previous.participationConfirmed===true,starterConfirmed:row.starterConfirmed===true||previous.starterConfirmed===true,participationGameId:String(row.gameId)};
+ return {...row,availabilityEvidence:row.availabilityEvidence||previous.availabilityEvidence,participationConfirmed:row.participationConfirmed===true||previous.participationConfirmed===true,starterConfirmed:row.starterConfirmed===true||previous.starterConfirmed===true,participationGameId:String(row.gameId)};
 }
 /** One face-card badge follows the game lifecycle; participation stays in details. */
 export function cardStatusBadge(row:any,state:'pregame'|'live'|'final'){
@@ -60,6 +62,7 @@ export function cardStatusBadge(row:any,state:'pregame'|'live'|'final'){
  return {label:availability.confirmed?'Lineup confirmed':'Lineup pending',tone:availability.confirmed?'confirmed':'pending',notice};
 }
 export function playerStatusNotice(row:any,state:'pregame'|'live'|'final'){
+ const note=playerAvailabilityNote(row);if(note)return note.text;
  const values=[row?.availability,row?.injuryStatus,row?.injury_status,row?.playerStatus,row?.injury?.status];
  if(row?.inactive===true||values.some(v=>/^inactive$/i.test(String(v||''))))return 'Inactive';
  if(row?.isOut===true||values.some(v=>/^out$/i.test(String(v||''))))return 'Out';

@@ -41,6 +41,7 @@ test('production routes enforce admin authentication, safe cookies and request o
  await mkdir(path.join(dir,'nba'));
  const fixture=['hit','miss','push','void'].map((status,i)=>({key:'test-'+i,playerId:String(i+1),playerName:'Test player '+i,teamName:'Test team',gameDate:day,gameTime:day+'T15:00:00Z',market:'points',matchup:'A @ B',savedAt:day+'T12:00:00Z',status,actual:[12,9,10,null][i],sportsbookLine:10,pickSide:'OVER'}));
  for(let i=0;i<101;i++)fixture.push({...fixture[0],key:'extra-'+i,playerId:'extra-'+i});
+ fixture[3].recoveredAfterStart=true;
  await writeFile(path.join(dir,'nba',`points_${day}.json`),JSON.stringify(fixture));
  await new Promise(resolve=>provider.listen(0,'127.0.0.1',resolve));
  const providerPort=provider.address().port;
@@ -76,9 +77,11 @@ test('production routes enforce admin authentication, safe cookies and request o
   const refreshed=await request('/api/admin/auth',{headers:{Cookie:'sach-admin-refresh=test-refresh','Sec-Fetch-Site':'same-origin'}});assert.equal(refreshed.status,200);assert.equal(refreshed.headers.getSetCookie().length,2);
   const records=await request('/api/admin/records?sport=nba&period=Today',{headers:{Cookie:cookie}});assert.equal(records.status,200);const inspected=await records.json();assert.deepEqual(inspected.counts,{total:105,hits:102,misses:1,pushes:1,settled:104,pending:0,void:1,unknown:0,hitRate:99});assert.equal(inspected.records.find(r=>r.status==='hit').actual,12);assert.equal(inspected.records.find(r=>r.status==='miss').side,'OVER');assert.equal(inspected.records.find(r=>r.status==='miss').verifiedPick,false);
   assert.equal((await request('/api/admin/records?sport=mlb',{headers:{Cookie:cookie}})).status,400);
+  assert.equal(inspected.records.find(r=>r.status==='void').voidNote.code,'late_capture');
   const password=await request('/api/admin/password',{method:'POST',headers:{Origin:base,Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({password:'new-local-test-password'})});assert.equal(password.status,200);
   const otp=await post({action:'email',email});assert.equal(otp.status,200);assert.equal(sentEmail,email);
   const html=await(await request('/admin',{headers:{Cookie:cookie}})).text();assert.equal(html.includes('test-server-api-key'),false);
+  assert.ok(html.indexOf('Your account')>=0&&html.indexOf('Your account')<html.indexOf('Result inspector'));
   const logout=await post({action:'logout'},{Origin:base,Cookie:cookie});assert.equal(logout.status,200);assert.ok(logout.headers.getSetCookie().every(c=>c.includes('Max-Age=0')));
  }finally{child.kill('SIGTERM');await new Promise(resolve=>child.once('exit',resolve));await new Promise(resolve=>provider.close(resolve));await rm(dir,{recursive:true,force:true});}
 });

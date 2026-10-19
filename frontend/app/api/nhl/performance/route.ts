@@ -100,6 +100,8 @@ export async function GET(req:NextRequest){
             // performance. Finalize them as void so they never inflate Pending.
             if(row.sportsbookLine==null||!row.pickSide){
               row.status="void";
+              row.voidReasonCode=row.sportsbookLine==null?'missing_line':'missing_saved_side';
+              row.voidReason=row.sportsbookLine==null?'No betting line was recorded; this entry cannot be scored against a line.':'No saved OVER/UNDER call was recorded.';
               row.gradedAt=new Date().toISOString();
               changed=true;
             }else{
@@ -108,6 +110,8 @@ export async function GET(req:NextRequest){
                 // A final box score with no player row means the wager is not
                 // scoreable from an appearance; keep it out of hit rate.
                 row.status="void";
+                row.voidReasonCode='no_final_player_stat_row';
+                row.voidReason='No usable player appearance/stat row was found in the official final boxscore. This does not confirm an injury.';
                 row.gradedAt=new Date().toISOString();
                 changed=true;
               }else if(actual!=null){

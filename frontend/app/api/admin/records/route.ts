@@ -21,6 +21,7 @@ import { NHL_MARKETS } from "@/lib/nhl";
 import { CBB_MARKETS } from "@/lib/cbb";
 import { dashboardDay } from "@/lib/dashboard-contract";
 import { guardPerformancePayload } from "@/lib/prop-integrity";
+import { enrichRecordAvailability } from "@/lib/record-notes-server";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
@@ -45,7 +46,8 @@ export async function GET(req: NextRequest) {
     const batches = await Promise.all(days.flatMap(day => definitions.map(([market]) => reader(market, day))));
     if (batches.some(batch => batch.connected === false)) throw new Error("Incomplete history");
     const guarded = guardPerformancePayload({ predictions: batches.flatMap(batch => batch.predictions || []) }, sport);
-    const records = guarded.predictions.map(adminResult) as ReturnType<typeof adminResult>[];
+    const withNotes=await enrichRecordAvailability(guarded.predictions,sport);
+    const records = withNotes.map(adminResult) as ReturnType<typeof adminResult>[];
     records.sort((a, b) => String(b.gameTime || b.savedAt || "").localeCompare(String(a.gameTime || a.savedAt || ""))) ;
     return adminJson({ sport, period, records, counts: adminResultCounts(records), updatedAt: new Date().toISOString() });
   } catch { return adminJson({ error: "Could not load complete result history. Retry shortly; partial counts are not displayed." }, 502); }
