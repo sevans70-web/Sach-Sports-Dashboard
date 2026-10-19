@@ -1,10 +1,11 @@
 import {NextRequest,NextResponse} from 'next/server';
-import {getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage} from '@/lib/owls-provider';
+import {getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage,getOwlsArchiveValidationSample} from '@/lib/owls-provider';
 import {footballBookRows} from '@/lib/football-book-quotes';
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 export const dynamic='force-dynamic';
 /** Read-only catalog diagnostics. No credentials, account information or raw
- * archived records are returned; snapshots share the provider request cache. */
+ * account records are returned; snapshots share the provider request cache.
+ * The archive probe exposes only bounded public quote fields, never outcomes. */
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport');if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
  const [merged,source]=await Promise.allSettled([getOwlsPayload(sport),getOwlsBet365Payload(sport)]);
@@ -15,11 +16,19 @@ export async function GET(req:NextRequest){
  if(merged.status==='fulfilled')for(const game of merged.value?.data||[]){games++;for(const book of game.books||[])for(const prop of book.props||[]){const key=[book.key,prop.category??prop.market??prop.type,prop.periodID??prop.periodId??prop.period??'game'].join('|');categories.set(key,(categories.get(key)||0)+1)}}
  const raw=source.status==='fulfilled'?source.value:null;
  const archive=await getOwlsArchiveCoverage().then(coverage=>({coverage}),e=>({error:String(e?.message||'Archive unavailable')}));
+ const validationSample=await getOwlsArchiveValidationSample(sport).then(({query,response:p})=>{
+  const rows=Array.isArray(p?.data)?p.data:Array.isArray(p?.data?.props)?p.data.props:Array.isArray(p?.props)?p.props:null;
+  return {query,responseKeys:Object.keys(p||{}),dataKeys:p?.data&&!Array.isArray(p.data)?Object.keys(p.data):null,
+   rows:rows?.length??null,knownMain:rows?.filter((r:any)=>r.isMain===true).length??null,
+   labelledTwoSidedMain:rows?.filter((r:any)=>r.isMain===true&&r.closing?.overPrice!=null&&r.closing?.underPrice!=null).length??null,
+   examples:rows?.slice(0,2).map((r:any)=>({keys:Object.keys(r),eventId:r.eventId,gameTime:r.gameTime,playerName:r.playerName,propType:r.propType,book:r.book,isMain:r.isMain,closing:r.closing}))??[],
+   scope:'First bounded page only; counts do not establish archive-wide coverage or model validation.'};
+ },e=>({error:String(e?.message||'Archive sample unavailable')}));
  const supplement=await getSgoSupplement(sport.toUpperCase());
  const supplementCategories=new Map<string,number>();
  for(const event of supplement?.data||[])for(const odd of Object.values(event.odds||{}) as any[]){const key=[odd.statID,odd.periodID,odd.sideID].join('|');supplementCategories.set(key,(supplementCategories.get(key)||0)+1)}
  const supplementGames=sgoBookGames(supplement);
  const supplementalCoverage={warning:supplement?.warning||null,events:supplement?.data?.length||0,categories:Object.fromEntries(supplementCategories),namedBookQuotes:supplementGames.reduce((n:number,g:any)=>n+g.books.reduce((a:number,b:any)=>a+b.props.length,0),0),qualifyingQuarter:sport==='nfl'?Object.fromEntries(['passing_yards','receiving_yards','rushing_yards'].map(base=>['q1_'+base,footballBookRows({data:supplementGames},'q1_'+base,[base+'_1q','q1_'+base]).map(r=>({playerName:r.playerName,gameTime:r.gameTime,book:r.sportsbook,line:r.line}))])):undefined};
  const buckets=Object.entries(raw?.data||{}).map(([name,v]:[string,any])=>({name,fixtures:(v.fixtures||[]).length,markets:(v.markets||[]).map((m:any)=>({name:m.name,type:m.type,count:(m.outcomes||[]).length,example:(m.outcomes||[]).slice(0,2).map((o:any)=>({name:o.name,handicap:o.handicap,americanOdds:o.americanOdds,status:o.status,fixtureId:o.fixtureId,gameFixtureId:o.gameFixtureId}))}))}));
- return NextResponse.json({sport,merged:{games,error:merged.status==='rejected'?String(merged.reason?.message||'Feed unavailable'):null,categories:Object.fromEntries(categories),quarterSamples,qualifyingQuarter},bet365:{error:source.status==='rejected'?String(source.reason?.message||'Source unavailable'):null,status:raw?.meta?.status,cacheTimestamp:raw?.meta?.cacheTimestamp,buckets},supplement: supplementalCoverage,archive,updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
+ return NextResponse.json({sport,merged:{games,error:merged.status==='rejected'?String(merged.reason?.message||'Feed unavailable'):null,categories:Object.fromEntries(categories),quarterSamples,qualifyingQuarter},bet365:{error:source.status==='rejected'?String(source.reason?.message||'Source unavailable'):null,status:raw?.meta?.status,cacheTimestamp:raw?.meta?.cacheTimestamp,buckets},supplement: supplementalCoverage,archive,validationSample,updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
 }

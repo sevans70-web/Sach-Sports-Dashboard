@@ -1,5 +1,11 @@
 # Cross-sport prop integrity repair
 
+### 19 October: executable workload probability engine
+
+`lib/probability-forecast.ts` now fits serializable workload and efficiency models, calibrates empirical forecast distributions on a later disjoint period, and evaluates probability distributions with CRPS, interval coverage and fixture-cluster uncertainty. It separates Over/Under/push probabilities and supports exact-price calibration/ROI only for traceable frozen pregame quote joins, rebuilding features at the actual decision time. The independent source dataset was expanded with 14,950 NFL observations from 352 official completed games; all discovery and summary requests completed without errors. Passing samples exclude backup-volume appearances without dropping future target relief outcomes.
+
+Executed results, artifacts, provenance and replay instructions are in `model-research/2026-10-19/README.md`. There are 25 fitted distribution candidates on the unchanged six-sport dataset and four on the additional NFL population. Results still fail promotion requirements: passing/rushing point error trails the comparison, receiving-yard uncertainty under-covers, archived context and exact quote joins are missing, and the reused evaluation period is not a fresh holdout. GI and actual betting picks remain disabled; no candidate is registered. Administrative model status now reflects this work. Fixed bounded NBA/NFL archive probes inspect provider coverage without exposing credentials or accepting arbitrary queries.
+
 ### 19 October: public card facts and official NFL quarter observations
 
 Public cards now load dated recent results without requiring expansion. The displayed `Last N avg.` is the arithmetic average of those actual results, with the exact count, rather than a stored projection. Football passing samples exclude fewer-than-ten-attempt appearances and prior seasons; future and undated observations are excluded. Bookmaker prices, timestamps, stored-baseline diagnostics and sample-audit details no longer occupy the public card face. The book name and exact verified threshold remain visible. Model validation details remain in admin and this document.

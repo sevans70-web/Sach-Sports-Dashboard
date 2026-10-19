@@ -48,8 +48,8 @@ export function nhlOpportunityGames(payload:any,identity:{sport:string;season:st
 const avg=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 /** Require same season AND team. Availability lag is a conservative research
  * convention, not a claim that an archived pregame feature snapshot exists. */
-export function opportunityFeatures(history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>){
- const cutoff=Date.parse(target.gameTime)-48*3600000;
+export function opportunityFeatures(history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>,availableAt=target.gameTime){
+ const cutoff=Date.parse(availableAt)-48*3600000;
  const rows=history.filter(g=>g.sport===target.sport&&g.market===target.market&&g.playerId===target.playerId&&g.season===target.season&&g.teamId===target.teamId&&Date.parse(g.gameTime)<cutoff&&Number.isFinite(g.actual)&&Number.isFinite(g.workload)).sort((a,b)=>a.gameTime.localeCompare(b.gameTime));
  if(rows.length<3)return {features:null,baseline:null,reason:'fewer_than_three_same_season_team_appearances'};
  const recent=rows.slice(-3),long=rows.slice(-8),last=rows.at(-1)!,v3=avg(recent.map(g=>g.workload)),v8=avg(long.map(g=>g.workload));

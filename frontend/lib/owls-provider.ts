@@ -4,6 +4,20 @@ const cache=new Map<Sport,{expires:number;payload?:any;error?:string}>();
 const pending=new Map<Sport,Promise<any>>();
 const sourceCache=new Map<string,{expires:number;payload?:any;error?:string}>();
 const sourcePending=new Map<string,Promise<any>>();
+/** Two fixed, bounded archive probes for model-data coverage. No caller-supplied
+ * URL, date range, pagination or credentials. Successful samples cache for an
+ * hour; errors respect Retry-After with a minimum five-minute cooldown. */
+export async function getOwlsArchiveValidationSample(sport:'nfl'|'nba'){
+ const tag='validation-sample-'+sport,hit=sourceCache.get(tag);if(hit&&hit.expires>Date.now()){if(hit.error)throw Error(hit.error);return hit.payload}
+ const running=sourcePending.get(tag);if(running)return running;
+ const work=(async()=>{
+  const key=process.env.OWLS_INSIGHT_API_KEY?.trim();if(!key)throw Error('Book feed is not configured');
+  const query=sport==='nba'?{sport,propType:'points',startDate:'2026-04-01',endDate:'2026-04-07',isMain:'true',limit:'100'}:{sport,propType:'passing_yards',startDate:'2026-10-01',endDate:'2026-10-07',isMain:'true',limit:'100'};
+  const response=await providerFetch('https://api.owlsinsight.com/api/v1/history/player-props?'+new URLSearchParams(query),{headers:{Authorization:`Bearer ${key}`,'x-api-key':key,Accept:'application/json'},cache:'no-store'});
+  if(!response.ok){const error=`Archive validation sample returned ${response.status}`;const retry=Number(response.headers.get('retry-after'));sourceCache.set(tag,{expires:Date.now()+Math.max(300_000,Math.min(3600_000,Number.isFinite(retry)?retry*1000:0)),error});throw Error(error)}
+  const payload={query,response:await response.json()};sourceCache.set(tag,{expires:Date.now()+3600_000,payload});return payload;
+ })();sourcePending.set(tag,work);try{return await work}finally{sourcePending.delete(tag)}
+}
 export async function getOwlsArchiveCoverage(){
  const tag='archive-coverage',hit=sourceCache.get(tag);if(hit&&hit.expires>Date.now()){if(hit.error)throw Error(hit.error);return hit.payload}
  const running=sourcePending.get(tag);if(running)return running;
