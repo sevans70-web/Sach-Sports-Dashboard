@@ -6,6 +6,7 @@ export type LinearModel={means:number[];scales:number[];coefficients:number[]};
 export type DistributionModel={version:1;group:string;trainedThrough:string;calibratedThrough:string;
  workload:LinearModel;rate:LinearModel;residuals:number[];trainingRows:number;calibrationRows:number;
  rateTrainingRows?:number;
+ workloadCalibration?:{expectedWorkload:number;residual:number}[];
  minimum:number|null;integer:boolean;validatedForBetting:false};
 export type ExactQuote={sport:string;market:string;period:'game'|'q1';gameId:string;playerId:string;
  bookmaker:string;quoteId:string;line:number;overPrice:number;underPrice:number;
@@ -81,6 +82,19 @@ export function distributionValues(model:DistributionModel,projection:number){
   return model.integer?Math.round(v):v;
  }).sort((a,b)=>a-b);
 }
+/** Separate experimental calibration policy, fixed before evaluation: use the
+ * nearest half of calibration workloads, at least 100 observations. Selection
+ * never reads the target outcome, realized workload, line or bookmaker price.
+ * Sparse calibration abstains instead of silently reverting to pooled errors. */
+export function workloadDistributionValues(model:DistributionModel,projection:number,expectedWorkload:number){
+ const rows=model.workloadCalibration;
+ if(!rows)return distributionValues(model,projection);
+ if(!Number.isFinite(expectedWorkload)||expectedWorkload<0||rows.length<200||rows.some(r=>!Number.isFinite(r.expectedWorkload)||r.expectedWorkload<0||!Number.isFinite(r.residual)))throw Error('Invalid workload calibration');
+ const count=Math.max(100,Math.ceil(rows.length/2));
+ const selected=rows.map((r,index)=>({...r,index,distance:Math.abs(r.expectedWorkload-expectedWorkload)}))
+  .sort((a,b)=>a.distance-b.distance||a.index-b.index).slice(0,count);
+ return distributionValues({...model,residuals:selected.map(r=>r.residual)},projection);
+}
 export function outcomeProbabilities(values:number[],line:number){
  if(!values.length||!Number.isFinite(line)||!values.every(Number.isFinite))throw Error('Invalid outcome distribution');
  let over=0,under=0,push=0;
@@ -139,12 +153,14 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
  const input=probabilityInputs(history,target,availableAt);
  if(!input.features)return {reason:input.reason,forecast:null};
  const prediction=point(model,input.features);
- return {reason:null,forecast:{...prediction,values:distributionValues(model,prediction.projection)}};
+ return {reason:null,forecast:{...prediction,values:workloadDistributionValues(model,prediction.projection,prediction.expectedWorkload)}};
 }
 /** Fixed 65%/35% chronological split of PRIOR-season feature dates for fitting
  * and calibration; later season retained for diagnostic evaluation. The later
  * season has already been inspected for v1, so it is NOT a fresh holdout. */
-export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[]){
+export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload'}={}){
+ if(options.calibration!=null&&!['pooled','workload'].includes(options.calibration))throw Error('Unsupported calibration policy');
+ const conditional=options.calibration==='workload';
  const seen=new Set<string>();for(const g of games){
   if(seen.has(outcomeKey(g)))throw Error('Duplicate observation '+outcomeKey(g));seen.add(outcomeKey(g));
   if(!validTime(g.gameTime)||!Number.isFinite(g.actual)||!Number.isFinite(g.workload)||g.workload<0)throw Error('Invalid observation '+outcomeKey(g));
@@ -164,7 +180,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   const calibration=prior.filter(r=>Date.parse(r.game.gameTime)>=boundaryMs);
   const base={group,targetAppearances:source.filter(g=>g.season===testSeason).length,eligibleTargets:test.length,
    trainingRows:train.length,calibrationRows:calibration.length,exactQuoteSamples:0,validatedForBetting:false};
-  if(train.length<100||rateTraining.length<100||calibration.length<100){reports.push({...base,reason:'insufficient_training_or_calibration',forecasts:0});continue}
+  if(train.length<100||rateTraining.length<100||calibration.length<(conditional?200:100)){reports.push({...base,reason:'insufficient_training_or_calibration',forecasts:0});continue}
   const trainedThrough=train.at(-1)!.game.gameTime,calibratedThrough=calibration.at(-1)!.game.gameTime;
   if(test.some(r=>Date.parse(r.game.gameTime)-48*3600000<=Date.parse(calibratedThrough)))throw Error('Calibration/test overlap '+group);
   // Genuine zero-opportunity quarters train the workload model. Efficiency
@@ -177,9 +193,10 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    residuals:[],trainingRows:train.length,calibrationRows:calibration.length,minimum,integer:true,validatedForBetting:false};
   if(market.startsWith('q1_'))model.rateTrainingRows=rateTraining.length;
   model.residuals=calibration.map(r=>r.game.actual-point(model,r.x).projection).sort((a,b)=>a-b);models.push(model);
+  if(conditional)model.workloadCalibration=calibration.map(r=>{const p=point(model,r.x);return {expectedWorkload:p.expectedWorkload,residual:r.game.actual-p.projection}});
   const baselineResiduals=calibration.map(r=>r.game.actual-r.baseline).sort((a,b)=>a-b);
   const results=test.map(r=>{
-   const pred=point(model,r.x),values=distributionValues(model,pred.projection),n=values.length;
+   const pred=point(model,r.x),values=workloadDistributionValues(model,pred.projection,pred.expectedWorkload),n=values.length;
    // Finite-sample central 80% empirical residual interval. Dependent games
    // and conditional role changes preclude claiming a coverage guarantee.
    const lower=values[Math.max(0,Math.floor((n+1)*.1)-1)],upper=values[Math.min(n-1,Math.ceil((n+1)*.9)-1)];
@@ -190,10 +207,14 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    if(quotedForecast?.reason)quoteIssue=quotedForecast.reason;
    const price=q&&!quoteIssue&&quotedForecast?.forecast?evaluatePrice(quotedForecast.forecast.values,q):null;
    const probability=price&&price.over+price.under>0?price.over/(price.over+price.under):null;
+   const pooledPrice=conditional&&q&&!quoteIssue&&quotedForecast?.forecast?evaluatePrice(distributionValues(model,quotedForecast.forecast.projection),q):null;
+   const pooledProbability=pooledPrice&&pooledPrice.over+pooledPrice.under>0?pooledPrice.over/(pooledPrice.over+pooledPrice.under):null;
    const decided=q&&r.game.actual!==q.line,won=price?.candidateSide&&decided?(price.candidateSide==='OVER'?r.game.actual>q!.line:r.game.actual<q!.line):null;
    const profit=won==null?null:won?payout(price!.candidateSide==='OVER'?q!.overPrice:q!.underPrice):-1;
    return {gameId:r.game.gameId,actual:r.game.actual,projection:pred.projection,workload:pred.expectedWorkload,baseline:r.baseline,
     workloadError:Math.abs(pred.expectedWorkload-r.game.workload),crps:empiricalCrps(values,r.game.actual),
+    pooledCrps:conditional?empiricalCrps(distributionValues(model,pred.projection),r.game.actual):null,
+    pooledBrier:pooledProbability!=null&&decided?(pooledProbability-Number(r.game.actual>q!.line))**2:null,
     baselineCrps:empiricalCrps(distributionValues({...model,residuals:baselineResiduals},r.baseline),r.game.actual),
     covered:r.game.actual>=lower&&r.game.actual<=upper,width:upper-lower,quoteIssue,
     brier:probability!=null&&decided?(probability-Number(r.game.actual>q!.line))**2:null,
@@ -214,6 +235,9 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    crps:results.length?mean(results.map(r=>r.crps)):null,interval80Coverage:results.length?mean(results.map(r=>Number(r.covered))):null,
    baselineCrps:results.length?mean(results.map(r=>r.baselineCrps)):null,
    pairedCrpsImprovement:clusteredMeanInterval(results.map(r=>({gameId:r.gameId,value:r.baselineCrps-r.crps}))),
+   ...(conditional?{calibrationPolicy:'nearest_half_workload_minimum_100',
+    pairedPooledCrpsImprovement:clusteredMeanInterval(results.filter(r=>r.pooledCrps!=null).map(r=>({gameId:r.gameId,value:r.pooledCrps!-r.crps}))),
+    pairedPooledBrierImprovement:clusteredMeanInterval(results.filter(r=>r.pooledBrier!=null&&r.brier!=null).map(r=>({gameId:r.gameId,value:r.pooledBrier!-r.brier!})))}:{}),
    meanIntervalWidth:results.length?mean(results.map(r=>r.width)):null,exactQuoteSamples:results.filter(r=>!r.quoteIssue).length,
    brier:metric('brier'),marketBrier:metric('marketBrier'),candidateBets:results.filter(r=>r.candidate).length,
    pairedBrierImprovement:clusteredMeanInterval(results.filter(r=>r.brier!=null&&r.marketBrier!=null).map(r=>({gameId:r.gameId,value:r.marketBrier!-r.brier!}))),
@@ -221,12 +245,12 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
- return {modelId:quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
+ return {modelId:conditional?'local-workload-distribution-candidate-v1':quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
   observations:games.length,models,reports,limitations:[
    'Diagnostic reuse of the v1 evaluation period; not an untouched holdout.',
    'Current-board population and revised official logs introduce selection and vintage bias.',
    'Pregame role, injuries, teammates, weather, rotation, matchup and goalie context remain missing.',
-   'A pooled empirical error distribution does not establish player-conditional calibration.',
+   conditional?'Workload-neighborhood calibration uses at least 100 errors from the nearest half of at least 200 calibration workloads; it does not establish player-conditional or prospective calibration.':'A pooled empirical error distribution does not establish player-conditional calibration.',
    '48-hour publication lag is a convention, not archived publication-time evidence.',
    quarter?'Quarter forecasts require independently reconciled quarter workload/results; scorer models are unsupported. No probability or GI promotion without exact quotes, independent validation and prospective evidence.':'No quarter/scorer support. No probability or GI promotion without exact quotes, independent validation and prospective evidence.',
   ]};
