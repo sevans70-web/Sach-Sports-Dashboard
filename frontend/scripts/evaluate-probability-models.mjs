@@ -7,21 +7,24 @@ import {loadTs} from '../tests/load-ts.mjs';
 const source=(process.env.MODEL_OBSERVATIONS_DIR||new URL('../model-research/2026-10-18/',import.meta.url).pathname).replace(/\/$/,'')+'/';
 const output=process.argv[2]||new URL('../model-research/2026-10-19/',import.meta.url).pathname;
 const digest=b=>createHash('sha256').update(b).digest('hex');
-const manifest=JSON.parse(await readFile(source+'source-manifest.json','utf8'));
+const manifest=JSON.parse(await readFile(source+'source-manifest.json','utf8').catch(async error=>{if(error.code!=='ENOENT')throw error;return gunzipSync(await readFile(source+'source-manifest.json.gz')).toString()}));
 const compressed=await readFile(source+'opportunity-observations.json.gz');
 assert.equal(digest(compressed),manifest.compressedSha256);
 const raw=gunzipSync(compressed);assert.equal(digest(raw),manifest.dataSha256);
 const quotes=process.argv[3]?JSON.parse(await readFile(process.argv[3],'utf8')):[];
 const {evaluateProbabilityModels}=await loadTs(new URL('../lib/probability-forecast.ts',import.meta.url));
 const policy=process.env.MODEL_CALIBRATION||'pooled';
+const featurePolicy=process.env.MODEL_FEATURE_POLICY;
+assert.ok(featurePolicy==null||featurePolicy==='basketball_context','Unknown MODEL_FEATURE_POLICY');
 assert.ok(['pooled','workload'].includes(policy),'Unknown MODEL_CALIBRATION');
 if(policy==='workload'){
  assert.ok(process.argv[2],'Experimental calibration requires an explicit separate output directory');
  assert.notEqual(resolve(output),resolve(source),'Experimental output must not overwrite the frozen source bundle');
  const existing=await readFile(output+'/probability-evaluation.json','utf8').catch(error=>{if(error.code==='ENOENT')return null;throw error});
- if(existing)assert.equal(JSON.parse(existing).modelId,'local-workload-distribution-candidate-v1','Experimental output must not overwrite another model bundle');
+ if(existing)assert.equal(JSON.parse(existing).modelId,featurePolicy?'basketball-context-distribution-candidate-v1':'local-workload-distribution-candidate-v1','Experimental output must not overwrite another model bundle');
 }
-const {models,...report}=evaluateProbabilityModels(JSON.parse(raw),quotes,{calibration:policy});
+if(featurePolicy){assert.ok(process.argv[2],'Experimental features require explicit output');assert.notEqual(resolve(output),resolve(source),'Experimental features require a separate output bundle')}
+const {models,...report}=evaluateProbabilityModels(JSON.parse(raw),quotes,{calibration:policy,featurePolicy});
 const artifacts=gzipSync(JSON.stringify(models)+'\n',{level:9});
 const result={...report,sourceDataSha256:manifest.dataSha256,selectedQuoteCount:quotes.length,
  quoteDataSha256:quotes.length?digest(JSON.stringify(quotes)):null,modelArtifactsSha256:digest(artifacts)};

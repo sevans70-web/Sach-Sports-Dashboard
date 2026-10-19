@@ -1,0 +1,24 @@
+{
+  "modelId": "opportunity-strength-empirical-return-candidate-v1",
+  "evaluatedAt": "2026-10-19T16:26:14.371Z",
+  "sourceDataSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "selectedQuotes": 89,
+  "eligibleCalibrationRows": 74,
+  "fixtures": 11,
+  "minimumCalibrationRows": 200,
+  "minimumFixtures": 30,
+  "rejectionCounts": {
+    "fewer_than_three_same_season_team_appearances": 12,
+    "prior_workload_role_uncertain": 3
+  },
+  "fitReason": "insufficient_exact_price_calibration",
+  "giEnabled": false,
+  "publicPicksEnabled": false,
+  "artifact": null,
+  "limitations": [
+    "GI represents ranked calibrated expected unit return, not outcome probability or evidence confidence.",
+    "These are retrospective exact-price diagnostic decisions; independent later evaluation and complete current context are still required.",
+    "Quoted payout arithmetic does not implement every bookmaker participation/refund rule.",
+    "NBA has no independently verified historical exact-price samples in the current dataset; its six fitted distributions cannot establish betting accuracy."
+  ]
+}

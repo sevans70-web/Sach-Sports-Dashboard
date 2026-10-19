@@ -1,4 +1,5 @@
 import {opportunityFeatures, type OpportunityGame} from '@/lib/opportunity-backtest';
+import {basketballFeatureIndex} from '@/lib/basketball-model-inputs';
 
 /** Research engine. These artifacts are deliberately independent of the live
  * model registry. Fitting, calibration and price evaluation never certify GI. */
@@ -7,6 +8,8 @@ export type DistributionModel={version:1;group:string;trainedThrough:string;cali
  workload:LinearModel;rate:LinearModel;residuals:number[];trainingRows:number;calibrationRows:number;
  rateTrainingRows?:number;
  workloadCalibration?:{expectedWorkload:number;residual:number}[];
+ featurePolicy?:'basketball_context';
+ calibrationSamples?:number;
  minimum:number|null;integer:boolean;validatedForBetting:false};
 export type ExactQuote={sport:string;market:string;period:'game'|'q1';gameId:string;playerId:string;
  bookmaker:string;quoteId:string;line:number;overPrice:number;underPrice:number;
@@ -65,7 +68,11 @@ function point(model:Pick<DistributionModel,'workload'|'rate'|'minimum'>,x:numbe
  const raw=expectedWorkload*expectedRate;
  return {expectedWorkload,expectedRate,projection:model.minimum==null?raw:Math.max(model.minimum,raw)};
 }
-function materialize(games:OpportunityGame[]):FeatureRow[]{
+function materialize(games:OpportunityGame[],featurePolicy?:'basketball_context'):FeatureRow[]{
+ if(featurePolicy==='basketball_context'){
+  const input=basketballFeatureIndex(games);
+  return games.flatMap(game=>{const prior=input(game);return prior.features?[{game,x:prior.features,baseline:prior.baseline!}]:[]});
+ }
  const histories=new Map<string,OpportunityGame[]>();
  for(const g of games){const k=[g.sport,g.market,g.playerId,g.teamId,g.season].join('|');histories.set(k,[...(histories.get(k)||[]),g])}
  return games.flatMap(game=>{
@@ -150,7 +157,7 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
  // Features are reconstructed with a 48-hour result lag. This is not a
  // substitute for a frozen pregame role/injury/rotation snapshot.
  if(!validTime(availableAt)||Date.parse(availableAt)>Date.parse(target.gameTime)||Date.parse(availableAt)-48*3600000<=Date.parse(model.calibratedThrough))return {reason:'model_not_available_before_target',forecast:null};
- const input=probabilityInputs(history,target,availableAt);
+ const input=model.featurePolicy==='basketball_context'?basketballFeatureIndex(history)(target,availableAt):probabilityInputs(history,target,availableAt);
  if(!input.features)return {reason:input.reason,forecast:null};
  const prediction=point(model,input.features);
  return {reason:null,forecast:{...prediction,values:workloadDistributionValues(model,prediction.projection,prediction.expectedWorkload)}};
@@ -158,14 +165,15 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
 /** Fixed 65%/35% chronological split of PRIOR-season feature dates for fitting
  * and calibration; later season retained for diagnostic evaluation. The later
  * season has already been inspected for v1, so it is NOT a fresh holdout. */
-export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload'}={}){
+export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context'}={}){
  if(options.calibration!=null&&!['pooled','workload'].includes(options.calibration))throw Error('Unsupported calibration policy');
  const conditional=options.calibration==='workload';
  const seen=new Set<string>();for(const g of games){
   if(seen.has(outcomeKey(g)))throw Error('Duplicate observation '+outcomeKey(g));seen.add(outcomeKey(g));
   if(!validTime(g.gameTime)||!Number.isFinite(g.actual)||!Number.isFinite(g.workload)||g.workload<0)throw Error('Invalid observation '+outcomeKey(g));
  }
- const all=materialize(games),groups=[...new Set(games.map(groupOf))].sort(),models:DistributionModel[]=[],reports=[];
+ if(options.featurePolicy!=null&&options.featurePolicy!=='basketball_context')throw Error('Unsupported feature policy');
+ const all=materialize(games,options.featurePolicy),groups=[...new Set(games.map(groupOf))].sort(),models:DistributionModel[]=[],reports=[];
  const quoteMap=new Map<string,ExactQuote>();for(const q of quotes){const key=[q.sport,q.market,q.playerId,q.gameId].join('|');if(quoteMap.has(key))throw Error('Multiple selected quotes '+key);quoteMap.set(key,q)}
  for(const group of groups){
   const [sport,market]=group.split('|'),testSeason=sport==='nhl'?'20252026':'2026';
@@ -175,10 +183,11 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   const boundary=dates[Math.floor(dates.length*.65)],boundaryMs=Date.parse(boundary||'');
   // Whole timestamps stay together; 48h embargo prevents a fitting result
   // from being unavailable at the earliest calibration prediction.
-  const train=prior.filter(r=>Date.parse(r.game.gameTime)<boundaryMs-48*3600000&&(market.startsWith('q1_')||r.game.workload>0));
+  const train=prior.filter(r=>Date.parse(r.game.gameTime)<boundaryMs-48*3600000&&(options.featurePolicy||market.startsWith('q1_')||r.game.workload>0));
   const rateTraining=train.filter(r=>r.game.workload>0);
   const calibration=prior.filter(r=>Date.parse(r.game.gameTime)>=boundaryMs);
   const base={group,targetAppearances:source.filter(g=>g.season===testSeason).length,eligibleTargets:test.length,
+   ...(options.featurePolicy?{zeroWorkloadTrainingRows:train.filter(r=>r.game.workload===0).length,zeroWorkloadTargets:test.filter(r=>r.game.workload===0).length}:{}),
    trainingRows:train.length,calibrationRows:calibration.length,exactQuoteSamples:0,validatedForBetting:false};
   if(train.length<100||rateTraining.length<100||calibration.length<(conditional?200:100)){reports.push({...base,reason:'insufficient_training_or_calibration',forecasts:0});continue}
   const trainedThrough=train.at(-1)!.game.gameTime,calibratedThrough=calibration.at(-1)!.game.gameTime;
@@ -191,10 +200,16 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   const minimum=['passing_yards','rushing_yards','receiving_yards'].includes(market.replace(/^q1_/,''))?null:0;
   const model:DistributionModel={version:1,group,trainedThrough,calibratedThrough,workload,rate,
    residuals:[],trainingRows:train.length,calibrationRows:calibration.length,minimum,integer:true,validatedForBetting:false};
+  if(options.featurePolicy)model.featurePolicy=options.featurePolicy;
   if(market.startsWith('q1_'))model.rateTrainingRows=rateTraining.length;
-  model.residuals=calibration.map(r=>r.game.actual-point(model,r.x).projection).sort((a,b)=>a-b);models.push(model);
-  if(conditional)model.workloadCalibration=calibration.map(r=>{const p=point(model,r.x);return {expectedWorkload:p.expectedWorkload,residual:r.game.actual-p.projection}});
-  const baselineResiduals=calibration.map(r=>r.game.actual-r.baseline).sort((a,b)=>a-b);
+  // This separate basketball candidate fixes a maximum 401 chronological,
+  // uniformly spaced calibration observations before inspecting outcomes.
+  // Bounded distributions make full-population evaluation reproducible.
+  const distributionCalibration=options.featurePolicy?Array.from({length:Math.min(401,calibration.length)},(_,i)=>calibration[Math.round(i*(calibration.length-1)/(Math.min(401,calibration.length)-1))]):calibration;
+  if(options.featurePolicy)model.calibrationSamples=distributionCalibration.length;
+  model.residuals=distributionCalibration.map(r=>r.game.actual-point(model,r.x).projection).sort((a,b)=>a-b);models.push(model);
+  if(conditional)model.workloadCalibration=distributionCalibration.map(r=>{const p=point(model,r.x);return {expectedWorkload:p.expectedWorkload,residual:r.game.actual-p.projection}});
+  const baselineResiduals=distributionCalibration.map(r=>r.game.actual-r.baseline).sort((a,b)=>a-b);
   const results=test.map(r=>{
    const pred=point(model,r.x),values=workloadDistributionValues(model,pred.projection,pred.expectedWorkload),n=values.length;
    // Finite-sample central 80% empirical residual interval. Dependent games
@@ -245,8 +260,17 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
- return {modelId:conditional?'local-workload-distribution-candidate-v1':quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
-  observations:games.length,models,reports,limitations:[
+ return {modelId:options.featurePolicy?'basketball-context-distribution-candidate-v1':conditional?'local-workload-distribution-candidate-v1':quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
+  observations:games.length,models,reports,limitations:options.featurePolicy?[
+   'Two completed regular-season fixture windows replace current-board selection; athletes absent from final tables and incomplete boxes remain uncovered.',
+   'Later-season development evaluation is not a prospective untouched holdout; official sources are current revisions.',
+   'Historical source publication timestamps and frozen pregame injury/lineup reports are unavailable; features use a conservative 48-hour lag.',
+   'Usage and pace are boxscore estimates with fixed 0.44 free-throw weighting, not reported official possession counts.',
+   'Minutes and per-minute production are fitted separately from prior roles, workload, usage, team/opponent context, rest and home status.',
+   'The uncertainty calibration uses at most 401 uniformly spaced chronological calibration rows, selecting their nearest half by expected workload.',
+   'New roles, transfers without same-team history and missing opponent histories abstain; same-team history can carry from the preceding season.',
+   'Quarter, scorer and combined markets are not fitted in this bundle. Exact-price validation, current availability/rotation context and independent evaluation remain required before GI or picks.'
+  ]:[
    'Diagnostic reuse of the v1 evaluation period; not an untouched holdout.',
    'Current-board population and revised official logs introduce selection and vintage bias.',
    'Pregame role, injuries, teammates, weather, rotation, matchup and goalie context remain missing.',

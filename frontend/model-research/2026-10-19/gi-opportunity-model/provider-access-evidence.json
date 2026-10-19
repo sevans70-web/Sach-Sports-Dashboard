@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-19T16:19:01.381Z",
+  "sport": "nba",
+  "archiveCoverageMetadataAvailable": true,
+  "historicalClosingPlayerPropSample": {
+    "status": 403,
+    "error": "Archive validation sample returned 403"
+  },
+  "documentation": "https://owlsinsight.com/docs",
+  "documentedRouteTier": "MVP",
+  "accountSubscriptionVerified": false,
+  "billingChanged": false,
+  "interpretation": "The configured key was denied access to the historical player-prop sample. This observation does not establish the account's subscription or whether a billing upgrade is needed."
+}
