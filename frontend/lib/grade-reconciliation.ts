@@ -1,4 +1,5 @@
 import {footballObservedRows} from "@/lib/football-observed-stats";
+import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {basketballSummaryActual} from "@/lib/basketball-settlement";
 import {nhlObservedActual} from "@/lib/observed-player-stats";
 
@@ -18,13 +19,14 @@ export function correctedGrade<T extends GradeRow>(old:T,next:T):T|null{
 export function reconcileOfficialGrade<T extends GradeRow>(row:T,payload:any,sport:string):T{
  if(!["hit","miss","push"].includes(row.status)||!row.gameId||!/^\d+$/.test(String(row.playerId||"")))return row;
  const market=String(row.market||"");
- if(market.startsWith("q1_")||["first_td","first_basket"].includes(market))return row;
+ const footballQuarter=['nfl','cfb'].includes(sport)&&['q1_passing_yards','q1_rushing_yards','q1_receiving_yards'].includes(market);
+ if(market.startsWith("q1_")&&!footballQuarter||["first_td","first_basket"].includes(market))return row;
  const competition=payload?.header?.competitions?.[0];
  const id=String(sport==="nhl"?payload?.id:payload?.header?.id||competition?.id||"");
  const final=sport==="nhl"?["FINAL","OFF"].includes(payload?.gameState):competition?.status?.type?.completed===true;
  if(id!==String(row.gameId)||!final)return row;
  let actual:number|null=null;
- if(sport==="nfl"||sport==="cfb")actual=footballObservedRows(payload).find(p=>p.playerId===String(row.playerId))?.stats[market]??null;
+ if(sport==="nfl"||sport==="cfb")actual=(footballQuarter?footballQuarterRows(payload):footballObservedRows(payload)).find(p=>p.playerId===String(row.playerId))?.stats[market]??null;
  else if(sport==="nhl")actual=nhlObservedActual(payload,String(row.playerId),market);
  else actual=basketballSummaryActual(payload,{playerId:row.playerId},market);
  if(actual==null||!Number.isFinite(actual))return row;
@@ -35,6 +37,6 @@ export function reconcileOfficialGrade<T extends GradeRow>(row:T,payload:any,spo
  else return row;
  if(actual===row.actual&&status===row.status)return row;
  const checkedAt=new Date().toISOString();
- const revision:GradeRevision={previousActual:row.actual??null,previousStatus:row.status,previousGradedAt:row.gradedAt??null,actual,status,checkedAt,gameId:String(row.gameId),playerId:String(row.playerId),source:sport==="nhl"?"NHL final boxscore":"ESPN final boxscore"};
+ const revision:GradeRevision={previousActual:row.actual??null,previousStatus:row.status,previousGradedAt:row.gradedAt??null,actual,status,checkedAt,gameId:String(row.gameId),playerId:String(row.playerId),source:footballQuarter?'ESPN Q1 play-by-play reconciled to final boxscore':sport==="nhl"?"NHL final boxscore":"ESPN final boxscore"};
  return {...row,actual,status,gradedAt:checkedAt,gradeRevisions:[...(row.gradeRevisions||[]),revision]};
 }

@@ -8,6 +8,10 @@ NFL/CFB live football stats now include observed Q1 passing, rushing and receivi
 
 Read-only market-coverage diagnostics inspect the merged props catalog, the documented separate Bet365 v2 source, and archive availability using the configured server key and shared cache. Raw source buckets are not promoted to betting quotes without a tested adapter. GI, picks, probability calibration and sport/quarter forecast validation remain unfinished; the validated-model registry remains empty.
 
+Live source inspection at 2026-10-19 01:13 UTC found NFL BetMGM Q1 passing/receiving/rushing categories, but zero qualifying main quotes. Sample records explicitly say `marketStructure: milestone` and carry only an Over price (passing 40+/-325, receiving 5+/-295, rushing 5+/-700). Bet365 v2 supplied no NFL Q1 bucket. The NBA merged catalog had neither quarter nor first-basket categories; its Bet365 player grids were one-price milestones. This verifies a current coverage gap, not proof those books never offer these markets. Do not synthesize an Under side or republish these ladders as a main O/U. The shared combined-yard category parser now recognizes the provider's `rush_rec_yards` alias without weakening period/quote checks.
+
+Final football Q1 corrections now use the reconciled quarter parser and append the previous actual/status to `gradeRevisions`. Unreconciled legacy quarter totals are suppressed on cards instead of overriding a newly checked missing quarter stat; preserved underlying records remain inspectable. Live analysis and progress use the same latest observed value. In a 12-game stored official-summary audit, the conservative parser reconciled 13/23 players with passing attempts, 56/81 rushers and 143/153 receivers with catches. Remaining observations stay unknown; this does not establish complete quarter coverage or a validated forecast.
+
 Scope: NFL, CFB, NBA, WNBA, CBB and NHL. MLB and soccer remain hidden; their stored history is untouched.
 
 ## What is repaired

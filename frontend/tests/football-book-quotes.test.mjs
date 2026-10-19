@@ -54,3 +54,12 @@ test('same player in another game/day is never collapsed into one quote',()=>{
  assert.equal(r.length,2);assert.deepEqual(r.map(x=>x.line),[289.5,250.5]);
  assert.equal(footballQuoteFields(r[0]).overPrice,104);
 });
+test('provider rush_rec_yards alias qualifies only as the same full-game combined market',()=>{
+ const [r]=rows([book('draftkings',[quote({category:'rush_rec_yards',line:75.5})])],'rushing_receiving_yards');assert.equal(r.line,75.5);
+ assert.equal(rows([book('draftkings',[quote({category:'rush_rec_yards',periodID:'1q'})])],'rushing_receiving_yards').length,0);
+});
+test('observed BetMGM Q1 milestone feed is never relabeled as a two-way main O/U',()=>{
+ for(const [base,line,price]of [['passing_yards',40,-325],['receiving_yards',5,-295],['rushing_yards',5,-700]]){
+ const result=footballBookRows({data:[game([book('betmgm',[quote({category:base+'_1q',line,overPrice:price,underPrice:undefined,marketStructure:'milestone'})])])]},'q1_'+base,[base+'_1q'],now);assert.equal(result.length,0);
+ }
+});

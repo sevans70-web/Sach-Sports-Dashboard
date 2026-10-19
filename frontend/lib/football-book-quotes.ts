@@ -3,6 +3,7 @@ import {recordNoteFields} from '@/lib/record-notes';
 
 export const FOOTBALL_QUOTE_VERSION = 1;
 const norm = (v: unknown) => String(v ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const categoryKey=(v:unknown)=>{const key=norm(v);return ({rushrecyards:'rushingreceivingyards',rushreceivingyards:'rushingreceivingyards',passrushyards:'passingrushingyards'} as Record<string,string>)[key]||key};
 // Provider names may include a college abbreviation. It is not a different player.
 const playerKey = (v: string) => norm(v.replace(/\s*\([^)]*\)\s*$/, ""));
 const price = (v: unknown) => {
@@ -25,7 +26,7 @@ export type FootballBookRow = {
  */
 export function footballBookRows(payload: any, market: string, aliases: string[], now = Date.now()): FootballBookRow[] {
   const binary = /^(anytime_td|first_td|q1_anytime_td)$/.test(market);
-  const categories = new Set(aliases.map(norm));
+  const categories = new Set(aliases.map(categoryKey));
   const grouped = new Map<string, FootballBookRow[]>();
   for (const game of Array.isArray(payload?.data) ? payload.data : []) {
     const away = String(game.awayTeam || game.away_team || "");
@@ -37,7 +38,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
       const sportsbookKey = String(book.key || "");
       if (!sportsbookKey) continue;
       for (const prop of Array.isArray(book.props) ? book.props : []) {
-        const category = norm(prop.category ?? prop.market ?? prop.type);
+        const category = categoryKey(prop.category ?? prop.market ?? prop.type);
         const period = norm(prop.periodID ?? prop.periodId ?? prop.period ?? "");
         const quarter = market.startsWith("q1_");
         const base = market.replace(/^q1_/, "");

@@ -24,7 +24,7 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
   if(/passing/.test(market)&&workload.length&&workload.every((v:any)=>v!=null))facts.push(`Passing workload: ${fmt(workload.reduce((a:number,b:number)=>a+b!,0)/workload.length)} attempts per game in this sample.`);
  }
  if(row.availabilityEvidence?.text&&String(row.availabilityEvidence.gameId)===String(row.gameId))facts.push(row.availabilityEvidence.text);
- const actual=num(row.actualResult??row.liveCurrent);
+ const actual=num(row.gameState==='post'?row.actualResult:row.liveCurrent);
  if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line!=null?`; ${fmt(Math.abs(actual-line))} ${actual>=line?'above':'below'} the ${fmt(line)} line`:''}.`);
  if(!facts.length)facts.push(row.matchup?`${row.playerName||'Player'} · ${row.matchup}. Recent game details are loading.`:'Recent game details are loading.');
  return {facts,face:facts.slice(0,2).join(' '),recentAverage:average,recentCount:count,recentLabel:count?`Last ${count} avg.`:'Recent avg.'};

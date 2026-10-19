@@ -405,6 +405,7 @@ function marketActualValue(
   row: any,
   marketKey: string
 ) {
+  if(marketKey.startsWith('q1_')&&row?.quarterObservationChecked===true)return finite(row.observedQuarterValue);
   const mlbActual: Record<string, any> = {
     home_runs:
       result?.actual_home_runs ??
@@ -509,7 +510,7 @@ function normalizeCard(
   );
 
   const liveCurrent =
-    finite(row?.liveCurrent) ??
+    row?.quarterObservationChecked===true&&market.key.startsWith('q1_') ? finite(row.observedQuarterValue) : finite(row?.liveCurrent) ??
     marketActualValue(
       result,
       row,
@@ -956,7 +957,7 @@ function PlayerCard({
           : ""
     );
 
-  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime},sport,card.market,historyLoaded?historyValues:[]);
+  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const displayedAverage=researchOnly?context.recentAverage:card.modelProjection;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
@@ -2192,7 +2193,10 @@ export function PlayerRankingsPanel({
             ? (payload.participants||[]).find((p:any)=>String(p.playerId)===String(card.playerId)) : null;
           const updatedRaw=applyParticipationEvidence({...card.raw,gameId:String(game.id),playerId:card.playerId},payload,String(game.id));
           const current = payload?.success===true&&String(payload.gameId)===String(game.id)?finite(row?.stats?.[card.market]):null;
-          if (current == null) return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,raw:updatedRaw,lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
+          if (current == null) {
+            const checkedQuarter=['nfl','cfb'].includes(sport)&&card.market.startsWith('q1_')&&row?.stats&&Object.hasOwn(row.stats,card.market);
+            return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,...(checkedQuarter?{actual:null,liveCurrent:null,liveProgressPct:null}:{}),raw:{...updatedRaw,...(checkedQuarter?{quarterObservationChecked:true,observedQuarterValue:null,actualResult:null,liveCurrent:null}: {})},lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
+          }
 
           const progress =
             card.sportsbookLine != null && card.sportsbookLine > 0
@@ -2208,6 +2212,7 @@ export function PlayerRankingsPanel({
             liveProgressPct: progress,
             raw: {
               ...updatedRaw,
+              ...(['nfl','cfb'].includes(sport)&&card.market.startsWith('q1_')?{quarterObservationChecked:true,observedQuarterValue:current}:{}),
               gameState:payload.state==="post"?"post":String(game.state||card.gameState),
               liveCurrent: game.state === "in" ? current : card.liveCurrent,
               actualResult: payload.state === "post" || game.state === "post" ? current : card.actual,

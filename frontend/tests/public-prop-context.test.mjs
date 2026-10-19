@@ -9,3 +9,6 @@ test('descriptive sample average and line counts use dated observations and neve
  const r=context({quoteVerified:true,sportsbookLine:20.5,gameTime:'2026-10-18',researchCohort:{observations:[10,20,30,40,50].map((value,i)=>({value,date:`2026-10-0${i+1}`,included:true}))}},'nfl','receiving_yards');
  assert.equal(r.recentAverage,30);assert.equal(r.recentLabel,'Last 5 avg.');assert.match(r.face,/3 of the last 5/);assert.equal(r.giScore,undefined);assert.equal(r.prediction,undefined);assert.doesNotMatch(r.face,/stored|unvalidated|coverage|baseline/i);
 });
+test('live facts use the latest live stat, even when the ranking snapshot has an older actual field',()=>{
+ const r=context({gameState:'in',actualResult:119,liveCurrent:154,quoteVerified:true,sportsbookLine:274.5},'nfl','passing_yards');assert.match(r.face,/Currently at 154 yards/);assert.doesNotMatch(r.face,/119/);
+});

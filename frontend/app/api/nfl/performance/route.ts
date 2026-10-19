@@ -148,7 +148,7 @@ export async function GET(req:NextRequest){
      const got=await getNflPredictions(market,day);connected=connected&&got.connected;writable=writable&&(got.writable!==false);recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
      for(const p of got.predictions){
        if(p.status!=="pending"){
-         if(["hit","miss","push"].includes(p.status)&&p.gameId&&!p.market.startsWith("q1_")&&p.market!=="first_td"){
+         if(["hit","miss","push"].includes(p.status)&&p.gameId&&p.market!=="first_td"){
            let payload=summaryCache.get(String(p.gameId));
            if(payload===undefined){payload=await getSummary(String(p.gameId));summaryCache.set(String(p.gameId),payload)}
            const corrected=reconcileOfficialGrade(p,payload,"nfl");
