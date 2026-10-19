@@ -4,6 +4,31 @@ const cache=new Map<Sport,{expires:number;payload?:any;error?:string}>();
 const pending=new Map<Sport,Promise<any>>();
 const sourceCache=new Map<string,{expires:number;payload?:any;error?:string}>();
 const sourcePending=new Map<string,Promise<any>>();
+/** Included graded-results capability, NOT the restricted MVP history archive.
+ * Two fixed dates, at most two reads per sport/hour, no caller-controlled query.
+ * A provider grade is discovery evidence only, never model-validation evidence. */
+export async function getOwlsIncludedResultsSample(sport:'nfl'|'nba'){
+ const tag='included-results-'+sport,hit=sourceCache.get(tag);
+ if(hit&&hit.expires>Date.now()){if(hit.error)throw Error(hit.error);return hit.payload}
+ const running=sourcePending.get(tag);if(running)return running;
+ const work=(async()=>{
+  const key=process.env.OWLS_INSIGHT_API_KEY?.trim();if(!key)throw Error('Book feed is not configured');
+  const read=async(query:Record<string,string>)=>{
+   const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${sport}/props/results?`+new URLSearchParams(query),{headers:{Authorization:`Bearer ${key}`,'x-api-key':key,Accept:'application/json'},cache:'no-store'});
+   if(!response.ok){const error=`Included prop results returned ${response.status}`;const retry=Number(response.headers.get('retry-after'));sourceCache.set(tag,{expires:Date.now()+Math.max(3600_000,Number.isFinite(retry)?Math.min(86400_000,retry*1000):0),error});throw Error(error)}
+   return response.json();
+  };
+  const date=sport==='nba'?'2026-04-01':'2026-10-18';
+  const discovery=await read({date});
+  const games=Array.isArray(discovery?.data)?discovery.data:discovery?.data?.games??discovery?.games;
+  const first=Array.isArray(games)?games[0]:null;
+  const id=first?.eventId??first?.event_id??first?.gameId??first?.game_id;
+  // Only documented sport-prefixed event IDs, never a URL or arbitrary string.
+  const gameId=typeof id==='string'&&new RegExp(`^${sport}:[A-Za-z0-9@_-]{1,100}$`).test(id)?id:null;
+  const response=gameId?await read({game_id:gameId,confirmed_only:'true',category:sport==='nba'?'points':'passing_yards'}):null;
+  const payload={date,gameId,discovery,response};sourceCache.set(tag,{expires:Date.now()+3600_000,payload});return payload;
+ })();sourcePending.set(tag,work);try{return await work}finally{sourcePending.delete(tag)}
+}
 /** Two fixed, bounded archive probes for model-data coverage. No caller-supplied
  * URL, date range, pagination or credentials. Successful samples cache for an
  * hour; errors respect Retry-After with a minimum five-minute cooldown. */

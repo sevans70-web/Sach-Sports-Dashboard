@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server';
-import {getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage,getOwlsArchiveValidationSample} from '@/lib/owls-provider';
+import {getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage,getOwlsArchiveValidationSample,getOwlsIncludedResultsSample} from '@/lib/owls-provider';
 import {footballBookRows} from '@/lib/football-book-quotes';
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 export const dynamic='force-dynamic';
@@ -8,6 +8,17 @@ export const dynamic='force-dynamic';
  * The archive probe exposes only bounded public quote fields, never outcomes. */
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport');if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
+ if(req.nextUrl.searchParams.get('mode')==='included-results'){
+  // Explicit public-field allowlist: never forward arbitrary provider bodies.
+  const fields=['eventId','event_id','gameId','game_id','date','startTime','gameTime','player','playerName','category','propType','book','line','isMain','isMainLine','overPrice','underPrice','updatedAt','lastUpdate','actual','final','verdict','result','count','playerCount','entryCount'];
+  const describe=(p:any)=>{
+   const container=p?.data??p;
+   const rows=Array.isArray(container)?container:Array.isArray(container?.games)?container.games:Array.isArray(container?.props)?container.props:Array.isArray(container?.results)?container.results:[];
+   return {keys:Object.keys(p||{}),dataKeys:container&&!Array.isArray(container)?Object.keys(container):null,count:rows.length,examples:rows.slice(0,2).map((r:any)=>Object.fromEntries(fields.filter(k=>['string','number','boolean'].includes(typeof r?.[k])).map(k=>[k,r[k]]))),rowKeys:rows[0]?Object.keys(rows[0]):[]};
+  };
+  const sample=await getOwlsIncludedResultsSample(sport).then(p=>({date:p.date,gameId:p.gameId,discovery:describe(p.discovery),results:describe(p.response)}),e=>({error:String(e?.message||'Included results unavailable')}));
+  return NextResponse.json({sport,sample,scope:'Discovery only; provider verdicts do not validate forecasts or establish frozen quote provenance.',updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
+ }
  const [merged,source]=await Promise.allSettled([getOwlsPayload(sport),getOwlsBet365Payload(sport)]);
  const categories=new Map<string,number>();let games=0;
  const quarterSamples:any[]=[];
