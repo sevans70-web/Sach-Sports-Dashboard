@@ -742,6 +742,7 @@ const NATIVE_HISTORY_SPORTS = new Set<RankingsSport>([
   "nba",
   "wnba",
   "cbb",
+  "nhl",
 ]);
 
 const recentFormCache = new Map<string, number[]>();
@@ -788,7 +789,7 @@ async function loadRecentFormForCard(
   const payload = await response.json();
 
   const values = Array.isArray(payload?.points)
-    ? datedCardHistory(payload.points,card.gameTime,card.market,sport)
+    ? datedCardHistory(payload.points,card.gameTime,card.market,sport,card.raw?.gameId)
     : Array.isArray(payload?.values)
       ? payload.values
           .map((value: any) => Number(value))

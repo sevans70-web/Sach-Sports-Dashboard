@@ -14,6 +14,8 @@ Final football Q1 corrections now use the reconciled quarter parser and append t
 
 The configured SportsGameOdds supplement now retains root `byBookmaker` prices rather than publishing a consensus pseudo-book. For O/U, opposing odds must match exact event, player, stat, period, book and threshold, both sides must be available, and the older side timestamp controls freshness. Alternative rungs are never traversed. NFL Q1 and CFB now route these named-book quotes through the shared integrity parser; NBA uses the repaired adapter already connected to its quote builder. First-basket named-book scorer prices are supported when the source explicitly provides that market. Opposing odds are requested explicitly, and shared league polling is cached for five minutes. This repair establishes quote provenance only and does not enable GI/picks.
 
+Hockey cards use a dated official NHL history endpoint rather than the legacy undated array. It preserves fixture IDs, derives goalie saves only from known shots/goals against, skips explicit zero-ice-time appearances, and leaves missing stats unknown. Shared history excludes the target fixture and date-only results from the target Eastern game day, preventing target-result leakage into a pregame average. Quarter passing and combined passing/rushing history also use the limited-passing-role filter.
+
 Scope: NFL, CFB, NBA, WNBA, CBB and NHL. MLB and soccer remain hidden; their stored history is untouched.
 
 ## What is repaired

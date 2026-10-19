@@ -1,12 +1,15 @@
 const num=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 const fmt=(v:number)=>Number(v.toFixed(1)).toString();
 /** Descriptive pregame history only; never a forecast, edge, or GI score. */
-export function datedCardHistory(points:any[],kickoff:string,market:string,sport:string){
+export function datedCardHistory(points:any[],kickoff:string,market:string,sport:string,gameId?:string){
  const cutoff=Date.parse(kickoff);if(!Number.isFinite(cutoff))return [];
+ const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(cutoff));
  return points.filter(p=>Number.isFinite(Date.parse(p.date))&&Date.parse(p.date)<cutoff&&num(p.value)!=null)
+  .filter(p=>!gameId||String(p.gameId)!==String(gameId))
+  .filter(p=>!/^\d{4}-\d{2}-\d{2}$/.test(p.date)||p.date<day)
   .filter(p=>!market.startsWith('q1_')||p.period==='q1')
   .filter(p=>!['nfl','cfb'].includes(sport)||p.season==null||Number(p.season)===new Date(cutoff).getUTCFullYear())
-  .filter(p=>!['nfl','cfb'].includes(sport)||!['passing_yards','passing_tds'].includes(market)||num(p.workload)!=null&&Number(p.workload)>=10)
+  .filter(p=>!['nfl','cfb'].includes(sport)||!['passing_yards','passing_tds','passing_rushing_yards'].includes(market.replace(/^q1_/,''))||num(p.workload)!=null&&Number(p.workload)>=10)
   .sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-20).map(p=>Number(p.value));
 }
 export function publicPropContext(row:any,sport:string,market:string,history:number[]=[]){
