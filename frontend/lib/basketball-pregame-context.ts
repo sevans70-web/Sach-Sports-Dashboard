@@ -85,7 +85,7 @@ export async function attachBasketballPregameContext(payload:any,sport:Sport){
   const context=playerPregameContext(contexts.get(text(row.gameId))||null,row),report=context?.availability[0];
   return {...row,pregameContext:context,...(context?{lineupConfirmed:context.starterConfirmed,starterConfirmed:context.starterConfirmed,
    availabilityEvidence:report?{code:'official_injury_status',text:`Reported ${report.status}${report.note?' · '+report.note:''}`,
-    source:'ESPN pregame report',checkedAt:context.retrievedAt,gameId:context.gameId}:undefined}:{})};
+    source:'ESPN pregame report',reportedAt:report.reportedAt||undefined,checkedAt:context.retrievedAt,gameId:context.gameId}:undefined}:{})};
  });
  return {...payload,rows,pregameContextCount:rows.filter((row:any)=>row.pregameContext!=null).length};
 }

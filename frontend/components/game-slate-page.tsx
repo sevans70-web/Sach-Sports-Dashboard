@@ -84,6 +84,8 @@ type InjuryRow = {
   playerName: string;
   position: string;
   status: string;
+  reportedAt?: string;
+  participation?: string;
 };
 
 type RecentRow = {
@@ -573,7 +575,7 @@ function rosterWatchRow(
     teamName,
     position: player.position,
     headshot: player.headshot,
-    market: "watch",
+    market: "",
     marketLabel: "Player to Watch",
     sportsbookLine: null,
     modelProjection: null,
@@ -811,7 +813,7 @@ function PlayerWatchCard({
             <li>
               GI{" "}
               {row.giScore == null
-                ? row.researchOnly?"Unvalidated":"—"
+                ? "—"
                 : Number(row.giScore).toFixed(1)}
             </li>
             <li>
@@ -919,7 +921,7 @@ function TeamRankingTable({
 
             <strong>
               {row.giScore == null
-                ? row.researchOnly?"Unvalidated":"—"
+                ? "—"
                 : Number(row.giScore).toFixed(1)}
             </strong>
           </Link>
@@ -931,7 +933,7 @@ function TeamRankingTable({
       )}
 
       <div className={styles.teamRankFooter}>
-        Game-specific research rankings · GI/picks require model validation
+        Ranked players in this matchup
       </div>
     </section>
   );
@@ -1238,9 +1240,9 @@ function ExpandedGame({
             </div>
 
             <div className={styles.contextMetrics}>
-              <ContextMetric label="Spread" value={spread} />
-              <ContextMetric label="Game Total" value={total} />
-              <ContextMetric label="Weather" value={weather} />
+              {context.spread ? <ContextMetric label="Spread" value={spread} /> : null}
+              {context.total != null ? <ContextMetric label="Game Total" value={total} /> : null}
+              {!["nba","wnba","cbb","nhl"].includes(sport) && context.weather ? <ContextMetric label="Weather" value={weather} /> : null}
             </div>
 
             <p className={styles.contextCopy}>
@@ -1273,8 +1275,8 @@ function ExpandedGame({
             </div>
           </section>
 
-          <section className={styles.overviewGrid}>
-            <div className={styles.goldPanel}>
+          {(recent.length > 0 || injuries.length > 0) ? <section className={styles.overviewGrid}>
+            {recent.length > 0 ?             <div className={styles.goldPanel}>
               <div className={styles.panelTitle}>
                 <span>▥</span>
                 <h4>Recent Matchups</h4>
@@ -1294,9 +1296,9 @@ function ExpandedGame({
                   Recent head-to-head history will appear when the live provider publishes it.
                 </p>
               )}
-            </div>
+            </div> : null}
 
-            <div className={styles.goldPanel}>
+            {injuries.length > 0 ?             <div className={styles.goldPanel}>
               <div className={styles.panelTitle}>
                 <span>✚</span>
                 <h4>Injury Report</h4>
@@ -1321,7 +1323,7 @@ function ExpandedGame({
                                 ? ` · ${row.position}`
                                 : ""}
                               <em>
-                                {row.status || "Reported"}
+                                {row.participation ? `${row.participation} · ` : ""}Reported {row.status || "injury"}{row.reportedAt ? ` · ${new Date(row.reportedAt).toLocaleString()}` : " · date unavailable"}
                               </em>
                             </span>
                           ))
@@ -1333,8 +1335,8 @@ function ExpandedGame({
                   }
                 )}
               </div>
-            </div>
-          </section>
+            </div> : null}
+          </section> : null}
         </div>
       ) : null}
 
@@ -1504,7 +1506,7 @@ function ExpandedGame({
           <section className={styles.goldPanel}>
             <div className={styles.panelTitle}>
               <span>◈</span>
-              <h4>Prop Research and Verified Picks</h4>
+              <h4>Player Props</h4>
             </div>
 
             {rankings.filter(gradeableRankingRow).length ? (
@@ -1546,19 +1548,19 @@ function ExpandedGame({
                     <em>
                       GI{" "}
                       {row.giScore == null
-                        ? row.researchOnly?"Unvalidated":"—"
+                        ? "—"
                         : Number(
                             row.giScore
                           ).toFixed(1)}
                     </em>
                     <small>{propIntelligence(row,sport,String(row.market||"")).face}</small>
-                    <small>{row.researchOnly?"NO PICK · forecast model unvalidated":row.prediction}</small>
+                    <small>{row.researchOnly?"No pick available":row.prediction}</small>
                   </Link>
                 ))}
               </div>
             ) : (
               <div className={styles.miniEmpty}>
-                No research rows or verified picks are currently attached to this fixture.
+                No player props available for this game.
               </div>
             )}
           </section>
@@ -1572,7 +1574,7 @@ function ExpandedGame({
               <span>▥</span>
               <h4>Historical Baseline vs Recorded Line</h4>
             </div>
-            <p>Research comparisons only. These differences are not validated forecast edges.</p>
+            <p>Historical average compared with the recorded line.</p>
 
             {trendRows.length ? (
               <div className={styles.trendList}>

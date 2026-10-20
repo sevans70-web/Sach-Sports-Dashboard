@@ -9,7 +9,7 @@ import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
-import {voidRecordNote,recordNoteFields} from '@/lib/record-notes';
+import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
@@ -1036,7 +1036,7 @@ function PlayerCard({
         </div>
 
         <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
-          <span>{fittedForecast?.giScore!=null?'GI · research':researchOnly ? "Research" : "GI"}</span>
+          <span>{fittedForecast?.giScore!=null?'GI · experimental':"GI"}</span>
           <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
         </div>
       </div>
@@ -1058,7 +1058,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{fittedForecast?.candidateSide?'Research lean':'Sach Pick'}</span>
+          <span>{fittedForecast?.candidateSide?'Model lean':'Sach Pick'}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1139,7 +1139,7 @@ function PlayerCard({
             <div className={`${styles.progressTrack} ${researchOnly ? styles.researchProgress : ""}`} role="progressbar" aria-label={`${card.playerName} ${card.marketLabel} ${card.market==="anytime_td"?"toward 1+ touchdown target":"toward recorded line"}`} aria-valuemin={0} aria-valuemax={observedProgress.line} aria-valuenow={Math.max(0,Math.min(observedProgress.line,current!))} aria-valuetext={`${shortNumber(current)} of ${shortNumber(observedProgress.line)}; observed statistic, not a win probability`}>
               <i style={{ width: `${progress}%` }} />
             </div>
-            <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":"Toward recorded line"}{researchOnly ? " · research only" : ""}</small>
+            <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":"Toward recorded line"}</small>
           </> : null}
           {current!=null&&!observedProgress&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
         </div>
@@ -1301,7 +1301,7 @@ function PlayerCard({
             <h4>{state === "live" ? "Matchup (Live)" : state === "final" ? "Matchup Result" : "Matchup"}</h4>
             <div className={styles.matchupBox}>
               <strong>{card.matchup || "Matchup context"}</strong>
-              <p>{researchOnly?context.face:card.summary}</p>
+              <p>{card.gameStatus || (state === "pregame" ? "Scheduled" : state === "live" ? "In progress" : "Final")}</p>
             </div>
           </section>
 
@@ -1321,7 +1321,8 @@ function PlayerCard({
 
           {(card.openingLine != null || card.sportsbookLine != null) ? (
             <section className={styles.intelSection}>
-              <h4>Line Movement</h4>
+              <h4>Book Lines</h4>
+              {card.bookmakerCount != null ? <p>{card.bookmakerCount} sportsbook sources</p> : null}
               <div className={styles.lineMovement}>
                 <div>
                   <span>Open</span>
@@ -1348,12 +1349,8 @@ function PlayerCard({
                 <span>✓</span>
                 {playerAvailability({...card.raw,gameState:card.gameState}).detail}
               </p>
-              {card.bookmakerCount != null ? (
-                <p>
-                  <span>✓</span>
-                  {card.bookmakerCount} sportsbook source{card.bookmakerCount === 1 ? "" : "s"} represented.
-                </p>
-              ) : null}
+              {playerAvailabilityNote(card.raw) ? <p>{playerAvailabilityNote(card.raw)!.text} · {playerAvailabilityNote(card.raw)!.source}{playerAvailabilityNote(card.raw)!.reportedAt ? ` · reported ${new Date(playerAvailabilityNote(card.raw)!.reportedAt!).toLocaleString()}` : playerAvailabilityNote(card.raw)!.checkedAt ? ` · checked ${new Date(playerAvailabilityNote(card.raw)!.checkedAt!).toLocaleString()}` : " · report date unavailable"}</p> : null}
+
             </div>
           </section>
         </div>
@@ -2402,7 +2399,7 @@ export function PlayerRankingsPanel({
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label} Rankings</h3>
         <p>
-          {sport === "cfb" && cfbSlate === "all" ? "Up to 75 · three independent Top 25 time blocks" : "Top 25"} · {sourceText} · original prediction values remain frozen after game start when the sport feed supports locking.
+          {sport === "cfb" && cfbSlate === "all" ? "Up to 75 · three independent Top 25 time blocks" : "Top 25"} · {sourceText}
         </p>
       </div>
 
@@ -2429,12 +2426,6 @@ export function PlayerRankingsPanel({
 
       {error ? (
         <div className={styles.state}>{error}</div>
-      ) : null}
-
-      {(loading&&!["mlb","soccer"].includes(sport))||displayCards.some(card => card.raw?.researchOnly) ? (
-        <div className={styles.state}>Picks and GI are being rebuilt. Explore recent player results and available book lines below.</div>
-      ) : !loading && displayCards.length > 0 && displayCards.every(card => card.sportsbookLine == null) ? (
-        <div className={styles.state}>Sportsbook lines are unavailable. These are model-watch rankings; betting picks are only saved and graded with verified market data.</div>
       ) : null}
 
       <div className={styles.cards} ref={cardsRegionRef} style={loading&&pendingHeight?{minHeight:pendingHeight}:undefined} aria-busy={loading}>

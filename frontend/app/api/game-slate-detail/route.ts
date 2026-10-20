@@ -1,3 +1,4 @@
+import {espnParticipation} from '@/lib/player-participation';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { getGameFeed } from "@/lib/mlb-server";
@@ -41,6 +42,8 @@ type InjuryRow = {
   playerName: string;
   position: string;
   status: string;
+  reportedAt?: string;
+  participation?: string;
 };
 
 type RecentRow = {
@@ -172,9 +175,11 @@ function recordFromCompetitor(
 }
 
 function parseInjuries(
-  summary: any
+  summary: any, sport: string
 ): InjuryRow[] {
   const out: InjuryRow[] = [];
+  const participants=espnParticipation(summary,sport);
+  const state=summary?.header?.competitions?.[0]?.status?.type?.state;
 
   for (const group of summary?.injuries || []) {
     const teamName = text(
@@ -194,6 +199,8 @@ function parseInjuries(
 
       out.push({
         teamName,
+        reportedAt: text(row.date) || undefined,
+        participation: participants.some(p=>p.playerId===String(athlete.id)&&p.participationConfirmed) ? (state==="post"?"Played":state==="in"?"Playing":undefined) : undefined,
         playerName: text(
           athlete?.displayName ||
             athlete?.fullName ||
@@ -589,7 +596,7 @@ async function espnGameDetail(
   return {
     rosters,
     context: espnContext(summary),
-    injuries: parseInjuries(summary),
+    injuries: parseInjuries(summary,sport),
     recentMatchups:
       parseSeasonSeries(summary),
   };

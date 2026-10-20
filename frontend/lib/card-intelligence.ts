@@ -32,7 +32,7 @@ export function gameIntelligence(game:any,context:any={},injuries:any[]=[]){
  if(context.spread||number(context.total)!=null)facts.push(`Reported game market: ${context.spread||'spread unavailable'}${number(context.total)!=null?` · total ${fmt(Number(context.total))}`:''}. Full-game market context does not establish a player-prop edge.`);
  if(injuries.length)facts.push(`Listed availability concerns: ${injuries.slice(0,3).map(r=>`${r.playerName} (${r.status})`).join('; ')}${injuries.length>3?`; ${injuries.length-3} more listed`:''}. Workload effects have not been estimated.`);
  if(context.weather)facts.push(`Reported conditions: ${context.weather}.`);
- if(!facts.length)facts.push(`${game.awayTeam} visit ${game.homeTeam}${game.venue?` at ${game.venue}`:''}. Scoring, market and availability context has not yet been supplied.`);
+ if(!facts.length)facts.push(`${game.awayTeam} visit ${game.homeTeam}${game.venue?` at ${game.venue}`:''}.`);
  return facts;
 }
 /** Guarded nulls are intentional: legacy aliases must not restore suppressed values. */

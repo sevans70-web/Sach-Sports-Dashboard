@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SportsNav } from "@/components/dashboard-chrome";
 import styles from "./unified-player-card.module.css";
 
 type SportKey =
@@ -278,7 +277,7 @@ export function UnifiedPlayerCard({
     first(query.position);
 
   const researchMarket =
-    requestedMarket ||
+    (requestedMarket && requestedMarket !== "watch" ? requestedMarket : "") ||
     defaultResearchMarket(
       sport,
       position
@@ -556,18 +555,6 @@ export function UnifiedPlayerCard({
         aria-hidden="true"
       />
 
-      <div className={styles.brand}>
-        <img
-          src="/brand/sach-sports-crown-logo.png"
-          alt=""
-        />
-        <strong>
-          <span>SACH</span> SPORTS
-        </strong>
-      </div>
-
-      <SportsNav active={sport} />
-
       <div className={styles.utilityRow}>
         <button
           type="button"
@@ -683,7 +670,7 @@ export function UnifiedPlayerCard({
                     )}%`
                   : ""
               }`
-            : "Research Mode"}
+            : "Player Profile"}
         </b>
       </section>
 
@@ -791,23 +778,7 @@ export function UnifiedPlayerCard({
             </section>
           ) : null}
 
-          <section
-            className={styles.why}
-          >
-            <h2>
-              Why This Player Ranks Here
-            </h2>
 
-            <p>
-              This is the same
-              sportsbook-backed prediction
-              attached to the ranking
-              screen. The pregame line,
-              Sach projection and pick stay
-              together through live play
-              and final grading.
-            </p>
-          </section>
         </>
       ) : (
         <>
@@ -832,7 +803,7 @@ export function UnifiedPlayerCard({
 
             <article>
               <span>
-                Research Stat
+                Stat
               </span>
               <strong>
                 {marketLabel(
@@ -851,24 +822,7 @@ export function UnifiedPlayerCard({
             </article>
           </section>
 
-          <section
-            className={styles.why}
-          >
-            <h2>
-              Player Intelligence
-            </h2>
 
-            <p>
-              No sportsbook-backed prop
-              is attached to this roster
-              click right now, so this is
-              research mode. We show the
-              player, matchup, role and
-              verified recent history
-              without inventing a line,
-              pick or betting result.
-            </p>
-          </section>
         </>
       )}
 

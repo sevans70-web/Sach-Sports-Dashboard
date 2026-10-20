@@ -278,7 +278,7 @@ function PerformanceCards({
           style={{ "--rate": `${rate * 3.6}deg` } as React.CSSProperties}
         />
         <div className={styles.metricCopy}>
-          <span>{research?"Research hit rate":"Hit Rate"}</span>
+          <span>{research?"Hit rate":"Hit Rate"}</span>
           <strong>{rateOrDash(stat.hitRate, stat.connected)}</strong>
           <small>
             {stat.connected ? `${stat.hits} / ${stat.settled-(stat.pushes||0)} decisions` : "Data unavailable"}
@@ -289,13 +289,13 @@ function PerformanceCards({
       <article className={styles.metricCard}>
         <span className={styles.metricIcon} aria-hidden="true">✓</span>
         <div className={styles.metricCopy}>
-          <span>{research?"Research settled":"Settled"}</span>
+          <span>{research?"Settled":"Settled"}</span>
           <strong>{numberOrDash(stat.settled, stat.connected)}</strong>
           <small>
             {stat.connected ? (
               <>
-                <b className={styles.winText}>{stat.hits} Wins</b>
-                <b className={styles.lossText}>{losses} Losses</b>
+                <b className={styles.winText}>{stat.hits} {research ? "Hits" : "Wins"}</b>
+                <b className={styles.lossText}>{losses} {research ? "Misses" : "Losses"}</b>
                 {stat.pushes?<b>{stat.pushes} Pushes</b>:null}
               </>
             ) : (
@@ -308,9 +308,9 @@ function PerformanceCards({
       <article className={styles.metricCard}>
         <span className={styles.hourglass} aria-hidden="true">⌛</span>
         <div className={styles.metricCopy}>
-          <span>{research?"Research pending":"Verified pending"}</span>
+          <span>{research?"Pending":"Verified pending"}</span>
           <strong>{numberOrDash(stat.pending, stat.connected)}</strong>
-          <small>{!stat.connected?"Data unavailable":stat.pending?"Awaiting game results":research?"No research calls awaiting results":"No validated picks awaiting results"}</small>
+          <small>{!stat.connected?"Data unavailable":stat.pending?"Awaiting game results":research?"No saved forecasts awaiting results":"No validated picks awaiting results"}</small>
         </div>
       </article>
     </div>
@@ -434,9 +434,9 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   }, [sport, period, categoryKey,league]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const categoryNote = useMemo(() => {
-    if (activeCategory?.note) return activeCategory.note;
+    if (activeCategory?.note && !researchView) return activeCategory.note;
     if (loading) return "Loading prediction history…";
-    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.completed} settled · ${r.awaitingResult} pending · ${r.void} void/withdrawn · ${r.total} saved research records. Historical research only.`:"No saved research for this period.";}
+    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved research records: ${categoryStat.research.awaitingResult} awaiting result. No validated ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
     }
@@ -453,7 +453,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           Prediction Performance
         </h2>
 
-        {researchView ? <p>Historical research results from saved calls. These models are not yet validated. Pending means saved calls awaiting game results.</p> : null}
+        {researchView ? <p>Older saved forecasts · separate from current Sach picks.</p> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
           {PERIODS.map((item) => (
@@ -469,7 +469,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         </div>
 
         <PerformanceCards stat={researchView?researchStat(overall):overall} research={researchView} />
-        {overall.connected&&overall.research? <div className={styles.researchTracking} aria-label="Research history tracking"><strong>Research history · separate from betting performance</strong><span>{overall.research.awaitingResult} awaiting result · {overall.research.completed} with recorded results · {overall.research.void} void/withdrawn · {overall.research.total} total</span><small>These are saved historical research records, not validated picks or a count of every visible card.</small></div>:null}
+
       </section>
 
       <section className={styles.categoryPanel}>

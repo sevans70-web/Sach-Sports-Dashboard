@@ -1,4 +1,4 @@
-export type RecordNote={code:string;text:string;source:string;checkedAt?:string;gameId?:string};
+export type RecordNote={code:string;text:string;source:string;checkedAt?:string;reportedAt?:string;gameId?:string};
 export function recordNoteFields(row:any){return Object.fromEntries(Object.entries({voidReason:row?.voidReason,voidReasonCode:row?.voidReasonCode,withdrawnFromBoard:row?.withdrawnFromBoard,recoveredAfterStart:row?.recoveredAfterStart,availabilityEvidence:row?.availabilityEvidence,injuryStatus:row?.injuryStatus,injuryDescription:row?.injuryDescription,didNotPlay:row?.didNotPlay}).filter(([,v])=>v!==undefined));}
 const text=(v:any)=>typeof v==='string'?v:typeof v==='object'?String(v?.description||v?.name||v?.text||''):'';
 export function voidRecordNote(row:any):RecordNote|null{
@@ -32,7 +32,8 @@ export function officialAvailabilityRows(payload:any,sport:string,gameId:string)
  }else{
   for(const group of payload?.injuries||[])for(const injury of group?.injuries||[]){
    const status=text(injury.status),detail=text(injury.details?.type||injury.type||injury.details?.detail);
-   if(status)add(injury.athlete?.id||injury.playerId,'official_injury_status',`Reported ${status}${detail&&detail.toLowerCase()!==status.toLowerCase()?` · ${detail}`:''}`);
+   const playerId=injury.athlete?.id||injury.playerId;
+   if(status){add(playerId,'official_injury_status',`Reported ${status}${detail&&detail.toLowerCase()!==status.toLowerCase()?` · ${detail}`:''}`);const note=notes.get(String(playerId));if(note&&injury.date)note.reportedAt=String(injury.date);}
   }
   for(const team of payload?.boxscore?.players||[])for(const group of team?.statistics||[])for(const row of group?.athletes||[]){
    const id=row.athlete?.id||row.player?.id;

@@ -22,13 +22,12 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
    <div className="ssGamesPreviewHead"><h2>{sport==="nfl"?`${data?.weekNumber?`WEEK ${data.weekNumber}`:"CURRENT WEEK"} NFL GAMES`:`${sport.toUpperCase()} CURRENT + NEXT GAMES`}</h2><Link href={viewAll}>View All ›</Link></div>
    <div className="ssGamesPreviewGrid">{data?.previewGames?.length?data.previewGames.slice(0,3).map((g:any)=><GamesPreviewCard key={g.id} game={{...g,href:viewAll}}/>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}</div>
   </section>
-  <SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="Current slate · default market" metrics={[
+  <SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
    {label:"Games",value:ready?data.games:"…",detail:ready?snapshotGameDetail(data.games,data.live,data.finals):"Loading current + next slate",icon:"games",tone:"green"},
    {label:"Lineups",value:ready?`${data.confirmedLineups}/${data.lineups}`:"…",detail:ready?`${data.confirmedLineups} confirmed · ${data.pendingLineups} awaiting confirmation`:"Team lineups",icon:"lineups"},
    {label:"Predictions",value:ranked?data.predictions:"…",detail:ranked?`${market} · verified picks`:"Checking verified market data",icon:"predictions",tone:"gold"}
   ]}/>
-  <p className="ssScopeNote">Current and next playable slate{sport==="nfl"?" · full NFL week":""}. Prediction total: {market||"default ranking market"}. Model-watch rows are excluded.</p>
-  {error||data?.warning?<p className="ssDashboardWarning" role="status">{error||data.warning}</p>:null}
+  {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
   <section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>
   <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport}/></section>
  </main>;

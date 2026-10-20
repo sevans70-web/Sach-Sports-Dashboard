@@ -56,3 +56,15 @@ test('one face badge progresses pending, confirmed, LIVE, FINAL across every act
   assert.equal(cardStatusBadge({...row,liveCurrent:0},'final').notice,null);
  }
 });
+test('official appearance overrides injury notices only for the same fixture and retains the dated report',async()=>{
+ const {playerStatusNotice}=await loadTs(new URL('../lib/player-participation.ts',import.meta.url));
+ const {officialAvailabilityRows}=await loadTs(new URL('../lib/record-notes.ts',import.meta.url));
+ const payload={header:{id:'401873008'},injuries:[{injuries:[{athlete:{id:'4361741'},status:'Out',date:'2026-10-18T10:00Z',details:{type:'Shoulder'}}]}]};
+ const note=officialAvailabilityRows(payload,'nfl','401873008')[0].note;
+ const row={gameId:'401873008',participationGameId:'401873008',participationConfirmed:true,injuryStatus:'Out',availabilityEvidence:note};
+ assert.equal(playerStatusNotice(row,'live'),'Playing');
+ assert.equal(playerStatusNotice(row,'final'),'Played');
+ assert.equal(row.availabilityEvidence.reportedAt,'2026-10-18T10:00Z');
+ assert.match(playerStatusNotice({...row,gameId:'other'},'final'),/Out/);
+ assert.match(playerStatusNotice({...row,participationConfirmed:false},'final'),/Out/);
+});

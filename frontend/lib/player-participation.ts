@@ -62,6 +62,8 @@ export function cardStatusBadge(row:any,state:'pregame'|'live'|'final'){
  return {label:availability.confirmed?'Lineup confirmed':'Lineup pending',tone:availability.confirmed?'confirmed':'pending',notice};
 }
 export function playerStatusNotice(row:any,state:'pregame'|'live'|'final'){
+ const participation=playerAvailability({...row,gameState:state});
+ if(participation.label==='Playing'||participation.label==='Played')return participation.label;
  const note=playerAvailabilityNote(row);if(note)return note.text;
  const values=[row?.availability,row?.injuryStatus,row?.injury_status,row?.playerStatus,row?.injury?.status];
  if(row?.inactive===true||values.some(v=>/^inactive$/i.test(String(v||''))))return 'Inactive';
