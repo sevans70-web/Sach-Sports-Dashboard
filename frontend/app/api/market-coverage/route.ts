@@ -9,6 +9,13 @@ export const dynamic='force-dynamic';
  * The archive probe exposes only bounded public quote fields, never outcomes. */
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport');if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
+ if(req.nextUrl.searchParams.get('mode')==='feed-sample'){
+  const allowed=(row:any,keys:string[])=>Object.fromEntries(keys.filter(k=>['string','number','boolean'].includes(typeof row?.[k])).map(k=>[k,row[k]]));
+  try{const p=await getOwlsPayload(sport);return NextResponse.json({sport,games:(p?.data||[]).slice(0,30).map((g:any)=>({
+   ...allowed(g,['id','gameId','eventId','homeTeam','awayTeam','home_team','away_team','commenceTime','commence_time','startTime','date']),
+   books:(g.books||[]).slice(0,12).map((b:any)=>({...allowed(b,['key','name','lastUpdate']),props:(b.props||[]).filter((p:any)=>p.category==='points').slice(0,2).map((p:any)=>allowed(p,['playerName','player','category','line','overPrice','underPrice','lastUpdate','isMainLine','isAlternate','marketStructure','lineType','suspended']))}))
+  })),updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}})}catch(e:any){return NextResponse.json({error:String(e?.message||'Feed unavailable')},{status:503})}
+ }
  if(req.nextUrl.searchParams.get('mode')==='included-results'){
   // Explicit public-field allowlist: never forward arbitrary provider bodies.
   const fields=['eventId','event_id','gameId','game_id','date','startTime','gameTime','player','playerId','playerName','category','propType','book','sportsbook','line','isMain','isMainLine','marketStructure','capturePhase','overPrice','underPrice','updatedAt','lastUpdate','recordedAt','capturedAt','timestamp','actual','status','final','verdict','result','ungradableReason','count','playerCount','entryCount','entries','players','finalEntries'];

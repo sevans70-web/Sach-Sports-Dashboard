@@ -52,7 +52,8 @@ async function fetchOwlsPayload(){
  const [owls,sgo]=await Promise.allSettled([getOwlsPayload("nba"),getSgoSupplement("NBA")]);
  const primary=owls.status==="fulfilled"?owls.value:null,extra=sgo.status==="fulfilled"?sgo.value:null;
  if(!primary&&!extra?.data?.length)throw new Error("NBA odds feeds are unavailable.");
- return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],feedWarning:extra?.warning||null};
+ const primaryWarning=owls.status==='rejected'?String(owls.reason?.message||'Primary NBA feed unavailable'):null;
+ return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],feedWarning:[primaryWarning,extra?.warning].filter(Boolean).join('; ')||null};
 }
 
 function boardForMarket(payload:any,market:NbaMarketKey){return mainMarketQuotes(payload,market,p=>basketballMarketMatches(p,market))}
