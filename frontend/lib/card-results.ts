@@ -1,5 +1,6 @@
 import {rankingLineProgress} from "@/lib/ranking-card-state";
 import {voidRecordNote} from '@/lib/record-notes';
+import {verifiedPropQuote} from '@/lib/prop-integrity';
 const num=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 export function cardStatUnit(market:string){
  const key=market.replace(/^q1_/,'');
@@ -10,6 +11,12 @@ export function cardStatUnit(market:string){
 export function scorerTarget(market:string){return market==='first_td'?'First TD scorer':market==='first_basket'?'First basket scorer':'1+ TD'}
 export function cardObservedProgress(actual:any,line:any,market:string){
  return market==='anytime_td'?rankingLineProgress(actual,1,'touchdowns'):rankingLineProgress(actual,line,market);
+}
+export function cardProgressLine(row:any,line:any,market:string){
+ if(num(line)!=null&&Number(line)>0)return Number(line);
+ const quote=row?.progressQuote;
+ if(quote?.source!=='saved_pregame'||String(quote.gameId)!==String(row?.gameId)||String(quote.playerId)!==String(row?.playerId)||quote.market!==market||Date.parse(quote.gameTime)!==Date.parse(row?.gameTime)||!verifiedPropQuote(quote,Date.now(),true))return null;
+ return num(quote.sportsbookLine)!=null&&Number(quote.sportsbookLine)>0?Number(quote.sportsbookLine):null;
 }
 /** Preserve the difference between a historical research outcome and a validated wager. */
 export function researchFinalOutcome(row:any,actual:any,line:any,market:string){

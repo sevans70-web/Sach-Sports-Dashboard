@@ -8,7 +8,7 @@ import {matchingPredictionResult} from "@/lib/prediction-results";
 import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
-import {cardObservedProgress,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
+import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
 
@@ -924,7 +924,8 @@ function PlayerCard({
         ? card.actual
         : null;
 
-  const observedProgress=cardObservedProgress(current,card.sportsbookLine,card.market);
+  const progressLine=cardProgressLine(card.raw,card.sportsbookLine,card.market);
+  const observedProgress=cardObservedProgress(current,progressLine,card.market);
   const researchOutcome=researchFinalOutcome(card.raw,current,card.sportsbookLine,card.market);
   const progress=observedProgress?.percent??0;
 
@@ -1140,7 +1141,7 @@ function PlayerCard({
             <div className={`${styles.progressTrack} ${researchOnly ? styles.researchProgress : ""}`} role="progressbar" aria-label={`${card.playerName} ${card.marketLabel} ${card.market==="anytime_td"?"toward 1+ touchdown target":"toward recorded line"}`} aria-valuemin={0} aria-valuemax={observedProgress.line} aria-valuenow={Math.max(0,Math.min(observedProgress.line,current!))} aria-valuetext={`${shortNumber(current)} of ${shortNumber(observedProgress.line)}; observed statistic, not a win probability`}>
               <i style={{ width: `${progress}%` }} />
             </div>
-            <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":"Toward recorded line"}</small>
+            <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":card.sportsbookLine==null?`Pregame line ${shortNumber(progressLine)} · ${card.raw?.progressQuote?.sportsbook||'saved quote'}`:"Toward recorded line"}</small>
           </> : null}
           {current!=null&&!observedProgress&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
         </div>

@@ -7,6 +7,7 @@ import {opportunityStrength,type GiArtifact} from '@/lib/opportunity-strength';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/lib/opportunity-backtest';
 import {providerFetch} from '@/lib/provider-fetch';
+import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
 let cached:RuntimeBundle|null=null;
 function bundle():RuntimeBundle{
@@ -80,6 +81,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
 }
 export async function attachFittedResearchForecasts(payload:any,sport:string,now=Date.now()){
  if(!Array.isArray(payload?.rows)||!payload.rows.length)return payload;
+ payload=await attachRecordedProgressLines(payload,sport,now);
  let data:RuntimeBundle;try{data=bundle()}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.

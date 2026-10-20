@@ -11,6 +11,9 @@ export function torontoHistoryDay(v:Date|string=new Date()){
 }
 type Snapshot={capturedAt:string;hash:string;payload:any};
 function target(sport:string,stream:string,day:string){return path.join(ROOT,safe(sport),"archive",`${safe(stream)}_${safe(day)}.json`)}
+export async function readHistorySnapshots(sport:string,stream:string,day:string):Promise<Snapshot[]>{
+ try{const rows=JSON.parse(await fs.readFile(target(sport,stream,day),'utf8'));return Array.isArray(rows)?rows:[]}catch{return []}
+}
 export async function appendHistorySnapshot(sport:string,stream:string,payload:any,day=torontoHistoryDay()){
  const file=target(sport,stream,day);await fs.mkdir(path.dirname(file),{recursive:true});
  let rows:Snapshot[]=[];try{const parsed=JSON.parse(await fs.readFile(file,"utf8"));if(Array.isArray(parsed))rows=parsed}catch{}
