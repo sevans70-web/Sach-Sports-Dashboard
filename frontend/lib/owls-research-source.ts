@@ -40,19 +40,56 @@ export function researchIdentities(payload:any,sport:'nfl'|'nba'){
  }
  return [...ids.values()].sort((a,b)=>a.playerId.localeCompare(b.playerId)||a.category.localeCompare(b.category));
 }
+// Results grading is not a fixture census. NBA history may exist even when
+// that separate index is empty. Select official identities without using stats.
+export function officialNbaResearchFixtures(boards:any[],date:string){
+ const fixtures=new Map<string,string>();
+ for(const board of boards)for(const e of board?.events||[]){
+  const c=e.competitions?.[0],teams=c?.competitors||[];
+  if(String(e.date).slice(0,10)!==date||c?.status?.type?.completed!==true)continue;
+  const away=teams.find((t:any)=>t.homeAway==='away')?.team?.displayName,home=teams.find((t:any)=>t.homeAway==='home')?.team?.displayName;
+  if(typeof away!=='string'||typeof home!=='string'||!/^\d+$/.test(String(e.id)))continue;
+  fixtures.set('nba:'+away+'@'+home+'-'+date.replaceAll('-',''),String(e.id));
+ }
+ return fixtures;
+}
+export function officialNbaResearchIdentities(payload:any){
+ const rows=[];
+ for(const team of payload?.boxscore?.players||[])for(const section of team.statistics||[])for(const row of section.athletes||[]){
+  const a=row.athlete;if(!a?.id||typeof a.displayName!=='string')continue;
+  for(const category of markets.nba)rows.push({playerId:String(a.id),playerName:a.displayName,category});
+ }
+ return researchIdentities({data:rows},'nba');
+}
+async function officialJson(url:string){
+ const hit=cache.get(url);if(hit&&hit.until>Date.now()&&hit.value)return hit.value;
+ const r=await providerFetch(url,{cache:'no-store'});if(!r.ok)throw Error('Official research identities returned '+r.status);
+ const value=await r.json();cache.set(url,{until:Date.now()+3600_000,value});return value;
+}
 export async function includedResearchSource(sport:'nfl'|'nba',day:number,game:number|null,entry:number|null){
  if(!Number.isInteger(day)||day<0||day>=RESEARCH_DATES[sport].length)throw Error('Invalid research day');
  const date=RESEARCH_DATES[sport][day];
  const discovery=await read(sport,'results',{date});
  if(discovery?.meta?.gamesTruncated===true)throw Error('Truncated research discovery');
- const games=(Array.isArray(discovery?.data)?discovery.data:[]).map((r:any)=>String(r.gameId??r.eventId??''))
+ let games=(Array.isArray(discovery?.data)?discovery.data:[]).map((r:any)=>String(r.gameId??r.eventId??''))
   .filter((id:string)=>id.startsWith(sport+':')&&id.endsWith(date.replaceAll('-',''))&&id.length<=200&&!/[\x00-\x1f\x7f]/.test(id)).sort();
- const base={sport,date,dates:RESEARCH_DATES[sport],games,retrievedAt:new Date().toISOString()};
+ let officialFixtures=new Map<string,string>();
+ if(sport==='nba'&&!games.length){
+  const previous=new Date(Date.parse(date+'T00:00:00Z')-86400000).toISOString().slice(0,10);
+  const boards=await Promise.all([previous,date].map(d=>officialJson('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates='+d.replaceAll('-','')+'&limit=1000')));
+  officialFixtures=officialNbaResearchFixtures(boards,date);games=[...officialFixtures.keys()].sort();
+ }
+ const discoverySource=officialFixtures.size?'official_fixture_census':'provider_results_index';
+ const base={sport,date,dates:RESEARCH_DATES[sport],games,discoverySource,retrievedAt:new Date().toISOString()};
  if(game===null)return base;
  if(!Number.isInteger(game)||game<0||game>=games.length)throw Error('Invalid research fixture');
  const gameId=games[game],results=await read(sport,'results',{game_id:gameId});
  if(results?.meta?.actualsTruncated===true)throw Error('Truncated research identities');
- const identities=researchIdentities(results,sport);
+ let identities=researchIdentities(results,sport);
+ if(!identities.length&&officialFixtures.has(gameId)){
+  const summary=await officialJson('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event='+officialFixtures.get(gameId));
+  identities=officialNbaResearchIdentities(summary);
+ }
  if(entry===null)return {...base,gameId,identities};
  if(!Number.isInteger(entry)||entry<0||entry>=identities.length)throw Error('Invalid research entry');
  const identity=identities[entry],book='pinnacle';
@@ -60,7 +97,7 @@ export async function includedResearchSource(sport:'nfl'|'nba',day:number,game:n
  const data=history?.data,points=Array.isArray(data?.history)?data.history:[];
  return {...base,gameId,identity,book,
   historyIdentity:fields(data,['gameId','player','category','book','isMain','marketStructure']),
-  opening:fields(data?.opening,quoteKeys),history:points.map((p:any)=>fields(p,quoteKeys)),
+  opening:fields(data?.openingLine??data?.opening,quoteKeys),history:points.map((p:any)=>fields(p,quoteKeys)),
   source:'https://api.owlsinsight.com/api/v1/'+sport+'/props/history',
   sourceTruncated:history?.meta?.historyTruncated===true||history?.meta?.truncated===true,
   historyKeys:Object.keys(data||{}),pointKeys:points[0]?Object.keys(points[0]):[],

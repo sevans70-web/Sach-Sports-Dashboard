@@ -1,6 +1,15 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {loadTs} from './load-ts.mjs';
-const {researchIdentities,includedResearchSource}=await loadTs(new URL('../lib/owls-research-source.ts',import.meta.url));
+const {researchIdentities,includedResearchSource,officialNbaResearchFixtures,officialNbaResearchIdentities}=await loadTs(new URL('../lib/owls-research-source.ts',import.meta.url));
+test('official fallback uses exact UTC fixture dates and identities without outcomes',()=>{
+ const event={id:'123',date:'2026-04-01T00:30Z',competitions:[{status:{type:{completed:true}},competitors:[{homeAway:'away',team:{displayName:'A'}},{homeAway:'home',team:{displayName:'B'}}]}]};
+ assert.deepEqual([...officialNbaResearchFixtures([{events:[event,event]}],'2026-04-01')],[['nba:A@B-20260401','123']]);
+ assert.equal(officialNbaResearchFixtures([{events:[event]}],'2026-03-31').size,0);
+ const athlete={athlete:{id:'1',displayName:'Player'},stats:['999'],didNotPlay:true};
+ const payload={boxscore:{players:[{statistics:[{athletes:[athlete,athlete]}]}]}};
+ const ids=officialNbaResearchIdentities(payload);assert.equal(ids.length,6);
+ athlete.stats=['0'];athlete.didNotPlay=false;assert.deepEqual(officialNbaResearchIdentities(payload),ids);
+});
 test('research sampling uses identities, including losing, zero and provisional results',()=>{
  const data=[{playerId:'2',playerName:'B',category:'rushing_yards',actual:0,final:false},{playerId:'1',playerName:'A',category:'passing_yards',actual:500,final:true},{playerId:'1',playerName:'A',category:'touchdowns'}];
  const first=researchIdentities({data},'nfl');assert.equal(first.length,2);
