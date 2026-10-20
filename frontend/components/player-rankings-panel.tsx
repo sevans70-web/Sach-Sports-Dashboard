@@ -964,6 +964,8 @@ function PlayerCard({
   const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=state==='pregame'&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
+  const displayedPick=fittedForecast?.candidateSide||card.prediction;
+  const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
   const displayedAverage=fittedForecast?.projection??(researchOnly?context.recentAverage:card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
@@ -1034,8 +1036,8 @@ function PlayerCard({
         </div>
 
         <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
-          <span>{researchOnly ? "Research" : "GI"}</span>
-          <strong title={researchOnly?intelligence.giReason:undefined}>{shortNumber(card.giScore)}</strong>
+          <span>{fittedForecast?.giScore!=null?'GI · research':researchOnly ? "Research" : "GI"}</span>
+          <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
         </div>
       </div>
 
@@ -1056,20 +1058,20 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>Sach Pick</span>
+          <span>{fittedForecast?.candidateSide?'Research lean':'Sach Pick'}</span>
           <strong
             className={
-              card.prediction === "UNDER"
+              displayedPick === "UNDER"
                 ? styles.under
-                : card.prediction === "OVER" ||
-                    card.prediction === "YES"
+                : displayedPick === "OVER" ||
+                    displayedPick === "YES"
                   ? styles.over
                   : ""
             }
           >
-            {(sport === "cfb" || sport === "nfl") && ["OVER", "UNDER"].includes(card.prediction) && card.sportsbookLine != null
-              ? `${card.prediction} ${shortNumber(card.sportsbookLine)}`
-              : card.prediction}
+            {["OVER", "UNDER"].includes(displayedPick) && card.sportsbookLine != null
+              ? `${displayedPick} ${shortNumber(card.sportsbookLine)}`
+              : displayedPick}
           </strong>
         </div>
 

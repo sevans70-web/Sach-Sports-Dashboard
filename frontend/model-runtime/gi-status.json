@@ -1,0 +1,30 @@
+{
+  "nfl|passing_yards": {
+    "status": "experimental",
+    "reason": "limited_independent_evaluation",
+    "forecasts": 16,
+    "modelBrier": 0.20383174791914388,
+    "bookBrier": 0.24894134082175057
+  },
+  "nfl|receiving_yards": {
+    "status": "withheld",
+    "reason": "price_validation_failed",
+    "forecasts": 31,
+    "modelBrier": 0.3110498591462657,
+    "bookBrier": 0.25067068782158913
+  },
+  "nfl|receptions": {
+    "status": "withheld",
+    "reason": "price_validation_failed",
+    "forecasts": 31,
+    "modelBrier": 0.26615640244095395,
+    "bookBrier": 0.24161164685626688
+  },
+  "nfl|rushing_yards": {
+    "status": "withheld",
+    "reason": "price_validation_failed",
+    "forecasts": 32,
+    "modelBrier": 0.31014356096476126,
+    "bookBrier": 0.2510390347264641
+  }
+}

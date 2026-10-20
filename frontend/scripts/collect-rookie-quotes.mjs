@@ -26,12 +26,17 @@ async function query(day,game,entry){const q=new URLSearchParams({sport,day:Stri
 async function fixture(providerId,date){
  const m=providerId.match(/^[^:]+:(.+)@(.+)-\d{8}$/);if(!m)return null;
  const league=sport==='nfl'?'football/nfl':'basketball/nba';
- const board=await get('https://site.api.espn.com/apis/site/v2/sports/'+league+'/scoreboard?dates='+date.replaceAll('-','')+'&limit=1000');
- const matches=(board.events||[]).filter(e=>{
+ const boardUrl='https://site.api.espn.com/apis/site/v2/sports/'+league+'/scoreboard?dates=';
+ const board=await get(boardUrl+date.replaceAll('-','')+'&limit=1000');
+ const matchEvents=events=>events.filter(e=>{
   const c=e.competitions?.[0],teams=c?.competitors||[];
   const same=(side,name)=>teams.some(t=>t.homeAway===side&&[t.team?.displayName,t.team?.shortDisplayName,t.team?.abbreviation].some(n=>norm(n)===norm(name)));
   return String(e.date||'').slice(0,10)===date&&c?.status?.type?.completed===true&&same('away',m[1])&&same('home',m[2]);
  });
+ let matches=matchEvents(board.events||[]);
+ // Owls non-MLB IDs are UTC-dated; ESPN's scoreboard filter uses the local
+ // sports day. Night games can therefore require the previous day's board.
+ if(!matches.length){const previous=new Date(Date.parse(date+'T00:00:00Z')-86400000).toISOString().slice(0,10);const earlier=await get(boardUrl+previous.replaceAll('-','')+'&limit=1000');matches=matchEvents(earlier.events||[])}
  if(matches.length!==1)return null;
  const e=matches[0],gameId=String(e.id);
  if(sport==='nfl'&&!observations.some(r=>r.gameId===gameId)){

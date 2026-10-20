@@ -17,12 +17,17 @@ test('missing histories, future snapshots, after-start and unsupported markets a
  assert.equal(fittedResearchForecast(row,'nfl','passing_yards',{...data,asOf:'2026-09-02'},now).status,'unavailable');
  assert.equal(fittedResearchForecast(row,'nfl','q1_passing_yards',data,now).reason,'market_model_not_fitted');
 });
+test('an exact official context supplies a missing season; another fixture cannot do so',()=>{
+ const context={gameId:row.gameId,playerId:row.playerId,teamId:row.teamId,gameTime:row.gameTime,season:'2026',seasonType:2};
+ assert.equal(fittedResearchForecast({...row,season:undefined,pregameContext:context},'nfl','passing_yards',data,now).projection,240);
+ assert.equal(fittedResearchForecast({...row,season:undefined,pregameContext:{...context,gameId:'other'}},'nfl','passing_yards',data,now).status,'unavailable');
+});
 test('GI requires exact fresh quote evidence and a prior calibration artifact',()=>{
  const artifact={version:1,trainedThrough:'2026-08-01',calibrationRows:300,fixtures:40,blocks:[{maximumExpectedReturn:10,estimatedUnitReturn:.1}],positiveReturnReference:[.1,.1],validatedForBetting:false};
  const withGi={...data,gi:{'nfl|passing_yards':artifact}};
  assert.equal(fittedResearchForecast(row,'nfl','passing_yards',withGi,now).giScore,null);
  const quoted={...row,quoteVersion:1,sportsbookKey:'book',sportsbook:'Book',quoteId:'q',lineType:'main',sportsbookLine:200.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:'2026-09-01T11:59:00Z',capturedAt:'2026-09-01T11:59:30Z'};
- const f=fittedResearchForecast(quoted,'nfl','passing_yards',withGi,now);assert.equal(f.giScore,50);assert.equal(f.validatedForBetting,false);assert.equal(quoted.prediction,'NO PICK');
+ const f=fittedResearchForecast(quoted,'nfl','passing_yards',withGi,now);assert.equal(f.giScore,50);assert.equal(f.candidateSide,'OVER');assert.equal(f.validatedForBetting,false);assert.equal(quoted.prediction,'NO PICK');
  assert.equal(fittedResearchForecast({...quoted,quoteUpdatedAt:'2026-09-01T10:00:00Z'},'nfl','passing_yards',withGi,now).giScore,null);
  assert.equal(fittedResearchForecast(quoted,'nfl','passing_yards',{...withGi,gi:{'nfl|passing_yards':{...artifact,trainedThrough:'2026-09-02'}}},now).giScore,null);
 });

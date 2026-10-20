@@ -5,9 +5,9 @@ import {createHash} from 'node:crypto';
 import {forecastDistribution,evaluatePrice,quoteProblem,type DistributionModel,type ExactQuote} from '@/lib/probability-forecast';
 import {opportunityStrength,type GiArtifact} from '@/lib/opportunity-strength';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
-import {espnOpportunityGames,type OpportunityGame} from '@/lib/opportunity-backtest';
+import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/lib/opportunity-backtest';
 import {providerFetch} from '@/lib/provider-fetch';
-export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>};
+export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
 let cached:RuntimeBundle|null=null;
 function bundle():RuntimeBundle{
  if(cached)return cached;
@@ -17,18 +17,20 @@ function bundle():RuntimeBundle{
  const data=JSON.parse(gunzipSync(bytes).toString());
  if(data.version!==1||!Array.isArray(data.models)||!Array.isArray(data.observations))throw Error('Invalid forecast snapshot');
  let gi={};try{gi=JSON.parse(readFileSync(join(root,'gi-calibration.json'),'utf8'))}catch{}
- return cached={...data,digest:manifest.sha256,asOf:manifest.asOf,gi};
+ let giStatus={};try{giStatus=JSON.parse(readFileSync(join(root,'gi-status.json'),'utf8'))}catch{}
+ return cached={...data,digest:manifest.sha256,asOf:manifest.asOf,gi,giStatus};
 }
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** Experimental outputs remain separate from the validated recommendation
  * registry and never rewrite historical lines, bets, grades or probabilities. */
 export function fittedResearchForecast(row:any,sport:string,market:string,data:RuntimeBundle,now=Date.now()){
  if(row?.frozen||row?.lockedAtKickoff||['in','post'].includes(row?.gameState)||!Number.isFinite(Date.parse(row?.gameTime))||Date.parse(row.gameTime)<=now)return unavailable('pregame_only');
- if(!row?.gameId||!row?.playerId||!row?.teamId||!row?.season)return unavailable('missing_fixture_or_team_identity');
+ const context=row.pregameContext;
+ if(context&&(context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)))return unavailable('wrong_pregame_context_identity');
+ if(!row?.gameId||!row?.playerId||!row?.teamId||!(context?.season||row?.season))return unavailable('missing_fixture_or_team_identity');
  if(!Number.isFinite(Date.parse(data.asOf))||Date.parse(data.asOf)>now)return unavailable('snapshot_not_available');
  const key=sport+'|'+market,model=data.models.find(m=>m.group===key);
  if(!model)return unavailable('market_model_not_fitted');
- const context=row.pregameContext;
  if(model.featurePolicy==='basketball_context'&&(!context||context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)||!context.opponentId||!['home','away'].includes(context.homeAway)))return unavailable('missing_exact_pregame_context');
  if(context?.seasonType!=null&&context.seasonType!==2)return unavailable('model_requires_regular_season');
  if(context?.availability?.some((r:any)=>/^(out|inactive|suspended|injured reserve)$/i.test(r.status)))return unavailable('reported_unavailable');
@@ -56,8 +58,8 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   interval80:{lower:Math.round(values[Math.floor((values.length-1)*.1)]*10)/10,upper:Math.round(values[Math.floor((values.length-1)*.9)]*10)/10},
   modelId:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
-  giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
-  candidateSide:pricing?.candidateSide&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?pricing.candidateSide:null,
+  giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
+  candidateSide:pricing?.candidateSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?pricing.candidateSide:null,
   // Comparison and probabilities are research calculations, never a pick.
   priceComparison:pricing?{overProbability:pricing.over,underProbability:pricing.under,pushProbability:pricing.push,overExpectedReturn:pricing.overEv,underExpectedReturn:pricing.underEv}:null,
   validatedForBetting:false,reason:null,
@@ -68,12 +70,12 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  let data:RuntimeBundle;try{data=bundle()}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
- if(sport==='nfl'){
+ if(sport==='nfl'||sport==='nhl'){
   const players=[...new Map<string,any>(payload.rows.filter((r:any)=>/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
-   const season=String(row.season),url=`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
-   try{const r=await providerFetch(url);if(!r.ok)return;updates.push(...espnOpportunityGames(await r.json(),{sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()}))}catch{}
+   const season=String(row.season),url=sport==='nhl'?`https://api-web.nhle.com/v1/player/${encodeURIComponent(row.playerId)}/game-log/${encodeURIComponent(season)}/2`:`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
+   try{const r=await providerFetch(url);if(!r.ok)return;const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()};const payload=await r.json();updates.push(...(sport==='nhl'?nhlOpportunityGames(payload,identity):espnOpportunityGames(payload,identity)))}catch{}
   }));
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
