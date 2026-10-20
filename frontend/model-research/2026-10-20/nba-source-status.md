@@ -4,6 +4,14 @@ The production NBA points response at 16:21:47 UTC reports 25 verified book quot
 
 NBA GI remains unavailable. No NBA historical exact-price calibration artifact has been fitted, and no NBA model has been approved as a validated betting recommendation.
 
+## Directional selections independent of GI
+
+The runtime now exposes `researchForecast.modelSelection` separately from GI and from the validated recommendation registry. A fitted distribution and a fresh, exact two-sided main-market quote can produce an estimated OVER/UNDER selection using the existing fixed policy (at least 55% model conditional win probability and at least 3% model expected unit return). GI is not an input to that decision. These thresholds do not establish calibrated NBA betting value. Markets with an existing failed exact-price evaluation still abstain.
+
+Each selection retains its exact line, side price, bookmaker, quote ID, source update time and calculation time. Existing research-board archives preserve the output; old saved wager records and grades are unchanged. The UI identifies it as an estimate. It is not counted as a validated pick or added to validated betting performance.
+
+A current-source check at 2026-10-20T17:23:16Z produced 11 estimated points selections from 25 quoted rows. This is a runtime check, not a historical performance result or a promise that the same quotes remain available.
+
 ## Credentialed OWL checks
 
 - Rookie current merged props works; there is no basis to call the membership expired.

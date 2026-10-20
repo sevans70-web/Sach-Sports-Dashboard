@@ -964,7 +964,8 @@ function PlayerCard({
   const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=state==='pregame'&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
-  const displayedPick=fittedForecast?.candidateSide||card.prediction;
+  const modelSelection=fittedForecast?.modelSelection;
+  const displayedPick=modelSelection?.side||fittedForecast?.candidateSide||card.prediction;
   const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
   const displayedAverage=fittedForecast?.projection??(researchOnly?context.recentAverage:card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
@@ -1058,7 +1059,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{fittedForecast?.candidateSide?'Model lean':'Sach Pick'}</span>
+          <span>{modelSelection?'Sach Pick · estimate':fittedForecast?.candidateSide?'Model lean':'Sach Pick'}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1110,7 +1111,7 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {fittedForecast ? <div className={styles.faceFooter}><p>Experimental projection · {shortNumber(fittedForecast.expectedWorkload)} expected {fittedForecast.workloadUnit}. Model range {shortNumber(fittedForecast.interval80.lower)}–{shortNumber(fittedForecast.interval80.upper)}.</p></div> : null}
+      {fittedForecast ? <div className={styles.faceFooter}><p>{modelSelection ? `${modelSelection.sportsbook} · ${Number(modelSelection.price)>0?'+':''}${modelSelection.price} · model selection, not yet validated.` : 'Model estimate'} · {shortNumber(fittedForecast.expectedWorkload)} expected {fittedForecast.workloadUnit}. Model range {shortNumber(fittedForecast.interval80.lower)}–{shortNumber(fittedForecast.interval80.upper)}.</p></div> : null}
 
       {state === "pregame" && !card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>

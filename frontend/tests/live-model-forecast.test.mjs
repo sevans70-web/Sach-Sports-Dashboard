@@ -31,3 +31,18 @@ test('GI requires exact fresh quote evidence and a prior calibration artifact',(
  assert.equal(fittedResearchForecast({...quoted,quoteUpdatedAt:'2026-09-01T10:00:00Z'},'nfl','passing_yards',withGi,now).giScore,null);
  assert.equal(fittedResearchForecast(quoted,'nfl','passing_yards',{...withGi,gi:{'nfl|passing_yards':{...artifact,trainedThrough:'2026-09-02'}}},now).giScore,null);
 });
+test('a model selection can exist without GI while failed, stale and after-start decisions abstain',()=>{
+ const quoted={...row,quoteVersion:1,sportsbookKey:'book',sportsbook:'Book',quoteId:'q',lineType:'main',sportsbookLine:200.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:'2026-09-01T11:59:00Z',capturedAt:'2026-09-01T11:59:30Z'};
+ const forecast=fittedResearchForecast(quoted,'nfl','passing_yards',data,now);
+ assert.equal(forecast.giScore,null);
+ assert.equal(forecast.modelSelection.side,'OVER');
+ assert.equal(forecast.modelSelection.line,200.5);
+ assert.equal(forecast.modelSelection.price,-110);
+ assert.equal(forecast.modelSelection.quoteId,'q');
+ assert.equal(forecast.modelSelection.validatedForBetting,false);
+ assert.equal(quoted.prediction,'NO PICK');
+ assert.equal(fittedResearchForecast({...quoted,quoteUpdatedAt:'2026-09-01T10:00:00Z'},'nfl','passing_yards',data,now).modelSelection,null);
+ assert.equal(fittedResearchForecast(quoted,'nfl','passing_yards',{...data,giStatus:{'nfl|passing_yards':{reason:'price_validation_failed'}}},now).modelSelection,null);
+ assert.equal(fittedResearchForecast({...quoted,gameState:'in'},'nfl','passing_yards',data,now).status,'unavailable');
+ assert.equal(fittedResearchForecast({...quoted,sportsbookLine:240,overPrice:-110,underPrice:-110},'nfl','passing_yards',data,now).modelSelection,null);
+});
