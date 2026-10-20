@@ -1,11 +1,11 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
-import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
-import {nbaPropMatchesGame} from "@/lib/nba-game-match";
+import {nbaQuoteMatchesGame} from "@/lib/nba-game-match";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -138,7 +138,7 @@ async function loadSlateContext(overview:any):Promise<SlateContext>{
 }
 
 function chooseRosterEntry(entries:SlateRosterEntry[],b:any){
- const matching=entries.filter(entry=>nbaPropMatchesGame(b,entry.game)&&quoteMatchesFixture(b,entry.game));
+ const matching=entries.filter(entry=>nbaQuoteMatchesGame(b,entry.game));
  return matching.length===1?matching[0]:undefined;
 }
 
@@ -174,7 +174,7 @@ async function rowsForMarket(
  );
 
  const uniqueBoard=[
-  ...board.reduce((acc:Map<string,any>,b:any)=>{
+  ...board.filter((b:any)=>chooseRosterEntry(context.byName.get(cleanNbaName(b.playerName))||[],b)).reduce((acc:Map<string,any>,b:any)=>{
    const key=cleanNbaName(b.playerName);
    const existing=acc.get(key);
 
@@ -276,6 +276,8 @@ async function rowsForMarket(
    matchup:`${game.awayTeam} @ ${game.homeTeam}`,
    gameTime:game.tipoff||b.gameTime,
    gameId:game.gameId||"",
+   providerGameTime:b.gameTime,
+   providerEventId:b.eventId,
    gameState:game.state||"pre",
    gameStatus:game.status||"Scheduled",
    headshot:rosterPlayer.headshot||nbaHeadshot(rosterPlayer.playerId),

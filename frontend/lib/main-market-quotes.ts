@@ -20,9 +20,9 @@ export function mainMarketQuotes(payload:any,market:string,matches:(prop:any)=>b
     playerTeam:row.teamName.toUpperCase(),bookProbability:row.prob,...footballQuoteFields(row)}));
 }
 
-export function quoteMatchesFixture(quote:any,game:any){
+export function quoteMatchesFixture(quote:any,game:any,toleranceMs=5*60_000){
   const norm=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
   const expected=norm(`${game.awayTeam} @ ${game.homeTeam}`);
   const delta=Math.abs(Date.parse(quote.gameTime||"")-Date.parse(game.tipoff||game.date||""));
-  return norm(quote.matchup)===expected&&Number.isFinite(delta)&&delta<=5*60_000;
+  return norm(quote.matchup)===expected&&Number.isFinite(delta)&&delta<=toleranceMs;
 }
