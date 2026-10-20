@@ -1,7 +1,7 @@
 import {nullableNumber} from "@/lib/provider-fetch";
 
 export const PROP_INTEGRITY_VERSION = 1;
-export const PROP_REVIEW_NOTICE = "Research only — sportsbook quotes and historical baselines are not validated Sach betting recommendations. GI and picks are withheld pending model validation.";
+export const PROP_REVIEW_NOTICE = "Research only — experimental Sach forecasts and GI are not validated betting recommendations. Sportsbook lines and historical baselines are shown separately.";
 // An ingest flag, a high heuristic GI, or a client-supplied boolean cannot
 // certify a forecasting model. Register a model here only after a reviewed,
 // time-separated backtest and calibration report exist in the repository.

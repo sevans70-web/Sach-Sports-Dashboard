@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {recordNoteFields} from "@/lib/record-notes";
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -53,4 +54,4 @@ export async function captureAllNhlMarkets(){
  return {...research,success:research.researchArchived||(results.every(x=>!x.error)&&verifiedPredictions>0),verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:"Research snapshots archived separately; no validated NHL betting picks are available."};
 }
 
-export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return guardRankingPayload(await buildNhlRankingsRaw(...args),"nhl")}
+export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await buildNhlRankingsRaw(...args),"nhl"),"nhl")}

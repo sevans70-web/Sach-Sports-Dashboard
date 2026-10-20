@@ -1,0 +1,28 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
+const {fittedResearchForecast}=await loadTs(new URL('../lib/live-model-forecast.ts',import.meta.url));
+const linear=n=>({means:Array(10).fill(0),scales:Array(10).fill(1),coefficients:[n,...Array(10).fill(0)]});
+const model={version:1,group:'nfl|passing_yards',trainedThrough:'2025-01-01',calibratedThrough:'2025-03-01',workload:linear(30),rate:linear(8),residuals:[-10,0,10],minimum:0,integer:true,validatedForBetting:false};
+const history=Array.from({length:6},(_,i)=>({sport:'nfl',market:'passing_yards',season:'2026',playerId:'p',playerName:'P',teamId:'A',opponentId:'B',gameId:'prior'+i,gameTime:new Date(Date.UTC(2026,0,1+i*7)).toISOString(),actual:100,workload:30}));
+const row={sport:'nfl',market:'passing_yards',season:'2026',playerId:'p',playerName:'P',teamId:'A',opponentId:'B',gameId:'g',gameTime:'2026-09-01T13:00:00Z',modelProjection:100,giScore:null,modelProbability:null,prediction:'NO PICK'};
+const data={models:[model],observations:history,digest:'test',asOf:'2026-08-30T00:00:00Z',gi:{}},now=Date.parse('2026-09-01T12:00:00Z');
+test('fitted workload and rate produce a projection distinct from the unchanged historical mean',()=>{
+ const f=fittedResearchForecast(row,'nfl','passing_yards',data,now);assert.equal(f.projection,240);assert.equal(f.expectedWorkload,30);assert.equal(f.validatedForBetting,false);assert.equal(f.giScore,null);assert.equal(row.modelProjection,100);assert.equal(row.prediction,'NO PICK');
+});
+test('target outcomes, book line and archived heuristic scores cannot alter the forecast',()=>{
+ const f=fittedResearchForecast(row,'nfl','passing_yards',data,now);
+ assert.deepEqual(fittedResearchForecast({...row,actual:9999,workload:9999,sportsbookLine:9999,giScore:99},'nfl','passing_yards',data,now),f);
+});
+test('missing histories, future snapshots, after-start and unsupported markets abstain',()=>{
+ for(const r of [{...row,gameTime:'2026-08-31'},{...row,teamId:''},{...row,teamId:'new'},{...row,frozen:true}])assert.equal(fittedResearchForecast(r,'nfl','passing_yards',data,now).status,'unavailable');
+ assert.equal(fittedResearchForecast(row,'nfl','passing_yards',{...data,asOf:'2026-09-02'},now).status,'unavailable');
+ assert.equal(fittedResearchForecast(row,'nfl','q1_passing_yards',data,now).reason,'market_model_not_fitted');
+});
+test('GI requires exact fresh quote evidence and a prior calibration artifact',()=>{
+ const artifact={version:1,trainedThrough:'2026-08-01',calibrationRows:300,fixtures:40,blocks:[{maximumExpectedReturn:10,estimatedUnitReturn:.1}],positiveReturnReference:[.1,.1],validatedForBetting:false};
+ const withGi={...data,gi:{'nfl|passing_yards':artifact}};
+ assert.equal(fittedResearchForecast(row,'nfl','passing_yards',withGi,now).giScore,null);
+ const quoted={...row,quoteVersion:1,sportsbookKey:'book',sportsbook:'Book',quoteId:'q',lineType:'main',sportsbookLine:200.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:'2026-09-01T11:59:00Z',capturedAt:'2026-09-01T11:59:30Z'};
+ const f=fittedResearchForecast(quoted,'nfl','passing_yards',withGi,now);assert.equal(f.giScore,50);assert.equal(f.validatedForBetting,false);assert.equal(quoted.prediction,'NO PICK');
+ assert.equal(fittedResearchForecast({...quoted,quoteUpdatedAt:'2026-09-01T10:00:00Z'},'nfl','passing_yards',withGi,now).giScore,null);
+ assert.equal(fittedResearchForecast(quoted,'nfl','passing_yards',{...withGi,gi:{'nfl|passing_yards':{...artifact,trainedThrough:'2026-09-02'}}},now).giScore,null);
+});

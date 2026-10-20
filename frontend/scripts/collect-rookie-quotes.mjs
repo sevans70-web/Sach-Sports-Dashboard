@@ -59,7 +59,7 @@ for(let day=firstDay;day<=lastDay;day++){
    const hi=snapshot.historyIdentity||{};
    if(snapshot.sourceTruncated||hi.gameId!==listing.games[game]||norm(hi.player)!==norm(id.playerName)||hi.category!==id.category||hi.book!==snapshot.book){reject('history_identity_or_truncation');continue}
    const points=[snapshot.opening,...snapshot.history].filter(p=>p.timestamp&&p.line!=null&&p.overPrice!=null&&p.underPrice!=null)
-    .sort((a,b)=>Date.parse(a.timestamp)-Date.parse(b.timestamp));
+    .sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
    // A single-prop movement history is the book's main-line sequence, not
    // the result endpoint's mixed closing ladder. Keep that provenance explicit.
    let chosen=null;for(const p of points){
@@ -82,7 +82,7 @@ async function checkpoint(){
  const raw=JSON.stringify(observations)+'\n',compressed=gzipSync(raw,{level:9});
  await writeFile(output+'/opportunity-observations.json.gz',compressed);
  await writeFile(output+'/selected-quotes.json',JSON.stringify(quotes,null,2)+'\n');
- await writeFile(output+'/source-manifest.json',JSON.stringify({sport,policy:'first two source-identity-sorted players per supported market; earliest valid two-sided movement per player-fixture-market; fixed dates',
+ await writeFile(output+'/source-manifest.json',JSON.stringify({sport,policy:`first ${perMarket} source-identity-sorted players per supported market; last valid recorded pregame two-sided change per player-fixture-market; fixed dates`,
   collectedAt:new Date().toISOString(),observations:observations.length,quotes:quotes.length,fixtures:new Set(quotes.map(q=>q.gameId)).size,rejections,requests,
   dataSha256:digest(raw),compressedSha256:digest(compressed),quoteDataSha256:digest(JSON.stringify(quotes)),
   limitations:['Retrospective source revisions, not frozen historical vintages.','Provider graded-game discovery can omit ungraded games.','History main-line identity is documented route semantics, not an explicit per-change isMain field.','Provider change timestamps are original source observations; retrievedAt is today, not a claimed historical Sach capture.','Official outcomes verify identity and settlement, never select the sampled price.']},null,2)+'\n');

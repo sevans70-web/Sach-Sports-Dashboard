@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -569,4 +570,4 @@ export async function captureAllNbaMarkets(){
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
-export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){return guardRankingPayload(await attachBasketballPregameContext(await buildNbaMarketRankingsRaw(...args),'nba'),"nba")}
+export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(await buildNbaMarketRankingsRaw(...args),'nba'),"nba"),"nba")}

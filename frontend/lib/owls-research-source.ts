@@ -3,7 +3,7 @@ import {providerFetch} from '@/lib/provider-fetch';
 // Fixed, outcome-independent collection windows. This uses included Rookie
 // routes only. It never reads the restricted backfill archive or changes billing.
 export const RESEARCH_DATES={
- nfl:['2026-09-06','2026-09-13','2026-09-20','2026-09-27','2026-10-04','2026-10-11','2026-10-18'],
+ nfl:['2026-09-06','2026-09-13','2026-09-20','2026-09-27','2026-10-04','2026-10-11','2026-10-18','2026-10-02','2026-10-05','2026-10-06','2026-10-09','2026-10-12','2026-10-13'],
  nba:['2026-04-01','2026-04-02','2026-04-03','2026-04-04','2026-04-05','2026-04-06','2026-04-07'],
 } as const;
 const markets={nfl:new Set(['passing_yards','rushing_yards','receiving_yards','receptions']),nba:new Set(['points','rebounds','assists','threes_made','steals','blocks'])};

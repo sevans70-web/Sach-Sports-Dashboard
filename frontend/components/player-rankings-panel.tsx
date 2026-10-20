@@ -963,7 +963,8 @@ function PlayerCard({
 
   const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
-  const displayedAverage=researchOnly?context.recentAverage:card.modelProjection;
+  const fittedForecast=state==='pregame'&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
+  const displayedAverage=fittedForecast?.projection??(researchOnly?context.recentAverage:card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 
@@ -1076,20 +1077,20 @@ function PlayerCard({
           <span>
             {state === 'final' ? 'Final result' : binaryEvent
               ? "HR Probability"
-              : researchOnly ? context.recentLabel : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
+              : fittedForecast ? "Sach projection" : researchOnly ? context.recentLabel : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
           </span>
           <strong>
             {state === 'final' ? shortNumber(current) : binaryEvent
               ? card.modelProbability == null
                 ? "—"
                 : `${shortNumber(card.modelProbability)}%`
-              : shortNumber(researchOnly?context.recentAverage:card.modelProjection)}
+              : shortNumber(displayedAverage)}
           </strong>
         </div>
 
         <div>
-          <span>GI Score</span>
-          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"GI is unavailable until forecasting validation is complete.":undefined}>{researchOnly?"—":shortNumber(card.giScore)}</strong>
+          <span>{fittedForecast?.giScore!=null?'GI · experimental':'GI Score'}</span>
+          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"Experimental opportunity strength is separate from verified recommendations and win probability.":undefined}>{fittedForecast?.giScore!=null?shortNumber(fittedForecast.giScore):researchOnly?"—":shortNumber(card.giScore)}</strong>
         </div>
       </div>
 
@@ -1103,9 +1104,11 @@ function PlayerCard({
           <p>{card.raw?.quoteVersion === 1
             ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? "Scorer market" : "Main O/U"} · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
             : "Original line unverified · retained for history; no verified recommendation."}</p>
-          {card.raw?.quoteVersion === 1 ? <p>The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line.</p> : null}
+          {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
       ) : null}
+
+      {fittedForecast ? <div className={styles.faceFooter}><p>Experimental projection · {shortNumber(fittedForecast.expectedWorkload)} expected {fittedForecast.workloadUnit}. Model range {shortNumber(fittedForecast.interval80.lower)}–{shortNumber(fittedForecast.interval80.upper)}.</p></div> : null}
 
       {state === "pregame" && !card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
@@ -1182,19 +1185,19 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : researchOnly ? context.recentLabel : "Sach Projection"}
+                  : fittedForecast ? "Sach Projection" : researchOnly ? context.recentLabel : "Sach Projection"}
               </b>
-              <span>{researchOnly ? "Recent games" : "Model"}</span>
+              <span>{fittedForecast ? "Experimental model" : researchOnly ? "Recent games" : "Model"}</span>
               <strong>
                 {binaryEvent
                   ? card.modelProbability == null
                     ? "—"
                     : `${shortNumber(card.modelProbability)}%`
-                  : shortNumber(researchOnly?context.recentAverage:card.modelProjection)}
+                  : shortNumber(displayedAverage)}
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? researchOnly ? "Average vs line" : "Edge" : "Actual"}</b>
+              <b>{state === "pregame" ? fittedForecast ? "Projection vs line" : researchOnly ? "Average vs line" : "Edge" : "Actual"}</b>
               <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"

@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -216,4 +217,4 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"wnba"),init)}
+async function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(await attachFittedResearchForecasts(guardRankingPayload(payload,"wnba"),"wnba"),init)}

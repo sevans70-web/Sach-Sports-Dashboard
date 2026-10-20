@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
@@ -116,4 +117,4 @@ export async function captureAllCbbMarkets(){
  return {...research,success:research.researchArchived||results.some(x=>x.success&&x.saved===true),verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.recommendationEligible===true).length:0),0),warning:"Research snapshots archived separately; no validated CBB betting picks are available.",markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
 
-export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbMarketRankingsRaw>){return guardRankingPayload(await buildCbbMarketRankingsRaw(...args),"cbb")}
+export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbMarketRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await buildCbbMarketRankingsRaw(...args),"cbb"),"cbb")}

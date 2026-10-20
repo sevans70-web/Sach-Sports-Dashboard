@@ -6,7 +6,7 @@ const routes={nba:'nba',wnba:'wnba',cbb:'mens-college-basketball'};
 const text=(x:unknown)=>typeof x==='string'||typeof x==='number'?String(x):'';
 const list=(x:any):any[]=>Array.isArray(x)?x:[];
 export type BasketballPregameContext={
- version:1;sport:Sport;gameId:string;gameTime:string;season:string|null;retrievedAt:string;
+ version:1;sport:Sport;gameId:string;gameTime:string;season:string|null;seasonType:number|null;retrievedAt:string;
  sourceUrl:string;sourceSha256:string;providerUpdatedAt:null;
  teams:{teamId:string;opponentId:string;homeAway:string;injurySectionPresent:boolean;
   reportedInjuries:{playerId:string;status:string;note:string;reportedAt:string|null}[];
@@ -37,7 +37,7 @@ export function basketballPregameContext(payload:any,sport:Sport,gameId:string,r
   return {teamId,opponentId:ids[1-index],homeAway:text(side.homeAway),injurySectionPresent:injuries.length>0,
    reportedInjuries,confirmedStarterIds:[...new Set(starters)].sort()};
  });
- return {version:1,sport,gameId,gameTime,season:text(header.season?.year)||null,retrievedAt,
+ return {version:1,sport,gameId,gameTime,season:text(header.season?.year)||null,seasonType:Number.isInteger(header.season?.type)?header.season.type:null,retrievedAt,
   sourceUrl:`https://site.api.espn.com/apis/site/v2/sports/basketball/${routes[sport]}/summary?event=${encodeURIComponent(gameId)}`,
   sourceSha256:createHash('sha256').update(JSON.stringify(payload)).digest('hex'),providerUpdatedAt:null,teams};
 }
@@ -50,7 +50,7 @@ export function playerPregameContext(context:BasketballPregameContext|null,row:a
  if(!team||!text(row.playerId))return null;
  const availability=team.reportedInjuries.filter(i=>i.playerId===text(row.playerId));
  return {version:1,sport:context.sport,gameId:context.gameId,playerId:text(row.playerId),teamId:team.teamId,
-  opponentId:team.opponentId,gameTime:context.gameTime,season:context.season,retrievedAt:context.retrievedAt,
+  opponentId:team.opponentId,homeAway:team.homeAway,gameTime:context.gameTime,season:context.season,seasonType:context.seasonType,retrievedAt:context.retrievedAt,
   sourceUrl:context.sourceUrl,sourceSha256:context.sourceSha256,providerUpdatedAt:null,
   starterConfirmed:team.confirmedStarterIds.includes(text(row.playerId)),availability,
   availabilityConfirmed:false,injurySectionPresent:team.injurySectionPresent,

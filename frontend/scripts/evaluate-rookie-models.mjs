@@ -9,7 +9,7 @@ const hash=b=>createHash('sha256').update(b).digest('hex');assert.equal(hash(raw
 const observations=JSON.parse(raw),quotes=JSON.parse(await readFile(source+'/selected-quotes.json','utf8'));
 const sport=manifest.sport,modelSource=new URL('../model-research/2026-10-19/'+(sport==='nfl'?'nfl-population':'nba-context-model')+'/distribution-models.json.gz',import.meta.url);
 const models=JSON.parse(gunzipSync(await readFile(modelSource)));
-const cutoff=sport==='nfl'?'2026-10-05T00:00:00Z':'2026-04-05T00:00:00Z';
+const cutoff=sport==='nfl'?'2026-10-16T00:00:00Z':'2026-04-05T00:00:00Z';
 const rejected={},calibration=[],later=[];const reject=r=>rejected[r]=(rejected[r]||0)+1;
 for(const q of quotes){
  const target=observations.find(g=>g.sport===q.sport&&g.market===q.market&&g.playerId===q.playerId&&g.gameId===q.gameId),model=models.find(m=>m.group===q.sport+'|'+q.market);

@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {NextRequest,NextResponse} from "next/server";
 import {type CbbMarketKey,CBB_MARKETS} from "@/lib/cbb";
@@ -52,4 +53,4 @@ export async function GET(req:NextRequest){
  }
 }
 
-function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"cbb"),init)}
+async function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(await attachFittedResearchForecasts(guardRankingPayload(payload,"cbb"),"cbb"),init)}

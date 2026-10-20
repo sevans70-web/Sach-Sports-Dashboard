@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {espnParticipation} from "@/lib/player-participation";
 import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {footballResearchSample} from "@/lib/football-history";
@@ -384,4 +385,4 @@ export async function GET(req:NextRequest){
  }catch(e){console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
 
-function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"nfl"),init)}
+async function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(await attachFittedResearchForecasts(guardRankingPayload(payload,"nfl"),"nfl"),init)}

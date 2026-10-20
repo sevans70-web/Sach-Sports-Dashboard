@@ -1,3 +1,4 @@
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -1898,4 +1899,4 @@ export async function GET(
   }
 }
 
-function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"cfb"),init)}
+async function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(await attachFittedResearchForecasts(guardRankingPayload(payload,"cfb"),"cfb"),init)}
