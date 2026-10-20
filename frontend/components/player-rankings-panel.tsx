@@ -1211,8 +1211,8 @@ function PlayerCard({
             </div>
             <div>
               <b>GI</b>
-              <span>Score</span>
-              <strong title={researchOnly?intelligence.giReason:undefined}>{shortNumber(card.giScore)}</strong>
+              <span>{fittedForecast?.giScore!=null?'Experimental score':'Score'}</span>
+              <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
             </div>
           </div>
 
