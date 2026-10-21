@@ -586,7 +586,8 @@ import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
 export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
  const loaded=shared?.overview||await loadNbaOverview();
- const day=options?.day;
+ const today=torontoNbaDay(new Date());
+ const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===today)?today:undefined);
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
  if(frozen)return frozen;
