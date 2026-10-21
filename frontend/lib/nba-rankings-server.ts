@@ -1,5 +1,5 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
-import {frozenNbaSlateBoard,savePregameNbaSlateBoard} from '@/lib/nba-slate-board';
+import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -401,7 +401,7 @@ async function rowsForMarket(
 
 async function buildNbaMarketRankingsRaw(
  market:NbaMarketKey,
- shared?:{payload:any;overview:any}
+ shared?:{payload?:any;overview:any}
 ){
  let fallbackDays=[torontoNbaDay(new Date())];
 
@@ -422,7 +422,7 @@ async function buildNbaMarketRankingsRaw(
   let payload:any=shared?.payload??{data:[]};
   let owlsOk=Boolean(shared?.payload);
 
-  if(!shared){
+  if(!shared?.payload){
    try{
     payload=await fetchOwlsPayload();
     owlsOk=true;
@@ -517,7 +517,7 @@ async function buildNbaMarketRankingsRaw(
  }
 }
 
-export async function captureAllNbaMarkets(){
+export async function captureAllNbaMarkets(day?:string){
  // A sportsbook outage must not abort the entire capture request before
  // per-market fallbacks and diagnostics can run.
  const [oddsResult,overviewResult]=await Promise.allSettled([
@@ -531,12 +531,13 @@ export async function captureAllNbaMarkets(){
  const payload=oddsResult.status==="fulfilled"?oddsResult.value:null;
  const overview=overviewResult.status==="fulfilled"?overviewResult.value:null;
 
- const results=await Promise.all(
+ const buildBoards=async(slateDay?:string)=>Promise.all(
   NBA_MARKETS.map(async([market])=>{
    try{
     return await buildNbaMarketRankings(
      market,
-     payload&&overview?{payload,overview}:undefined
+     overview?{payload,overview}:undefined,
+     {day:slateDay}
     );
    }catch(e:any){
     return{
@@ -549,8 +550,14 @@ export async function captureAllNbaMarkets(){
    }
   })
  );
+ const results=await buildBoards(day);
 
  const research=await archiveResearchBoards("nba",results);
+ // Prepare the next calendar day's slate while today's locked board is still
+ // on screen. The existing ten-minute scheduler refreshes both independently.
+ const upcomingDay=nextNbaBoardDay();
+ const upcoming=!day&&overview?.games?.some((g:any)=>torontoNbaDay(g.tipoff||'')===upcomingDay)?await buildBoards(upcomingDay):[];
+ if(upcoming.length)await archiveResearchBoards('nba',upcoming);
  return{
   ...research,
   warning:"Research snapshots are archived separately; validated betting picks remain withheld.",
@@ -559,6 +566,7 @@ export async function captureAllNbaMarkets(){
   ),
   providerError,
   overviewError,
+  upcoming:upcoming.length?{day:upcomingDay,markets:upcoming.map((x:any)=>({market:x.market,rows:x.rows?.length||0,verifiedQuotes:x.verifiedQuoteCount||0,modelSelections:x.modelSelectionCount||0,saved:x.boardSaved===true,error:x.error||null}))}:null,
   verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>verifiedNbaPrediction(r,x.market)).length:0),0),
   markets:results.map((x:any)=>({
    market:x.market,
@@ -576,10 +584,14 @@ export async function captureAllNbaMarkets(){
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
-export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){
- const overview=args[1]?.overview||await loadNbaOverview();
- const frozen=await frozenNbaSlateBoard(args[0],overview.games||[]);
+export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
+ const loaded=shared?.overview||await loadNbaOverview();
+ const day=options?.day;
+ const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
+ const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
  if(frozen)return frozen;
- const payload=await attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(await buildNbaMarketRankingsRaw(...args),'nba'),'nba'),'nba');
- return savePregameNbaSlateBoard(payload,overview.games||[]);
+ let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
+ if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
+ const payload=await attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(raw,'nba'),'nba'),'nba');
+ return savePregameNbaSlateBoard(payload,overview.games||[],Date.now(),day);
 }

@@ -5,8 +5,10 @@ import {verifiedPropQuote} from '@/lib/prop-integrity';
 
 export type NbaSlateBoard={version:1;day:string;market:string;capturedAt:string;lockAt:string;rows:any[];recoveredAt?:string};
 const stream=(market:string)=>'slate_board_'+market;
-export function nbaSlateBoundary(games:any[],now=Date.now()){
- const day=torontoHistoryDay(new Date(now));
+export function nextNbaBoardDay(day=torontoHistoryDay()){
+ const date=new Date(day+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+1);return date.toISOString().slice(0,10);
+}
+export function nbaSlateBoundary(games:any[],now=Date.now(),day=torontoHistoryDay(new Date(now))){
  const today=games.filter(g=>torontoHistoryDay(g.tipoff||g.date||'')===day);
  const times=today.map(g=>Date.parse(g.tipoff||g.date||'')).filter(Number.isFinite);
  return {day,games:today,lockAt:times.length?Math.min(...times):null};
@@ -25,8 +27,8 @@ export function selectPregameBoard(snapshots:any[],day:string,market:string,lock
 export async function readNbaSlateBoard(market:string,day:string):Promise<NbaSlateBoard|null>{
  return (await readDurableHistory<NbaSlateBoard>('nba',stream(market),day))[0]||null;
 }
-export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now()){
- const boundary=nbaSlateBoundary(games,now);
+export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now(),day?:string){
+ const boundary=nbaSlateBoundary(games,now,day);
  const stored=await readNbaSlateBoard(market,boundary.day);
  if(boundary.lockAt==null&&stored&&Number.isFinite(Date.parse(stored.lockAt)))boundary.lockAt=Date.parse(stored.lockAt);
  if(boundary.lockAt==null||now<boundary.lockAt)return null;
@@ -48,8 +50,8 @@ export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now
    boardUnavailable:!board,source:board?'Saved pregame NBA daily board':'No pregame board was recorded',updatedAt:new Date(now).toISOString()};
  });
 }
-export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.now()){
- const b=nbaSlateBoundary(games,now);
+export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.now(),day?:string){
+ const b=nbaSlateBoundary(games,now,day);
  if(b.lockAt==null||now>=b.lockAt||!payload?.rows?.length)return payload;
  const rows=payload.rows.filter((r:any)=>torontoHistoryDay(r.gameTime)===b.day).slice(0,25);
  if(!rows.length)return payload;

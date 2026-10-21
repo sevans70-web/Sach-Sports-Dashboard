@@ -22,14 +22,15 @@ export async function nbaPickPerformance(markets:string[],days:string[],summary:
  const results:any[]=[];
  for(const day of days)for(const market of markets){
   const board=await readNbaSlateBoard(market,day);
-  if(!board||Date.parse(board.lockAt)>now||!(Date.parse(board.capturedAt)<Date.parse(board.lockAt)))continue;
+  if(!board||Date.parse(board.capturedAt)>now||!(Date.parse(board.capturedAt)<Date.parse(board.lockAt)))continue;
+  const locked=Date.parse(board.lockAt)<=now;
   const rows:any[]=[];
   const previous=await readDurableHistory<any>('nba','model_pick_results_'+market,day);
   for(const row of board.rows){
    if(row.market!==market)continue;
    const pick=savedModelPick(row,board.capturedAt);if(!pick)continue;
-   const saved={...row,pickSide:pick.side,prediction:pick.side,sportsbookLine:pick.line,savedAt:board.capturedAt,boardCapturedAt:board.capturedAt,boardFrozen:true,validatedForBetting:false};
-   const grade=gradeSavedNbaPick(saved,await summary(String(row.gameId)));
+   const saved={...row,pickSide:pick.side,prediction:pick.side,sportsbookLine:pick.line,savedAt:board.capturedAt,boardCapturedAt:board.capturedAt,boardFrozen:locked,validatedForBetting:false};
+   const grade=locked?gradeSavedNbaPick(saved,await summary(String(row.gameId))):{status:'pending',actual:null};
    const old=previous.find(r=>r.playerId===saved.playerId&&r.gameId===saved.gameId&&r.quoteId===saved.quoteId&&r.savedAt===saved.savedAt&&r.pickSide===saved.pickSide);
    rows.push({...saved,...(grade.status==='pending'&&old&&['hit','miss','push','void'].includes(old.status)?{status:old.status,actual:old.actual,voidReason:old.voidReason,gradedAt:old.gradedAt}:grade),...(grade.status!=='pending'?{gradedAt:new Date(now).toISOString(),gradeSource:'ESPN final boxscore'}:{})});
   }

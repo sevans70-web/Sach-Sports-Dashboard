@@ -5,7 +5,8 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {loadTs} from './load-ts.mjs';
 const root=await mkdtemp(path.join(tmpdir(),'nba-board-'));process.env.SACH_HISTORY_DIR=root;
-const {selectPregameBoard,nbaSlateBoundary,frozenNbaSlateBoard}=await loadTs(new URL('../lib/nba-slate-board.ts',import.meta.url));
+const {selectPregameBoard,nbaSlateBoundary,frozenNbaSlateBoard,savePregameNbaSlateBoard,readNbaSlateBoard,nextNbaBoardDay}=await loadTs(new URL('../lib/nba-slate-board.ts',import.meta.url));
+const {torontoHistoryDay}=await loadTs(new URL('../lib/history-archive.ts',import.meta.url));
 const {writeDurableHistory}=await loadTs(new URL('../lib/durable-history.ts',import.meta.url));
 const {savedModelPick}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
 const {gradeSavedNbaPick,summarizeSavedPicks,nbaPickPerformance}=await loadTs(new URL('../lib/nba-pick-performance.ts',import.meta.url));
@@ -35,6 +36,22 @@ test('late snapshots cannot create pregame boards, and recovery never invents a 
  for(const patch of [{quoteId:'wrong'},{line:9},{price:-115},{calculatedAt:start}])assert.equal(savedModelPick({...rows[0],researchForecast:{modelSelection:{...rows[0].researchForecast.modelSelection,...patch}}},capture),null);
 });
 const summary=(actual,dnp=false)=>({header:{id:'0',competitions:[{status:{type:{completed:true}}}]},boxscore:{players:[{statistics:[{labels:['PTS'],athletes:[{athlete:{id:'0'},didNotPlay:dnp,stats:[String(actual)]}]}]}]}});
+test('tomorrow can be prepared and counted pending without replacing today or grading future results',async()=>{
+ const now=Date.now(),stamp=new Date(now).toISOString(),tomorrow=nextNbaBoardDay(torontoHistoryDay()),tip=tomorrow+'T23:00:00Z';
+ const before=await readNbaSlateBoard('points',day);
+ const row={...rows[0],gameId:'tomorrow',gameTime:tip,quoteUpdatedAt:stamp,capturedAt:stamp,researchForecast:{modelSelection:{...rows[0].researchForecast.modelSelection,calculatedAt:stamp}}};
+ const schedule=[{gameId:'tomorrow',tipoff:tip,state:'pre'}];
+ const result=await savePregameNbaSlateBoard({market:'points',rows:[row]},schedule,now,tomorrow);
+ assert.equal(result.boardSaved,true);assert.equal(result.boardDay,tomorrow);
+ const saved=await readNbaSlateBoard('points',tomorrow);assert.equal(savedModelPick(saved.rows[0],saved.capturedAt).side,'OVER');
+ assert.deepEqual(await readNbaSlateBoard('points',day),before);
+ const performance=await nbaPickPerformance(['points'],[tomorrow],async()=>{throw Error('Must not grade before first tipoff')},now);
+ assert.equal(performance.pending,1);assert.equal(performance.hitRate,null);
+ assert.equal(await frozenNbaSlateBoard('points',schedule,now,tomorrow),null);
+ const frozen=await frozenNbaSlateBoard('points',schedule,Date.parse(tip),tomorrow);
+ assert.equal(frozen.rows[0].researchForecast.modelSelection.side,'OVER');assert.equal(frozen.rows[0].boardFrozen,true);
+ assert.equal(nextNbaBoardDay('2026-12-31'),'2027-01-01');
+});
 test('actual pick grades require the exact official final fixture and athlete; missing stats remain pending',()=>{
  const row={...rows[0],pickSide:'OVER'};
  assert.equal(gradeSavedNbaPick(row,summary(11)).status,'hit');assert.equal(gradeSavedNbaPick(row,summary(10)).status,'miss');
