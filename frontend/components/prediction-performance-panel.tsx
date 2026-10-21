@@ -309,9 +309,9 @@ function PerformanceCards({
       <article className={styles.metricCard}>
         <span className={styles.hourglass} aria-hidden="true">⌛</span>
         <div className={styles.metricCopy}>
-          <span>{research?"Pending":"Verified pending"}</span>
+          <span>Pending</span>
           <strong>{numberOrDash(stat.pending, stat.connected)}</strong>
-          <small>{!stat.connected?"Data unavailable":stat.pending?"Awaiting game results":research?"No saved forecasts awaiting results":"No validated picks awaiting results"}</small>
+          <small>{!stat.connected?"Data unavailable":stat.pending?"Awaiting game results":research?"No saved forecasts awaiting results":"No picks awaiting results"}</small>
         </div>
       </article>
     </div>

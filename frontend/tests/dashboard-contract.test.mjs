@@ -8,6 +8,11 @@ test('dashboard counts distinguish traceable quotes from validated predictions',
  assert.equal(d.games,2);assert.equal(d.rankedPlayers,3);assert.equal(d.playerProps,1);assert.equal(d.predictions,0);assert.deepEqual(d.verifiedRows,[]);
  assert.equal(d.confirmedLineups,1);assert.equal(d.pendingLineups,3);
 });
+test('saved model selections have a separate snapshot count from validated predictions',()=>{
+ const quoted={...row,capturedAt:stamp,quoteId:'q',researchForecast:{modelSelection:{side:'OVER',line:10.5,price:-110,quoteId:'q',sportsbookKey:'fanduel',calculatedAt:stamp}}};
+ const d=dashboardCounts(games,[quoted]);assert.equal(d.estimatedPicks,1);assert.equal(d.predictions,0);
+ assert.equal(dashboardCounts(games,[{...quoted,researchForecast:{}}]).estimatedPicks,0);
+});
 test('a genuine zero quote is retained but a missing threshold cannot become zero',()=>{
  assert.equal(dashboardCounts(games,[{...row,sportsbookLine:0}]).playerProps,1);assert.equal(dashboardCounts(games,[{...row,sportsbookLine:null}]).playerProps,0);
 });
