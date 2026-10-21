@@ -24,7 +24,10 @@ export async function GET(req:NextRequest){
     if(sport==="mlb"){
      const rows=d.batter?.days?.[dashboardDay(new Date())]?.categories?.home_runs||[],settled=rows.filter((r:any)=>typeof r.correct==="boolean");
      sports.push({sport,connected:d.success!==false,hits:settled.filter((r:any)=>r.correct).length,settled:settled.length,pending:rows.length-settled.length});
-    }else sports.push({sport,connected:response.ok&&d.connected!==false&&d.success!==false,hits:Number(d.hits)||0,settled:Number(d.settled)||0,pending:Number(d.pending)||0});
+    }else {
+     const picks=d.sachPickPerformance||d;
+     sports.push({sport,connected:response.ok&&picks.connected!==false&&d.success!==false,hits:Number(picks.hits)||0,settled:Number(picks.settled)||0,pending:Number(picks.pending)||0});
+    }
    }catch{sports.push({sport,connected:false,hits:0,settled:0,pending:0})}
   }));
   const hits=sports.reduce((n,s)=>n+s.hits,0),settled=sports.reduce((n,s)=>n+s.settled,0),payload={success:sports.every(s=>s.connected),partial:sports.some(s=>!s.connected),hits,settled,pending:sports.reduce((n,s)=>n+s.pending,0),hitRate:settled?Math.round(hits/settled*1000)/10:null,sports,scope:"Today · default ranking markets",updatedAt:new Date().toISOString()};

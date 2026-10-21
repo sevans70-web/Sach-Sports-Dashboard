@@ -1,6 +1,8 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
 import {prioritizeModelPicks} from '@/lib/saved-model-pick';
+import {availablePregameRankings} from '@/lib/ranking-availability';
+import {rankingResponse} from '@/lib/ranking-response-cache';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -585,7 +587,7 @@ export async function captureAllNbaMarkets(day?:string){
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
-export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
+async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
  const loaded=shared?.overview||await loadNbaOverview();
  const today=torontoNbaDay(new Date());
  const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===today)?today:undefined);
@@ -594,6 +596,11 @@ export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payloa
  if(frozen)return frozen;
  let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
- const payload=await attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(raw,'nba'),'nba'),'nba');
+ const eligible=availablePregameRankings(await attachBasketballPregameContext(raw,'nba'));
+ const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
  return savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},overview.games||[],Date.now(),day);
+}
+
+export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
+ return rankingResponse('nba|'+market+'|'+(options?.day||''),()=>buildNbaMarketRankingsUncached(market,shared,options),Boolean(shared));
 }

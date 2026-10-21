@@ -423,7 +423,7 @@ async function model(id:string,market:CfbMarketKey,asOf:string){
  const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
  const season=Number(cutoff.slice(0,4));
  try{
-  const payload=await fetchJson(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,2500);
+  const payload=await fetchJson(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,8000);
   const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
   return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
  }catch{return {projection:null,games:0}}
@@ -445,7 +445,7 @@ async function roster(
   const value =
     await timeout(
       getCfbTeamRoster(teamId),
-      3000,
+      8000,
       {
         teamName: "",
         teamLogo: "",
@@ -453,7 +453,8 @@ async function roster(
       }
     );
 
-  rosterCache.set(
+  // A provider timeout must not poison this team's roster for an hour.
+  if(value.players.length)rosterCache.set(
     teamId,
     {
       at: Date.now(),
@@ -986,9 +987,7 @@ function decorateGameState(
               : "Scheduled"
         )
       ),
-    lineupConfirmed:
-      started ||
-      row.lineupConfirmed === true,
+    lineupConfirmed: row.lineupConfirmed === true,
   };
 }
 
@@ -998,8 +997,9 @@ async function buildFreshBoard(
   schedule: any[],
   gameDay: string
 ) {
-  const initialRaw =
-    await marketRows(market);
+  const [initialRaw,fallbackCandidates] = await Promise.all([
+    marketRows(market),rosterFallbackRows(market,schedule,[],gameDay,slate)
+  ]);
 
   const scopedRaw =
     initialRaw.filter(
@@ -1028,13 +1028,7 @@ async function buildFreshBoard(
   const fallbackRaw =
     scopedRaw.length
       ? []
-      : await rosterFallbackRows(
-          market,
-          schedule,
-          [],
-          gameDay,
-          slate
-        );
+      : fallbackCandidates;
 
   const raw = [...scopedRaw, ...fallbackRaw];
 
@@ -1317,7 +1311,7 @@ async function lockBoard(
             ...row,
             frozen: true,
             lockedAtKickoff: row.recoveredAfterStart !== true,
-            lineupConfirmed: true,
+            lineupConfirmed: row.lineupConfirmed === true,
             summary:
               row.summary ||
               "Top 25 position and pregame prediction locked at kickoff.",
@@ -1361,7 +1355,7 @@ async function lockBoard(
             ...row,
             frozen: true,
             lockedAtKickoff: true,
-            lineupConfirmed: true,
+            lineupConfirmed: row.lineupConfirmed === true,
           },
           schedule
         )
@@ -1513,19 +1507,15 @@ async function build(
   market: CfbMarketKey,
   slate: SlateKey
 ): Promise<BoardPayload> {
-  const schedule =
-    await timeout(
-      getEspnCfbSchedule(),
-      5000,
-      []
-    );
+  const schedule = await getEspnCfbSchedule(true);
+  if(!schedule.length)throw new Error('College football schedule is temporarily unavailable');
 
   const gameDay =
     targetGameDay(schedule);
 
   const blockGames = schedule.filter(game => day(game.date || "") === gameDay && inSlate(game.date,slate));
   const completed = blockGames.length > 0 && blockGames.every(game => game.completed || game.state === "post");
-  const freshWork = completed ? Promise.resolve([]) : buildFreshBoard(
+  const freshWork = completed || !blockGames.length ? Promise.resolve([]) : buildFreshBoard(
       market,
       slate,
       schedule,

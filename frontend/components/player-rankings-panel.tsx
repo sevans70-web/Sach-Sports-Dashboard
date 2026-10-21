@@ -5,7 +5,7 @@ import {datedCardHistory,publicPropContext} from "@/lib/public-prop-context";
 import {trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
-import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
+import {prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
@@ -2032,7 +2032,7 @@ export function PlayerRankingsPanel({
           .map((row: any) => {
             let enriched = row;
             let result = performance
-              ? resultForPlayer(sport==='nba'?{results:performance.sachPickPerformance?.results||[]}:performance, row)
+              ? resultForPlayer(sport==='nba'||sport==='wnba'?{results:performance.sachPickPerformance?.results||[]}:performance, row)
               : null;
             let game: any = null;
 
@@ -2112,7 +2112,12 @@ export function PlayerRankingsPanel({
           return isGradeablePrediction(card);
         });
 
-        const staged = await stageRankingImages(isolated);
+        // Cards render immediately; image decoding must not delay the board.
+        const staged = isolated;
+        for(const card of staged.slice(0,5)){
+          if(card.headshot)void prepareRankingImage(card.headshot);
+          if(card.teamLogo)void prepareRankingImage(card.teamLogo);
+        }
         if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
         // The cards effect caches the merged state after official final
         // observations are retained; never publish the stale staged board.

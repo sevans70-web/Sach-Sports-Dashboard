@@ -33,7 +33,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  const key=sport+'|'+market,model=data.models.find(m=>m.group===key);
  if(!model)return unavailable('market_model_not_fitted');
  if(model.featurePolicy==='basketball_context'&&(!context||context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)||!context.opponentId||!['home','away'].includes(context.homeAway)))return unavailable('missing_exact_pregame_context');
- if(context?.seasonType!=null&&context.seasonType!==2)return unavailable('model_requires_regular_season');
+ if(model.featurePolicy==='basketball_context'&&context?.seasonType!=null&&context.seasonType!==2)return unavailable('model_requires_regular_season');
  if(context?.availability?.some((r:any)=>/^(out|inactive|suspended|injured reserve)$/i.test(r.status)))return unavailable('reported_unavailable');
  const target={sport,market,gameId:String(row.gameId),playerId:String(row.playerId),playerName:String(row.playerName||''),teamId:String(row.teamId),
   opponentId:String(context?.opponentId||row.opponentId||''),season:String(context?.season||row.season),gameTime:row.gameTime,source:'current official fixture',retrievedAt:new Date(now).toISOString(),

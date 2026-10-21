@@ -1,4 +1,9 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
+import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
+import {availablePregameRankings} from '@/lib/ranking-availability';
+import {prioritizeModelPicks} from '@/lib/saved-model-pick';
+import {rankingResponse} from '@/lib/ranking-response-cache';
+import {frozenNbaSlateBoard,savePregameNbaSlateBoard} from '@/lib/nba-slate-board';
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
@@ -76,8 +81,12 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
 
 async function buildWnbaMarketRankingsRaw(market:WnbaMarketKey,shared?:{payload:any;overview:any}){
  try{
-  const source=shared??{payload:await fetchOwlsPayload().catch(()=>({data:[]})),overview:await loadWnbaOverview()};
-  const ranked=rowsForMarket(source.payload,source.overview,market);
+  const source:{payload:any;overview:any}=shared||await Promise.all([fetchOwlsPayload().catch(()=>({data:[]})),loadWnbaOverview()]).then(([payload,overview])=>({payload,overview}));
+  const ranked=rowsForMarket(source.payload,source.overview,market).map((row:any)=>{
+   const game=source.overview.games.find((g:any)=>String(g.gameId)===String(row.gameId));
+   const teamId=String(row.teamName).toUpperCase()===String(game?.awayAbbr).toUpperCase()?game?.awayTeamId:String(row.teamName).toUpperCase()===String(game?.homeAbbr).toUpperCase()?game?.homeTeamId:null;
+   return {...row,teamId:teamId?String(teamId):'',season:String(source.overview.season)};
+  });
   const verified=ranked.filter((x:any)=>x.sportsbookLine!=null&&x.prediction&&x.modelProjection!=null);
   const saved=verified.length>0?await saveWnbaPredictions(market,verified).catch(()=>false):false;
   return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:ranked.some((x:any)=>x.sportsbookLine!=null)?"Owls Insight WNBA props + ESPN":"ESPN WNBA model watch",verifiedPredictions:verified.length};
@@ -99,4 +108,18 @@ export async function captureAllWnbaMarkets(){
  return {...research,success:research.researchArchived||results.some(x=>x.success&&x.saved!==false),verifiedPredictions:results.reduce((n,x)=>n+((x as any).verifiedPredictions||0),0),warning:"Research snapshots archived separately; no validated WNBA betting picks are available.",markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
 
-export async function buildWnbaMarketRankings(...args:Parameters<typeof buildWnbaMarketRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await buildWnbaMarketRankingsRaw(...args),"wnba"),"wnba")}
+export async function buildWnbaMarketRankings(...args:Parameters<typeof buildWnbaMarketRankingsRaw>){
+ return rankingResponse('wnba|'+args[0],async()=>{
+ const overview=args[1]?.overview||await loadWnbaOverview();
+ const today=torontoWnbaDay(new Date());
+ const current=overview.games.filter((g:any)=>torontoWnbaDay(g.tipoff||'')===today);
+ const games=current.length?current:activeRankingSlate(overview.games,torontoWnbaDay);
+ const day=games[0]?.tipoff?torontoWnbaDay(games[0].tipoff):torontoWnbaDay(new Date());
+ const frozen=await frozenNbaSlateBoard(args[0],games,Date.now(),day,'wnba');
+ if(frozen)return frozen;
+ const source=args[1]||{overview,payload:await fetchOwlsPayload().catch(()=>({data:[]}))};
+ const contextual=availablePregameRankings(await attachBasketballPregameContext(await buildWnbaMarketRankingsRaw(args[0],source),'wnba'));
+ const payload=await attachFittedResearchForecasts(guardRankingPayload(contextual,'wnba'),'wnba');
+ return savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},games,Date.now(),day,'wnba');
+ },Boolean(args[1]));
+}

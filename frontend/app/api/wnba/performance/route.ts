@@ -1,4 +1,5 @@
 import {guardPerformancePayload} from "@/lib/prop-integrity";
+import {nbaPickPerformance} from '@/lib/nba-pick-performance';
 import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
 import {basketballSummaryActual,basketballLogActual} from "@/lib/basketball-settlement";
 import {statNumber} from "@/lib/provider-fetch";
@@ -146,7 +147,12 @@ export async function GET(req:NextRequest){
   const settledRows=all.filter(x=>x.status==="hit"||x.status==="miss");
   const hits=settledRows.filter(x=>x.status==="hit").length;
   const pending=all.filter(x=>x.status==="pending").length;
+  const sachPickPerformance=await nbaPickPerformance(markets,range(period),async id=>{
+    if(!summaryCache.has(id))summaryCache.set(id,await summary(id));
+    return summaryCache.get(id);
+  },Date.now(),'wnba');
   return performanceJson({
+    sachPickPerformance,
     connected,hits,settled:settledRows.length,pending,total:all.length,
     hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
     results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)),

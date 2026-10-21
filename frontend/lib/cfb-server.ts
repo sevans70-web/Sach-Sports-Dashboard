@@ -75,16 +75,17 @@ function dateKey(d:Date){
   return `${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,"0")}${String(d.getUTCDate()).padStart(2,"0")}`;
 }
 
-export async function getEspnCfbSchedule(){
+export async function getEspnCfbSchedule(currentOnly=false){
   const now=new Date();
   // Keep enough future schedule loaded to build Sach projections before sportsbooks post props.
-  const dates=Array.from({length:16},(_,i)=>i-1).map(offset=>dateKey(new Date(now.getTime()+offset*86400000)));
+  const dates=Array.from({length:currentOnly?4:16},(_,i)=>i-1).map(offset=>dateKey(new Date(now.getTime()+offset*86400000)));
   const payloads=await Promise.all(
     dates.map(async date=>{
       try{return await json(`${ESPN_SCOREBOARD}?limit=200&groups=80&dates=${date}`)}
       catch{return {events:[]}}
     })
   );
+  if(currentOnly&&!payloads.some(p=>(p.events||[]).some((e:any)=>Date.parse(e.date)>Date.now()||e.status?.type?.state==='in')))return getEspnCfbSchedule();
   const seen=new Set<string>();
   const out:any[]=[];
   for(const payload of payloads){

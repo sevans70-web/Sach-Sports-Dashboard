@@ -1,4 +1,5 @@
 import {nullableNumber} from "@/lib/provider-fetch";
+import {availablePregameRankings} from '@/lib/ranking-availability';
 
 export const PROP_INTEGRITY_VERSION = 1;
 export const PROP_REVIEW_NOTICE = "Research only — experimental Sach forecasts and GI are not validated betting recommendations. Sportsbook lines and historical baselines are shown separately.";
@@ -58,6 +59,7 @@ export function integrityRow(row:any,sport:string,market=String(row?.market||"")
 
 export function guardRankingPayload(payload:any,sport:string){
   if(!payload||!Array.isArray(payload.rows)) return payload;
+  payload=availablePregameRankings(payload);
   const rows=payload.rows.map((r:any)=>integrityRow(r,sport,String(payload.market||r.market||"")));
   return {...payload,rows,integrityVersion:PROP_INTEGRITY_VERSION,warning:PROP_REVIEW_NOTICE,
     verifiedPredictions:rows.filter((r:any)=>r.recommendationEligible).length,

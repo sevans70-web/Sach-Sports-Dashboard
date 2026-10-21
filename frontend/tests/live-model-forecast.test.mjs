@@ -22,6 +22,12 @@ test('an exact official context supplies a missing season; another fixture canno
  assert.equal(fittedResearchForecast({...row,season:undefined,pregameContext:context},'nfl','passing_yards',data,now).projection,240);
  assert.equal(fittedResearchForecast({...row,season:undefined,pregameContext:{...context,gameId:'other'}},'nfl','passing_yards',data,now).status,'unavailable');
 });
+test('WNBA workload models accept playoff fixture identity without borrowing the NBA regular-season context restriction',()=>{
+ const wnbaRow={...row,sport:'wnba',market:'points',pregameContext:{gameId:row.gameId,playerId:row.playerId,teamId:row.teamId,gameTime:row.gameTime,season:'2026',seasonType:3}};
+ const wnbaData={...data,models:[{...model,group:'wnba|points'}],observations:history.map(g=>({...g,sport:'wnba',market:'points'}))};
+ assert.equal(fittedResearchForecast(wnbaRow,'wnba','points',wnbaData,now).status,'available');
+ assert.equal(fittedResearchForecast({...wnbaRow,teamId:''},'wnba','points',wnbaData,now).reason,'wrong_pregame_context_identity');
+});
 test('GI requires exact fresh quote evidence and a prior calibration artifact',()=>{
  const artifact={version:1,trainedThrough:'2026-08-01',calibrationRows:300,fixtures:40,blocks:[{maximumExpectedReturn:10,estimatedUnitReturn:.1}],positiveReturnReference:[.1,.1],validatedForBetting:false};
  const withGi={...data,gi:{'nfl|passing_yards':artifact}};

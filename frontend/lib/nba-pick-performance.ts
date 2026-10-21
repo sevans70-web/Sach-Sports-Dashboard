@@ -18,14 +18,14 @@ export function summarizeSavedPicks(results:any[]){
  const hits=count('hit'),misses=count('miss'),pushes=count('push');
  return {scope:'saved_pregame_model_picks',connected:true,total:results.length,hits,misses,pushes,settled:hits+misses+pushes,pending:count('pending'),void:count('void'),hitRate:hits+misses?Math.round(1000*hits/(hits+misses))/10:null,results};
 }
-export async function nbaPickPerformance(markets:string[],days:string[],summary:(id:string)=>Promise<any>,now=Date.now()){
+export async function nbaPickPerformance(markets:string[],days:string[],summary:(id:string)=>Promise<any>,now=Date.now(),sport='nba'){
  const results:any[]=[];
  for(const day of days)for(const market of markets){
-  const board=await readNbaSlateBoard(market,day);
+  const board=await readNbaSlateBoard(market,day,sport);
   if(!board||Date.parse(board.capturedAt)>now||!(Date.parse(board.capturedAt)<Date.parse(board.lockAt)))continue;
   const locked=Date.parse(board.lockAt)<=now;
   const rows:any[]=[];
-  const previous=await readDurableHistory<any>('nba','model_pick_results_'+market,day);
+  const previous=await readDurableHistory<any>(sport,'model_pick_results_'+market,day);
   for(const row of board.rows){
    if(row.market!==market)continue;
    const pick=savedModelPick(row,board.capturedAt);if(!pick)continue;
@@ -35,7 +35,7 @@ export async function nbaPickPerformance(markets:string[],days:string[],summary:
    rows.push({...saved,...(grade.status==='pending'&&old&&['hit','miss','push','void'].includes(old.status)?{status:old.status,actual:old.actual,voidReason:old.voidReason,gradedAt:old.gradedAt}:grade),...(grade.status!=='pending'?{gradedAt:new Date(now).toISOString(),gradeSource:'ESPN final boxscore'}:{})});
   }
   // Separate stream: original forecasts, grades and backups remain intact.
-  if(rows.length)await withHistoryLock('nba-model-grades|'+market+'|'+day,()=>writeDurableHistory('nba','model_pick_results_'+market,day,rows));
+  if(rows.length)await withHistoryLock(sport+'-model-grades|'+market+'|'+day,()=>writeDurableHistory(sport,'model_pick_results_'+market,day,rows));
   results.push(...rows);
  }
  return summarizeSavedPicks(results);

@@ -217,4 +217,4 @@ export async function GET(req: NextRequest) {
   }
 }
 
-async function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(await attachFittedResearchForecasts(guardRankingPayload(payload,"wnba"),"wnba"),init)}
+async function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(payload.integrityVersion||payload.boardFrozen?payload:await attachFittedResearchForecasts(guardRankingPayload(payload,"wnba"),"wnba"),init)}

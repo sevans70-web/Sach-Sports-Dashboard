@@ -39,13 +39,13 @@ async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{const
 async function loadPlayers():Promise<NbaPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:NBA_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
-export async function loadNbaGames():Promise<NbaGame[]>{
+export async function loadNbaGames(fullCalendar=true):Promise<NbaGame[]>{
  // ESPN's scoreboard endpoint is reliable for a single YYYYMMDD date. Large
  // date ranges can return an empty events array during the preseason/offseason,
  // so query individual days instead. This window includes recent games for live/
  // final state plus the next 45 days, which comfortably reaches the next slate.
  const now=new Date();
- const dates=Array.from({length:48},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
+ const dates=Array.from({length:fullCalendar?48:8},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
  const payloads=await successfulPayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,60)),"NBA");
  const seen=new Set<string>();const games:NbaGame[]=[];
  for(const payload of payloads)for(const v of list(payload.events)){
@@ -54,9 +54,10 @@ export async function loadNbaGames():Promise<NbaGame[]>{
   const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);
   seen.add(id);games.push({gameId:id,tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
  }
+ if(!fullCalendar&&!games.some(g=>g.state!=='post'&&Date.parse(g.tipoff||'')>Date.now()))return loadNbaGames(true);
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
-export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadNbaGames()]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadNbaGames(false)]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
 export function nbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/nba/players/full/${playerId}.png`}
 export function cleanNbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:NbaPlayer|undefined,market:NbaMarketKey):number|null{

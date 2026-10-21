@@ -63,6 +63,18 @@ test('actual pick grades require the exact official final fixture and athlete; m
  const stats=summarizeSavedPicks(['hit','miss','push','pending','void'].map(status=>({status})));
  assert.equal(stats.total,5);assert.equal(stats.settled,3);assert.equal(stats.hitRate,50);assert.equal(stats.pending,1);
 });
+test('WNBA boards and actual pick grades stay isolated from NBA history and freeze their original selections',async()=>{
+ const tip=Date.now()+3600000,stamp=new Date().toISOString(),wnbaDay=torontoHistoryDay(new Date(tip));
+ const row={...rows[0],sport:'wnba',gameTime:new Date(tip).toISOString(),quoteUpdatedAt:stamp,capturedAt:stamp,researchForecast:{modelSelection:{...rows[0].researchForecast.modelSelection,calculatedAt:stamp}}};
+ const before=await readNbaSlateBoard('points',wnbaDay);
+ const game={gameId:row.gameId,tipoff:row.gameTime,state:'pre'};
+ const saved=await savePregameNbaSlateBoard({market:'points',rows:[row]},[game],Date.now(),wnbaDay,'wnba');
+ assert.equal(saved.boardSaved,true);assert.deepEqual(await readNbaSlateBoard('points',wnbaDay),before);
+ const pending=await nbaPickPerformance(['points'],[wnbaDay],async()=>{throw Error('Pregame results unavailable')},Date.now(),'wnba');assert.equal(pending.pending,1);
+ const frozen=await frozenNbaSlateBoard('points',[{...game,state:'post'}],tip+1,wnbaDay,'wnba');
+ assert.equal(frozen.rows[0].researchForecast.modelSelection.side,'OVER');assert.equal(frozen.rows[0].boardFrozen,true);
+ const graded=await nbaPickPerformance(['points'],[wnbaDay],async()=>summary(12),tip+1,'wnba');assert.equal(graded.hits,1);
+});
 test('pick ledger counts only selections saved pregame and retains settled grades through provider failures',async()=>{
  await writeDurableHistory('nba','slate_board_points',day,[{version:1,day,market:'points',lockAt:start,capturedAt:capture,rows:[rows[0], {...rows[1],researchForecast:undefined}, {...rows[2],market:'assists'}]}]);
  const first=await nbaPickPerformance(['points'],[day],async()=>summary(12),Date.parse('2026-10-20T23:30:00Z'));

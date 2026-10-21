@@ -488,7 +488,7 @@ export async function GET(req:NextRequest) {
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "nba",
-          (await loadNbaGames()).map(game => fromOverview("nba", game))
+          (await loadNbaGames(calendar)).map(game => fromOverview("nba", game))
         )
       );
     } else if(sport === "wnba") {

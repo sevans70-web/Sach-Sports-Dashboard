@@ -1,5 +1,5 @@
 import {eligiblePropPrediction,verifiedPropQuote} from "@/lib/prop-integrity";
-import {savedModelPick} from '@/lib/saved-model-pick';
+import {cardModelPick} from '@/lib/saved-model-pick';
 export const DASHBOARD_SPORTS = ["mlb","nfl","cfb","nba","wnba","nhl","soccer","cbb"] as const;
 export type DashboardSport = typeof DASHBOARD_SPORTS[number];
 // Pause public discovery, not historical storage or settlement.
@@ -35,8 +35,21 @@ export function dashboardCounts(games:any[],rows:any[],requireFootballQuote=fals
  const ranked=[...unique.values()];
  const props=ranked.filter(r=>verifiedPropQuote(r,Date.now(),r.boardFrozen===true)&&r.marketBacked!==false&&!r.earlyModel);
  const predictions=props.filter(r=>eligiblePropPrediction(r)&&r.resultStatus!=="void");
- const modelSelections=props.filter(r=>savedModelPick(r,r.boardCapturedAt||r.researchForecast?.modelSelection?.calculatedAt));
+ const modelSelections=props.filter(r=>cardModelPick(r));
  // A game having started does not prove that a provider published a lineup.
  const confirmed=games.reduce((n,g)=>n+Number(g.awayLineupConfirmed===true)+Number(g.homeLineupConfirmed===true),0);
- return {games:games.length,live:games.filter(g=>g.state==="in").length,finals:games.filter(g=>g.state==="post").length,lineups:games.length*2,confirmedLineups:confirmed,pendingLineups:games.length*2-confirmed,rankedPlayers:ranked.length,playerProps:props.length,predictions:predictions.length,estimatedPicks:modelSelections.length,verifiedRows:predictions};
+ return {games:games.length,live:games.filter(g=>g.state==="in").length,finals:games.filter(g=>g.state==="post").length,lineups:games.length*2,confirmedLineups:confirmed,pendingLineups:games.length*2-confirmed,rankedPlayers:ranked.length,playerProps:props.length,predictions:predictions.length,estimatedPicks:modelSelections.length,modelPickRows:modelSelections,verifiedRows:predictions};
+}
+
+/** Give each professional sport with a playable fixture a home-page slot. */
+export function featuredDashboardGames(games:any[],limit=3){
+ const order:Record<string,number>={in:0,pre:1,post:2};
+ const sorted=[...games].sort((a,b)=>(order[a.state]??1)-(order[b.state]??1)||Date.parse(a.date)-Date.parse(b.date));
+ const selected:any[]=[];
+ for(const sport of ['nba','wnba','nhl','nfl']){
+  const game=sorted.find(g=>g.sport===sport&&g.state!=='post');
+  if(game&&selected.length<limit)selected.push(game);
+ }
+ for(const game of sorted)if(selected.length<limit&&!selected.includes(game))selected.push(game);
+ return selected;
 }

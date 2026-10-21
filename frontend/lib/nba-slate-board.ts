@@ -24,21 +24,21 @@ export function selectPregameBoard(snapshots:any[],day:string,market:string,lock
  }
  return best;
 }
-export async function readNbaSlateBoard(market:string,day:string):Promise<NbaSlateBoard|null>{
- return (await readDurableHistory<NbaSlateBoard>('nba',stream(market),day))[0]||null;
+export async function readNbaSlateBoard(market:string,day:string,sport='nba'):Promise<NbaSlateBoard|null>{
+ return (await readDurableHistory<NbaSlateBoard>(sport,stream(market),day))[0]||null;
 }
-export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now(),day?:string){
+export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now(),day?:string,sport='nba'){
  const boundary=nbaSlateBoundary(games,now,day);
- const stored=await readNbaSlateBoard(market,boundary.day);
+ const stored=await readNbaSlateBoard(market,boundary.day,sport);
  if(boundary.lockAt==null&&stored&&Number.isFinite(Date.parse(stored.lockAt)))boundary.lockAt=Date.parse(stored.lockAt);
  if(boundary.lockAt==null||now<boundary.lockAt)return null;
- return withHistoryLock('nba-board|'+market+'|'+boundary.day,async()=>{
-  let board=await readNbaSlateBoard(market,boundary.day);
+ return withHistoryLock(sport+'-board|'+market+'|'+boundary.day,async()=>{
+  let board=await readNbaSlateBoard(market,boundary.day,sport);
   if(!board||!Number.isFinite(Date.parse(board.capturedAt))||Date.parse(board.capturedAt)>=boundary.lockAt!){
    const days=[boundary.day,torontoHistoryDay(new Date(boundary.lockAt!-86400000)),torontoHistoryDay(new Date(boundary.lockAt!-2*86400000))];
-   const snapshots=(await Promise.all(days.map(day=>readHistorySnapshots('nba',market,day)))).flat();
+   const snapshots=(await Promise.all(days.map(day=>readHistorySnapshots(sport,market,day)))).flat();
    board=selectPregameBoard(snapshots,boundary.day,market,boundary.lockAt!,now);
-   if(board){board={...board,recoveredAt:new Date(now).toISOString()};await writeDurableHistory('nba',stream(market),boundary.day,[board]);}
+   if(board){board={...board,recoveredAt:new Date(now).toISOString()};await writeDurableHistory(sport,stream(market),boundary.day,[board]);}
   }
   const rows=(board?.rows||[]).map(saved=>{
    const game=boundary.games.find(g=>String(g.gameId||g.id)===String(saved.gameId));
@@ -47,17 +47,17 @@ export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now
     quoteVerified:verifiedPropQuote(saved,now,true),sportsbookLine:verifiedPropQuote(saved,now,true)?saved.sportsbookLine:null};
   });
   return {success:true,market,rows,boardFrozen:true,boardDay:boundary.day,boardCapturedAt:board?.capturedAt||null,verifiedQuoteCount:rows.filter(r=>r.quoteVerified).length,modelSelectionCount:rows.filter(r=>r.researchForecast?.modelSelection).length,
-   boardUnavailable:!board,source:board?'Saved pregame NBA daily board':'No pregame board was recorded',updatedAt:new Date(now).toISOString()};
+   boardUnavailable:!board,source:board?`Saved pregame ${sport.toUpperCase()} daily board`:'No pregame board was recorded',updatedAt:new Date(now).toISOString()};
  });
 }
-export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.now(),day?:string){
+export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.now(),day?:string,sport='nba'){
  const b=nbaSlateBoundary(games,now,day);
  if(b.lockAt==null||now>=b.lockAt||!payload?.rows?.length)return payload;
  const rows=payload.rows.filter((r:any)=>torontoHistoryDay(r.gameTime)===b.day).slice(0,25);
  if(!rows.length)return payload;
- const boardSaved=await withHistoryLock('nba-board|'+payload.market+'|'+b.day,async()=>{
+ const boardSaved=await withHistoryLock(sport+'-board|'+payload.market+'|'+b.day,async()=>{
   if(Date.now()>=b.lockAt!)return false;
-  return writeDurableHistory('nba',stream(payload.market),b.day,[{version:1,day:b.day,market:payload.market,capturedAt:new Date(now).toISOString(),lockAt:new Date(b.lockAt!).toISOString(),rows} satisfies NbaSlateBoard]);
+  return writeDurableHistory(sport,stream(payload.market),b.day,[{version:1,day:b.day,market:payload.market,capturedAt:new Date(now).toISOString(),lockAt:new Date(b.lockAt!).toISOString(),rows} satisfies NbaSlateBoard]);
  });
  return {...payload,boardSaved,boardDay:b.day,boardLockAt:new Date(b.lockAt).toISOString()};
 }
