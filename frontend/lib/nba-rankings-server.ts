@@ -1,5 +1,6 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
+import {prioritizeModelPicks} from '@/lib/saved-model-pick';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -594,5 +595,5 @@ export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payloa
  let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
  const payload=await attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(raw,'nba'),'nba'),'nba');
- return savePregameNbaSlateBoard(payload,overview.games||[],Date.now(),day);
+ return savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},overview.games||[],Date.now(),day);
 }

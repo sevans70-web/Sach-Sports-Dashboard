@@ -7,3 +7,32 @@ export function savedModelPick(row:any,capturedAt=row?.boardCapturedAt){
  if(!verifiedPropQuote(row,capture,true)||!pick.quoteId||pick.quoteId!==row.quoteId||pick.sportsbookKey!==row.sportsbookKey||pick.line!==row.sportsbookLine||pick.price!==(pick.side==='OVER'?row.overPrice:row.underPrice))return null;
  return pick;
 }
+
+/** Show the exact saved selection; a pregame card must still have a fresh quote. */
+export function cardModelPick(row:any,now=Date.now()){
+ const pick=savedModelPick(row,row?.boardCapturedAt||row?.researchForecast?.modelSelection?.calculatedAt);
+ if(!pick)return null;
+ if(row.boardFrozen===true)return pick;
+ if(row.frozen||row.lockedAtKickoff||['in','post'].includes(row.gameState)||Date.parse(row.gameTime)<=now||!verifiedPropQuote(row,now))return null;
+ return pick;
+}
+
+/** Before the daily lock, put supported picks in the dashboard preview first.
+ * Keep the existing order within each group; no GI or new selection is inferred. */
+export function prioritizeModelPicks(rows:any[],now=Date.now()){
+ if(rows.some(row=>row.boardFrozen||row.frozen||row.lockedAtKickoff))return rows;
+ return rows.map((row,index)=>({row,index,selected:cardModelPick(row,now)!=null}))
+  .sort((a,b)=>Number(b.selected)-Number(a.selected)||a.index-b.index)
+  .map(({row},index)=>({...row,rank:index+1}));
+}
+
+export function modelPickNotice(row:any){
+ const reason=row?.researchForecast?.reason||row?.researchForecast?.selectionReason;
+ if(reason==='price_threshold_not_met')return 'No qualifying price';
+ if(reason==='verified_quote_unavailable')return 'Verified line and price needed';
+ if(['prior_basketball_role_uncertain','basketball_role_uncertain'].includes(reason))return 'Role is uncertain';
+ if(['player_team_history_unavailable','insufficient_basketball_role_history'].includes(reason))return 'More same-team history needed';
+ if(reason==='reported_unavailable')return 'Reported unavailable';
+ if(['market_model_not_fitted','price_validation_failed'].includes(reason))return 'No supported pick for this market';
+ return 'Not enough evidence for a pick';
+}

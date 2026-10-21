@@ -9,7 +9,7 @@ import {stageRankingImages,prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
-import {savedModelPick} from '@/lib/saved-model-pick';
+import {cardModelPick,modelPickNotice} from '@/lib/saved-model-pick';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
 
@@ -966,7 +966,7 @@ function PlayerCard({
   const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
-  const modelSelection=card.raw?.boardFrozen?savedModelPick(card.raw):fittedForecast?.modelSelection;
+  const modelSelection=cardModelPick(card.raw);
   const displayedPick=modelSelection?.side||(card.raw?.boardFrozen?'NO PICK':fittedForecast?.candidateSide||card.prediction);
   const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
   const displayedAverage=fittedForecast?.projection??(researchOnly?context.recentAverage:card.modelProjection);
@@ -1076,6 +1076,7 @@ function PlayerCard({
               ? `${displayedPick} ${shortNumber(card.sportsbookLine)}`
               : displayedPick}
           </strong>
+          {sport==='nba'&&state==='pregame'&&!modelSelection&&displayedPick==='NO PICK'?<small>{modelPickNotice(card.raw)}</small>:null}
         </div>
 
         <div>
