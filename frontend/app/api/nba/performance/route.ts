@@ -5,6 +5,7 @@ import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {NBA_MARKETS,type NbaMarketKey,cleanNbaName} from "@/lib/nba";
+import {nbaPickPerformance} from '@/lib/nba-pick-performance';
 import {getNbaPredictions,saveNbaGrades,nbaDay,type SavedNbaPrediction} from "@/lib/nba-history";
 
 export const dynamic="force-dynamic";
@@ -168,7 +169,12 @@ export async function GET(req:NextRequest){
   const settledRows=all.filter(x=>x.status==="hit"||x.status==="miss");
   const hits=settledRows.filter(x=>x.status==="hit").length;
   const pending=all.filter(x=>x.status==="pending").length;
+  const sachPickPerformance=await nbaPickPerformance(markets,range(period),async id=>{
+    if(!summaryCache.has(id))summaryCache.set(id,await summary(id));
+    return summaryCache.get(id);
+  });
   return performanceJson({
+    sachPickPerformance,
     connected,hits,settled:settledRows.length,pending,total:all.length,
     hitRate:settledRows.length?Math.round(hits/settledRows.length*1000)/10:null,
     results:all.sort((a,b)=>(b.savedAt||b.gameTime).localeCompare(a.savedAt||a.gameTime)),

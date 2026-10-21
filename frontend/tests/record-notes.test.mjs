@@ -22,7 +22,7 @@ test('explicit official DNP and injury statuses use exact fixture and player IDs
   assert.equal(rows.find(r=>r.playerId==='44'),undefined);
   assert.equal(rows.some(r=>r.playerId==='unknown'),false);
   assert.deepEqual(notes.officialAvailabilityRows(payload,sport,'456'),[]);
-  if(['nba','wnba','cbb'].includes(sport))assert.equal(rows.find(r=>r.playerId==='45').note.code,'bench_appearance');
+  assert.equal(rows.find(r=>r.playerId==='45'),undefined);
  }
  assert.deepEqual(notes.officialAvailabilityRows({id:'123',playerByGameStats:{homeTeam:{forwards:[]}}},'nhl','123'),[]);
  assert.equal(notes.officialAvailabilityRows({id:'123',playerByGameStats:{homeTeam:{forwards:[{playerId:'42',didNotPlay:true}]}}},'nhl','123')[0].note.code,'official_dnp');

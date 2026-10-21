@@ -12,7 +12,7 @@ export function voidRecordNote(row:any):RecordNote|null{
 }
 export function playerAvailabilityNote(row:any):RecordNote|null{
  const evidence=row?.availabilityEvidence;
- if(evidence?.text&&evidence.gameId&&String(evidence.gameId)===String(row?.gameId))return evidence;
+ if(evidence?.code!=='bench_appearance'&&evidence?.text&&evidence.gameId&&String(evidence.gameId)===String(row?.gameId))return evidence;
  const status=text(row?.injuryStatus||row?.injury_status||row?.injury?.status||row?.availability||row?.playerStatus);
  if(row?.didNotPlay===true||/^(dnp|did not play)$/i.test(status))return {code:'dnp_reported',text:'Did not play'+(row?.dnpReason?`: ${text(row.dnpReason)}`:''),source:'Player status feed'};
  const label=row?.inactive===true?'Inactive':row?.isOut===true?'Out':/^(out|inactive|questionable|doubtful|day.to.day|injured reserve|suspended)$/i.test(status)?status:null;
@@ -38,12 +38,6 @@ export function officialAvailabilityRows(payload:any,sport:string,gameId:string)
   for(const team of payload?.boxscore?.players||[])for(const group of team?.statistics||[])for(const row of group?.athletes||[]){
    const id=row.athlete?.id||row.player?.id;
    if(row.didNotPlay===true)add(id,'official_dnp',`Did not play${row.reason?`: ${text(row.reason)}`:''}`);
-   else if(['nba','wnba','cbb'].includes(sport)&&row.starter===false){
-    const labels=(group.labels||group.keys||[]).map((v:any)=>text(v).toLowerCase());
-    const minuteIndex=labels.findIndex((v:string)=>['min','minutes'].includes(v));
-    const minutes=String(row.stats?.[minuteIndex]??'');
-    if(minuteIndex>=0&&/^\d+(?::\d{2})?$/.test(minutes)&&minutes.split(':').some(v=>Number(v)>0)&&!notes.has(String(id)))add(id,'bench_appearance','Did not start; appeared off the bench. Settlement depends on the market’s participation rules.');
-   }
   }
  }
  return [...notes].map(([playerId,note])=>({playerId,note}));

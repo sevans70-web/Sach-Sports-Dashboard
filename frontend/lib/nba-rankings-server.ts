@@ -1,4 +1,5 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
+import {frozenNbaSlateBoard,savePregameNbaSlateBoard} from '@/lib/nba-slate-board';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -554,7 +555,7 @@ export async function captureAllNbaMarkets(){
   ...research,
   warning:"Research snapshots are archived separately; validated betting picks remain withheld.",
   success:research.researchArchived||results.some(
-   (x:any)=>x.success&&x.saved!==false
+   (x:any)=>x.success&&(x.boardSaved||x.boardFrozen||x.saved!==false)
   ),
   providerError,
   overviewError,
@@ -563,7 +564,9 @@ export async function captureAllNbaMarkets(){
    market:x.market,
    rows:x.rows?.length||0,
   pregameContextRows:x.pregameContextCount||0,
-   saved:x.saved===true,
+   saved:x.boardSaved===true||x.boardFrozen===true||x.saved===true,
+   boardFrozen:x.boardFrozen===true,
+   modelSelections:x.modelSelectionCount||0,
    success:x.success,
    error:x.error||null
   })),
@@ -573,4 +576,10 @@ export async function captureAllNbaMarkets(){
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
-export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(await buildNbaMarketRankingsRaw(...args),'nba'),"nba"),"nba")}
+export async function buildNbaMarketRankings(...args:Parameters<typeof buildNbaMarketRankingsRaw>){
+ const overview=args[1]?.overview||await loadNbaOverview();
+ const frozen=await frozenNbaSlateBoard(args[0],overview.games||[]);
+ if(frozen)return frozen;
+ const payload=await attachFittedResearchForecasts(guardRankingPayload(await attachBasketballPregameContext(await buildNbaMarketRankingsRaw(...args),'nba'),'nba'),'nba');
+ return savePregameNbaSlateBoard(payload,overview.games||[]);
+}

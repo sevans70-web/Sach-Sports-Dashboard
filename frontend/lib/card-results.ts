@@ -1,6 +1,7 @@
 import {rankingLineProgress} from "@/lib/ranking-card-state";
 import {voidRecordNote} from '@/lib/record-notes';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
+import {savedModelPick} from '@/lib/saved-model-pick';
 const num=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 export function cardStatUnit(market:string){
  const key=market.replace(/^q1_/,'');
@@ -23,6 +24,12 @@ export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
  const note=voidRecordNote(row);if(note)return {label:'VOID · NOT SCORED',detail:note.text};
  const value=num(actual),threshold=num(line);
  if(value==null)return {label:'FINAL · STAT UNAVAILABLE',detail:'Official final statistic has not been reported.'};
+ const pick=row.boardFrozen===true?savedModelPick(row):null;
+ if(pick){
+  const push=value===pick.line,hit=pick.side==='UNDER'?value<pick.line:value>pick.line;
+  return {label:push?'PUSH':hit?'✅ SACH PICK WON':'❌ SACH PICK LOST',detail:`Final ${value} ${cardStatUnit(market)} · saved ${pick.side} ${pick.line} · ${pick.sportsbook}`};
+ }
+ if(row.boardFrozen===true)return {label:'FINAL · ACTUAL RECORDED',detail:`Final ${value} ${cardStatUnit(market)} · no pregame Sach pick saved.`};
  if(row.quoteVerified!==true||threshold==null)return {label:'FINAL · ACTUAL RECORDED',detail:`Actual ${value} · verified line unavailable; no pick grade.`};
  const scorer=market==='anytime_td',side=String(row.originalResearchPick||row.archivedOriginal?.prediction||'').toUpperCase();
  const saved=Date.parse(row.originalResearchSavedAt||row.savedAt||''),kickoff=Date.parse(row.gameTime||'');

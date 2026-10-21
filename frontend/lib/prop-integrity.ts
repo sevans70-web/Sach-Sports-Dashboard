@@ -32,7 +32,7 @@ export function eligiblePropPrediction(row:any,now=Date.now(),historical=false){
 
 export function integrityRow(row:any,sport:string,market=String(row?.market||""),now=Date.now()){
   if(row?.integrityVersion===PROP_INTEGRITY_VERSION){
-    if(row.quoteVerified&&!verifiedPropQuote(row,now))return {...row,quoteVerified:false,sportsbookLine:null,reviewReason:"Quote is no longer fresh or pregame capture cannot be established"};
+    if(row.quoteVerified&&!verifiedPropQuote(row,now,row.boardFrozen===true))return {...row,quoteVerified:false,sportsbookLine:null,reviewReason:"Quote is no longer fresh or pregame capture cannot be established"};
     return row;
   }
   const verified=verifiedPropQuote(row,now);

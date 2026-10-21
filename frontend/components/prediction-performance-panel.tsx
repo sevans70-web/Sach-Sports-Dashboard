@@ -121,6 +121,7 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
 };
 
 function normalizeStat(payload: any): PerformanceStat {
+  if(payload?.sachPickPerformance) payload={...payload,...payload.sachPickPerformance};
   const hits = Number(payload?.hits ?? payload?.correct ?? 0) || 0;
   const settled = Number(payload?.settled ?? 0) || 0;
   const pending = Number(payload?.pending ?? 0) || 0;
@@ -330,7 +331,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
   const [loading, setLoading] = useState(true);
   const [categoryOpen, setCategoryOpen] = useState(true);
-  const researchView=!["mlb","soccer"].includes(sport);
+  const researchView=!["mlb","soccer","nba"].includes(sport);
 
   const activeCategory =
     categories.find((category) => category.key === categoryKey) || categories[0];
@@ -436,12 +437,13 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const categoryNote = useMemo(() => {
     if (activeCategory?.note && !researchView) return activeCategory.note;
     if (loading) return "Loading prediction history…";
+    if(sport==='nba') return categoryStat.total ? '' : 'No pregame Sach picks saved for this period.';
     if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved research records: ${categoryStat.research.awaitingResult} awaiting result. No validated ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
     }
     return "";
-  }, [activeCategory, categoryStat, loading,researchView]);
+  }, [activeCategory, categoryStat, loading,researchView,sport]);
 
   if (!activeCategory) return null;
 
@@ -454,6 +456,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         </h2>
 
         {researchView ? <p>Older saved forecasts · separate from current Sach picks.</p> : null}
+        {sport==='nba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
           {PERIODS.map((item) => (
