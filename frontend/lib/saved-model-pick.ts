@@ -17,6 +17,14 @@ export function cardModelPick(row:any,now=Date.now()){
  return pick;
 }
 
+/** The projection slot never substitutes an observed average or legacy baseline. */
+export function cardModelProjection(row:any,now=Date.now()):number|null{
+ const forecast=row?.researchForecast;
+ if(forecast?.status!=='available'||typeof forecast.projection!=='number'||!Number.isFinite(forecast.projection))return null;
+ if(row.boardFrozen!==true&&(row.frozen||row.lockedAtKickoff||['in','post'].includes(row.gameState)||Date.parse(row.gameTime)<=now))return null;
+ return forecast.projection;
+}
+
 /** Before the daily lock, put supported picks in the dashboard preview first.
  * Keep the existing order within each group; no GI or new selection is inferred. */
 export function prioritizeModelPicks(rows:any[],now=Date.now()){

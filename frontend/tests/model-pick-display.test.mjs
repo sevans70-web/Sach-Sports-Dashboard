@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadTs} from './load-ts.mjs';
-const {cardModelPick,prioritizeModelPicks,modelPickNotice}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
+const {cardModelPick,cardModelProjection,prioritizeModelPicks,modelPickNotice}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
 const now=Date.parse('2026-10-21T12:00:00Z');
 const selected={playerId:'selected',gameId:'game',gameTime:'2026-10-21T23:00:00Z',gameState:'pre',quoteVersion:1,quoteVerified:true,lineType:'main',sportsbook:'Book',sportsbookKey:'book',quoteId:'quote',sportsbookLine:9.5,overPrice:-110,underPrice:-132,quoteUpdatedAt:'2026-10-21T11:59:00Z',capturedAt:'2026-10-21T11:59:30Z',researchForecast:{status:'available',modelSelection:{side:'UNDER',line:9.5,price:-132,sportsbookKey:'book',quoteId:'quote',calculatedAt:'2026-10-21T11:59:45Z'}}};
 test('actual model selections appear ahead of unsupported rows in the five-card preview',()=>{
@@ -28,4 +28,15 @@ test('unsupported cards explain why they have no pick without manufacturing a di
  assert.equal(modelPickNotice({researchForecast:{reason:'prior_basketball_role_uncertain'}}),'Role is uncertain');
  assert.equal(modelPickNotice({researchForecast:{selectionReason:'price_threshold_not_met'}}),'No qualifying price');
  assert.equal(cardModelPick({researchForecast:{projection:30},sportsbookLine:9.5},now),null);
+});
+test('the projection slot never substitutes last-five averages or a legacy season baseline',()=>{
+ const row={...selected,modelProjection:15.6,recentAverage:15.6,researchForecast:{status:'unavailable',reason:'player_team_history_unavailable'}};
+ assert.equal(cardModelProjection(row,now),null);
+ for(const projection of [null,undefined,NaN,Infinity,'10.2'])assert.equal(cardModelProjection({...row,researchForecast:{status:'available',projection}},now),null);
+});
+test('a supported projection can coexist with a pass at the offered price; its average cannot create a pick',()=>{
+ const row={...selected,sportsbookLine:8.5,modelProjection:2.2,researchForecast:{status:'available',projection:10.2,modelSelection:null,selectionReason:'price_threshold_not_met'}};
+ assert.equal(cardModelProjection(row,now),10.2);assert.equal(cardModelPick(row,now),null);assert.equal(modelPickNotice(row),'No qualifying price');
+ assert.equal(cardModelProjection({...row,gameState:'in'},now),null);
+ assert.equal(cardModelProjection({...row,gameState:'post',boardFrozen:true},now),10.2);
 });

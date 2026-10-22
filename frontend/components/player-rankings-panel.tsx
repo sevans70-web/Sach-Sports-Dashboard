@@ -9,7 +9,7 @@ import {prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
-import {cardModelPick,modelPickNotice} from '@/lib/saved-model-pick';
+import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
 
@@ -967,9 +967,9 @@ function PlayerCard({
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
   const modelSelection=cardModelPick(card.raw);
-  const displayedPick=modelSelection?.side||(card.raw?.boardFrozen?'NO PICK':fittedForecast?.candidateSide||card.prediction);
+  const displayedPick=modelSelection?.side||(researchOnly?'PASS':card.prediction);
   const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
-  const displayedAverage=fittedForecast?.projection??(researchOnly?context.recentAverage:card.modelProjection);
+  const displayedAverage=researchOnly?cardModelProjection(card.raw):card.modelProjection;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 
@@ -1061,7 +1061,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{modelSelection?'Sach Pick · estimate':fittedForecast?.candidateSide?'Model lean':'Sach Pick'}</span>
+          <span>Sach Pick</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1076,21 +1076,21 @@ function PlayerCard({
               ? `${displayedPick} ${shortNumber(card.sportsbookLine)}`
               : displayedPick}
           </strong>
-          {sport==='nba'&&state==='pregame'&&!modelSelection&&displayedPick==='NO PICK'?<small>{modelPickNotice(card.raw)}</small>:null}
+          {state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
         </div>
 
         <div>
           <span>
             {state === 'final' ? 'Final result' : binaryEvent
               ? "HR Probability"
-              : fittedForecast ? "Sach projection" : researchOnly ? context.recentLabel : (sport === "cfb" || sport === "nfl") ? "History Estimate" : "Model Proj."}
+              : "Sach projection"}
           </span>
           <strong>
             {state === 'final' ? shortNumber(current) : binaryEvent
               ? card.modelProbability == null
                 ? "—"
                 : `${shortNumber(card.modelProbability)}%`
-              : shortNumber(displayedAverage)}
+              : displayedAverage==null?'Unavailable':shortNumber(displayedAverage)}
           </strong>
         </div>
 
@@ -1114,7 +1114,7 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {fittedForecast ? <div className={styles.faceFooter}><p>{modelSelection ? `${modelSelection.sportsbook} · ${Number(modelSelection.price)>0?'+':''}${modelSelection.price} · model selection, not yet validated.` : 'Model estimate'} · {shortNumber(fittedForecast.expectedWorkload)} expected {fittedForecast.workloadUnit}. Model range {shortNumber(fittedForecast.interval80.lower)}–{shortNumber(fittedForecast.interval80.upper)}.</p></div> : null}
+      {fittedForecast ? <div className={styles.faceFooter}><p>{modelSelection ? `${modelSelection.sportsbook} · ${Number(modelSelection.price)>0?'+':''}${modelSelection.price}` : 'Model estimate'} · {shortNumber(fittedForecast.expectedWorkload)} expected {fittedForecast.workloadUnit} · range {shortNumber(fittedForecast.interval80.lower)}–{shortNumber(fittedForecast.interval80.upper)}.</p></div> : null}
 
       {state === "pregame" && !card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
@@ -1191,9 +1191,9 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : fittedForecast ? "Sach Projection" : researchOnly ? context.recentLabel : "Sach Projection"}
+                  : "Sach Projection"}
               </b>
-              <span>{fittedForecast ? "Experimental model" : researchOnly ? "Recent games" : "Model"}</span>
+              <span>{displayedAverage==null?'Unavailable':'Model estimate'}</span>
               <strong>
                 {binaryEvent
                   ? card.modelProbability == null
@@ -1203,7 +1203,7 @@ function PlayerCard({
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? fittedForecast ? "Projection vs line" : researchOnly ? "Average vs line" : "Edge" : "Actual"}</b>
+              <b>{state === "pregame" ? "Projection vs line" : "Actual"}</b>
               <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"

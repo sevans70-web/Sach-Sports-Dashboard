@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
+import {internalAppOrigin} from '@/lib/internal-app-origin';
 import { NFL_ACTIVE_MARKETS } from "@/lib/nfl";
 import { CFB_MARKETS } from "@/lib/cfb";
 import { BATTER_MARKETS, PITCHER_MARKETS } from "@/lib/mlb";
@@ -313,7 +314,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const origin = req.nextUrl.origin;
+  const origin = internalAppOrigin();
   const day = torontoHistoryDay();
   const requestedSport = req.nextUrl.searchParams.get("sport");
   const deep = req.nextUrl.searchParams.get("deep") === "1";

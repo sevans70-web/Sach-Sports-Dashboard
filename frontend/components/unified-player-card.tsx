@@ -284,8 +284,8 @@ export function UnifiedPlayerCard({
     );
 
   const line = finite(query.line);
-  const projection =
-    finite(query.projection);
+  const projection = first(query.projectionSource)==='fitted_model'
+    ? finite(query.projection) : null;
   const gi = finite(query.gi);
   const probability =
     finite(query.prob);
@@ -314,21 +314,7 @@ export function UnifiedPlayerCard({
       )
   );
 
-  const effectivePick =
-    pick ||
-    (
-      line != null &&
-      projection != null
-        ? projection >= line
-          ? "OVER"
-          : "UNDER"
-        : line != null &&
-            probability != null
-          ? probability >= 50
-            ? "OVER"
-            : "UNDER"
-          : ""
-    );
+  const effectivePick = ['OVER','UNDER','YES','FIRST BASKET'].includes(pick)?pick:'';
 
   const edge =
     line != null &&
@@ -690,24 +676,23 @@ export function UnifiedPlayerCard({
 
             <article>
               <span>
-                Model Projection
+                Sach projection
               </span>
               <strong>
-                {fmt(projection)}
+                {projection==null?'Unavailable':fmt(projection)}
               </strong>
             </article>
 
             <article>
               <span>
-                Sach Prediction
+                Sach Pick
               </span>
               <strong
                 className={
                   styles.pick
                 }
               >
-                {effectivePick ||
-                  "—"}
+                {effectivePick || "PASS"}
               </strong>
             </article>
 
@@ -732,7 +717,7 @@ export function UnifiedPlayerCard({
                 <small>SACH PLAY</small>
                 <h2>{marketLabel(researchMarket)}</h2>
               </div>
-              <strong>{effectivePick || "—"} {fmt(line)}</strong>
+              <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:'PASS'}</strong>
             </div>
 
             <div className={styles.playRows}>
@@ -741,14 +726,14 @@ export function UnifiedPlayerCard({
                   <b>Main Play</b>
                   <small>sportsbook-backed line</small>
                 </span>
-                <strong>{effectivePick || "—"} {fmt(line)}</strong>
+                <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:'PASS'}</strong>
               </div>
               <div>
                 <span>
-                  <b>Model Target</b>
-                  <small>Sach projection</small>
+                  <b>Sach projection</b>
+                  <small>Model estimate</small>
                 </span>
-                <strong>{fmt(projection)}</strong>
+                <strong>{projection==null?'Unavailable':fmt(projection)}</strong>
               </div>
               <div>
                 <span>

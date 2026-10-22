@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {gameIntelligence,propIntelligence,gameRankingEvidence,gameRankingMatches,gameRankingTeam} from "@/lib/card-intelligence";
 import {playableSlateOrder} from "@/lib/ranking-card-state";
+import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SportsNav } from "@/components/dashboard-chrome";
 import styles from "./game-slate.module.css";
@@ -315,6 +316,8 @@ function playerHref(
   const id = encodeURIComponent(
     String(row.playerId || clean(row.playerName))
   );
+  const supportedPick=cardModelPick(row);
+  const supportedProjection=cardModelProjection(row);
 
   const qs = new URLSearchParams({
     name: row.playerName || "Player",
@@ -322,10 +325,11 @@ function playerHref(
     matchup: `${game.awayTeam} @ ${game.homeTeam}`,
     market: row.market || "",
     line: String(row.sportsbookLine ?? ""),
-    projection: String(row.modelProjection ?? ""),
+    projection: String(supportedProjection ?? ""),
+    projectionSource: supportedProjection==null?'':'fitted_model',
     gi: String(row.giScore ?? ""),
     prob: String(row.modelProbability ?? ""),
-    pick: row.prediction || "",
+    pick: supportedPick?.side || (row.recommendationEligible?row.prediction:'') || "",
     position: row.position || "",
     state: row.gameState || game.state || "",
     status: row.gameStatus || game.status || "",

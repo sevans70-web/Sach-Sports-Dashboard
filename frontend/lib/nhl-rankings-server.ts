@@ -1,4 +1,7 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
+import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
+import {prioritizeModelPicks} from '@/lib/saved-model-pick';
+import {rankingResponse} from '@/lib/ranking-response-cache';
 import {recordNoteFields} from "@/lib/record-notes";
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -17,7 +20,12 @@ const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const num=(v:any)=>{return nullableNumber(v)};
 const median=(xs:number[])=>{const a=xs.filter(Number.isFinite).sort((a,b)=>a-b);if(!a.length)return null;const i=Math.floor(a.length/2);return a.length%2?a[i]:(a[i-1]+a[i])/2};
 function match(v:any,m:NhlMarketKey){const x=norm(v);const a:Record<NhlMarketKey,string[]>={shots_on_goal:["shotsongoal","playershotsongoal","shots"],points:["points","playerpoints"],goals:["goals","playergoals","anytimegoalscorer"],assists:["assists","playerassists"],blocked_shots:["blockedshots","blocks","playerblockedshots"],goalie_saves:["goaliesaves","saves","playersaves"]};return a[m].includes(x)}
-async function owls(){return getOwlsPayload("nhl")}
+async function owls(){
+ const [primary,supplement]=await Promise.allSettled([getOwlsPayload('nhl'),getSgoSupplement('NHL')]);
+ const data=[...(primary.status==='fulfilled'?primary.value?.data||[]:[]),...sgoBookGames(supplement.status==='fulfilled'?supplement.value:null)];
+ if(!data.length&&primary.status==='rejected')throw primary.reason;
+ return {data};
+}
 function board(payload:any,market:NhlMarketKey){return mainMarketQuotes(payload,market,p=>match(p.category??p.market??p.type,market))}
 async function buildNhlRankingsRaw(m:NhlMarketKey){
  const [overview,payload]=await Promise.all([loadNhlOverview(),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
@@ -54,4 +62,7 @@ export async function captureAllNhlMarkets(){
  return {...research,success:research.researchArchived||(results.every(x=>!x.error)&&verifiedPredictions>0),verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:"Research snapshots archived separately; no validated NHL betting picks are available."};
 }
 
-export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await buildNhlRankingsRaw(...args),"nhl"),"nhl")}
+export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return rankingResponse('nhl|'+args[0],async()=>{
+ const payload=await attachFittedResearchForecasts(guardRankingPayload(await buildNhlRankingsRaw(...args),'nhl'),'nhl');
+ return {...payload,rows:prioritizeModelPicks(payload.rows||[])};
+})}
