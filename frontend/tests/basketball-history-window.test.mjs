@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {basketballHistorySeasons,basketballHistoryWindow}=await loadTs(new URL('../lib/basketball-history-window.ts',import.meta.url));
+const {basketballHistorySeasons,basketballHistoryWindow,basketballRegularSeasonGroups}=await loadTs(new URL('../lib/basketball-history-window.ts',import.meta.url));
 test('fall NBA and CBB use the new ending-year season while WNBA stays in its calendar year',()=>{
  assert.deepEqual(basketballHistorySeasons('nba','2026-10-23T23:00Z'),[2026,2027]);
  assert.deepEqual(basketballHistorySeasons('cbb','2026-11-01T23:00Z'),[2026,2027]);
@@ -15,4 +15,9 @@ test('later games, undated rows, duplicates and missing values cannot contaminat
  const future=Array.from({length:25},(_,i)=>({gameId:'future'+i,date:'2026-10-24T23:00Z',value:99}));
  const rows=basketballHistoryWindow([...history,...future,history[24],{gameId:'bad',date:'',value:0},{gameId:'null',date:history[0].date,value:null}],before);
  assert.equal(rows.length,20);assert.equal(rows[0].value,5);assert.equal(rows.at(-1).value,24);
+});
+
+test('preseason and playoff groups cannot contaminate regular-season recent form',()=>{
+ const p={seasonTypes:[{displayName:'2026-27 Regular Season',categories:[{events:[{value:8}]}]},{displayName:'2026-27 Preseason'},{displayName:'2025-26 Postseason'}]};
+ assert.equal(basketballRegularSeasonGroups(p).length,1);assert.equal(basketballRegularSeasonGroups(p)[0].categories[0].events[0].value,8);
 });

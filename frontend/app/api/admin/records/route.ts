@@ -22,6 +22,8 @@ import { CBB_MARKETS } from "@/lib/cbb";
 import { dashboardDay } from "@/lib/dashboard-contract";
 import { guardPerformancePayload } from "@/lib/prop-integrity";
 import { enrichRecordAvailability } from "@/lib/record-notes-server";
+import {readMlbAdminHistory,assertHiddenHistoryReadable} from '@/lib/hidden-admin-history';
+import {readSoccerPredictions} from '@/lib/soccer-predictions';
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
@@ -29,6 +31,12 @@ export async function GET(req: NextRequest) {
   const sport = req.nextUrl.searchParams.get("sport") || "nfl", period = req.nextUrl.searchParams.get("period") || "Today";
   if (!(ADMIN_SPORTS as readonly string[]).includes(sport) || !["Today", "Yesterday", "Week"].includes(period)) return adminJson({ error: "Unsupported sport or period." }, 400);
   try {
+    if(sport==='mlb'||sport==='soccer'){
+      await assertHiddenHistoryReadable(sport);
+      const saved=sport==='mlb'?await readMlbAdminHistory(period):await readSoccerPredictions(period);
+      const records=saved.map(row=>adminResult({...row,recommendationEligible:false,quoteVerified:false,reviewReason:'Saved hidden-sport history; quote provenance and model validation require review.'}));
+      return adminJson({sport,period,records,counts:adminResultCounts(records),updatedAt:new Date().toISOString()});
+    }
     const handler = { nfl: nflPerformance, cfb: cfbPerformance, nba: nbaPerformance, wnba: wnbaPerformance, nhl: nhlPerformance, cbb: cbbPerformance }[sport]!;
     const groups = sport === "nfl" ? ["QB", "Offense", "Q1"] : sport === "cfb" ? ["QB", "Offense"] : [""];
     await Promise.all(groups.map(async group => {

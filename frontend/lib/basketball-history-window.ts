@@ -5,6 +5,10 @@ export function basketballHistorySeasons(sport:string,before:string|null,now=new
  const year=cutoff.getUTCFullYear()+(sport!=='wnba'&&cutoff.getUTCMonth()>=8?1:0);
  return [year-1,year];
 }
+/** ESPN returns preseason in the same gamelog response. Keep the regular-season chart comparable. */
+export function basketballRegularSeasonGroups(payload:any){
+ return (Array.isArray(payload?.seasonTypes)?payload.seasonTypes:[]).filter((group:any)=>/\bregular season\b/i.test(String(group.displayName||'')));
+}
 /** Filter before taking Last 20 so later games cannot displace pregame history. */
 export function basketballHistoryWindow(rows:any[],before:string|null,now=Date.now()){
  const parsed=before?Date.parse(before):now,cutoff=Number.isFinite(parsed)?parsed:now;

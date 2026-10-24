@@ -1,6 +1,6 @@
 import {voidRecordNote,playerAvailabilityNote} from '@/lib/record-notes';
 export const ADMIN_EMAIL = "sachsportsplatform@gmail.com";
-export const ADMIN_SPORTS = ["nfl", "cfb", "nba", "wnba", "nhl", "cbb"] as const;
+export const ADMIN_SPORTS = ["nfl", "cfb", "nba", "wnba", "nhl", "cbb", "mlb", "soccer"] as const;
 export function isAdminUser(user: any) {
   return Boolean(user?.id && String(user.email || "").trim().toLowerCase() === ADMIN_EMAIL && user.email_confirmed_at && !user.is_anonymous);
 }
@@ -17,6 +17,10 @@ export function adminResult(row: any) {
     gameId: String(row.gameId || ""), matchup: String(row.matchup || ""), gameTime: row.gameTime || null,
     gameDate: row.gameDate || null, side: original.prediction ?? row.pickSide ?? row.prediction ?? null,
     line: original.sportsbookLine ?? row.sportsbookLine ?? null, actual: row.actual ?? null,
+    modelProjection: original.modelProjection ?? row.modelProjection ?? null,
+    modelProbability: original.modelProbability ?? row.modelProbability ?? null,
+    giScore: original.giScore ?? row.giScore ?? null,
+    legacyResult: row.legacyResult || null,
     status: ["hit", "miss", "push", "pending", "void"].includes(status) ? status : "unknown",
     savedAt: row.savedAt || null, gradedAt: row.gradedAt || null,
     gradeRevisions: Array.isArray(row.gradeRevisions) ? row.gradeRevisions : [],
