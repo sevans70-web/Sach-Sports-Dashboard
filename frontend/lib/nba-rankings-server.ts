@@ -597,7 +597,9 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
   // The old builder truncated before forecasting. Restore additional candidates
   // only when a traceable pre-lock forecast exists in the original archive.
   const lockAt=Math.min(...overview.games.map((g:any)=>Date.parse(g.tipoff)).filter(Number.isFinite));
-  const snapshots=await readHistorySnapshots('nba',market,frozen.boardDay);
+  // Tomorrow's slate is also prepared on preceding capture days.
+  const archiveDays=[0,1,2].map(offset=>torontoNbaDay(new Date(Date.parse(frozen.boardDay+'T12:00Z')-offset*86400000)));
+  const snapshots=(await Promise.all(archiveDays.map(day=>readHistorySnapshots('nba',market,day)))).flat();
   const recorded=recordedNbaCandidates(snapshots,market,frozen.boardDay,lockAt);
   const keys=new Set(frozen.rows.map((r:any)=>r.gameId+'|'+r.playerId));
   const extra=recorded.filter(r=>!keys.has(r.gameId+'|'+r.playerId)).map(row=>{
