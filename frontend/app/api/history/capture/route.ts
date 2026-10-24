@@ -1,3 +1,4 @@
+import {captureHiddenSportGames} from "@/lib/hidden-sport-game-capture";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
@@ -251,6 +252,10 @@ async function captureSport(
     );
   }
 
+  if(sport==='wnba'||sport==='mlb'){
+    const official=await captureHiddenSportGames(sport);
+    results.push({sport,stream:'official-final-games',path:'official-boxscores',ok:official.success,count:official.saved,error:official.errors.join('; ')||undefined});
+  }
   const grading: CaptureResult[] = [];
 
   for (const route of gradingRoutes(sport, deep)) {

@@ -3,7 +3,7 @@ const {mlbAdminSnapshot}=await loadTs(new URL('../lib/hidden-admin-history.ts',i
 const {ADMIN_SPORTS,adminResult}=await loadTs(new URL('../lib/admin-policy.ts',import.meta.url));
 const {VISIBLE_SPORTS}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
 test('hidden sports remain available only in admin navigation',()=>{
- for(const sport of ['mlb','soccer']){assert.ok(ADMIN_SPORTS.includes(sport));assert.ok(!VISIBLE_SPORTS.includes(sport));}
+ for(const sport of ['mlb','soccer','wnba']){assert.ok(ADMIN_SPORTS.includes(sport));assert.ok(!VISIBLE_SPORTS.includes(sport));}
 });
 test('legacy MLB target-hit labels do not manufacture sportsbook grades or saved sides',()=>{
  const source={batter:{captured_at:'2026-10-01T18:00Z',categories:{hits:[{player_id:1,name:'Player',game_pk:2,correct:true,actual:1,result_label:'Hit'}]}}};
