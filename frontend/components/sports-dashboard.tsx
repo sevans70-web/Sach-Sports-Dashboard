@@ -27,11 +27,11 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
    <div className="ssGamesPreviewHead"><h2>{sport==="nfl"?`${data?.weekNumber?`WEEK ${data.weekNumber}`:"CURRENT WEEK"} NFL GAMES`:`${sport.toUpperCase()} CURRENT + NEXT GAMES`}</h2><Link href={viewAll}>View All ›</Link></div>
    <div className={sport==="soccer"?"ssGamesPreviewGrid":"ssGamesPreviewGrid ssGamesSwipe"}>{data?.previewGames?.length?(sport==="soccer"?data.previewGames.slice(0,3):data.previewGames).map((g:any)=><GamesPreviewCard key={g.id} game={{...g,href:viewAll}}/>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}</div>
   </section>
-  <SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
+  {sport==="soccer"?<SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
    {label:"Games",value:ready?data.games:"…",detail:ready?snapshotGameDetail(data.games,data.live,data.finals):"Loading current + next slate",icon:"games",tone:"green"},
    {label:"Lineups",value:ready?`${data.confirmedLineups}/${data.lineups}`:"…",detail:ready?`${data.confirmedLineups} confirmed · ${data.pendingLineups} awaiting confirmation`:"Team lineups",icon:"lineups"},
    {label:currentBoard?.market==='first_basket'?"First basket candidates":"Sach picks",value:ranked?currentBoard?.count??data?.estimatedPicks??0:"…",detail:ranked?`${market} · ${currentBoard?.market==='first_basket'?'book-implied chances':'saved picks'}`:"Checking market data",icon:"predictions",tone:"gold"}
-  ]}/>
+  ]}/>:null}
   {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
   {sport==="soccer"?<section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>:null}
   <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport} onPickCount={onPickCount}/></section>

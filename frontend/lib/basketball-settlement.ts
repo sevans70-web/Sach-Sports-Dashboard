@@ -36,3 +36,9 @@ export function basketballLogActual(payload:any,p:{gameId?:string},market:string
  }
  return null;
 }
+
+/** A live box score is progress, never a full-game settlement. */
+export function basketballFixtureFinal(payload:any,gameId:string){
+ const competition=payload?.header?.competitions?.[0];
+ return String(payload?.header?.id||competition?.id||'')===String(gameId)&&competition?.status?.type?.completed===true;
+}
