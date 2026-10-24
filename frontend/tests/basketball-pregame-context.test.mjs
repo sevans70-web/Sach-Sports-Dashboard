@@ -1,8 +1,22 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {basketballPregameContext,playerPregameContext,attachBasketballPregameContext}=await loadTs(new URL('../lib/basketball-pregame-context.ts',import.meta.url));
+const {basketballPregameContext,playerPregameContext,attachBasketballPregameContext,attachBasketballAvailability}=await loadTs(new URL('../lib/basketball-pregame-context.ts',import.meta.url));
 const start='2026-10-20T23:00:00Z',at='2026-10-20T22:00:00Z';
 const source=()=>({header:{id:'g',season:{year:2027},competitions:[{date:start,status:{type:{state:'pre',completed:false}},competitors:[{team:{id:'A'},homeAway:'home'},{team:{id:'B'},homeAway:'away'}]}]},injuries:[{team:{id:'A'},injuries:[{athlete:{id:'p'},status:'Questionable',shortComment:'Ankle; game-time decision',date:at},{athlete:{id:'mate'},status:'Out',shortComment:'Knee'}]},{team:{id:'B'},injuries:[{athlete:{id:'opp'},status:'Out'}]}],boxscore:{players:[{team:{id:'A'},statistics:[{athletes:[{athlete:{id:'p'},starter:true},{athlete:{id:'bench'},starter:false}]}]}]}});
 const row={gameId:'g',gameTime:start,teamId:'A',playerId:'p'};
+test('locked NBA availability refresh preserves the original projection and pregame evidence',async()=>{
+ const original=globalThis.fetch;
+ const forecast={status:'available',projection:16.2,modelSelection:{side:'OVER',line:9.5}};
+ const locked={...row,gameId:'998811',boardFrozen:true,pregameContext:{source:'original pregame snapshot'},researchForecast:forecast};
+ globalThis.fetch=async()=>{const p=source();p.header.id='998811';p.header.competitions[0].status.type={state:'in'};p.injuries[0].injuries[0].status='Out';return Response.json(p)};
+ try{
+  const result=await attachBasketballAvailability({rows:[locked]},'nba');
+  assert.match(result.rows[0].availabilityEvidence.text,/Reported Out/);
+  assert.equal(result.rows[0].availabilityEvidence.gameId,'998811');
+  assert.strictEqual(result.rows[0].researchForecast,forecast);
+  assert.strictEqual(result.rows[0].pregameContext,locked.pregameContext);
+  assert.equal(locked.availabilityEvidence,undefined);
+ }finally{globalThis.fetch=original}
+});
 test('pregame evidence retains exact source, season, starter flag and team-scoped reports',()=>{
  for(const sport of ['nba','wnba','cbb']){
   const context=basketballPregameContext(source(),sport,'g',at),player=playerPregameContext(context,row);

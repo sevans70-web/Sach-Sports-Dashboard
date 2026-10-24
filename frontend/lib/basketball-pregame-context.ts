@@ -1,5 +1,7 @@
 import {createHash} from 'node:crypto';
 import {providerFetch} from '@/lib/provider-fetch';
+import {officialAvailabilityRows} from '@/lib/record-notes';
+import {espnParticipation} from '@/lib/player-participation';
 
 type Sport='nba'|'wnba'|'cbb';
 const routes={nba:'nba',wnba:'wnba',cbb:'mens-college-basketball'};
@@ -88,4 +90,25 @@ export async function attachBasketballPregameContext(payload:any,sport:Sport){
     source:'ESPN pregame report',reportedAt:report.reportedAt||undefined,checkedAt:context.retrievedAt,gameId:context.gameId}:undefined}:{})};
  });
  return {...payload,rows,pregameContextCount:rows.filter((row:any)=>row.pregameContext!=null).length};
+}
+
+/** Refresh availability for locked rows without touching their pregame context,
+ * saved projection, quote, selection, or position in the daily board. */
+export async function attachBasketballAvailability(payload:any,sport:Sport){
+ if(!Array.isArray(payload?.rows)||!payload.rows.length)return payload;
+ const ids=[...new Set<string>(payload.rows.map((r:any)=>text(r.gameId)).filter((id:string)=>/^\d+$/.test(id)))];
+ const reports=new Map<string,{availability:ReturnType<typeof officialAvailabilityRows>;participants:ReturnType<typeof espnParticipation>}>();
+ for(let i=0;i<ids.length;i+=4)await Promise.all(ids.slice(i,i+4).map(async id=>{
+  try{
+   const r=await providerFetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${routes[sport]}/summary?event=${id}`);
+   if(!r.ok)return;const p=await r.json();if(text(p?.header?.id)!==id)return;
+   reports.set(id,{availability:officialAvailabilityRows(p,sport,id),participants:espnParticipation(p,sport)});
+  }catch{}
+ }));
+ return {...payload,rows:payload.rows.map((row:any)=>{
+  const report=reports.get(text(row.gameId));if(!report)return row;
+  const availabilityEvidence=report.availability.find(a=>a.playerId===text(row.playerId))?.note;
+  const participant=report.participants.find(p=>p.playerId===text(row.playerId));
+  return {...row,...(availabilityEvidence?{availabilityEvidence}:{}),...(participant?.participationConfirmed?{participationConfirmed:true,participationGameId:text(row.gameId)}:{})};
+ })};
 }

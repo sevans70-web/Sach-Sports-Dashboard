@@ -24,6 +24,7 @@ export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
  const note=voidRecordNote(row);if(note)return {label:'VOID · NOT SCORED',detail:note.text};
  const value=num(actual),threshold=num(line);
  if(value==null)return {label:'FINAL · STAT UNAVAILABLE',detail:'Official final statistic has not been reported.'};
+ if(market==='first_basket')return {label:value===1?'FIRST BASKET SCORED':'DID NOT SCORE FIRST',detail:'Official first-score result · displayed percentage was bookmaker-implied.'};
  const pick=row.boardFrozen===true?savedModelPick(row):null;
  if(pick){
   const push=value===pick.line,hit=pick.side==='UNDER'?value<pick.line:value>pick.line;

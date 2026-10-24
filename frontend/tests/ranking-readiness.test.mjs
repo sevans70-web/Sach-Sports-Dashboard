@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadTs} from './load-ts.mjs';
-const {excludeUnavailablePregame,availablePregameRankings}=await loadTs(new URL('../lib/ranking-availability.ts',import.meta.url));
+const {excludeUnavailablePregame,excludeUnavailableRanking,availablePregameRankings}=await loadTs(new URL('../lib/ranking-availability.ts',import.meta.url));
 const {featuredDashboardGames,dashboardCounts}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
 const {rankingResponse}=await loadTs(new URL('../lib/ranking-response-cache.ts',import.meta.url));
 const now=Date.parse('2026-10-21T20:00Z');
@@ -18,6 +18,13 @@ test('participation, lineup confirmation and locked history take precedence over
  const kept={...row,playerId:'other',pregameContext:null,rank:2};
  const payload=availablePregameRankings({rows:[row,kept]},now);assert.equal(payload.rows.length,1);assert.equal(payload.rows[0].rank,1);assert.equal(payload.excludedUnavailable,1);
  const locked={...kept,frozen:true,rank:8};assert.equal(availablePregameRankings({rows:[row,locked]},now).rows[0].rank,8);
+});
+test('Reed Sheppard: a daily lock does not keep a reported-out nonparticipant in public rankings',()=>{
+ const locked={...row,boardFrozen:true,frozen:true,lockedAtKickoff:true,gameState:'in',availabilityEvidence:{gameId:row.gameId,code:'official_injury_status',text:'Reported Out · Knee'}};
+ assert.equal(excludeUnavailableRanking(locked,now),true);
+ assert.equal(excludeUnavailableRanking({...locked,participationConfirmed:true,participationGameId:row.gameId},now),false);
+ assert.equal(excludeUnavailableRanking({...locked,participationConfirmed:true,participationGameId:'another-game'},now),true);
+ assert.equal(locked.boardFrozen,true);assert.equal(locked.pregameContext.availability[0].status,'Out');
 });
 test('homepage gives NBA, WNBA and NHL separate slots even when NBA has all the earliest games',()=>{
  const games=['nba','nba','nba','wnba','nhl','nfl'].map((sport,i)=>({id:String(i),sport,state:'pre',date:new Date(now+i*60000).toISOString()}));

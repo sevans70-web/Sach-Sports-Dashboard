@@ -364,6 +364,12 @@
   overflow: hidden;
 }
 
+.faceMetrics.firstBasketMetrics { grid-template-columns: 1.25fr 1fr 1fr; }
+.expandedHeader.firstBasketExpanded { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.firstBasketCard .cardTop { grid-template-columns: 38px 66px minmax(0, 1fr); }
+.firstBasketMetrics > div:first-child strong { color: var(--gold); font-size: 20px; }
+.firstBasketMetrics span { white-space: normal; }
+
 .researchGi strong { border-color: #686b72; color: #c6c8cc; }
 
 .faceMetrics > div {

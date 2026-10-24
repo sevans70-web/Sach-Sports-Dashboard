@@ -13,6 +13,15 @@ export function excludeUnavailablePregame(row:any,now=Date.now()){
  return row?.inactive===true||row?.isOut===true||statuses.some(s=>/^(out|inactive|suspended|injured reserve)$/i.test(String(s||'')));
 }
 
+/** A locked board freezes predictions, not injury status. Suppress an officially
+ * unavailable nonparticipant from public rankings without rewriting its history.
+ * Actual participation in the exact fixture takes precedence over an old report. */
+export function excludeUnavailableRanking(row:any,now=Date.now()){
+ if(row?.participationConfirmed===true&&String(row.participationGameId||'')===String(row.gameId))return false;
+ return excludeUnavailablePregame({...row,boardFrozen:false,frozen:false,lockedAtKickoff:false,
+  gameState:'pre',gameTime:new Date(now+60_000).toISOString(),starterConfirmed:false,lineupConfirmed:false},now);
+}
+
 export function availablePregameRankings(payload:any,now=Date.now()){
  if(!Array.isArray(payload?.rows)||payload.boardFrozen)return payload;
  const rows=payload.rows.filter((r:any)=>!excludeUnavailablePregame(r,now));

@@ -1,10 +1,11 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
-import {prioritizeModelPicks} from '@/lib/saved-model-pick';
-import {availablePregameRankings} from '@/lib/ranking-availability';
+import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
+import {availablePregameRankings,excludeUnavailableRanking} from '@/lib/ranking-availability';
+import {publicNbaRanking} from '@/lib/public-card-metrics';
 import {rankingResponse} from '@/lib/ranking-response-cache';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
-import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
+import {attachBasketballPregameContext,attachBasketballAvailability} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
@@ -593,12 +594,18 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===today)?today:undefined);
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
- if(frozen)return frozen;
+ if(frozen)return publicNbaBoard(await attachBasketballAvailability(frozen,'nba'));
  let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
  const eligible=availablePregameRankings(await attachBasketballPregameContext(raw,'nba'));
  const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
- return savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},overview.games||[],Date.now(),day);
+ return publicNbaBoard(await savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},overview.games||[],Date.now(),day));
+}
+
+function publicNbaBoard(payload:any){
+ const rows=(payload.rows||[]).filter((row:any)=>!excludeUnavailableRanking(row)&&publicNbaRanking({...row,market:row.market||payload.market}));
+ return {...payload,rows:payload.boardFrozen?rows:rows.map((row:any,i:number)=>({...row,rank:i+1})),publicRankingCount:rows.length,
+  verifiedQuoteCount:rows.filter((r:any)=>r.quoteVerified===true).length,modelSelectionCount:rows.filter((r:any)=>cardModelPick(r)).length};
 }
 
 export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){

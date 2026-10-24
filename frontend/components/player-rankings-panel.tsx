@@ -10,6 +10,8 @@ import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
 import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
+import {firstBasketQuote,publicNbaRanking} from '@/lib/public-card-metrics';
+import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
 
@@ -967,6 +969,8 @@ function PlayerCard({
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
   const modelSelection=cardModelPick(card.raw);
+  const firstBasket=card.market==='first_basket';
+  const scorerQuote=firstBasketQuote(card.raw);
   const displayedPick=modelSelection?.side||(researchOnly?'PASS':card.prediction);
   const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
   const displayedAverage=researchOnly?cardModelProjection(card.raw):card.modelProjection;
@@ -982,7 +986,7 @@ function PlayerCard({
     <article
       data-ranking-market={card.market}
       data-ranking-player={card.playerId}
-      className={`${styles.card} ${
+      className={`${styles.card} ${firstBasket?styles.firstBasketCard:''} ${
         state === "live"
           ? styles.liveCard
           : state === "final"
@@ -1038,13 +1042,18 @@ function PlayerCard({
           {voidNote ? <span className={styles.playerStatusNotice}>Void: {voidNote.text}</span> : null}
         </div>
 
-        <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
+        {!firstBasket?<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>{fittedForecast?.giScore!=null?'GI · experimental':"GI"}</span>
           <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
-        </div>
+        </div>:null}
       </div>
 
-      <div className={styles.faceMetrics}>
+      <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`}>
+        {firstBasket?<>
+          <div><span>First basket chance</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong><small>Book-implied likelihood</small></div>
+          <div><span>Sportsbook odds</span><strong>{scorerQuote?`${scorerQuote.price>0?'+':''}${scorerQuote.price}`:'—'}</strong></div>
+          <div><span>Sportsbook</span><strong>{scorerQuote?.sportsbook||'—'}</strong></div>
+        </>:<>
         <div>
           <span>
             {footballScorer ? "TD target" : researchOnly && !card.raw?.quoteVerified ? "Book line unavailable" : binaryEvent
@@ -1081,12 +1090,12 @@ function PlayerCard({
 
         <div>
           <span>
-            {state === 'final' ? 'Final result' : binaryEvent
+            {binaryEvent
               ? "HR Probability"
               : "Sach projection"}
           </span>
           <strong>
-            {state === 'final' ? shortNumber(current) : binaryEvent
+            {binaryEvent
               ? card.modelProbability == null
                 ? "—"
                 : `${shortNumber(card.modelProbability)}%`
@@ -1098,12 +1107,13 @@ function PlayerCard({
           <span>{fittedForecast?.giScore!=null?'GI · experimental':'GI Score'}</span>
           <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"Experimental opportunity strength is separate from verified recommendations and win probability.":undefined}>{fittedForecast?.giScore!=null?shortNumber(fittedForecast.giScore):researchOnly?"—":shortNumber(card.giScore)}</strong>
         </div>
+        </>}
       </div>
 
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
-          <p>{researchOnly?intelligence.face:card.summary}</p>
+          <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
@@ -1123,7 +1133,7 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {state === "live" ? (
+      {state === "live" && firstBasket ? <div className={styles.liveStrip}><strong>First basket</strong><span>{current===1?'Scored first':current===0?'Another player scored first':'Waiting for the first score'}</span></div> : state === "live" ? (
         <div className={`${styles.liveStrip} ${researchOnly ? styles.unverifiedStrip : ""}`}>
           <div>
             <strong>{card.marketLabel} · current</strong>
@@ -1145,7 +1155,7 @@ function PlayerCard({
             </div>
             <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":card.sportsbookLine==null?`Pregame line ${shortNumber(progressLine)} · ${card.raw?.progressQuote?.sportsbook||'saved quote'}`:"Toward recorded line"}</small>
           </> : null}
-          {current!=null&&!observedProgress&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
+          {current!=null&&!observedProgress&&!firstBasket&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
         </div>
       ) : null}
 
@@ -1173,7 +1183,11 @@ function PlayerCard({
 
       {open ? (
         <div className={styles.intelligence}>
-          <div className={styles.expandedHeader}>
+          <div className={`${styles.expandedHeader} ${firstBasket?styles.firstBasketExpanded:''}`}>
+            {firstBasket?<>
+              <div><b>First basket chance</b><span>Book-implied likelihood</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>
+              <div><b>Sportsbook odds</b><span>{scorerQuote?.sportsbook}</span><strong>{scorerQuote?`${scorerQuote.price>0?'+':''}${scorerQuote.price}`:'—'}</strong></div>
+            </>:<>
             <div>
               <b>{card.marketLabel}</b>
               <span>
@@ -1218,6 +1232,7 @@ function PlayerCard({
               <span>{fittedForecast?.giScore!=null?'Experimental score':'Score'}</span>
               <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
             </div>
+            </>}
           </div>
 
           {researchOnly ? null : state === "pregame" ? (
@@ -1727,7 +1742,7 @@ export function PlayerRankingsPanel({
 
   useEffect(()=>{
     if(loading||error||cards.some(card=>card.market!==market.key))return;
-    onPickCount?.({market:market.key,count:cards.filter(card=>card.raw?.withdrawnFromBoard!==true&&card.raw?.resultStatus!=="void"&&cardModelPick(card.raw)).length});
+    onPickCount?.({market:market.key,count:cards.filter(card=>!excludeUnavailableRanking(card.raw)&&(card.market==='first_basket'?firstBasketQuote(card.raw)!=null:card.raw?.withdrawnFromBoard!==true&&card.raw?.resultStatus!=="void"&&cardModelPick(card.raw))).length});
   },[cards,loading,error,market.key,onPickCount]);
 
   const viewCacheKey = (
@@ -2277,6 +2292,7 @@ export function PlayerRankingsPanel({
         return next;
       })
       .filter((card) => {
+        if(sport==='nba'&&(excludeUnavailableRanking(card.raw)||!publicNbaRanking(card.raw)))return false;
         if (card.raw?.boardFrozen === true) return true;
         if (!sharedStatusGames.length) return true;
 
