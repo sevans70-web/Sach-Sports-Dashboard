@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-24T14:13:29.833Z",
+  "reports": [
+    {
+      "market": "q1_points",
+      "trainingRows": 7572,
+      "trainingFixtures": 511,
+      "calibrationRows": 4284,
+      "testRows": 13693,
+      "testFixtures": 884,
+      "mae": 2.226222791643578,
+      "baselineMae": 2.2296522662120015,
+      "quarterBaselineMae": 2.2909894581752295,
+      "improvementPct": 0.1538120818386515,
+      "status": "point_error_improved",
+      "validatedForBetting": false
+    },
+    {
+      "market": "q1_rebounds",
+      "trainingRows": 7572,
+      "trainingFixtures": 511,
+      "calibrationRows": 4284,
+      "testRows": 13693,
+      "testFixtures": 884,
+      "mae": 0.9236268138595133,
+      "baselineMae": 0.91852482346074,
+      "quarterBaselineMae": 0.949438161544718,
+      "improvementPct": -0.5554548193428666,
+      "status": "point_error_failed",
+      "validatedForBetting": false
+    },
+    {
+      "market": "q1_assists",
+      "trainingRows": 7572,
+      "trainingFixtures": 511,
+      "calibrationRows": 4284,
+      "testRows": 13693,
+      "testFixtures": 884,
+      "mae": 0.7078039323380518,
+      "baselineMae": 0.6909909282599725,
+      "quarterBaselineMae": 0.7173432375944637,
+      "improvementPct": -2.433172910159206,
+      "status": "point_error_failed",
+      "validatedForBetting": false
+    },
+    {
+      "market": "q1_threes_made",
+      "trainingRows": 7572,
+      "trainingFixtures": 511,
+      "calibrationRows": 4284,
+      "testRows": 13693,
+      "testFixtures": 884,
+      "mae": 0.4940560902167774,
+      "baselineMae": 0.46420409428607173,
+      "quarterBaselineMae": 0.48156777475225093,
+      "improvementPct": -6.430791175294755,
+      "status": "point_error_failed",
+      "validatedForBetting": false
+    }
+  ],
+  "limitations": [
+    "Fixture universe comes from the existing runtime census; completeness against a full official season schedule is not certified.",
+    "2026 was used for earlier model research and is not a fresh untouched holdout.",
+    "Historical official source revisions are observed now, not archived pregame data vintages.",
+    "No exact Q1 sportsbook-price evaluation, probability calibration certification, injury/rotation vintage or profitable-return evidence.",
+    "Quarter labels are conditional on observed Q1 participation; pregame lineup and bookmaker quarter-participation rules are not historically certified.",
+    "These candidate models do not authorize live betting recommendations."
+  ]
+}

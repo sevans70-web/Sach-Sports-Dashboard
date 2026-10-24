@@ -2496,7 +2496,7 @@ export function PlayerRankingsPanel({
 
       {!loading && !error && !displayCards.length ? (
         <div className={styles.state}>
-          No eligible {market.label} rankings are available for the current slate.
+          {sport === 'nba' && (market.key.startsWith('q1_') || market.key === 'first_basket') ? `No Qualified Picks — ${market.label}.` : <>No eligible {market.label} rankings are available for the current slate.</>}
         </div>
       ) : null}
 
