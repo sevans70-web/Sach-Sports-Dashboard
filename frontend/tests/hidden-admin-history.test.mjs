@@ -15,3 +15,9 @@ test('original saved projections and score values remain accessible without mark
  const r=adminResult({modelProjection:10,archivedOriginal:{modelProjection:12.5,modelProbability:60,giScore:75}});
  assert.equal(r.modelProjection,12.5);assert.equal(r.modelProbability,60);assert.equal(r.giScore,75);assert.equal(r.verifiedPick,false);
 });
+
+test('MLB inspector preserves first-seen timestamps and legacy projections without inventing verified probabilities',()=>{
+ const source={batter:{captured_at:'2026-10-24T03:00Z',categories:{home_runs:[{player_id:1,player_name:'P',team_name:'Team',opponent_name:'Opponent',first_seen_at:'2026-10-24T01:00Z',projection:.25,gi_score:100,home_run_probability:29.6,result_label:'Hit'}]}}};
+ const row=mlbAdminSnapshot(source,'2026-10-23')[0],r=adminResult(row);
+ assert.equal(r.savedAt,'2026-10-24T01:00Z');assert.equal(row.capturedAt,'2026-10-24T03:00Z');assert.equal(r.modelProjection,.25);assert.equal(r.giScore,100);assert.equal(r.modelProbability,null);assert.equal(r.team,'Team');assert.equal(r.matchup,'Team vs Opponent');assert.equal(r.verifiedPick,false);assert.equal(r.status,'unknown');assert.match(r.reason,/participation/);
+});

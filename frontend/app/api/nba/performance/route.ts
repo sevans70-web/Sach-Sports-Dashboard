@@ -1,6 +1,7 @@
+import {basketballHistorySeasons} from '@/lib/basketball-history-window';
 import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
-import {basketballSummaryActual,basketballLogActual} from "@/lib/basketball-settlement";
+import {basketballSummaryActual,basketballLogActual,basketballFixtureFinal} from "@/lib/basketball-settlement";
 import {statNumber} from "@/lib/provider-fetch";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -41,7 +42,7 @@ async function finalsForDay(day:string){
   return ids;
 }
 async function summary(gameId:string){return json(`${SUMMARY}?event=${encodeURIComponent(gameId)}`,8000)}
-async function gamelog(playerId:string){return json(`${ATHLETE_BASE}/${encodeURIComponent(playerId)}/gamelog?season=2026`,6500)}
+async function gamelog(playerId:string,season:number){return json(`${ATHLETE_BASE}/${encodeURIComponent(playerId)}/gamelog?season=${season}`,6500)}
 
 function numberValue(v:any){return statNumber(v)}
 function statFromSummary(payload:any,p:SavedNbaPrediction,labelAliases:string[]){
@@ -147,14 +148,16 @@ export async function GET(req:NextRequest){
 
         let gamePayload=summaryCache.get(String(p.gameId));
         if(gamePayload===undefined){gamePayload=await summary(String(p.gameId));summaryCache.set(String(p.gameId),gamePayload)}
-        const complete=gamePayload?.header?.competitions?.[0]?.status?.type?.completed===true;
+        const complete=basketballFixtureFinal(gamePayload,String(p.gameId));
         if(!market.startsWith("q1_")&&market!=="first_basket"&&!complete){graded.push(p);continue}
         let a=summaryActual(gamePayload,p,market);
 
         // Fallback for older saved records or an ESPN summary that temporarily omits a player row.
         if(a==null&&!market.startsWith("q1_")&&market!=="first_basket"&&/^\d+$/.test(String(p.playerId||""))){
-          let logPayload=gamelogCache.get(String(p.playerId));
-          if(logPayload===undefined){logPayload=await gamelog(String(p.playerId));gamelogCache.set(String(p.playerId),logPayload)}
+          const season=basketballHistorySeasons('nba',p.gameTime||day).at(-1)!;
+          const logKey=String(p.playerId)+'|'+season;
+          let logPayload=gamelogCache.get(logKey);
+          if(logPayload===undefined){logPayload=await gamelog(String(p.playerId),season);gamelogCache.set(logKey,logPayload)}
           a=basketballLogActual(logPayload,p,market,day);
         }
         if(a==null){graded.push(p);continue}

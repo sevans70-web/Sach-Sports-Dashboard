@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     if(sport==='mlb'||sport==='soccer'){
       await assertHiddenHistoryReadable(sport);
       const saved=sport==='mlb'?await readMlbAdminHistory(period):await readSoccerPredictions(period);
-      const records=saved.map(row=>adminResult({...row,recommendationEligible:false,quoteVerified:false,reviewReason:'Saved hidden-sport history; quote provenance and model validation require review.'}));
+      const records=saved.map(row=>adminResult({...row,recommendationEligible:false,quoteVerified:false,reviewReason:row.reviewReason||'Saved hidden-sport history; quote provenance and model validation require review.'}));
       return adminJson({sport,period,records,counts:adminResultCounts(records),updatedAt:new Date().toISOString()});
     }
     const handler = { nfl: nflPerformance, cfb: cfbPerformance, nba: nbaPerformance, wnba: wnbaPerformance, nhl: nhlPerformance, cbb: cbbPerformance }[sport]!;

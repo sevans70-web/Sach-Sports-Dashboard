@@ -13,8 +13,14 @@ export function mlbAdminSnapshot(payload:any,day:string){
     key:String(row.key||`${day}|${section}|${market}|${row.gameId||row.game_pk||row.gamePk||''}|${row.playerId||row.player_id||row.name||''}`),
     gameDate:day,market,playerId:String(row.playerId||row.player_id||''),
     playerName:row.playerName||row.player_name||row.name||'Unknown player',
-    teamName:row.teamName||row.team||'',gameId:String(row.gameId||row.game_pk||row.gamePk||''),
-    savedAt:row.savedAt||row.captured_at||payload[section].captured_at||null,
+    teamName:row.teamName||row.team_name||row.team||'',
+    matchup:row.matchup||[row.team_name,row.opponent_name].filter(Boolean).join(' vs '),
+    modelProjection:row.modelProjection??row.projection??null,giScore:row.giScore??row.gi_score??null,
+    modelProbability:row.modelProbability??null,
+    reviewReason:'Legacy snapshot: original sportsbook selection, price provenance, participation and pregame timing are not verified.',
+    gameId:String(row.gameId||row.game_pk||row.gamePk||''),
+    savedAt:row.savedAt||row.first_seen_at||row.captured_at||payload[section].captured_at||null,
+    capturedAt:row.captured_at||payload[section].captured_at||null,
     // Legacy target-hit labels are not proof of a saved sportsbook prediction.
     status:row.status||'unknown',legacyResult:row.result_label||null,
    });

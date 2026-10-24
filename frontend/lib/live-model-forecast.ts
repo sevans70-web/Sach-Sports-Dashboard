@@ -1,3 +1,4 @@
+import {refreshNbaObservations} from '@/lib/live-basketball-observations';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {gunzipSync} from 'node:zlib';
@@ -94,7 +95,15 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   }));
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
- const rows=payload.rows.map((r:any)=>({...r,researchForecast:fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now)}));
+ let nbaRefreshUnavailable=new Set<string>();
+ if(sport==='nba'){
+  const refresh=await refreshNbaObservations(payload.rows,now);
+  nbaRefreshUnavailable=new Set(refresh.unavailablePlayers);
+  const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));
+  for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);
+  data={...data,observations:[...merged.values()]};
+ }
+ const rows=payload.rows.map((r:any)=>({...r,researchForecast:nbaRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now)}));
  return {...payload,rows,fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast.status==='available').length,
   modelSelectionCount:rows.filter((r:any)=>r.researchForecast.modelSelection!=null).length};
 }
