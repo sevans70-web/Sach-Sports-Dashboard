@@ -1,8 +1,9 @@
+import {retainPlayerHistory} from '@/lib/player-history-cloud';
 import {NextRequest,NextResponse} from 'next/server';
 import {providerFetch} from '@/lib/provider-fetch';
 import {nhlHistoryPoints} from '@/lib/nhl-history-points';
 export const dynamic='force-dynamic';
-export async function GET(req:NextRequest,{params}:{params:Promise<{id:string}>}){
+async function loadHistory(req:NextRequest,{params}:{params:Promise<{id:string}>}){
  const {id}=await params,market=req.nextUrl.searchParams.get('market')||'';
  if(!/^\d+$/.test(id)||!['points','goals','assists','shots_on_goal','blocked_shots','goalie_saves'].includes(market))return NextResponse.json({success:false,points:[],error:'Unsupported player or market'},{status:400});
  const now=new Date(),year=now.getUTCFullYear(),seasonStart=now.getUTCMonth()>=8?year:year-1;
@@ -12,4 +13,9 @@ export async function GET(req:NextRequest,{params}:{params:Promise<{id:string}>}
  const points=[...new Map(blocks.flatMap(b=>b.points).map(p=>[p.gameId,p])).values()].sort((a,b)=>a.date.localeCompare(b.date)).slice(-30);
  const success=blocks.some(b=>b.ok);
  return NextResponse.json({success,points,updatedAt:new Date().toISOString()},{status:success?200:502,headers:{'Cache-Control':'no-store'}});
+}
+
+export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
+ const {id}=await context.params;const response=await loadHistory(req,context);
+ return retainPlayerHistory('nhl',id,req.nextUrl.searchParams.get('market')||'shots_on_goal',response,req.nextUrl.searchParams.get('before'));
 }

@@ -15,7 +15,6 @@ export async function GET(req:NextRequest){
   let saved:any[];
   if(sport==='soccer'){
    // Preserve the existing hidden soccer path and scope.
-   if(!['Today','Yesterday','Week'].includes(period))return adminJson({error:'Soccer history supports Today, Yesterday and Week.'},400);
    await assertHiddenHistoryReadable('soccer');saved=await readSoccerPredictions(period);
   }else{
    const data=await readSavedPerformance(sport,period);if(!data.coverage.complete)throw new Error('Incomplete saved history');saved=data.records;

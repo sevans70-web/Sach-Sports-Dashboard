@@ -1,3 +1,4 @@
+import {retainPlayerHistory} from '@/lib/player-history-cloud';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import type {NflMarketKey} from "@/lib/nfl";
@@ -141,7 +142,7 @@ function parseSeason(payload:any,season:number,market:HistoryMarket){
   return rows;
 }
 
-export async function GET(
+async function loadHistory(
   req:NextRequest,
   {params}:{params:Promise<{id:string}>}
 ){
@@ -222,4 +223,9 @@ export async function GET(
       :"No verified game-by-game history was returned for this player and market.",
     updatedAt:new Date().toISOString()
   });
+}
+
+export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
+ const {id}=await context.params;const response=await loadHistory(req,context);
+ return retainPlayerHistory('nfl',id,req.nextUrl.searchParams.get('market')||'passing_yards',response,req.nextUrl.searchParams.get('before'));
 }

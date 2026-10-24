@@ -16,3 +16,18 @@ test('deletion requires a fresh remote match, readable searchable migration and 
  }finally{await rm(dir,{recursive:true,force:true});}
 });
 test('JSONB roundtrip hashing ignores key order and optional undefined fields, retaining exact zero actuals',()=>{assert.equal(checksum({b:0,a:2,optional:undefined}),checksum({a:2,b:0}));assert.notEqual(checksum({actual:0}),checksum({actual:null}));});
+test('compressed immutable snapshot segments use their parent capture date for retention',()=>{assert.equal(expiredHistory('sach-history/wnba/archive/segments/points_2026-10-17/123-unique.json.gz',new Date('2026-10-24T16:00Z')),true);assert.equal(expiredHistory('sach-history/wnba/archive/segments/points_2026-10-18/123-unique.json.gz',new Date('2026-10-24T16:00Z')),false);});
+test('a verified crash-left archive temporary file is removed only during quiescent recovery, never during normal capture',async()=>{
+ const dir=await mkdtemp(path.join(tmpdir(),'sach-orphan-')),full=path.join(dir,'copy.json.1.tmp'),body='partial archive bytes',rel='sach-history/nba/archive/points_2026-10-24.json.1.tmp',now=new Date('2026-10-24T16:00Z');
+ try{await writeFile(full,body);await utimes(full,new Date('2026-10-24T10:00Z'),new Date('2026-10-24T10:00Z'));const remoteFile={id:'copy',size:body.length,md5Checksum:await md5File(full)};
+ const args={full,rel,size:body.length,remoteFile,now,verifyRemote:async()=>remoteFile,migrateDocument:async()=>true,recordArchive:async()=>{}};
+ assert.equal(await pruneVerifiedFile(args),false);assert.equal(await readFile(full,'utf8'),body);
+ assert.equal(await pruneVerifiedFile({...args,quiescent:true,verifyRemote:async()=>({...remoteFile,md5Checksum:'wrong'})}),false);assert.equal(await readFile(full,'utf8'),body);
+ assert.equal(await pruneVerifiedFile({...args,quiescent:true}),true);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
+test('storage inventory measures historical, protected and temporary files without modifying them',async()=>{
+ const {storageInventory}=await import('../scripts/storage-inventory.mjs');const dir=await mkdtemp(path.join(tmpdir(),'sach-inventory-'));const fs=await import('node:fs/promises');
+ try{await fs.mkdir(path.join(dir,'sach-history','mlb','archive'),{recursive:true});await writeFile(path.join(dir,'sach-history','mlb','archive','hits_2026-10-16.json'),'old');await writeFile(path.join(dir,'sach-history','mlb','archive','hits_2026-10-24.json.1.tmp'),'temporary');await writeFile(path.join(dir,'protected-config'),'safe');const x=await storageInventory(dir,new Date('2026-10-24T16:00Z'));assert.equal(x.files,3);assert.equal(x.bytes,16);assert.equal(x.eligibleBytes,3);assert.equal(x.temporaryBytes,9);assert.equal(x.groups.mlb.bytes,12);assert.equal(x.groups.operational.bytes,4);assert.equal(await readFile(path.join(dir,'protected-config'),'utf8'),'safe');}
+ finally{await rm(dir,{recursive:true,force:true});}
+});

@@ -1,3 +1,4 @@
+import {retainPlayerHistory} from '@/lib/player-history-cloud';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { extractStatisticsLogAppearances } from "@/lib/soccer-history";
@@ -15,6 +16,7 @@ const MLB_PITCHER_MARKETS = new Set([
 ]);
 
 function finite(value: unknown) {
+  if(value==null||typeof value==="boolean"||String(value).trim()==="")return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
@@ -38,9 +40,7 @@ function mlbValue(stat: any, market: string) {
 
   if (market === "hits_runs_rbis") {
     return (
-      (finite(stat.hits) || 0) +
-      (finite(stat.runs) || 0) +
-      (finite(stat.rbi) || 0)
+      [stat.hits,stat.runs,stat.rbi].every(v=>finite(v)!=null)?Number(stat.hits)+Number(stat.runs)+Number(stat.rbi):null
     );
   }
 
@@ -52,7 +52,7 @@ function mlbValue(stat: any, market: string) {
     const innings = Number(whole);
     const extraOuts = Number(fraction);
 
-    if (!Number.isFinite(innings) || !Number.isFinite(extraOuts)) {
+    if (!Number.isInteger(innings) || !Number.isInteger(extraOuts) || extraOuts<0 || extraOuts>2) {
       return null;
     }
 
@@ -64,7 +64,7 @@ function mlbValue(stat: any, market: string) {
 
 async function mlbHistory(playerId: string, market: string) {
   const group = MLB_PITCHER_MARKETS.has(market) ? "pitching" : "hitting";
-  const rows: Array<{ date: string; value: number }> = [];
+  const rows: Array<{ date: string; value: number;gameId:string;opponent:string;season:number }> = [];
 
   await Promise.all(
     [2025, 2026].map(async (season) => {
@@ -85,7 +85,7 @@ async function mlbHistory(playerId: string, market: string) {
 
             rows.push({
               date: String(split?.date || split?.game?.gameDate || ""),
-              value,
+              value,gameId:String(split?.game?.gamePk||""),opponent:String(split?.opponent?.name||""),season,
             });
           }
         }
@@ -95,8 +95,7 @@ async function mlbHistory(playerId: string, market: string) {
 
   return rows
     .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-20)
-    .map((row) => row.value);
+    .slice(-20);
 }
 
 function nhlValue(game: any, market: string) {
@@ -119,7 +118,7 @@ function nhlValue(game: any, market: string) {
 }
 
 async function nhlHistory(playerId: string, market: string) {
-  const rows: Array<{ date: string; value: number }> = [];
+  const rows: Array<{ date: string; value: number;gameId:string;opponent:string;season:number }> = [];
 
   for (const season of [20252026, 20262027]) {
     try {
@@ -141,7 +140,7 @@ async function nhlHistory(playerId: string, market: string) {
 
         rows.push({
           date: String(game?.gameDate || ""),
-          value,
+          value,gameId:String(game?.gameId||""),opponent:String(game?.opponentCommonName?.default||game?.opponentAbbrev||""),season,
         });
       }
     } catch {}
@@ -149,8 +148,7 @@ async function nhlHistory(playerId: string, market: string) {
 
   return rows
     .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-20)
-    .map((row) => row.value);
+    .slice(-20);
 }
 
 async function soccerHistory(
@@ -181,13 +179,10 @@ async function soccerHistory(
     position: market === "saves" ? "GK" : "",
   });
 
-  return rows
-    .map((row: any) => finite(row?.[market]))
-    .filter((value): value is number => value != null)
-    .slice(-20);
+  return rows.filter((row:any)=>row.availableMetrics?.includes(market)&&finite(row[market])!=null&&row.gameId&&row.gameDate).map((row:any)=>({gameId:String(row.gameId),date:row.gameDate,opponent:row.opponent||'',value:Number(row[market])})).slice(-20);
 }
 
-export async function GET(req: NextRequest) {
+async function loadHistory(req: NextRequest) {
   const sport = String(
     req.nextUrl.searchParams.get("sport") || ""
   ).toLowerCase();
@@ -224,14 +219,14 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    let values: number[] = [];
+    let points:any[] = [];
 
     if (sport === "mlb") {
-      values = await mlbHistory(playerId, market);
+      points = await mlbHistory(playerId, market);
     } else if (sport === "nhl") {
-      values = await nhlHistory(playerId, market);
+      points = await nhlHistory(playerId, market);
     } else if (sport === "soccer") {
-      values = await soccerHistory(
+      points = await soccerHistory(
         playerId,
         playerName,
         team,
@@ -258,7 +253,8 @@ export async function GET(req: NextRequest) {
         sport,
         playerId,
         market,
-        values,
+        values:points.map(p=>p.value),
+        points,
       },
       {
         headers: {
@@ -284,3 +280,5 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req:NextRequest){const response=await loadHistory(req);return retainPlayerHistory(req.nextUrl.searchParams.get('sport')||'',req.nextUrl.searchParams.get('playerId')||'',req.nextUrl.searchParams.get('market')||'',response,req.nextUrl.searchParams.get('before'));}
