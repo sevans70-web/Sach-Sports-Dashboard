@@ -57,3 +57,7 @@ The timestamp scan flagged 96 NHL and 2 WNBA records saved at/after scheduled st
 Downloaded the October 23 Drive performance snapshot (582,933 bytes; SHA-256 `46e72764847affbf4f2ce31a4b673486711b50e25b13d17f32887fac9f17417e`) and checked official MLB game 849805. Of 235 unique category/player/game entries, 149 statistical values and their team/opponent identity matched. Forty-four entries had no qualifying participation (42 legacy Miss labels and 2 legacy Hit labels), and 42 had no matching player box entry. All 235 first-seen timestamps were after the scheduled start. No source record was changed. These are reactivation blockers, not verified pregame betting results.
 
 The admin mapping now retains legacy projection/GI values for inspection, first-seen time separately from snapshot capture, team/matchup and explicit review limitations. It does not manufacture a calibrated probability from legacy home-run/benchmark percentages. The inspector labels stored outcomes Saved actual rather than claiming independent official verification.
+
+## Requested compact card sizing
+
+Following the user's two iPhone screenshots, restore three visible game cards across the shared swipe row and reduce Top Plays to approximately two visible cards on phones (four on wider screens). Clamp game context to two lines, retain logos/time/status and horizontal scrolling, and keep Soccer's grid unchanged. Production build passed; deployment remains held while backup runs.
