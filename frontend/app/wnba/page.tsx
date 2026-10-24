@@ -1,2 +1,2 @@
-import {SportsDashboard} from "@/components/sports-dashboard";
-export default function Page(){return <SportsDashboard sport="wnba"/>}
+import {redirect} from "next/navigation";
+export default function PausedDashboard(){redirect("/")}

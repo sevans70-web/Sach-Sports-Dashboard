@@ -120,8 +120,11 @@ function historyUrl(
   playerId: string,
   playerName: string,
   team: string,
-  market: string
+  market: string,
+  league: string,
+  source: string
 ) {
+  if(sport==='nhl'&&source==='espn')return `/api/player-search/history?${new URLSearchParams({id:playerId,market})}`;
   if (
     ["nfl", "cfb", "nba", "wnba", "cbb"].includes(
       sport
@@ -140,6 +143,7 @@ function historyUrl(
     playerName,
     team,
     market,
+    league,
   });
 
   return `/api/player-history?${params.toString()}`;
@@ -350,7 +354,9 @@ export function UnifiedPlayerCard({
         playerId,
         name,
         team,
-        researchMarket
+        researchMarket,
+        first(query.league)||'eng.1',
+        first(query.source)
       ),
       {
         cache: "no-store",
@@ -465,6 +471,8 @@ export function UnifiedPlayerCard({
     name,
     team,
     researchMarket,
+    query.league,
+    query.source,
   ]);
 
   const visibleHistory =
