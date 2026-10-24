@@ -36,11 +36,8 @@ async function retryUpload(fn,label){
  }
  throw last;
 }
-let count=0,total=0,errors=[],deletionCandidates=[];
-const cutoff=new Date();cutoff.setUTCHours(0,0,0,0);cutoff.setUTCDate(cutoff.getUTCDate()-6);
+let count=0,total=0,errors=[];
 async function md5File(file){const hash=createHash("md5");for await(const chunk of createReadStream(file))hash.update(chunk);return hash.digest("hex");}
-function historicalDate(rel){if(!rel.startsWith("sach-history/"))return null;const base=path.basename(rel);const dates=[...base.matchAll(/(?:^|[^0-9])(20\d{2}-\d{2}-\d{2})(?=[^0-9]|$)/g)];if(!dates.length)return null;const d=dates[dates.length-1][1];const date=new Date(d+"T00:00:00Z");return !Number.isNaN(date.valueOf())&&date.toISOString().slice(0,10)===d?date:null;}
-async function markForCleanup(full,rel,size,remoteFile){const date=historicalDate(rel);if(!date||date>=cutoff)return;if(!remoteFile||Number(remoteFile.size)!==size||!remoteFile.md5Checksum)return;const localHash=await md5File(full);if(localHash===remoteFile.md5Checksum)deletionCandidates.push({full,rel,size,localHash});else console.error("CLEANUP_HASH_MISMATCH",rel);}
 
 async function walk(dir,parent){
  const remote=await query("'"+parent+"' in parents and trashed = false");
@@ -52,7 +49,7 @@ async function walk(dir,parent){
   if(!entry.isFile())continue;
   try{
    const stat=await fs.stat(full);const size=stat.size;
-   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){const rel=path.relative(root,full);const remote=remoteFiles.get(entry.name);if(remote.md5Checksum&&await md5File(full)===remote.md5Checksum){count++;total+=size;console.log("BACKUP_SKIP",rel,size);await markForCleanup(full,rel,size,remote);continue;}console.log("BACKUP_REUPLOAD",rel);}
+   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){const rel=path.relative(root,full);const remote=remoteFiles.get(entry.name);if(remote.md5Checksum&&await md5File(full)===remote.md5Checksum){count++;total+=size;console.log("BACKUP_SKIP",rel,size);continue;}console.log("BACKUP_REUPLOAD",rel);}
    const uploaded=await retryUpload(async()=>{
    const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name:entry.name,parents:[parent]})});
    const location=session.headers.get("location");if(!location)throw Error("Missing upload session");
@@ -73,20 +70,11 @@ async function walk(dir,parent){
    if(Number(result.size)!==size)throw Error("Uploaded file size mismatch");
    return result;
    });
-   await markForCleanup(full,path.relative(root,full),size,uploaded);
    count++;total+=size;console.log("BACKUP_OK",path.relative(root,full),size);
   }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}
  }
 }
 await walk(root,backup);
 console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,files:count,bytes:total,errors}));
-if(errors.length){console.error("CLEANUP_ABORTED_BACKUP_INCOMPLETE");process.exitCode=1;}
-else {
- let removed=0,freed=0,cleanupErrors=0;
- for(const item of deletionCandidates){
-  try{const stat=await fs.stat(item.full);if(stat.size!==item.size||await md5File(item.full)!==item.localHash){console.error("CLEANUP_CHANGED",item.rel);continue;}await fs.unlink(item.full);removed++;freed+=item.size;console.log("CLEANUP_OK",item.rel,item.size);}
-  catch(e){cleanupErrors++;console.error("CLEANUP_FAILED",item.rel,String(e));}
- }
- console.log("CLEANUP_COMPLETE",JSON.stringify({removed,bytesFreed:freed,cleanupErrors,cutoff:cutoff.toISOString().slice(0,10)}));
- if(cleanupErrors)process.exitCode=1;
-}
+// Backups never delete source data. Retention requires a separately approved action.
+if(errors.length)process.exitCode=1;
