@@ -1,8 +1,9 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
 import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
-import {availablePregameRankings,excludeUnavailableRanking} from '@/lib/ranking-availability';
-import {publicNbaRanking} from '@/lib/public-card-metrics';
+import {availablePregameRankings} from '@/lib/ranking-availability';
+import {selectNbaCandidates,recordedNbaCandidates} from '@/lib/nba-ranking-candidates';
+import {readHistorySnapshots} from '@/lib/history-archive';
 import {rankingResponse} from '@/lib/ranking-response-cache';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext,attachBasketballAvailability} from '@/lib/basketball-pregame-context';
@@ -314,7 +315,6 @@ async function rowsForMarket(
  if(market==="first_basket"){
   return rows
    .sort((a:any,b:any)=>b.giScore-a.giScore)
-   .slice(0,25)
    .map((x:any,i:number)=>({...x,rank:i+1}));
  }
 
@@ -397,7 +397,6 @@ async function rowsForMarket(
   if(!key||seen.has(key))continue;
   seen.add(key);
   merged.push(row);
-  if(merged.length>=25)break;
  }
 
  return merged.map((x:any,i:number)=>({...x,rank:i+1}));
@@ -594,16 +593,32 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===today)?today:undefined);
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
- if(frozen)return publicNbaBoard(await attachBasketballAvailability(frozen,'nba'));
+ if(frozen){
+  // The old builder truncated before forecasting. Restore additional candidates
+  // only when a traceable pre-lock forecast exists in the original archive.
+  const lockAt=Math.min(...overview.games.map((g:any)=>Date.parse(g.tipoff)).filter(Number.isFinite));
+  const snapshots=await readHistorySnapshots('nba',market,frozen.boardDay);
+  const recorded=recordedNbaCandidates(snapshots,market,frozen.boardDay,lockAt);
+  const keys=new Set(frozen.rows.map((r:any)=>r.gameId+'|'+r.playerId));
+  const extra=recorded.filter(r=>!keys.has(r.gameId+'|'+r.playerId)).map(row=>{
+   const game=overview.games.find((g:any)=>String(g.gameId)===String(row.gameId));
+   return {...row,gameState:game?.state||row.gameState,gameStatus:game?.status||row.gameStatus};
+  });
+  return publicNbaBoard(await attachBasketballAvailability({...frozen,rows:[...frozen.rows,...extra]},'nba'));
+ }
  let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
  const eligible=availablePregameRankings(await attachBasketballPregameContext(raw,'nba'));
  const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
- return publicNbaBoard(await savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},overview.games||[],Date.now(),day));
+ // Archive the complete candidate pool, including honest abstentions, then
+ // choose the supported Top 25 and persist exactly that public pregame board.
+ await archiveResearchBoards('nba',[payload]);
+ const selected=publicNbaBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])});
+ return savePregameNbaSlateBoard(selected,overview.games||[],Date.now(),day);
 }
 
 function publicNbaBoard(payload:any){
- const rows=(payload.rows||[]).filter((row:any)=>!excludeUnavailableRanking(row)&&publicNbaRanking({...row,market:row.market||payload.market}));
+ const rows=selectNbaCandidates(payload.rows||[],payload.market);
  return {...payload,rows:payload.boardFrozen?rows:rows.map((row:any,i:number)=>({...row,rank:i+1})),publicRankingCount:rows.length,
   verifiedQuoteCount:rows.filter((r:any)=>r.quoteVerified===true).length,modelSelectionCount:rows.filter((r:any)=>cardModelPick(r)).length};
 }
