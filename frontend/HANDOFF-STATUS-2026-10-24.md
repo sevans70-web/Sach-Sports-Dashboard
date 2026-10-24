@@ -1,23 +1,23 @@
 # Sach Sports handoff status — October 24, 2026
 
-This checklist distinguishes deployed work from changes prepared for review. Production at the time of this update is commit `518b379930292f038fe5ce8c5123722abfb272fe`; Railway deployment `1ac0ab53-3cb4-445e-a805-1e711edaa039` reached SUCCESS. No destructive volume operations or new subscriptions were performed.
+This checklist distinguishes deployed work from changes prepared for review. Production at this update is commit `405f54cba3a0ebb52c9467919bba175bf747e9e2`; Railway deployment `d82d63fd-5ebe-4404-9347-b609c114591c` reached SUCCESS. PRs #2–12 have merged; native fixture/price metadata verification is the current follow-up. No destructive volume operations or new subscriptions were performed.
 
 | Handoff requirement | Verified state | Remaining work |
 | --- | --- | --- |
 | 1. Continue existing project | Located repository, production branch, infrastructure, shared components, records and previous development notes. Existing application retained. | Ongoing reconciliation of all defects against live behavior. |
-| 2. Backup/storage | Source deletion removed in PR #2. OAuth repaired; backup resumed October 24. Downloaded and parsed a 54,313-byte NHL backup file containing 65 records. | Full job completion, full source/remote checksum coverage, deterministic restore selection where duplicate filenames exist, and broader recovery verification. No volume cleanup is authorized. |
-| 3. Shared structure | PR #3 deployed hero/timestamp, Top Plays, swipeable Games, Rankings, Performance. | Current repair removes duplicate Snapshot block for non-Soccer dashboards. Full iPhone/iPad regression remains. |
-| 4. Top Plays | Compact carousel deployed with four basketball categories and no-pick states. No fabricated odds or model probabilities. | Currently consumes summary/default-market rows. All-market aggregation and independently qualified model selections remain. |
+| 2. Backup/storage | Source deletion removed in PR #2. OAuth repaired; backup resumed October 24. Downloaded and parsed a 54,313-byte NHL backup file containing 65 records. | Backup job completion verified at 06:37 UTC: 1,118 files, 14,680,181,077 bytes, no errors, exit 0. Full source/remote checksum coverage, deterministic restore selection where duplicate filenames exist, and broader recovery verification remain. No volume cleanup is authorized. |
+| 3. Shared structure | PR #3 deployed hero/timestamp, Top Plays, swipeable Games, Rankings, Performance. | PR #8 removed duplicate Snapshot blocks and restored three compact game cards plus roughly two Top Plays cards on phones. PR #9 moved full Prediction Performance to its own dashboard at the user’s request. Broader iPhone/iPad regression remains. |
+| 4. Top Plays | Compact carousel deployed with four basketball categories and no-pick states. No fabricated odds or model probabilities. | PR #10 connects NBA/WNBA/CBB/NHL captures across markets; the live endpoint returned multiple markets and 79 verified quotes. PR #12 retains current-board fallback where aggregate captures are unavailable. Independently qualified models remain unapproved; no pick is invented. |
 | 5. Games | Swipeable game cards retained without previous three-game truncation. | Enhanced validated winner/score/total projections, market comparison and full injury/matchup intelligence. |
 | 6. Rankings | PR #6 retains the frozen overnight NBA slate while any game is live; Previous/Today/Tomorrow access separates daily boards. Previous API verified 25 frozen ranks. | Further overnight end-to-end checks, all-sport lineup/progress/status/card consistency and validated probability/GI. |
 | 7. Player intelligence | Basketball Last 5/10/20 season rollover, pregame filtering, duplicate-game filtering and preseason exclusion deployed in PRs #4–5. | Complete explanations, matchup/minutes/role/injury evidence and mobile experience across sports. |
 | 8. Historical validation | Bounded official-stat and saved-selection arithmetic checks below. Original calls/lines retained. | Full original line provenance, projections, snapshots, DNP/void/pending reconciliation, all dates and all sports. |
 | 9. Sports | Shared non-Soccer layout covers NBA/NFL/CFB/NHL/CBB/WNBA; MLB remains hidden publicly. | Sport-specific and historical checks remain, including MLB reactivation readiness. Soccer excluded from redesign/validation. |
-| 10. Performance | Existing periods retained; audited returned-record uniqueness in NBA/NFL/WNBA/NHL/CBB snapshots. | Complete count reconciliation including voids, pushes, pending, late recovery and hidden archives. |
-| 11. Defects | Midnight NBA reset repaired. Jeremiah's missing new-season game repaired in chart. | Current batch repairs NBA role-data refresh and basketball settlement season/final guards. Picks/GI, all progress/status and flicker defects are not certified complete. |
+| 10. Performance | Today/Yesterday/Week/Month/Season and categories retained on a separate dashboard, linked near Last Updated and from navigation. Audited returned-record uniqueness in NBA/NFL/WNBA/NHL/CBB snapshots. | Complete count reconciliation including voids, pushes, pending, late recovery and hidden archives. |
+| 11. Defects | Midnight NBA reset repaired. Jeremiah's missing new-season game repaired in chart. | PR #8 deployed NBA role-data refresh and basketball settlement season/final guards. PR #11 made NBA Q1/First Basket empty states explicitly say No Qualified Picks. Picks/GI, all progress/status and flicker defects are not certified complete. |
 | 12. Sportsbook comparison | No new purchase, OWL upgrade or fabricated pricing. | Provider/Canadian regional/API/cost feasibility and comparison integrations remain future work. |
 | 13. Admin | PR #5 includes hidden MLB/Soccer historical access, original raw fields and signed-out auth protection. | Real owner-session verification and complete hidden-volume coverage. |
-| 14–16. Testing/deployment/reliability | Prior PRs #2–7 deployed with health verification. Current repair batch: 255 tests and production build pass; targeted layout tests also pass. | Current batch must be reviewed/deployed after the running backup is protected from interruption. Overall handoff remains incomplete. |
+| 14–16. Testing/deployment/reliability | PRs #2–12 deployed with terminal SUCCESS checks. Latest full suite: 261 tests passed; production build and TypeScript checks passed. Top Plays endpoint and Q1 tab tested live. | Overall handoff remains incomplete: qualified period/scorer models, full historical integrity coverage, enhanced intelligence and broad device/admin regression are not certified. |
 
 ## Independent audit results in this continuation
 
@@ -35,7 +35,7 @@ The 788 verified records are result-arithmetic checks against provider stats and
 
 The timestamp scan flagged 96 NHL and 2 WNBA records saved at/after scheduled start. A restored NHL shots file contained 13 such records, all already VOID. These are recovery entries in that sample, not late wins. All remaining timestamp cases need record-level review. No timestamps or original predictions were rewritten.
 
-## Repair batch prepared in this continuation
+## Repair batch deployed in PR #8
 
 - NBA research forecasts discover recent current-season games through ranked players' official logs, then ingest reconciled complete two-team box scores for minutes, usage, pace and opponent context. Regular season only; the existing 48-hour research availability lag remains. Source failures/incomplete evidence withhold affected forecasts. Frozen/started cards are untouched.
 - Live source check for Jeremiah Fears (`5144091`) loaded game `401909839`, October 22 UTC, season 2027: 8 points, 21 minutes. The original saved 24.3 / OVER 11.5 is preserved, not retroactively replaced or declared validated.
@@ -47,9 +47,9 @@ The timestamp scan flagged 96 NHL and 2 WNBA records saved at/after scheduled st
 ## Next priorities
 
 1. Finish backup coverage/recovery verification without clearing or resizing volumes.
-2. Deploy and verify the tested repair batch without interrupting the backup.
+2. Verify exact native period-market fixtures and standalone prices before connecting them to the rankings.
 3. Audit remaining 50 NFL cases, all pending/void/DNP records, timestamp recovery cases and MLB legacy snapshots through read-only exports.
-4. Independently validate current models/probabilities/GI before enabling qualified featured picks; complete all-market Top Plays and supported first-basket modelling.
+4. Independently validate current models/probabilities/GI before enabling qualified featured picks; extend all-market Top Plays to remaining capture paths and complete supported first-basket modelling.
 5. Finish enhanced game/player intelligence, mobile regression and real admin-session verification.
 
 ## MLB read-only recovery audit
@@ -60,4 +60,12 @@ The admin mapping now retains legacy projection/GI values for inspection, first-
 
 ## Requested compact card sizing
 
-Following the user's two iPhone screenshots, restore three visible game cards across the shared swipe row and reduce Top Plays to approximately two visible cards on phones (four on wider screens). Clamp game context to two lines, retain logos/time/status and horizontal scrolling, and keep Soccer's grid unchanged. Production build passed; deployment remains held while backup runs.
+Following the user's two iPhone screenshots, restore three visible game cards across the shared swipe row and reduce Top Plays to approximately two visible cards on phones (four on wider screens). Clamp game context to two lines, retain logos/time/status and horizontal scrolling, and keep Soccer's grid unchanged. Deployed and verified in PR #8. Full Prediction Performance moved off the main dashboard in PR #9.
+
+## NBA Q1 / First Basket evidence collected October 24
+
+Collected all 1,813 fixtures identified in the existing runtime census: 1,805 usable event records, 1,762 reconciled Q1 scoring tapes, and 1,801 first-score labels. Original compressed responses and SHA-256 provenance are preserved in `Sach-NBA-Event-Census-2026-10-24.tar.gz`, Library file `libfile_bcaa72ea165c81919418eddb622e6d28`. First score includes free throws and is distinct from first field goal.
+
+Quarter-specific research used 7,572 training, 4,284 calibration and 13,693 test rows across 884 test fixtures per market. Points forecast MAE improved just 0.154%; rebounds, assists and threes were worse than the comparison baseline. This does not approve any model. Exact evaluation and limitations are in `model-research/2026-10-24-events/`.
+
+Live merged OWL coverage: eight games, 3,378 props, zero Q1/First Basket markets. The included FanDuel native Source API is fresh and exposes Q1 two-runner markets, quarter milestones, and First Basket markets labelled SAME_GAME_MULTIS. Milestones cannot substitute for two-way lines; SGP-only prices cannot substitute for standalone First Basket prices. Native event/start/quote verification remains separate from model approval.
