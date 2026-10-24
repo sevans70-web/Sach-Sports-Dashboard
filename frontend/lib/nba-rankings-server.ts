@@ -1,3 +1,4 @@
+import {basketballMarketCoverage} from '@/lib/basketball-market-coverage';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
@@ -57,11 +58,13 @@ export function torontoNbaDay(v:Date|string){
  return `${get("year")}-${get("month")}-${get("day")}`;
 }
 
+let coverageLoggedAt=0;
 async function fetchOwlsPayload(){
  const [owls,sgo]=await Promise.allSettled([getOwlsPayload("nba"),getSgoSupplement("NBA")]);
  const primary=owls.status==="fulfilled"?owls.value:null,extra=sgo.status==="fulfilled"?sgo.value:null;
  if(!primary&&!extra?.data?.length)throw new Error("NBA odds feeds are unavailable.");
  const primaryWarning=owls.status==='rejected'?String(owls.reason?.message||'Primary NBA feed unavailable'):null;
+ if(primary&&Date.now()-coverageLoggedAt>=5*60_000){coverageLoggedAt=Date.now();console.info('[nba-market-coverage]',JSON.stringify(basketballMarketCoverage(primary)));}
  return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],feedWarning:[primaryWarning,extra?.warning].filter(Boolean).join('; ')||null};
 }
 
@@ -563,7 +566,7 @@ export async function captureAllNbaMarkets(day?:string){
  // on screen. The existing ten-minute scheduler refreshes both independently.
  const upcomingDay=nextNbaBoardDay(activeNbaBoardDay(overview?.games||[]));
  const upcoming=!day&&overview?.games?.some((g:any)=>torontoNbaDay(g.tipoff||'')===upcomingDay)?await buildBoards(upcomingDay):[];
- if(upcoming.length)await archiveResearchBoards('nba',upcoming);
+ if(upcoming.length)await archiveResearchBoards('nba',upcoming.map(board=>({...board,day:upcomingDay})));
  return{
   ...research,
   warning:"Research snapshots are archived separately; validated betting picks remain withheld.",
