@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useState} from "react";
+import {useCallback,useEffect,useState} from "react";
 import Link from "next/link";
 import {IntelligenceHero,UpdatedStamp,GamesPreviewCard} from "./dashboard-chrome";
 import {SnapshotPanel,snapshotGameDetail} from "./snapshot-panel";
@@ -10,8 +10,11 @@ import {SOCCER_LEAGUES} from "@/lib/soccer";
 import {dashboardCounts,DEFAULT_MARKETS,type DashboardSport} from "@/lib/dashboard-contract";
 export function SportsDashboard({sport}:{sport:DashboardSport}){
  const [league,setLeague]=useState("eng.1"),{data:summary,error}=useDashboardSummary(sport,league),schedule=useDashboardSchedule(sport,league);
+ const [boardCount,setBoardCount]=useState<{scope:string;market:string;count:number}|null>(null);
+ const onPickCount=useCallback((value:{market:string;count:number})=>setBoardCount({...value,scope:`${sport}|${league}`}),[sport,league]);
+ const currentBoard=boardCount?.scope===`${sport}|${league}`?boardCount:null;
  const data=summary||(schedule?{...dashboardCounts(schedule.games||[],[]),previewGames:schedule.games||[],weekNumber:schedule.weekNumber,market:DEFAULT_MARKETS[sport],updatedAt:schedule.updatedAt,scheduleAvailable:schedule.success!==false,rankingsAvailable:false}:null);
- const ready=data?.scheduleAvailable,ranked=data?.rankingsAvailable,market=String(data?.market||"").replaceAll("_"," ");
+ const ready=data?.scheduleAvailable,ranked=currentBoard!=null||data?.rankingsAvailable,market=String(currentBoard?.market||data?.market||"").replaceAll("_"," ");
  useEffect(()=>{if(!["nba","wnba","nhl","cbb","soccer"].includes(sport))return;const controller=new AbortController();fetch(`/api/${sport}/capture${sport==="soccer"?`?league=${encodeURIComponent(league)}`:""}`,{method:"POST",cache:"no-store",signal:controller.signal}).catch(()=>{});return()=>controller.abort()},[sport,league]);
  const viewAll=`/${sport}/games${sport==="soccer"?`?league=${encodeURIComponent(league)}`:""}`;
  return <main className="ssDashboard" data-dashboard-sport={sport}>
@@ -25,10 +28,10 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   <SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
    {label:"Games",value:ready?data.games:"…",detail:ready?snapshotGameDetail(data.games,data.live,data.finals):"Loading current + next slate",icon:"games",tone:"green"},
    {label:"Lineups",value:ready?`${data.confirmedLineups}/${data.lineups}`:"…",detail:ready?`${data.confirmedLineups} confirmed · ${data.pendingLineups} awaiting confirmation`:"Team lineups",icon:"lineups"},
-   {label:"Sach picks",value:ranked?data.estimatedPicks??0:"…",detail:ranked?`${market} · saved picks`:"Checking market data",icon:"predictions",tone:"gold"}
+   {label:"Sach picks",value:ranked?currentBoard?.count??data?.estimatedPicks??0:"…",detail:ranked?`${market} · saved picks`:"Checking market data",icon:"predictions",tone:"gold"}
   ]}/>
   {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
   <section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>
-  <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport}/></section>
+  <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport} onPickCount={onPickCount}/></section>
  </main>;
 }

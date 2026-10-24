@@ -1691,8 +1691,10 @@ function applyCfbLiveState(card: RankingCard, game: CfbLiveGame | null) {
 
 export function PlayerRankingsPanel({
   sport,
+  onPickCount,
 }: {
   sport: RankingsSport;
+  onPickCount?: (summary: {market:string;count:number}) => void;
 }) {
   const config = CONFIG[sport];
   const [groupKey, setGroupKey] = useState(config.groups[0].key);
@@ -1722,6 +1724,11 @@ export function PlayerRankingsPanel({
   const rankingRequestSeq = useRef(0);
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
+
+  useEffect(()=>{
+    if(loading||error||cards.some(card=>card.market!==market.key))return;
+    onPickCount?.({market:market.key,count:cards.filter(card=>card.raw?.withdrawnFromBoard!==true&&card.raw?.resultStatus!=="void"&&cardModelPick(card.raw)).length});
+  },[cards,loading,error,market.key,onPickCount]);
 
   const viewCacheKey = (
     nextGroup: string,
