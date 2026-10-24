@@ -4,6 +4,8 @@ import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
 import {availablePregameRankings} from '@/lib/ranking-availability';
 import {selectNbaCandidates,recordedNbaCandidates} from '@/lib/nba-ranking-candidates';
 import {readHistorySnapshots} from '@/lib/history-archive';
+import {writeDurableHistory} from '@/lib/durable-history';
+import {withHistoryLock} from '@/lib/history-lock';
 import {rankingResponse} from '@/lib/ranking-response-cache';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext,attachBasketballAvailability} from '@/lib/basketball-pregame-context';
@@ -606,7 +608,13 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
    const game=overview.games.find((g:any)=>String(g.gameId)===String(row.gameId));
    return {...row,gameState:game?.state||row.gameState,gameStatus:game?.status||row.gameStatus};
   });
-  return publicNbaBoard(await attachBasketballAvailability({...frozen,rows:[...frozen.rows,...extra]},'nba'));
+  const visible=publicNbaBoard(await attachBasketballAvailability({...frozen,rows:[...frozen.rows,...extra]},'nba'));
+  // Keep the restored display and grading ledger on the same exact decisions.
+  // This is a separate repair record; never overwrite the original daily board.
+  if(visible.rows.some((r:any)=>r.recoveredRecordedCandidate))await withHistoryLock('nba-restored-board|'+market+'|'+frozen.boardDay,()=>writeDurableHistory('nba','restored_slate_board_'+market,frozen.boardDay,[{
+   version:1,day:frozen.boardDay,market,capturedAt:frozen.boardCapturedAt,lockAt:new Date(lockAt).toISOString(),restoredAt:new Date().toISOString(),rows:visible.rows
+  }]));
+  return visible;
  }
  let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};

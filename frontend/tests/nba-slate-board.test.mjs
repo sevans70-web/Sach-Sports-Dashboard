@@ -81,5 +81,10 @@ test('pick ledger counts only selections saved pregame and retains settled grade
  assert.equal(first.total,1);assert.equal(first.hits,1);
  const outage=await nbaPickPerformance(['points'],[day],async()=>null,Date.parse('2026-10-20T23:30:00Z'));
  assert.equal(outage.hits,1);assert.equal(outage.pending,0);
+ const original=await readNbaSlateBoard('points',day);
+ await writeDurableHistory('nba','restored_slate_board_points',day,[{...original,rows:[rows[0],{...rows[1],recoveredRecordedCandidate:true,boardCapturedAt:capture}]}]);
+ const restored=await nbaPickPerformance(['points'],[day],async()=>summary(12),Date.parse('2026-10-20T23:30:00Z'));
+ assert.equal(restored.total,2);assert.equal(restored.hits,1);assert.equal(restored.pending,1);
+ assert.equal((await readNbaSlateBoard('points',day)).rows.length,3,'original board remains unchanged');
  await rm(root,{recursive:true,force:true});
 });

@@ -21,15 +21,18 @@ export function summarizeSavedPicks(results:any[]){
 export async function nbaPickPerformance(markets:string[],days:string[],summary:(id:string)=>Promise<any>,now=Date.now(),sport='nba'){
  const results:any[]=[];
  for(const day of days)for(const market of markets){
-  const board=await readNbaSlateBoard(market,day,sport);
+  const original=await readNbaSlateBoard(market,day,sport);
+  const restored=sport==='nba'?(await readDurableHistory<any>(sport,'restored_slate_board_'+market,day))[0]:null;
+  const board=restored&&restored.day===day&&restored.market===market&&original&&restored.capturedAt===original.capturedAt?restored:original;
   if(!board||Date.parse(board.capturedAt)>now||!(Date.parse(board.capturedAt)<Date.parse(board.lockAt)))continue;
   const locked=Date.parse(board.lockAt)<=now;
   const rows:any[]=[];
   const previous=await readDurableHistory<any>(sport,'model_pick_results_'+market,day);
   for(const row of board.rows){
    if(row.market!==market)continue;
-   const pick=savedModelPick(row,board.capturedAt);if(!pick)continue;
-   const saved={...row,pickSide:pick.side,prediction:pick.side,sportsbookLine:pick.line,savedAt:board.capturedAt,boardCapturedAt:board.capturedAt,boardFrozen:locked,validatedForBetting:false};
+   const capture=row.recoveredRecordedCandidate?row.boardCapturedAt:board.capturedAt;
+   const pick=savedModelPick(row,capture);if(!pick)continue;
+   const saved={...row,pickSide:pick.side,prediction:pick.side,sportsbookLine:pick.line,savedAt:capture,boardCapturedAt:capture,boardFrozen:locked,validatedForBetting:false};
    const grade=locked?gradeSavedNbaPick(saved,await summary(String(row.gameId))):{status:'pending',actual:null};
    const old=previous.find(r=>r.playerId===saved.playerId&&r.gameId===saved.gameId&&r.quoteId===saved.quoteId&&r.savedAt===saved.savedAt&&r.pickSide===saved.pickSide);
    rows.push({...saved,...(grade.status==='pending'&&old&&['hit','miss','push','void'].includes(old.status)?{status:old.status,actual:old.actual,voidReason:old.voidReason,gradedAt:old.gradedAt}:grade),...(grade.status!=='pending'?{gradedAt:new Date(now).toISOString(),gradeSource:'ESPN final boxscore'}:{})});
