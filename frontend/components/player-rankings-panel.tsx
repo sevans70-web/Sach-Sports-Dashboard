@@ -1272,7 +1272,7 @@ function PlayerCard({
             </div>
           )}
 
-          <section className={styles.intelSection}>
+          {!firstBasket?<section className={styles.intelSection}>
             <h4>{researchOnly ? "Player Analysis" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
             <div className={styles.reasonList}>
               {(reasons.length ? reasons : [card.summary]).map((reason, index) => (
@@ -1282,9 +1282,9 @@ function PlayerCard({
                 </p>
               ))}
             </div>
-          </section>
+          </section>:null}
 
-          <section className={styles.intelSection}>
+          {!firstBasket?<section className={styles.intelSection}>
             <div className={styles.sectionTitleRow}>
               <h4>Recent Form</h4>
               <div className={styles.formTabs}>
@@ -1314,7 +1314,7 @@ function PlayerCard({
                 liveValue={state === "live" ? current : null}
               />
             )}
-          </section>
+          </section>:null}
 
           <section className={styles.intelSection}>
             <h4>{state === "live" ? "Matchup (Live)" : state === "final" ? "Matchup Result" : "Matchup"}</h4>
