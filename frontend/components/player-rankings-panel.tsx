@@ -1732,6 +1732,8 @@ export function PlayerRankingsPanel({
   const [error, setError] = useState("");
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
+  const [nbaSlate,setNbaSlate]=useState("active");
+  const [nbaBoardLabel,setNbaBoardLabel]=useState("");
   const [nflSlate, setNflSlate] = useState<CfbSlateKey>("all");
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
   const [sharedStatusGames, setSharedStatusGames] = useState<SharedStatusGame[]>([]);
@@ -2024,7 +2026,7 @@ export function PlayerRankingsPanel({
           const rankingUrl =
             sport === "cfb"
               ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
-              : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
+              : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}${sport==="nba"&&nbaSlate!=="active"?`&day=${nbaSlate}`:""}`;
 
           // Never make rankings wait for grading/performance data.
           const rankingPayload = await fetchJson(
@@ -2033,17 +2035,18 @@ export function PlayerRankingsPanel({
           );
 
           rawRows = rankingPayload?.rows || [];
+          if(sport==="nba"&&alive)setNbaBoardLabel(rankingPayload?.boardDay||"");
           rawDropped = rankingPayload?.dropped || [];
 
           const performanceUrl =
-            `/api/${sport}/performance?period=Today&market=${encodeURIComponent(market.key)}`;
+            `/api/${sport}/performance?period=${sport==="nba"?"Week":"Today"}&market=${encodeURIComponent(market.key)}`;
           performance = rankingJsonCache.get(performanceUrl)?.payload || null;
           // Performance is secondary to the ranking board. Do not start a
           // second expensive request while CFB is still assembling its slate.
           if (sport !== "cfb") prefetchJson(performanceUrl);
         }
 
-        const movementScope=[sport,league,requestedMarket,requestedCfbSlate,torontoDay(new Date().toISOString())].join("|");
+        const movementScope=[sport,league,requestedMarket,requestedCfbSlate,sport==="nba"?nbaSlate:"",rawRows[0]?.boardDay||torontoDay(new Date().toISOString())].join("|");
         try{
           const stored=window.localStorage.getItem("sach-rank-movement-v2|"+movementScope);
           const tracked=trackRankBoard(rawRows,stored?JSON.parse(stored) as RankBoard:null,movementScope);
@@ -2179,7 +2182,7 @@ export function PlayerRankingsPanel({
       controller.abort();
       window.clearInterval(interval);
     };
-  }, [sport, groupKey, marketKey, league, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sport, groupKey, marketKey, league, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
@@ -2393,6 +2396,8 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
+      {sport==='nba'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NBA ranking slate">{[['active','Live / current slate'],['previous','Previous slate'],['today','Today'],['tomorrow','Tomorrow']].map(([key,label])=><button type="button" key={key} className={nbaSlate===key?styles.activeTab:''} onClick={()=>{setNbaSlate(key);setFull(false)}}>{label}</button>)}</div></div>:null}
+
       {config.groups.length > 1 ? (
         <div className={styles.tabsFrame}>
           <div className={styles.tabs} ref={groupScroll.ref}>
@@ -2433,6 +2438,7 @@ export function PlayerRankingsPanel({
         <h3>{market.icon} {market.label} Rankings</h3>
         <p>
           {sport === "cfb" && cfbSlate === "all" ? "Up to 75 · three independent Top 25 time blocks" : "Top 25"} · {sourceText}
+          {sport==='nba'&&nbaBoardLabel?` · ${nbaBoardLabel}`:''}
           {sport==='nba'&&displayCards.some(c=>c.raw?.boardFrozen)?' · Locked at first tipoff':''}
         </p>
       </div>
