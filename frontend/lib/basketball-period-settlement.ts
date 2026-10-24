@@ -11,11 +11,16 @@ export function basketballQ1Actual(payload:any,p:{playerId?:string;playerName?:s
  if(!basketballQuarterComplete(payload))return null;
  const plays=orderedPlays(payload).filter(x=>Number(x.period?.number??x.period)===1);
  const competitors=payload?.header?.competitions?.[0]?.competitors||[];
- const scores=competitors.map((c:any)=>Number((c.linescores||[]).find((s:any,i:number)=>Number(s.period??i+1)===1)?.value));
+ const scores=competitors.map((c:any)=>{
+  const quarter=(c.linescores||[]).find((s:any,i:number)=>Number(s.period?.number??s.period??i+1)===1);
+  const raw=quarter?.value??quarter?.displayValue;
+  return raw==null||typeof raw==='boolean'||String(raw).trim()===''?NaN:Number(raw);
+ });
  const scored=plays.reduce((n,x)=>n+(x.scoringPlay===true?Number(x.scoreValue)||0:0),0);
  if(scores.length!==2||scores.some((x:number)=>!Number.isFinite(x))||scores.reduce((a:number,b:number)=>a+b,0)!==scored||!plays.length)return null;
  const name=String(p.playerName||"");if(!name)return null;
- let points=0,rebounds=0,assists=0,threes=0,participated=false;
+ const starter=Boolean(p.playerId&&(payload?.boxscore?.players||[]).some((team:any)=>(team.statistics||[]).some((group:any)=>(group.athletes||[]).some((a:any)=>String(a.athlete?.id)===String(p.playerId)&&a.starter===true&&a.didNotPlay!==true))));
+ let points=0,rebounds=0,assists=0,threes=0,participated=starter;
  for(const play of plays){
   const text=String(play.text||play.shortText||""),n=clean(text),own=subject(text,name);
   if(own)participated=true;

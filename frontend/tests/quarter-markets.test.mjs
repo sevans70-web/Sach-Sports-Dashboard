@@ -28,6 +28,16 @@ test('Q1 grading counts only a complete first quarter, including FTs, rebounds, 
  const p=payload(),player={playerName:'Alex One'};assert.equal(q1(p,player,'q1_points'),4);assert.equal(q1(p,player,'q1_pts_rebs_asts'),6);assert.equal(q1(p,player,'q1_threes_made'),1);assert.equal(q1(p,{playerName:'Absent Player'},'q1_points'),null);
  p.header.competitions[0].status.period=1;assert.equal(q1(p,player,'q1_points'),null);p.header.competitions[0].status.period=2;p.plays.shift();assert.equal(q1(p,player,'q1_points'),null);
 });
+test('official displayValue quarter totals reconcile without substituting full-game results or missing zeroes',()=>{
+ const p=payload();p.header.competitions[0].competitors.forEach(c=>{c.linescores=c.linescores.map(s=>({displayValue:String(s.value)}))});
+ assert.equal(q1(p,{playerName:'Alex One'},'q1_points'),4);
+ p.boxscore={players:[{statistics:[{athletes:[{athlete:{id:'starter'},starter:true},{athlete:{id:'bench'},starter:false},{athlete:{id:'out'},starter:true,didNotPlay:true}]}]}]};
+ assert.equal(q1(p,{playerId:'starter',playerName:'Zero Starter'},'q1_points'),0);
+ assert.equal(q1(p,{playerId:'bench',playerName:'Zero Bench'},'q1_points'),null);
+ assert.equal(q1(p,{playerId:'out',playerName:'Out Player'},'q1_points'),null);
+ p.header.competitions[0].competitors[0].linescores[0].displayValue='';
+ assert.equal(q1(p,{playerName:'Alex One'},'q1_points'),null);
+});
 test('first basket counts the first score including free throws, not the assister or a truncated later score',()=>{
  const p=payload();assert.equal(first(p,{playerName:'Alex One'}),1);assert.equal(first(p,{playerName:'Ben Two'}),0);p.plays.shift();assert.equal(first(p,{playerName:'Ben Two'}),null);
 });
