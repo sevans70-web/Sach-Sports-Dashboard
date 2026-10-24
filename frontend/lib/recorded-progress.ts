@@ -29,7 +29,7 @@ export async function attachRecordedProgressLines(payload:any,sport:string,now=D
  const rows=payload.rows,needed=rows.filter((r:any)=>r.sportsbookLine==null&&r.gameId&&r.playerId&&Date.parse(r.gameTime)<=now);
  if(!needed.length)return payload;
  const quotes=new Map<any,any>();
- const markets=[...new Set(needed.map((row:any)=>String(payload.market||row.market||'')))];
+ const markets=[...new Set<string>(needed.map((row:any)=>String(payload.market||row.market||'')))];
  for(const market of markets){
   if(!market)continue;
   const players=needed.filter((r:any)=>String(payload.market||r.market||'')===market),days=new Set<string>();
