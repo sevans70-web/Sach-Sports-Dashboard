@@ -1,0 +1,149 @@
+{
+  "modelId": "local-workload-distribution-candidate-v1",
+  "validatedForBetting": false,
+  "giEnabled": false,
+  "observations": 12951,
+  "reports": [
+    {
+      "group": "cfb|passing_yards",
+      "targetAppearances": 580,
+      "eligibleTargets": 62,
+      "trainingRows": 311,
+      "calibrationRows": 194,
+      "exactQuoteSamples": 0,
+      "validatedForBetting": false,
+      "reason": "insufficient_training_or_calibration",
+      "forecasts": 0
+    },
+    {
+      "group": "cfb|rushing_yards",
+      "targetAppearances": 2018,
+      "eligibleTargets": 227,
+      "trainingRows": 1230,
+      "calibrationRows": 830,
+      "exactQuoteSamples": 0,
+      "validatedForBetting": false,
+      "reason": null,
+      "trainedThrough": "2025-10-15T23:00:00.000Z",
+      "calibrationStartsAt": "2025-10-18T23:30:00.000Z",
+      "calibratedThrough": "2025-12-07T01:00:00.000Z",
+      "forecasts": 227,
+      "mae": 26.464385784717457,
+      "baselineMae": 27.626221942521507,
+      "workloadMae": 3.3061488025347012,
+      "crps": 19.76420748649286,
+      "interval80Coverage": 0.7797356828193832,
+      "baselineCrps": 21.281977998507497,
+      "pairedCrpsImprovement": {
+        "clusters": 55,
+        "replicates": 1000,
+        "lower95": 0.453918705536553,
+        "upper95": 2.643700576555291
+      },
+      "calibrationPolicy": "nearest_half_workload_minimum_100",
+      "pairedPooledCrpsImprovement": {
+        "clusters": 55,
+        "replicates": 1000,
+        "lower95": 0.2748513527599069,
+        "upper95": 0.8515518511364987
+      },
+      "pairedPooledBrierImprovement": null,
+      "meanIntervalWidth": 82.16299559471365,
+      "brier": null,
+      "marketBrier": null,
+      "candidateBets": 0,
+      "pairedBrierImprovement": null,
+      "candidateSettled": 0,
+      "candidatePushes": 0,
+      "candidateRoi": null,
+      "candidateRoiInterval": null,
+      "quoteRejections": {
+        "missing_quote": 227
+      },
+      "calibrationBins": [
+        {
+          "from": 0,
+          "to": 0.1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.1,
+          "to": 0.2,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.2,
+          "to": 0.3,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.3,
+          "to": 0.4,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.4,
+          "to": 0.5,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.5,
+          "to": 0.6,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.6,
+          "to": 0.7,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.7,
+          "to": 0.8,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.8,
+          "to": 0.9,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        },
+        {
+          "from": 0.9,
+          "to": 1,
+          "count": 0,
+          "predicted": null,
+          "observed": null
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Diagnostic reuse of the v1 evaluation period; not an untouched holdout.",
+    "Current-board population and revised official logs introduce selection and vintage bias.",
+    "Pregame role, injuries, teammates, weather, rotation, matchup and goalie context remain missing.",
+    "Workload-neighborhood calibration uses at least 100 errors from the nearest half of at least 200 calibration workloads; it does not establish player-conditional or prospective calibration.",
+    "48-hour publication lag is a convention, not archived publication-time evidence.",
+    "No quarter/scorer support. No probability or GI promotion without exact quotes, independent validation and prospective evidence."
+  ],
+  "sourceDataSha256": "da6079fb1caa55c76f6e06b61c0607ff76852784febe9075ef352689013303bc",
+  "selectedQuoteCount": 0,
+  "quoteDataSha256": null,
+  "modelArtifactsSha256": "96274020b4598192ca8f5561d7cf936f3e4cea0038341b72b7d9ac4ea3c365da"
+}

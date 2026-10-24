@@ -2,6 +2,9 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';import {createHash} from 'node:crypto';
 import {loadTs} from '../tests/load-ts.mjs';
 const {footballModelObservations}=await loadTs(new URL('../lib/football-model-observations.ts',import.meta.url));
+const sport=process.env.MODEL_SPORT||'nfl';if(!['nfl','cfb'].includes(sport))throw Error('Unsupported football sport');
+if(sport==='cfb'&&!process.argv[2])throw Error('CFB collection requires a separate explicit output directory');
+const providerSport=sport==='cfb'?'college-football':'nfl';
 const output=process.argv[2]||new URL('../model-research/2026-10-19/nfl-population/',import.meta.url).pathname;
 const cache=process.env.MODEL_SOURCE_CACHE||'/tmp/sach-football-population-cache';
 const period=process.env.MODEL_QUARTERS==='1'?'q1':'game';
@@ -17,9 +20,11 @@ async function get(url){
 async function pool(items,work,size=3){let index=0;await Promise.all(Array.from({length:size},async()=>{while(index<items.length)await work(items[index++])}))}
 // Explicit week + dates=season is required: year= is ignored by this endpoint.
 // Calendar-year ranges also include games from the previous NFL season.
-const weeks=(period==='q1'?[2024,2025,2026]:[2025,2026]).flatMap(season=>Array.from({length:18},(_,i)=>({season:String(season),week:i+1})));
+const seasons=process.env.MODEL_SEASONS?process.env.MODEL_SEASONS.split(',').map(Number):(period==='q1'?[2024,2025,2026]:[2025,2026]);
+if(seasons.some(s=>!Number.isInteger(s)||s<2020||s>2026))throw Error('Invalid study season');
+const weeks=seasons.flatMap(season=>Array.from({length:sport==='cfb'?16:18},(_,i)=>({season:String(season),week:i+1})));
 await pool(weeks,async({season,week})=>{
- const url=`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${season}&week=${week}&seasontype=2&limit=1000`;
+ const url=`https://site.api.espn.com/apis/site/v2/sports/football/${providerSport}/scoreboard?${sport==='cfb'?'groups=80&':''}dates=${season}&week=${week}&seasontype=2&limit=1000`;
  try{const {data,retrievedAt}=await get(url);
   if(String(data.season?.year)!==season||Number(data.season?.type)!==2||Number(data.week?.number)!==week)throw Error('Scoreboard season/week mismatch');
   let accepted=0;for(const e of data.events||[]){
@@ -32,8 +37,8 @@ await pool(weeks,async({season,week})=>{
 console.log(JSON.stringify({discoveredGames:events.size,scoreboardErrors:errors.length}));
 let done=0;
 await pool([...events.values()],async identity=>{
- const url=`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${identity.gameId}`;
- try{const {data,retrievedAt}=await get(url),rows=footballModelObservations(data,{...identity,sport:'nfl',source:url,retrievedAt},period);
+ const url=`https://site.api.espn.com/apis/site/v2/sports/football/${providerSport}/summary?event=${identity.gameId}`;
+ try{const {data,retrievedAt}=await get(url),rows=footballModelObservations(data,{...identity,sport,source:url,retrievedAt},period);
   if(!rows.length&&period==='game')throw Error('No eligible official summary observations');
   observations.push(...rows);requests.push({kind:'summary',...identity,source:url,retrievedAt,observations:rows.length});
  }catch(e){errors.push({kind:'summary',...identity,source:url,error:e.message})}
@@ -42,5 +47,5 @@ await pool([...events.values()],async identity=>{
 observations.sort((a,b)=>[a.market,a.playerId,a.season,a.gameTime,a.gameId].join('|').localeCompare([b.market,b.playerId,b.season,b.gameTime,b.gameId].join('|')));
 const data=JSON.stringify(observations)+'\n',compressed=gzipSync(data,{level:9});
 await writeFile(output+'/opportunity-observations.json.gz',compressed);
-await writeFile(output+'/source-manifest.json',JSON.stringify({population:period==='q1'?'Reconciled first-quarter yards and quarter workload from completed official NFL games; incomplete tape excluded; historical full-game workload retained only as a prior-role feature.':'All discovered completed regular-season NFL games, all official players with reported positive market workload; 48-hour publication lag convention.',observations:observations.length,discoveredGames:events.size,completedSummaries:requests.filter(r=>r.kind==='summary').length,dataSha256:digest(data),compressedSha256:digest(compressed),requests,errors},null,2)+'\n');
+await writeFile(output+'/source-manifest.json',JSON.stringify({population:period==='q1'?'Reconciled first-quarter yards and quarter workload from completed official football games; incomplete tape excluded; historical full-game workload retained only as a prior-role feature.':'All discovered completed regular-season football games, all official players with reported positive market workload; 48-hour publication lag convention.',observations:observations.length,discoveredGames:events.size,completedSummaries:requests.filter(r=>r.kind==='summary').length,dataSha256:digest(data),compressedSha256:digest(compressed),requests,errors},null,2)+'\n');
 console.log(JSON.stringify({done:true,observations:observations.length,errors:errors.length}));

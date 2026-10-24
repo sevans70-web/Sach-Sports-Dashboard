@@ -40,3 +40,9 @@ test('a supported projection can coexist with a pass at the offered price; its a
  assert.equal(cardModelProjection({...row,gameState:'in'},now),null);
  assert.equal(cardModelProjection({...row,gameState:'post',boardFrozen:true},now),10.2);
 });
+
+test('missing forecast and failed accuracy checks have distinct public explanations',()=>{
+ assert.equal(modelPickNotice({market:'receiving_yards',researchForecast:{status:'available',reason:null,selectionReason:'price_validation_failed'}}),'Accuracy checks not met');
+ assert.equal(modelPickNotice({market:'receiving_yards',researchForecast:{reason:'market_model_not_fitted'}}),'Forecast not available yet');
+ assert.equal(modelPickNotice({market:'first_td',researchForecast:{reason:'market_model_not_fitted'}}),'Scorer forecast not available yet');
+});

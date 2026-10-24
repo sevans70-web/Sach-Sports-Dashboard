@@ -41,6 +41,8 @@ export function modelPickNotice(row:any){
  if(['prior_basketball_role_uncertain','basketball_role_uncertain'].includes(reason))return 'Role is uncertain';
  if(['player_team_history_unavailable','insufficient_basketball_role_history'].includes(reason))return 'More same-team history needed';
  if(reason==='reported_unavailable')return 'Reported unavailable';
- if(['market_model_not_fitted','price_validation_failed'].includes(reason))return 'No supported pick for this market';
+ if(reason==='price_validation_failed')return 'Accuracy checks not met';
+ if(reason==='price_validation_missing')return 'Pick verification is incomplete';
+ if(reason==='market_model_not_fitted')return ['anytime_td','first_td','q1_anytime_td'].includes(row?.market)?'Scorer forecast not available yet':'Forecast not available yet';
  return 'Not enough evidence for a pick';
 }

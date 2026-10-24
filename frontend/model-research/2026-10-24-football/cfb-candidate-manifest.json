@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "sha256": "bd09b867ea3476162a5350511d400dcccd29eddbe8935a5009e43d8e20b80a86",
+  "observations": 12951,
+  "models": [
+    "cfb|passing_yards",
+    "cfb|rushing_yards"
+  ],
+  "selectionPolicy": "projection_only",
+  "validatedForBetting": false,
+  "sourceManifest": "model-research/2026-10-24-football/source-manifest.json"
+}

@@ -16,14 +16,15 @@ const MARKET_ALIASES:Record<CfbMarketKey,string[]>={
 
 export type CfbOwlsRow=FootballBookRow;
 
-async function sharedPayload(){
- const [owls,sgo]=await Promise.allSettled([getOwlsPayload('ncaaf'),getSgoSupplement('NCAAF')]);
- const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
- if(!primary&&!extra?.data?.length)throw Error('College football book feeds are unavailable');
- return {data:[...(primary?.data||[]),...sgoBookGames(extra)]};
-}
-export async function getOwlsCfbRows(market:CfbMarketKey):Promise<CfbOwlsRow[]>{
-  return footballBookRows(await sharedPayload(),market,MARKET_ALIASES[market]);
+/** The paid primary feed already merges books. Do not let an exhausted
+ * optional provider delay or erase an executable primary-market quote. */
+export async function getOwlsCfbRows(market:CfbMarketKey,sources={primary:()=>getOwlsPayload('ncaaf'),supplement:()=>getSgoSupplement('NCAAF')}):Promise<CfbOwlsRow[]>{
+ let primary:any=null;
+ try{primary=await sources.primary()}catch{}
+ const rows=footballBookRows(primary,market,MARKET_ALIASES[market]);
+ if(rows.length)return rows;
+ const extra=await sources.supplement();
+ return footballBookRows({data:sgoBookGames(extra)},market,MARKET_ALIASES[market]);
 }
 
 export async function getOwlsQualifiedGames(markets:CfbMarketKey[]){
