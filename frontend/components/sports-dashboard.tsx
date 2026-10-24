@@ -21,7 +21,7 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
  return <main className="ssDashboard" data-dashboard-sport={sport}>
   <IntelligenceHero sport={sport}/>
   {sport==="soccer"?<div className="soccerLeagueRow"><label htmlFor="soccer-league">Leagues</label><select id="soccer-league" value={league} onChange={e=>setLeague(e.target.value)}>{SOCCER_LEAGUES.map(([label,key])=><option value={key} key={key}>{label}</option>)}</select></div>:null}
-  <UpdatedStamp value={data?.updatedAt} preview={false}/>
+  {sport==="soccer"?<UpdatedStamp value={data?.updatedAt} preview={false}/>:<div className="ssDashboardMeta"><UpdatedStamp value={data?.updatedAt} preview={false}/><Link className="ssPerformanceLink" href={`/performance?sport=${sport}`}>Prediction Performance ›</Link></div>}
   {sport!=="soccer"?<TodayTopPlays sport={sport} rows={summary?.verifiedRows||[]} loading={!summary}/>:null}
   <section className="ssGamesPreview" aria-label={`${sport.toUpperCase()} current slate`}>
    <div className="ssGamesPreviewHead"><h2>{sport==="nfl"?`${data?.weekNumber?`WEEK ${data.weekNumber}`:"CURRENT WEEK"} NFL GAMES`:`${sport.toUpperCase()} CURRENT + NEXT GAMES`}</h2><Link href={viewAll}>View All ›</Link></div>
@@ -35,6 +35,6 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
   {sport==="soccer"?<section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>:null}
   <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport} onPickCount={onPickCount}/></section>
-  {sport!=="soccer"?<section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>:null}
+
  </main>;
 }
