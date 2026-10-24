@@ -1,9 +1,26 @@
 import {providerFetch} from "@/lib/provider-fetch";
+import {nativeBasketballCoverage} from '@/lib/native-basketball-coverage';
 type Sport="nfl"|"ncaaf"|"nba"|"wnba"|"nhl"|"soccer"|"cbb";
 const cache=new Map<Sport,{expires:number;payload?:any;error?:string}>();
 const pending=new Map<Sport,Promise<any>>();
 const sourceCache=new Map<string,{expires:number;payload?:any;error?:string}>();
 const sourcePending=new Map<string,Promise<any>>();
+/** One fixed Source API read per hour, included on all paying tiers in the
+ * provider OpenAPI contract. Discovery only; no new plan or raw odds exposure. */
+export async function getOwlsNbaPeriodSourceCoverage(){
+ const tag='nba-fanduel-period-coverage',hit=sourceCache.get(tag);
+ if(hit&&hit.expires>Date.now()){if(hit.error)throw Error(hit.error);return hit.payload}
+ const pending=sourcePending.get(tag);if(pending)return pending;
+ const task=(async()=>{
+  try{
+   const key=process.env.OWLS_INSIGHT_API_KEY?.trim();if(!key)throw Error('Book feed is not configured');
+   const r=await providerFetch('https://api.owlsinsight.com/api/v2/fanduel/nba',{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},cache:'no-store'});
+   if(!r.ok)throw Error('Included FanDuel source returned '+r.status);
+   const p=await r.json(),value={source:'fanduel',sport:'nba',status:typeof p?.meta?.status==='string'?p.meta.status:null,ageSeconds:typeof p?.meta?.ageSeconds==='number'?p.meta.ageSeconds:null,...nativeBasketballCoverage(p),checkedAt:new Date().toISOString()};
+   sourceCache.set(tag,{expires:Date.now()+3600_000,payload:value});return value;
+  }catch(e){const error=e instanceof Error?e.message:'Source unavailable';sourceCache.set(tag,{expires:Date.now()+3600_000,error});throw Error(error)}
+ })();sourcePending.set(tag,task);try{return await task}finally{sourcePending.delete(tag)}
+}
 /** Included graded-results capability, NOT the restricted MVP history archive.
  * Fixed dates, at most six reads for NFL and three for NBA per hour.
  * No caller-controlled query or paid-plan fallback.

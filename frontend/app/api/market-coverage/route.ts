@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server';
-import {getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage,getOwlsArchiveValidationSample,getOwlsIncludedResultsSample} from '@/lib/owls-provider';
+import {getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage,getOwlsArchiveValidationSample,getOwlsIncludedResultsSample,getOwlsNbaPeriodSourceCoverage} from '@/lib/owls-provider';
 import {footballBookRows} from '@/lib/football-book-quotes';
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 import {inspectOwlsResultEvidence} from '@/lib/owls-result-evidence';
@@ -9,6 +9,10 @@ export const dynamic='force-dynamic';
  * The archive probe exposes only bounded public quote fields, never outcomes. */
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport');if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
+ if(req.nextUrl.searchParams.get('mode')==='nba-period-source'){
+  if(sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
+  try{return NextResponse.json(await getOwlsNbaPeriodSourceCoverage(),{headers:{'Cache-Control':'no-store'}})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Source unavailable'},{status:503,headers:{'Cache-Control':'no-store'}})}
+ }
  if(req.nextUrl.searchParams.get('mode')==='feed-sample'){
   const allowed=(row:any,keys:string[])=>Object.fromEntries(keys.filter(k=>['string','number','boolean'].includes(typeof row?.[k])).map(k=>[k,row[k]]));
   try{const p=await getOwlsPayload(sport);return NextResponse.json({sport,games:(p?.data||[]).slice(0,30).map((g:any)=>({
