@@ -1,3 +1,4 @@
+import {retainPlayerHistory} from '@/lib/player-history-cloud';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import type {CfbMarketKey} from "@/lib/cfb";
@@ -61,7 +62,7 @@ function parseSeason(payload:any,season:number,market:CfbMarketKey){
   }
   return rows;
 }
-export async function GET(req:NextRequest,{params}:{params:Promise<{id:string}>}){
+async function loadHistory(req:NextRequest,{params}:{params:Promise<{id:string}>}){
   const{id}=await params;
   const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as CfbMarketKey;
   if(market==="first_td")return NextResponse.json({success:true,supported:false,points:[],statLabel:"First TD",message:"First TD does not have a reliable game-by-game stat series."});
@@ -70,4 +71,9 @@ export async function GET(req:NextRequest,{params}:{params:Promise<{id:string}>}
   const points=blocks.flat().sort((a,b)=>new Date(a.date).getTime()-new Date(b.date).getTime()).slice(-20);
   return NextResponse.json({success:true,supported:true,points,statLabel:LABELS[market]||"Player History",
     message:points.length?"":"No verified game-by-game history was returned for this player and market.",updatedAt:new Date().toISOString()});
+}
+
+export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
+ const {id}=await context.params;const response=await loadHistory(req,context);
+ return retainPlayerHistory('cfb',id,req.nextUrl.searchParams.get('market')||'passing_yards',response,req.nextUrl.searchParams.get('before'));
 }

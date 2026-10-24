@@ -1,3 +1,4 @@
+import {cloudHistoryDocuments} from '@/lib/cloud-history';
 import {promises as fs} from "node:fs";
 import path from "node:path";
 import {historyRoot,readDurableHistory,writeDurableHistory} from "@/lib/durable-history";
@@ -33,6 +34,7 @@ export async function readSoccerPredictions(period:string,market?:SoccerMarketKe
  const dates=new Set(Array.from({length:count},(_,i)=>soccerDay(new Date(now.getTime()-(i+(period==="Yesterday"?1:0))*86400000))));
  let names:string[]=[];
  try{names=await fs.readdir(path.join(historyRoot(),"soccer"))}catch(e){if((e as NodeJS.ErrnoException).code!=="ENOENT")throw e}
+ names=[...new Set([...names,...(await cloudHistoryDocuments('soccer')).map(d=>`${d.stream}_${d.game_date}.json`)])];
  const files=names.filter(name=>name.startsWith("predictions_")&&/_(\d{4}-\d{2}-\d{2})\.json$/.test(name)&&dates.has(name.match(/_(\d{4}-\d{2}-\d{2})\.json$/)![1]));
  const out:SoccerPick[]=[];
  for(let i=0;i<files.length;i+=32){

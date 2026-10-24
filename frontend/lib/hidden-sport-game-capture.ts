@@ -1,3 +1,5 @@
+import {hiddenGameObservations} from '@/lib/hidden-game-observations';
+import {cloudConfigured,cloudRequest} from '../scripts/history-cloud.mjs';
 import {providerFetch as fetch} from '@/lib/provider-fetch';
 import {appendHistorySnapshot,torontoHistoryDay} from '@/lib/history-archive';
 /** Capture complete official game evidence even when no user opens a hidden dashboard.
@@ -21,6 +23,10 @@ export async function captureHiddenSportGames(sport:'wnba'|'mlb',now=new Date())
      const payload=await box.json();
      if(sport==='wnba'?!payload.boxscore?.players?.length:!payload.teams?.home?.players||!payload.teams?.away?.players)throw new Error('Incomplete official boxscore');
      await appendHistorySnapshot(sport,`official_game_${id}`,{kind:'official_final_game',gameId:id,gameDate:day,source:sport==='wnba'?'ESPN':'MLB Stats API',schedule:g,boxscore:payload},day);
+     if(cloudConfigured()){
+      const observations=hiddenGameObservations(sport,id,g,payload);
+      for(let j=0;j<observations.length;j+=100)await cloudRequest('history_player_games?on_conflict=sport,player_id,game_id,market',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(observations.slice(j,j+100))});
+     }
      results.push({gameId:id,ok:true});
     }catch{results.push({gameId:id,ok:false});}
    }));
