@@ -5,6 +5,7 @@ import {IntelligenceHero,UpdatedStamp,GamesPreviewCard} from "./dashboard-chrome
 import {SnapshotPanel,snapshotGameDetail} from "./snapshot-panel";
 import {PlayerRankingsPanel} from "./player-rankings-panel";
 import {PredictionPerformancePanel} from "./prediction-performance-panel";
+import {TodayTopPlays} from "./today-top-plays";
 import {useDashboardSummary,useDashboardSchedule} from "./use-dashboard-summary";
 import {SOCCER_LEAGUES} from "@/lib/soccer";
 import {dashboardCounts,DEFAULT_MARKETS,type DashboardSport} from "@/lib/dashboard-contract";
@@ -21,9 +22,10 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   <IntelligenceHero sport={sport}/>
   {sport==="soccer"?<div className="soccerLeagueRow"><label htmlFor="soccer-league">Leagues</label><select id="soccer-league" value={league} onChange={e=>setLeague(e.target.value)}>{SOCCER_LEAGUES.map(([label,key])=><option value={key} key={key}>{label}</option>)}</select></div>:null}
   <UpdatedStamp value={data?.updatedAt} preview={false}/>
+  {sport!=="soccer"?<TodayTopPlays sport={sport} rows={summary?.verifiedRows||[]} loading={!summary}/>:null}
   <section className="ssGamesPreview" aria-label={`${sport.toUpperCase()} current slate`}>
    <div className="ssGamesPreviewHead"><h2>{sport==="nfl"?`${data?.weekNumber?`WEEK ${data.weekNumber}`:"CURRENT WEEK"} NFL GAMES`:`${sport.toUpperCase()} CURRENT + NEXT GAMES`}</h2><Link href={viewAll}>View All ›</Link></div>
-   <div className="ssGamesPreviewGrid">{data?.previewGames?.length?data.previewGames.slice(0,3).map((g:any)=><GamesPreviewCard key={g.id} game={{...g,href:viewAll}}/>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}</div>
+   <div className={sport==="soccer"?"ssGamesPreviewGrid":"ssGamesPreviewGrid ssGamesSwipe"}>{data?.previewGames?.length?(sport==="soccer"?data.previewGames.slice(0,3):data.previewGames).map((g:any)=><GamesPreviewCard key={g.id} game={{...g,href:viewAll}}/>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}</div>
   </section>
   <SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
    {label:"Games",value:ready?data.games:"…",detail:ready?snapshotGameDetail(data.games,data.live,data.finals):"Loading current + next slate",icon:"games",tone:"green"},
@@ -31,7 +33,8 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
    {label:currentBoard?.market==='first_basket'?"First basket candidates":"Sach picks",value:ranked?currentBoard?.count??data?.estimatedPicks??0:"…",detail:ranked?`${market} · ${currentBoard?.market==='first_basket'?'book-implied chances':'saved picks'}`:"Checking market data",icon:"predictions",tone:"gold"}
   ]}/>
   {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
-  <section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>
+  {sport==="soccer"?<section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>:null}
   <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport} onPickCount={onPickCount}/></section>
+  {sport!=="soccer"?<section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>:null}
  </main>;
 }
