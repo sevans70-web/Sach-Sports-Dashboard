@@ -25,7 +25,7 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   <SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
    {label:"Games",value:ready?data.games:"…",detail:ready?snapshotGameDetail(data.games,data.live,data.finals):"Loading current + next slate",icon:"games",tone:"green"},
    {label:"Lineups",value:ready?`${data.confirmedLineups}/${data.lineups}`:"…",detail:ready?`${data.confirmedLineups} confirmed · ${data.pendingLineups} awaiting confirmation`:"Team lineups",icon:"lineups"},
-   {label:sport==='nba'?"Sach picks":"Predictions",value:ranked?(sport==='nba'?data.estimatedPicks||0:data.predictions):"…",detail:ranked?`${market} · ${sport==='nba'?'model estimates':'verified picks'}`:"Checking market data",icon:"predictions",tone:"gold"}
+   {label:"Sach picks",value:ranked?data.estimatedPicks??0:"…",detail:ranked?`${market} · saved picks`:"Checking market data",icon:"predictions",tone:"gold"}
   ]}/>
   {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
   <section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>

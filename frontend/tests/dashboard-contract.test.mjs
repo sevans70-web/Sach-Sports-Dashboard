@@ -13,6 +13,12 @@ test('saved model selections have a separate snapshot count from validated predi
  const d=dashboardCounts(games,[quoted]);assert.equal(d.estimatedPicks,1);assert.equal(d.predictions,0);
  assert.equal(dashboardCounts(games,[{...quoted,researchForecast:{}}]).estimatedPicks,0);
 });
+test('frozen pregame picks remain counted after tipoff and void or withdrawn picks do not',()=>{
+ const capture=new Date(Date.now()-120000).toISOString(),start=new Date(Date.now()-60000).toISOString();
+ const quoted={...row,gameTime:start,quoteUpdatedAt:capture,capturedAt:capture,boardCapturedAt:capture,boardFrozen:true,gameState:'in',quoteId:'q',researchForecast:{modelSelection:{side:'OVER',line:10.5,price:-110,quoteId:'q',sportsbookKey:'fanduel',calculatedAt:capture}}};
+ const d=dashboardCounts([{id:'a',date:start,state:'in'}],[quoted,{...quoted,playerId:'2',withdrawnFromBoard:true},{...quoted,playerId:'3',resultStatus:'void'}]);
+ assert.equal(d.estimatedPicks,1);assert.equal(d.modelPickRows[0].playerId,'1');
+});
 test('a genuine zero quote is retained but a missing threshold cannot become zero',()=>{
  assert.equal(dashboardCounts(games,[{...row,sportsbookLine:0}]).playerProps,1);assert.equal(dashboardCounts(games,[{...row,sportsbookLine:null}]).playerProps,0);
 });

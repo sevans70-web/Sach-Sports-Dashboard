@@ -35,7 +35,9 @@ export function dashboardCounts(games:any[],rows:any[],requireFootballQuote=fals
  const ranked=[...unique.values()];
  const props=ranked.filter(r=>verifiedPropQuote(r,Date.now(),r.boardFrozen===true)&&r.marketBacked!==false&&!r.earlyModel);
  const predictions=props.filter(r=>eligiblePropPrediction(r)&&r.resultStatus!=="void");
- const modelSelections=props.filter(r=>cardModelPick(r));
+ // Match the cards' saved-selection rule, including frozen pregame picks.
+ // Do not count withdrawn/void records or require a separate validation registry.
+ const modelSelections=ranked.filter(r=>r.withdrawnFromBoard!==true&&r.resultStatus!=="void"&&cardModelPick(r));
  // A game having started does not prove that a provider published a lineup.
  const confirmed=games.reduce((n,g)=>n+Number(g.awayLineupConfirmed===true)+Number(g.homeLineupConfirmed===true),0);
  return {games:games.length,live:games.filter(g=>g.state==="in").length,finals:games.filter(g=>g.state==="post").length,lineups:games.length*2,confirmedLineups:confirmed,pendingLineups:games.length*2-confirmed,rankedPlayers:ranked.length,playerProps:props.length,predictions:predictions.length,estimatedPicks:modelSelections.length,modelPickRows:modelSelections,verifiedRows:predictions};
