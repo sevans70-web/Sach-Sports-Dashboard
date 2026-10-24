@@ -12,3 +12,8 @@ test('descriptive sample average and line counts use dated observations and neve
 test('live facts use the latest live stat, even when the ranking snapshot has an older actual field',()=>{
  const r=context({gameState:'in',actualResult:119,liveCurrent:154,quoteVerified:true,sportsbookLine:274.5},'nfl','passing_yards');assert.match(r.face,/Currently at 154 yards/);assert.doesNotMatch(r.face,/119/);
 });
+test('chart points retain exact dates, opponents and zero values without leaking the current game',async()=>{
+ const {datedCardHistoryPoints}=await loadTs(new URL('../lib/public-prop-context.ts',import.meta.url));
+ const points=datedCardHistoryPoints([{date:'2026-10-20',value:0,opponent:'BOS',gameId:'one'},{date:'2026-10-24',value:99,gameId:'current'}],'2026-10-24T20:00Z','points','nba','current');
+ assert.deepEqual(points,[{date:'2026-10-20',value:0,opponent:'BOS',gameId:'one'}]);
+});

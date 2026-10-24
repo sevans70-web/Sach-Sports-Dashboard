@@ -1,7 +1,7 @@
 "use client";
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence} from "@/lib/card-intelligence";
-import {datedCardHistory,publicPropContext} from "@/lib/public-prop-context";
+import {datedCardHistoryPoints,publicPropContext} from "@/lib/public-prop-context";
 import {trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
@@ -751,14 +751,15 @@ const NATIVE_HISTORY_SPORTS = new Set<RankingsSport>([
   "nhl",
 ]);
 
-const recentFormCache = new Map<string, number[]>();
+type RecentPoint={value:number;date?:string;opponent?:string;gameId?:string};
+const recentFormCache = new Map<string, RecentPoint[]>();
 
 async function loadRecentFormForCard(
   card: RankingCard,
   sport: RankingsSport,
   league: string,
   signal: AbortSignal
-) {
+):Promise<RecentPoint[]> {
   const key = `${sport}|${league}|${card.playerId}|${card.market}|${card.gameTime}`;
   const cached = recentFormCache.get(key);
   if (cached) return cached;
@@ -795,11 +796,11 @@ async function loadRecentFormForCard(
   const payload = await response.json();
 
   const values = Array.isArray(payload?.points)
-    ? datedCardHistory(payload.points,card.gameTime,card.market,sport,card.raw?.gameId)
+    ? datedCardHistoryPoints(payload.points,card.gameTime,card.market,sport,card.raw?.gameId)
     : Array.isArray(payload?.values)
       ? payload.values
           .map((value: any) => Number(value))
-          .filter((value: number) => Number.isFinite(value))
+          .filter((value: number) => Number.isFinite(value)).map((value:number)=>({value}))
       : [];
 
   const recent = values.slice(-20);
@@ -809,15 +810,21 @@ async function loadRecentFormForCard(
 
 function RecentChart({
   values,
+  points,
+  statLabel,
   line,
   projection,
   liveValue,
 }: {
   values: number[];
+  points:RecentPoint[];
+  statLabel:string;
   line: number | null;
   projection: number | null;
   liveValue?: number | null;
 }) {
+  const [selected,setSelected]=useState<number|null>(null);
+  useEffect(()=>setSelected(null),[values.length,liveValue]);
   const plotted = liveValue == null ? values : [...values, liveValue];
   if (!plotted.length) {
     return (
@@ -835,16 +842,16 @@ function RecentChart({
   );
 
   return (
-    <div className={styles.chart}>
+    <><div className={styles.chart}>
       <div className={styles.chartBars}>
         {plotted.map((value, index) => (
-          <div className={styles.barSlot} key={`${value}-${index}`}>
+          <button type="button" className={styles.barSlot} key={`${value}-${index}`} onClick={()=>setSelected(index)} aria-pressed={selected===index} aria-label={`${points[index]?.date||`Game ${index+1}`} ${points[index]?.opponent||""}: ${value} ${statLabel}`}>
             <div
               className={`${styles.bar} ${index === plotted.length - 1 && liveValue != null ? styles.liveBar : ""}`}
               style={{ height: `${Math.max(7, (value / max) * 100)}%` }}
             />
             <span>{index === plotted.length - 1 && liveValue != null ? "Live" : `G${index + 1}`}</span>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -857,6 +864,7 @@ function RecentChart({
         </div>
       ) : null}
     </div>
+    <p className={styles.chartReadout} role="status">{selected==null?"Tap a bar for the exact game result.":`${points[selected]?.date?new Date(points[selected].date!).toLocaleDateString("en-US",{timeZone:"UTC",month:"short",day:"numeric"}):selected===values.length?"Live":"Game "+(selected+1)}${points[selected]?.opponent?" · "+points[selected].opponent:""}: ${plotted[selected]} ${statLabel}`}</p></>
   );
 }
 
@@ -871,12 +879,14 @@ function PlayerCard({
 }) {
   const [open, setOpen] = useState(false);
   const [formSpan, setFormSpan] = useState<5 | 10 | 20>(10);
+  const [historyPoints,setHistoryPoints]=useState<RecentPoint[]>([]);
   const [historyValues, setHistoryValues] = useState<number[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
 
   useEffect(() => {
     setHistoryValues([]);
+    setHistoryPoints([]);
     setHistoryLoaded(false);
   }, [card.playerId, card.market, card.gameTime]);
 
@@ -888,7 +898,8 @@ function PlayerCard({
 
     loadRecentFormForCard(card, sport, league, controller.signal)
       .then((values) => {
-        setHistoryValues(values);
+        setHistoryPoints(values);
+        setHistoryValues(values.map(p=>p.value));
       })
       .catch(() => {})
       .finally(() => {
@@ -1308,6 +1319,9 @@ function PlayerCard({
               </div>
             ) : (
               <RecentChart
+                key={`${card.playerId}|${card.market}|${formSpan}`}
+                points={historyPoints.slice(-formSpan)}
+                statLabel={card.market.replaceAll("_"," ")}
                 values={recentFormValues}
                 line={card.sportsbookLine}
                 projection={displayedAverage}

@@ -23,7 +23,7 @@ type PerformanceStat = {
   total: number;
   hitRate: number | null;
   pushes?:number;
-  research?:{total:number;awaitingResult:number;completed:number;void:number;hits:number;misses:number;pushes:number;hitRate:number|null};
+  research?:{total:number;awaitingResult:number;completed:number;void:number;hits:number;misses:number;pushes:number;hitRate:number|null;lateRecords?:number;unknown?:number};
 };
 
 type CategoryConfig = {
@@ -80,6 +80,9 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     { key: "assists", label: "Assists", icon: "🎯", market: "assists" },
     { key: "threes_made", label: "3PT", icon: "3️⃣", market: "threes_made" },
     { key: "pts_rebs_asts", label: "PRA", icon: "📊", market: "pts_rebs_asts" },
+    { key: "pts_rebs", label: "P+R", icon: "📊", market: "pts_rebs" },
+    { key: "pts_asts", label: "P+A", icon: "📊", market: "pts_asts" },
+    { key: "rebs_asts", label: "R+A", icon: "📊", market: "rebs_asts" },
     { key: "steals", label: "Steals", icon: "🖐️", market: "steals" },
     { key: "blocks", label: "Blocks", icon: "🧱", market: "blocks" },
     {key:"first_basket",label:"First Basket",icon:"1️⃣",market:"first_basket"},
@@ -91,6 +94,9 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     { key: "assists", label: "Assists", icon: "🎯", market: "assists" },
     { key: "threes_made", label: "3PT", icon: "3️⃣", market: "threes_made" },
     { key: "pts_rebs_asts", label: "PRA", icon: "📊", market: "pts_rebs_asts" },
+    { key: "pts_rebs", label: "P+R", icon: "📊", market: "pts_rebs" },
+    { key: "pts_asts", label: "P+A", icon: "📊", market: "pts_asts" },
+    { key: "rebs_asts", label: "R+A", icon: "📊", market: "rebs_asts" },
     { key: "steals", label: "Steals", icon: "🖐️", market: "steals" },
     { key: "blocks", label: "Blocks", icon: "🧱", market: "blocks" },
   ],
@@ -115,6 +121,9 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     { key: "assists", label: "Assists", icon: "🎯", market: "assists" },
     { key: "threes_made", label: "3PT", icon: "3️⃣", market: "threes_made" },
     { key: "pts_rebs_asts", label: "PRA", icon: "📊", market: "pts_rebs_asts" },
+    { key: "pts_rebs", label: "P+R", icon: "📊", market: "pts_rebs" },
+    { key: "pts_asts", label: "P+A", icon: "📊", market: "pts_asts" },
+    { key: "rebs_asts", label: "R+A", icon: "📊", market: "rebs_asts" },
     { key: "steals", label: "Steals", icon: "🖐️", market: "steals" },
     { key: "blocks", label: "Blocks", icon: "🧱", market: "blocks" },
   ],
@@ -331,7 +340,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
   const [loading, setLoading] = useState(true);
   const [categoryOpen, setCategoryOpen] = useState(true);
-  const researchView=!["mlb","soccer","nba","wnba"].includes(sport);
+  const researchView=sport!=="soccer";
+  const [savedRecords,setSavedRecords]=useState<any[]>([]);
 
   const activeCategory =
     categories.find((category) => category.key === categoryKey) || categories[0];
@@ -361,42 +371,16 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
       setLoading(true);
 
       try {
-        if (sport === "mlb") {
-          const payload = await fetchJson("/api/mlb/performance", controller.signal);
-          const stats: Record<string, PerformanceStat> = {
-            batter: aggregateMlbHistory(payload?.batter, period),
-            pitcher: aggregateMlbHistory(payload?.pitcher, period),
-            emerging: aggregateMlbHistory(payload?.emerging, period),
-          };
-
-          if (!alive) return;
-          setOverall(combineStats(Object.values(stats)));
-          setCategoryStat(stats[activeCategory.key] || ZERO);
+        if (sport !== "soccer") {
+          const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
+          const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}`,controller.signal);
+          if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
+          if(!alive)return;
+          setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
+          setCategoryStat(normalizeStat(payload));
+          setSavedRecords(payload.records||[]);
           return;
         }
-
-        if (sport === "nfl" || sport === "cfb") {
-          const available = categories.filter((category) => category.available !== false);
-          const rows = await Promise.all(
-            available.map(async (category) => {
-              const group = encodeURIComponent(category.group || category.key);
-              const payload = await fetchJson(
-                `/api/${sport}/performance?period=${encodeURIComponent(period)}&group=${group}`,
-                controller.signal
-              );
-              return [category.key, normalizeStat(payload)] as const;
-            })
-          );
-
-          if (!alive) return;
-          const lookup = Object.fromEntries(rows) as Record<string, PerformanceStat>;
-          setOverall(combineStats(Object.values(lookup)));
-          setCategoryStat(
-            activeCategory.available === false ? ZERO : lookup[activeCategory.key] || ZERO
-          );
-          return;
-        }
-
         const scope=sport==="soccer"?`&league=${encodeURIComponent(league)}`:"";
         const overallPayload = await fetchJson(
           `/api/${sport}/performance?period=${encodeURIComponent(period)}${scope}`,
@@ -419,6 +403,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         if (!alive) return;
         setOverall(ZERO);
         setCategoryStat(ZERO);
+        setSavedRecords([]);
       } finally {
         running=false;
         if (alive) setLoading(false);
@@ -438,7 +423,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     if (activeCategory?.note && !researchView) return activeCategory.note;
     if (loading) return "Loading prediction history…";
     if(sport==='nba'||sport==='wnba') return categoryStat.total ? '' : 'No pregame Sach picks saved for this period.';
-    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn`:"No saved forecasts for this period.";}
+    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn${r.unknown?` · ${r.unknown} without a recorded grade`:""}${r.lateRecords?` · ${r.lateRecords} first saved after start`:""}`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved research records: ${categoryStat.research.awaitingResult} awaiting result. No validated ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
     }
@@ -455,7 +440,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           Prediction Performance
         </h2>
 
-        {researchView ? <p>Older saved forecasts · separate from current Sach picks.</p> : null}
+        {researchView ? <p>Saved forecast history · original calls and recorded results. Historical grades do not imply validated picks.</p> : null}
         {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
@@ -520,6 +505,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
               </div>
 
               <PerformanceCards stat={researchView?researchStat(categoryStat):categoryStat} research={researchView} compact />
+              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}</article>)}</div></details>:null}
 
               {categoryNote ? <p className={styles.categoryNote}>{categoryNote}</p> : null}
             </div>

@@ -11,7 +11,7 @@ export function mlbAdminSnapshot(payload:any,day:string){
    if(!Array.isArray(records))continue;
    for(const row of records)rows.push({...row,
     key:String(row.key||`${day}|${section}|${market}|${row.gameId||row.game_pk||row.gamePk||''}|${row.playerId||row.player_id||row.name||''}`),
-    gameDate:day,market,playerId:String(row.playerId||row.player_id||''),
+    gameDate:day,market,historySection:section,playerId:String(row.playerId||row.player_id||''),
     playerName:row.playerName||row.player_name||row.name||'Unknown player',
     teamName:row.teamName||row.team_name||row.team||'',
     matchup:row.matchup||[row.team_name,row.opponent_name].filter(Boolean).join(' vs '),

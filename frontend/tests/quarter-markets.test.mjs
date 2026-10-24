@@ -8,8 +8,8 @@ const {uniqueRankingRows}=await loadTs(new URL('../lib/unique-ranking-rows.ts',i
 test('provider names with college suffixes collapse by roster ID without losing other games',()=>{
  const rows=[{playerId:'1',playerName:'Player',matchup:'A @ B',gameTime:'2026-10-17T19:00:00Z',frozen:true},{playerId:'1',playerName:'Player (OSU)',matchup:'A @ B',gameTime:'2026-10-17T19:00:00Z'},{playerId:'1',playerName:'Player',matchup:'A @ C',gameTime:'2026-10-24T19:00:00Z'}];assert.equal(uniqueRankingRows(rows).length,2);assert.equal(uniqueRankingRows(rows)[0].frozen,true);
 });
-test('public sports exclude MLB/soccer; active NFL Q1 has exactly the three yardage markets',()=>{
- assert.deepEqual(VISIBLE_SPORTS,['nfl','cfb','nba','wnba','nhl','cbb']);assert.deepEqual(NFL_ACTIVE_MARKETS.map(x=>x[0]).filter(x=>x.startsWith('q1_')),['q1_passing_yards','q1_receiving_yards','q1_rushing_yards']);
+test('public sports exclude WNBA/MLB/soccer; active NFL Q1 has exactly the three yardage markets',()=>{
+ assert.deepEqual(VISIBLE_SPORTS,['nfl','cfb','nba','nhl','cbb']);assert.deepEqual(NFL_ACTIVE_MARKETS.map(x=>x[0]).filter(x=>x.startsWith('q1_')),['q1_passing_yards','q1_receiving_yards','q1_rushing_yards']);
 });
 test('basketball period matching never leaks a full game, half or team total into Q1',()=>{
  assert.equal(match({category:'points'},'q1_points'),false);assert.equal(match({category:'points',periodID:'1q'},'q1_points'),true);assert.equal(match({category:'points_1q'},'q1_points'),true);assert.equal(match({category:'points',periodID:'1h'},'q1_points'),false);assert.equal(match({category:'points',periodID:'1q'},'points'),false);assert.equal(match({category:'first_field_goal'},'first_basket'),false);assert.equal(match({category:'firstBasket'},'first_basket'),true);
