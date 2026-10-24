@@ -971,7 +971,7 @@ function PlayerCard({
   const modelSelection=cardModelPick(card.raw);
   const firstBasket=card.market==='first_basket';
   const scorerQuote=firstBasketQuote(card.raw);
-  const displayedPick=modelSelection?.side||(researchOnly?'PASS':card.prediction);
+  const displayedPick=modelSelection?.side||(researchOnly?'No Qualified Pick':card.prediction);
   const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
   const displayedAverage=researchOnly?cardModelProjection(card.raw):card.modelProjection;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;

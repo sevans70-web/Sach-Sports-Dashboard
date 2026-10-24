@@ -770,7 +770,7 @@ async function marketRows(
     const rows =
       await timeout(
         getOwlsCfbRows(market),
-        4000,
+        12000,
         []
       );
 
@@ -997,9 +997,7 @@ async function buildFreshBoard(
   schedule: any[],
   gameDay: string
 ) {
-  const [initialRaw,fallbackCandidates] = await Promise.all([
-    marketRows(market),rosterFallbackRows(market,schedule,[],gameDay,slate)
-  ]);
+  const initialRaw = await marketRows(market);
 
   const scopedRaw =
     initialRaw.filter(
@@ -1028,7 +1026,7 @@ async function buildFreshBoard(
   const fallbackRaw =
     scopedRaw.length
       ? []
-      : fallbackCandidates;
+      : await rosterFallbackRows(market,schedule,[],gameDay,slate);
 
   const raw = [...scopedRaw, ...fallbackRaw];
 
