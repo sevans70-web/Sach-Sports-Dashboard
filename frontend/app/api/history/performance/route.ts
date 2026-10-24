@@ -1,3 +1,4 @@
+import {dashboardDay} from '@/lib/dashboard-contract';
 import {NextRequest,NextResponse} from 'next/server';
 import {HISTORY_SPORTS,HISTORY_PERIODS,readSavedPerformance,savedHistorySummary,historyGroup} from '@/lib/saved-performance';
 export const runtime='nodejs';
@@ -11,7 +12,7 @@ export async function GET(req:NextRequest){
   const categories=Object.fromEntries([...new Set(data.records.map(r=>String(r.market)))].map(key=>[key,savedHistorySummary(data.records.filter(r=>r.market===key))]));
   return NextResponse.json({success:data.coverage.complete,connected:data.coverage.complete,sport,period,readOnly:true,researchSummary:savedHistorySummary(selected),overallSummary:data.summary,categories,coverage:data.coverage,
    // Preserve the saved call and grade. These are historical forecasts, not newly validated picks.
-   records:selected.sort((a,b)=>String(b.gameTime||b.savedAt).localeCompare(String(a.gameTime||a.savedAt))).map(r=>({key:r.key,playerName:r.playerName,market:r.market,gameDate:r.gameDate,gameTime:r.gameTime,savedAt:r.savedAt,pick:r.pickSide||r.pick||null,line:r.sportsbookLine??null,projection:r.modelProjection??null,actual:r.actual??null,status:r.status,gradedAt:r.gradedAt,legacyResult:r.legacyResult||null})),
+   records:selected.sort((a,b)=>String(b.gameTime||b.savedAt).localeCompare(String(a.gameTime||a.savedAt))).map(r=>({key:r.key,playerName:r.playerName,market:r.market,gameDate:Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate,storedGameDate:r.gameDate,gameTime:r.gameTime,savedAt:r.savedAt,pick:r.pickSide||r.pick||null,line:r.sportsbookLine??null,projection:r.modelProjection??null,actual:r.actual??null,status:r.status,gradedAt:r.gradedAt,legacyResult:r.legacyResult||null})),
    updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
  }catch{return NextResponse.json({success:false,connected:false,error:'Saved history storage is unavailable. Counts cannot be verified.'},{status:503,headers:{'Cache-Control':'no-store'}});}
 }

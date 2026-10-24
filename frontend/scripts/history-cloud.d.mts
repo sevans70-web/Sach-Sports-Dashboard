@@ -1,0 +1,7 @@
+export function canonical(value:any):string;
+export function checksum(value:any):string;
+export function cloudConfigured():boolean;
+export function cloudRequest(route:string,options?:any):Promise<any>;
+export function saveCloudDocument(sport:string,stream:string,day:string,payload:any,bytes?:number):Promise<boolean>;
+export function readCloudDocument(sport:string,stream:string,day:string):Promise<any>;
+export function listCloudDocuments(sport:string):Promise<any[]>;

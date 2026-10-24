@@ -1,3 +1,4 @@
+import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
 import {correctedGrade} from "@/lib/grade-reconciliation";
 import {eligiblePropPrediction} from "@/lib/prop-integrity";
 import {promises as fs} from "node:fs";
@@ -44,17 +45,7 @@ function diskFile(m:CfbMarketKey,day:string){
   );
 }
 
-async function readDisk(m:CfbMarketKey,day:string){
-  try{
-    const raw=await fs.readFile(diskFile(m,day),"utf8");
-    const value=JSON.parse(raw);
-    return Array.isArray(value)
-      ?value as SavedCfbPrediction[]
-      :[];
-  }catch{
-    return [];
-  }
-}
+async function readDisk(m:CfbMarketKey,day:string){return readDurableHistory<SavedCfbPrediction>('cfb',String(m),day);}
 
 async function writeDisk(
   m:CfbMarketKey,
@@ -65,6 +56,7 @@ async function writeDisk(
   try{
     predictions=mergePredictionHistory(await readDisk(m,day),predictions);
     await fs.mkdir(DISK_DIR,{recursive:true});
+    await writeDurableHistory('cfb',String(m),day,predictions);
     const target=diskFile(m,day),temporary=`${target}.${randomUUID()}.tmp`;
     await fs.writeFile(
       temporary,
