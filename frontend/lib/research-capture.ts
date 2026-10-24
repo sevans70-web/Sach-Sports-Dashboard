@@ -1,9 +1,11 @@
+import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {appendHistorySnapshot} from "@/lib/history-archive";
 import {withHistoryLock} from "@/lib/history-lock";
 /** Observational research must keep accumulating for evaluation, but must not
  * enter wager history or be reported as a successfully validated betting pick.
  * Reuse the existing archive root/day/backup/retention policy unchanged. */
 export async function archiveResearchBoards(sport:string,boards:any[]){
+  for(const board of boards)updateTopPlayMarket(sport,board);
   const markets=await Promise.all(boards.map(async board=>{
     if(!board?.market||!Array.isArray(board.rows)||!board.rows.length||board.rows.some((r:any)=>r.integrityVersion!==1))return {market:board?.market,archived:false};
     try{
