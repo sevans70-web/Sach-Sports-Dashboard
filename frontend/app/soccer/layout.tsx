@@ -1,2 +1,2 @@
-import {redirect} from "next/navigation";
-export default function PausedSoccer(){redirect("/")}
+import type {ReactNode} from "react";
+export default function PlayerAccessLayout({children}:{children:ReactNode}){return children}
