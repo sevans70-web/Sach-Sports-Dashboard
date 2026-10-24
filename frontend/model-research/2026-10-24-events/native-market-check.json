@@ -1,0 +1,1548 @@
+{
+  "checkedAt": "2026-10-24T14:30:52.317Z",
+  "source": "OWL included FanDuel native NBA Source API",
+  "readOnly": true,
+  "coverage": {
+    "source": "fanduel",
+    "sport": "nba",
+    "status": "ok",
+    "ageSeconds": 1,
+    "marketTypes": [
+      [
+        "1+_MADE_THREES",
+        3
+      ],
+      [
+        "1ST_HALF_AWAY_TEAM_TOTAL",
+        3
+      ],
+      [
+        "1ST_HALF_HANDICAP",
+        4
+      ],
+      [
+        "1ST_HALF_HOME_TEAM_TOTAL",
+        3
+      ],
+      [
+        "1ST_HALF_MARGIN",
+        3
+      ],
+      [
+        "1ST_HALF_MATCH_BETTING_(3-WAY)",
+        3
+      ],
+      [
+        "1ST_HALF_TOTAL_POINTS",
+        4
+      ],
+      [
+        "1ST_HALF_WINNER",
+        3
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_1+_ASSISTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_1+_MADE_THREES",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_1+_REBOUNDS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_2+_ASSISTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_2+_MADE_THREES",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_2+_REBOUNDS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_3+_ASSISTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_3+_MADE_THREES",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_3+_REBOUNDS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_4+_ASSISTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_4+_REBOUNDS",
+        3
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_5+_ASSISTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_5+_REBOUNDS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_RECORD_6+_REBOUNDS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_10+_POINTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_12+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_15+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_2+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_20+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_4+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_6+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_-_TO_SCORE_8+_POINTS",
+        2
+      ],
+      [
+        "1ST_QUARTER_HANDICAP",
+        4
+      ],
+      [
+        "1ST_QUARTER_MATCH_BETTING_(3-WAY)",
+        4
+      ],
+      [
+        "1ST_QUARTER_RACE_TO_10_POINTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_RACE_TO_15_POINTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_RACE_TO_20_POINTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_RACE_TO_25_POINTS",
+        3
+      ],
+      [
+        "1ST_QUARTER_TOTAL_POINTS",
+        4
+      ],
+      [
+        "1ST_QUARTER_WINNER",
+        3
+      ],
+      [
+        "2+_MADE_THREES",
+        3
+      ],
+      [
+        "2ND_HALF_WINNER",
+        3
+      ],
+      [
+        "2ND_QUARTER_HANDICAP",
+        4
+      ],
+      [
+        "2ND_QUARTER_MATCH_BETTING_(3-WAY)",
+        3
+      ],
+      [
+        "2ND_QUARTER_RACE_TO_10_POINTS",
+        3
+      ],
+      [
+        "2ND_QUARTER_RACE_TO_15_POINTS",
+        3
+      ],
+      [
+        "2ND_QUARTER_RACE_TO_20_POINTS",
+        3
+      ],
+      [
+        "2ND_QUARTER_RACE_TO_25_POINTS",
+        3
+      ],
+      [
+        "2ND_QUARTER_TOTAL_POINTS",
+        4
+      ],
+      [
+        "3+_MADE_THREES",
+        3
+      ],
+      [
+        "3RD_QUARTER_HANDICAP",
+        4
+      ],
+      [
+        "3RD_QUARTER_MATCH_BETTING_(3-WAY)",
+        3
+      ],
+      [
+        "3RD_QUARTER_RACE_TO_10_POINTS",
+        3
+      ],
+      [
+        "3RD_QUARTER_RACE_TO_15_POINTS",
+        3
+      ],
+      [
+        "3RD_QUARTER_RACE_TO_20_POINTS",
+        3
+      ],
+      [
+        "3RD_QUARTER_RACE_TO_25_POINTS",
+        3
+      ],
+      [
+        "3RD_QUARTER_TOTAL_POINTS",
+        4
+      ],
+      [
+        "4+_MADE_THREES",
+        3
+      ],
+      [
+        "4TH_QUARTER_HANDICAP",
+        3
+      ],
+      [
+        "4TH_QUARTER_MATCH_BETTING_(3-WAY)",
+        3
+      ],
+      [
+        "4TH_QUARTER_RACE_TO_10_POINTS",
+        3
+      ],
+      [
+        "4TH_QUARTER_RACE_TO_15_POINTS",
+        3
+      ],
+      [
+        "4TH_QUARTER_RACE_TO_20_POINTS",
+        3
+      ],
+      [
+        "4TH_QUARTER_RACE_TO_25_POINTS",
+        3
+      ],
+      [
+        "4TH_QUARTER_TOTAL_POINTS",
+        4
+      ],
+      [
+        "5+_MADE_THREES",
+        3
+      ],
+      [
+        "6+_MADE_THREES",
+        3
+      ],
+      [
+        "7+_MADE_THREES",
+        3
+      ],
+      [
+        "8+_MADE_THREES",
+        2
+      ],
+      [
+        "ALTERNATE_HANDICAPS",
+        3
+      ],
+      [
+        "ALTERNATE_TOTAL_POINTS",
+        3
+      ],
+      [
+        "AWAY_TEAM_ALTERNATE_TOTAL_POINTS",
+        4
+      ],
+      [
+        "AWAY_TEAM_TOTAL_POINTS",
+        4
+      ],
+      [
+        "FIRST_BASKET_(SAME_GAME_MULTIS)",
+        4
+      ],
+      [
+        "FIRST_TEAM_BASKET_SCORER",
+        4
+      ],
+      [
+        "HOME_TEAM_ALTERNATE_TOTAL_POINTS",
+        4
+      ],
+      [
+        "HOME_TEAM_TOTAL_POINTS",
+        4
+      ],
+      [
+        "MATCH_HANDICAP_(2-WAY)",
+        4
+      ],
+      [
+        "METHOD_OF_FIRST_BASKET",
+        3
+      ],
+      [
+        "MONEY_LINE",
+        4
+      ],
+      [
+        "NBA_GAME_SPECIALS",
+        3
+      ],
+      [
+        "PLAYER_A_1ST_QUARTER_POINTS",
+        3
+      ],
+      [
+        "PLAYER_A_TOTAL_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_A_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        4
+      ],
+      [
+        "PLAYER_A_TOTAL_POINTS",
+        3
+      ],
+      [
+        "PLAYER_A_TOTAL_POINTS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_A_TOTAL_POINTS_+_REB_+_AST",
+        3
+      ],
+      [
+        "PLAYER_A_TOTAL_POINTS_+_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_A_TOTAL_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_A_TOTAL_REBOUNDS_+_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_B_1ST_QUARTER_POINTS",
+        3
+      ],
+      [
+        "PLAYER_B_TOTAL_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_B_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        3
+      ],
+      [
+        "PLAYER_B_TOTAL_POINTS",
+        4
+      ],
+      [
+        "PLAYER_B_TOTAL_POINTS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_B_TOTAL_POINTS_+_REB_+_AST",
+        3
+      ],
+      [
+        "PLAYER_B_TOTAL_POINTS_+_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_B_TOTAL_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_B_TOTAL_REBOUNDS_+_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_C_1ST_QUARTER_POINTS",
+        3
+      ],
+      [
+        "PLAYER_C_TOTAL_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_C_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        4
+      ],
+      [
+        "PLAYER_C_TOTAL_POINTS",
+        4
+      ],
+      [
+        "PLAYER_C_TOTAL_POINTS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_C_TOTAL_POINTS_+_REB_+_AST",
+        4
+      ],
+      [
+        "PLAYER_C_TOTAL_POINTS_+_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_C_TOTAL_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_C_TOTAL_REBOUNDS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_D_1ST_QUARTER_POINTS",
+        3
+      ],
+      [
+        "PLAYER_D_TOTAL_ASSISTS",
+        2
+      ],
+      [
+        "PLAYER_D_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        3
+      ],
+      [
+        "PLAYER_D_TOTAL_POINTS",
+        4
+      ],
+      [
+        "PLAYER_D_TOTAL_POINTS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_D_TOTAL_POINTS_+_REB_+_AST",
+        4
+      ],
+      [
+        "PLAYER_D_TOTAL_POINTS_+_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_D_TOTAL_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_D_TOTAL_REBOUNDS_+_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_E_1ST_QUARTER_POINTS",
+        2
+      ],
+      [
+        "PLAYER_E_TOTAL_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_E_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        4
+      ],
+      [
+        "PLAYER_E_TOTAL_POINTS",
+        3
+      ],
+      [
+        "PLAYER_E_TOTAL_POINTS_+_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_E_TOTAL_POINTS_+_REB_+_AST",
+        3
+      ],
+      [
+        "PLAYER_E_TOTAL_POINTS_+_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_E_TOTAL_REBOUNDS",
+        3
+      ],
+      [
+        "PLAYER_E_TOTAL_REBOUNDS_+_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_F_1ST_QUARTER_POINTS",
+        2
+      ],
+      [
+        "PLAYER_F_TOTAL_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_F_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        3
+      ],
+      [
+        "PLAYER_F_TOTAL_POINTS",
+        4
+      ],
+      [
+        "PLAYER_F_TOTAL_POINTS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_F_TOTAL_POINTS_+_REB_+_AST",
+        4
+      ],
+      [
+        "PLAYER_F_TOTAL_POINTS_+_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_F_TOTAL_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_F_TOTAL_REBOUNDS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_G_1ST_QUARTER_POINTS",
+        1
+      ],
+      [
+        "PLAYER_G_TOTAL_ASSISTS",
+        2
+      ],
+      [
+        "PLAYER_G_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        4
+      ],
+      [
+        "PLAYER_G_TOTAL_POINTS",
+        3
+      ],
+      [
+        "PLAYER_G_TOTAL_POINTS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_G_TOTAL_POINTS_+_REB_+_AST",
+        4
+      ],
+      [
+        "PLAYER_G_TOTAL_POINTS_+_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_G_TOTAL_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_G_TOTAL_REBOUNDS_+_ASSISTS",
+        4
+      ],
+      [
+        "PLAYER_H_1ST_QUARTER_POINTS",
+        2
+      ],
+      [
+        "PLAYER_H_TOTAL_ASSISTS",
+        2
+      ],
+      [
+        "PLAYER_H_TOTAL_MADE_3_POINT_FIELD_GOALS",
+        4
+      ],
+      [
+        "PLAYER_H_TOTAL_POINTS",
+        4
+      ],
+      [
+        "PLAYER_H_TOTAL_POINTS_+_ASSISTS",
+        3
+      ],
+      [
+        "PLAYER_H_TOTAL_POINTS_+_REB_+_AST",
+        3
+      ],
+      [
+        "PLAYER_H_TOTAL_POINTS_+_REBOUNDS",
+        4
+      ],
+      [
+        "PLAYER_H_TOTAL_REBOUNDS",
+        4
+      ]
+    ],
+    "marketTypesTruncated": true,
+    "fixtures": [
+      {
+        "eventId": "36224425",
+        "name": "San Antonio Spurs @ Dallas Mavericks",
+        "openDate": "2026-10-25T00:10:00.000Z"
+      },
+      {
+        "eventId": "36224424",
+        "name": "Milwaukee Bucks @ Philadelphia 76ers",
+        "openDate": "2026-10-24T23:40:00.000Z"
+      },
+      {
+        "eventId": "36224423",
+        "name": "Washington Wizards @ Chicago Bulls",
+        "openDate": "2026-10-25T00:10:00.000Z"
+      },
+      {
+        "eventId": "36224422",
+        "name": "Brooklyn Nets @ Cleveland Cavaliers",
+        "openDate": "2026-10-24T23:40:00.000Z"
+      }
+    ],
+    "periodCandidates": [
+      {
+        "marketId": "734.193591109",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_5+_REBOUNDS",
+        "name": "1st Quarter - To Record 5+ Rebounds",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 1,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 360
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591071",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_1+_ASSISTS",
+        "name": "1st Quarter - To Record 1+ Assists",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -470
+          },
+          {
+            "name": "De'Aaron Fox",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -420
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591074",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_20+_POINTS",
+        "name": "1st Quarter - To Score 20+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 1,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 6500
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591089",
+        "marketType": "PLAYER_B_1ST_QUARTER_POINTS",
+        "name": "Stephon Castle - 1st Qtr Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Stephon Castle Over",
+            "handicap": 4.5,
+            "status": "ACTIVE",
+            "americanOdds": 110
+          },
+          {
+            "name": "Stephon Castle Under",
+            "handicap": 4.5,
+            "status": "ACTIVE",
+            "americanOdds": -146
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591080",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_3+_MADE_THREES",
+        "name": "1st Quarter - To Record 3+ Made Threes",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Devin Vassell",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 2500
+          },
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 2500
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591087",
+        "marketType": "PLAYER_A_1ST_QUARTER_POINTS",
+        "name": "Victor Wembanyama - 1st Qtr Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama Over",
+            "handicap": 7.5,
+            "status": "ACTIVE",
+            "americanOdds": 104
+          },
+          {
+            "name": "Victor Wembanyama Under",
+            "handicap": 7.5,
+            "status": "ACTIVE",
+            "americanOdds": -138
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591086",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_2+_ASSISTS",
+        "name": "1st Quarter - To Record 2+ Assists",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -102
+          },
+          {
+            "name": "De'Aaron Fox",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 108
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591090",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_2+_MADE_THREES",
+        "name": "1st Quarter - To Record 2+ Made Threes",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Devin Vassell",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 630
+          },
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 640
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591009",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_6+_REBOUNDS",
+        "name": "1st Quarter - To Record 6+ Rebounds",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 1,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 750
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590958",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_2+_REBOUNDS",
+        "name": "1st Quarter - To Record 2+ Rebounds",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -580
+          },
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 140
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591011",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_1+_MADE_THREES",
+        "name": "1st Quarter - To Record 1+ Made Threes",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Devin Vassell",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 118
+          },
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 120
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590960",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_1+_REBOUNDS",
+        "name": "1st Quarter - To Record 1+ Rebounds",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -4500
+          },
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -340
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591091",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_10+_POINTS",
+        "name": "1st Quarter - To Score 10+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 220
+          },
+          {
+            "name": "Dylan Harper",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 750
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591097",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_5+_ASSISTS",
+        "name": "1st Quarter - To Record 5+ Assists",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 1500
+          },
+          {
+            "name": "De'Aaron Fox",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 2000
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590969",
+        "marketType": "PLAYER_C_1ST_QUARTER_POINTS",
+        "name": "Dylan Harper - 1st Qtr Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Dylan Harper Over",
+            "handicap": 4.5,
+            "status": "ACTIVE",
+            "americanOdds": -104
+          },
+          {
+            "name": "Dylan Harper Under",
+            "handicap": 4.5,
+            "status": "ACTIVE",
+            "americanOdds": -128
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591023",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_3+_REBOUNDS",
+        "name": "1st Quarter - To Record 3+ Rebounds",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -166
+          },
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 430
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591029",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_4+_REBOUNDS",
+        "name": "1st Quarter - To Record 4+ Rebounds",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 3,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 158
+          },
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 1200
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590975",
+        "marketType": "PLAYER_D_1ST_QUARTER_POINTS",
+        "name": "De'Aaron Fox - 1st Qtr Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "De'Aaron Fox Over",
+            "handicap": 3.5,
+            "status": "ACTIVE",
+            "americanOdds": -108
+          },
+          {
+            "name": "De'Aaron Fox Under",
+            "handicap": 3.5,
+            "status": "ACTIVE",
+            "americanOdds": -122
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590976",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_15+_POINTS",
+        "name": "1st Quarter - To Score 15+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 1,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 1100
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591036",
+        "marketType": "PLAYER_E_1ST_QUARTER_POINTS",
+        "name": "Devin Vassell - 1st Qtr Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Devin Vassell Over",
+            "handicap": 2.5,
+            "status": "ACTIVE",
+            "americanOdds": -144
+          },
+          {
+            "name": "Devin Vassell Under",
+            "handicap": 2.5,
+            "status": "ACTIVE",
+            "americanOdds": 108
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590985",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_4+_ASSISTS",
+        "name": "1st Quarter - To Record 4+ Assists",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 3,
+        "runnerSample": [
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 750
+          },
+          {
+            "name": "De'Aaron Fox",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 850
+          }
+        ]
+      },
+      {
+        "marketId": "734.193571041",
+        "marketType": "1ST_QUARTER_HANDICAP",
+        "name": "1st Quarter Spread",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": -4.5,
+            "status": "ACTIVE",
+            "americanOdds": -108
+          },
+          {
+            "name": "Dallas Mavericks",
+            "handicap": 4.5,
+            "status": "ACTIVE",
+            "americanOdds": -118
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590988",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_8+_POINTS",
+        "name": "1st Quarter - To Score 8+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 104
+          },
+          {
+            "name": "Dylan Harper",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 350
+          }
+        ]
+      },
+      {
+        "marketId": "734.193590986",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_3+_ASSISTS",
+        "name": "1st Quarter - To Record 3+ Assists",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 300
+          },
+          {
+            "name": "De'Aaron Fox",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 320
+          }
+        ]
+      },
+      {
+        "marketId": "734.193571039",
+        "marketType": "1ST_QUARTER_TOTAL_POINTS",
+        "name": "1st Quarter Total Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "Over",
+            "handicap": 60.5,
+            "status": "ACTIVE",
+            "americanOdds": -104
+          },
+          {
+            "name": "Under",
+            "handicap": 60.5,
+            "status": "ACTIVE",
+            "americanOdds": -122
+          }
+        ]
+      },
+      {
+        "marketId": "734.193570980",
+        "marketType": "1ST_QUARTER_MATCH_BETTING_(3-WAY)",
+        "name": "1st Quarter Winner (3-Way)",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 3,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -260
+          },
+          {
+            "name": "Tie",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 1700
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591055",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_6+_POINTS",
+        "name": "1st Quarter - To Score 6+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -240
+          },
+          {
+            "name": "Dylan Harper",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 152
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591059",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_4+_POINTS",
+        "name": "1st Quarter - To Score 4+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 5,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -800
+          },
+          {
+            "name": "Dylan Harper",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -198
+          }
+        ]
+      },
+      {
+        "marketId": "734.193584137",
+        "marketType": "FIRST_BASKET_(SAME_GAME_MULTIS)",
+        "name": "First Basket",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 10,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 260
+          },
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 700
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591100",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_2+_POINTS",
+        "name": "1st Quarter - To Score 2+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 4,
+        "runnerSample": [
+          {
+            "name": "Dylan Harper",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -1100
+          },
+          {
+            "name": "Stephon Castle",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -1000
+          }
+        ]
+      },
+      {
+        "marketId": "734.193591102",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_12+_POINTS",
+        "name": "1st Quarter - To Score 12+ Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 4,
+        "runnerSample": [
+          {
+            "name": "Victor Wembanyama",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 430
+          },
+          {
+            "name": "Dylan Harper",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 1280
+          }
+        ]
+      },
+      {
+        "marketId": "734.193571034",
+        "marketType": "1ST_QUARTER_RACE_TO_15_POINTS",
+        "name": "1st Quarter Race to 15 Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -220
+          },
+          {
+            "name": "Dallas Mavericks",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 168
+          }
+        ]
+      },
+      {
+        "marketId": "734.193571020",
+        "marketType": "1ST_QUARTER_RACE_TO_25_POINTS",
+        "name": "1st Quarter Race to 25 Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 3,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -240
+          },
+          {
+            "name": "Neither",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 1700
+          }
+        ]
+      },
+      {
+        "marketId": "734.193571016",
+        "marketType": "1ST_QUARTER_RACE_TO_20_POINTS",
+        "name": "1st Quarter Race to 20 Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -250
+          },
+          {
+            "name": "Dallas Mavericks",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 190
+          }
+        ]
+      },
+      {
+        "marketId": "734.193570983",
+        "marketType": "1ST_QUARTER_RACE_TO_10_POINTS",
+        "name": "1st Quarter Race to 10 Points",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -215
+          },
+          {
+            "name": "Dallas Mavericks",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 164
+          }
+        ]
+      },
+      {
+        "marketId": "734.193632478",
+        "marketType": "METHOD_OF_FIRST_BASKET",
+        "name": "Method of First Basket",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 50,
+        "runnerSample": [
+          {
+            "name": "Daniel Gafford - Dunk",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 2700
+          },
+          {
+            "name": "Daniel Gafford - Free Throw",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 8000
+          }
+        ]
+      },
+      {
+        "marketId": "734.193571025",
+        "marketType": "1ST_QUARTER_WINNER",
+        "name": "1st Quarter Winner",
+        "eventId": "36224425",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "San Antonio Spurs",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -265
+          },
+          {
+            "name": "Dallas Mavericks",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 210
+          }
+        ]
+      },
+      {
+        "marketId": "734.193588741",
+        "marketType": "1ST_QUARTER_-_TO_SCORE_8+_POINTS",
+        "name": "1st Quarter - To Score 8+ Points",
+        "eventId": "36224424",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 10,
+        "runnerSample": [
+          {
+            "name": "Joel Embiid",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 118
+          },
+          {
+            "name": "Tyrese Maxey",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": 116
+          }
+        ]
+      },
+      {
+        "marketId": "734.193588742",
+        "marketType": "PLAYER_I_1ST_QUARTER_POINTS",
+        "name": "LeBron James - 1st Qtr Points",
+        "eventId": "36224424",
+        "marketStatus": "OPEN",
+        "bettingType": "MOVING_HANDICAP",
+        "runners": 2,
+        "runnerSample": [
+          {
+            "name": "LeBron James Over",
+            "handicap": 3.5,
+            "status": "ACTIVE",
+            "americanOdds": -154
+          },
+          {
+            "name": "LeBron James Under",
+            "handicap": 3.5,
+            "status": "ACTIVE",
+            "americanOdds": 116
+          }
+        ]
+      },
+      {
+        "marketId": "734.193588743",
+        "marketType": "1ST_QUARTER_-_TO_RECORD_2+_REBOUNDS",
+        "name": "1st Quarter - To Record 2+ Rebounds",
+        "eventId": "36224424",
+        "marketStatus": "OPEN",
+        "bettingType": "ODDS",
+        "runners": 10,
+        "runnerSample": [
+          {
+            "name": "Joel Embiid",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -340
+          },
+          {
+            "name": "Jaylen Brown",
+            "handicap": 0,
+            "status": "ACTIVE",
+            "americanOdds": -125
+          }
+        ]
+      }
+    ],
+    "truncated": true,
+    "scanned": 100000,
+    "checkedAt": "2026-10-24T14:30:52.317Z"
+  },
+  "validation": {
+    "approvedForPublicQuotes": false,
+    "approvedForBettingPicks": false,
+    "limitations": [
+      "Traversal reached its configured node cap; this is a bounded sample, not complete source coverage.",
+      "A sampled LeBron James Q1 market references eventId 36224424 while the sampled event metadata names Milwaukee Bucks @ Philadelphia 76ers; reject ambiguous player-fixture mappings.",
+      "Native event openDate differs from the official scheduled time by ten minutes in sampled fixtures; exact fixture normalization has not been approved.",
+      "Inspected First Basket market type is SAME_GAME_MULTIS; do not treat those runner prices as verified standalone betting odds.",
+      "No candidate quarter forecast has been approved, regardless of source quote availability."
+    ]
+  }
+}
