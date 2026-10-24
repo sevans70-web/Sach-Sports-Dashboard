@@ -5,7 +5,7 @@ import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/li
 import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
 import {availablePregameRankings} from '@/lib/ranking-availability';
 import {selectNbaCandidates,recordedNbaCandidates} from '@/lib/nba-ranking-candidates';
-import {readHistorySnapshots} from '@/lib/history-archive';
+import {visitHistorySnapshots} from '@/lib/history-archive';
 import {writeDurableHistory} from '@/lib/durable-history';
 import {withHistoryLock} from '@/lib/history-lock';
 import {rankingResponse} from '@/lib/ranking-response-cache';
@@ -605,8 +605,14 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
   const lockAt=Math.min(...overview.games.map((g:any)=>Date.parse(g.tipoff)).filter(Number.isFinite));
   // Tomorrow's slate is also prepared on preceding capture days.
   const archiveDays=[0,1,2].map(offset=>torontoNbaDay(new Date(Date.parse(frozen.boardDay+'T12:00Z')-offset*86400000)));
-  const snapshots=(await Promise.all(archiveDays.map(day=>readHistorySnapshots('nba',market,day)))).flat();
-  const recorded=recordedNbaCandidates(snapshots,market,frozen.boardDay,lockAt);
+  const candidates=new Map<string,any>();
+  for(const captureDay of archiveDays)await visitHistorySnapshots('nba',market,captureDay,snapshot=>{
+   for(const row of recordedNbaCandidates([snapshot],market,frozen.boardDay,lockAt)){
+    const key=row.gameId+'|'+row.playerId,old=candidates.get(key);
+    if(!old||Date.parse(row.boardCapturedAt)>Date.parse(old.boardCapturedAt))candidates.set(key,row);
+   }
+  });
+  const recorded=[...candidates.values()];
   const keys=new Set(frozen.rows.map((r:any)=>r.gameId+'|'+r.playerId));
   const extra=recorded.filter(r=>!keys.has(r.gameId+'|'+r.playerId)).map(row=>{
    const game=overview.games.find((g:any)=>String(g.gameId)===String(row.gameId));
