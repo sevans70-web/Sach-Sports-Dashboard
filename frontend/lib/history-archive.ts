@@ -1,28 +1,53 @@
-import {promises as fs} from "node:fs";
-import path from "node:path";
-import {createHash} from "node:crypto";
-
-const ROOT=process.env.SACH_HISTORY_DIR||"/data/sach-history";
-const safe=(v:string)=>String(v||"").replace(/[^a-z0-9_-]/gi,"_");
+import {promises as fs,createReadStream} from 'node:fs';
+import path from 'node:path';
+import {createHash,randomUUID} from 'node:crypto';
+import {withHistoryLock} from '@/lib/history-lock';
+const ROOT=process.env.SACH_HISTORY_DIR||'/data/sach-history';
+const safe=(v:string)=>String(v||'').replace(/[^a-z0-9_-]/gi,'_');
 export function torontoHistoryDay(v:Date|string=new Date()){
- const d=typeof v==="string"?new Date(v):v;if(Number.isNaN(d.getTime()))return "";
- const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
- const g=(t:string)=>p.find(x=>x.type===t)?.value||"";return `${g("year")}-${g("month")}-${g("day")}`;
+ const d=typeof v==='string'?new Date(v):v;if(Number.isNaN(d.getTime()))return '';
+ const p=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
+ const g=(t:string)=>p.find(x=>x.type===t)?.value||'';return `${g('year')}-${g('month')}-${g('day')}`;
 }
 type Snapshot={capturedAt:string;hash:string;payload:any};
-function target(sport:string,stream:string,day:string){return path.join(ROOT,safe(sport),"archive",`${safe(stream)}_${safe(day)}.json`)}
-export async function readHistorySnapshots(sport:string,stream:string,day:string):Promise<Snapshot[]>{
- try{const rows=JSON.parse(await fs.readFile(target(sport,stream,day),'utf8'));return Array.isArray(rows)?rows:[]}catch{return []}
+const archive=(sport:string)=>path.join(ROOT,safe(sport),'archive');
+const stem=(stream:string,day:string)=>`${safe(stream)}_${safe(day)}`;
+/** Stream legacy arrays one snapshot at a time; escaped braces/UTF-8 are handled by the decoder. */
+export async function visitLegacySnapshots(file:string,visit:(snapshot:Snapshot)=>void){
+ let text='',depth=0,inString=false,escaped=false,started=false;
+ try{
+  for await(const chunk of createReadStream(file,{encoding:'utf8',highWaterMark:64*1024}))for(const char of chunk as string){
+   if(!started){if(char!=='{')continue;started=true;depth=1;text='{';continue;}
+   text+=char;
+   if(inString){if(escaped)escaped=false;else if(char==='\\')escaped=true;else if(char==='"')inString=false;}
+   else if(char==='"')inString=true;else if(char==='{')depth++;else if(char==='}')depth--;
+   if(depth===0){visit(JSON.parse(text));text='';started=false;}
+   if(text.length>32*1024*1024)throw new Error('Archive snapshot exceeds safe read size');
+  }
+  if(started)throw new Error('Incomplete archive snapshot');
+ }catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;}
 }
+export async function visitHistorySnapshots(sport:string,stream:string,day:string,visit:(snapshot:Snapshot)=>void){
+ await visitLegacySnapshots(path.join(archive(sport),stem(stream,day)+'.json'),visit);
+ const dir=path.join(archive(sport),'segments',stem(stream,day));
+ let names:string[]=[];try{names=await fs.readdir(dir);}catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;}
+ for(const name of names.filter(n=>n.endsWith('.json')).sort())visit(JSON.parse(await fs.readFile(path.join(dir,name),'utf8')));
+}
+export async function readHistorySnapshots(sport:string,stream:string,day:string):Promise<Snapshot[]>{
+ const rows:Snapshot[]=[];await visitHistorySnapshots(sport,stream,day,row=>rows.push(row));return rows;
+}
+const latestHashes=new Map<string,string>();
 export async function appendHistorySnapshot(sport:string,stream:string,payload:any,day=torontoHistoryDay()){
- const file=target(sport,stream,day);await fs.mkdir(path.dirname(file),{recursive:true});
- let rows:Snapshot[]=[];try{const parsed=JSON.parse(await fs.readFile(file,"utf8"));if(Array.isArray(parsed))rows=parsed}catch{}
- const raw=JSON.stringify(payload??null),hash=createHash("sha1").update(raw).digest("hex");
- if(rows.at(-1)?.hash===hash)return {ok:true,written:false,file,count:rows.length};
- rows.push({capturedAt:new Date().toISOString(),hash,payload});
- // Keep the full day while preventing an accidental runaway file.
- if(rows.length>1000)rows=rows.slice(-1000);
- const tmp=`${file}.${process.pid}.tmp`;await fs.writeFile(tmp,JSON.stringify(rows,null,2),"utf8");await fs.rename(tmp,file);
- return {ok:true,written:true,file,count:rows.length};
+ const id=`${sport}|${stream}|${day}`;
+ return withHistoryLock('archive-write|'+id,async()=>{
+  const raw=JSON.stringify(payload??null),hash=createHash('sha1').update(raw).digest('hex');
+  if(latestHashes.get(id)===hash)return {ok:true,written:false,count:0};
+  // Each snapshot is immutable. Never rewrite, trim or delete an older archive to append data.
+  const dir=path.join(archive(sport),'segments',stem(stream,day));await fs.mkdir(dir,{recursive:true});
+  const file=path.join(dir,`${Date.now()}-${randomUUID()}.json`),temp=file+'.tmp';
+  await fs.writeFile(temp,JSON.stringify({capturedAt:new Date().toISOString(),hash,payload}),'utf8');await fs.rename(temp,file);
+  if(latestHashes.size>2048)latestHashes.delete(latestHashes.keys().next().value!);latestHashes.set(id,hash);
+  return {ok:true,written:true,file,count:1};
+ });
 }
 export async function historyArchiveStatus(){try{await fs.mkdir(ROOT,{recursive:true});await fs.access(ROOT,fs.constants.W_OK);return{ok:true,root:ROOT}}catch(e){return{ok:false,root:ROOT,error:e instanceof Error?e.message:String(e)}}}

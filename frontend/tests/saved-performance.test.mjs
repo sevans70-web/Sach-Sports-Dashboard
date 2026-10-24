@@ -16,3 +16,11 @@ test('read-only saved history preserves zero actuals, voids, pushes, original ca
 });
 test('periods use Toronto days at midnight and retain a full year rollover',()=>{assert.deepEqual([...historyDays('Yesterday',new Date('2026-10-24T02:00Z'))],['2026-10-22']);assert.equal(historyDays('Season',new Date('2026-10-24T15:00Z')).size,370);});
 test('late saves are visible and disclosed, not silently discarded or relabelled validated',()=>{const x=savedHistorySummary([{status:'hit',savedAt:'2026-10-23T20:01Z',gameTime:'2026-10-23T20:00Z'}]);assert.equal(x.hits,1);assert.equal(x.lateRecords,1);assert.equal(x.validatedPicks,undefined);});
+
+test('periods follow the fixture day rather than the earlier day the forecast was first captured',async()=>{
+ const root=await mkdtemp(path.join(tmpdir(),'sach-history-day-'));
+ try{await mkdir(path.join(root,'nfl'));await writeFile(path.join(root,'nfl','receiving_yards_2026-10-16.json'),JSON.stringify([{key:'k',market:'receiving_yards',status:'hit',gameDate:'2026-10-16',gameTime:'2026-10-18T17:00Z'}]));
+ const x=await readSavedPerformance('nfl','Week',new Date('2026-10-24T15:00Z'),root);assert.equal(x.summary.total,1);assert.equal(x.records[0].gameDate,'2026-10-16');
+ assert.equal((await readSavedPerformance('nfl','Today',new Date('2026-10-24T15:00Z'),root)).summary.total,0);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

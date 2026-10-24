@@ -864,7 +864,7 @@ function RecentChart({
         </div>
       ) : null}
     </div>
-    <p className={styles.chartReadout} role="status">{selected==null?"Tap a bar for the exact game result.":`${points[selected]?.date?new Date(points[selected].date!).toLocaleDateString("en-US",{timeZone:"UTC",month:"short",day:"numeric"}):selected===values.length?"Live":"Game "+(selected+1)}${points[selected]?.opponent?" · "+points[selected].opponent:""}: ${plotted[selected]} ${statLabel}`}</p></>
+    <p className={styles.chartReadout} role="status">{selected==null?"Tap a bar for the exact game result.":`${points[selected]?.date?new Date(points[selected].date!).toLocaleDateString("en-US",{timeZone:/^\d{4}-\d{2}-\d{2}$/.test(points[selected].date!)?"UTC":"America/Toronto",month:"short",day:"numeric"}):selected===values.length?"Live":"Game "+(selected+1)}${points[selected]?.opponent?" · "+points[selected].opponent:""}: ${plotted[selected]} ${statLabel}`}</p></>
   );
 }
 
