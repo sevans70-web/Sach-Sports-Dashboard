@@ -1,4 +1,5 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
+import {activeNbaBoardDay} from '@/lib/nba-board-window';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
 import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
 import {availablePregameRankings} from '@/lib/ranking-availability';
@@ -560,7 +561,7 @@ export async function captureAllNbaMarkets(day?:string){
  const research=await archiveResearchBoards("nba",results);
  // Prepare the next calendar day's slate while today's locked board is still
  // on screen. The existing ten-minute scheduler refreshes both independently.
- const upcomingDay=nextNbaBoardDay();
+ const upcomingDay=nextNbaBoardDay(activeNbaBoardDay(overview?.games||[]));
  const upcoming=!day&&overview?.games?.some((g:any)=>torontoNbaDay(g.tipoff||'')===upcomingDay)?await buildBoards(upcomingDay):[];
  if(upcoming.length)await archiveResearchBoards('nba',upcoming);
  return{
@@ -591,8 +592,8 @@ import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
 async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
  const loaded=shared?.overview||await loadNbaOverview();
- const today=torontoNbaDay(new Date());
- const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===today)?today:undefined);
+ const activeDay=activeNbaBoardDay(loaded.games||[]);
+ const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===activeDay)?activeDay:undefined);
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
  if(frozen){
