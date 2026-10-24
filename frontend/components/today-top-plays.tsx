@@ -7,7 +7,7 @@ import styles from './today-top-plays.module.css';
 
 export function TodayTopPlays({sport,rows=[],loading=false}:{sport:DashboardSport;rows?:any[];loading?:boolean}){
  const [live,setLive]=useState<{sport:string;plays:ReturnType<typeof todayTopPlays>}|null>(null);
- useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store'});if(!r.ok){if(active)setLive(null);return;}const p=await r.json();if(active&&Array.isArray(p.plays))setLive({sport,plays:p.plays});}catch{if(active)setLive(null)}finally{running=false}};refresh();const id=setInterval(refresh,30000);return()=>{active=false;clearInterval(id)}},[sport]);
+ useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store'});if(!r.ok){if(active)setLive(null);return;}const p=await r.json();if(active)setLive(p.state==='ready'&&Array.isArray(p.plays)?{sport,plays:p.plays}:null);}catch{if(active)setLive(null)}finally{running=false}};refresh();const id=setInterval(refresh,30000);return()=>{active=false;clearInterval(id)}},[sport]);
  const featured=live?.sport===sport?live.plays:todayTopPlays(rows,sport);
  return <section className={styles.section} aria-label="Today's Top Plays">
   <h2>Today’s Top Plays</h2>
