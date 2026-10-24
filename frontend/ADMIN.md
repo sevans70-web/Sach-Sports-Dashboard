@@ -1,6 +1,6 @@
 # Private administration
 
-The `/admin` route and `/api/admin/*` data routes require a server-verified Supabase user with confirmed email `sachsportsplatform@gmail.com`. User metadata and client flags never grant administrator access. The public site remains available as before; MLB and soccer remain absent from navigation, including the admin sport selector.
+The `/admin` route and `/api/admin/*` data routes require a server-verified Supabase user with confirmed email `sachsportsplatform@gmail.com`. User metadata and client flags never grant administrator access. The public site remains available as before; MLB and soccer remain absent from navigation, while both remain available in the private admin sport selector.
 
 ## First sign-in
 
@@ -31,3 +31,7 @@ No changes to retention, volume, Google Drive backup scripts or storage settings
 ## Verification
 
 `npm run build`, `node --test --test-concurrency=2 tests/*.test.mjs`, then `node --test tests/admin-auth.integration.mjs` from `frontend`. The integration test starts the production server against an isolated local Auth mock; it never authenticates against production or sends email. It checks page/API denial, exact-email authorization, request origin, session cookies, refresh, result access, password change and logout. Production verification must separately report whether only the signed-out boundary was tested or the real owner login and email delivery were completed.
+
+## October 24 handoff update
+
+MLB and Soccer are selectable privately. MLB reads existing Railway performance snapshots without generating predictions or recomputing grades. Legacy target-hit labels remain separate from sportsbook outcomes; missing/unreadable storage produces an error. Soccer reads existing saved predictions without invoking its capture or settlement routes. Neither sport is added to public discovery. Original projection, probability and GI fields are visible for inspection without implying validation.

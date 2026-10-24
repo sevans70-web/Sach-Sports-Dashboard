@@ -39,6 +39,10 @@ test('production routes enforce admin authentication, safe cookies and request o
  const dir=await mkdtemp(path.join(tmpdir(),'sach-admin-test-'));
  const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  await mkdir(path.join(dir,'nba'));
+ await mkdir(path.join(dir,'mlb','performance'),{recursive:true});
+ await mkdir(path.join(dir,'soccer'));
+ await writeFile(path.join(dir,'mlb','performance',day+'.json'),JSON.stringify({batter:{categories:{hits:[{player_id:'mlb1',name:'Legacy MLB player',actual:1,result_label:'Hit'}]}}}));
+ await writeFile(path.join(dir,'soccer','predictions_eng_1_shots_'+day+'.json'),JSON.stringify([{key:'soccer1',league:'eng.1',market:'shots',gameDate:day,playerId:'soccer1',playerName:'Saved soccer player',status:'pending',sportsbookLine:2.5,pickSide:'OVER'}]));
  const fixture=['hit','miss','push','void'].map((status,i)=>({key:'test-'+i,playerId:String(i+1),playerName:'Test player '+i,teamName:'Test team',gameDate:day,gameTime:day+'T15:00:00Z',market:'points',matchup:'A @ B',savedAt:day+'T12:00:00Z',status,actual:[12,9,10,null][i],sportsbookLine:10,pickSide:'OVER'}));
  for(let i=0;i<101;i++)fixture.push({...fixture[0],key:'extra-'+i,playerId:'extra-'+i});
  fixture[3].recoveredAfterStart=true;
@@ -76,7 +80,13 @@ test('production routes enforce admin authentication, safe cookies and request o
   assert.equal((await post({action:'email-link',emailLink:'https://evil.example/auth/v1/verify?token=valid-hash&type=email'})).status,400);
   const refreshed=await request('/api/admin/auth',{headers:{Cookie:'sach-admin-refresh=test-refresh','Sec-Fetch-Site':'same-origin'}});assert.equal(refreshed.status,200);assert.equal(refreshed.headers.getSetCookie().length,2);
   const records=await request('/api/admin/records?sport=nba&period=Today',{headers:{Cookie:cookie}});assert.equal(records.status,200);const inspected=await records.json();assert.deepEqual(inspected.counts,{total:105,hits:102,misses:1,pushes:1,settled:104,pending:0,void:1,unknown:0,hitRate:99});assert.equal(inspected.records.find(r=>r.status==='hit').actual,12);assert.equal(inspected.records.find(r=>r.status==='miss').side,'OVER');assert.equal(inspected.records.find(r=>r.status==='miss').verifiedPick,false);
-  assert.equal((await request('/api/admin/records?sport=mlb',{headers:{Cookie:cookie}})).status,400);
+  for(const sport of ['mlb','soccer']){
+   assert.equal((await request('/api/admin/records?sport='+sport)).status,401);
+   const hidden=await request('/api/admin/records?sport='+sport,{headers:{Cookie:cookie}});assert.equal(hidden.status,200);
+   const data=await hidden.json();assert.equal(data.records.length,1);assert.equal(data.records[0].verifiedPick,false);
+   if(sport==='mlb'){assert.equal(data.records[0].status,'unknown');assert.equal(data.records[0].side,null);}
+  }
+  assert.equal((await request('/api/admin/records?sport=unsupported',{headers:{Cookie:cookie}})).status,400);
   assert.equal(inspected.records.find(r=>r.status==='void').voidNote.code,'late_capture');
   const password=await request('/api/admin/password',{method:'POST',headers:{Origin:base,Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({password:'new-local-test-password'})});assert.equal(password.status,200);
   const otp=await post({action:'email',email});assert.equal(otp.status,200);assert.equal(sentEmail,email);
