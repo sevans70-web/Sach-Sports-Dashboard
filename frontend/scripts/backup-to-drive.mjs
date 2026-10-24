@@ -36,7 +36,34 @@ async function retryUpload(fn,label){
  }
  throw last;
 }
-let count=0,total=0,errors=[];
+let count=0,total=0,errors=[],deleted=0,freedBytes=0;
+// Only date-stamped sport history is eligible. Keep seven Toronto-calendar days,
+// including today. Never delete databases, manifests, system files, or undated data.
+const todayToronto=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const [yy,mm,dd]=todayToronto.split("-").map(Number);
+const cutoff=new Date(Date.UTC(yy,mm-1,dd-6));
+function expiredHistory(rel){
+ const segments=rel.split(path.sep);
+ if(segments[0]!=="sach-history"||segments.length<3||segments[1]==="_system")return false;
+ const match=segments.at(-1).match(/(?:^|_)(\\d{4}-\\d{2}-\\d{2})\\.json$/);
+ if(!match)return false;
+ const day=new Date(match[1]+"T00:00:00Z");
+ return !Number.isNaN(day.getTime())&&day.toISOString().slice(0,10)===match[1]&&day<cutoff;
+}
+async function safelyPrune(full,rel,size,remoteMd5){
+ if(!expiredHistory(rel)||!remoteMd5)return;
+ const current=await fs.stat(full);
+ if(current.size!==size)return;
+ const localMd5=await md5File(full);
+ if(localMd5.toLowerCase()!==remoteMd5.toLowerCase())return;
+ // Recheck after hashing to avoid removing a changing live file.
+ const after=await fs.stat(full);
+ if(after.size!==current.size||after.mtimeMs!==current.mtimeMs)return;
+ await fs.unlink(full);
+ deleted++;freedBytes+=size;
+ console.log("RETENTION_DELETE_VERIFIED",rel,size);
+}
+
 async function md5File(file){const hash=createHash("md5");for await(const chunk of createReadStream(file))hash.update(chunk);return hash.digest("hex");}
 
 async function walk(dir,parent){
@@ -49,7 +76,7 @@ async function walk(dir,parent){
   if(!entry.isFile())continue;
   try{
    const stat=await fs.stat(full);const size=stat.size;
-   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){const rel=path.relative(root,full);const remote=remoteFiles.get(entry.name);if(remote.md5Checksum&&await md5File(full)===remote.md5Checksum){count++;total+=size;console.log("BACKUP_SKIP",rel,size);continue;}console.log("BACKUP_REUPLOAD",rel);}
+   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){const rel=path.relative(root,full);const remote=remoteFiles.get(entry.name);if(remote.md5Checksum&&await md5File(full)===remote.md5Checksum){count++;total+=size;console.log("BACKUP_SKIP",rel,size);await safelyPrune(full,rel,size,remote.md5Checksum);continue;}console.log("BACKUP_REUPLOAD",rel);}
    const uploaded=await retryUpload(async()=>{
    const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name:entry.name,parents:[parent]})});
    const location=session.headers.get("location");if(!location)throw Error("Missing upload session");
@@ -68,13 +95,15 @@ async function walk(dir,parent){
     }
    }
    if(Number(result.size)!==size)throw Error("Uploaded file size mismatch");
+   if(!result.md5Checksum||await md5File(full)!==result.md5Checksum)throw Error("Uploaded file checksum mismatch");
    return result;
    });
    count++;total+=size;console.log("BACKUP_OK",path.relative(root,full),size);
+   await safelyPrune(full,path.relative(root,full),size,uploaded.md5Checksum);
   }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}
  }
 }
 await walk(root,backup);
-console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,files:count,bytes:total,errors}));
-// Backups never delete source data. Retention requires a separately approved action.
+console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,files:count,bytes:total,deleted,freedBytes,errors}));
+// Retention runs only after matching MD5 checksums establish an archived copy.
 if(errors.length)process.exitCode=1;
