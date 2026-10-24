@@ -1133,7 +1133,7 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {state === "live" && firstBasket ? <div className={styles.liveStrip}><strong>First basket</strong><span>{current===1?'Scored first':current===0?'Another player scored first':'First-score result pending'}</span></div> : state === "live" ? (
+      {state === "live" && firstBasket ? <div className={styles.liveStrip}><strong>First basket · </strong><span>{current===1?'Scored first':current===0?'Another player scored first':'First-score result pending'}</span></div> : state === "live" ? (
         <div className={`${styles.liveStrip} ${researchOnly ? styles.unverifiedStrip : ""}`}>
           <div>
             <strong>{card.marketLabel} · current</strong>
