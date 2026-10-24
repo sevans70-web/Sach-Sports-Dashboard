@@ -1,3 +1,6 @@
+import {pruneVerifiedFile,md5File} from './retention-cleanup.mjs';
+import {expiredHistory,historyFileInfo,retentionCutoff} from './retention-policy.mjs';
+import {cloudConfigured,saveCloudDocument,cloudRequest} from './history-cloud.mjs';
 // Railway startup launches this script after the dashboard server starts.\n// Run inside the Railway service: node scripts/backup-to-drive.mjs
 // Streams files directly from the mounted volume to Google Drive without staging a second copy.
 import {promises as fs,createReadStream} from "node:fs";
@@ -37,46 +40,37 @@ async function retryUpload(fn,label){
  throw last;
 }
 let count=0,total=0,errors=[],deleted=0,freedBytes=0;
-// Only date-stamped sport history is eligible. Keep seven Toronto-calendar days,
-// including today. Never delete databases, manifests, system files, or undated data.
-const todayToronto=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
-const [yy,mm,dd]=todayToronto.split("-").map(Number);
-const cutoff=new Date(Date.UTC(yy,mm-1,dd-6));
-function expiredHistory(rel){
- const segments=rel.split(path.sep);
- if(segments[0]!=="sach-history"||segments.length<3||segments[1]==="_system")return false;
- const match=segments.at(-1).match(/(?:^|_)(\\d{4}-\\d{2}-\\d{2})\\.json$/);
- if(!match)return false;
- const day=new Date(match[1]+"T00:00:00Z");
- return !Number.isNaN(day.getTime())&&day.toISOString().slice(0,10)===match[1]&&day<cutoff;
+console.log('RETENTION_CUTOFF',retentionCutoff());
+async function migrateDocument(full,rel,size){
+ const info=historyFileInfo(rel);if(!info?.document)return true;
+ if(size>16*1024*1024)throw Error('Searchable document exceeds migration size limit; preserving source');
+ if(!cloudConfigured())throw Error('Cloud history configuration missing; preserving source');
+ const payload=JSON.parse(await fs.readFile(full,'utf8'));
+ await saveCloudDocument(info.sport,info.stream,info.day,payload,size);
+ console.log('CLOUD_DOCUMENT_VERIFIED',rel,size);return payload;
 }
-async function safelyPrune(full,rel,size,remoteMd5){
- if(!expiredHistory(rel)||!remoteMd5)return;
- const current=await fs.stat(full);
- if(current.size!==size)return;
- const localMd5=await md5File(full);
- if(localMd5.toLowerCase()!==remoteMd5.toLowerCase())return;
- // Recheck after hashing to avoid removing a changing live file.
- const after=await fs.stat(full);
- if(after.size!==current.size||after.mtimeMs!==current.mtimeMs)return;
- await fs.unlink(full);
- deleted++;freedBytes+=size;
- console.log("RETENTION_DELETE_VERIFIED",rel,size);
+async function safelyPrune(full,rel,size,remoteFile){
+ const removed=await pruneVerifiedFile({full,rel,size,remoteFile,migrateDocument,
+ verifyRemote:async id=>(await api(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,size,md5Checksum,trashed`)).json(),
+ recordArchive:async record=>{await cloudRequest('history_archive_files?on_conflict=relative_path,md5',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(record)});}
+ });
+ if(removed){deleted++;freedBytes+=size;console.log('RETENTION_DELETE_VERIFIED',rel,size);}
 }
-
-async function md5File(file){const hash=createHash("md5");for await(const chunk of createReadStream(file))hash.update(chunk);return hash.digest("hex");}
 
 async function walk(dir,parent){
  const remote=await query("'"+parent+"' in parents and trashed = false");
  const remoteFiles=new Map(remote.filter(f=>f.mimeType!== "application/vnd.google-apps.folder").map(f=>[f.name,f]));
- for(const entry of await fs.readdir(dir,{withFileTypes:true})){
+ const entries=await fs.readdir(dir,{withFileTypes:true});
+ entries.sort((a,b)=>Number(expiredHistory(path.relative(root,path.join(dir,b.name))))-Number(expiredHistory(path.relative(root,path.join(dir,a.name))))||a.name.localeCompare(b.name));
+ for(const entry of entries){
   const full=path.join(dir,entry.name);
   if(entry.isSymbolicLink())continue;
   if(entry.isDirectory()){await walk(full,await directory(entry.name,parent));continue;}
   if(!entry.isFile())continue;
   try{
    const stat=await fs.stat(full);const size=stat.size;
-   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){const rel=path.relative(root,full);const remote=remoteFiles.get(entry.name);if(remote.md5Checksum&&await md5File(full)===remote.md5Checksum){count++;total+=size;console.log("BACKUP_SKIP",rel,size);await safelyPrune(full,rel,size,remote.md5Checksum);continue;}console.log("BACKUP_REUPLOAD",rel);}
+   try{await migrateDocument(full,path.relative(root,full),size);}catch(e){console.error('CLOUD_DOCUMENT_PENDING',path.relative(root,full),String(e));}
+   if(remoteFiles.has(entry.name)&&Number(remoteFiles.get(entry.name).size)===size){const rel=path.relative(root,full);const remote=remoteFiles.get(entry.name);if(remote.md5Checksum&&await md5File(full)===remote.md5Checksum){count++;total+=size;console.log("BACKUP_SKIP",rel,size);await safelyPrune(full,rel,size,remote);continue;}console.log("BACKUP_REUPLOAD",rel);}
    const uploaded=await retryUpload(async()=>{
    const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name:entry.name,parents:[parent]})});
    const location=session.headers.get("location");if(!location)throw Error("Missing upload session");
@@ -99,11 +93,13 @@ async function walk(dir,parent){
    return result;
    });
    count++;total+=size;console.log("BACKUP_OK",path.relative(root,full),size);
-   await safelyPrune(full,path.relative(root,full),size,uploaded.md5Checksum);
+   await safelyPrune(full,path.relative(root,full),size,uploaded);
   }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}
  }
 }
+console.log('STORAGE_BEFORE',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
 await walk(root,backup);
+console.log('STORAGE_AFTER',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
 console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,files:count,bytes:total,deleted,freedBytes,errors}));
 // Retention runs only after matching MD5 checksums establish an archived copy.
 if(errors.length)process.exitCode=1;

@@ -1,3 +1,5 @@
+import {cloudConfigured} from '../scripts/history-cloud.mjs';
+import {cloudHistoryDocuments} from '@/lib/cloud-history';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {historyRoot} from '@/lib/durable-history';
@@ -25,13 +27,13 @@ export function historyGroup(row:any,sport:string){
 export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot()){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
- const names=await fs.readdir(directory); // Propagate storage failure, never report it as zero history.
- const days=historyDays(period,now),rows:any[]=[],errors:string[]=[];
+ const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;}); // Propagate storage failure, never report it as zero history.
+ const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[];
  let files=0;
  const availableDates=new Set<string>();
  for(const name of names){
   const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
-  if(!date||name.startsWith('slate_board_')||name.startsWith('restored_slate_board_'))continue;availableDates.add(date);if(!days.has(date))continue;
+  if(!date||name.startsWith('slate_board_')||name.startsWith('restored_slate_board_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
   try{
    const data=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));
    if(sport==='mlb')rows.push(...mlbAdminSnapshot(data,date));
@@ -39,7 +41,13 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
    files++;
   }catch{errors.push(name);}
  }
- const unique=[...new Map(rows.map(r=>[r.key||`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`,r])).values()];
- const records=unique.filter(r=>days.has(String(r.gameDate||dashboardDay(r.gameTime||r.savedAt))));
- return {records,coverage:{files,availableDates:[...availableDates].sort(),errors,complete:errors.length===0},summary:savedHistorySummary(records)};
+ const documents=await cloudHistoryDocuments(sport);
+ const cloudRows:any[]=[];
+ for(const doc of documents){
+  if(sport==='mlb'&&doc.stream==='performance')cloudRows.push(...mlbAdminSnapshot(doc.payload,doc.game_date));
+  else if(Array.isArray(doc.payload)&&!doc.stream.startsWith('slate_board_')&&!doc.stream.startsWith('restored_slate_board_'))cloudRows.push(...doc.payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));
+ }
+ const unique=[...new Map([...cloudRows,...rows].map(r=>[r.key||`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`,r])).values()];
+ const records=unique.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||'')));
+ return {records,coverage:{files,availableDates:[...new Set([...availableDates,...documents.map(d=>d.game_date)])].sort(),cloudDocuments:documents.length,errors,complete:errors.length===0},summary:savedHistorySummary(records)};
 }

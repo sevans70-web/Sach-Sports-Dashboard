@@ -1,5 +1,5 @@
 import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
-import {readHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
+import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {withHistoryLock} from '@/lib/history-lock';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 
@@ -36,8 +36,10 @@ export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now
   let board=await readNbaSlateBoard(market,boundary.day,sport);
   if(!board||!Number.isFinite(Date.parse(board.capturedAt))||Date.parse(board.capturedAt)>=boundary.lockAt!){
    const days=[boundary.day,torontoHistoryDay(new Date(boundary.lockAt!-86400000)),torontoHistoryDay(new Date(boundary.lockAt!-2*86400000))];
-   const snapshots=(await Promise.all(days.map(day=>readHistorySnapshots(sport,market,day)))).flat();
-   board=selectPregameBoard(snapshots,boundary.day,market,boundary.lockAt!,now);
+   for(const captureDay of days)await visitHistorySnapshots(sport,market,captureDay,snapshot=>{
+    const candidate=selectPregameBoard([snapshot],boundary.day,market,boundary.lockAt!,now);
+    if(candidate&&(!board||Date.parse(candidate.capturedAt)>Date.parse(board.capturedAt)))board=candidate;
+   });
    if(board){board={...board,recoveredAt:new Date(now).toISOString()};await writeDurableHistory(sport,stream(market),boundary.day,[board]);}
   }
   const rows=(board?.rows||[]).map(saved=>{

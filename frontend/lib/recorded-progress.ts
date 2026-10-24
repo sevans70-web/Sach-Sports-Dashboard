@@ -1,4 +1,4 @@
-import {readHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
+import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 
 /** Recover display evidence only; never turn a live quote into a pregame pick. */
@@ -28,15 +28,18 @@ export async function attachRecordedProgressLines(payload:any,sport:string,now=D
  if(!Array.isArray(payload?.rows))return payload;
  const rows=payload.rows,needed=rows.filter((r:any)=>r.sportsbookLine==null&&r.gameId&&r.playerId&&Date.parse(r.gameTime)<=now);
  if(!needed.length)return payload;
- const markets=new Map<string,any[]>();
- // Captures can occur on the fixture day or before it. Read the existing
- // archive without rewriting saved forecasts, bets, grades or quote fields.
- for(const row of needed){
-  const market=String(payload.market||row.market||'');if(!market||markets.has(market))continue;
-  const days=new Set<string>();
-  for(const same of needed.filter((r:any)=>String(payload.market||r.market||'')===market))for(let offset=0;offset<3;offset++)days.add(torontoHistoryDay(new Date(Date.parse(same.gameTime)-offset*86400000)));
-  const snapshots=await Promise.all([...days].filter(Boolean).map(day=>readHistorySnapshots(sport,market,day)));
-  markets.set(market,snapshots.flat());
+ const quotes=new Map<any,any>();
+ const markets=[...new Set<string>(needed.map((row:any)=>String(payload.market||row.market||'')))];
+ for(const market of markets){
+  if(!market)continue;
+  const players=needed.filter((r:any)=>String(payload.market||r.market||'')===market),days=new Set<string>();
+  for(const row of players)for(let offset=0;offset<3;offset++)days.add(torontoHistoryDay(new Date(Date.parse(row.gameTime)-offset*86400000)));
+  for(const day of [...days].filter(Boolean))await visitHistorySnapshots(sport,market,day,snapshot=>{
+   for(const row of players){
+    const candidate=archivedProgressQuote({...row,market},[snapshot],now),old=quotes.get(row);
+    if(candidate&&(!old||Date.parse(candidate.archivedAt)>Date.parse(old.archivedAt)))quotes.set(row,candidate);
+   }
+  });
  }
- return {...payload,rows:rows.map((row:any)=>row.sportsbookLine!=null?row:{...row,progressQuote:archivedProgressQuote({...row,market:payload.market||row.market},markets.get(String(payload.market||row.market))||[],now)})};
+ return {...payload,rows:rows.map((row:any)=>row.sportsbookLine!=null?row:{...row,progressQuote:quotes.get(row)||null})};
 }
