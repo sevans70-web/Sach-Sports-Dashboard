@@ -252,8 +252,6 @@ with st.popover("▦", use_container_width=False):
     left, right = st.columns(2)
     with left:
         st.page_link("pages/home.py", label="HOME", icon="🏠")
-        st.page_link("pages/mlb.py", label="MLB", icon="⚾")
-        st.page_link("pages/wnba.py", label="WNBA", icon="🏀")
         st.page_link("pages/soccer.py", label="SOCCER", icon="⚽")
     with right:
         st.page_link("pages/nfl.py", label="NFL", icon="🏈")

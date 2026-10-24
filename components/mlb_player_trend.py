@@ -121,6 +121,18 @@ def render_mlb_player_trend(
             use_container_width=True,
         )
 
+    # Persistent exact results for touchscreens (hover alone is insufficient).
+    selected_game = st.selectbox(
+        "Tap a game to see its exact result",
+        options=list(range(len(source) - 1, -1, -1)),
+        format_func=lambda idx: (
+            f"{source.iloc[idx]['game_date']} · {source.iloc[idx]['opponent']}"
+        ),
+        key=f"mlb_exact_result_{player_id}_{field}_{game_limit}",
+    )
+    chosen = source.iloc[selected_game]
+    st.markdown(f"**Actual {label}: {chosen['value']:.0f}** · {chosen['result']}")
+
     values = source["value"]
     hits = int((values > threshold).sum())
     st.markdown(

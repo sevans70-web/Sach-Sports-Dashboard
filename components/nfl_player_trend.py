@@ -119,6 +119,23 @@ def render_nfl_player_trend(
             width="stretch",
         )
 
+    # A native selector works on iPhone/iPad where chart hover tooltips do not.
+    if not plot.empty:
+        selected_game = st.selectbox(
+            "Tap a game to see its exact result",
+            options=list(range(len(plot) - 1, -1, -1)),
+            format_func=lambda idx: (
+                f"{str(plot.iloc[idx].get('game_date', ''))[:10]} · "
+                f"{plot.iloc[idx].get('opponent', 'Opponent')}"
+            ),
+            key=f"nfl_exact_result_{safe_key}_{game_limit}",
+        )
+        chosen = plot.iloc[selected_game]
+        st.markdown(
+            f"**Actual {market}: {_fmt_value(float(chosen['value']), market)}**"
+            + (f" · {chosen['result']}" if has_line else "")
+        )
+
     if len(plot) < game_limit:
         st.caption(
             f"{len(plot)} qualifying game{'s' if len(plot) != 1 else ''} available "
