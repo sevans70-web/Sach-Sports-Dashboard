@@ -10,11 +10,12 @@ export function selectNbaCandidates(rows:any[],market:string,now=Date.now()){
   seen.add(key);return true;
  }).slice(0,25);
  const occupied=new Set(selected.filter(r=>!r.recoveredRecordedCandidate).map(r=>r.rank));
- return selected.map(row=>{
+ const ranked=selected.map(row=>{
   if(!row.recoveredRecordedCandidate)return row;
   let rank=1;while(occupied.has(rank))rank++;occupied.add(rank);
   return {...row,rank};
  });
+ return ranked.some(r=>r.recoveredRecordedCandidate)?ranked.sort((a,b)=>a.rank-b.rank):ranked;
 }
 
 /** Recover only decisions actually recorded before the daily lock. Never fit
