@@ -8,9 +8,9 @@ export async function cloudRequest(route,options={}){
  const headers={apikey:key,'Content-Type':'application/json',...options.headers};if(!key.startsWith('sb_secret_'))headers.Authorization='Bearer '+key;
  const r=await fetch(base+'/rest/v1/'+route,{...options,headers,signal:AbortSignal.timeout(20000),cache:'no-store'});if(!r.ok)throw Error('Cloud history HTTP '+r.status);const text=await r.text();return text?JSON.parse(text):null;
 }
-export async function saveCloudDocument(sport,stream,day,payload,bytes=0){
+export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt=new Date().toISOString()){
  const hash=checksum(payload),scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
- await cloudRequest('history_documents?on_conflict=sport,stream,game_date',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({sport,stream,game_date:day,checksum:hash,payload,source_bytes:bytes,updated_at:new Date().toISOString()})});
+ await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:payload,p_source_bytes:bytes,p_source_updated_at:sourceUpdatedAt})});
  const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
  if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');return true;
 }
