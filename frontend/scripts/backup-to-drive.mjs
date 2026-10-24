@@ -45,8 +45,9 @@ async function migrateDocument(full,rel,size){
  const info=historyFileInfo(rel);if(!info?.document)return true;
  if(size>16*1024*1024)throw Error('Searchable document exceeds migration size limit; preserving source');
  if(!cloudConfigured())throw Error('Cloud history configuration missing; preserving source');
+ const sourceStat=await fs.stat(full);
  const payload=JSON.parse(await fs.readFile(full,'utf8'));
- await saveCloudDocument(info.sport,info.stream,info.day,payload,size);
+ await saveCloudDocument(info.sport,info.stream,info.day,payload,size,sourceStat.mtime.toISOString());
  console.log('CLOUD_DOCUMENT_VERIFIED',rel,size);return payload;
 }
 async function safelyPrune(full,rel,size,remoteFile){

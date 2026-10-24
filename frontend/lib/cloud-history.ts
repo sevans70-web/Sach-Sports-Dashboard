@@ -1,4 +1,4 @@
-import {cloudConfigured,listCloudDocuments,saveCloudDocument} from '../scripts/history-cloud.mjs';
+import {cloudConfigured,listCloudDocuments,saveCloudDocument,checksum} from '../scripts/history-cloud.mjs';
 const cache=new Map<string,{at:number;rows:any[]}>(),pending=new Map<string,Promise<any[]>>();
 export async function cloudHistoryDocuments(sport:string):Promise<any[]>{
  if(!cloudConfigured())return [];
@@ -9,5 +9,6 @@ export async function cloudHistoryRead(sport:string,stream:string,day:string){re
 export async function cloudHistoryWrite(sport:string,stream:string,day:string,rows:any[]){
  if(!cloudConfigured())return false;
  await saveCloudDocument(sport,stream,day,rows,Buffer.byteLength(JSON.stringify(rows)));
- cache.delete(sport);return true;
+ const hit=cache.get(sport);if(hit){const updated={stream,game_date:day,payload:rows,checksum:checksum(rows)},index=hit.rows.findIndex(r=>r.stream===stream&&r.game_date===day);if(index>=0)hit.rows[index]=updated;else hit.rows.push(updated);}
+ return true;
 }

@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';import {checksum} from '../scripts/history-cloud.mjs';
+test('verified writes update a warm sport cache without reloading every historical document',async()=>{
+ const oldFetch=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';let listCalls=0,latest=[{key:'a',actual:0}];
+ globalThis.fetch=async(url,options={})=>{const u=String(url);if(u.includes('rpc/write_history_document')){latest=JSON.parse(options.body).p_payload;return new Response(null,{status:204});}if(u.includes('game_date=eq.'))return Response.json([{payload:latest,checksum:checksum(latest)}]);listCalls++;return Response.json([{stream:'points',game_date:'2026-10-23',payload:latest,checksum:checksum(latest)}]);};
+ try{const api=await loadTs(new URL('../lib/cloud-history.ts',import.meta.url));assert.equal((await api.cloudHistoryRead('nba','points','2026-10-23'))[0].actual,0);await api.cloudHistoryWrite('nba','points','2026-10-23',[{key:'a',actual:8}]);assert.equal((await api.cloudHistoryRead('nba','points','2026-10-23'))[0].actual,8);assert.equal(listCalls,1);}
+ finally{globalThis.fetch=oldFetch;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldKey===undefined)delete process.env.SUPABASE_SECRET_KEY;else process.env.SUPABASE_SECRET_KEY=oldKey;}
+});
