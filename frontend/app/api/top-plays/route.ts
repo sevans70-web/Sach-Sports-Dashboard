@@ -1,3 +1,6 @@
+import {retainedTopPlays} from '@/lib/retained-top-plays';
+import {readHistorySnapshots} from '@/lib/history-archive';
+import {writeDurableHistory} from '@/lib/durable-history';
 import {NBA_MARKETS} from '@/lib/nba';
 import {NFL_MARKETS} from '@/lib/nfl';
 import {CFB_MARKETS} from '@/lib/cfb';
@@ -19,7 +22,23 @@ export async function GET(req:NextRequest){
  const day=dashboardDay(new Date());
  const definitions:Record<string,readonly (readonly any[])[]>={nba:NBA_MARKETS,nfl:NFL_MARKETS,cfb:CFB_MARKETS,nhl:NHL_MARKETS,cbb:CBB_MARKETS,wnba:WNBA_MARKETS,soccer:SOCCER_MARKETS,mlb:[...BATTER_MARKETS,...PITCHER_MARKETS]};
  const markets=[...new Set(definitions[sport].map(m=>String(m[0])))];
- const saved=await readDurableHistoryBatch(sport,markets.map(m=>'featured_'+m),day).catch(()=>[]);
+ const saved=await readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),'featured_selections'],day).catch(()=>[]);
  for(const record of saved){const board=record.payload?.[0],stamp=Date.parse(board?.featuredCapturedAt||'');if(board&&Number.isFinite(stamp)&&Date.now()-stamp<15*60000)updateTopPlayMarket(sport,board,stamp);}
- return NextResponse.json(topPlayMarketState(sport),{headers:{'Cache-Control':'no-store'}});
+ const state=topPlayMarketState(sport),previous=saved.find(r=>r.stream==='featured_selections')?.payload||[];
+ const boards=saved.filter(r=>r.stream!=='featured_selections').map(r=>r.payload?.[0]).filter(Boolean);
+ // First-basket refreshes legitimately become empty at tipoff. Original scorer
+ // quotes remain in the immutable research archive and must not disappear.
+ if(['nba','wnba','cbb'].includes(sport)&&!state.plays.find(p=>p.key==='first')?.pick&&!previous.find((p:any)=>p.key==='first')?.pick){
+  const snapshots=await readHistorySnapshots(sport,'first_basket',day).catch(()=>[]);
+  boards.push(...snapshots.map(s=>({...s.payload,capturedAt:s.capturedAt})));
+ }
+ const retained=retainedTopPlays(boards,sport);
+ state.plays=state.plays.map(card=>{
+  if(card.pick)return card;
+  const old=previous.find((p:any)=>p.key===card.key)?.pick||retained.find(p=>p.key===card.key)?.pick;
+  if(!old||dashboardDay(old.row.gameTime)!==day)return card;
+  return {...card,pick:{...old,row:{...old.row,featuredRetained:true}}};
+ });
+ if(state.plays.some(p=>p.pick))await writeDurableHistory(sport,'featured_selections',day,state.plays);
+ return NextResponse.json(state,{headers:{'Cache-Control':'no-store'}});
 }
