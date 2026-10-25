@@ -1,3 +1,4 @@
+import {publishFeaturedBoards,featuredBoardsFromCapture} from '@/lib/research-capture';
 import {captureHiddenSportGames} from "@/lib/hidden-sport-game-capture";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -97,6 +98,7 @@ async function captureArchive(
     };
   }
 
+  await publishFeaturedBoards(sport,featuredBoardsFromCapture(result.payload,stream));
   const saved = await appendHistorySnapshot(sport, stream, result.payload, day);
 
   return {

@@ -26,6 +26,6 @@ export async function readDurableHistoryBatch(sport:string,streams:string[],day:
  }));
  const found=local.filter(Boolean) as {stream:string;payload:any[]}[];
  const missing=streams.filter(stream=>!found.some(row=>row.stream===stream));
- const remote=await readCloudDocumentsForDay(sport,missing,day);
+ const remote=await readCloudDocumentsForDay(sport,missing,day).catch(()=>[]);
  return [...found,...remote];
 }
