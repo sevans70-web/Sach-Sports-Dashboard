@@ -18,8 +18,8 @@ export async function saveFeaturedSelections(sport:string,candidates:any[],day:s
   const merged=distinctFeaturedPlayers(candidates.map(card=>{
    const prior=previous.find(c=>c.key===card.key)?.pick;
    const saved=prior&&dashboardDay(prior.row.gameTime)===day?prior:null;
-   if(saved&&dashboardDay(saved.row.gameTime)===day&&Date.parse(saved.row.gameTime)<=now)return { ...card,pick:saved };
-   return card.pick?card:saved?{...card,pick:saved}:card;
+   if(saved)return {...card,pick:saved};
+   return saved?{...card,pick:saved}:card;
   }));
   if(merged.some(c=>c.pick))await writeDurableHistory(sport,'featured_selections',day,merged);
   return merged;
