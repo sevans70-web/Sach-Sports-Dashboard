@@ -544,7 +544,7 @@ export async function getCfbPredictions(
 
 /** Fast local read for boards. Remote history remains available through getCfbPredictions. */
 export async function getLocalCfbPredictions(m:CfbMarketKey,day:string){
-  return mergePredictions(await readDisk(m,day),runtime.get(storeKey(m,day))||[]);
+  return mergePredictions(await readDurableHistory<SavedCfbPrediction>('cfb',String(m),day,true),runtime.get(storeKey(m,day))||[]);
 }
 
 export async function getCfbPredictionsForDays(
