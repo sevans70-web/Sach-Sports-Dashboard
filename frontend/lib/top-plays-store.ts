@@ -10,7 +10,7 @@ export function updateTopPlayMarket(sport:string,board:any,now=Date.now()){
  for(const [key,v] of markets)if(now-v.at>=15*60_000)markets.delete(key);
  const day=board.boardDay||board.day||(board.rows[0]?.gameTime?dashboardDay(board.rows[0].gameTime):dashboardDay(new Date(now)));
  const key=sport+'|'+board.market+'|'+day;if((markets.get(key)?.at||0)>now)return;
- markets.set(key,{at:now,rows:board.rows});
+ markets.set(key,{at:now,rows:board.rows.map((row:any)=>({...row,market:row.market||board.market}))});
 }
 export function topPlayMarketState(sport:string,now=Date.now()){
  const sources=[...markets].filter(([key,v])=>key.startsWith(sport+'|')&&now-v.at<15*60_000);

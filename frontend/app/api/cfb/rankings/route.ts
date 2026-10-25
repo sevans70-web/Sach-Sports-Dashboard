@@ -1,3 +1,4 @@
+import {publishFeaturedBoards} from '@/lib/research-capture';
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -392,4 +393,4 @@ export async function GET(req:NextRequest){
   }
 }
 
-function rankingJson(payload:any,init?:ResponseInit){return NextResponse.json(guardRankingPayload(payload,"cfb"),init)}
+async function rankingJson(payload:any,init?:ResponseInit){const board=guardRankingPayload(payload,"cfb");await publishFeaturedBoards("cfb",[board]);return NextResponse.json(board,init)}

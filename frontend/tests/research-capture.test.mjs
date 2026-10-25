@@ -12,3 +12,12 @@ test('research capture uses existing daily archive, keeps original evidence, and
   assert.equal(snapshots[0].payload.kind,'research_rankings');assert.equal(snapshots[0].payload.verifiedPredictions,0);assert.equal(snapshots[0].payload.rows[0].archivedOriginal.sportsbookLine,8.8);
  }finally{if(old===undefined)delete process.env.SACH_HISTORY_DIR;else process.env.SACH_HISTORY_DIR=old;await rm(dir,{recursive:true,force:true})}
 });
+
+test('scheduler extracts exact market rows from football, baseball and soccer payloads',async()=>{
+ const {featuredBoardsFromCapture}=await loadTs(new URL('../lib/research-capture.ts',import.meta.url));
+ const row={playerId:'7',sportsbookLine:12.5,overPrice:-110};
+ for(const payload of [{rows:[row],market:'passing_yards'},{rankings:{shots:[row]}},{batter:{hits:[row]},pitcher:{strikeouts:[]}}]){
+  const boards=featuredBoardsFromCapture(payload,'dashboard');assert.deepEqual(boards[0].rows,[row]);assert.ok(boards[0].market);assert.equal(boards[0].rows[0].modelProbability,undefined);
+ }
+ assert.deepEqual(featuredBoardsFromCapture({error:'unavailable'},'dashboard'),[]);
+});

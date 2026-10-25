@@ -7,8 +7,7 @@ import {withHistoryLock} from "@/lib/history-lock";
  * enter wager history or be reported as a successfully validated betting pick.
  * Reuse the existing archive root/day/backup/retention policy unchanged. */
 export async function archiveResearchBoards(sport:string,boards:any[]){
-  for(const board of boards)updateTopPlayMarket(sport,board);
-  await Promise.all(boards.filter(b=>b?.market&&Array.isArray(b.rows)).map(board=>writeDurableHistory(sport,'featured_'+board.market,dashboardDay(new Date()),[{...board,featuredCapturedAt:new Date().toISOString()}])));
+  await publishFeaturedBoards(sport,boards);
   const markets=await Promise.all(boards.map(async board=>{
     if(!board?.market||!Array.isArray(board.rows)||!board.rows.length||board.rows.some((r:any)=>r.integrityVersion!==1))return {market:board?.market,archived:false};
     try{
@@ -18,4 +17,14 @@ export async function archiveResearchBoards(sport:string,boards:any[]){
     }catch(e){return {market:board.market,archived:false,error:e instanceof Error?e.message:String(e)}}
   }));
   return {researchArchived:markets.some(m=>m.archived),archivedMarkets:markets.filter(m=>m.archived).length,archiveErrors:markets.filter(m=>m.error)};
+}
+
+/** Shared by ranking routes and the independent all-sport scheduler. */
+export async function publishFeaturedBoards(sport:string,boards:any[]){
+ for(const board of boards)updateTopPlayMarket(sport,board);
+ await Promise.all(boards.filter(b=>b?.market&&Array.isArray(b.rows)).map(board=>writeDurableHistory(sport,'featured_'+board.market,dashboardDay(new Date()),[{...board,featuredCapturedAt:new Date().toISOString()}])));
+}
+export function featuredBoardsFromCapture(payload:any,stream:string){
+ if(Array.isArray(payload?.rows))return [{...payload,market:payload.market||stream}];
+ return [payload?.rankings,payload?.batter,payload?.pitcher].filter(Boolean).flatMap(group=>Object.entries(group).filter(([,rows])=>Array.isArray(rows)).map(([market,rows])=>({market,rows,updatedAt:payload.updatedAt})));
 }
