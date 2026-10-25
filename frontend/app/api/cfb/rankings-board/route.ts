@@ -1521,7 +1521,7 @@ async function build(
     );
 
   let recorded = await getLocalCfbPredictions(market,gameDay);
-  if (!recorded.length) recorded = (await timeout(getCfbPredictions(market,gameDay),2500,{predictions:[],connected:false,id:undefined})).predictions;
+  if (!recorded.length) recorded = (await timeout(getCfbPredictions(market,gameDay).catch(()=>({predictions:[],connected:false,id:undefined})),2500,{predictions:[],connected:false,id:undefined})).predictions;
   const allState = slate === "all" ? null : await readBoardState(market,"all",gameDay);
   const priorAllRows = [...(allState?.rows || []), ...Object.values(allState?.locked || {})]
     .filter(row => inSlate(String(row.gameTime || ""),slate) && day(row.gameTime || "") === gameDay);
