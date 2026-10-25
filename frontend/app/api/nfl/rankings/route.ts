@@ -32,6 +32,7 @@ async function cachedRoster(teamId:string){
 }
 
 const OWLS_MARKETS:Record<NflMarketKey,string[]>={
+ sacks:["sacks","player_sacks"],tackles:["tackles","solo_tackles"],tackles_assists:["tackles_assists","total_tackles"],
  passing_yards:["passing_yards","passingyards","pass_yards","passyards"],
  passing_tds:["passing_tds","pass_tds","passing_touchdowns","passingtouchdowns"],
  qb_rushing_yards:["rushing_yards","rushingyards","rush_yards","rushyards"],
@@ -55,6 +56,7 @@ const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  q1_rush_attempts:["rush_attempts_1q","rushing_attempts_1q","1q_rush_attempts","first_quarter_rush_attempts"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
+ sacks:["sacks","totalsacks"],tackles:["solotackles","solo"],tackles_assists:["totaltackles","tackles","combinedtackles"],
  passing_yards:["passingyards","passyards"],
  passing_tds:["passingtouchdowns","passingtds","passtds","td"],
  qb_rushing_yards:["rushingyards","rushyards"],
@@ -130,7 +132,7 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  return {id:"",headshot:"",teamName:teamName||"NFL",teamId:"",position:"",teamLogo:""};
 }
 async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
- if(market==="first_td"||market.startsWith("q1_"))return [];
+ if(market==="first_td"||market.startsWith("q1_")||["sacks","tackles","tackles_assists"].includes(market))return [];
  const positions=market.startsWith("passing")||market==="qb_rushing_yards"?new Set(["QB"]):
    market.startsWith("rushing")?new Set(["RB","FB"]):new Set(["WR","TE","RB","FB"]);
  const games=schedule.filter(g=>g.state==="pre"&&easternDayKey(g.date)>=easternDayKey(new Date()));
@@ -255,6 +257,7 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  if(market==="rushing_tds")return rushingTd();
  if(market==="receiving_yards")return receivingYds();
  if(market==="receptions")return receptions();
+ if(["sacks","tackles","tackles_assists"].includes(market))return statFromSummary(payload,playerId,playerName,"defensive",market==="sacks"?"SACKS":market==="tackles"?"SOLO":"TOT");
  if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null&&b==null?null:(a||0)+(b||0)}
  if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null&&b==null?null:(a||0)+(b||0)}
  if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null&&b==null?null:(a||0)+(b||0)}
