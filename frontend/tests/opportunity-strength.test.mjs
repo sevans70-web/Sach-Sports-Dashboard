@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
 const {fitOpportunityStrength,opportunityStrength,giCalibrationRow,researchOpportunityDecision}=await loadTs(new URL('../lib/opportunity-strength.ts',import.meta.url));
-const row=(i,extra={})=>({observationId:'q'+i,gameId:'g'+i,decisionAt:'2025-01-01T00:00:00Z',settledAt:'2025-01-02T00:00:00Z',expectedReturn:i/1000,unitReturn:i<100?-1:1,...extra});
+const row=(i,extra={})=>({observationId:'q'+i,gameId:'g'+i,decisionAt:'2025-01-01T00:00:00Z',settledAt:'2025-01-02T00:00:00Z',expectedReturn:i/1000,unitReturn:i<100?-1:i<200?.5:1,...extra});
 test('GI learns opportunity return order separately from probability, using earlier fixture-weighted outcomes',()=>{
  const rows=Array.from({length:300},(_,i)=>row(i)),{artifact}=fitOpportunityStrength(rows,'2025-02-01');assert.ok(artifact);
  assert.equal(opportunityStrength(artifact,.01,'2026-01-01').score,0);
@@ -41,4 +41,9 @@ test('the decision engine requires both forecast value and earlier GI calibratio
  assert.equal(researchOpportunityDecision(model,history,target,quote,null).reason,'GI_exact_price_calibration_missing');
  assert.equal(researchOpportunityDecision(model,history,target,{...quote,line:240},artifact).candidatePick,null);
  assert.equal(researchOpportunityDecision(model,history,target,{...quote,gameId:'wrong'},artifact).reason,'wrong_identity');
+});
+
+test('a single positive calibration level cannot manufacture midpoint GI rankings',()=>{
+ const artifact={version:1,trainedThrough:'2025-01-01',calibrationRows:271,fixtures:31,blocks:[{maximumExpectedReturn:.1,estimatedUnitReturn:-.1},{maximumExpectedReturn:1,estimatedUnitReturn:.06}],positiveReturnReference:Array(200).fill(.06),validatedForBetting:false};
+ for(const edge of [.01,.2,.8]){const result=opportunityStrength(artifact,edge,'2026-01-01');assert.equal(result.score,null);assert.equal(result.reason,'GI_calibration_has_no_ranking_resolution');assert.equal(result.estimatedUnitReturn,edge<=.1?-.1:.06)}
 });

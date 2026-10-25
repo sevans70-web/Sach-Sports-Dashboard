@@ -983,7 +983,7 @@ function PlayerCard({
   const firstBasket=card.market==='first_basket';
   const scorerQuote=firstBasketQuote(card.raw);
   const displayedPick=modelSelection?.side||(researchOnly?'No Qualified Pick':card.prediction);
-  const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
+  const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='GI_calibration_has_no_ranking_resolution'?"GI unavailable: historical calibration cannot yet distinguish opportunity strength.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
   const displayedAverage=researchOnly?cardModelProjection(card.raw):card.modelProjection;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
@@ -1124,6 +1124,7 @@ function PlayerCard({
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
+          {!firstBasket&&researchOnly&&fittedForecast?.giScore==null?<p>{researchGiReason}</p>:null}
           <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (

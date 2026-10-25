@@ -59,6 +59,10 @@ export function opportunityStrength(artifact:GiArtifact,expectedReturn:number,de
  const at=Date.parse(decisionAt),trained=Date.parse(artifact.trainedThrough);
  if(!Number.isFinite(at)||!Number.isFinite(trained)||at<=trained||!Number.isFinite(expectedReturn)||!artifact.blocks.length||artifact.blocks.some((b,i)=>!Number.isFinite(b.maximumExpectedReturn)||!Number.isFinite(b.estimatedUnitReturn)||i>0&&(b.maximumExpectedReturn<=artifact.blocks[i-1].maximumExpectedReturn||b.estimatedUnitReturn<artifact.blocks[i-1].estimatedUnitReturn))||artifact.positiveReturnReference.some(v=>!Number.isFinite(v)||v<=0))return {score:null,estimatedUnitReturn:null,reason:'GI_calibration_unavailable'};
  const estimate=artifact.blocks.find(b=>expectedReturn<=b.maximumExpectedReturn)?.estimatedUnitReturn??artifact.blocks.at(-1)!.estimatedUnitReturn;
+ // One positive fitted return maps every positive opportunity to the same
+ // midpoint (50). It has no ranking resolution, so withhold the score while
+ // preserving the estimated return for diagnostics.
+ if(new Set(artifact.positiveReturnReference).size<2)return {score:null,estimatedUnitReturn:estimate,reason:'GI_calibration_has_no_ranking_resolution'};
  if(estimate<=0||!artifact.positiveReturnReference.length)return {score:0,estimatedUnitReturn:estimate,reason:'no_positive_calibrated_opportunity'};
  const reference=artifact.positiveReturnReference,lower=reference.filter(v=>v<estimate).length,equal=reference.filter(v=>v===estimate).length;
  return {score:Math.round(100*(lower+.5*equal)/reference.length),estimatedUnitReturn:estimate,reason:null};
