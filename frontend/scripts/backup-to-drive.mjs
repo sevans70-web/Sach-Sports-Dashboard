@@ -1,3 +1,4 @@
+import {driveAuth} from './drive-auth.mjs';
 import {pruneVerifiedFile,md5File} from './retention-cleanup.mjs';
 import {expiredHistory,historyFileInfo,retentionCutoff,orphanArchiveInfo} from './retention-policy.mjs';
 import {cloudConfigured,saveCloudDocument,cloudRequest} from './history-cloud.mjs';
@@ -14,15 +15,8 @@ const clientId=process.env.GOOGLE_OAUTH_CLIENT_ID;
 const clientSecret=process.env.GOOGLE_OAUTH_CLIENT_SECRET;
 const refreshToken=process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
 if(!folder||!clientId||!clientSecret||!refreshToken)throw Error("OAuth backup configuration missing: BACKUP_DRIVE_FOLDER_ID and GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN required");
-const tokenResponse=await fetch("https://oauth2.googleapis.com/token",{
- method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},
- body:new URLSearchParams({client_id:clientId,client_secret:clientSecret,refresh_token:refreshToken,grant_type:"refresh_token"})
-});
-if(!tokenResponse.ok)throw Error("Google OAuth refresh failed: HTTP "+tokenResponse.status+" (check consent testing status and refresh token)");
-const {access_token:token}=await tokenResponse.json();
-if(!token)throw Error("Google OAuth did not return an access token");
-const auth={Authorization:"Bearer "+token};
-async function api(url,options={}){const r=await fetch(url,{...options,headers:{...auth,...options.headers}});if(!r.ok)throw Error("Drive API "+r.status+": "+(await r.text()).slice(0,300));return r;}
+const {request:driveRequest}=driveAuth({clientId,clientSecret,refreshToken});
+async function api(url,options={}){const r=await driveRequest(url,options);if(!r.ok)throw Error("Drive API "+r.status+": "+(await r.text()).slice(0,300));return r;}
 async function query(q){let files=[],pageToken;do{const u=new URL("https://www.googleapis.com/drive/v3/files");u.searchParams.set("fields","nextPageToken,files(id,name,mimeType,size,md5Checksum)");u.searchParams.set("pageSize","1000");u.searchParams.set("q",q);if(pageToken)u.searchParams.set("pageToken",pageToken);const page=await (await api(u.toString())).json();files.push(...page.files);pageToken=page.nextPageToken;}while(pageToken);return files;}
 async function directory(name,parent){const safe=name.replaceAll("'","\\'");const matches=await query("'"+parent+"' in parents and name = '"+safe+"' and mimeType = 'application/vnd.google-apps.folder' and trashed = false");if(matches.length)return matches[0].id;const r=await api("https://www.googleapis.com/drive/v3/files?fields=id",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name,mimeType:"application/vnd.google-apps.folder",parents:[parent]})});return (await r.json()).id;}
 // Resume the newest backup folder instead of creating duplicate full backups.
@@ -86,7 +80,7 @@ async function walk(dir,parent){
      const end=Math.min(size,offset+chunkSize)-1;
      const chunks=[];for await(const c of createReadStream(full,{start:offset,end}))chunks.push(c);
      const data=Buffer.concat(chunks);
-     const r=await fetch(location,{method:"PUT",headers:{...auth,"Content-Length":String(data.length),"Content-Range":`bytes ${offset}-${end}/${size}`},body:data});
+     const r=await driveRequest(location,{method:"PUT",headers:{"Content-Length":String(data.length),"Content-Range":`bytes ${offset}-${end}/${size}`},body:data});
      if(r.status===308){offset=end+1;continue;}
      if(!r.ok)throw Error("Upload failed "+r.status);
      result=await r.json();offset=size;
