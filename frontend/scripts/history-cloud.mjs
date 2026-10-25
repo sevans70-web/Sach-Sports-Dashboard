@@ -18,3 +18,12 @@ export async function readCloudDocument(sport,stream,day){const rows=await cloud
 export async function listCloudDocuments(sport){
  const rows=[];for(let offset=0;;offset+=100){const page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${encodeURIComponent(sport)}&order=game_date.asc,stream.asc&limit=100&offset=${offset}`);for(const row of page){if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');rows.push(row);}if(page.length<100)break;}return rows;
 }
+
+/** Indexed current-day reads for small dashboard views; never scan a sport archive. */
+export async function readCloudDocumentsForDay(sport,streams,day){
+ if(!cloudConfigured()||!streams.length)return [];
+ if(!/^[a-z0-9_-]+$/i.test(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(day)||streams.some(s=>!(/^[a-z0-9_-]+$/i.test(s))))throw Error('Invalid history scope');
+ const rows=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&game_date=eq.${day}&stream=in.(${streams.join(',')})`);
+ for(const row of rows){if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');}
+ return rows;
+}
