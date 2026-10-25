@@ -1,8 +1,10 @@
+import {withHistoryLock} from '@/lib/history-lock';
+import {randomUUID} from 'node:crypto';
 import {publishFeaturedBoards,featuredBoardsFromCapture} from '@/lib/research-capture';
 import {captureHiddenSportGames} from "@/lib/hidden-sport-game-capture";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import {internalAppOrigin} from '@/lib/internal-app-origin';
 import { NFL_ACTIVE_MARKETS } from "@/lib/nfl";
 import { CFB_MARKETS } from "@/lib/cfb";
@@ -98,8 +100,8 @@ async function captureArchive(
     };
   }
 
-  await publishFeaturedBoards(sport,featuredBoardsFromCapture(result.payload,stream));
   const saved = await appendHistorySnapshot(sport, stream, result.payload, day);
+  after(async()=>{try{await publishFeaturedBoards(sport,featuredBoardsFromCapture(result.payload,stream))}catch(e){console.error("[capture featured publication]",sport,stream,e)}});
 
   return {
     sport,
@@ -221,7 +223,7 @@ async function captureSport(
     );
   } else if (sport === "cfb") {
     results.push(
-      ...(await marketSet(origin, sport, "/api/cfb/rankings", CFB_MARKETS, day)),
+      ...(await marketSet(origin, sport, "/api/cfb/rankings-board", CFB_MARKETS, day)),
     );
   } else if (sport === "mlb") {
     results.push(
@@ -258,6 +260,11 @@ async function captureSport(
     const official=await captureHiddenSportGames(sport);
     results.push({sport,stream:'official-final-games',path:'official-boxscores',ok:official.success,count:official.saved,error:official.errors.join('; ')||undefined});
   }
+  return results;
+}
+
+const gradingInFlight=new Set<Sport>();
+async function gradeSport(origin:string,sport:Sport,deep:boolean){
   const grading: CaptureResult[] = [];
 
   for (const route of gradingRoutes(sport, deep)) {
@@ -273,7 +280,7 @@ async function captureSport(
     });
   }
 
-  return [...results, ...grading];
+  return grading;
 }
 
 async function readManifest() {
@@ -284,23 +291,31 @@ async function readManifest() {
   }
 }
 
-async function writeManifest(sport: Sport, day: string, results: CaptureResult[]) {
+async function writeManifest(sport: Sport, day: string, results: CaptureResult[], gradingPending=false) {
+ return withHistoryLock("history-capture-manifest",async()=>{
   try {
     await fs.mkdir(SYSTEM_DIR, { recursive: true });
 
     const manifest = await readManifest();
+    if(results.some(item=>item.stream==='grading')){
+      if(manifest.day&&manifest.day!==day)return;
+      const latest=manifest.sports?.[sport]?.results;
+      if(Array.isArray(latest))results=[...latest.filter((item:CaptureResult)=>item.stream!=='grading'),...results.filter(item=>item.stream==='grading')];
+    }
     manifest.updatedAt = new Date().toISOString();
     manifest.day = day;
     manifest.sports = manifest.sports || {};
     manifest.sports[sport] = {
       updatedAt: new Date().toISOString(),
       success: results.every((item) => item.ok),
+      gradingPending,
+      captureSuccess: results.filter(item=>item.stream!=="grading").every(item=>item.ok),
       saved: results.filter((item) => item.ok && item.stream !== "grading").length,
       failed: results.filter((item) => !item.ok).length,
       results,
     };
 
-    const temp = `${MANIFEST_FILE}.${process.pid}.tmp`;
+    const temp = `${MANIFEST_FILE}.${process.pid}.${randomUUID()}.tmp`;
     await fs.writeFile(temp, JSON.stringify(manifest, null, 2), "utf8");
     await fs.rename(temp, MANIFEST_FILE);
   } catch (error) {
@@ -309,6 +324,7 @@ async function writeManifest(sport: Sport, day: string, results: CaptureResult[]
       error instanceof Error ? error.message : String(error),
     );
   }
+ });
 }
 
 export async function GET(req: NextRequest) {
@@ -342,7 +358,11 @@ export async function GET(req: NextRequest) {
   for (const sport of selected) {
     const results = await captureSport(origin, sport, day, deep);
     allResults.push(...results);
-    await writeManifest(sport, day, results);
+    await writeManifest(sport, day, results,true);
+    if(!gradingInFlight.has(sport)){
+      gradingInFlight.add(sport);
+      after(async()=>{try{const grading=await gradeSport(origin,sport,deep);await writeManifest(sport,day,[...results,...grading]);}finally{gradingInFlight.delete(sport)}});
+    }
   }
 
   const failed = allResults.filter((result) => !result.ok);
@@ -357,6 +377,7 @@ export async function GET(req: NextRequest) {
       day,
       sports: selected,
       saved,
+      gradingPending: true,
       failed: failed.length,
       results: allResults,
       updatedAt: new Date().toISOString(),

@@ -8,7 +8,7 @@ declare global {
     | undefined;
 }
 
-const SPORTS = ["mlb", "nfl", "cfb", "nba", "wnba", "nhl", "soccer", "cbb"] as const;
+const SPORTS = ["nfl", "nba", "cfb", "nhl", "cbb", "soccer", "wnba", "mlb"] as const;
 const TEN_MINUTES = 10 * 60 * 1000;
 
 async function sleep(ms: number) {
@@ -59,19 +59,6 @@ async function runCycle(base: string, deep = false) {
   console.log(`[sach-history] capture cycle started ${startedAt}`);
 
   try {
-    if (deep) {
-      try {
-        const recovered = await hit(base, "/api/history/recover?days=45", 180_000);
-        console.log(
-          `[sach-history] startup recovery checked=${recovered?.checked ?? 0} recovered=${recovered?.recovered ?? 0}`,
-        );
-      } catch (error) {
-        console.error(
-          "[sach-history] startup recovery failed",
-          error instanceof Error ? error.message : String(error),
-        );
-      }
-    }
 
     for (const sport of SPORTS) {
       const suffix = deep ? "&deep=1" : "";
@@ -106,6 +93,21 @@ async function runCycle(base: string, deep = false) {
       // Avoid hammering the odds/data providers between sports.
       await sleep(1_500);
     }
+    // Capture current pregame evidence before cold archive recovery.
+    if (deep) {
+      try {
+        const recovered = await hit(base, "/api/history/recover?days=45", 180_000);
+        console.log(
+          `[sach-history] startup recovery checked=${recovered?.checked ?? 0} recovered=${recovered?.recovered ?? 0}`,
+        );
+      } catch (error) {
+        console.error(
+          "[sach-history] startup recovery failed",
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+    }
+
   } finally {
     state.inFlight = false;
     console.log(`[sach-history] capture cycle finished ${new Date().toISOString()}`);
