@@ -1,3 +1,4 @@
+import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {NextRequest,NextResponse} from "next/server";
 import {type NbaMarketKey,NBA_MARKETS} from "@/lib/nba";
 import {buildNbaMarketRankings} from "@/lib/nba-rankings-server";
@@ -17,6 +18,11 @@ export async function GET(req:NextRequest){
  let result,timer:ReturnType<typeof setTimeout>|undefined;
  try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),12000)})]);}
  catch{
+  if(market==='first_basket'){
+   const board=(await readDurableHistory<any>('nba','featured_first_basket',day||dates.today))[0];
+   const rows=(board?.rows||[]).filter((row:any)=>row.market==='first_basket'&&row.lineType==='scorer'&&Date.parse(row.gameTime)>Date.now()&&verifiedPropQuote(row));
+   if(rows.length)return NextResponse.json({success:true,market,rows,boardFrozen:false,source:'Recent verified first-basket prices',warning:'Refreshing scorer prices; showing recent verified quotes.'},{headers:{'Cache-Control':'no-store'}});
+  }
   const saved=(await readDurableHistory<any>('nba','slate_board_'+market,day||dates.today))[0];
   const captured=Date.parse(saved?.capturedAt||''),lock=Date.parse(saved?.lockAt||'');
   if(!saved?.rows?.length||!Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock||Date.now()<lock)return NextResponse.json({success:false,rows:[],error:'Player props are temporarily unavailable. Please retry.'},{status:503,headers:{'Cache-Control':'no-store'}});

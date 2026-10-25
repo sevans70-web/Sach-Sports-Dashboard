@@ -431,6 +431,13 @@ async function buildNbaMarketRankingsRaw(
 
   if(slateDays.length)fallbackDays=slateDays;
 
+  // Scorer quotes need an official fixture/player match, not full prop rosters.
+  if(market==='first_basket')try{
+   const native=await getNbaFirstBasketSource();
+   const rows=nativeFirstBasketRows(native.payload,native.readAt,overview);
+   if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:'Current FanDuel first-basket prices',warning:'Probabilities are sportsbook-implied, not an independent first-basket model.'};
+  }catch{}
+
   let payload:any=shared?.payload??{data:[]};
   let owlsOk=Boolean(shared?.payload);
 
@@ -444,11 +451,7 @@ async function buildNbaMarketRankingsRaw(
   }
 
   const ranked=await rowsForMarket(payload,overview,market);
-  if(market==='first_basket')try{
-   const native=await getNbaFirstBasketSource();
-   const ids=new Set(ranked.map((r:any)=>String(r.gameId)+'|'+String(r.playerId)));
-   ranked.push(...nativeFirstBasketRows(native.payload,native.readAt,overview).filter((r:any)=>!ids.has(r.gameId+'|'+r.playerId)));
-  }catch{}
+
 
 
   if(ranked.length){
