@@ -1,3 +1,5 @@
+import {writeDurableHistory} from '@/lib/durable-history';
+import {dashboardDay} from '@/lib/dashboard-contract';
 import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {appendHistorySnapshot} from "@/lib/history-archive";
 import {withHistoryLock} from "@/lib/history-lock";
@@ -6,6 +8,7 @@ import {withHistoryLock} from "@/lib/history-lock";
  * Reuse the existing archive root/day/backup/retention policy unchanged. */
 export async function archiveResearchBoards(sport:string,boards:any[]){
   for(const board of boards)updateTopPlayMarket(sport,board);
+  await Promise.all(boards.filter(b=>b?.market&&Array.isArray(b.rows)).map(board=>writeDurableHistory(sport,'featured_'+board.market,dashboardDay(new Date()),[{...board,featuredCapturedAt:new Date().toISOString()}])));
   const markets=await Promise.all(boards.map(async board=>{
     if(!board?.market||!Array.isArray(board.rows)||!board.rows.length||board.rows.some((r:any)=>r.integrityVersion!==1))return {market:board?.market,archived:false};
     try{

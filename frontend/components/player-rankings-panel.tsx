@@ -1406,6 +1406,7 @@ const JSON_STALE_MS = 5 * 60_000;
 async function networkJson(url: string) {
   const response = await fetch(url, {
     cache: "no-store",
+    signal: AbortSignal.timeout(20000),
   });
 
   if (!response.ok) {
