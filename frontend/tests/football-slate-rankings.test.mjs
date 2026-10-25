@@ -12,3 +12,9 @@ test('each slate locks its own original pregame evidence and ignores later resul
  const board=selectRecordedFootballSlate(snapshots,'receiving_yards','2026-10-25','early',Date.parse(row.gameTime));
  assert.equal(board.rows[0].sportsbookLine,50.5);assert.equal(board.rows[0].actualResult,undefined);
 });
+
+test('all day never mixes tomorrow evening into the current calendar day',()=>{
+ const rows=[{gameTime:'2026-10-25T17:00Z'},{gameTime:'2026-10-26T00:20Z'},{gameTime:'2026-10-27T00:15Z'}];
+ assert.equal(independentFootballRankings(rows,25,'2026-10-25').length,2);
+ assert.equal(independentFootballRankings(rows,25,'2026-10-26').length,1);
+});

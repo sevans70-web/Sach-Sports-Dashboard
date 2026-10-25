@@ -39,8 +39,8 @@ export async function visitHistorySnapshots(sport:string,stream:string,day:strin
  if(!localOnly&&!names.length&&day<retentionCutoff())await visitCloudSegments(`sach-history/${safe(sport)}/archive/segments/${stem(stream,day)}`,source=>visitLegacySnapshots(source,visit));
  for(const name of names.filter(n=>n.endsWith('.json')||n.endsWith('.json.gz')).sort()){const raw=await fs.readFile(path.join(dir,name));visit(JSON.parse(name.endsWith('.gz')?gunzipSync(raw).toString('utf8'):raw.toString('utf8')));}
 }
-export async function readHistorySnapshots(sport:string,stream:string,day:string):Promise<Snapshot[]>{
- const rows:Snapshot[]=[];await visitHistorySnapshots(sport,stream,day,row=>rows.push(row));return rows;
+export async function readHistorySnapshots(sport:string,stream:string,day:string,localOnly=false):Promise<Snapshot[]>{
+ const rows:Snapshot[]=[];await visitHistorySnapshots(sport,stream,day,row=>rows.push(row),localOnly);return rows;
 }
 const latestHashes=new Map<string,string>();
 export async function appendHistorySnapshot(sport:string,stream:string,payload:any,day=torontoHistoryDay()){

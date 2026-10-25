@@ -31,7 +31,7 @@ export async function GET(req:NextRequest){
  // First-basket refreshes legitimately become empty at tipoff. Original scorer
  // quotes remain in the immutable research archive and must not disappear.
  if(['nba','wnba','cbb'].includes(sport)&&!state.plays.find(p=>p.key==='first')?.pick&&!previous.find((p:any)=>p.key==='first')?.pick){
-  const snapshots=await readHistorySnapshots(sport,'first_basket',day).catch(()=>[]);
+  const snapshots=await readHistorySnapshots(sport,'first_basket',day,true).catch(()=>[]);
   boards.push(...snapshots.map(s=>({...s.payload,capturedAt:s.capturedAt})));
  }
  const retained=retainedTopPlays(boards,sport);
