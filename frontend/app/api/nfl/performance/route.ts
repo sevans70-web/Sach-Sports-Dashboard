@@ -142,10 +142,11 @@ export async function GET(req:NextRequest){
  const groupMarkets=group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"]):group==="Q1"?new Set<NflMarketKey>(["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"]):new Set<NflMarketKey>(["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
  const markets=(marketParam?[marketParam]:[...groupMarkets]).filter(m=>NFL_MARKETS.some(x=>x[0]===m));
  try{
-   const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,writable=true,recoveredSnapshots=0;
+   const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,writable=true,recoveredSnapshots=0;const unavailable:string[]=[];
    const summaryCache=new Map<string,any>();
-   for(const day of days)for(const market of markets){
-     const got=await getNflPredictions(market,day);connected=connected&&got.connected;writable=writable&&(got.writable!==false);recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
+   historyReads: for(const day of days)for(const market of markets){
+     const got=await getNflPredictions(market,day).catch(()=>{unavailable.push(`${market}|${day}`);return {connected:false,writable:false,predictions:[] as SavedNflPrediction[],snapshotCount:0,id:undefined}});connected=connected&&got.connected;writable=writable&&(got.writable!==false);recoveredSnapshots+=Number(got.snapshotCount||0);let changed=false;
+     if(unavailable.length)break historyReads;
      for(const p of got.predictions){
        if(p.status!=="pending"){
          if(["hit","miss","push"].includes(p.status)&&p.gameId&&p.market!=="first_td"){
@@ -179,9 +180,10 @@ export async function GET(req:NextRequest){
    }
    const scoped=marketParam?all:all.filter(p=>groupMarkets.has(p.market));
    const settled=scoped.filter(p=>p.status==="hit"||p.status==="miss"),hits=scoped.filter(p=>p.status==="hit").length,pending=scoped.filter(p=>p.status==="pending").length;
-   return performanceJson({success:true,connected,writable,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
-     hitRate:settled.length?Math.round(hits/settled.length*1000)/10:null,recoveredSnapshots,predictions:scoped.sort((a,b)=>b.savedAt.localeCompare(a.savedAt))},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
+   return performanceJson({success:true,connected,writable,historyPartial:unavailable.length>0,unavailableHistoryStreams:unavailable,period,group,market:marketParam,total:scoped.length,hits,settled:settled.length,pending,
+     hitRate:unavailable.length?null:settled.length?Math.round(hits/settled.length*1000)/10:null,recoveredSnapshots,predictions:scoped.sort((a,b)=>b.savedAt.localeCompare(a.savedAt))},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
  }catch(e){return performanceJson({success:false,connected:false,hits:0,settled:0,pending:0,hitRate:null,predictions:[],error:e instanceof Error?e.message:"NFL performance unavailable"},{status:500,headers:{"Cache-Control":"no-store"}})}
 }
 
 function performanceJson(payload:any,init?:ResponseInit){return NextResponse.json(guardPerformancePayload(payload,"nfl"),init)}
+

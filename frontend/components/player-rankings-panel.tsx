@@ -1,4 +1,5 @@
 "use client";
+import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence} from "@/lib/card-intelligence";
 import {datedCardHistoryPoints,publicPropContext} from "@/lib/public-prop-context";
@@ -981,10 +982,12 @@ function PlayerCard({
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
   const modelSelection=cardModelPick(card.raw);
   const firstBasket=card.market==='first_basket';
+  const quarterTarget=sport==='nfl'&&card.raw?.lineType==='milestone';
   const scorerQuote=firstBasketQuote(card.raw);
-  const displayedPick=modelSelection?.side||(researchOnly?'No Qualified Pick':card.prediction);
+  const footballForecast=['nfl','cfb'].includes(sport)?footballForecastDisplay(card.raw):null;
+  const displayedPick=modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'No Qualified Pick':card.prediction);
   const researchGiReason=fittedForecast?.giScore!=null?"Experimental opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='GI_calibration_has_no_ranking_resolution'?"GI unavailable: historical calibration cannot yet distinguish opportunity strength.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
-  const displayedAverage=researchOnly?cardModelProjection(card.raw):card.modelProjection;
+  const displayedAverage=footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 
@@ -1054,13 +1057,17 @@ function PlayerCard({
         </div>
 
         {!firstBasket?<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
-          <span>{fittedForecast?.giScore!=null?'GI · experimental':"GI"}</span>
-          <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
+          <span>GI Score</span>
+          <strong title={researchOnly?researchGiReason:undefined}>{['nfl','cfb'].includes(sport)?'—':shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
         </div>:null}
       </div>
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`}>
-        {firstBasket?<>
+        {quarterTarget?<>
+          <div><span>Q1 Target</span><strong>{shortNumber(card.sportsbookLine)}+ yards</strong></div>
+          <div><span>Sportsbook odds</span><strong>{Number(card.raw.overPrice)>0?'+':''}{card.raw.overPrice}</strong></div>
+          <div><span>Book-implied chance</span><strong>{shortNumber(card.raw.overPrice>0?10000/(card.raw.overPrice+100):100*-card.raw.overPrice/(-card.raw.overPrice+100))}%</strong><small>Milestone · not a two-way O/U</small></div>
+        </>:firstBasket?<>
           <div><span>First basket chance</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong><small>Book-implied likelihood</small></div>
           <div><span>Sportsbook odds</span><strong>{scorerQuote?`${scorerQuote.price>0?'+':''}${scorerQuote.price}`:'—'}</strong></div>
           <div><span>Sportsbook</span><strong>{scorerQuote?.sportsbook||'—'}</strong></div>
@@ -1096,7 +1103,8 @@ function PlayerCard({
               ? `${displayedPick} ${shortNumber(card.sportsbookLine)}`
               : displayedPick}
           </strong>
-          {state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
+          {footballForecast?.side?<small>{footballForecast.basis}{footballForecast.probability!=null?` · ${shortNumber(footballForecast.probability)}%`:''}</small>:state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
+          {footballForecast?.side&&state==='final'?<small>Forecast result: {footballForecastOutcome(footballForecast.side,current,card.sportsbookLine)||'Awaiting official result'}</small>:null}
         </div>
 
         <div>
@@ -1115,8 +1123,8 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{fittedForecast?.giScore!=null?'GI · experimental':'GI Score'}</span>
-          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"Experimental opportunity strength is separate from verified recommendations and win probability.":undefined}>{fittedForecast?.giScore!=null?shortNumber(fittedForecast.giScore):researchOnly?"—":shortNumber(card.giScore)}</strong>
+          <span>GI Score</span>
+          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"GI needs calibrated return evidence; win probability is a separate measure.":undefined}>{['nfl','cfb'].includes(sport)?'Not calibrated':fittedForecast?.giScore!=null?shortNumber(fittedForecast.giScore):researchOnly?'—':shortNumber(card.giScore)}</strong>
         </div>
         </>}
       </div>
@@ -1124,7 +1132,7 @@ function PlayerCard({
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
-          {!firstBasket&&researchOnly&&fittedForecast?.giScore==null?<p>{researchGiReason}</p>:null}
+          {!firstBasket&&!quarterTarget&&researchOnly&&fittedForecast?.giScore==null?<p>{researchGiReason}</p>:null}
           <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
@@ -1242,7 +1250,7 @@ function PlayerCard({
             <div>
               <b>GI</b>
               <span>{fittedForecast?.giScore!=null?'Experimental score':'Score'}</span>
-              <strong title={researchOnly?researchGiReason:undefined}>{shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
+              <strong title={researchOnly?researchGiReason:undefined}>{['nfl','cfb'].includes(sport)?'—':shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
             </div>
             </>}
           </div>
@@ -2071,7 +2079,7 @@ export function PlayerRankingsPanel({
           rawRows=tracked.rows.map((r:any)=>r.boardFrozen?{...r,movement:'same'}:r);window.localStorage.setItem("sach-rank-movement-v2|"+movementScope,JSON.stringify(tracked.board));
         }catch{rawRows=trackRankBoard(rawRows,null,movementScope).rows}
         const normalized = rawRows
-          .slice(0, sport === "cfb" && requestedCfbSlate === "all" ? 75 : 25)
+          .slice(0, ["nfl","cfb"].includes(sport) ? 75 : 25)
           .map((row: any) => {
             let enriched = row;
             let result = performance
@@ -2355,9 +2363,9 @@ export function PlayerRankingsPanel({
     : displayCards.slice(0, 5);
 
   const cfbAllDayGroups = useMemo(() => {
-    if (sport !== "cfb" || cfbSlate !== "all") return [];
+    if (!((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))) return [];
     return rankingTimeBlocks(displayCards);
-  }, [sport, cfbSlate, displayCards]);
+  }, [sport, cfbSlate, nflSlate, displayCards]);
 
   const sourceText = useMemo(() => {
     if (sport === "soccer") {
@@ -2374,7 +2382,7 @@ export function PlayerRankingsPanel({
     <div className={`ssPlayerRankingsRoot ${styles.root}`}>
       <div className={styles.header}>
         <div>
-          <h2>{sport === "cfb" && cfbSlate === "all" ? "All Day Rankings" : "Top 25 Rankings"}</h2>
+          <h2>{["nfl","cfb"].includes(sport)?"Top Plays":"Top 25 Rankings"}</h2>
           <p>
             Market-specific intelligence · live matchup context
           </p>
@@ -2457,7 +2465,7 @@ export function PlayerRankingsPanel({
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label} Rankings</h3>
         <p>
-          {sport === "cfb" && cfbSlate === "all" ? "Up to 75 · three independent Top 25 time blocks" : "Top 25"} · {sourceText}
+          {["nfl","cfb"].includes(sport)?"Top Plays":"Top 25"} · {sourceText}
           {sport==='nba'&&nbaBoardLabel?` · ${nbaBoardLabel}`:''}
           {sport==='nba'&&displayCards.some(c=>c.raw?.boardFrozen)?' · Locked at first tipoff':''}
         </p>
@@ -2492,7 +2500,7 @@ export function PlayerRankingsPanel({
         {loading&&!displayCards.length?<div className={styles.skeletonStack} aria-label={`Loading ${market.label} rankings`}>
           {[0,1,2].map(item=><div className={styles.skeletonCard} key={item}><i/><span/><b/><em/></div>)}
         </div>:null}
-        {sport === "cfb" && cfbSlate === "all"
+        {((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))
           ? cfbAllDayGroups.map((block) => (
               <section key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
                 <button type="button" aria-expanded={blockExpanded[`${market.key}|${block.key}`] ?? !block.completed}
@@ -2520,7 +2528,7 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {displayCards.length > (sport === "cfb" && cfbSlate === "all" ? 15 : 5) ? (
+      {displayCards.length > (["nfl","cfb"].includes(sport) ? 15 : 5) ? (
         <button
           type="button"
           className={styles.bottomViewAll}
@@ -2532,9 +2540,10 @@ export function PlayerRankingsPanel({
               : `View Full All Day Rankings · ${displayCards.length}`
             : full
               ? "Show Top 5 Only"
-              : "View Full Top 25"}
+              : (["nfl","cfb"].includes(sport)?"View All Top Plays":"View Full Top 25")}
         </button>
       ) : null}
     </div>
   );
 }
+

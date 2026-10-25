@@ -18,11 +18,16 @@ export async function GET() {
     capture = JSON.parse(await fs.readFile(manifest, "utf8"));
   } catch {}
 
+  let backup:any=null;try{backup=JSON.parse(await fs.readFile(path.join(root,"_system","last-backup.json"),"utf8"))}catch{}
   return NextResponse.json(
     {
       success: storage.ok,
       storage,
       capture,
+      backup,
+      localRetentionDays:7,
+      archiveDestination:"Google Drive",
+      pruningRequiresVerifiedArchive:true,
       schedulerExpectedEveryMinutes: 10,
       updatedAt: new Date().toISOString(),
     },
@@ -33,3 +38,4 @@ export async function GET() {
     },
   );
 }
+

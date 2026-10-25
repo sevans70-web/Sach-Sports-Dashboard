@@ -12,9 +12,9 @@ export function verifiedPropQuote(row:any, now=Date.now(), historical=false){
   if(row?.quoteVersion!==1 || !row.sportsbookKey || !row.sportsbook || !row.gameId || !row.playerId) return false;
   const stamp=Date.parse(row.quoteUpdatedAt||""), kickoff=Date.parse(row.gameTime||"");
   const over=nullableNumber(row.overPrice), under=nullableNumber(row.underPrice);
-  const scorer=row.lineType==="scorer";
+  const scorer=row.lineType==="scorer",milestone=row.lineType==="milestone"&&String(row.market||'').startsWith('q1_')&&nullableNumber(row.sportsbookLine)!=null&&Number(row.sportsbookLine)>0;
   if(!Number.isFinite(stamp)||!Number.isFinite(kickoff)||over==null||Math.abs(over)<100) return false;
-  if(!scorer&&(row.lineType!=="main"||nullableNumber(row.sportsbookLine)==null||under==null||Math.abs(under)<100)) return false;
+  if(!scorer&&!milestone&&(row.lineType!=="main"||nullableNumber(row.sportsbookLine)==null||under==null||Math.abs(under)<100)) return false;
   if(row.recoveredAfterStart===true) return false;
   // A frozen pregame quote remains valid evidence after the game ends. It is
   // not replaced with a live quote or subjected to today's freshness cutoff.
@@ -26,7 +26,7 @@ export function verifiedPropQuote(row:any, now=Date.now(), historical=false){
 }
 
 export function eligiblePropPrediction(row:any,now=Date.now(),historical=false){
-  return verifiedPropQuote(row,now,historical) && VALIDATED_MODELS.has(String(row?.forecastModelId||"")) &&
+  return row?.lineType!=="milestone" && verifiedPropQuote(row,now,historical) && VALIDATED_MODELS.has(String(row?.forecastModelId||"")) &&
     row?.forecastValidation?.passed===true && ["OVER","UNDER","YES","FIRST BASKET"].includes(row.prediction||row.pickSide) &&
     row?.withdrawnFromBoard!==true && row?.recoveredAfterStart!==true;
 }
@@ -85,3 +85,4 @@ export function guardPerformancePayload(payload:any,sport:string){
     [key]:history.map((r:any)=>({...integrityRow(r,sport),status:eligiblePropPrediction(r,Date.now(),true)?r.status:"research",historicalStatus:r.status})),
   };
 }
+
