@@ -1,3 +1,4 @@
+import {captureFeaturedSelections} from '@/lib/featured-selection-capture';
 import {writeDurableHistory} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {updateTopPlayMarket} from '@/lib/top-plays-store';
@@ -21,6 +22,7 @@ export async function archiveResearchBoards(sport:string,boards:any[]){
 
 /** Shared by ranking routes and the independent all-sport scheduler. */
 export async function publishFeaturedBoards(sport:string,boards:any[]){
+ await captureFeaturedSelections(sport,boards);
  for(const board of boards)updateTopPlayMarket(sport,board);
  await Promise.all(boards.filter(b=>b?.market&&Array.isArray(b.rows)).map(board=>writeDurableHistory(sport,'featured_'+board.market,dashboardDay(new Date()),[{...board,featuredCapturedAt:new Date().toISOString()}])));
 }

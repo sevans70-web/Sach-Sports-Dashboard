@@ -2,9 +2,15 @@ import {eligiblePropPrediction,verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick} from '@/lib/saved-model-pick';
 import {dashboardDay} from '@/lib/dashboard-contract';
 
+export function topPlayDay(rows:any[],now=Date.now()){
+ const today=dashboardDay(new Date(now));
+ const days=[...new Set(rows.map(r=>dashboardDay(r.gameTime)).filter(d=>d&&d>=today))].sort();
+ return days.includes(today)?today:days[0]||today;
+}
 export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
+ const slateDay=topPlayDay(rows,now);
  const eligible=rows.filter(row=>
-  dashboardDay(row.gameTime)===dashboardDay(new Date(now))&&Date.parse(row.gameTime)>now&&
+  dashboardDay(row.gameTime)===slateDay&&Date.parse(row.gameTime)>now&&
   !row.withdrawnFromBoard&&!['out','inactive'].includes(String(row.availabilityStatus||'').toLowerCase()));
  const priced=eligible.flatMap(row=>{
   const saved=cardModelPick(row,now),approved=eligiblePropPrediction(row,now);
