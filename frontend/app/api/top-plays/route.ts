@@ -37,7 +37,7 @@ export async function GET(req:NextRequest){
  const retained=retainedTopPlays(boards,sport);
  const used=new Set<string>();
  state.plays=state.plays.map(card=>{
-  const options=[card.pick,previous.find((p:any)=>p.key===card.key)?.pick,retained.find(p=>p.key===card.key)?.pick];
+  // A verified choice saved for this slate is immutable, even before kickoff.\n  const options=[previous.find((p:any)=>p.key===card.key)?.pick,card.pick,retained.find(p=>p.key===card.key)?.pick];
   for(const pick of options){
    if(!pick||dashboardDay(pick.row.gameTime)!==selectionDay)continue;
    const id=String(pick.row.playerId||pick.row.playerName).trim().toLowerCase();
