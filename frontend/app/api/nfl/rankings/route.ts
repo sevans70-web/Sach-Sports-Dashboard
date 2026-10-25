@@ -1,3 +1,5 @@
+import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
+import {readDurableHistory} from '@/lib/durable-history';
 import {independentFootballRankings,footballSlate} from '@/lib/football-slate-rankings';
 import {lockedNflBoard} from '@/lib/nfl-locked-board';
 import {publishFeaturedBoards} from '@/lib/research-capture';
@@ -285,13 +287,24 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
  });
 }
 
-export async function GET(req:NextRequest){
+const refreshes=new Set<string>();
+export async function GET(req:NextRequest){return rankings(req)}
+async function rankings(req:NextRequest,refresh=false):Promise<Response>{
  const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
  if(!NFL_MARKETS.some(x=>x[0]===market))return rankingJson({success:false,error:"Unsupported NFL market"},{status:400});
  let locked:any=null;
  try{
   const lockSchedule=await getEspnNflSchedule();
   locked=await lockedNflBoard(market,lockSchedule);
+  if(!refresh){
+   const day=easternDayKey(new Date()),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
+   const retained=retainedNflRankingPayload(locked,published,market,day);
+   if(retained){
+    const key=market+'|'+day;
+    if(!refreshes.has(key)){refreshes.add(key);after(async()=>{try{await rankings(req,true)}catch(e){console.error('[NFL background refresh]',market,e)}finally{refreshes.delete(key)}})}
+    return NextResponse.json(retained,{headers:{'Cache-Control':'no-store'}});
+   }
+  }
   let providerError:string|null=null;
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market).catch(async(e)=>{
     providerError=e instanceof Error?e.message:String(e);
