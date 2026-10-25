@@ -434,7 +434,10 @@ async function buildNbaMarketRankingsRaw(
   // Scorer quotes need an official fixture/player match, not full prop rosters.
   if(market==='first_basket')try{
    const native=await getNbaFirstBasketSource();
-   const rows=nativeFirstBasketRows(native.payload,native.readAt,overview);
+   const futureGames=(overview.games||[]).filter((game:any)=>Date.parse(game.tipoff)>Date.now());
+   const currentRosters=await Promise.all(futureGames.map((game:any)=>loadNbaGameRosters(String(game.gameId)).catch(()=>[])));
+   const players=currentRosters.flatMap(rosters=>rosters.flatMap((roster:any)=>roster.players.filter((p:any)=>p.active!==false).map((player:any)=>({...player,team:roster.teamAbbr}))));
+   const rows=nativeFirstBasketRows(native.payload,native.readAt,{...overview,players});
    if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:'Current FanDuel first-basket prices',warning:'Probabilities are sportsbook-implied, not an independent first-basket model.'};
   }catch{}
 
