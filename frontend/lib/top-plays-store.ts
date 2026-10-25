@@ -9,7 +9,8 @@ export function updateTopPlayMarket(sport:string,board:any,now=Date.now()){
  if(!board?.market||!Array.isArray(board.rows))return;
  for(const [key,v] of markets)if(now-v.at>=15*60_000)markets.delete(key);
  const day=board.boardDay||board.day||(board.rows[0]?.gameTime?dashboardDay(board.rows[0].gameTime):dashboardDay(new Date(now)));
- markets.set(sport+'|'+board.market+'|'+day,{at:now,rows:board.rows});
+ const key=sport+'|'+board.market+'|'+day;if((markets.get(key)?.at||0)>now)return;
+ markets.set(key,{at:now,rows:board.rows});
 }
 export function topPlayMarketState(sport:string,now=Date.now()){
  const sources=[...markets].filter(([key,v])=>key.startsWith(sport+'|')&&now-v.at<15*60_000);
