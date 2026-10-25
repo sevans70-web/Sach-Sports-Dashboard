@@ -30,13 +30,13 @@ export async function visitLegacySnapshots(file:string|AsyncIterable<string>,vis
   if(started)throw new Error('Incomplete archive snapshot');
  }catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;}
 }
-export async function visitHistorySnapshots(sport:string,stream:string,day:string,visit:(snapshot:Snapshot)=>void){
+export async function visitHistorySnapshots(sport:string,stream:string,day:string,visit:(snapshot:Snapshot)=>void,localOnly=false){
  const legacy=path.join(archive(sport),stem(stream,day)+'.json');
  if(await fs.stat(legacy).then(()=>true).catch(e=>{if(e.code==='ENOENT')return false;throw e;}))await visitLegacySnapshots(legacy,visit);
- else await visitCloudArchive(`sach-history/${safe(sport)}/archive/${stem(stream,day)}.json`,source=>visitLegacySnapshots(source,visit));
+ else if(!localOnly)await visitCloudArchive(`sach-history/${safe(sport)}/archive/${stem(stream,day)}.json`,source=>visitLegacySnapshots(source,visit));
  const dir=path.join(archive(sport),'segments',stem(stream,day));
  let names:string[]=[];try{names=await fs.readdir(dir);}catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;}
- if(!names.length&&day<retentionCutoff())await visitCloudSegments(`sach-history/${safe(sport)}/archive/segments/${stem(stream,day)}`,source=>visitLegacySnapshots(source,visit));
+ if(!localOnly&&!names.length&&day<retentionCutoff())await visitCloudSegments(`sach-history/${safe(sport)}/archive/segments/${stem(stream,day)}`,source=>visitLegacySnapshots(source,visit));
  for(const name of names.filter(n=>n.endsWith('.json')||n.endsWith('.json.gz')).sort()){const raw=await fs.readFile(path.join(dir,name));visit(JSON.parse(name.endsWith('.gz')?gunzipSync(raw).toString('utf8'):raw.toString('utf8')));}
 }
 export async function readHistorySnapshots(sport:string,stream:string,day:string):Promise<Snapshot[]>{
@@ -57,3 +57,4 @@ export async function appendHistorySnapshot(sport:string,stream:string,payload:a
  });
 }
 export async function historyArchiveStatus(){try{await fs.mkdir(ROOT,{recursive:true});await fs.access(ROOT,fs.constants.W_OK);return{ok:true,root:ROOT}}catch(e){return{ok:false,root:ROOT,error:e instanceof Error?e.message:String(e)}}}
+

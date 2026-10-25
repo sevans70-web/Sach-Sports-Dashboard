@@ -26,7 +26,7 @@ export async function lockedNflBoard(market:string,games:any[],now=Date.now()){
   let saved=(await readDurableHistory<any>('nfl','locked_research_'+market,day).catch(()=>[]))[0];
   if(!saved){
    let candidate:any=null;
-   await visitHistorySnapshots('nfl',market,day,s=>{const next=selectNflLockedBoard([s],market,day,now);if(next&&(!candidate||next.rows.length>candidate.rows.length||next.rows.length===candidate.rows.length&&Date.parse(next.capturedAt)>Date.parse(candidate.capturedAt)))candidate=next});
+   await visitHistorySnapshots('nfl',market,day,s=>{const next=selectNflLockedBoard([s],market,day,now);if(next&&(!candidate||next.rows.length>candidate.rows.length||next.rows.length===candidate.rows.length&&Date.parse(next.capturedAt)>Date.parse(candidate.capturedAt)))candidate=next},true);
    if(!candidate)return null;
    saved=candidate;
    // Local persistence completes before cloud replication; display does not wait for it.
