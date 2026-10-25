@@ -301,7 +301,7 @@ export async function GET(req:NextRequest){
   }),getEspnNflSchedule()]),today=easternDayKey(new Date());
   const candidates=owlsRows.length?owlsRows:await modelOnlyRows(market,schedule);
   const frozenSlates=new Set(locked?.lockedSlates||[]);
-  const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(frozenSlates.has(footballSlate(t)))return false;if(!t)return true;const k=easternDayKey(t);return !k||k>=today});
+  const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(frozenSlates.has(footballSlate(t)))return false;if(!t||Date.parse(t)<=Date.now())return false;const k=easternDayKey(t);return !k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
   const built=await Promise.all(active.slice(0,150).map(async(row:any)=>{
@@ -404,5 +404,5 @@ export async function GET(req:NextRequest){
  }catch(e){if(locked?.rows?.length)return NextResponse.json(locked,{headers:{'Cache-Control':'no-store'}});console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
 
-async function rankingJson(payload:any,init?:ResponseInit,locked?:any){let source=guardRankingPayload(payload,"nfl");if(locked?.rows?.length){const frozen=new Set(locked.lockedSlates);source={...source,rows:source.rows.filter((r:any)=>!frozen.has(r.slateKey))};}let board=await attachFittedResearchForecasts(source,"nfl");if(locked?.rows?.length){const slates=new Set(locked.lockedSlates);board={...board,lockedSlates:locked.lockedSlates,rows:[...locked.rows,...board.rows.filter((r:any)=>!slates.has(r.slateKey))]};}after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
+async function rankingJson(payload:any,init?:ResponseInit,locked?:any){let source=guardRankingPayload(payload,"nfl");if(locked?.rows?.length){const frozen=new Set(locked.lockedSlates);source={...source,rows:source.rows.filter((r:any)=>!frozen.has(r.slateKey))};}let board=await attachFittedResearchForecasts(source,"nfl");if(locked?.rows?.length){const slates=new Set(locked.lockedSlates);board={...board,lockedSlates:locked.lockedSlates,rows:[...locked.rows,...board.rows.filter((r:any)=>!slates.has(r.slateKey))]};}board={...board,validRankingCount:board.rows.length,publicRankingCount:board.rows.length};after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
 

@@ -27,14 +27,21 @@ export async function lockedNflBoard(market:string,games:any[],now=Date.now()){
  const work=withHistoryLock('nfl-research-board|'+key,async()=>{
   const blocks:any[]=[],snapshots:any[]=[];let loaded=false;
   const legacy=(await readDurableHistory<any>('nfl','locked_research_'+market,day,true))[0];
+  const recent=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
   for(const b of boundaries){
    const stream='slate_locked_v2_'+market+'_'+b.slate;
    let saved=(await readDurableHistory<any>('nfl',stream,day,true).catch(()=>[]))[0];const existing=Boolean(saved);
-   if(!saved&&legacy){
-    // Migration must preserve every original pregame row, including 1 PM
-    // picks recorded after an earlier international game in the same block.
-    const rows=(legacy.rows||[]).filter((r:any)=>footballSlate(r.gameTime)===b.slate&&torontoHistoryDay(r.gameTime)===day&&Date.parse(r.boardCapturedAt||legacy.capturedAt)<Date.parse(r.gameTime));
-    if(rows.length)saved={...legacy,rows:rows.map((r:any,i:number)=>({...r,originalRank:r.originalRank??r.rank,rank:i+1,slateKey:b.slate,boardCapturedAt:r.boardCapturedAt||legacy.capturedAt}))};
+   if(!saved){
+    // Original locked rows take precedence. A recently published full board
+    // also retains exact pregame evidence if scheduled archive work was delayed.
+    const originals=new Map<string,any>();
+    for(const source of [legacy,recent].filter(Boolean))for(const row of source.rows||[]){
+     const capturedAt=row.boardCapturedAt||source.capturedAt||source.featuredCapturedAt;
+     if(footballSlate(row.gameTime)!==b.slate||torontoHistoryDay(row.gameTime)!==day||!Number.isFinite(Date.parse(capturedAt))||Date.parse(capturedAt)>=Date.parse(row.gameTime))continue;
+     const id=row.playerId+'|'+row.gameId;if(!originals.has(id))originals.set(id,{...row,boardCapturedAt:capturedAt});
+    }
+    const rows=[...originals.values()].slice(0,25).map((r:any,i:number)=>({...r,originalRank:r.originalRank??r.rank,rank:i+1,slateKey:b.slate}));
+    if(rows.length)saved={rows,capturedAt:rows.reduce((latest:string,r:any)=>r.boardCapturedAt>latest?r.boardCapturedAt:latest,'')};
    }
    if(!saved){
     if(!loaded){await visitHistorySnapshots('nfl',market,day,s=>snapshots.push(s),true);loaded=true}

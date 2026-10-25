@@ -11,6 +11,10 @@ test('slate migration retains original 1 PM evidence captured after an internati
  const {attachRecordedProgressLines}=await loadTs(new URL('../lib/recorded-progress.ts',import.meta.url));
  const payload={market:'receiving_yards',rows:[{gameId:'g',playerId:'p',gameTime:new Date(Date.now()-3600000).toISOString(),sportsbookLine:null}]};
  const beforeProgress=network;const value=await attachRecordedProgressLines(payload,'nfl');assert.equal(value.rows[0].progressQuote,null);assert.equal(network,beforeProgress);
+ const quarter={market:'q1_passing_yards',playerId:'q',gameId:'afternoon',rank:1,gameTime:'2026-10-25T20:05:00Z',lineType:'milestone',sportsbookLine:50,overPrice:550};
+ await writeFile(join(root,'nfl','featured_q1_passing_yards_2026-10-25.json'),JSON.stringify([{market:quarter.market,featuredCapturedAt:'2026-10-25T19:47:00Z',rows:[quarter,{...quarter,playerId:'late',boardCapturedAt:'2026-10-25T20:06:00Z'}]}]));
+ const recovered=await lockedNflBoard(quarter.market,[{id:'afternoon',date:quarter.gameTime,state:'in'}],Date.parse('2026-10-25T20:10Z'));
+ assert.equal(recovered.rows.length,1);assert.equal(recovered.rows[0].sportsbookLine,50);assert.equal(recovered.rows[0].overPrice,550);assert.equal(recovered.rows[0].boardCapturedAt,'2026-10-25T19:47:00Z');assert.equal(recovered.rows[0].researchForecast,undefined);
  for(let i=0;i<100;i++){try{await stat(join(root,'nfl','slate_locked_v2_passing_yards_early_2026-10-25.json'));break}catch{await new Promise(resolve=>setImmediate(resolve))}}
  }finally{globalThis.fetch=originalFetch;delete process.env.SACH_HISTORY_DIR;delete process.env.SUPABASE_URL;delete process.env.SUPABASE_SECRET_KEY;await rm(root,{recursive:true,force:true})}
 });
