@@ -1768,7 +1768,7 @@ export function PlayerRankingsPanel({
 
   useEffect(()=>{
     if(loading||error||cards.some(card=>card.market!==market.key))return;
-    onPickCount?.({market:market.key,count:cards.filter(card=>!excludeUnavailableRanking(card.raw)&&(card.market==='first_basket'?firstBasketQuote(card.raw)!=null:card.raw?.withdrawnFromBoard!==true&&card.raw?.resultStatus!=="void"&&cardModelPick(card.raw))).length});
+    onPickCount?.({market:market.key,count:cards.filter(card=>!excludeUnavailableRanking(card.raw)&&(card.market==='first_basket'?firstBasketQuote(card.raw)!=null:card.raw?.withdrawnFromBoard!==true&&card.raw?.resultStatus!=="void"&&(cardModelPick(card.raw)||(['nfl','cfb'].includes(sport)&&footballForecastDisplay(card.raw).side)))).length});
   },[cards,loading,error,market.key,onPickCount]);
 
   const viewCacheKey = (
