@@ -1,4 +1,5 @@
 "use client";
+import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence} from "@/lib/card-intelligence";
@@ -2232,10 +2233,10 @@ export function PlayerRankingsPanel({
   }, [sport, groupKey, marketKey, league, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length || !sharedStatusGames.length) return;
+    if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length) return;
 
-    const statusGames = sharedStatusGames.filter(
-      (game) => (["in","post"].includes(String(game.state || "").toLowerCase()) || (game.state==="pre" && Date.parse(game.date||"")>Date.now())) && game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
+    const statusGames = cardObservationGames(sharedStatusGames,cards).filter(
+      (game) => game.id && cards.some(card=>sharedGameForCard(card,[game])!=null)
     );
     if (!statusGames.length) return;
 
