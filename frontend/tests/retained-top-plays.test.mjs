@@ -8,3 +8,15 @@ test('pregame first-basket and long-shot evidence stays visible after final tipo
  assert.ok(retainedTopPlays([{rows:[{...row,capturedAt:'2026-10-25T02:01Z'}]}],'nba',now).every(c=>!c.pick));
  assert.ok(retainedTopPlays([{rows:[row]}],'nba',Date.parse('2026-10-26T02:14Z')).every(c=>!c.pick));
 });
+
+
+test('saved pregame pool fills value and long shot with the next distinct qualifying players on all sports',()=>{
+ const at='2026-10-25T01:53Z',now=Date.parse('2026-10-25T02:14Z');
+ const rows=['a','b','c'].map(playerId=>({...row,playerId,playerName:playerId,market:'passing_yards',lineType:'main',sportsbookLine:20.5,overPrice:500,underPrice:-700,quoteId:playerId,
+  researchForecast:{modelSelection:{side:'OVER',line:20.5,price:500,quoteId:playerId,sportsbookKey:'book',calculatedAt:at},priceComparison:{overProbability:.7,underProbability:.3,overExpectedReturn:3.2,underExpectedReturn:-.5}}}));
+ for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb']){
+  const cards=retainedTopPlays([{rows}],sport,now);
+  assert.deepEqual(cards.filter(c=>c.pick).map(c=>c.pick.row.playerId),['a','b','c']);
+  assert.ok(cards.filter(c=>c.pick).every(c=>c.pick.row.featuredRetained));
+ }
+});

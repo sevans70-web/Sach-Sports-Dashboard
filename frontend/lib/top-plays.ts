@@ -30,6 +30,11 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
   return [{row:{...row,prediction:row.market==='first_basket'?'FIRST BASKET':'YES'},probability:Math.round(probability*10)/10,price,expectedReturn:0,basis:'bookmaker_implied'}];
  });
 
+ return selectFeaturedCandidates(priced,scorers,sport);
+}
+
+/** Apply category requirements to a complete candidate pool, including saved evidence. */
+export function selectFeaturedCandidates(priced:any[],scorers:any[],sport:string){
  const used=new Set<string>();
  const identity=(p:any)=>String(p.row.playerId||p.row.playerName).trim().toLowerCase();
  const take=(pick:any)=>{if(!pick||used.has(identity(pick)))return null;used.add(identity(pick));return pick};
@@ -46,3 +51,4 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
 export function distinctFeaturedPlayers<T extends {pick:any}>(cards:T[]):T[]{
  const seen=new Set<string>();return cards.map(card=>{if(!card.pick)return card;const row=card.pick.row,key=String(row.playerId||row.playerName).trim().toLowerCase();if(seen.has(key))return {...card,pick:null};seen.add(key);return card});
 }
+
