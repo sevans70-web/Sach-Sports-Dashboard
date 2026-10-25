@@ -1,3 +1,4 @@
+import {lockedNflBoard} from '@/lib/nfl-locked-board';
 import {publishFeaturedBoards} from '@/lib/research-capture';
 import {rankingSourceState} from '@/lib/ranking-source-state';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
@@ -283,6 +284,9 @@ export async function GET(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
  if(!NFL_MARKETS.some(x=>x[0]===market))return rankingJson({success:false,error:"Unsupported NFL market"},{status:400});
  try{
+  const lockSchedule=await getEspnNflSchedule();
+  const locked=await lockedNflBoard(market,lockSchedule);
+  if(locked)return NextResponse.json(locked,{headers:{'Cache-Control':'no-store'}});
   let providerError:string|null=null;
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market).catch(async(e)=>{
     providerError=e instanceof Error?e.message:String(e);
