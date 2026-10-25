@@ -1,6 +1,9 @@
+import {currentNbaPregameSnapshot,readNbaSlateBoard} from '@/lib/nba-slate-board';
+import {activeNbaBoardDay} from '@/lib/nba-board-window';
+import {attachBasketballAvailability} from '@/lib/basketball-pregame-context';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {after,NextRequest,NextResponse} from "next/server";
-import {type NbaMarketKey,NBA_MARKETS} from "@/lib/nba";
+import {type NbaMarketKey,NBA_MARKETS,loadNbaGames} from "@/lib/nba";
 import {buildNbaMarketRankings} from "@/lib/nba-rankings-server";
 import {readDurableHistory} from '@/lib/durable-history';
 import {nbaBoardDates} from '@/lib/nba-board-window';
@@ -15,6 +18,12 @@ export async function GET(req:NextRequest){
  const dates=nbaBoardDates(),requested=req.nextUrl.searchParams.get('day')||undefined;
  const day=requested&&requested in dates?dates[requested as keyof typeof dates]:requested;
  if(day&&!Object.values(dates).includes(day))return NextResponse.json({success:false,rows:[],error:'Choose the previous slate, today or tomorrow.'},{status:400});
+ const cachedDay=day||dates.today;
+ const recent=currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
+ if(recent&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
+  const visible=await attachBasketballAvailability(recent,'nba');
+  if(visible.rows.length){after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});return NextResponse.json(visible,{headers:{'Cache-Control':'no-store'}});}
+ }
  let result,timer:ReturnType<typeof setTimeout>|undefined;
  try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})]);}
  catch{

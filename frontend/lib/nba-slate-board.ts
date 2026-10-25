@@ -1,3 +1,4 @@
+import {selectNbaCandidates} from '@/lib/nba-ranking-candidates';
 import {retentionCutoff} from '../scripts/retention-policy.mjs';
 import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
 import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
@@ -63,4 +64,12 @@ export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.
   return writeDurableHistory(sport,stream(payload.market),b.day,[{version:1,day:b.day,market:payload.market,capturedAt:new Date(now).toISOString(),lockAt:new Date(b.lockAt!).toISOString(),rows} satisfies NbaSlateBoard],deferCloud);
  });
  return {...payload,boardSaved,boardDay:b.day,boardLockAt:new Date(b.lockAt).toISOString()};
+}
+
+/** Fast display during pregame refresh; never carry an expired price, another
+ * date, a later snapshot or a post-tipoff reconstruction onto this board. */
+export function currentNbaPregameSnapshot(board:NbaSlateBoard|null,market:string,day:string,now=Date.now()){
+ if(!board||board.market!==market||board.day!==day||!Number.isFinite(Date.parse(board.capturedAt))||Date.parse(board.capturedAt)>now||!Number.isFinite(Date.parse(board.lockAt))||Date.parse(board.capturedAt)>=Date.parse(board.lockAt)||now>=Date.parse(board.lockAt))return null;
+ const rows=selectNbaCandidates(board.rows.filter(row=>torontoHistoryDay(row.gameTime)===day),market,now);
+ return rows.length?{success:true,market,boardDay:day,boardCapturedAt:board.capturedAt,boardFrozen:false,refreshing:true,source:'Recent saved pregame NBA board',rows,publicRankingCount:rows.length}:null;
 }
