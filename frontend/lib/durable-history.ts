@@ -1,3 +1,4 @@
+import {readCloudDocumentsForDay} from '../scripts/history-cloud.mjs';
 import {cloudHistoryRead,cloudHistoryWrite} from '@/lib/cloud-history';
 import {promises as fs} from "node:fs";
 import path from "node:path";
@@ -16,4 +17,15 @@ export async function writeDurableHistory<T>(sport:string,market:string,day:stri
 export async function durableHistoryStatus(){
  try{await fs.mkdir(ROOT,{recursive:true});const probe=path.join(ROOT,".write-test");await fs.writeFile(probe,new Date().toISOString(),"utf8");await fs.unlink(probe);return {ok:true,root:ROOT}}
  catch(e){return {ok:false,root:ROOT,error:e instanceof Error?e.message:String(e)}}
+}
+
+/** Prefer local current records, then fetch only missing streams for this day. */
+export async function readDurableHistoryBatch(sport:string,streams:string[],day:string):Promise<any[]>{
+ const local=await Promise.all(streams.map(async stream=>{
+  try{const payload=JSON.parse(await fs.readFile(file(sport,stream,day),'utf8'));return Array.isArray(payload)?{stream,payload}:null;}catch{return null;}
+ }));
+ const found=local.filter(Boolean) as {stream:string;payload:any[]}[];
+ const missing=streams.filter(stream=>!found.some(row=>row.stream===stream));
+ const remote=await readCloudDocumentsForDay(sport,missing,day);
+ return [...found,...remote];
 }

@@ -5,3 +5,5 @@ export function cloudRequest(route:string,options?:any):Promise<any>;
 export function saveCloudDocument(sport:string,stream:string,day:string,payload:any,bytes?:number,sourceUpdatedAt?:string):Promise<boolean>;
 export function readCloudDocument(sport:string,stream:string,day:string):Promise<any>;
 export function listCloudDocuments(sport:string):Promise<any[]>;
+
+export function readCloudDocumentsForDay(sport:string,streams:string[],day:string):Promise<any[]>;
