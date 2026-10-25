@@ -11,7 +11,7 @@ import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
 import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
-import {firstBasketQuote,publicNbaRanking} from '@/lib/public-card-metrics';
+import {firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
@@ -1145,7 +1145,7 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {fittedForecast ? <div className={styles.faceFooter}><p>{modelSelection ? `${modelSelection.sportsbook} · ${Number(modelSelection.price)>0?'+':''}${modelSelection.price}` : 'Model estimate'} · {shortNumber(fittedForecast.expectedWorkload)} expected {fittedForecast.workloadUnit} · range {shortNumber(fittedForecast.interval80.lower)}–{shortNumber(fittedForecast.interval80.upper)}.</p></div> : null}
+      {fittedForecast ? <div className={styles.faceFooter}><p>{forecastDetailText(fittedForecast,modelSelection,shortNumber)}</p></div> : null}
 
       {state === "pregame" && !card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>

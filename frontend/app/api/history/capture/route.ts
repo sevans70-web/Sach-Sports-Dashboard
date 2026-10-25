@@ -60,13 +60,13 @@ async function fetchJson(
     });
 
     const payload = await response.json().catch(() => null);
-    const payloadFailed = payload?.success === false;
+    const payloadFailed = payload?.success === false || payload?.historyPartial === true;
 
     return {
       ok: response.ok && !payloadFailed,
       status: response.status,
       payload,
-      error: payloadFailed ? String(payload?.error || "capture returned success=false") : undefined,
+      error: payloadFailed ? String(payload?.error || (payload?.historyPartial ? "Historical records are partially unavailable" : "capture returned success=false")) : undefined,
     };
   } catch (error) {
     return {
