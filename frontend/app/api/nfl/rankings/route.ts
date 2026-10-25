@@ -336,8 +336,16 @@ export async function GET(req:NextRequest){
   const nextDay=playableDays.find((d:string)=>d>primaryDay)||"";
   const priority=(r:any)=>{const day=easternDayKey(rowGameTime(r,schedule));return day===primaryDay?12:day===nextDay?3:0};
   rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
-  const historySaved=await saveNflPregamePredictions(market,ranked,schedule);
-  const results=await getNflResultMap(market,today);
+  // Storage is optional for rendering a fresh board, never for overwriting
+  // historical records. Failed reads stay failed on the persistence path.
+  const savedToday=await getNflPredictions(market,today).catch(e=>{
+   console.error('[NFL history read]',market,e instanceof Error?e.message:String(e));
+   return {connected:false,writable:false,predictions:[] as SavedNflPrediction[],snapshotCount:0};
+  });
+  const results=new Map<string,SavedNflPrediction>();
+  for(const p of savedToday.predictions){results.set(`${p.playerId}|game:${p.gameId}`,p);results.set(`${p.playerId}|matchup:${cleanName(p.matchup)}`,p)}
+  const historySaved=false;
+  after(async()=>{try{await saveNflPregamePredictions(market,ranked,schedule)}catch(e){console.error('[NFL history save]',market,e instanceof Error?e.message:String(e))}});
   const withResults=ranked.map(r=>{const p=results.get(`${r.playerId}|game:${r.gameId}`)||results.get(`${r.playerId}|matchup:${cleanName(r.matchup)}`);const margin=p?.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r});
   const liveRows=await liveContext(withResults,schedule,market);
 
@@ -345,7 +353,6 @@ export async function GET(req:NextRequest){
   // tracked Top 25, that prediction stays visible for the rest of the day even if
   // the sportsbook feed removes the completed game.  Current pregame rows can still
   // move, enter and drop; started/final rows are locked from the Supabase snapshot.
-  const savedToday=await getNflPredictions(market,today);
   const liveKeys=new Set(liveRows.map((r:any)=>`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
   const gameFor=(p:SavedNflPrediction)=>p.gameId?schedule.find((g:any)=>String(g.id)===String(p.gameId)):matchupGame(schedule,p.matchup);
   const started=(g:any)=>Boolean(g&&(g.state==="in"||g.completed||g.state==="post"));
@@ -388,3 +395,4 @@ export async function GET(req:NextRequest){
 }
 
 async function rankingJson(payload:any,init?:ResponseInit){const board=await attachFittedResearchForecasts(guardRankingPayload(payload,"nfl"),"nfl");after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
+

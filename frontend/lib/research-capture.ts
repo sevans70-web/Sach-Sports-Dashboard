@@ -22,11 +22,12 @@ export async function archiveResearchBoards(sport:string,boards:any[]){
 
 /** Shared by ranking routes and the independent all-sport scheduler. */
 export async function publishFeaturedBoards(sport:string,boards:any[]){
- await captureFeaturedSelections(sport,boards);
  for(const board of boards)updateTopPlayMarket(sport,board);
+ await captureFeaturedSelections(sport,boards);
  await Promise.all(boards.filter(b=>b?.market&&Array.isArray(b.rows)).map(board=>writeDurableHistory(sport,'featured_'+board.market,dashboardDay(new Date()),[{...board,featuredCapturedAt:new Date().toISOString()}])));
 }
 export function featuredBoardsFromCapture(payload:any,stream:string){
  if(Array.isArray(payload?.rows))return [{...payload,market:payload.market||stream}];
  return [payload?.rankings,payload?.batter,payload?.pitcher].filter(Boolean).flatMap(group=>Object.entries(group).filter(([,rows])=>Array.isArray(rows)).map(([market,rows])=>({market,rows,updatedAt:payload.updatedAt})));
 }
+
