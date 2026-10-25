@@ -22,7 +22,7 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   <IntelligenceHero sport={sport}/>
   {sport==="soccer"?<div className="soccerLeagueRow"><label htmlFor="soccer-league">Leagues</label><select id="soccer-league" value={league} onChange={e=>setLeague(e.target.value)}>{SOCCER_LEAGUES.map(([label,key])=><option value={key} key={key}>{label}</option>)}</select></div>:null}
   {sport==="soccer"?<UpdatedStamp value={data?.updatedAt} preview={false}/>:<div className="ssDashboardMeta"><UpdatedStamp value={data?.updatedAt} preview={false}/><Link className="ssPerformanceLink" href={`/performance?sport=${sport}`}>Prediction Performance ›</Link></div>}
-  {sport!=="soccer"?<TodayTopPlays sport={sport} rows={summary?.verifiedRows||[]} loading={!summary&&!error}/>:null}
+  <TodayTopPlays sport={sport} rows={summary?.verifiedRows||[]} loading={!summary&&!error}/>
   <section className="ssGamesPreview" aria-label={`${sport.toUpperCase()} current slate`}>
    <div className="ssGamesPreviewHead"><h2>{sport==="nfl"?`${data?.weekNumber?`WEEK ${data.weekNumber}`:"CURRENT WEEK"} NFL GAMES`:`${sport.toUpperCase()} CURRENT + NEXT GAMES`}</h2><Link href={viewAll}>View All ›</Link></div>
    <div className={sport==="soccer"?"ssGamesPreviewGrid":"ssGamesPreviewGrid ssGamesSwipe"}>{data?.previewGames?.length?(sport==="soccer"?data.previewGames.slice(0,3):data.previewGames).map((g:any)=><GamesPreviewCard key={g.id} game={{...g,href:viewAll}}/>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}</div>
