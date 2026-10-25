@@ -8,7 +8,7 @@ export function selectNflLockedBoard(snapshots:any[],market:string,day:string,no
  let best:any=null;
  for(const s of snapshots){
   const at=Date.parse(s.capturedAt),p=s.payload;
-  if(!Number.isFinite(at)||at>now||p?.kind!=='research_rankings'||p.market!==market)continue;
+  if(!Number.isFinite(at)||at>now||(p?.kind!=null&&p.kind!=='research_rankings')||p?.market!==market)continue;
   const rows=(p.rows||[]).filter((r:any)=>torontoHistoryDay(r.gameTime)===day&&at<Date.parse(r.gameTime));
   if(!rows.length)continue;
   // A smaller post-kickoff feed must never replace the full recorded slate.

@@ -6,7 +6,7 @@ test('kickoff feed shrink cannot remove unvalidated pregame research rows in any
   const full={capturedAt:'2026-10-25T16:55Z',payload:{kind:'research_rankings',market,rows}};
   const late={capturedAt:'2026-10-25T17:05Z',payload:{kind:'research_rankings',market,rows:rows.slice(15)}};
   const board=selectNflLockedBoard([full,late],market,'2026-10-25',Date.parse('2026-10-25T17:10Z'));
-  assert.deepEqual(board.rows,rows);assert.equal(board.capturedAt,full.capturedAt);
+  assert.deepEqual(selectNflLockedBoard([{...full,payload:{market,rows}}],market,'2026-10-25',Date.parse('2026-10-25T17:10Z')).rows,rows);assert.deepEqual(board.rows,rows);assert.equal(board.capturedAt,full.capturedAt);
   assert.equal(selectNflLockedBoard([{...full,capturedAt:'2026-10-26T00:00Z'}],market,'2026-10-25',Date.parse('2026-10-25T17:10Z')),null);
  }
 });
