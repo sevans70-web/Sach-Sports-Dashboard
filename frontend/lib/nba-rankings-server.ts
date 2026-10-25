@@ -1,3 +1,4 @@
+import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {basketballMarketCoverage} from '@/lib/basketball-market-coverage';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
@@ -593,18 +594,30 @@ export async function captureAllNbaMarkets(day?:string){
 import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-markets";
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
+const recoveredCandidates=new Map<string,Promise<any[]>>();
 async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
  const loaded=shared?.overview||await loadNbaOverview();
  const activeDay=activeNbaBoardDay(loaded.games||[]);
  const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===activeDay)?activeDay:undefined);
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
+ if(frozen&&market==='first_basket'){
+  // Fresh scorer prices for games that have not started are distinct from the
+  // immutable daily model board. Never rewrite that board or backdate a price.
+  const current=await buildNbaMarketRankingsRaw(market,{overview});
+  const quotes=guardRankingPayload({...current,rows:(current.rows||[]).filter((r:any)=>Date.parse(r.gameTime)>Date.now())},'nba');
+  const visible=publicNbaBoard(quotes);
+  if(visible.rows.length){await archiveResearchBoards('nba',[visible]);return {...visible,source:'Current pregame first-basket prices',boardFrozen:false};}
+ }
  if(frozen){
   // The old builder truncated before forecasting. Restore additional candidates
   // only when a traceable pre-lock forecast exists in the original archive.
   const lockAt=Math.min(...overview.games.map((g:any)=>Date.parse(g.tipoff)).filter(Number.isFinite));
   // Tomorrow's slate is also prepared on preceding capture days.
   const archiveDays=[0,1,2].map(offset=>torontoNbaDay(new Date(Date.parse(frozen.boardDay+'T12:00Z')-offset*86400000)));
+  const recoveryKey=market+'|'+frozen.boardDay+'|'+lockAt;
+  let recovery=recoveredCandidates.get(recoveryKey);
+  if(!recovery){recovery=(async()=>{
   const candidates=new Map<string,any>();
   for(const captureDay of archiveDays)await visitHistorySnapshots('nba',market,captureDay,snapshot=>{
    for(const row of recordedNbaCandidates([snapshot],market,frozen.boardDay,lockAt)){
@@ -612,7 +625,12 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
     if(!old||Date.parse(row.boardCapturedAt)>Date.parse(old.boardCapturedAt))candidates.set(key,row);
    }
   });
-  const recorded=[...candidates.values()];
+  return [...candidates.values()];
+  })().catch(e=>{recoveredCandidates.delete(recoveryKey);throw e});
+   if(recoveredCandidates.size>=64)recoveredCandidates.delete(recoveredCandidates.keys().next().value!);
+   recoveredCandidates.set(recoveryKey,recovery);
+  }
+  const recorded=await recovery;
   const keys=new Set(frozen.rows.map((r:any)=>r.gameId+'|'+r.playerId));
   const extra=recorded.filter(r=>!keys.has(r.gameId+'|'+r.playerId)).map(row=>{
    const game=overview.games.find((g:any)=>String(g.gameId)===String(row.gameId));
@@ -644,5 +662,7 @@ function publicNbaBoard(payload:any){
 }
 
 export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
- return rankingResponse('nba|'+market+'|'+(options?.day||''),()=>buildNbaMarketRankingsUncached(market,shared,options),Boolean(shared));
+ const result=await rankingResponse('nba|'+market+'|'+(options?.day||''),()=>buildNbaMarketRankingsUncached(market,shared,options),Boolean(shared));
+ if(result?.boardFrozen){updateTopPlayMarket('nba',result);await withHistoryLock('featured-nba-'+market,()=>writeDurableHistory('nba','featured_'+market,torontoNbaDay(new Date()),[{...result,featuredCapturedAt:new Date().toISOString()}]));}
+ return result;
 }
