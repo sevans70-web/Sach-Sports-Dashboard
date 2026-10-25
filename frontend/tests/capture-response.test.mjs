@@ -13,7 +13,7 @@ test('capture publishes a durable local snapshot before slow or failed featured 
  };
  const source=await readFile(new URL('../app/api/history/capture/route.ts',import.meta.url),'utf8');
  const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
- const module={exports:{}};vm.runInNewContext(code,{module,exports:module.exports,require:name=>imports[name]||nodeRequire(name),process:{env:{SACH_HISTORY_DIR:root}},console:{log(){},error(){}},AbortController,setTimeout,clearTimeout,Buffer,fetch:async url=>{requests.push(url);return url.includes('/performance')?Response.json({success:false,error:'remote grading unavailable'},{status:503}):Response.json({success:true,market:'passing_yards',rows:[{playerId:'original',sportsbookLine:245.5}]})}});
+ const module={exports:{}};vm.runInNewContext(code,{module,exports:module.exports,require:name=>imports[name]||nodeRequire(name),process:{env:{SACH_HISTORY_DIR:root}},console:{log(){},error(){}},AbortController,setTimeout,clearTimeout,Buffer,fetch:async url=>{requests.push(url);return url.includes('/performance')?Response.json({success:true,historyPartial:true}):Response.json({success:true,market:'passing_yards',rows:[{playerId:'original',sportsbookLine:245.5}]})}});
  try{
  const result=await module.exports.GET({nextUrl:new URL('http://internal/api/history/capture?sport=nfl')});
  assert.equal(result.success,true);assert.equal(result.gradingPending,true);assert.equal(result.saved,1);assert.equal(snapshots.length,1);assert.equal(publications,0);assert.equal(requests.length,1);assert.equal(snapshots[0].payload.rows[0].sportsbookLine,245.5);

@@ -17,3 +17,12 @@ export function publicNbaRanking(row:any,now=Date.now()){
  if(row?.market==='first_basket')return firstBasketQuote(row,now)!=null;
  return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
 }
+
+/** Combined expectations have no joint interval; display only supplied fields. */
+export function forecastDetailText(forecast:any,selection:any,format:(value:number)=>string=String){
+ const parts=[selection?`${selection.sportsbook} · ${Number(selection.price)>0?'+':''}${selection.price}`:forecast?.modelId==='sum_of_fitted_component_expectations'?'Combined model estimate':'Model estimate'];
+ if(typeof forecast?.expectedWorkload==='number'&&Number.isFinite(forecast.expectedWorkload))parts.push(`${format(forecast.expectedWorkload)} expected ${forecast.workloadUnit||'opportunities'}`);
+ const range=forecast?.interval80;
+ if(typeof range?.lower==='number'&&Number.isFinite(range.lower)&&typeof range?.upper==='number'&&Number.isFinite(range.upper))parts.push(`range ${format(range.lower)}–${format(range.upper)}`);
+ return parts.join(' · ')+'.';
+}
