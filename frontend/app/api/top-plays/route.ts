@@ -1,3 +1,4 @@
+import {distinctFeaturedPlayers} from '@/lib/top-plays';
 import {retainedTopPlays} from '@/lib/retained-top-plays';
 import {readHistorySnapshots} from '@/lib/history-archive';
 import {saveFeaturedSelections} from '@/lib/featured-selection-capture';
@@ -40,6 +41,7 @@ export async function GET(req:NextRequest){
   if(!old||dashboardDay(old.row.gameTime)!==selectionDay)return card;
   return {...card,pick:{...old,row:{...old.row,featuredRetained:true}}};
  });
+ state.plays=distinctFeaturedPlayers(state.plays);
  after(async()=>{try{await saveFeaturedSelections(sport,state.plays,selectionDay)}catch(e){console.error("[featured save]",e)}});
  return NextResponse.json(state,{headers:{'Cache-Control':'no-store'}});
 }

@@ -15,10 +15,10 @@ test('every dashboard has three core categories and preserves captured choices w
    await captureFeaturedSelections(sport,[{market,rows:[q]}],now);
    await captureFeaturedSelections(sport,[{market,rows:[]}],Date.parse(q.gameTime)+60000);
    const saved=await readDurableHistory(sport,'featured_selections','2026-10-24');
-   assert.equal(saved.find(c=>c.key==='long').pick.row.playerName,'Saved scorer',sport);
+   assert.equal(saved.find(c=>c.key===(market==='first_basket'?'first':'long')).pick.row.playerName,'Saved scorer',sport);
    await captureFeaturedSelections(sport,[{market,rows:[{...q,gameTime:'2026-10-25T18:00Z'}]}],now);
    const next=await readDurableHistory(sport,'featured_selections','2026-10-25');
-   assert.equal(next.find(c=>c.key==='long').pick.row.gameTime,'2026-10-25T18:00Z',sport+' next slate');
+   assert.equal(next.find(c=>c.key===(market==='first_basket'?'first':'long')).pick.row.gameTime,'2026-10-25T18:00Z',sport+' next slate');
   }
  }finally{await rm(dir,{recursive:true,force:true});}
 });
