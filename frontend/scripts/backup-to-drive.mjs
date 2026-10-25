@@ -1,4 +1,5 @@
 import {driveAuth} from './drive-auth.mjs';
+import {storageInventory} from './storage-inventory.mjs';
 import {pruneVerifiedFile,md5File} from './retention-cleanup.mjs';
 import {expiredHistory,historyFileInfo,retentionCutoff,orphanArchiveInfo} from './retention-policy.mjs';
 import {cloudConfigured,saveCloudDocument,cloudRequest} from './history-cloud.mjs';
@@ -10,6 +11,13 @@ import {createHash} from "node:crypto";
 const root=process.env.RAILWAY_VOLUME_MOUNT_PATH||"/data";
 const rootStat=await fs.stat(root);
 if(!rootStat.isDirectory())throw Error("Railway backup source is not a directory: "+root);
+// A quiescent startup check with no orphan files has nothing to upload or prune.
+// Full archive replication still runs after startup and on the regular schedule.
+if(process.env.SACH_BACKUP_ORPHANS_ONLY==='1'){
+ const inventory=await storageInventory(root);
+ if(inventory.temporaryBytes===0){console.log(JSON.stringify({status:'COMPLETE',scope:'orphan-temporary-files',files:0,bytes:0,deleted:0,freedBytes:0,errors:[]}));process.exit(0)}
+}
+
 const folder=process.env.BACKUP_DRIVE_FOLDER_ID;
 const clientId=process.env.GOOGLE_OAUTH_CLIENT_ID;
 const clientSecret=process.env.GOOGLE_OAUTH_CLIENT_SECRET;
@@ -34,6 +42,9 @@ async function retryUpload(fn,label){
  throw last;
 }
 let count=0,total=0,errors=[],deleted=0,freedBytes=0;
+const backupStatusFile=path.join(root,'sach-history','_system','last-backup.json');
+async function backupStatus(value){await fs.mkdir(path.dirname(backupStatusFile),{recursive:true});const temp=backupStatusFile+'.'+process.pid+'.tmp';await fs.writeFile(temp,JSON.stringify({...value,updatedAt:new Date().toISOString(),retentionCutoff:retentionCutoff(),scope:process.env.SACH_BACKUP_ORPHANS_ONLY==='1'?'orphan-temporary-files':'full-volume'}));await fs.rename(temp,backupStatusFile)}
+await backupStatus({status:'RUNNING',startedAt:new Date().toISOString()});
 console.log('RETENTION_CUTOFF',retentionCutoff());
 async function migrateDocument(full,rel,size){
  const info=historyFileInfo(rel);if(!info?.document)return true;
@@ -97,7 +108,9 @@ async function walk(dir,parent){
 }
 console.log('STORAGE_BEFORE',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
 await walk(root,backup);
+await backupStatus({status:errors.length?'INCOMPLETE':'COMPLETE',files:count,bytes:total,deleted,freedBytes,errors});
 console.log('STORAGE_AFTER',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
 console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,scope:process.env.SACH_BACKUP_ORPHANS_ONLY==='1'?'orphan-temporary-files':'full-volume',files:count,bytes:total,deleted,freedBytes,errors}));
 // Retention runs only after matching MD5 checksums establish an archived copy.
 if(errors.length)process.exitCode=1;
+

@@ -6,7 +6,11 @@ type Refresh={observations:OpportunityGame[];unavailablePlayers:string[];checked
 type JsonSource=(url:string)=>Promise<any>;
 const cache=new Map<string,{expires:number;value:Refresh}>();
 const pending=new Map<string,Promise<Refresh>>();
-async function officialJson(url:string){const r=await providerFetch(url);if(!r.ok)throw Error('Official basketball source unavailable');return r.json()}
+const sourceCache=new Map<string,{at:number;value:any}>(),sourcePending=new Map<string,Promise<any>>();
+async function officialJson(url:string){
+ const hit=sourceCache.get(url);if(hit&&Date.now()-hit.at<15*60000)return hit.value;
+ let work=sourcePending.get(url);if(!work){work=(async()=>{const r=await providerFetch(url);if(!r.ok)throw Error('Official basketball source unavailable');const value=await r.json();if(sourceCache.size>=1024)sourceCache.delete(sourceCache.keys().next().value!);sourceCache.set(url,{at:Date.now(),value});return value;})().finally(()=>sourcePending.delete(url));sourcePending.set(url,work)}return work;
+}
 /** Refresh the complete two-team census for recent fixtures discovered in each
  * ranked player's official log. Never infer usage from a player's points mean.
  * The research engine's existing 48-hour availability lag remains unchanged. */

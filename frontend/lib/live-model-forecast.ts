@@ -25,12 +25,18 @@ function bundle():RuntimeBundle{
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** Experimental outputs remain separate from the validated recommendation
  * registry and never rewrite historical lines, bets, grades or probabilities. */
-export function fittedResearchForecast(row:any,sport:string,market:string,data:RuntimeBundle,now=Date.now()){
+export function fittedResearchForecast(row:any,sport:string,market:string,data:RuntimeBundle,now=Date.now()):any{
  if(row?.frozen||row?.lockedAtKickoff||['in','post'].includes(row?.gameState)||!Number.isFinite(Date.parse(row?.gameTime))||Date.parse(row.gameTime)<=now)return unavailable('pregame_only');
  const context=row.pregameContext;
  if(context&&(context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)))return unavailable('wrong_pregame_context_identity');
  if(!row?.gameId||!row?.playerId||!row?.teamId||!(context?.season||row?.season))return unavailable('missing_fixture_or_team_identity');
  if(!Number.isFinite(Date.parse(data.asOf))||Date.parse(data.asOf)>now)return unavailable('snapshot_not_available');
+ const combination:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
+ if(['nba','wnba','cbb'].includes(sport)&&combination[market]){
+  const parts=combination[market].map(component=>fittedResearchForecast({...row,market:component,sportsbookLine:null},sport,component,data,now));
+  if(parts.some(p=>p.status!=='available'||p.projection==null))return unavailable('component_forecast_unavailable');
+  return {status:'available',projection:Math.round(parts.reduce((n,p)=>n+Number(p.projection),0)*10)/10,modelId:'sum_of_fitted_component_expectations',modelGroup:sport+'|'+market,calculatedAt:new Date(now).toISOString(),components:combination[market],giScore:null,giReason:'GI_exact_price_calibration_missing',priceComparison:null,modelSelection:null,validatedForBetting:false,reason:null};
+ }
  const key=sport+'|'+market,model=data.models.find(m=>m.group===key);
  if(!model)return unavailable('market_model_not_fitted');
  if(model.featurePolicy==='basketball_context'&&(!context||context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)||!context.opponentId||!['home','away'].includes(context.homeAway)))return unavailable('missing_exact_pregame_context');
@@ -97,7 +103,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  let nbaRefreshUnavailable=new Set<string>();
  if(sport==='nba'){
-  const refresh=await refreshNbaObservations(payload.rows,now);
+  const refresh=await refreshNbaObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),now);
   nbaRefreshUnavailable=new Set(refresh.unavailablePlayers);
   const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));
   for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);

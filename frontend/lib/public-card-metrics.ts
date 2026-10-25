@@ -1,3 +1,4 @@
+import {footballForecastDisplay} from '@/lib/football-forecast-display';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
 
@@ -10,9 +11,9 @@ export function firstBasketQuote(row:any,now=Date.now()){
  return {probability:Math.round(probability*1000)/10,price,sportsbook:String(row.sportsbook),basis:'bookmaker_implied' as const};
 }
 
-/** Public ranking cards require a supported saved pregame decision. Keep the
+/** Public cards show supported pregame forecasts or saved selections, labelled separately. Keep the
  * original full board in durable history for audit, including abstentions. */
 export function publicNbaRanking(row:any,now=Date.now()){
  if(row?.market==='first_basket')return firstBasketQuote(row,now)!=null;
- return cardModelPick(row,now)!=null&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
+ return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
 }

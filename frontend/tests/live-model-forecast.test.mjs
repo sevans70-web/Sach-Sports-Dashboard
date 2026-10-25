@@ -52,3 +52,12 @@ test('a model selection can exist without GI while failed, stale and after-start
  assert.equal(fittedResearchForecast({...quoted,gameState:'in'},'nfl','passing_yards',data,now).status,'unavailable');
  assert.equal(fittedResearchForecast({...quoted,sportsbookLine:240,overPrice:-110,underPrice:-110},'nfl','passing_yards',data,now).modelSelection,null);
 });
+test('combination forecasts sum fitted component expectations without inventing joint probability or GI',()=>{
+ const comboRow={...row,sport:'nba',market:'pts_rebs'};
+ const models=['points','rebounds'].map((market,i)=>({...model,group:'nba|'+market,rate:linear(i?2:8)}));
+ const observations=['points','rebounds'].flatMap(market=>history.map(g=>({...g,sport:'nba',market})));
+ const f=fittedResearchForecast(comboRow,'nba','pts_rebs',{...data,models,observations},now);
+ assert.equal(f.projection,300);assert.equal(f.modelSelection,null);assert.equal(f.priceComparison,null);assert.equal(f.giScore,null);assert.equal(f.validatedForBetting,false);
+ assert.equal(fittedResearchForecast(comboRow,'nba','pts_rebs',{...data,models:models.slice(0,1),observations},now).reason,'component_forecast_unavailable');
+ assert.equal(fittedResearchForecast({...comboRow,market:'q1_pts_rebs_asts'},'nba','q1_pts_rebs_asts',{...data,models,observations},now).reason,'market_model_not_fitted');
+});
