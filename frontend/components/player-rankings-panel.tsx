@@ -1407,7 +1407,7 @@ const JSON_STALE_MS = 5 * 60_000;
 async function networkJson(url: string) {
   const response = await fetch(url, {
     cache: "no-store",
-    signal: AbortSignal.timeout(20000),
+    signal: AbortSignal.timeout(45000),
   });
 
   if (!response.ok) {
@@ -1977,9 +1977,11 @@ export function PlayerRankingsPanel({
     const requestedCfbSlate = cfbSlate;
 
     let running=false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
     const run = async () => {
       if(running)return;
       running=true;
+      if(retryTimer)clearTimeout(retryTimer);
       setError("");
 
       try {
@@ -2174,9 +2176,10 @@ export function PlayerRankingsPanel({
         // should never turn the ranking section into a blank panel.
         setError(
           cause instanceof Error
-            ? cause.message
+            ? /abort|timeout/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : cause.message
             : "Player rankings are temporarily unavailable."
         );
+        retryTimer=setTimeout(run,5000);
       } finally {
         running=false;
         if (
@@ -2197,6 +2200,7 @@ export function PlayerRankingsPanel({
       alive = false;
       controller.abort();
       window.clearInterval(interval);
+      if(retryTimer)clearTimeout(retryTimer);
     };
   }, [sport, groupKey, marketKey, league, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 

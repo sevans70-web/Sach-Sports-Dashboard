@@ -9,7 +9,7 @@ import {CBB_MARKETS} from '@/lib/cbb';
 import {WNBA_MARKETS} from '@/lib/wnba';
 import {SOCCER_MARKETS} from '@/lib/soccer';
 import {BATTER_MARKETS,PITCHER_MARKETS} from '@/lib/mlb';
-import {NextRequest,NextResponse} from 'next/server';
+import {after,NextRequest,NextResponse} from 'next/server';
 import {DASHBOARD_SPORTS,type DashboardSport} from '@/lib/dashboard-contract';
 import {readDurableHistoryBatch,readDurableHistory} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
@@ -40,6 +40,6 @@ export async function GET(req:NextRequest){
   if(!old||dashboardDay(old.row.gameTime)!==selectionDay)return card;
   return {...card,pick:{...old,row:{...old.row,featuredRetained:true}}};
  });
- state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay);
+ after(async()=>{try{await saveFeaturedSelections(sport,state.plays,selectionDay)}catch(e){console.error("[featured save]",e)}});
  return NextResponse.json(state,{headers:{'Cache-Control':'no-store'}});
 }

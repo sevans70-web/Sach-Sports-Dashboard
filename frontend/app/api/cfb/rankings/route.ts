@@ -3,7 +3,7 @@ import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
-import {NextRequest,NextResponse} from "next/server";
+import {after,NextRequest,NextResponse} from "next/server";
 import {CFB_MARKETS,type CfbMarketKey,cleanName} from "@/lib/cfb";
 import {getEspnCfbSchedule,getCfbMarketRows,getCfbRankings,getCfbTeamRoster} from "@/lib/cfb-server";
 import {getOwlsCfbRows} from "@/lib/cfb-owls";
@@ -393,4 +393,4 @@ export async function GET(req:NextRequest){
   }
 }
 
-async function rankingJson(payload:any,init?:ResponseInit){const board=guardRankingPayload(payload,"cfb");await publishFeaturedBoards("cfb",[board]);return NextResponse.json(board,init)}
+async function rankingJson(payload:any,init?:ResponseInit){const board=guardRankingPayload(payload,"cfb");after(async()=>{try{await publishFeaturedBoards("cfb",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}

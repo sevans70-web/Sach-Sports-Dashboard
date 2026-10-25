@@ -9,7 +9,7 @@ import {getOwlsPayload} from "@/lib/owls-provider";
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 import {footballBookRows,footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
-import {NextRequest,NextResponse} from "next/server";
+import {after,NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName,safeNumber} from "@/lib/nfl";
 import {getEspnNflSchedule,getNflTeamRoster,getNflMarketRows} from "@/lib/nfl-server";
 import {nflPredictionProbability,nflGiScore} from "@/lib/nfl-prediction";
@@ -387,4 +387,4 @@ export async function GET(req:NextRequest){
  }catch(e){console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
 
-async function rankingJson(payload:any,init?:ResponseInit){const board=await attachFittedResearchForecasts(guardRankingPayload(payload,"nfl"),"nfl");await publishFeaturedBoards("nfl",[board]);return NextResponse.json(board,init)}
+async function rankingJson(payload:any,init?:ResponseInit){const board=await attachFittedResearchForecasts(guardRankingPayload(payload,"nfl"),"nfl");after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
