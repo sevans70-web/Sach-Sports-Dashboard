@@ -116,3 +116,11 @@ export async function getOwlsPayload(sport:Sport){
  pending.set(sport,work);
  try{return await work}finally{pending.delete(sport)}
 }
+
+let firstBasketSource:any=null,firstBasketReadAt=0,firstBasketPending:Promise<any>|null=null;
+/** Included native source, shared across capture requests; never sent to browsers. */
+export async function getNbaFirstBasketSource(){
+ if(firstBasketSource&&Date.now()-firstBasketReadAt<60000)return {payload:firstBasketSource,readAt:firstBasketReadAt};
+ if(firstBasketPending)return firstBasketPending;
+ firstBasketPending=(async()=>{const key=process.env.OWLS_INSIGHT_API_KEY?.trim();if(!key)throw Error('Book feed not configured');const r=await providerFetch('https://api.owlsinsight.com/api/v2/fanduel/nba',{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error('First basket source unavailable');const payload=await r.json();firstBasketSource=payload;firstBasketReadAt=Date.now();return {payload,readAt:firstBasketReadAt};})().finally(()=>{firstBasketPending=null});return firstBasketPending;
+}

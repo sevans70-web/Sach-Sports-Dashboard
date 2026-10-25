@@ -17,7 +17,7 @@ test('featured cards reuse an exact saved pregame model selection and its side-s
  assert.ok(todayTopPlays([{...q,quoteId:'different'}],'nba',now).every(c=>c.pick===null));
  assert.ok(todayTopPlays([q],'nba',Date.parse(q.gameTime)+1).every(c=>c.pick===null));
 });
-test('first basket displays a verified book-implied chance without inventing model value or a long shot',()=>{
+test('first basket and price-qualified scorer long shots display book-implied chances without inventing model value',()=>{
  const q={...row,market:'first_basket',lineType:'scorer',overPrice:500,underPrice:null};
- const cards=todayTopPlays([q],'nba',now);assert.equal(cards[2].pick.basis,'bookmaker_implied');assert.equal(cards[2].pick.probability,16.7);assert.equal(cards[2].pick.row.prediction,'FIRST BASKET');assert.equal(cards[1].pick,null);assert.equal(cards[3].pick,null);
+ const cards=todayTopPlays([q],'nba',now);assert.equal(cards[2].pick.basis,'bookmaker_implied');assert.equal(cards[2].pick.probability,16.7);assert.equal(cards[2].pick.row.prediction,'FIRST BASKET');assert.equal(cards[1].pick,null);assert.equal(cards[3].pick.basis,'bookmaker_implied');assert.equal(cards[0].pick,null);
 });

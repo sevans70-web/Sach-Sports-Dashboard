@@ -1,6 +1,5 @@
-import {eligiblePropPrediction} from '@/lib/prop-integrity';
+import {eligiblePropPrediction,verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick} from '@/lib/saved-model-pick';
-import {firstBasketQuote} from '@/lib/public-card-metrics';
 import {dashboardDay} from '@/lib/dashboard-contract';
 
 export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
@@ -19,12 +18,18 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
   if(typeof expectedReturn!=='number'||!Number.isFinite(expectedReturn))return [];
   return [{row:{...row,prediction:side},probability,price,expectedReturn,basis:'model' as string}];
  });
- const first=eligible.flatMap(row=>{const q=firstBasketQuote(row,now);return q?[{row:{...row,prediction:'FIRST BASKET'},probability:q.probability,price:q.price,expectedReturn:0,basis:'bookmaker_implied'}]:[]}).sort((a,b)=>b.probability-a.probability)[0]||null;
+ const scorers=eligible.flatMap(row=>{
+  if(row.lineType!=='scorer'||!verifiedPropQuote(row,now,row.boardFrozen===true))return [];
+  const price=row.overPrice,probability=price>0?10000/(price+100):100*-price/(-price+100);
+  return [{row:{...row,prediction:row.market==='first_basket'?'FIRST BASKET':'YES'},probability:Math.round(probability*10)/10,price,expectedReturn:0,basis:'bookmaker_implied'}];
+ });
+ const first=scorers.filter(p=>p.row.market==='first_basket').sort((a,b)=>b.probability-a.probability)[0]||null;
+
  const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
  return [
   {key:'play',title:'⭐ Play of the Day',pick:best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability)},
   {key:'value',title:'💎 Best Value',pick:best(priced.filter(p=>p.expectedReturn>0),p=>p.expectedReturn)},
   ...(['nba','wnba','cbb'].includes(sport)?[{key:'first',title:'🏀 First Basket',pick:first}]:[]),
-  {key:'long',title:'🚀 Long Shot',pick:best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)},
+  {key:'long',title:'🚀 Long Shot',pick:best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)||best(scorers.filter(p=>p.price>=300),p=>p.probability)},
  ];
 }

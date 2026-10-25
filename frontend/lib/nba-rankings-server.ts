@@ -15,6 +15,8 @@ import {attachBasketballPregameContext,attachBasketballAvailability} from '@/lib
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
+import {nativeFirstBasketRows} from '@/lib/native-first-basket';
+import {getNbaFirstBasketSource} from '@/lib/owls-provider';
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {nbaQuoteMatchesGame} from "@/lib/nba-game-match";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
@@ -605,9 +607,10 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
   // Fresh scorer prices for games that have not started are distinct from the
   // immutable daily model board. Never rewrite that board or backdate a price.
   const current=await buildNbaMarketRankingsRaw(market,{overview});
+  try{const native=await getNbaFirstBasketSource();current.rows=[...(current.rows||[]),...nativeFirstBasketRows(native.payload,native.readAt,overview)];}catch{}
   const quotes=guardRankingPayload({...current,rows:(current.rows||[]).filter((r:any)=>Date.parse(r.gameTime)>Date.now())},'nba');
   const visible=publicNbaBoard(quotes);
-  if(visible.rows.length){await archiveResearchBoards('nba',[visible]);return {...visible,source:'Current pregame first-basket prices',boardFrozen:false};}
+  if(visible.rows.length){await archiveResearchBoards('nba',[visible]);return {...visible,success:true,source:'Current pregame first-basket prices',boardFrozen:false};}
  }
  if(frozen){
   // The old builder truncated before forecasting. Restore additional candidates
