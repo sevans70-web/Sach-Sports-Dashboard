@@ -29,13 +29,20 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
   const price=row.overPrice,probability=price>0?10000/(price+100):100*-price/(-price+100);
   return [{row:{...row,prediction:row.market==='first_basket'?'FIRST BASKET':'YES'},probability:Math.round(probability*10)/10,price,expectedReturn:0,basis:'bookmaker_implied'}];
  });
- const first=scorers.filter(p=>p.row.market==='first_basket').sort((a,b)=>b.probability-a.probability)[0]||null;
 
- const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
+ const used=new Set<string>();
+ const identity=(p:any)=>String(p.row.playerId||p.row.playerName).trim().toLowerCase();
+ const take=(pick:any)=>{if(!pick||used.has(identity(pick)))return null;used.add(identity(pick));return pick};
+ const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].filter(p=>!used.has(identity(p))).sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
  return [
-  {key:'play',title:'⭐ Play of the Day',pick:best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability)},
-  {key:'value',title:'💎 Best Value',pick:best(priced.filter(p=>p.expectedReturn>0),p=>p.expectedReturn)},
-  ...(['nba','wnba','cbb'].includes(sport)?[{key:'first',title:'🏀 First Basket',pick:first}]:[]),
-  {key:'long',title:'🚀 Long Shot',pick:best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)||best(scorers.filter(p=>p.price>=300),p=>p.probability)},
+  {key:'play',title:'⭐ Play of the Day',pick:take(best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability))},
+  {key:'value',title:'💎 Best Value',pick:take(best(priced.filter(p=>p.expectedReturn>0),p=>p.expectedReturn))},
+  ...(['nba','wnba','cbb'].includes(sport)?[{key:'first',title:'🏀 First Basket',pick:take(best(scorers.filter(p=>p.row.market==='first_basket'),p=>p.probability))}]:[]),
+  {key:'long',title:'🚀 Long Shot',pick:take(best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)||best(scorers.filter(p=>p.price>=300),p=>p.probability))},
  ];
+}
+
+/** Guard saved/retained responses as well as new selections. */
+export function distinctFeaturedPlayers<T extends {pick:any}>(cards:T[]):T[]{
+ const seen=new Set<string>();return cards.map(card=>{if(!card.pick)return card;const row=card.pick.row,key=String(row.playerId||row.playerName).trim().toLowerCase();if(seen.has(key))return {...card,pick:null};seen.add(key);return card});
 }

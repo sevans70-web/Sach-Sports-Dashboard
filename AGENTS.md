@@ -13,3 +13,5 @@ prices. Label next-slate selections clearly when there are no games today.
 WNBA and MLB are intentionally hidden. Preserve their capture, historical
 records, and shared feature support without unhiding them unless requested.
 Never fabricate a pick, GI score, odds, result, or model probability to fill a card.
+
+Featured categories must use different players on every dashboard. Choose the next qualifying player; never repeat one player across categories or invent a replacement.
