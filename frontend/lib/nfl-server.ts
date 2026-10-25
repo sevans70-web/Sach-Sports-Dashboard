@@ -22,6 +22,7 @@ const ODDS_MARKETS:Partial<Record<NflMarketKey,string>>={
 };
 
 const SGO_STATS:Record<NflMarketKey,string[]>={
+ sacks:["sacks","player_sacks"],tackles:["tackles","solo_tackles"],tackles_assists:["tackles_assists","total_tackles"],
   passing_yards:["passing_yards","passingYards","passing yards","pass_yards","passYards","player_pass_yds"],
   passing_tds:["passing_tds","passingTouchdowns","passing touchdowns","pass_tds","passTDs","player_pass_tds"],
   qb_rushing_yards:["rushing_yards","rushingYards","rushing yards","rush_yards","rushYards","player_rush_yds"],
@@ -116,6 +117,7 @@ function sgoBookCount(o:any){
 }
 
 const LEADER_ALIASES:Record<NflMarketKey,string[]>={
+ sacks:["sacks","totalsacks"],tackles:["solotackles"],tackles_assists:["totaltackles","tackles"],
   passing_yards:["passingyards","passing yards"],
   passing_tds:["passingtouchdowns","passing tds","passing touchdowns"],
   qb_rushing_yards:["rushingyards","rushing yards"],

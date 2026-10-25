@@ -8,7 +8,7 @@ export function cardStatUnit(market:string){
  const key=market.replace(/^q1_/,'');
  if(key.includes('yards'))return 'yards';
  if(/(?:^|_)tds?$|touchdown/.test(key))return 'touchdowns';
- return ({points:'points',rebounds:'rebounds',assists:'assists',threes_made:'threes',steals:'steals',blocks:'blocks',receptions:'receptions',shots_on_goal:'shots on goal',goalie_saves:'saves',goals:'goals',blocked_shots:'blocked shots',pts_rebs_asts:'points + rebounds + assists',pts_rebs:'points + rebounds',pts_asts:'points + assists',rebs_asts:'rebounds + assists'} as Record<string,string>)[key]||'recorded';
+ return ({points:'points',rebounds:'rebounds',assists:'assists',threes_made:'threes',steals:'steals',blocks:'blocks',receptions:'receptions',shots_on_goal:'shots on goal',goalie_saves:'saves',goals:'goals',blocked_shots:'blocked shots',sacks:'sacks',tackles:'solo tackles',tackles_assists:'tackles + assists',pts_rebs_asts:'points + rebounds + assists',pts_rebs:'points + rebounds',pts_asts:'points + assists',rebs_asts:'rebounds + assists'} as Record<string,string>)[key]||'recorded';
 }
 export function scorerTarget(market:string){return market==='first_td'?'First TD scorer':market==='first_basket'?'First basket scorer':'1+ TD'}
 export function cardObservedProgress(actual:any,line:any,market:string){
@@ -32,7 +32,7 @@ export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
   const push=value===pick.line,hit=pick.side==='UNDER'?value<pick.line:value>pick.line;
   return {label:push?'PUSH':hit?'✅ SACH PICK WON':'❌ SACH PICK LOST',detail:`Final ${value} ${cardStatUnit(market)} · saved ${pick.side} ${pick.line} · ${pick.sportsbook}`};
  }
- if(row.boardFrozen===true&&['nfl','cfb'].includes(row.sport)){const forecast=footballForecastDisplay(row);const outcome=footballForecastOutcome(forecast.side,value,threshold);if(outcome)return {label:`FORECAST ${outcome}`,detail:`Final ${value} ${cardStatUnit(market)} · original ${forecast.basis?.toLowerCase()} ${forecast.side} ${threshold} · model validation pending`};}
+ if(row.boardFrozen===true){const forecast=footballForecastDisplay(row);const outcome=footballForecastOutcome(forecast.side,value,threshold);if(outcome)return {label:`FORECAST ${outcome}`,detail:`Final ${value} ${cardStatUnit(market)} · original ${forecast.basis?.toLowerCase()} ${forecast.side} ${threshold} · model validation pending`};}
  if(row.boardFrozen===true)return {label:'FINAL · ACTUAL RECORDED',detail:`Final ${value} ${cardStatUnit(market)} · no pregame Sach pick saved.`};
  if(row.quoteVerified!==true||threshold==null)return {label:'FINAL · ACTUAL RECORDED',detail:`Actual ${value} · verified line unavailable; no pick grade.`};
  const scorer=market==='anytime_td',side=String(row.originalResearchPick||row.archivedOriginal?.prediction||'').toUpperCase();

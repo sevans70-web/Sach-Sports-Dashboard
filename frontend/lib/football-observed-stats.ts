@@ -4,6 +4,7 @@ import type {ObservedPlayerRow} from "@/lib/observed-player-stats";
 
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const definitions:Record<string,Record<string,string[]>>={
+ defensive:{sacks:["sacks","sack"],tackles:["solo","solotackles"],tackles_assists:["tot","total","totaltackles"]},
  passing:{passing_yards:["yds","yards","passingyards"],passing_tds:["td","touchdowns"],pass_completions:["cmp","completions","catt","cmpatt"],pass_attempts:["att","attempts","catt","cmpatt"]},
  rushing:{rushing_yards:["yds","yards","rushingyards","caryds"],rushing_tds:["td","touchdowns"],rush_attempts:["car","att","carries","caryds"]},
  receiving:{receiving_yards:["yds","yards","receivingyards"],receiving_tds:["td","touchdowns"],receptions:["rec","receptions"],targets:["tgts","targets"]},
