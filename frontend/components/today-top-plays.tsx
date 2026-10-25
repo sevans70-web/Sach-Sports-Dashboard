@@ -8,7 +8,7 @@ import styles from './today-top-plays.module.css';
 
 export function TodayTopPlays({sport,rows=[],loading=false}:{sport:DashboardSport;rows?:any[];loading?:boolean}){
  const [live,setLive]=useState<{sport:string;plays:ReturnType<typeof todayTopPlays>;slateDay?:string}|null>(null);
- useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!r.ok){if(active)setLive(null);return;}const p=await r.json();if(active)setLive(Array.isArray(p.plays)?{sport,plays:p.plays,slateDay:p.slateDay}:null);}catch{if(active)setLive(null)}finally{running=false}};refresh();const id=setInterval(refresh,30000);return()=>{active=false;clearInterval(id)}},[sport]);
+ useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store',signal:AbortSignal.timeout(45000)});if(!r.ok)return;const p=await r.json();if(active)setLive(Array.isArray(p.plays)?{sport,plays:p.plays,slateDay:p.slateDay}:null);}catch{/* Retain the last successful choices during a failed refresh. */}finally{running=false}};refresh();const id=setInterval(refresh,30000);return()=>{active=false;clearInterval(id)}},[sport]);
  const featured=live?.sport===sport?live.plays:todayTopPlays(rows,sport);
  return <section className={styles.section} aria-label="Today's Top Plays">
   <h2>{live?.sport===sport&&live.slateDay&&live.slateDay!==dashboardDay(new Date())?'Next Slate’s Top Plays':'Today’s Top Plays'}</h2>
