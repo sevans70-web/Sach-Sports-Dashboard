@@ -5,7 +5,8 @@ export function footballSlate(time:string){
  return hour<15?'early':hour<19?'afternoon':'evening';
 }
 /** Partition the whole candidate pool BEFORE selecting each slate's leaders. */
-export function independentFootballRankings(rows:any[],limit=25){
+export function independentFootballRankings(rows:any[],limit=25,day?:string){
+ if(day)rows=rows.filter(r=>{const d=new Date(r.gameTime);return Number.isFinite(d.getTime())&&new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(d)===day});
  return FOOTBALL_SLATES.flatMap(slate=>rows.filter(r=>footballSlate(r.gameTime)===slate).slice(0,limit).map((r,i)=>({...r,originalRank:r.originalRank??r.rank,rank:i+1,slateKey:slate})));
 }
 export function selectRecordedFootballSlate(snapshots:any[],market:string,day:string,slate:string,lockAt:number){

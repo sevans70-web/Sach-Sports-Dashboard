@@ -26,14 +26,21 @@ export async function lockedNflBoard(market:string,games:any[],now=Date.now()){
  if(pending.has(key))return pending.get(key);
  const work=withHistoryLock('nfl-research-board|'+key,async()=>{
   const blocks:any[]=[],snapshots:any[]=[];let loaded=false;
+  const legacy=(await readDurableHistory<any>('nfl','locked_research_'+market,day,true))[0];
   for(const b of boundaries){
    const stream='slate_locked_v2_'+market+'_'+b.slate;
-   let saved=(await readDurableHistory<any>('nfl',stream,day).catch(()=>[]))[0];
+   let saved=(await readDurableHistory<any>('nfl',stream,day,true).catch(()=>[]))[0];const existing=Boolean(saved);
+   if(!saved&&legacy){
+    // Migration must preserve every original pregame row, including 1 PM
+    // picks recorded after an earlier international game in the same block.
+    const rows=(legacy.rows||[]).filter((r:any)=>footballSlate(r.gameTime)===b.slate&&torontoHistoryDay(r.gameTime)===day&&Date.parse(r.boardCapturedAt||legacy.capturedAt)<Date.parse(r.gameTime));
+    if(rows.length)saved={...legacy,rows:rows.map((r:any,i:number)=>({...r,originalRank:r.originalRank??r.rank,rank:i+1,slateKey:b.slate,boardCapturedAt:r.boardCapturedAt||legacy.capturedAt}))};
+   }
    if(!saved){
     if(!loaded){await visitHistorySnapshots('nfl',market,day,s=>snapshots.push(s),true);loaded=true}
     saved=selectRecordedFootballSlate(snapshots,market,day,b.slate,Math.min(...b.times));
-    if(saved)void writeDurableHistory('nfl',stream,day,[saved]).catch(e=>console.error('[NFL board persistence]',e));
    }
+   if(saved&&!existing){void writeDurableHistory('nfl',stream,day,[saved]).catch(e=>console.error('[NFL board persistence]',e));}
    if(saved)blocks.push({...saved,slateKey:b.slate});
   }
   return {success:true,market,boardDay:day,lockedSlates:blocks.map(b=>b.slateKey),source:'Saved pregame NFL slate boards',updatedAt:new Date(now).toISOString(),rows:blocks.flatMap(saved=>saved.rows.map((r:any)=>{

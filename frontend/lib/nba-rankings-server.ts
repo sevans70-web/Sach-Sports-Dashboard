@@ -625,6 +625,7 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
   const visible=publicNbaBoard(quotes);
   if(visible.rows.length){await persist(()=>archiveResearchBoards('nba',[visible]));return {...visible,success:true,source:'Current pregame first-basket prices',boardFrozen:false};}
  }
+ if(frozen&&selectNbaCandidates(frozen.rows||[],market).length>=25)return publicNbaBoard(await attachBasketballAvailability(frozen,'nba'));
  if(frozen){
   // The old builder truncated before forecasting. Restore additional candidates
   // only when a traceable pre-lock forecast exists in the original archive.
@@ -667,7 +668,7 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  // Archive the complete candidate pool, including honest abstentions, then
  // choose the supported Top 25 and persist exactly that public pregame board.
  await persist(()=>archiveResearchBoards('nba',[payload]));
- const selected=publicNbaBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])});
+ const selected=publicNbaBoard({...payload,boardDay:day,rows:prioritizeModelPicks(payload.rows||[])});
  return savePregameNbaSlateBoard(selected,overview.games||[],Date.now(),day,'nba',options?.deferHistory);
 }
 

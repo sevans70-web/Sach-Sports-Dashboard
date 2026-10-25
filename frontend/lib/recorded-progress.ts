@@ -1,3 +1,4 @@
+import {retentionCutoff} from '../scripts/retention-policy.mjs';
 import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 
@@ -34,12 +35,12 @@ export async function attachRecordedProgressLines(payload:any,sport:string,now=D
   if(!market)continue;
   const players=needed.filter((r:any)=>String(payload.market||r.market||'')===market),days=new Set<string>();
   for(const row of players)for(let offset=0;offset<3;offset++)days.add(torontoHistoryDay(new Date(Date.parse(row.gameTime)-offset*86400000)));
-  for(const day of [...days].filter(Boolean))await visitHistorySnapshots(sport,market,day,snapshot=>{
+  for(const day of [...days].filter(Boolean))try{await visitHistorySnapshots(sport,market,day,snapshot=>{
    for(const row of players){
     const candidate=archivedProgressQuote({...row,market},[snapshot],now),old=quotes.get(row);
     if(candidate&&(!old||Date.parse(candidate.archivedAt)>Date.parse(old.archivedAt)))quotes.set(row,candidate);
    }
-  });
+  },day>=retentionCutoff());}catch(e){console.error('[progress archive unavailable]',sport,market,day,e instanceof Error?e.message:String(e));}
  }
  return {...payload,rows:rows.map((row:any)=>row.sportsbookLine!=null?row:{...row,progressQuote:quotes.get(row)||null})};
 }
