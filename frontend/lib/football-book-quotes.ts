@@ -17,14 +17,14 @@ export type FootballBookRow = {
   line: number | null; price: number; prob: number; bookmakerCount: number;
   quoteVersion: number; sportsbook: string; sportsbookKey: string;
   overPrice: number; underPrice: number | null; quoteUpdatedAt: string;
-  lineType: "main" | "scorer"; quoteId: string; quoteUrl: string; capturedAt: string;
+  lineType: "main" | "scorer" | "milestone"; quoteId: string; quoteUrl: string; capturedAt: string;
 };
 
 /** Read only the provider's game -> book -> prop contract, never nested alternateLines.
  * Keep one executable quote, with BOTH prices at the SAME line for two-way props.
  * Never average thresholds/prices or merge games played on different dates.
  */
-export function footballBookRows(payload: any, market: string, aliases: string[], now = Date.now()): FootballBookRow[] {
+export function footballBookRows(payload: any, market: string, aliases: string[], now = Date.now(), allowQuarterMilestones=false): FootballBookRow[] {
   const binary = /^(anytime_td|first_td|q1_anytime_td)$/.test(market);
   const categories = new Set(aliases.map(categoryKey));
   const grouped = new Map<string, FootballBookRow[]>();
@@ -64,7 +64,8 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
         const overPrice = price(prop.overPrice ?? prop.over_price);
         const underPrice = price(prop.underPrice ?? prop.under_price);
         const line = nullableNumber(prop.line ?? prop.point ?? prop.total);
-        if (overPrice == null || (!binary && (alternate || underPrice == null || line == null))) continue;
+        const milestone=allowQuarterMilestones&&quarter&&structure==='milestone'&&line!=null&&line>0&&underPrice==null&&prop.isAlternate!==true;
+        if (overPrice == null || (!binary && !milestone && (alternate || underPrice == null || line == null))) continue;
         // With both sides available, remove the bookmaker margin for the model input.
         const p = implied(overPrice);
         const prob = Math.round((underPrice == null ? p : p / (p + implied(underPrice))) * 1000) / 10;
@@ -73,7 +74,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
           playerName, teamName: String(prop.team || prop.teamName || ""), line,
           price: overPrice, prob, bookmakerCount: 1, quoteVersion: FOOTBALL_QUOTE_VERSION,
           sportsbook: String(book.title || book.name || sportsbookKey), sportsbookKey,
-          overPrice, underPrice, quoteUpdatedAt, lineType: binary ? "scorer" : "main",
+          overPrice, underPrice, quoteUpdatedAt, lineType: binary ? "scorer" : milestone ? "milestone" : "main",
           quoteId: String(prop.propId || ""), quoteUrl: String(prop.event_link || book.event_link || ""), capturedAt: new Date(now).toISOString(),
         };
         const key = `${playerKey(playerName)}|${norm(matchup)}|${Date.parse(gameTime)}|${market}`;
@@ -85,7 +86,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
     // A stable book preference avoids picking whichever line flatters our projection.
     const priority = ["bet365", "pinnacle", "fanduel", "draftkings", "caesars", "betmgm"];
     const order = (r: FootballBookRow) => { const i = priority.indexOf(r.sportsbookKey); return i < 0 ? 99 : i; };
-    rows.sort((a, b) => order(a) - order(b) || Date.parse(b.quoteUpdatedAt) - Date.parse(a.quoteUpdatedAt) || a.quoteId.localeCompare(b.quoteId));
+    rows.sort((a, b) => order(a) - order(b) || Date.parse(b.quoteUpdatedAt) - Date.parse(a.quoteUpdatedAt) || (a.lineType==='milestone'&&b.lineType==='milestone'?Number(a.line)-Number(b.line):0) || a.quoteId.localeCompare(b.quoteId));
     const selected = rows[0];
     return {...selected, bookmakerCount: new Set(rows.filter(r => r.line === selected.line).map(r => r.sportsbookKey)).size};
   });
@@ -106,3 +107,4 @@ export function footballQuoteGame(row: any, schedule: any[]) {
   return schedule.find(game => norm(`${game.awayTeam} @ ${game.homeTeam}`) === matchup &&
     Number.isFinite(Date.parse(game.date)) && Math.abs(Date.parse(game.date) - time) <= 5 * 60_000);
 }
+

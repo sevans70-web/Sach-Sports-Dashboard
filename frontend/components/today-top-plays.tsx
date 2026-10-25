@@ -11,7 +11,7 @@ export function TodayTopPlays({sport,rows=[],loading=false}:{sport:DashboardSpor
  useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store',signal:AbortSignal.timeout(45000)});if(!r.ok)return;const p=await r.json();if(active)setLive(Array.isArray(p.plays)?{sport,plays:p.plays,slateDay:p.slateDay}:null);}catch{/* Retain the last successful choices during a failed refresh. */}finally{running=false}};refresh();const id=setInterval(refresh,30000);return()=>{active=false;clearInterval(id)}},[sport]);
  const featured=live?.sport===sport?live.plays:todayTopPlays(rows,sport);
  return <section className={styles.section} aria-label="Today's Top Plays">
-  <h2>{live?.sport===sport&&live.slateDay&&live.slateDay!==dashboardDay(new Date())?'Next Slate’s Top Plays':'Today’s Top Plays'}</h2>
+  <h2>{live?.sport===sport&&live.slateDay&&live.slateDay!==dashboardDay(new Date())?'Next Slate’s Featured Picks':'Today’s Featured Picks'}</h2>
   <div className={styles.carousel} tabIndex={0} aria-label="Swipe featured categories">
    {featured.map(({key,title,pick})=><article className={styles.card} key={key}>
     <h3>{title}</h3>
@@ -20,3 +20,4 @@ export function TodayTopPlays({sport,rows=[],loading=false}:{sport:DashboardSpor
   </div>
  </section>;
 }
+

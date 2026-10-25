@@ -95,6 +95,10 @@ function marketLabel(value: string) {
     tackles: "Tackles",
     tackles_assists: "Tackles + Assists",
     sacks: "Sacks",
+    q1_points: "First Quarter Points",
+    q1_passing_yards: "First Quarter Passing Yards",
+    q1_rushing_yards: "First Quarter Rushing Yards",
+    q1_receiving_yards: "First Quarter Receiving Yards",
     anytime_td: "Touchdowns",
     points: "Points",
     rebounds: "Rebounds",
@@ -319,6 +323,11 @@ export function UnifiedPlayerCard({
   );
 
   const effectivePick = ['OVER','UNDER','YES','FIRST BASKET'].includes(pick)?pick:'';
+  // Direction from a model estimate is not a verified betting selection.
+  const forecastDirection = !effectivePick && projection != null && line != null
+    ? projection > line ? 'OVER' : projection < line ? 'UNDER' : 'AT LINE'
+    : '';
+  const displayedPick = effectivePick || (forecastDirection ? `Forecast ${forecastDirection}` : 'Not established');
 
   const edge =
     line != null &&
@@ -656,7 +665,7 @@ export function UnifiedPlayerCard({
 
         <b>
           {hasPrediction
-            ? `GI ${fmt(gi)}${
+            ? `GI Score ${gi == null ? "Not calibrated" : fmt(gi)}${
                 probability != null
                   ? ` · ${fmt(
                       probability,
@@ -693,14 +702,14 @@ export function UnifiedPlayerCard({
 
             <article>
               <span>
-                Sach Pick
+                {effectivePick ? "Sach Pick" : "Forecast Direction"}
               </span>
               <strong
                 className={
                   styles.pick
                 }
               >
-                {effectivePick || "PASS"}
+                {displayedPick}
               </strong>
             </article>
 
@@ -725,16 +734,16 @@ export function UnifiedPlayerCard({
                 <small>SACH PLAY</small>
                 <h2>{marketLabel(researchMarket)}</h2>
               </div>
-              <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:'PASS'}</strong>
+              <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:forecastDirection?`Forecast ${forecastDirection} ${fmt(line)}`:'Not established'}</strong>
             </div>
 
             <div className={styles.playRows}>
               <div>
                 <span>
                   <b>Main Play</b>
-                  <small>sportsbook-backed line</small>
+                  <small>{effectivePick ? "Sportsbook-backed selection" : "Forecast only — no verified selection"}</small>
                 </span>
-                <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:'PASS'}</strong>
+                <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:forecastDirection?`Forecast ${forecastDirection} ${fmt(line)}`:'Not established'}</strong>
               </div>
               <div>
                 <span>

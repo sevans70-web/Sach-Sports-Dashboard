@@ -16,5 +16,6 @@ test('Tre Jones final result cannot replace or fabricate the saved pregame proje
  assert.equal(cardModelProjection(row,now),16.2);assert.equal(publicNbaRanking(row,now),true);
  assert.equal(cardModelProjection({...row,actualResult:30},now),16.2);
  assert.equal(publicNbaRanking({...row,researchForecast:{status:'unavailable'}},now),false);
- assert.equal(publicNbaRanking({...row,researchForecast:{...row.researchForecast,modelSelection:null}},now),false);
+ assert.equal(publicNbaRanking({...row,researchForecast:{...row.researchForecast,modelSelection:null}},now),true);
+ assert.equal(publicNbaRanking({...row,boardCapturedAt:'2026-10-24T00:00Z',researchForecast:{...row.researchForecast,modelSelection:null}},now),false);
 });

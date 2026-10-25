@@ -1,3 +1,4 @@
+import {retentionCutoff} from '../scripts/retention-policy.mjs';
 import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {basketballMarketCoverage} from '@/lib/basketball-market-coverage';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
@@ -498,7 +499,7 @@ async function buildNbaMarketRankingsRaw(
 
   const fallback=snapshots
    .flatMap((x:any)=>x.predictions||[])
-   .filter((x:any)=>x.status==="pending")
+   .filter((x:any)=>x.status==="pending"&&fallbackDays.includes(torontoNbaDay(x.gameTime||'')))
    .sort((a:any,b:any)=>
     new Date(a.gameTime||0).getTime()-new Date(b.gameTime||0).getTime()||
     Number(a.rank||999)-Number(b.rank||999)
@@ -609,19 +610,20 @@ import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-ma
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
 const recoveredCandidates=new Map<string,Promise<any[]>>();
-async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
+async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string;deferHistory?:(work:()=>Promise<any>)=>void}){
+ const persist=async(work:()=>Promise<any>)=>{if(options?.deferHistory){options.deferHistory(work);return;}await work();};
  const loaded=shared?.overview||await loadNbaOverview();
  const activeDay=activeNbaBoardDay(loaded.games||[]);
  const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===activeDay)?activeDay:undefined);
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
- const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day);
+ const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day,'nba',options?.deferHistory);
  if(frozen&&market==='first_basket'){
   // Fresh scorer prices for games that have not started are distinct from the
   // immutable daily model board. Never rewrite that board or backdate a price.
   const current=await buildNbaMarketRankingsRaw(market,{overview});
   const quotes=guardRankingPayload({...current,rows:(current.rows||[]).filter((r:any)=>Date.parse(r.gameTime)>Date.now())},'nba');
   const visible=publicNbaBoard(quotes);
-  if(visible.rows.length){await archiveResearchBoards('nba',[visible]);return {...visible,success:true,source:'Current pregame first-basket prices',boardFrozen:false};}
+  if(visible.rows.length){await persist(()=>archiveResearchBoards('nba',[visible]));return {...visible,success:true,source:'Current pregame first-basket prices',boardFrozen:false};}
  }
  if(frozen){
   // The old builder truncated before forecasting. Restore additional candidates
@@ -638,7 +640,7 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
     const key=row.gameId+'|'+row.playerId,old=candidates.get(key);
     if(!old||Date.parse(row.boardCapturedAt)>Date.parse(old.boardCapturedAt))candidates.set(key,row);
    }
-  });
+  },captureDay>=retentionCutoff());
   return [...candidates.values()];
   })().catch(e=>{recoveredCandidates.delete(recoveryKey);throw e});
    if(recoveredCandidates.size>=64)recoveredCandidates.delete(recoveredCandidates.keys().next().value!);
@@ -653,9 +655,9 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
   const visible=publicNbaBoard(await attachBasketballAvailability({...frozen,rows:[...frozen.rows,...extra]},'nba'));
   // Keep the restored display and grading ledger on the same exact decisions.
   // This is a separate repair record; never overwrite the original daily board.
-  if(visible.rows.some((r:any)=>r.recoveredRecordedCandidate))await withHistoryLock('nba-restored-board|'+market+'|'+frozen.boardDay,()=>writeDurableHistory('nba','restored_slate_board_'+market,frozen.boardDay,[{
+  if(visible.rows.some((r:any)=>r.recoveredRecordedCandidate))await persist(()=>withHistoryLock('nba-restored-board|'+market+'|'+frozen.boardDay,()=>writeDurableHistory('nba','restored_slate_board_'+market,frozen.boardDay,[{
    version:1,day:frozen.boardDay,market,capturedAt:frozen.boardCapturedAt,lockAt:new Date(lockAt).toISOString(),restoredAt:new Date().toISOString(),rows:visible.rows
-  }]));
+  }])));
   return visible;
  }
  let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
@@ -664,9 +666,9 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
  // Archive the complete candidate pool, including honest abstentions, then
  // choose the supported Top 25 and persist exactly that public pregame board.
- await archiveResearchBoards('nba',[payload]);
+ await persist(()=>archiveResearchBoards('nba',[payload]));
  const selected=publicNbaBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])});
- return savePregameNbaSlateBoard(selected,overview.games||[],Date.now(),day);
+ return savePregameNbaSlateBoard(selected,overview.games||[],Date.now(),day,'nba',options?.deferHistory);
 }
 
 function publicNbaBoard(payload:any){
@@ -675,8 +677,8 @@ function publicNbaBoard(payload:any){
   verifiedQuoteCount:rows.filter((r:any)=>r.quoteVerified===true).length,modelSelectionCount:rows.filter((r:any)=>cardModelPick(r)).length};
 }
 
-export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string}){
+export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string;deferHistory?:(work:()=>Promise<any>)=>void}){
  const result=await rankingResponse('nba|'+market+'|'+(options?.day||''),()=>buildNbaMarketRankingsUncached(market,shared,options),Boolean(shared));
- if(result?.boardFrozen){updateTopPlayMarket('nba',result);await withHistoryLock('featured-nba-'+market,()=>writeDurableHistory('nba','featured_'+market,torontoNbaDay(new Date()),[{...result,featuredCapturedAt:new Date().toISOString()}]));}
+ if(result?.boardFrozen){updateTopPlayMarket('nba',result);const work=()=>withHistoryLock('featured-nba-'+market,()=>writeDurableHistory('nba','featured_'+market,torontoNbaDay(new Date()),[{...result,featuredCapturedAt:new Date().toISOString()}]));if(options?.deferHistory)options.deferHistory(work);else await work();}
  return result;
 }

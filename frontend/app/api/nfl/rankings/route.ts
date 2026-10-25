@@ -1,3 +1,4 @@
+import {independentFootballRankings} from '@/lib/football-slate-rankings';
 import {lockedNflBoard} from '@/lib/nfl-locked-board';
 import {publishFeaturedBoards} from '@/lib/research-capture';
 import {rankingSourceState} from '@/lib/ranking-source-state';
@@ -82,7 +83,7 @@ async function fetchOwlsRows(market:NflMarketKey){
  const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),market.startsWith('q1_')?getSgoSupplement('NFL'):Promise.resolve({data:[]})]);
  const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
  if(!primary&&!extra?.data?.length)throw Error('NFL book feeds are unavailable');
- return footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market]);
+ return footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now(),market.startsWith('q1_'));
 }
 
 async function resolvePlayer(name:string,teamName:string,matchup:string,schedule:any[]){
@@ -283,10 +284,10 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
 export async function GET(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
  if(!NFL_MARKETS.some(x=>x[0]===market))return rankingJson({success:false,error:"Unsupported NFL market"},{status:400});
+ let locked:any=null;
  try{
   const lockSchedule=await getEspnNflSchedule();
-  const locked=await lockedNflBoard(market,lockSchedule);
-  if(locked)return NextResponse.json(locked,{headers:{'Cache-Control':'no-store'}});
+  locked=await lockedNflBoard(market,lockSchedule);
   let providerError:string|null=null;
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market).catch(async(e)=>{
     providerError=e instanceof Error?e.message:String(e);
@@ -312,7 +313,7 @@ export async function GET(req:NextRequest){
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
    const game=matchupGame(schedule,row.matchup);
-   return {...footballQuoteFields(row),rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
+   return {...footballQuoteFields(row),market,rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
      const label=NFL_MARKETS.find(x=>x[0]===market)?.[2]||market;
      const edge=row.line!=null&&m.projection!=null?Number(m.projection)-Number(row.line):null;
      const edgeText=edge==null?"":` The model sits ${Math.abs(edge).toFixed(1)} ${edge>=0?"above":"below"} the current line.`;
@@ -339,7 +340,7 @@ export async function GET(req:NextRequest){
   const primaryDay=playableDays.includes(today)?today:(playableDays[0]||today);
   const nextDay=playableDays.find((d:string)=>d>primaryDay)||"";
   const priority=(r:any)=>{const day=easternDayKey(rowGameTime(r,schedule));return day===primaryDay?12:day===nextDay?3:0};
-  rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const ranked=rows.slice(0,25).map((r,i)=>({...r,rank:i+1}));
+  rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const ranked=independentFootballRankings(rows);
   // Storage is optional for rendering a fresh board, never for overwriting
   // historical records. Failed reads stay failed on the persistence path.
   const savedToday=await getNflPredictions(market,today).catch(e=>{
@@ -392,11 +393,11 @@ export async function GET(req:NextRequest){
   const merged:any[]=[...frozenStarted.filter((r:any)=>Number(r.rank)>=1&&Number(r.rank)<=25)];
   let futureIndex=0;
   const future=futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
-  for(let slot=1;slot<=25&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
+  for(let slot=1;slot<=75&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
   merged.sort((a:any,b:any)=>Number(a.rank)-Number(b.rank));
-  return rankingJson({...rankingSourceState(merged.length,providerError),providerError,degraded:Boolean(providerError),source:providerError?"Sach model watch + available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:merged,sportsbookOnly:merged.every(r=>r.marketBacked),validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}});
- }catch(e){console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
+  return rankingJson({...rankingSourceState(merged.length,providerError),providerError,degraded:Boolean(providerError),source:providerError?"Sach model watch + available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:independentFootballRankings(liveRows),sportsbookOnly:merged.every(r=>r.marketBacked),validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}},locked);
+ }catch(e){if(locked?.rows?.length)return NextResponse.json(locked,{headers:{'Cache-Control':'no-store'}});console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
 
-async function rankingJson(payload:any,init?:ResponseInit){const board=await attachFittedResearchForecasts(guardRankingPayload(payload,"nfl"),"nfl");after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
+async function rankingJson(payload:any,init?:ResponseInit,locked?:any){let board=await attachFittedResearchForecasts(guardRankingPayload(payload,"nfl"),"nfl");if(locked?.rows?.length){const slates=new Set(locked.lockedSlates);board={...board,lockedSlates:locked.lockedSlates,rows:[...locked.rows,...board.rows.filter((r:any)=>!slates.has(r.slateKey))]};}after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
 
