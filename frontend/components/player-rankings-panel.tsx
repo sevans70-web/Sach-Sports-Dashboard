@@ -1767,7 +1767,7 @@ export function PlayerRankingsPanel({
     nextGroup: string,
     nextMarket: string,
     nextSlate: CfbSlateKey = cfbSlate
-  ) => `${torontoDay()}|${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : "all"}`;
+  ) => `${torontoDay()}|${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : sport === "nba" ? nbaSlate : "all"}`;
 
   const restoreView = (nextGroup:string,nextMarket:string,nextSlate:CfbSlateKey=cfbSlate) => {
     const saved=rankingViewCache.get(viewCacheKey(nextGroup,nextMarket,nextSlate));
@@ -1777,7 +1777,7 @@ export function PlayerRankingsPanel({
   useEffect(()=>{
     if(!cards.length||cards.some(card=>card.market!==market.key))return;
     rankingViewCache.set(viewCacheKey(group.key,market.key,cfbSlate),{at:Date.now(),cards,dropped});
-  },[cards,dropped,sport,league,group.key,market.key,cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+  },[cards,dropped,sport,league,group.key,market.key,cfbSlate,nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const resetCfbMarketView = () => {
     // Set loading in the same render as the selected tab. The previous
@@ -1813,6 +1813,19 @@ export function PlayerRankingsPanel({
     resetCfbMarketView();
     setCfbSlate(key);
     restoreView(group.key,market.key,key);
+  };
+
+  const selectNbaSlate = (key: string) => {
+    if (sport !== "nba" || key === nbaSlate) return;
+    rankingRequestSeq.current += 1;
+    setCards([]);
+    setDropped([]);
+    setNbaBoardLabel("");
+    setError("");
+    setLoading(true);
+    setFull(false);
+    setShowDropped(false);
+    setNbaSlate(key);
   };
 
   const selectNflSlate = (key: CfbSlateKey) => {
@@ -1960,13 +1973,15 @@ export function PlayerRankingsPanel({
         group.markets[currentIndex - 1],
       ].filter(Boolean);
 
-      for (const item of neighbors) {
-        prefetchJson(`/api/${sport}/rankings?market=${encodeURIComponent(item.key)}`);
+      // NBA history recovery and roster loading are expensive. Prefetch only
+      // the next market, with the correct slate; never fan out concurrently.
+      for (const item of (sport === "nba" ? neighbors.slice(0,1) : neighbors)) {
+        prefetchJson(`/api/${sport}/rankings?market=${encodeURIComponent(item.key)}${sport === "nba" && nbaSlate !== "active" ? `&day=${nbaSlate}` : ""}`);
       }
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [sport, league, groupKey, market.key, cfbSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sport, league, groupKey, market.key, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   useEffect(() => {
@@ -1975,6 +1990,7 @@ export function PlayerRankingsPanel({
     const requestId = ++rankingRequestSeq.current;
     const requestedMarket = market.key;
     const requestedCfbSlate = cfbSlate;
+    const requestedNbaSlate = nbaSlate;
 
     let running=false;
     let retryTimer: ReturnType<typeof setTimeout> | undefined;
@@ -2134,7 +2150,8 @@ export function PlayerRankingsPanel({
           !alive ||
           requestId !== rankingRequestSeq.current ||
           requestedMarket !== market.key ||
-          (sport === "cfb" && requestedCfbSlate !== cfbSlate)
+          (sport === "cfb" && requestedCfbSlate !== cfbSlate) ||
+          (sport === "nba" && requestedNbaSlate !== nbaSlate)
         ) {
           return;
         }
@@ -2186,7 +2203,8 @@ export function PlayerRankingsPanel({
           alive &&
           requestId === rankingRequestSeq.current &&
           requestedMarket === market.key &&
-          (sport !== "cfb" || requestedCfbSlate === cfbSlate)
+          (sport !== "cfb" || requestedCfbSlate === cfbSlate) &&
+          (sport !== "nba" || requestedNbaSlate === nbaSlate)
         ) {
           setLoading(false);
         }
@@ -2416,7 +2434,7 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {sport==='nba'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NBA ranking slate">{[['active','Live / current slate'],['previous','Previous slate'],['today','Today'],['tomorrow','Tomorrow']].map(([key,label])=><button type="button" key={key} className={nbaSlate===key?styles.activeTab:''} onClick={()=>{setNbaSlate(key);setFull(false)}}>{label}</button>)}</div></div>:null}
+      {sport==='nba'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NBA ranking slate">{[['active','Live / current slate'],['previous','Previous slate'],['today','Today'],['tomorrow','Tomorrow']].map(([key,label])=><button type="button" key={key} className={nbaSlate===key?styles.activeTab:''} onClick={()=>selectNbaSlate(key)}>{label}</button>)}</div></div>:null}
 
       {config.groups.length > 1 ? (
         <div className={styles.tabsFrame}>
