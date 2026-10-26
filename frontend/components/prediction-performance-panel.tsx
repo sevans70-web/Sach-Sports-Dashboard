@@ -1,4 +1,5 @@
 "use client";
+import {fetchHistoryJson} from '@/lib/history-fetch';
 
 import { useEffect, useMemo, useState } from "react";
 import styles from "./prediction-performance.module.css";
@@ -252,11 +253,6 @@ function aggregateMlbHistory(payload: any, period: Period): PerformanceStat {
   };
 }
 
-async function fetchJson(url: string, signal: AbortSignal) {
-  const response = await fetch(url, { cache: "no-store", signal });
-  if (!response.ok) throw new Error(`Performance request failed: ${response.status}`);
-  return response.json();
-}
 
 function numberOrDash(value: number, connected: boolean) {
   return connected ? String(value) : "—";
@@ -379,31 +375,31 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     const controller = new AbortController();
     let alive = true;
 
-    let running=false;let refresh:number|undefined;let retryDelay=60000;
+    let running=false;let hasLoaded=false;let refresh:number|undefined;let retryDelay=60000;
     const run = async () => {
       if(running)return;
       running=true;
-      setLoading(true);
+      setLoading(!hasLoaded);
 
       try {
         const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
         const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
-        const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
-        if(payload.refreshing){retryDelay=5000;setHistoryRefreshing(true);}
+        const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
+        if(!alive)return;
+        const cloudUnavailable=payload.coverage?.errors?.some((error:string)=>error.startsWith('cloud:unavailable'));
+        retryDelay=payload.refreshing&&!cloudUnavailable?5000:60000;
+        setPartialHistory(payload.partial===true);setHistoryRefreshing(payload.refreshing===true&&!cloudUnavailable);
         if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
         if(!alive)return;
         setPartialHistory(payload.partial===true);
-        setHistoryRefreshing(payload.refreshing===true);retryDelay=payload.refreshing?5000:60000;
+        hasLoaded=true;
         setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
         setCategoryStat(normalizeStat(payload));
         setSavedRecords(payload.records||[]);
         setProbabilityAudit(payload.probabilityAccuracy||null);
       } catch {
         if (!alive) return;
-        setOverall(ZERO);
-        setCategoryStat(ZERO);
-        setSavedRecords([]);
-        setProbabilityAudit(null);
+        setHistoryRefreshing(false);
       } finally {
         running=false;
         if (alive) {setLoading(false);refresh=window.setTimeout(run,retryDelay);}
