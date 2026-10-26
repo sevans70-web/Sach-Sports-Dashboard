@@ -15,12 +15,13 @@ async function sleep(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function hit(base: string, path: string, timeoutMs = 120_000) {
+async function hit(base: string, path: string, timeoutMs = 120_000, method="GET") {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(`${base}${path}`, {
+      method,
       cache: "no-store",
       signal: controller.signal,
       headers: { "x-sach-history-scheduler": "1" },
@@ -140,6 +141,21 @@ export async function register() {
       ),
     );
   }, 20_000);
+
+  // Independent per-sport guards do not wait for the eight-sport capture loop.
+  // At most two guard requests run concurrently; HTTP routes also coalesce work.
+  const guards=new Set<string>(),guardLast=new Map<string,number>();let guardIndex=0;
+  const guardTimer=setInterval(()=>{
+    for(let count=0;count<SPORTS.length&&guards.size<2;count++){
+      const sport=SPORTS[guardIndex++%SPORTS.length];if(guards.has(sport)||Date.now()-(guardLast.get(sport)||0)<30_000)continue;
+      guards.add(sport);guardLast.set(sport,Date.now());
+      hit(base,`/api/history/safeguards?sport=${sport}`,240_000,"POST")
+       .then(()=>{})
+       .catch(error=>console.error('[sach-save]',sport,error instanceof Error?error.message:String(error)))
+       .finally(()=>guards.delete(sport));
+    }
+  },5000);
+  guardTimer.unref();
 
   globalThis.__sachHistoryScheduler.timer = setInterval(() => {
     runCycle(base, false).catch((error) =>

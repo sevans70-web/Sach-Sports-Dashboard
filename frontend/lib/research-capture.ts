@@ -1,3 +1,5 @@
+import {protectHistory} from '@/lib/protected-history';
+import {pregameCheckpointRows} from '@/lib/history-save-policy';
 import {captureFeaturedSelections} from '@/lib/featured-selection-capture';
 import {writeDurableHistory} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
@@ -22,6 +24,13 @@ export async function archiveResearchBoards(sport:string,boards:any[]){
 
 /** Shared by ranking routes and the independent all-sport scheduler. */
 export async function publishFeaturedBoards(sport:string,boards:any[]){
+ for(const board of boards){
+  const rows=pregameCheckpointRows(board);
+  for(const gameId of new Set(rows.map((r:any)=>String(r.gameId)))){
+   const evidence=rows.filter((r:any)=>String(r.gameId)===gameId);
+   await protectHistory(sport,'pregame_'+gameId+'_'+board.market,dashboardDay(evidence[0].gameTime),{kind:'pregame_checkpoint',gameId,market:board.market,checkpointAt:new Date().toISOString(),rows:evidence});
+  }
+ }
  for(const board of boards)updateTopPlayMarket(sport,board);
  await captureFeaturedSelections(sport,boards);
  await Promise.all(boards.filter(b=>b?.market&&Array.isArray(b.rows)).map(board=>writeDurableHistory(sport,'featured_'+board.market,dashboardDay(new Date()),[{...board,featuredCapturedAt:new Date().toISOString()}])));

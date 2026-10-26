@@ -49,7 +49,7 @@ export async function GET(req:NextRequest){
   return {...card,pick:null};
  });
  state.plays=distinctFeaturedPlayers(state.plays);
- after(async()=>{try{await saveFeaturedSelections(sport,state.plays,selectionDay)}catch(e){console.error("[featured save]",e)}});
+ state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay,Date.now(),work=>after(work));
  const presented={...state,plays:state.plays.map(card=>{const reportedOriginal=reportedFeaturedOriginal(sport,selectionDay,card.key);return reportedOriginal?{...card,pick:null,reportedOriginal}:card;})};
  return NextResponse.json(presented,{headers:{'Cache-Control':'no-store'}});
 }
