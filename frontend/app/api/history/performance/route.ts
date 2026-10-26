@@ -10,7 +10,7 @@ export async function GET(req:NextRequest){
   const data=await readSavedPerformance(sport,period),market=req.nextUrl.searchParams.get('market'),group=req.nextUrl.searchParams.get('group');
   const selected=data.records.filter(r=>(!market||r.market===market)&&(!group||historyGroup(r,sport)===group));
   const categories=Object.fromEntries([...new Set(data.records.map(r=>String(r.market)))].map(key=>[key,savedHistorySummary(data.records.filter(r=>r.market===key))]));
-  return NextResponse.json({success:data.coverage.complete,connected:data.coverage.complete,sport,period,readOnly:true,researchSummary:savedHistorySummary(selected),overallSummary:data.summary,categories,coverage:data.coverage,
+  return NextResponse.json({success:data.records.length>0||data.coverage.complete,connected:data.records.length>0||data.coverage.complete,partial:!data.coverage.complete,sport,period,readOnly:true,researchSummary:savedHistorySummary(selected),overallSummary:data.summary,categories,coverage:data.coverage,
    // Preserve the saved call and grade. These are historical forecasts, not newly validated picks.
    records:selected.sort((a,b)=>String(b.gameTime||b.savedAt).localeCompare(String(a.gameTime||a.savedAt))).map(r=>({key:r.key,playerName:r.playerName,market:r.market,gameDate:Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate,storedGameDate:r.gameDate,gameTime:r.gameTime,savedAt:r.savedAt,pick:r.pickSide||r.pick||null,line:r.sportsbookLine??null,projection:r.modelProjection??null,actual:r.actual??null,status:r.status,gradedAt:r.gradedAt,legacyResult:r.legacyResult||null})),
    updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});

@@ -1,5 +1,5 @@
-import {cloudConfigured} from '../scripts/history-cloud.mjs';
-import {cloudHistoryDocuments} from '@/lib/cloud-history';
+import {cloudConfigured,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
+
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {historyRoot} from '@/lib/durable-history';
@@ -33,7 +33,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const availableDates=new Set<string>();
  for(const name of names){
   const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
-  if(!date||name.startsWith('slate_board_')||name.startsWith('restored_slate_board_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
+  if(!date||name.startsWith('featured_')||name.startsWith('player_history_')||name.startsWith('slate_board_')||name.startsWith('restored_slate_board_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
   try{
    const data=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));
    if(sport==='mlb')rows.push(...mlbAdminSnapshot(data,date));
@@ -41,7 +41,8 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
    files++;
   }catch{errors.push(name);}
  }
- const documents=await cloudHistoryDocuments(sport);
+ let documents:any[]=[];
+ if(cloudConfigured())try{const remote=await listCloudPerformanceDocuments(sport);documents=remote.rows;errors.push(...remote.errors.map((x:string)=>'cloud:'+x));}catch{errors.push('cloud:unavailable');}
  const cloudRows:any[]=[];
  for(const doc of documents){
   if(sport==='mlb'&&doc.stream==='performance')cloudRows.push(...mlbAdminSnapshot(doc.payload,doc.game_date));
