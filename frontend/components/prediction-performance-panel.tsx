@@ -342,6 +342,17 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryOpen, setCategoryOpen] = useState(true);
   const researchView=sport!=="soccer";
   const [savedRecords,setSavedRecords]=useState<any[]>([]);
+  const [featured,setFeatured]=useState<any>(null);
+  const [featuredError,setFeaturedError]=useState(false);
+  useEffect(()=>{
+    const controller=new AbortController();
+    setFeatured(null);setFeaturedError(false);
+    fetch("/api/featured-performance?sport="+sport+"&period="+period,{cache:"no-store",signal:controller.signal})
+      .then(r=>{if(!r.ok)throw Error("History unavailable");return r.json()})
+      .then(data=>{if(!controller.signal.aborted)setFeatured(data)})
+      .catch(()=>{if(!controller.signal.aborted)setFeaturedError(true)});
+    return()=>controller.abort();
+  },[sport,period]);
 
   const activeCategory =
     categories.find((category) => category.key === categoryKey) || categories[0];
@@ -460,6 +471,36 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
       </section>
 
+      <section className={styles.categoryPanel} aria-label="Featured Picks Performance">
+        <div className={styles.categoryBody}>
+          <h2>⭐ Featured Picks Performance</h2>
+          <p>Original saved selections only · recorded results, not placed bets</p>
+          <div className={styles.summaryMetrics}>
+            {([["play","⭐ Play of the Day"],["value","💎 Best Value"],["first","🏀 First Basket"],["long","🚀 Long Shot"]] as const)
+              .filter(([key])=>key!=="first"||["nba","wnba","cbb"].includes(sport))
+              .map(([key,label])=>{
+                const stat=featured?.categories?.[key];
+                return <article className={styles.metricCard} key={key}>
+                  <div className={styles.metricCopy}><span>{label}</span>
+                  <strong>{stat?.hitRate!=null?String(stat.hitRate)+"%":"—"}</strong>
+                  <small>{stat?stat.hits+" wins · "+stat.misses+" losses · "+stat.pending+" pending":"Awaiting saved selections"}</small>
+                  </div>
+                </article>;
+              })}
+          </div>
+          {featuredError?<p>Featured history could not be verified; no results assumed.</p>:null}
+          {featured?.records?.length?<details><summary>View saved featured selections ({featured.records.length})</summary>
+            <div style={{maxHeight:440,overflow:"auto"}}>
+              {featured.records.map((r:any,i:number)=><article key={r.day+"|"+r.key+"|"+i} style={{padding:"10px 0",borderBottom:"1px solid #454036"}}>
+                <strong>{r.playerName}</strong>
+                <p>{r.day} · {r.key==="play"?"Play of the Day":r.key==="value"?"Best Value":r.key==="first"?"First Basket":"Long Shot"} · {String(r.market).replaceAll("_"," ")}</p>
+                <p>{r.side||"No direction"} {r.line??""} · {r.sportsbook||"Sportsbook not recorded"} {r.odds!=null?"· "+(r.odds>0?"+":"")+r.odds:""}</p>
+                <p>{String(r.status).toUpperCase()}{r.actual!=null?" · Actual "+r.actual:""}</p>
+              </article>)}
+            </div>
+          </details>:<p>{featured?"No saved featured selections found for this period.":"Checking saved featured selections…"}</p>}
+        </div>
+      </section>
       <section className={styles.categoryPanel}>
         <button
           type="button"
