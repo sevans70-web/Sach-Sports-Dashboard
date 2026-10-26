@@ -1,7 +1,8 @@
 import {predictionAccuracy,predictionProbability} from '@/lib/prediction-probability';
 import {performanceView} from '@/lib/performance-view';
+import {schedulePerformanceRecovery} from '@/lib/performance-recovery-scheduler';
 import {dashboardDay} from '@/lib/dashboard-contract';
-import {after,NextRequest,NextResponse} from 'next/server';
+import {NextRequest,NextResponse} from 'next/server';
 import {HISTORY_SPORTS,HISTORY_PERIODS,savedHistorySummary,historyGroup} from '@/lib/saved-performance';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -9,7 +10,7 @@ export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'nba',period=req.nextUrl.searchParams.get('period')||'Today';
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport)||!(HISTORY_PERIODS as readonly string[]).includes(period))return NextResponse.json({success:false,error:'Unsupported history scope'},{status:400});
  try{
-  const data=await performanceView(sport,period,after),market=req.nextUrl.searchParams.get('market'),group=req.nextUrl.searchParams.get('group'),league=sport==='soccer'?req.nextUrl.searchParams.get('league'):null;
+  const data=await performanceView(sport,period,schedulePerformanceRecovery),market=req.nextUrl.searchParams.get('market'),group=req.nextUrl.searchParams.get('group'),league=sport==='soccer'?req.nextUrl.searchParams.get('league'):null;
   const scopedRecords=data.records.filter(r=>!league||r.league===league);
   const selected=scopedRecords.filter(r=>(!market||r.market===market)&&(!group||historyGroup(r,sport)===group));
   const categories=Object.fromEntries([...new Set(scopedRecords.map(r=>String(r.market)))].map(key=>[key,savedHistorySummary(scopedRecords.filter(r=>r.market===key))]));
