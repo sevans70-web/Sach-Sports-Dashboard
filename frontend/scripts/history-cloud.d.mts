@@ -7,3 +7,4 @@ export function readCloudDocument(sport:string,stream:string,day:string):Promise
 export function listCloudDocuments(sport:string):Promise<any[]>;
 
 export function readCloudDocumentsForDay(sport:string,streams:string[],day:string):Promise<any[]>;
+export function listCloudPerformanceDocuments(sport:string):Promise<{rows:any[];errors:string[]}>;

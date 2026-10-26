@@ -24,3 +24,9 @@ test('periods follow the fixture day rather than the earlier day the forecast wa
  assert.equal((await readSavedPerformance('nfl','Today',new Date('2026-10-24T15:00Z'),root)).summary.total,0);
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('failed cloud history cannot erase genuine local graded records or masquerade as complete coverage',async()=>{
+ const root=await mkdtemp(path.join(tmpdir(),'sach-history-failed-cloud-')),oldFetch=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;
+ try{process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';globalThis.fetch=async()=>Response.json({error:'down'},{status:503});await mkdir(path.join(root,'nba'));await writeFile(path.join(root,'nba','points_2026-10-25.json'),JSON.stringify([{key:'real',market:'points',status:'hit',actual:0,gameDate:'2026-10-25'}]));const result=await readSavedPerformance('nba','Today',new Date('2026-10-25T20:00Z'),root);assert.equal(result.records[0].actual,0);assert.equal(result.summary.hits,1);assert.equal(result.coverage.complete,false);assert.ok(result.coverage.errors.includes('cloud:unavailable'));
+ }finally{globalThis.fetch=oldFetch;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldKey===undefined)delete process.env.SUPABASE_SECRET_KEY;else process.env.SUPABASE_SECRET_KEY=oldKey;await rm(root,{recursive:true,force:true});}
+});

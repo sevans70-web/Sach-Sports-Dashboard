@@ -344,6 +344,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [savedRecords,setSavedRecords]=useState<any[]>([]);
   const [featured,setFeatured]=useState<any>(null);
   const [featuredError,setFeaturedError]=useState(false);
+  const [partialHistory,setPartialHistory]=useState(false);
   useEffect(()=>{
     const controller=new AbortController();
     setFeatured(null);setFeaturedError(false);
@@ -387,6 +388,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}`,controller.signal);
           if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
           if(!alive)return;
+          setPartialHistory(payload.partial===true);
           setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
           setCategoryStat(normalizeStat(payload));
           setSavedRecords(payload.records||[]);
@@ -484,6 +486,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         </h2>
 
         {researchView ? <p>Saved forecast history · original calls and recorded results. Historical grades do not imply validated picks.</p> : null}
+      {partialHistory?<p>Some archived results could not be loaded. Totals cover the verified records currently available.</p>:null}
         {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
