@@ -60,3 +60,14 @@ All eight performance-page integrations now use the shared reader, retaining Soc
 league filter. Official-result selection prefers the most recently observed final over
 an older protected first-final receipt, so later authenticated corrections can survive.
 362 tests and the updated production build passed before release.
+
+## October 26 follow-up — local response before cloud recovery
+
+Recovered on a separate worktree based on PR70 production commit563a708; prior worktree preserved.
+First response skips cloud and live-stat waits; background recovery has a20-second cloud deadline.
+All363 tests and production build passed again. Deployment and live loading remain unverified.
+Supabase diagnosis: project reports ACTIVE_HEALTHY, but SQL/advisor tools timed out.
+Recent PostgREST logs now show PGRST003 connection-pool acquisition timeout and HTTP504
+for history reads/archive RPCs; prior PGRST002 history alone is insufficient to explain current state.
+No restart, pause, termination, data deletion or further timeout changes performed.
+Tracker: https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit
