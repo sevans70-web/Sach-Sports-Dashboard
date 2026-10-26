@@ -1,3 +1,4 @@
+import {estimatedEv} from '@/lib/estimated-ev';
 import {refreshNbaObservations} from '@/lib/live-basketball-observations';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -109,7 +110,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);
   data={...data,observations:[...merged.values()]};
  }
- const rows=payload.rows.map((r:any)=>({...r,researchForecast:nbaRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now)}));
+ const rows=payload.rows.map((r:any)=>({...r,researchForecast:nbaRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now)})).map((row:any)=>({...row,estimatedEv:estimatedEv(row,now)}));
  return {...payload,rows,fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast.status==='available').length,
   modelSelectionCount:rows.filter((r:any)=>r.researchForecast.modelSelection!=null).length};
 }

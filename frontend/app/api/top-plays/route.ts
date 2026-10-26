@@ -1,3 +1,4 @@
+import {estimatedEv} from '@/lib/estimated-ev';
 import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {distinctFeaturedPlayers} from '@/lib/top-plays';
 import {retainedTopPlays} from '@/lib/retained-top-plays';
@@ -50,7 +51,7 @@ export async function GET(req:NextRequest){
  });
  state.plays=distinctFeaturedPlayers(state.plays);
  state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay,Date.now(),work=>after(work));
- const presented={...state,plays:state.plays.map(card=>{const reportedOriginal=reportedFeaturedOriginal(sport,selectionDay,card.key);return reportedOriginal?{...card,pick:null,reportedOriginal}:card;})};
+ const presented={...state,plays:state.plays.map(card=>{const reportedOriginal=reportedFeaturedOriginal(sport,selectionDay,card.key);return reportedOriginal?{...card,pick:null,reportedOriginal}:card.pick?{...card,pick:{...card.pick,row:{...card.pick.row,estimatedEv:estimatedEv(card.pick.row)}}}:card;})};
  return NextResponse.json(presented,{headers:{'Cache-Control':'no-store'}});
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
@@ -185,7 +186,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
       {row.frozen?<span className="locked">LOCKED AT KICKOFF</span>:null}
     </div>
-    <div className="rankGi"><span>GI SCORE</span><strong>{Number(row.giScore||0).toFixed(1)}</strong></div>
+    <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>{open?"ⓘ Hide Intelligence":"ⓘ View Intelligence"}</button>
     {open?<div className="detail">
       <div><span>CONFIDENCE</span><b>{row.modelProbability!=null?`${Number(row.modelProbability).toFixed(1)}%`:"—"}</b></div>
@@ -194,7 +195,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       <div><span>POSITION</span><b>{row.position||"—"}</b></div>
       <section><span>SACH PREDICTION</span><strong>{proj}</strong>{row.projectionGames?<small>Recent sample: {row.projectionGames} games</small>:null}</section>
       <p>{row.summary}</p>
-      <Link href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&gi=${row.giScore}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link>
+      <Link href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link>
     </div>:null}
   </article>;
 }

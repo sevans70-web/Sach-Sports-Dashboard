@@ -1,4 +1,5 @@
 "use client";
+import {estimatedEv,estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 
 import Link from "next/link";
 import {gameIntelligence,propIntelligence,gameRankingEvidence,gameRankingMatches,gameRankingTeam} from "@/lib/card-intelligence";
@@ -327,7 +328,8 @@ function playerHref(
     line: String(row.sportsbookLine ?? ""),
     projection: String(supportedProjection ?? ""),
     projectionSource: supportedProjection==null?'':'fitted_model',
-    gi: String(row.giScore ?? ""),
+    gameId: String(row.gameId ?? ""),
+    quoteId: String((row as any).quoteId ?? ""),
     prob: String(row.modelProbability ?? ""),
     pick: supportedPick?.side || (row.recommendationEligible?row.prediction:'') || "",
     position: row.position || "",
@@ -635,8 +637,7 @@ async function fetchRankings(
       .filter((row) => gameMatchesRow(game, row))
       .sort(
         (a, b) =>
-          Number(b.giScore || 0) -
-          Number(a.giScore || 0)
+          (estimatedEv(b).percent??-Infinity)-(estimatedEv(a).percent??-Infinity)
       )
       .slice(0, 28);
 
@@ -680,8 +681,7 @@ async function fetchRankings(
       .filter((row) => gameMatchesRow(game, row))
       .sort(
         (a, b) =>
-          Number(b.giScore || 0) -
-          Number(a.giScore || 0)
+          (estimatedEv(b).percent??-Infinity)-(estimatedEv(a).percent??-Infinity)
       )
       .slice(0, 28);
 
@@ -728,8 +728,7 @@ async function fetchRankings(
     .filter((row) => gameMatchesRow(game, row))
     .sort(
       (a, b) =>
-        Number(b.giScore || 0) -
-        Number(a.giScore || 0)
+        (estimatedEv(b).percent??-Infinity)-(estimatedEv(a).percent??-Infinity)
     )
     .slice(0, 32);
 
@@ -815,10 +814,8 @@ function PlayerWatchCard({
         {row ? (
           <>
             <li>
-              GI{" "}
-              {row.giScore == null
-                ? "—"
-                : Number(row.giScore).toFixed(1)}
+              Estimated EV{" "}
+              {estimatedEvText(row)}
             </li>
             <li>
               {row.modelProjection == null
@@ -887,7 +884,7 @@ function TeamRankingTable({
         <span>Pos</span>
         <span>Line</span>
         <span>Baseline / forecast</span>
-        <span>GI</span>
+        <span>Estimated EV</span>
       </div>
 
       {rows.length ? (
@@ -924,9 +921,7 @@ function TeamRankingTable({
             </span>
 
             <strong>
-              {row.giScore == null
-                ? "—"
-                : Number(row.giScore).toFixed(1)}
+              {estimatedEvText(row)}
             </strong>
           </Link>
         ))
@@ -1550,12 +1545,8 @@ function ExpandedGame({
                     </span>
 
                     <em>
-                      GI{" "}
-                      {row.giScore == null
-                        ? "—"
-                        : Number(
-                            row.giScore
-                          ).toFixed(1)}
+                      Estimated EV{" "}
+                      {estimatedEvText(row)}
                     </em>
                     <small>{propIntelligence(row,sport,String(row.market||"")).face}</small>
                     <small>{row.researchOnly?"No pick available":row.prediction}</small>
@@ -1605,12 +1596,8 @@ function ExpandedGame({
                       </strong>
 
                       <em>
-                        GI{" "}
-                        {row.giScore == null
-                          ? "—"
-                          : Number(
-                              row.giScore
-                            ).toFixed(1)}
+                        Estimated EV{" "}
+                        {estimatedEvText(row)}
                       </em>
                     </Link>
                   );
