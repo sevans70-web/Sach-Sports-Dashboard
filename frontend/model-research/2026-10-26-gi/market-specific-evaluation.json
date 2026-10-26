@@ -1,0 +1,97 @@
+{
+  "modelId": "market-specific-exact-price-gi-evaluation-v2",
+  "evaluatedAt": "2026-10-26T12:38:05.526Z",
+  "sport": "nfl",
+  "cutoff": "2026-10-16T00:00:00Z",
+  "quotes": 639,
+  "calibrationRows": 271,
+  "calibrationFixtures": 31,
+  "laterForecasts": 110,
+  "laterFixtures": 11,
+  "fitReason": "market_specific_fits_required",
+  "artifacts": {
+    "receiving_yards": null,
+    "receptions": null,
+    "passing_yards": null,
+    "rushing_yards": null
+  },
+  "groups": [
+    {
+      "market": "passing_yards",
+      "calibrationRows": 46,
+      "calibrationFixtures": 30,
+      "fitReason": "insufficient_exact_price_calibration",
+      "positiveReturnLevels": 0,
+      "forecasts": 16,
+      "fixtures": 10,
+      "modelBrier": 0.20383174791914388,
+      "bookBrier": 0.24894134082175057,
+      "modelMae": 38.71066783868042,
+      "positiveGiOpportunities": 0,
+      "positiveGiMeanUnitReturn": null
+    },
+    {
+      "market": "receiving_yards",
+      "calibrationRows": 75,
+      "calibrationFixtures": 30,
+      "fitReason": "insufficient_exact_price_calibration",
+      "positiveReturnLevels": 0,
+      "forecasts": 31,
+      "fixtures": 11,
+      "modelBrier": 0.3110498591462657,
+      "bookBrier": 0.25067068782158913,
+      "modelMae": 22.24468546073326,
+      "positiveGiOpportunities": 0,
+      "positiveGiMeanUnitReturn": null
+    },
+    {
+      "market": "receptions",
+      "calibrationRows": 74,
+      "calibrationFixtures": 30,
+      "fitReason": "insufficient_exact_price_calibration",
+      "positiveReturnLevels": 0,
+      "forecasts": 31,
+      "fixtures": 11,
+      "modelBrier": 0.26615640244095395,
+      "bookBrier": 0.24161164685626688,
+      "modelMae": 1.7312416570958407,
+      "positiveGiOpportunities": 0,
+      "positiveGiMeanUnitReturn": null
+    },
+    {
+      "market": "rushing_yards",
+      "calibrationRows": 76,
+      "calibrationFixtures": 31,
+      "fitReason": "insufficient_exact_price_calibration",
+      "positiveReturnLevels": 0,
+      "forecasts": 32,
+      "fixtures": 11,
+      "modelBrier": 0.31014356096476126,
+      "bookBrier": 0.2510390347264641,
+      "modelMae": 18.48726777116982,
+      "positiveGiOpportunities": 0,
+      "positiveGiMeanUnitReturn": null
+    }
+  ],
+  "rejected": {
+    "fewer_than_three_same_season_team_appearances": 234,
+    "latest_passing_role_uncertain": 5,
+    "prior_workload_role_uncertain": 19
+  },
+  "giEnabled": false,
+  "publicPicksEnabled": false,
+  "sourceDataSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "quoteDataSha256": "df1f49cb722c55529a4256b2134e816478f584bf01b820421696420cbb26fc74",
+  "limitations": [
+    "Retrospective source revisions, not frozen historical vintages.",
+    "Provider graded-game discovery can omit ungraded games.",
+    "History main-line identity is documented route semantics, not an explicit per-change isMain field.",
+    "Provider change timestamps are original source observations; retrievedAt is today, not a claimed historical Sach capture.",
+    "Official outcomes verify identity and settlement, never select the sampled price.",
+    "Fixed models are reused without refitting against the newly collected prices.",
+    "The 48-hour settlement-availability convention is not a recovered provider publication timestamp.",
+    "Calibration and later evaluation are chronological, with all boundary-overlap opportunities excluded.",
+    "October 18 outcomes overlap earlier development inspections; this is not a fresh, untouched holdout.",
+    "This does not establish complete current role, injury or rotation evidence, prospective performance, bookmaker refund rules or public model approval."
+  ]
+}

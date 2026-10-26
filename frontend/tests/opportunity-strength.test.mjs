@@ -47,3 +47,10 @@ test('a single positive calibration level cannot manufacture midpoint GI ranking
  const artifact={version:1,trainedThrough:'2025-01-01',calibrationRows:271,fixtures:31,blocks:[{maximumExpectedReturn:.1,estimatedUnitReturn:-.1},{maximumExpectedReturn:1,estimatedUnitReturn:.06}],positiveReturnReference:Array(200).fill(.06),validatedForBetting:false};
  for(const edge of [.01,.2,.8]){const result=opportunityStrength(artifact,edge,'2026-01-01');assert.equal(result.score,null);assert.equal(result.reason,'GI_calibration_has_no_ranking_resolution');assert.equal(result.estimatedUnitReturn,edge<=.1?-.1:.06)}
 });
+test('different sports and markets cannot inflate GI calibration counts',()=>{
+ for(const group of ['nfl|receiving_yards','nba|points','cfb|passing_yards','nhl|shots','cbb|points','wnba|points','soccer|goals','mlb|hits']){const mixed=Array.from({length:300},(_,i)=>row(i,{group:i<150?'nfl|passing_yards':group}));assert.equal(fitOpportunityStrength(mixed,'2025-02-01').reason,'mixed_market_calibration');}
+ const legacy=Array.from({length:300},(_,i)=>row(i,{observationId:`nfl|${i<150?'passing_yards':'receiving_yards'}|g${i}`}));assert.equal(fitOpportunityStrength(legacy,'2025-02-01').artifact,null);
+});
+test('GI cannot cross markets or trust an unscoped legacy calibration',()=>{
+ const {artifact}=fitOpportunityStrength(Array.from({length:300},(_,i)=>row(i,{group:'nfl|passing_yards'})),'2025-02-01');assert.equal(artifact.group,'nfl|passing_yards');assert.ok(opportunityStrength(artifact,.2,'2026-01-01','nfl|passing_yards').score>0);assert.equal(opportunityStrength(artifact,.2,'2026-01-01','nba|points').reason,'GI_calibration_scope_unverified');assert.equal(opportunityStrength({...artifact,group:undefined},.2,'2026-01-01','nfl|passing_yards').score,null);
+});

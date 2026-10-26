@@ -3,7 +3,7 @@
  * never turn a season average, win probability or arbitrary weights into GI. */
 import {evaluatePrice,quoteProblem,forecastDistribution,type ExactQuote,type DistributionModel} from '@/lib/probability-forecast';
 import type {OpportunityGame} from '@/lib/opportunity-backtest';
-export type GiCalibrationRow={observationId:string;gameId:string;decisionAt:string;settledAt:string;expectedReturn:number;unitReturn:number};
+export type GiCalibrationRow={group?:string;observationId:string;gameId:string;decisionAt:string;settledAt:string;expectedReturn:number;unitReturn:number};
 /** Derive GI training targets from the same exact quote and official actual.
  * Saved hit/miss flags, old GI, season averages and caller ROI are ignored. */
 export function giCalibrationRow(target:OpportunityGame,quote:ExactQuote,values:number[],settledAt:string):GiCalibrationRow|null{
@@ -11,12 +11,15 @@ export function giCalibrationRow(target:OpportunityGame,quote:ExactQuote,values:
  const price=evaluatePrice(values,quote),side=price.overEv>=price.underEv?'OVER':'UNDER';
  const odds=side==='OVER'?quote.overPrice:quote.underPrice,win=side==='OVER'?target.actual>quote.line:target.actual<quote.line;
  const unitReturn=target.actual===quote.line?0:win?(odds>0?odds/100:100/-odds):-1;
- return {observationId:[quote.sport,quote.market,quote.gameId,quote.playerId,quote.bookmaker,quote.quoteId,quote.line].join('|'),gameId:target.gameId,decisionAt:quote.decisionAt,settledAt,expectedReturn:Math.max(price.overEv,price.underEv),unitReturn};
+ return {group:quote.sport+'|'+quote.market,observationId:[quote.sport,quote.market,quote.gameId,quote.playerId,quote.bookmaker,quote.quoteId,quote.line].join('|'),gameId:target.gameId,decisionAt:quote.decisionAt,settledAt,expectedReturn:Math.max(price.overEv,price.underEv),unitReturn};
 }
-export type GiArtifact={version:1;trainedThrough:string;calibrationRows:number;fixtures:number;
+export type GiArtifact={version:1;group?:string;trainedThrough:string;calibrationRows:number;fixtures:number;
  blocks:{maximumExpectedReturn:number;estimatedUnitReturn:number}[];positiveReturnReference:number[];
  validatedForBetting:false};
 export function fitOpportunityStrength(rows:GiCalibrationRow[],availableAt:string):{artifact:GiArtifact|null;reason:string|null}{
+ const groups=new Set(rows.map(row=>row.group||(/^(nfl|cfb|nba|wnba|cbb|nhl|soccer|mlb)\|/.test(row.observationId)?row.observationId.split('|').slice(0,2).join('|'):null)).filter(Boolean));
+ if(groups.size>1)return {artifact:null,reason:'mixed_market_calibration'};
+ const group=groups.size===1?[...groups][0]!:undefined;
  const at=Date.parse(availableAt);
  if(!Number.isFinite(at))throw Error('Invalid GI availability time');
  const ids=new Set<string>();for(const row of rows){if(!row.observationId||ids.has(row.observationId))throw Error('Missing or duplicate GI observation');ids.add(row.observationId)}
@@ -39,7 +42,7 @@ export function fitOpportunityStrength(rows:GiCalibrationRow[],availableAt:strin
  const mapping=blocks.map(b=>({maximumExpectedReturn:b.maximumExpectedReturn,estimatedUnitReturn:b.sum/b.weight}));
  const lookup=(value:number)=>mapping.find(b=>value<=b.maximumExpectedReturn)?.estimatedUnitReturn??mapping.at(-1)!.estimatedUnitReturn;
  const positiveReturnReference=sorted.map(r=>lookup(r.expectedReturn)).filter(r=>r>0).sort((a,b)=>a-b);
- return {artifact:{version:1,trainedThrough:new Date(rows.reduce((latest,r)=>Math.max(latest,Date.parse(r.settledAt)),0)).toISOString(),calibrationRows:rows.length,fixtures:counts.size,
+ return {artifact:{version:1,...(group?{group}:{}),trainedThrough:new Date(rows.reduce((latest,r)=>Math.max(latest,Date.parse(r.settledAt)),0)).toISOString(),calibrationRows:rows.length,fixtures:counts.size,
   blocks:mapping,positiveReturnReference,validatedForBetting:false},reason:null};
 }
 /** Complete experimental decision calculation from one frozen bookmaker quote.
@@ -55,7 +58,8 @@ export function researchOpportunityDecision(model:DistributionModel,history:Oppo
   candidatePick:price.candidateSide&&strength?.estimatedUnitReturn!=null&&strength.estimatedUnitReturn>=.03?price.candidateSide:null,
   candidateGi:strength?.score??null,reason:!gi?'GI_exact_price_calibration_missing':strength?.reason||(!price.candidateSide?'insufficient_probability_or_value':strength?.estimatedUnitReturn!=null&&strength.estimatedUnitReturn<.03?'insufficient_calibrated_return':null),validatedForBetting:false};
 }
-export function opportunityStrength(artifact:GiArtifact,expectedReturn:number,decisionAt:string){
+export function opportunityStrength(artifact:GiArtifact,expectedReturn:number,decisionAt:string,expectedGroup?:string){
+ if(expectedGroup&&artifact.group!==expectedGroup)return {score:null,estimatedUnitReturn:null,reason:'GI_calibration_scope_unverified'};
  const at=Date.parse(decisionAt),trained=Date.parse(artifact.trainedThrough);
  if(!Number.isFinite(at)||!Number.isFinite(trained)||at<=trained||!Number.isFinite(expectedReturn)||!artifact.blocks.length||artifact.blocks.some((b,i)=>!Number.isFinite(b.maximumExpectedReturn)||!Number.isFinite(b.estimatedUnitReturn)||i>0&&(b.maximumExpectedReturn<=artifact.blocks[i-1].maximumExpectedReturn||b.estimatedUnitReturn<artifact.blocks[i-1].estimatedUnitReturn))||artifact.positiveReturnReference.some(v=>!Number.isFinite(v)||v<=0))return {score:null,estimatedUnitReturn:null,reason:'GI_calibration_unavailable'};
  const estimate=artifact.blocks.find(b=>expectedReturn<=b.maximumExpectedReturn)?.estimatedUnitReturn??artifact.blocks.at(-1)!.estimatedUnitReturn;

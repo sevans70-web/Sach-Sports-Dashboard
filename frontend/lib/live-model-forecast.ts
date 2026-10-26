@@ -58,7 +58,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   const quote:ExactQuote={sport,market,period:market.startsWith('q1_')?'q1':'game',gameId:target.gameId,playerId:target.playerId,bookmaker:row.sportsbookKey,quoteId:row.quoteId,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,updatedAt:row.quoteUpdatedAt,capturedAt:row.capturedAt||new Date(now).toISOString(),decisionAt:new Date(now).toISOString(),mainLine:true};
   if(!quoteProblem(quote,target)){
    pricing=evaluatePrice(values,quote);
-   const artifact=data.gi[key];if(artifact)gi=opportunityStrength(artifact,Math.max(pricing.overEv,pricing.underEv),quote.decisionAt);
+   const artifact=data.gi[key];if(artifact)gi=opportunityStrength(artifact,Math.max(pricing.overEv,pricing.underEv),quote.decisionAt,key);
   }
  }
  // A directional model selection does not require a GI return-ranking fit.

@@ -29,7 +29,7 @@ test('WNBA workload models accept playoff fixture identity without borrowing the
  assert.equal(fittedResearchForecast({...wnbaRow,teamId:''},'wnba','points',wnbaData,now).reason,'wrong_pregame_context_identity');
 });
 test('GI requires exact fresh quote evidence and a prior calibration artifact',()=>{
- const artifact={version:1,trainedThrough:'2026-08-01',calibrationRows:300,fixtures:40,blocks:[{maximumExpectedReturn:.1,estimatedUnitReturn:.05},{maximumExpectedReturn:10,estimatedUnitReturn:.1}],positiveReturnReference:[.05,.1],validatedForBetting:false};
+ const artifact={version:1,group:'nfl|passing_yards',trainedThrough:'2026-08-01',calibrationRows:300,fixtures:40,blocks:[{maximumExpectedReturn:.1,estimatedUnitReturn:.05},{maximumExpectedReturn:10,estimatedUnitReturn:.1}],positiveReturnReference:[.05,.1],validatedForBetting:false};
  const withGi={...data,gi:{'nfl|passing_yards':artifact}};
  assert.equal(fittedResearchForecast(row,'nfl','passing_yards',withGi,now).giScore,null);
  const quoted={...row,quoteVersion:1,sportsbookKey:'book',sportsbook:'Book',quoteId:'q',lineType:'main',sportsbookLine:200.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:'2026-09-01T11:59:00Z',capturedAt:'2026-09-01T11:59:30Z'};
