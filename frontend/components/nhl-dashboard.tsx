@@ -1,4 +1,5 @@
 "use client";
+import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
@@ -61,7 +62,7 @@ function Card({row,market}:{row:Row;market:NhlMarketKey}){
       <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
     </div>
 
-    <div className="rankGi"><span>GI</span><strong>{fmt(row.giScore)}</strong></div>
+    <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
 
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Hide":"View"} Intelligence</button>
 
@@ -71,7 +72,7 @@ function Card({row,market}:{row:Row;market:NhlMarketKey}){
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount}</b></div>
       <div className="projectionBox"><span>SACH PREDICTION</span><strong>{prediction}</strong><small>Model projection: {projection}</small></div>
       <div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div>
-      <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&gi=${row.giScore}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup||"")}&gameTime=${encodeURIComponent(row.gameTime||"")}&status=${encodeURIComponent(row.gameStatus||"")}&books=${row.bookmakerCount}&summary=${encodeURIComponent(row.summary||"")}&photo=${encodeURIComponent(row.headshot||"")}&logo=${encodeURIComponent(row.teamLogo||"")}`}>Open full player card</Link>
+      <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup||"")}&gameTime=${encodeURIComponent(row.gameTime||"")}&status=${encodeURIComponent(row.gameStatus||"")}&books=${row.bookmakerCount}&summary=${encodeURIComponent(row.summary||"")}&photo=${encodeURIComponent(row.headshot||"")}&logo=${encodeURIComponent(row.teamLogo||"")}`}>Open full player card</Link>
     </div>:null}
   </article>
 }
@@ -166,7 +167,7 @@ export function NhlDashboard({data}:{data:NhlOverview}){
     <section className="section rankings">
       <div className="rankHeader"><h2>Player Rankings</h2><p>Model projections · matchup intelligence</p></div>
       <ScrollTabs>{NHL_MARKETS.map(([k,label])=><button className={market===k?"active":""} onClick={()=>{setMarket(k);setFull(false)}} key={k}>{label}</button>)}</ScrollTabs>
-      <div className="marketHead"><h2>{meta(market)[1]} Rankings</h2><p>GI combines the model projection, 2026 statistical baseline, matchup context and sample reliability.</p></div>
+      <div className="marketHead"><h2>{meta(market)[1]} Rankings</h2><p>Estimated EV compares model probabilities with the exact sportsbook payout. </p></div>
       {r.data.error?<div className="dataWarning">{r.data.error}</div>:null}
       <div className="cards">{(full?rows:rows.slice(0,5)).map(x=><Card row={x} market={market} key={`${x.playerId}-${x.rank}`}/>)}</div>
       {!r.loading&&!rows.length?<div className="empty">No verified {meta(market)[1]} rankings are currently available.</div>:null}

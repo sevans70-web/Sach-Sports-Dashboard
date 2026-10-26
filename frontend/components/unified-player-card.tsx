@@ -1,4 +1,5 @@
 "use client";
+import {SavedEstimatedEv} from '@/components/saved-estimated-ev';
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -294,7 +295,6 @@ export function UnifiedPlayerCard({
   const line = finite(query.line);
   const projection = first(query.projectionSource)==='fitted_model'
     ? finite(query.projection) : null;
-  const gi = finite(query.gi);
   const probability =
     finite(query.prob);
   const actual =
@@ -664,16 +664,8 @@ export function UnifiedPlayerCard({
         </div>
 
         <b>
-          {hasPrediction
-            ? `GI Score ${gi == null ? "Not calibrated" : fmt(gi)}${
-                probability != null
-                  ? ` · ${fmt(
-                      probability,
-                      0
-                    )}%`
-                  : ""
-              }`
-            : "Player Profile"}
+          Estimated EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined}/>
+
         </b>
       </section>
 

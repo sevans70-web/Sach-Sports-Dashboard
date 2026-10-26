@@ -1,4 +1,5 @@
 "use client";
+import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
 import Link from "next/link";
@@ -89,8 +90,8 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
       </div>
 
       <div className="origGi">
-        <small>GI SCORE</small>
-        <strong>{row.giScore.toFixed(1)}</strong>
+        <small>Estimated EV</small>
+        <strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong>
       </div>
 
       <button className="origIntel soccerIntelButton" onClick={() => setOpen((v) => !v)}>
@@ -107,7 +108,7 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
           <details open>
             <summary>Why this player?</summary>
             <p>
-              {row.why}. The GI score also considers expected minutes, starting reliability
+              {row.why}. The forecast also considers expected minutes, starting reliability
               and the upcoming matchup.
             </p>
           </details>
@@ -357,7 +358,7 @@ export function SoccerDashboard() {
         <div className="origMarketHead">
           <h2>{active[1]} {active[2]} Rankings</h2>
           <p>
-            Ranked by Soccer GI Score using recent production, expected minutes,
+            Soccer player research using recent production, expected minutes,
             starting reliability, sample quality and upcoming matchup context.
           </p>
         </div>

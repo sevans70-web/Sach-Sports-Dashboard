@@ -1,4 +1,5 @@
 "use client";
+import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
@@ -988,7 +989,7 @@ function PlayerCard({
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
   const displayedPick=modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction);
-  const researchGiReason=fittedForecast?.giScore!=null?"Opportunity strength from historical quoted returns; not a win probability.":fittedForecast?.giReason==='GI_calibration_has_no_ranking_resolution'?"GI unavailable: historical calibration cannot yet distinguish opportunity strength.":fittedForecast?.giReason==='price_validation_failed'?"This market failed the later-game price check; GI remains withheld.":fittedForecast?.giReason==='GI_exact_price_calibration_missing'?"Historical exact-price calibration is still missing for this market.":intelligence.giReason;
+  const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
@@ -1059,8 +1060,8 @@ function PlayerCard({
         </div>
 
         {!firstBasket?<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
-          <span>GI Score</span>
-          <strong title={researchOnly?researchGiReason:undefined}>{['nfl','cfb'].includes(sport)?'—':shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
+          <span>Estimated EV</span>
+          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
         </div>:null}
       </div>
 
@@ -1125,8 +1126,8 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>GI Score</span>
-          <strong className={researchOnly?styles.unvalidatedMetric:undefined} title={researchOnly?"GI needs calibrated return evidence; win probability is a separate measure.":undefined}>{['nfl','cfb'].includes(sport)?'Not calibrated':fittedForecast?.giScore!=null?shortNumber(fittedForecast.giScore):researchOnly?'—':shortNumber(card.giScore)}</strong>
+          <span>Estimated EV</span>
+          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
         </div>
         </>}
       </div>
@@ -1134,7 +1135,7 @@ function PlayerCard({
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
-          {!firstBasket&&!quarterTarget&&researchOnly&&fittedForecast?.giScore==null?<p>{researchGiReason}</p>:null}
+          {!firstBasket&&!quarterTarget?<p>{evNotice}</p>:null}
           <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
@@ -1250,9 +1251,9 @@ function PlayerCard({
               </strong>
             </div>
             <div>
-              <b>GI</b>
-              <span>{fittedForecast?.giScore!=null?'Experimental score':'Score'}</span>
-              <strong title={researchOnly?researchGiReason:undefined}>{['nfl','cfb'].includes(sport)?'—':shortNumber(fittedForecast?.giScore??card.giScore)}</strong>
+              <b>EV</b>
+              <span>Estimated return</span>
+              <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
             </div>
             </>}
           </div>

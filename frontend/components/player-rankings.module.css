@@ -346,11 +346,12 @@
 .gi strong {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  min-width: 68px;
+  height: 36px;
+  padding: 0 5px;
   margin: 2px auto 0;
-  border: 3px solid var(--green);
-  border-radius: 50%;
+  border: 1px solid var(--green);
+  border-radius: 8px;
   color: #fff;
   font-size: 14px;
 }
@@ -945,8 +946,8 @@
   }
 
   .gi strong {
-    width: 36px;
-    height: 36px;
+    min-width: 64px;
+    height: 32px;
     font-size: 12px;
   }
 
