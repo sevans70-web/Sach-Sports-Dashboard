@@ -1,3 +1,4 @@
+import {performanceView} from '@/lib/performance-view';
 import {featuredHistoryDays} from '@/lib/featured-history-days';
 import {withHistoryLock} from '@/lib/history-lock';
 import {officialFeaturedResult} from '@/lib/featured-official-result';
@@ -16,7 +17,7 @@ export async function GET(req:NextRequest){
  try{
   const [featuredDays,history]=await Promise.all([
    featuredHistoryDays(sport,days),
-   ['mlb','soccer'].includes(sport)?Promise.resolve({records:[],coverage:{complete:false}}):readSavedPerformance(sport,period).catch(()=>({records:[],coverage:{complete:false}}))
+   ['mlb','soccer'].includes(sport)?Promise.resolve({records:[],coverage:{complete:false}}):performanceView(sport,period,after).catch(()=>({records:[],coverage:{complete:false}}))
   ]);
   const observations=new Map<string,Promise<any>>();
   const official=(row:any)=>{
