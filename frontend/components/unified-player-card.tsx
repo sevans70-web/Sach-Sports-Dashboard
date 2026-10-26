@@ -295,8 +295,7 @@ export function UnifiedPlayerCard({
   const line = finite(query.line);
   const projection = first(query.projectionSource)==='fitted_model'
     ? finite(query.projection) : null;
-  const probability =
-    finite(query.prob);
+  const probability = null;
   const actual =
     finite(query.actual);
 
@@ -664,7 +663,7 @@ export function UnifiedPlayerCard({
         </div>
 
         <b>
-          Estimated EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined}/>
+          Model probability <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined}/> · Estimated EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined}/>
 
         </b>
       </section>

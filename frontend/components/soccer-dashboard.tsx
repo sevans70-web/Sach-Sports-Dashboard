@@ -1,4 +1,5 @@
 "use client";
+import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
@@ -81,7 +82,7 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
           <b>Sach Prediction:</b> {row.projection==null?"—":row.projection.toFixed(2)} {unit}
         </div>
         <div className="origProp">
-          <b>Confidence:</b> {pct(row.modelProbability)}
+          <b>Model probability:</b> {predictionProbabilityText(row)}
         </div>
         <p>{row.why}</p>
         <div className="soccerStatus">

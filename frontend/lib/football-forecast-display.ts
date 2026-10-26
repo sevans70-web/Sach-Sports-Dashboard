@@ -1,3 +1,4 @@
+import {predictionProbability} from '@/lib/prediction-probability';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
 /** Display a forecast direction separately from validated betting eligibility.
@@ -13,7 +14,8 @@ export function footballForecastDisplay(row:any,now=Date.now()){
  const line=typeof row?.sportsbookLine==='number'&&Number.isFinite(row.sportsbookLine)?row.sportsbookLine:null;
  const quote=verifiedPropQuote(row,now,row?.boardFrozen===true);
  const side=saved?.side||(projection!=null&&line!=null&&quote&&pregameEvidence&&row.lineType==='main'?(projection>line?'OVER':projection<line?'UNDER':'AT LINE'):null);
- const probability=side==='OVER'?f?.priceComparison?.overProbability:side==='UNDER'?f?.priceComparison?.underProbability:null;
+ const evidence=predictionProbability(row,now);
+ const probability=evidence&&evidence.side===side?evidence.win:null;
  return {projection,side,basis:fitted!=null?'Model forecast':baseline!=null?'History-based estimate':null,
   probability:typeof probability==='number'&&Number.isFinite(probability)?probability*100:null,
   validated:row?.recommendationEligible===true};

@@ -1,4 +1,5 @@
 "use client";
+import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 /* eslint-disable @next/next/no-img-element */
@@ -44,7 +45,7 @@ function predictionText(row:Row,market:WnbaMarketKey){
 function Card({row,market}:{row:Row;market:WnbaMarketKey}){
   const[open,setOpen]=useState(false);
   const prediction=predictionText(row,market);
-  const confidence=row.modelProbability==null?"—":`${fmt(row.modelProbability)}%`;
+  const confidence=predictionProbabilityText(row);
 
   return <article className="rankCard">
     <div className="rankNo">#{row.rank}<span className={`move ${row.movement||"same"}`}>{row.movement==="new"?"NEW":row.movement==="up"?`↑ ${Math.max(1,Number(row.previousRank||row.rank)-row.rank)}`:row.movement==="down"?`↓ ${Math.max(1,row.rank-Number(row.previousRank||row.rank))}`:"−"}</span></div>
@@ -57,7 +58,7 @@ function Card({row,market}:{row:Row;market:WnbaMarketKey}){
       {row.gameState==="in"?<div className="liveProgress"><b>● LIVE</b><span>{row.gameStatus||"In progress"}</span></div>:row.gameState==="post"?<p className="finalResult"><b>FINAL</b><span>Final stat grading updates from saved prediction history.</span></p>:null}
 
       <p className="projectionLine"><b>Sach Prediction:</b> {prediction}</p>
-      <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
+      <p className="confidenceLine"><b>Model probability:</b> {confidence}</p>
     </div>
 
     <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
@@ -65,7 +66,7 @@ function Card({row,market}:{row:Row;market:WnbaMarketKey}){
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Hide":"View"} Intelligence</button>
 
     {open?<div className="detail">
-      <div className="detailMetric green"><span>CONFIDENCE</span><b>{confidence}</b></div>
+      <div className="detailMetric green"><span>MODEL PROBABILITY</span><b>{confidence}</b></div>
       <div className="detailMetric"><span>REFERENCE LINE</span><b>{row.sportsbookLine??"—"}</b></div>
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount}</b></div>
       <div className="projectionBox"><span>SACH PREDICTION</span><strong>{prediction}</strong></div>

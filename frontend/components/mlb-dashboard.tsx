@@ -1,4 +1,5 @@
 "use client";
+import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 import Link from "next/link";
@@ -82,7 +83,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
   const gi=estimatedEvText(row), team=String(row.team_abbreviation||row.team_name||"MLB"),opp=String(row.opponent_abbreviation||row.opponent_name||"");
   const teamId=Number((row as any).team_id||(row as any).teamId||0);
   const logo=teamId?`https://www.mlbstatic.com/team-logos/${teamId}.svg`:String((row as any).team_logo_url||"");
-  const probability=percentValue(row.home_run_probability??row.hr_probability??row.probability),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
+  const probability=predictionProbabilityText(row),projection=numberValue(row.projection,1),pitcherName=String(row.opposing_probable_pitcher||row.probable_pitcher||"");
   const confirmed=row.lineup_confirmed===true||Boolean(resultRow?.lineup_confirmed);
   const gameTime=String(game?.startTime||(row as any).game_time||"");
   const summary=String((row as any).summary||(row as any).reason||(row as any).intelligence_summary||(pitcher?"Ranked by workload, season rates, matchup and sample reliability.":"Estimated EV requires supported probabilities and verified sportsbook odds."));
@@ -99,7 +100,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
     <div className="origRank">#{Number(row.rank||0)||"—"}{movementLabel(row)}</div>
     <div className="origPhotoWrap"><img className="origHeadshot" src={image} alt=""/>{logo?<img className="origTeamLogo" src={logo} alt=""/>:null}</div>
     <div className="origRankBody"><strong className="origName">{name}</strong><div className="origMatch">{team}{opp?` vs. ${opp}`:""}</div>{gameTime?<div className="origGameTime">🕒 {gameTime}</div>:null}
-      {pitcher?<><div className="origProp"><b>Projection:</b> {pitcherProjectionLabel(projection,marketKey)}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>HR Probability:</b> {probability}</div></>}
+      {pitcher?<><div className="origProp"><b>Projection:</b> {pitcherProjectionLabel(projection,marketKey)}</div></>:<><div className="origProp">{pitcherName?<>vs. <b>{pitcherName}</b></>:null}</div><div className="origProp"><b>Model probability:</b> {probability}</div></>}
       <p>{summary}</p>
       {!pitcher&&confirmed?<span className="confirmed">✓ Confirmed lineup{row.batting_order?` · #${row.batting_order}`:""}</span>:!pitcher&&!isLive&&!isFinal?<span className="confirmed pendingLineup">Lineup Pending</span>:null}
       {isFinal||isLive?<div className="origResultBlock">
