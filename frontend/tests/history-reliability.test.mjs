@@ -54,3 +54,11 @@ test('an older duplicated final cannot reverse a more recent official correction
  const r={gameDate:'2026-10-25',gameId:'g',playerId:'p',market:'points',sportsbookLine:10.5,pickSide:'OVER',status:'hit',actual:12,verifiedResult:true,resultSource:'official_final_boxscore',gradedAt:'2026-10-26T12:00Z'};
  const older={...r,status:'miss',actual:9,gradedAt:'2026-10-26T11:00Z'};assert.equal(reconcilePerformanceRecords([r,older]).records[0].actual,12);
 });
+
+test('first history response remains local when cloud is configured but unresponsive',async()=>{
+ const root=await mkdtemp(path.join(tmpdir(),'sach-cloud-first-')),oldFetch=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;let calls=0;
+ process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';globalThis.fetch=async()=>{calls++;throw Error('cloud should run after the response');};
+ const now=new Date(),day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+ try{await mkdir(path.join(root,'nfl'));await writeFile(path.join(root,'nfl',`passing_yards_${day}.json`),JSON.stringify([{key:'saved',gameDate:day,market:'passing_yards',status:'hit',actual:0}]));const data=await readSavedPerformance('nfl','Today',now,root,{observe:false,cloud:false});assert.equal(calls,0);assert.equal(data.records[0].actual,0);assert.equal(data.summary.hits,1);assert.equal(data.coverage.complete,false);assert.deepEqual(data.coverage.errors,['cloud:checking']);}
+ finally{globalThis.fetch=oldFetch;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldKey===undefined)delete process.env.SUPABASE_SECRET_KEY;else process.env.SUPABASE_SECRET_KEY=oldKey;await rm(root,{recursive:true,force:true});}
+});

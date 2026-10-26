@@ -389,6 +389,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
         const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
         const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
+        if(payload.refreshing){retryDelay=5000;setHistoryRefreshing(true);}
         if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
         if(!alive)return;
         setPartialHistory(payload.partial===true);

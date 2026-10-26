@@ -38,9 +38,10 @@ async function sourceDocument(file:string){
  return work;
 }
 /** Original saved calls only. Provider reconciliation may run after the response. */
-export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean}={}){
+export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean;cloud?:boolean}={}){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
- const remoteWork=cloudConfigured()?listCloudPerformanceDocuments(sport).catch(()=>({rows:[] as any[],errors:['unavailable']})):Promise.resolve({rows:[] as any[],errors:[] as string[]});
+ const startedAt=Date.now();
+ const remoteWork=cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):listCloudPerformanceDocuments(sport).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
@@ -62,9 +63,10 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  for(let i=0;i<selected.length;i+=4){const batch=await Promise.all(selected.slice(i,i+4).map(async name=>{try{return {name,payload:await sourceDocument(path.join(directory,name))}}catch{return {name,error:true}}}));
   for(const item of batch){if(item.error){errors.push(item.name);continue;}try{const date=item.name.match(/(\d{4}-\d{2}-\d{2})\.json$/)![1],stream=item.name.replace(/_?\d{4}-\d{2}-\d{2}\.json$/,'')||'performance';consume(item.payload,stream,date);files++;}catch{errors.push(item.name);}}
  }
- const remote=await remoteWork;errors.push(...remote.errors.map((x:string)=>'cloud:'+x));
+ const localFinishedAt=Date.now(),remote=await remoteWork,cloudFinishedAt=Date.now();errors.push(...remote.errors.map((x:string)=>'cloud:'+x));
  for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push('cloud:'+doc.stream+'|'+doc.game_date);}
  const reconciled=reconcilePerformanceRecords(rows);
  const records=await observeSavedResearch(reconciled.records.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
+ if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
  return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date)])].sort(),cloudDocuments:remote.rows.length,errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
 }
