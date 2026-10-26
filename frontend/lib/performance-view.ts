@@ -19,6 +19,6 @@ export async function performanceView(sport:string,period:string,defer:(work:()=
  };
  const refresh=(observe=true)=>{let work=pending.get(key);if(!work){work=read(sport,period,new Date(now),root,{observe,cloud:observe}).then(data=>write(data,!observe)).finally(()=>pending.delete(key));pending.set(key,work);}return work;};
  const background=()=>defer(()=>refresh(true).catch(e=>console.warn('[performance refresh]',sport,period,e instanceof Error?e.message:'failed')));
- try{const [cached]=JSON.parse(await fs.readFile(file,'utf8'));const age=now-Date.parse(cached?.at||'');if(age>=0&&age<24*3600_000&&Array.isArray(cached?.data?.records)&&cached.data.coverage){const cachedView:SavedView={...cached.data,snapshotAt:cached.at};previous=cachedView;const stale=age>=(cached.data.refreshing||!cached.data.coverage.complete?5000:60000);if(stale)background();return {...cachedView,refreshing:stale||cached.data.refreshing===true};}}catch{}
+ try{const [cached]=JSON.parse(await fs.readFile(file,'utf8'));const age=now-Date.parse(cached?.at||'');if(age>=0&&age<24*3600_000&&Array.isArray(cached?.data?.records)&&cached.data.coverage){const cachedView:SavedView={...cached.data,snapshotAt:cached.at};previous=cachedView;const recovering=cached.data.refreshing===true||cached.data.coverage.errors?.includes('cloud:checking');const stale=age>=(recovering?5000:60000);if(stale)background();return {...cachedView,refreshing:stale||cached.data.refreshing===true};}}catch{}
  const initial=await refresh(false);background();return {...initial,refreshing:true};
 }

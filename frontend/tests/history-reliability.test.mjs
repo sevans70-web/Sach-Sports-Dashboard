@@ -62,3 +62,13 @@ test('first history response remains local when cloud is configured but unrespon
  try{await mkdir(path.join(root,'nfl'));await writeFile(path.join(root,'nfl',`passing_yards_${day}.json`),JSON.stringify([{key:'saved',gameDate:day,market:'passing_yards',status:'hit',actual:0}]));const data=await readSavedPerformance('nfl','Today',now,root,{observe:false,cloud:false});assert.equal(calls,0);assert.equal(data.records[0].actual,0);assert.equal(data.summary.hits,1);assert.equal(data.coverage.complete,false);assert.deepEqual(data.coverage.errors,['cloud:checking']);}
  finally{globalThis.fetch=oldFetch;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldKey===undefined)delete process.env.SUPABASE_SECRET_KEY;else process.env.SUPABASE_SECRET_KEY=oldKey;await rm(root,{recursive:true,force:true});}
 });
+
+test('failed cloud coverage backs off while preserving saved records and retries after a minute',async()=>{
+ const root=await mkdtemp(path.join(tmpdir(),'sach-backoff-')),jobs=[],now=Date.now();let reads=0;
+ const reader=async()=>{reads++;return {records:[{key:'original',status:'hit',actual:0}],coverage:{complete:false,errors:['cloud:unavailable']},summary:{hits:1}}};
+ try{
+  await performanceView('nba','Season',work=>jobs.push(work),now,root,reader);await jobs.shift()();assert.equal(reads,2);
+  const cached=await performanceView('nba','Season',work=>jobs.push(work),now+6000,root,reader);assert.equal(cached.records[0].key,'original');assert.equal(cached.refreshing,false);assert.equal(jobs.length,0);
+  await performanceView('nba','Season',work=>jobs.push(work),now+61000,root,reader);assert.equal(jobs.length,1);await jobs.shift()();
+ }finally{await rm(root,{recursive:true,force:true});}
+});
