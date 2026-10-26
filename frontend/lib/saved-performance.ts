@@ -1,3 +1,4 @@
+import {savedResearchDecisions,observeSavedResearch} from '@/lib/saved-research-performance';
 import {cloudConfigured,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
 
 import {promises as fs} from 'node:fs';
@@ -23,7 +24,7 @@ export function historyGroup(row:any,sport:string){
  if(row.market?.startsWith('q1_'))return 'Q1';
  return /^(passing_|pass_completions|qb_)/.test(row.market||'')?'QB':'Offense';
 }
-/** Disk inspection only: no providers, model calls, settlement, migrations or writes. */
+/** Original saved calls only; research results may join exact official final observations. Never refit models or rewrite source history. */
 export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot()){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
@@ -31,11 +32,12 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[];
  let files=0;
  const availableDates=new Set<string>();
- for(const name of names){
+ for(const name of [...names].sort((a,b)=>Number(!a.startsWith('slate_locked_'))-Number(!b.startsWith('slate_locked_')))){
   const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
-  if(!date||name.startsWith('featured_')||name.startsWith('player_history_')||name.startsWith('slate_board_')||name.startsWith('restored_slate_board_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
+  if(!date||name.startsWith('player_history_')||name.startsWith('featured_selections_')||name.startsWith('featured_results_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
   try{
    const data=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));
+   if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(name)){rows.push(...savedResearchDecisions(Array.isArray(data)?data:[]));files++;continue;}
    if(sport==='mlb')rows.push(...mlbAdminSnapshot(data,date));
    else {if(!Array.isArray(data))throw new Error('Invalid history array');rows.push(...data.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
    files++;
@@ -48,7 +50,9 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   if(sport==='mlb'&&doc.stream==='performance')cloudRows.push(...mlbAdminSnapshot(doc.payload,doc.game_date));
   else if(Array.isArray(doc.payload)&&!doc.stream.startsWith('slate_board_')&&!doc.stream.startsWith('restored_slate_board_'))cloudRows.push(...doc.payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));
  }
- const unique=[...new Map([...cloudRows,...rows].map(r=>[r.key||`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`,r])).values()];
- const records=unique.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||'')));
+ const uniqueMap=new Map<string,any>();
+ for(const r of [...cloudRows,...rows]){const key=r.gameId&&r.playerId?`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`:r.key||`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`,prior=uniqueMap.get(key);if(!prior||prior.historyBasis==='original_saved_research_forecast'&&r.historyBasis!=='original_saved_research_forecast')uniqueMap.set(key,r);}
+ const unique=[...uniqueMap.values()];
+ const records=await observeSavedResearch(unique.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport);
  return {records,coverage:{files,availableDates:[...new Set([...availableDates,...documents.map(d=>d.game_date)])].sort(),cloudDocuments:documents.length,errors,complete:errors.length===0},summary:savedHistorySummary(records)};
 }
