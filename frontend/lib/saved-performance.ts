@@ -7,7 +7,7 @@ import {historyRoot} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {mlbAdminSnapshot} from '@/lib/hidden-admin-history';
 
-export const HISTORY_SPORTS=['nfl','cfb','nba','wnba','nhl','cbb','mlb'] as const;
+export const HISTORY_SPORTS=['nfl','cfb','nba','wnba','nhl','cbb','mlb','soccer'] as const;
 export const HISTORY_PERIODS=['Today','Yesterday','Week','Month','Season'] as const;
 export function historyDays(period:string,now=new Date()){
  const count=period==='Week'?7:period==='Month'?31:period==='Season'?370:1,offset=period==='Yesterday'?1:0;

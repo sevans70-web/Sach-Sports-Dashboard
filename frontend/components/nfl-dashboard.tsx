@@ -1,4 +1,5 @@
 "use client";
+import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
 
@@ -61,7 +62,7 @@ function ScrollTabs({children,className="",showCue=true}:{children:ReactNode;cla
 function RankingCard({row,market}:{row:NflRankingRow;market:NflMarketKey}){
   const[open,setOpen]=useState(false);
   const projection=projectionText(row,market);
-  const confidence=row.modelProbability!=null?`${Number(row.modelProbability).toFixed(0)}%`:"—";
+  const confidence=predictionProbabilityText(row);
   const liveProgress=row.liveCurrent!=null&&row.modelProjection!=null&&Number(row.modelProjection)>0
     ?Math.max(0,Math.min(100,Number(row.liveCurrent)/Number(row.modelProjection)*100))
     :null;
@@ -74,13 +75,13 @@ function RankingCard({row,market}:{row:NflRankingRow;market:NflMarketKey}){
       <span className="gameWhen">🗓 {gameDateTime(row.gameTime)}</span>
       {row.gameState==="in"?<div className="liveProgress"><b>● LIVE · {row.gameStatus||"In progress"}</b><span>Current: {row.liveCurrent==null?"Waiting for stat":formatActual(row.liveCurrent,market)}</span>{liveProgress!=null?<div className="progressTrack"><i style={{width:`${liveProgress}%`}}/></div>:null}</div>:null}
       <p className="projectionLine"><b>Sach Prediction:</b> {projection}</p>
-      <p className="confidenceLine"><b>Confidence:</b> {confidence}</p>
+      <p className="confidenceLine"><b>Model probability:</b> {confidence}</p>
       {row.resultStatus&&row.resultStatus!=="pending"?<div className={`finalResult ${row.resultStatus}`}><b>RESULT</b><span>{row.resultSymbol|| (row.resultStatus==="hit"?"✅ HIT":row.resultStatus==="miss"?"❌ MISS":row.resultStatus==="push"?"➖ PUSH":"VOID")}</span>{row.actualResult!=null?<small>Actual: {formatActual(row.actualResult,market)}</small>:<small>Final stat pending</small>}</div>:null}
       {row.frozen||row.gameState==="in"||row.gameState==="post"?<span className="locked">🔒 LOCKED AT KICKOFF</span>:null}
     </div>
     <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Hide":"View"} Intelligence</button>
-    {open?<div className="detail"><div className="detailMetric green"><span>CONFIDENCE</span><b>{row.modelProbability!=null?`${Number(row.modelProbability).toFixed(1)}%`:"—"}</b></div><div className="detailMetric"><span>REFERENCE LINE</span><b>{row.sportsbookLine??"—"}</b></div><div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div><div className="projectionBox"><span>SACH PREDICTION</span><strong>{projection}</strong></div><div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div><Link className="fullCard" href={`/nfl/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link></div>:null}
+    {open?<div className="detail"><div className="detailMetric green"><span>MODEL PROBABILITY</span><b>{predictionProbabilityText(row)}</b></div><div className="detailMetric"><span>REFERENCE LINE</span><b>{row.sportsbookLine??"—"}</b></div><div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div><div className="projectionBox"><span>SACH PREDICTION</span><strong>{projection}</strong></div><div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div><Link className="fullCard" href={`/nfl/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link></div>:null}
   </article>;
 }
 

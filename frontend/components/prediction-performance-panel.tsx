@@ -345,6 +345,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [featured,setFeatured]=useState<any>(null);
   const [featuredError,setFeaturedError]=useState(false);
   const [partialHistory,setPartialHistory]=useState(false);
+  const [probabilityAudit,setProbabilityAudit]=useState<any>(null);
   useEffect(()=>{
     const controller=new AbortController();
     setFeatured(null);setFeaturedError(false);
@@ -392,6 +393,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
           setCategoryStat(normalizeStat(payload));
           setSavedRecords(payload.records||[]);
+          setProbabilityAudit(payload.probabilityAccuracy||null);
           return;
         }
         const scope=sport==="soccer"?`&league=${encodeURIComponent(league)}`:"";
@@ -410,6 +412,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         }
 
         if (!alive) return;
+        setProbabilityAudit(null);
         setOverall(normalizeStat(overallPayload));
         setCategoryStat(selected);
       } catch {
@@ -417,6 +420,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         setOverall(ZERO);
         setCategoryStat(ZERO);
         setSavedRecords([]);
+        setProbabilityAudit(null);
       } finally {
         running=false;
         if (alive) setLoading(false);
@@ -551,6 +555,14 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
               </div>
 
               <PerformanceCards stat={researchView?researchStat(categoryStat):categoryStat} research={researchView} compact />
+              <details style={{marginTop:16}}><summary>Probability accuracy for this category</summary>
+                <p>Compare saved pregame estimates with results. Small samples do not establish reliable accuracy. Pushes are excluded from these percentages.</p>
+                {probabilityAudit?.groups?.length?probabilityAudit.groups.map((g:any)=><article key={`${g.sport}|${g.market}|${g.side}`} style={{padding:"10px 0"}}>
+                  <strong>{String(g.market).replaceAll("_"," ")} · {g.side}</strong>
+                  <p>{g.settled} settled · {g.wins} wins · {g.losses} losses · {g.pushes} pushes</p>
+                  <p>Average predicted chance, excluding pushes: {g.meanProbability==null?'—':(100*g.meanProbability).toFixed(1)+'%'} · Actual win rate: {g.hitRate==null?'—':(100*g.hitRate).toFixed(1)+'%'}</p>
+                </article>):<p>No settled predictions with verified saved probabilities are available for this category and period.</p>}
+              </details>
               {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}</article>)}</div></details>:null}
 
               {categoryNote ? <p className={styles.categoryNote}>{categoryNote}</p> : null}

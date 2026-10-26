@@ -1,3 +1,4 @@
+import {predictionProbability,predictionProbabilityText} from '@/lib/prediction-probability';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {NextRequest,NextResponse} from 'next/server';
@@ -23,5 +24,5 @@ export async function GET(req:NextRequest){
  const quotes=new Set(candidates.map(r=>r.quoteId));
  const ambiguous=(!gameId&&games.size>1)||(!quoteId&&quotes.size>1);
  const row=ambiguous?null:candidates.find(r=>estimatedEv(r).status==='available')||candidates[0];
- return NextResponse.json({ev:estimatedEv(row),text:estimatedEvText(row),notice:ambiguous?'Select a specific game and saved quote to view its EV':estimatedEvNotice(row)},{headers:{'Cache-Control':'no-store'}});
+ return NextResponse.json({probability:predictionProbability(row),probabilityText:predictionProbabilityText(row),ev:estimatedEv(row),text:estimatedEvText(row),notice:ambiguous?'Select a specific game and saved quote to view its EV':estimatedEvNotice(row)},{headers:{'Cache-Control':'no-store'}});
 }
