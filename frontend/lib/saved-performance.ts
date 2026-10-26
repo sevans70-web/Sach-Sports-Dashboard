@@ -1,3 +1,6 @@
+import {isOfficialFinal} from '@/lib/history-save-policy';
+import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
+import {cachedOfficialResult} from '@/lib/official-result-cache';
 import {savedResearchDecisions,observeSavedResearch} from '@/lib/saved-research-performance';
 import {cloudConfigured,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
 
@@ -24,35 +27,43 @@ export function historyGroup(row:any,sport:string){
  if(row.market?.startsWith('q1_'))return 'Q1';
  return /^(passing_|pass_completions|qb_)/.test(row.market||'')?'QB':'Offense';
 }
-/** Original saved calls only; research results may join exact official final observations. Never refit models or rewrite source history. */
-export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot()){
+// Bound parsed-source reuse across periods/categories. Source mtimes invalidate it;
+// neither original files nor historical grades are rewritten by this cache.
+const parsedSources=new Map<string,{stamp:string;bytes:number;data:any}>(),sourceReads=new Map<string,Promise<any>>();let parsedBytes=0;
+async function sourceDocument(file:string){
+ const stat=await fs.stat(file),stamp=[stat.size,stat.mtimeMs,stat.ctimeMs].join('|'),key=file+'|'+stamp;
+ const cached=parsedSources.get(file);if(cached?.stamp===stamp)return cached.data;
+ let work=sourceReads.get(key);
+ if(!work){work=(async()=>{const data=JSON.parse(await fs.readFile(file,'utf8'));if(stat.size<=2*1024*1024){if(cached)parsedBytes-=cached.bytes;parsedSources.delete(file);while(parsedBytes+stat.size>16*1024*1024&&parsedSources.size){const first=parsedSources.keys().next().value!;parsedBytes-=parsedSources.get(first)!.bytes;parsedSources.delete(first);}parsedSources.set(file,{stamp,bytes:stat.size,data});parsedBytes+=stat.size;}return data;})().finally(()=>sourceReads.delete(key));sourceReads.set(key,work);}
+ return work;
+}
+/** Original saved calls only. Provider reconciliation may run after the response. */
+export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean}={}){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
+ const remoteWork=cloudConfigured()?listCloudPerformanceDocuments(sport).catch(()=>({rows:[] as any[],errors:['unavailable']})):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
- const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;}); // Propagate storage failure, never report it as zero history.
- const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[];
- let files=0;
+ const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
+ const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
  const availableDates=new Set<string>();
- for(const name of [...names].sort((a,b)=>Number(!a.startsWith('slate_locked_'))-Number(!b.startsWith('slate_locked_')))){
-  const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
-  if(!date||name.startsWith('protected_')||name.startsWith('performance_view_')||name.startsWith('player_history_')||name.startsWith('featured_selections_')||name.startsWith('featured_results_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
-  try{
-   const data=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));
-   if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(name)){rows.push(...savedResearchDecisions(Array.isArray(data)?data:[]));files++;continue;}
-   if(sport==='mlb')rows.push(...mlbAdminSnapshot(data,date));
-   else {if(!Array.isArray(data))throw new Error('Invalid history array');rows.push(...data.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
-   files++;
-  }catch{errors.push(name);}
+ const consume=(payload:any,stream:string,date:string)=>{
+  if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))observations.set(String(item.gameId),item.boxscore);}return;}
+  if(stream.startsWith('protected_pregame_')){if(!Array.isArray(payload))throw Error('Invalid pregame receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='pregame_checkpoint')rows.push(...savedResearchDecisions([{...item,capturedAt:item.checkpointAt}]).map(r=>({...r,performanceSource:'checkpoint'})));}return;}
+  if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload);if(!p)throw Error('Invalid official result cache');observations.set(String(p.gameId),p);return;}
+  if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(stream)){
+   rows.push(...savedResearchDecisions(Array.isArray(payload)?payload:[]).map(r=>({...r,performanceSource:/^(slate_locked_|locked_research_)/.test(stream)?'locked':'board'})));return;
+  }
+  if(sport==='mlb')rows.push(...mlbAdminSnapshot(payload,date));
+  else {if(!Array.isArray(payload))throw Error('Invalid history array');rows.push(...payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
+ };
+ const selected=[...names].filter(name=>{const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
+  if(!date||/^(performance_view_|player_history_|featured_selections_|featured_results_)/.test(name)||(/^protected_/.test(name)&&!/^protected_(final_|pregame_)/.test(name)))return false;availableDates.add(date);return fileDays.has(date);
+ }).sort((a,b)=>Number(!a.startsWith('slate_locked_'))-Number(!b.startsWith('slate_locked_')));
+ for(let i=0;i<selected.length;i+=4){const batch=await Promise.all(selected.slice(i,i+4).map(async name=>{try{return {name,payload:await sourceDocument(path.join(directory,name))}}catch{return {name,error:true}}}));
+  for(const item of batch){if(item.error){errors.push(item.name);continue;}try{const date=item.name.match(/(\d{4}-\d{2}-\d{2})\.json$/)![1],stream=item.name.replace(/_?\d{4}-\d{2}-\d{2}\.json$/,'')||'performance';consume(item.payload,stream,date);files++;}catch{errors.push(item.name);}}
  }
- let documents:any[]=[];
- if(cloudConfigured())try{const remote=await listCloudPerformanceDocuments(sport);documents=remote.rows;errors.push(...remote.errors.map((x:string)=>'cloud:'+x));}catch{errors.push('cloud:unavailable');}
- const cloudRows:any[]=[];
- for(const doc of documents){
-  if(sport==='mlb'&&doc.stream==='performance')cloudRows.push(...mlbAdminSnapshot(doc.payload,doc.game_date));
-  else if(Array.isArray(doc.payload)&&!doc.stream.startsWith('slate_board_')&&!doc.stream.startsWith('restored_slate_board_'))cloudRows.push(...doc.payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));
- }
- const uniqueMap=new Map<string,any>();
- for(const r of [...cloudRows,...rows]){const key=r.gameId&&r.playerId?`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`:r.key||`${r.gameDate}|${r.market}|${r.gameId}|${r.playerId}`,prior=uniqueMap.get(key);if(!prior||prior.historyBasis==='original_saved_research_forecast'&&r.historyBasis!=='original_saved_research_forecast')uniqueMap.set(key,r);}
- const unique=[...uniqueMap.values()];
- const records=await observeSavedResearch(unique.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport);
- return {records,coverage:{files,availableDates:[...new Set([...availableDates,...documents.map(d=>d.game_date)])].sort(),cloudDocuments:documents.length,errors,complete:errors.length===0},summary:savedHistorySummary(records)};
+ const remote=await remoteWork;errors.push(...remote.errors.map((x:string)=>'cloud:'+x));
+ for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push('cloud:'+doc.stream+'|'+doc.game_date);}
+ const reconciled=reconcilePerformanceRecords(rows);
+ const records=await observeSavedResearch(reconciled.records.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
+ return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date)])].sort(),cloudDocuments:remote.rows.length,errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
 }

@@ -1,3 +1,4 @@
+import {saveOfficialResult} from '@/lib/official-result-cache';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {officialFeaturedResult} from '@/lib/featured-official-result';
 import {internalAppOrigin} from '@/lib/internal-app-origin';
@@ -14,13 +15,15 @@ export function savedResearchDecisions(boards:any[],capturedAt?:string){
  }));
 }
 const cache=new Map<string,{at:number;payload:any}>();
-export async function observeSavedResearch(records:any[],sport:string){
+export async function observeSavedResearch(records:any[],sport:string,options:{root?:string;observations?:Map<string,any>;cachedOnly?:boolean}={}){
  if(!['nfl','cfb','nba','wnba','cbb','nhl'].includes(sport))return records;
- const pending=records.filter(r=>r.historyBasis==='original_saved_research_forecast'&&Date.parse(r.gameTime)<Date.now()),ids=[...new Set<string>(pending.map(r=>String(r.gameId)))],observations=new Map<string,any>();
+ const pending=records.filter(r=>r.historyBasis==='original_saved_research_forecast'&&Date.parse(r.gameTime)<Date.now()),ids=[...new Set<string>(pending.map(r=>String(r.gameId)))],observations=new Map<string,any>(options.observations);
+ if(options.cachedOnly)return records.map(row=>{const result=row.historyBasis==='original_saved_research_forecast'?officialFeaturedResult(row,observations.get(String(row.gameId))):null;return result?{...row,...result}:row;});
  let index=0;
  await Promise.all(Array.from({length:Math.min(4,ids.length)},async()=>{while(index<ids.length){const id=ids[index++],key=sport+'|'+id,cached=cache.get(key);if(cached&&Date.now()-cached.at<(['post','final','off'].includes(String(cached.payload?.state).toLowerCase())?15*60_000:30000)){observations.set(id,cached.payload);continue;}
+  const seeded=observations.get(id);if(seeded&&Number.isFinite(Date.parse(seeded.updatedAt||''))&&Date.now()-Date.parse(seeded.updatedAt)<15*60_000)continue;
   const base=['nfl','cfb'].includes(sport)?'/api/football/live-player-stats?sport='+sport:sport==='nhl'?'/api/nhl/live-player-stats?':'/api/basketball/live-player-stats?sport='+sport;
-  try{const response=await fetch(internalAppOrigin()+base+(base.endsWith('?')?'':'&')+'gameId='+encodeURIComponent(id),{signal:AbortSignal.timeout(2500),cache:'no-store'});if(response.ok){const payload=await response.json();if(cache.size>512)cache.clear();cache.set(key,{at:Date.now(),payload});observations.set(id,payload);}}catch{}
+  try{const response=await fetch(internalAppOrigin()+base+(base.endsWith('?')?'':'&')+'gameId='+encodeURIComponent(id),{signal:AbortSignal.timeout(2500),cache:'no-store'});if(response.ok){const payload=await response.json();if(cache.size>512)cache.clear();cache.set(key,{at:Date.now(),payload});observations.set(id,payload);if(options.root)await saveOfficialResult(options.root,sport,id,records.find(r=>String(r.gameId)===id)?.gameTime,payload).catch(e=>console.warn('[official result cache]',sport,id,e instanceof Error?e.message:'failed'));}}catch{}
  }}));
  return records.map(row=>{if(row.historyBasis!=='original_saved_research_forecast')return row;const result=officialFeaturedResult(row,observations.get(String(row.gameId)));return result?{...row,...result}:row;});
 }
