@@ -125,6 +125,9 @@ export async function register() {
     inFlight: false,
   };
 
+  const {startRuntimeMonitor}=await import("./lib/runtime-monitor");
+  startRuntimeMonitor(process.env.SACH_HISTORY_DIR||"/data/sach-history");
+
   const port = process.env.PORT || "3000";
   const base = `http://127.0.0.1:${port}`;
 
