@@ -10,3 +10,10 @@ test('research grades use exact official finals without altering the stored orig
  globalThis.fetch=async()=>Response.json({success:true,gameId:'2',state:'post',rows:[{playerId:'1',stats:{points:0}}]});
  try{const graded=await observeSavedResearch(records,'nba');assert.equal(graded[0].status,'hit');assert.equal(graded[0].actual,0);assert.equal(graded[0].modelProjection,8);assert.equal(records[0].status,'pending');}finally{globalThis.fetch=original;}
 });
+
+test('official final observations remain cached across the one-minute UI refresh and still allow later corrections',async()=>{
+ const originalFetch=globalThis.fetch,originalNow=Date.now;let now=Date.parse('2026-10-26T01:00Z'),calls=0;
+ const records=savedResearchDecisions([{capturedAt:'2026-10-25T10:00Z',rows:[{...row,gameId:'333'}]}]);
+ globalThis.fetch=async()=>{calls++;return Response.json({success:true,gameId:'333',state:'post',rows:[{playerId:'1',stats:{points:0}}]});};Date.now=()=>now;
+ try{await observeSavedResearch(records,'nba');now+=60000;await observeSavedResearch(records,'nba');assert.equal(calls,1);now+=16*60000;await observeSavedResearch(records,'nba');assert.equal(calls,2);}finally{globalThis.fetch=originalFetch;Date.now=originalNow;}
+});
