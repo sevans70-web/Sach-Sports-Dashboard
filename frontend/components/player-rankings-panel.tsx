@@ -1,4 +1,5 @@
 "use client";
+import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
@@ -1106,7 +1107,7 @@ function PlayerCard({
               ? `${displayedPick} ${shortNumber(card.sportsbookLine)}`
               : displayedPick}
           </strong>
-          {footballForecast?.side?<small>{footballForecast.basis}{footballForecast.probability!=null?` · ${shortNumber(footballForecast.probability)}%`:''}</small>:state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
+          {footballForecast?.side?<small>{footballForecast.basis}</small>:state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
           {footballForecast?.side&&state==='final'?<small>Forecast result: {footballForecastOutcome(footballForecast.side,current,card.sportsbookLine)||'Awaiting official result'}</small>:null}
         </div>
 
@@ -1124,6 +1125,8 @@ function PlayerCard({
               : displayedAverage==null?'Unavailable':shortNumber(displayedAverage)}
           </strong>
         </div>
+
+        <div><span>Model probability</span><strong>{predictionProbabilityText(card.raw)}</strong><small>Saved pregame estimate</small></div>
 
         <div>
           <span>Estimated EV</span>
