@@ -435,7 +435,6 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const categoryNote = useMemo(() => {
     if (activeCategory?.note && !researchView) return activeCategory.note;
     if (loading) return "Loading prediction history…";
-    if(sport==='nba'||sport==='wnba') return categoryStat.total ? '' : 'No pregame Sach picks saved for this period.';
     if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn${r.unknown?` · ${r.unknown} without a recorded grade`:""}${r.lateRecords?` · ${r.lateRecords} first saved after start`:""}`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved research records: ${categoryStat.research.awaitingResult} awaiting result. No validated ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
