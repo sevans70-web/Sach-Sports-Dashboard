@@ -445,32 +445,6 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
   return (
     <div className={`ssPredictionPerformanceRoot ${styles.root}`}>
-      <section className={styles.performancePanel}>
-        <h2 className={styles.title}>
-          <span aria-hidden="true">📊</span>
-          Prediction Performance
-        </h2>
-
-        {researchView ? <p>Saved forecast history · original calls and recorded results. Historical grades do not imply validated picks.</p> : null}
-        {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
-
-        <div className={styles.periodTabs} aria-label="Prediction performance period">
-          {PERIODS.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={period === item ? styles.activeTab : ""}
-              onClick={() => setPeriod(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-
-        <PerformanceCards stat={researchView?researchStat(overall):overall} research={researchView} />
-
-      </section>
-
       <section className={styles.categoryPanel} aria-label="Featured Picks Performance">
         <div className={styles.categoryBody}>
           <h2>⭐ Featured Picks Performance</h2>
@@ -501,6 +475,33 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           </details>:<p>{featured?"No saved featured selections found for this period.":"Checking saved featured selections…"}</p>}
         </div>
       </section>
+
+      <section className={styles.performancePanel}>
+        <h2 className={styles.title}>
+          <span aria-hidden="true">📊</span>
+          Prediction Performance
+        </h2>
+
+        {researchView ? <p>Saved forecast history · original calls and recorded results. Historical grades do not imply validated picks.</p> : null}
+        {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
+
+        <div className={styles.periodTabs} aria-label="Prediction performance period">
+          {PERIODS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={period === item ? styles.activeTab : ""}
+              onClick={() => setPeriod(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        <PerformanceCards stat={researchView?researchStat(overall):overall} research={researchView} />
+
+      </section>
+
       <section className={styles.categoryPanel}>
         <button
           type="button"
