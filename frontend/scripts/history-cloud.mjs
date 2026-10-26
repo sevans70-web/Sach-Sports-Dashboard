@@ -34,7 +34,7 @@ async function fetchCloudPerformanceDocuments(sport){
  if(!/^[a-z0-9_-]+$/i.test(sport))throw Error('Invalid history sport');
  const rows=[],errors=[],signal=AbortSignal.timeout(2500);
  for(let offset=0;;offset+=100){
-  let page;try{page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=not.like.featured_*&stream=not.like.slate_board_*&stream=not.like.restored_slate_board_*&stream=not.like.performance_view_*&stream=not.like.player_history_*&stream=not.like.slate_locked_*&stream=not.like.locked_research_*&order=game_date.asc,stream.asc&limit=100&offset=${offset}`,{signal});}catch{return {rows,errors:[...errors,'unavailable']};}
+  let page;try{page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=not.like.featured_*&stream=not.like.slate_board_*&stream=not.like.restored_slate_board_*&stream=not.like.protected_*&stream=not.like.performance_view_*&stream=not.like.player_history_*&stream=not.like.slate_locked_*&stream=not.like.locked_research_*&order=game_date.asc,stream.asc&limit=100&offset=${offset}`,{signal});}catch{return {rows,errors:[...errors,'unavailable']};}
   for(const row of page){if(checksum(row.payload)!==row.checksum){errors.push(row.stream+'|'+row.game_date);continue;}rows.push(row);}
   if(page.length<100)return {rows,errors};
  }

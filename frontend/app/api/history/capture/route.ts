@@ -209,7 +209,7 @@ function gradingRoutes(sport: Sport, deep: boolean) {
   }
 }
 
-async function captureSport(
+async function captureSportWork(
   origin: string,
   sport: Sport,
   day: string,
@@ -261,6 +261,13 @@ async function captureSport(
     results.push({sport,stream:'official-final-games',path:'official-boxscores',ok:official.success,count:official.saved,error:official.errors.join('; ')||undefined});
   }
   return results;
+}
+
+// Scheduler and kickoff safeguards share work instead of multiplying provider requests.
+const captures=new Map<string,Promise<CaptureResult[]>>();
+function captureSport(origin:string,sport:Sport,day:string,deep:boolean){
+ const key=sport+'|'+day;let work=captures.get(key);
+ if(!work){work=captureSportWork(origin,sport,day,deep).finally(()=>captures.delete(key));captures.set(key,work);}return work;
 }
 
 const gradingInFlight=new Set<Sport>();
@@ -341,6 +348,7 @@ export async function GET(req: NextRequest) {
   const day = torontoHistoryDay();
   const requestedSport = req.nextUrl.searchParams.get("sport");
   const deep = req.nextUrl.searchParams.get("deep") === "1";
+  const resultsOnly=req.nextUrl.searchParams.get("phase")==="results";
 
   const selected = requestedSport
     ? SPORTS.filter((sport) => sport === requestedSport)
@@ -356,9 +364,9 @@ export async function GET(req: NextRequest) {
   const allResults: CaptureResult[] = [];
 
   for (const sport of selected) {
-    const results = await captureSport(origin, sport, day, deep);
+    const results = resultsOnly?[]:await captureSport(origin, sport, day, deep);
     allResults.push(...results);
-    await writeManifest(sport, day, results,true);
+    if(!resultsOnly)await writeManifest(sport, day, results,true);
     if(!gradingInFlight.has(sport)){
       gradingInFlight.add(sport);
       after(async()=>{try{const grading=await gradeSport(origin,sport,deep);await writeManifest(sport,day,[...results,...grading]);}finally{gradingInFlight.delete(sport)}});

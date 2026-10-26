@@ -34,7 +34,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const availableDates=new Set<string>();
  for(const name of [...names].sort((a,b)=>Number(!a.startsWith('slate_locked_'))-Number(!b.startsWith('slate_locked_')))){
   const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
-  if(!date||name.startsWith('performance_view_')||name.startsWith('player_history_')||name.startsWith('featured_selections_')||name.startsWith('featured_results_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
+  if(!date||name.startsWith('protected_')||name.startsWith('performance_view_')||name.startsWith('player_history_')||name.startsWith('featured_selections_')||name.startsWith('featured_results_'))continue;availableDates.add(date);if(!fileDays.has(date))continue;
   try{
    const data=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));
    if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(name)){rows.push(...savedResearchDecisions(Array.isArray(data)?data:[]));files++;continue;}
