@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readCloudDocumentRange,checksum} from '../scripts/history-cloud.mjs';
+test('season featured history reads only the indexed sport stream and date range, preserving checksums',async()=>{
+ const old=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;let calls=0;process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';
+ globalThis.fetch=async(url,options)=>{calls++;assert.match(String(url),/stream=eq.featured_selections/);assert.match(String(url),/game_date=gte.2025-10-21/);assert.match(String(url),/game_date=lte.2026-10-25/);assert.ok(options.signal);const payload=[{key:'play',pick:{price:120}}];return Response.json([{game_date:'2026-10-25',payload,checksum:checksum(payload)}]);};
+ try{const rows=await readCloudDocumentRange('nfl','featured_selections','2025-10-21','2026-10-25');assert.equal(rows[0].payload[0].pick.price,120);assert.equal(calls,1);await assert.rejects(readCloudDocumentRange('nfl','featured_selections','bad','2026-10-25'));}finally{globalThis.fetch=old;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldKey===undefined)delete process.env.SUPABASE_SECRET_KEY;else process.env.SUPABASE_SECRET_KEY=oldKey;}
+});

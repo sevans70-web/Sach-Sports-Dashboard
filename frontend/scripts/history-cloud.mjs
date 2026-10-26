@@ -32,9 +32,9 @@ export async function readCloudDocumentsForDay(sport,streams,day){
 /** Performance reads omit bulky ranking boards and raw player-log archives. */
 async function fetchCloudPerformanceDocuments(sport){
  if(!/^[a-z0-9_-]+$/i.test(sport))throw Error('Invalid history sport');
- const rows=[],errors=[];
+ const rows=[],errors=[],signal=AbortSignal.timeout(2500);
  for(let offset=0;;offset+=100){
-  const page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=not.like.featured_*&stream=not.like.slate_board_*&stream=not.like.restored_slate_board_*&stream=not.like.player_history_*&order=game_date.asc,stream.asc&limit=100&offset=${offset}`,{signal:AbortSignal.timeout(2500)});
+  let page;try{page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=not.like.featured_*&stream=not.like.slate_board_*&stream=not.like.restored_slate_board_*&stream=not.like.player_history_*&order=game_date.asc,stream.asc&limit=100&offset=${offset}`,{signal});}catch{return {rows,errors:[...errors,'unavailable']};}
   for(const row of page){if(checksum(row.payload)!==row.checksum){errors.push(row.stream+'|'+row.game_date);continue;}rows.push(row);}
   if(page.length<100)return {rows,errors};
  }
@@ -42,8 +42,14 @@ async function fetchCloudPerformanceDocuments(sport){
 
 const performanceReads=new Map(),performanceCache=new Map();
 export async function listCloudPerformanceDocuments(sport){
- const cached=performanceCache.get(sport);if(cached&&Date.now()-cached.at<15000)return cached.value;
+ const cached=performanceCache.get(sport);if(cached&&Date.now()-cached.at<(cached.value.errors.length?5000:15000))return cached.value;
  let work=performanceReads.get(sport);
  if(!work){work=fetchCloudPerformanceDocuments(sport).then(value=>{performanceCache.set(sport,{at:Date.now(),value});return value;}).finally(()=>performanceReads.delete(sport));performanceReads.set(sport,work);}
  return work;
+}
+
+export async function readCloudDocumentRange(sport,stream,first,last){
+ if(!/^[a-z0-9_-]+$/i.test(sport)||!/^[a-z0-9_-]+$/i.test(stream)||![first,last].every(d=>/^\d{4}-\d{2}-\d{2}$/.test(d))||first>last)throw Error('Invalid history range');
+ const rows=[];
+ for(let offset=0;;offset+=100){const page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=eq.${stream}&game_date=gte.${first}&game_date=lte.${last}&order=game_date.asc&limit=100&offset=${offset}`,{signal:AbortSignal.timeout(2500)});for(const row of page){if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');rows.push(row);}if(page.length<100)return rows;}
 }
