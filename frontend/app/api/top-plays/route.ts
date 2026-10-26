@@ -1,3 +1,4 @@
+import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {distinctFeaturedPlayers} from '@/lib/top-plays';
 import {retainedTopPlays} from '@/lib/retained-top-plays';
 import {readHistorySnapshots} from '@/lib/history-archive';
@@ -49,6 +50,7 @@ export async function GET(req:NextRequest){
  });
  state.plays=distinctFeaturedPlayers(state.plays);
  after(async()=>{try{await saveFeaturedSelections(sport,state.plays,selectionDay)}catch(e){console.error("[featured save]",e)}});
- return NextResponse.json(state,{headers:{'Cache-Control':'no-store'}});
+ const presented={...state,plays:state.plays.map(card=>{const reportedOriginal=reportedFeaturedOriginal(sport,selectionDay,card.key);return reportedOriginal?{...card,pick:null,reportedOriginal}:card;})};
+ return NextResponse.json(presented,{headers:{'Cache-Control':'no-store'}});
 }
 

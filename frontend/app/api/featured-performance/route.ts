@@ -1,3 +1,4 @@
+import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {performanceView} from '@/lib/performance-view';
 import {featuredHistoryDays} from '@/lib/featured-history-days';
 import {withHistoryLock} from '@/lib/history-lock';
@@ -31,6 +32,9 @@ export async function GET(req:NextRequest){
   for(const {day,choices} of featuredDays.boards)for(const card of choices){
    if(!CATEGORIES.includes(card.key)||!card.pick?.row)continue;
    const p=card.pick,row=p.row;
+   const correction=reportedFeaturedOriginal(sport,day,card.key);
+   if(correction){records.push({key:card.key,day,playerName:correction.playerName,market:correction.market,side:correction.prediction,line:correction.sportsbookLine,odds:null,sportsbook:null,gameTime:correction.gameTime,selectedAt:null,status:'unverified',actual:correction.officialTouchdowns,verifiedResult:false,selectionSource:correction.selectionSource,selectionIssue:correction.note+' '+correction.resultNote,recordedLaterSelection:{playerName:row.playerName,odds:p.price??null},resultSource:'official_final_boxscore',officialGameId:correction.gameId});continue;}
+
    const gameTime=String(row.gameTime||'');
    const selectionIssue=featuredSelectionDispute(sport,day,card.key);
    const savedGrades=await readDurableHistory<any>(sport,'featured_results',day,true);
