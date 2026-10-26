@@ -5,9 +5,10 @@ export type DashboardSport = typeof DASHBOARD_SPORTS[number];
 // Pause public discovery, not historical storage or settlement.
 export const VISIBLE_SPORTS: readonly DashboardSport[] = ["nfl","cfb","nba","nhl","cbb"];
 export const DEFAULT_MARKETS:Record<DashboardSport,string>={mlb:"home_runs",nfl:"passing_yards",cfb:"passing_yards",nba:"points",wnba:"points",nhl:"shots_on_goal",soccer:"shots_on_target",cbb:"points"};
+const torontoDayFormatter=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"});
 export function dashboardDay(value:Date|string){
  const d=value instanceof Date?value:new Date(value);if(!Number.isFinite(d.getTime()))return "";
- const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
+ const parts=torontoDayFormatter.formatToParts(d);
  const p=(t:string)=>parts.find(x=>x.type===t)?.value||"";return `${p("year")}-${p("month")}-${p("day")}`;
 }
 export function dashboardSlate<T extends {id?:string;date:string;state:string}>(games:T[],now=new Date(),allDates=false):T[]{
