@@ -340,11 +340,12 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
   const [loading, setLoading] = useState(true);
   const [categoryOpen, setCategoryOpen] = useState(true);
-  const researchView=sport!=="soccer";
+  const researchView=true;
   const [savedRecords,setSavedRecords]=useState<any[]>([]);
   const [featured,setFeatured]=useState<any>(null);
   const [featuredError,setFeaturedError]=useState(false);
   const [partialHistory,setPartialHistory]=useState(false);
+  const [historyRefreshing,setHistoryRefreshing]=useState(false);
   const [probabilityAudit,setProbabilityAudit]=useState<any>(null);
   useEffect(()=>{
     const controller=new AbortController();
@@ -373,48 +374,29 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
   useEffect(() => {
     if (!activeCategory) return;
+    setOverall(ZERO);setCategoryStat(ZERO);setSavedRecords([]);setProbabilityAudit(null);setPartialHistory(false);setHistoryRefreshing(false);
 
     const controller = new AbortController();
     let alive = true;
 
-    let running=false;
+    let running=false;let refresh:number|undefined;let retryDelay=60000;
     const run = async () => {
       if(running)return;
       running=true;
       setLoading(true);
 
       try {
-        if (sport !== "soccer") {
-          const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
-          const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}`,controller.signal);
-          if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
-          if(!alive)return;
-          setPartialHistory(payload.partial===true);
-          setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
-          setCategoryStat(normalizeStat(payload));
-          setSavedRecords(payload.records||[]);
-          setProbabilityAudit(payload.probabilityAccuracy||null);
-          return;
-        }
-        const scope=sport==="soccer"?`&league=${encodeURIComponent(league)}`:"";
-        const overallPayload = await fetchJson(
-          `/api/${sport}/performance?period=${encodeURIComponent(period)}${scope}`,
-          controller.signal
-        );
-
-        let selected = ZERO;
-        if (activeCategory.available !== false && activeCategory.market) {
-          const marketPayload = await fetchJson(
-            `/api/${sport}/performance?period=${encodeURIComponent(period)}&market=${encodeURIComponent(activeCategory.market)}${scope}`,
-            controller.signal
-          );
-          selected = normalizeStat(marketPayload);
-        }
-
-        if (!alive) return;
-        setProbabilityAudit(null);
-        setOverall(normalizeStat(overallPayload));
-        setCategoryStat(selected);
+        const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
+        const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
+        const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
+        if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
+        if(!alive)return;
+        setPartialHistory(payload.partial===true);
+        setHistoryRefreshing(payload.refreshing===true);retryDelay=payload.refreshing?5000:60000;
+        setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
+        setCategoryStat(normalizeStat(payload));
+        setSavedRecords(payload.records||[]);
+        setProbabilityAudit(payload.probabilityAccuracy||null);
       } catch {
         if (!alive) return;
         setOverall(ZERO);
@@ -423,14 +405,14 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         setProbabilityAudit(null);
       } finally {
         running=false;
-        if (alive) setLoading(false);
+        if (alive) {setLoading(false);refresh=window.setTimeout(run,retryDelay);}
       }
     };
 
     run();
-    const refresh=window.setInterval(run,60_000);
+
     return () => {
-      window.clearInterval(refresh);
+      window.clearTimeout(refresh);
       alive = false;
       controller.abort();
     };
@@ -491,6 +473,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
         {researchView ? <p>Saved forecast history · original calls and recorded results. Historical grades do not imply validated picks.</p> : null}
       {partialHistory?<p>Some archived results could not be loaded. Totals cover the verified records currently available.</p>:null}
+      {historyRefreshing?<p>Showing saved records while final results and archive coverage are checked.</p>:null}
         {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
 
         <div className={styles.periodTabs} aria-label="Prediction performance period">
@@ -557,7 +540,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
               <PerformanceCards stat={researchView?researchStat(categoryStat):categoryStat} research={researchView} compact />
               <details style={{marginTop:16}}><summary>Probability accuracy for this category</summary>
                 <p>Compare saved pregame estimates with results. Small samples do not establish reliable accuracy. Pushes are excluded from these percentages.</p>
-                {probabilityAudit?.groups?.length?probabilityAudit.groups.map((g:any)=><article key={`${g.sport}|${g.market}|${g.side}`} style={{padding:"10px 0"}}>
+                {loading?<p>Checking saved probabilities and results…</p>:probabilityAudit?.groups?.length?probabilityAudit.groups.map((g:any)=><article key={`${g.sport}|${g.market}|${g.side}`} style={{padding:"10px 0"}}>
                   <strong>{String(g.market).replaceAll("_"," ")} · {g.side}</strong>
                   <p>{g.settled} settled · {g.wins} wins · {g.losses} losses · {g.pushes} pushes</p>
                   <p>Average predicted chance, excluding pushes: {g.meanProbability==null?'—':(100*g.meanProbability).toFixed(1)+'%'} · Actual win rate: {g.hitRate==null?'—':(100*g.hitRate).toFixed(1)+'%'}</p>

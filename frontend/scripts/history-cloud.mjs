@@ -6,7 +6,7 @@ export async function cloudRequest(route,options={}){
  const base=(process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||'').replace(/\/$/,''),key=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||process.env.SUPABASE_KEY;
  if(!base||!key)throw Error('Cloud history is not configured');
  const headers={apikey:key,'Content-Type':'application/json',...options.headers};if(!key.startsWith('sb_secret_'))headers.Authorization='Bearer '+key;
- const r=await fetch(base+'/rest/v1/'+route,{...options,headers,signal:options.signal??AbortSignal.timeout(20000),cache:'no-store'});if(!r.ok)throw Error('Cloud history HTTP '+r.status);const text=await r.text();return text?JSON.parse(text):null;
+ const r=await fetch(base+'/rest/v1/'+route,{...options,headers,signal:options.signal??AbortSignal.timeout(20000),cache:'no-store'});if(!r.ok){const body=await r.text();let code;try{const parsed=JSON.parse(body);if(/^[A-Z0-9_]{1,24}$/.test(parsed.code||''))code=parsed.code;}catch{}const error=Error('Cloud history HTTP '+r.status+(code?' ('+code+')':''));error.status=r.status;if(code)error.code=code;throw error;}const text=await r.text();return text?JSON.parse(text):null;
 }
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt=new Date().toISOString()){
  const hash=checksum(payload),scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
@@ -34,7 +34,7 @@ async function fetchCloudPerformanceDocuments(sport){
  if(!/^[a-z0-9_-]+$/i.test(sport))throw Error('Invalid history sport');
  const rows=[],errors=[],signal=AbortSignal.timeout(2500);
  for(let offset=0;;offset+=100){
-  let page;try{page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=not.like.featured_*&stream=not.like.slate_board_*&stream=not.like.restored_slate_board_*&stream=not.like.protected_*&stream=not.like.performance_view_*&stream=not.like.player_history_*&stream=not.like.slate_locked_*&stream=not.like.locked_research_*&order=game_date.asc,stream.asc&limit=100&offset=${offset}`,{signal});}catch{return {rows,errors:[...errors,'unavailable']};}
+  let page;try{page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=not.like.featured_selections*&stream=not.like.featured_results*&or=(stream.not.like.protected_*,stream.like.protected_final_*,stream.like.protected_pregame_*)&stream=not.like.performance_view_*&stream=not.like.player_history_*&order=game_date.asc,stream.asc&limit=100&offset=${offset}`,{signal});}catch(e){return {rows,errors:[...errors,e.code?'unavailable:'+e.code:'unavailable']};}
   for(const row of page){if(checksum(row.payload)!==row.checksum){errors.push(row.stream+'|'+row.game_date);continue;}rows.push(row);}
   if(page.length<100)return {rows,errors};
  }
