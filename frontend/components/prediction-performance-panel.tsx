@@ -469,6 +469,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                 <strong>{r.playerName}</strong>
                 <p>{r.day} · {r.key==="play"?"Play of the Day":r.key==="value"?"Best Value":r.key==="first"?"First Basket":"Long Shot"} · {String(r.market).replaceAll("_"," ")}</p>
                 <p>{r.side||"No direction"} {r.line??""} · {r.sportsbook||"Sportsbook not recorded"} {r.odds!=null?"· "+(r.odds>0?"+":"")+r.odds:""}</p>
+                <p>{r.selectionIssue}</p>
                 <p>{String(r.status).toUpperCase()}{r.actual!=null?" · Actual "+r.actual:""}</p>
               </article>)}
             </div>
