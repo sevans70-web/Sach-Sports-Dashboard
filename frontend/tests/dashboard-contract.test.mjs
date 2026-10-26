@@ -32,3 +32,9 @@ test('current slate retains overnight live games, today finals and the next comp
 test('the full calendar keeps later published games beyond the dashboard preview',()=>{
  const now=new Date('2026-10-17T12:00:00-04:00'),g=[{id:'today',date:'2026-10-17T20:00:00Z',state:'pre'},{id:'next',date:'2026-10-18T20:00:00Z',state:'pre'},{id:'later',date:'2026-11-02T20:00:00Z',state:'pre'}];assert.equal(dashboardSlate(g,now).length,2);assert.equal(dashboardSlate(g,now,true).length,3);
 });
+
+test('shared Toronto date formatter preserves midnight and daylight-saving boundaries',async()=>{
+ const {dashboardDay}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
+ for(const [instant,day] of [['2026-10-26T03:59:59Z','2026-10-25'],['2026-10-26T04:00:00Z','2026-10-26'],['2026-11-01T05:59:59Z','2026-11-01'],['2026-11-01T06:00:00Z','2026-11-01'],['2026-11-02T04:59:59Z','2026-11-01'],['2026-11-02T05:00:00Z','2026-11-02']])assert.equal(dashboardDay(instant),day);
+ assert.equal(dashboardDay('invalid'),'');
+});

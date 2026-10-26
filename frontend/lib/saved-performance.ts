@@ -5,6 +5,7 @@ import {savedResearchDecisions,observeSavedResearch} from '@/lib/saved-research-
 import {cloudConfigured,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
 
 import {promises as fs} from 'node:fs';
+import {setImmediate as yieldToRequests} from 'node:timers/promises';
 import path from 'node:path';
 import {historyRoot} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
@@ -41,6 +42,7 @@ async function sourceDocument(file:string){
 export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean;cloud?:boolean}={}){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const startedAt=Date.now();
+ if(process.env.NODE_ENV==='production')console.info('[performance-start]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false}));
  const remoteWork=cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):listCloudPerformanceDocuments(sport).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
@@ -60,8 +62,10 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const selected=[...names].filter(name=>{const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
   if(!date||/^(performance_view_|player_history_|featured_selections_|featured_results_)/.test(name)||(/^protected_/.test(name)&&!/^protected_(final_|pregame_)/.test(name)))return false;availableDates.add(date);return fileDays.has(date);
  }).sort((a,b)=>Number(!a.startsWith('slate_locked_'))-Number(!b.startsWith('slate_locked_')));
+ if(process.env.NODE_ENV==='production')console.info('[performance-local]',JSON.stringify({sport,period,selectedFiles:selected.length}));
  for(let i=0;i<selected.length;i+=4){const batch=await Promise.all(selected.slice(i,i+4).map(async name=>{try{return {name,payload:await sourceDocument(path.join(directory,name))}}catch{return {name,error:true}}}));
   for(const item of batch){if(item.error){errors.push(item.name);continue;}try{const date=item.name.match(/(\d{4}-\d{2}-\d{2})\.json$/)![1],stream=item.name.replace(/_?\d{4}-\d{2}-\d{2}\.json$/,'')||'performance';consume(item.payload,stream,date);files++;}catch{errors.push(item.name);}}
+  await yieldToRequests();
  }
  const localFinishedAt=Date.now(),remote=await remoteWork,cloudFinishedAt=Date.now();errors.push(...remote.errors.map((x:string)=>'cloud:'+x));
  for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push('cloud:'+doc.stream+'|'+doc.game_date);}
