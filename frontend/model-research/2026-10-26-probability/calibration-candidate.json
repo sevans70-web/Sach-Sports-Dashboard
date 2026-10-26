@@ -1,0 +1,78 @@
+{
+  "purpose": "diagnostic_reused_development_data_not_untouched_holdout",
+  "runtimeChanged": false,
+  "report": [
+    {
+      "group": "nfl|passing_yards",
+      "selectionRows": 40,
+      "residualRows": 106,
+      "selectionMae": {
+        "model": 74.81131575649951,
+        "baseline": 78.81968253968253
+      },
+      "policy": "projection",
+      "testRows": 68,
+      "oldMae": 65.70218260849687,
+      "candidateMae": 65.70218260849687,
+      "exactQuotes": 18,
+      "oldBrier": 0.23606024573919943,
+      "candidateBrier": 0.23506783750642773,
+      "bookBrier": 0.2555544943759921,
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|receiving_yards",
+      "selectionRows": 263,
+      "residualRows": 815,
+      "selectionMae": {
+        "model": 21.183254212294223,
+        "baseline": 21.425879654777006
+      },
+      "policy": "projection",
+      "testRows": 433,
+      "oldMae": 23.87077838922752,
+      "candidateMae": 23.87077838922752,
+      "exactQuotes": 22,
+      "oldBrier": 0.3589789785185299,
+      "candidateBrier": 0.36392631193564606,
+      "bookBrier": 0.253555493583993,
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|receptions",
+      "selectionRows": 263,
+      "residualRows": 815,
+      "selectionMae": {
+        "model": 1.418767467523486,
+        "baseline": 1.4483273802665446
+      },
+      "policy": "projection",
+      "testRows": 433,
+      "oldMae": 1.6302997104238914,
+      "candidateMae": 1.6302997104238914,
+      "exactQuotes": 17,
+      "oldBrier": 0.25497928974254563,
+      "candidateBrier": 0.25769412827421606,
+      "bookBrier": 0.24418554576139573,
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|rushing_yards",
+      "selectionRows": 125,
+      "residualRows": 403,
+      "selectionMae": {
+        "model": 18.90240668413848,
+        "baseline": 18.73713881673882
+      },
+      "policy": "baseline",
+      "testRows": 200,
+      "oldMae": 19.62811786135362,
+      "candidateMae": 19.102499999999992,
+      "exactQuotes": 17,
+      "oldBrier": 0.3963376242370226,
+      "candidateBrier": 0.3768760279512183,
+      "bookBrier": 0.2504873556200437,
+      "validatedForBetting": false
+    }
+  ]
+}

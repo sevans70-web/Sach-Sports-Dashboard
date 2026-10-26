@@ -1,0 +1,11 @@
+# Probability accuracy investigation — October 26, 2026
+
+PR69 release 36f7c095f07fd0b28b0c85e5cdc88ea19e5bda98 passed 355 tests and a production build. Railway deployment 5d1ee5a4-1a41-4365-8588-c5672cfcb851 reached SUCCESS; live health reports ready with this exact commit.
+
+Live NFL Yesterday/QB records checked about 13:39 Toronto: 21 settled original saved probabilities, 11 UNDER (3 hits, average predicted conditional probability .6482758621, Brier .31139120095), 10 OVER (4 hits, average .6124137931, Brier .30381926278). Each displayed grade matched original side, exact line and final actual. Mean absolute projection error was 64.9 yards versus 52.5 for the recorded sportsbook lines. History coverage was partial (cloud reads HTTP503), so these are available retained selections, not a complete unbiased population. Existing selection and lineup coverage limitations remain. Original picks, probabilities, lines and results were not rewritten.
+
+The attached candidate evaluation uses earlier prior-season calibration rows to select between fitted and historical-baseline projections, with later prior-season rows for residual calibration; 2026 results do not choose the policy. NFL passing was essentially unchanged, receiving/receptions probability error worsened, and rushing remained worse than the market benchmark despite modest improvement. It reuses previously inspected development outcomes, not an untouched holdout. This candidate is NOT promoted into production. A simple rescale or replacement probability is not justified by these data.
+
+Live shared endpoint missing-record checks passed for all eight sports: a missing original record returns null probability and a dash. This verifies integration, not qualifying data availability. NBA OVER/UNDER ranking percentages and Amen Thompson's full saved player card matched. Hidden sports stayed hidden. NHL top-plays returned HTTP500 once; some cloud history reads returned503 and cold NFL performance loads took46–95sec. Cached repeat history returned200 in9ms. These are remaining live defects, not universal success.
+
+Remaining model work requires improved pregame role/workload context, exact quote samples and independent chronological/prospective evaluation before claiming reliable probability accuracy. The runtime model and accuracy gates are not relaxed by the candidate experiment.
