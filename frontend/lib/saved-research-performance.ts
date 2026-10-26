@@ -18,7 +18,7 @@ export async function observeSavedResearch(records:any[],sport:string){
  if(!['nfl','cfb','nba','wnba','cbb','nhl'].includes(sport))return records;
  const pending=records.filter(r=>r.historyBasis==='original_saved_research_forecast'&&Date.parse(r.gameTime)<Date.now()),ids=[...new Set<string>(pending.map(r=>String(r.gameId)))],observations=new Map<string,any>();
  let index=0;
- await Promise.all(Array.from({length:Math.min(4,ids.length)},async()=>{while(index<ids.length){const id=ids[index++],key=sport+'|'+id,cached=cache.get(key);if(cached&&Date.now()-cached.at<30000){observations.set(id,cached.payload);continue;}
+ await Promise.all(Array.from({length:Math.min(4,ids.length)},async()=>{while(index<ids.length){const id=ids[index++],key=sport+'|'+id,cached=cache.get(key);if(cached&&Date.now()-cached.at<(['post','final','off'].includes(String(cached.payload?.state).toLowerCase())?15*60_000:30000)){observations.set(id,cached.payload);continue;}
   const base=['nfl','cfb'].includes(sport)?'/api/football/live-player-stats?sport='+sport:sport==='nhl'?'/api/nhl/live-player-stats?':'/api/basketball/live-player-stats?sport='+sport;
   try{const response=await fetch(internalAppOrigin()+base+(base.endsWith('?')?'':'&')+'gameId='+encodeURIComponent(id),{signal:AbortSignal.timeout(2500),cache:'no-store'});if(response.ok){const payload=await response.json();if(cache.size>512)cache.clear();cache.set(key,{at:Date.now(),payload});observations.set(id,payload);}}catch{}
  }}));
