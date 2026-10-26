@@ -49,3 +49,8 @@ test('all sports read their existing immutable pregame/final receipts without ca
   assert.equal(await readFile(file,'utf8'),pre);assert.equal(await readFile(finalFile,'utf8'),fin);
  }assert.equal(calls,0);}finally{globalThis.fetch=originalFetch;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldPublic===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_URL;else process.env.NEXT_PUBLIC_SUPABASE_URL=oldPublic;await rm(root,{recursive:true,force:true});}
 });
+
+test('an older duplicated final cannot reverse a more recent official correction',()=>{
+ const r={gameDate:'2026-10-25',gameId:'g',playerId:'p',market:'points',sportsbookLine:10.5,pickSide:'OVER',status:'hit',actual:12,verifiedResult:true,resultSource:'official_final_boxscore',gradedAt:'2026-10-26T12:00Z'};
+ const older={...r,status:'miss',actual:9,gradedAt:'2026-10-26T11:00Z'};assert.equal(reconcilePerformanceRecords([r,older]).records[0].actual,12);
+});

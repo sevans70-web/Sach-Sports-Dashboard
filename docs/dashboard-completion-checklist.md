@@ -47,3 +47,16 @@ Implemented and tested (361 tests, production build passed; live verification pe
 
 Supabase accepted a documented schema-cache reload request at 2026-10-26 18:15:45 UTC.
 Successful cloud reads and production behavior still need verification; no checkmark is assigned from this request alone.
+
+Cloud diagnosis continued: reload logs showed SQLSTATE57014 while building the
+PostgREST schema cache. The authenticator role's statement_timeout was8s. It was
+changed to30s with config/schema reload notifications; anonymous3s and authenticated8s
+limits and lock_timeout8s remain unchanged. Read-back verified the role setting.
+Rollback: ALTER ROLE authenticator SET statement_timeout='8s'; then NOTIFY pgrst,'reload config'.
+This is a bounded metadata-service recovery adjustment, not a dashboard/client timeout increase.
+Cloud recovery still requires successful live reads.
+
+All eight performance-page integrations now use the shared reader, retaining Soccer's
+league filter. Official-result selection prefers the most recently observed final over
+an older protected first-final receipt, so later authenticated corrections can survive.
+362 tests and the updated production build passed before release.

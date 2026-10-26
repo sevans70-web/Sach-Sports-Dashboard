@@ -44,11 +44,12 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
- const availableDates=new Set<string>();
+ const availableDates=new Set<string>(),observationTimes=new Map<string,number>();
+ const remember=(payload:any,observedAt?:string)=>{const key=String(payload.gameId),at=Date.parse(observedAt||payload.updatedAt||'')||0;if(!observations.has(key)||at>(observationTimes.get(key)||0)){observations.set(key,payload);observationTimes.set(key,at);}};
  const consume=(payload:any,stream:string,date:string)=>{
-  if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))observations.set(String(item.gameId),item.boxscore);}return;}
+  if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}
   if(stream.startsWith('protected_pregame_')){if(!Array.isArray(payload))throw Error('Invalid pregame receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='pregame_checkpoint')rows.push(...savedResearchDecisions([{...item,capturedAt:item.checkpointAt}]).map(r=>({...r,performanceSource:'checkpoint'})));}return;}
-  if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload);if(!p)throw Error('Invalid official result cache');observations.set(String(p.gameId),p);return;}
+  if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload);if(!p)throw Error('Invalid official result cache');remember(p,payload.savedAt);return;}
   if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(stream)){
    rows.push(...savedResearchDecisions(Array.isArray(payload)?payload:[]).map(r=>({...r,performanceSource:/^(slate_locked_|locked_research_)/.test(stream)?'locked':'board'})));return;
   }

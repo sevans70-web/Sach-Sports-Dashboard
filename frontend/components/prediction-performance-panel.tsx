@@ -340,7 +340,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryStat, setCategoryStat] = useState<PerformanceStat>(ZERO);
   const [loading, setLoading] = useState(true);
   const [categoryOpen, setCategoryOpen] = useState(true);
-  const researchView=sport!=="soccer";
+  const researchView=true;
   const [savedRecords,setSavedRecords]=useState<any[]>([]);
   const [featured,setFeatured]=useState<any>(null);
   const [featuredError,setFeaturedError]=useState(false);
@@ -386,38 +386,17 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
       setLoading(true);
 
       try {
-        if (sport !== "soccer") {
-          const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
-          const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}`,controller.signal);
-          if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
-          if(!alive)return;
-          setPartialHistory(payload.partial===true);
-          setHistoryRefreshing(payload.refreshing===true);retryDelay=payload.refreshing?5000:60000;
-          setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
-          setCategoryStat(normalizeStat(payload));
-          setSavedRecords(payload.records||[]);
-          setProbabilityAudit(payload.probabilityAccuracy||null);
-          return;
-        }
-        const scope=sport==="soccer"?`&league=${encodeURIComponent(league)}`:"";
-        const overallPayload = await fetchJson(
-          `/api/${sport}/performance?period=${encodeURIComponent(period)}${scope}`,
-          controller.signal
-        );
-
-        let selected = ZERO;
-        if (activeCategory.available !== false && activeCategory.market) {
-          const marketPayload = await fetchJson(
-            `/api/${sport}/performance?period=${encodeURIComponent(period)}&market=${encodeURIComponent(activeCategory.market)}${scope}`,
-            controller.signal
-          );
-          selected = normalizeStat(marketPayload);
-        }
-
-        if (!alive) return;
-        setProbabilityAudit(null);
-        setOverall(normalizeStat(overallPayload));
-        setCategoryStat(selected);
+        const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
+        const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
+        const payload=await fetchJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
+        if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
+        if(!alive)return;
+        setPartialHistory(payload.partial===true);
+        setHistoryRefreshing(payload.refreshing===true);retryDelay=payload.refreshing?5000:60000;
+        setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
+        setCategoryStat(normalizeStat(payload));
+        setSavedRecords(payload.records||[]);
+        setProbabilityAudit(payload.probabilityAccuracy||null);
       } catch {
         if (!alive) return;
         setOverall(ZERO);
