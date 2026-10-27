@@ -86,21 +86,27 @@ async function fetchCloudPerformanceDocuments(sport){
   }
  }catch(e){return {rows:readState.cache.get(sport)?.value.rows||[],errors:[failure(e)]};}
  const seen=new Set(),started=Date.now();
- for(const meta of metadata){
-  const key=[sport,meta.stream,meta.game_date].join('|');if(seen.has(key))continue;seen.add(key);
-  const cached=readState.documents.get(key);
-  if(cached?.checksum===meta.checksum){rows.push(cached);continue;}
-  if(Date.now()-started>=30000){errors.push(meta.stream+'|'+meta.game_date+':checking');continue;}
-  if(Date.now()-(readState.failures.get(key)||0)<300000){errors.push(meta.stream+'|'+meta.game_date+':unavailable');continue;}
-  try{
-   const page=await performanceReadSlot(()=>cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=eq.${encodeURIComponent(meta.stream)}&game_date=eq.${meta.game_date}&limit=1`,{signal:AbortSignal.timeout(10000)}));
-   const row=page?.[0];
-   if(!row||row.stream!==meta.stream||row.game_date!==meta.game_date||checksum(row.payload)!==row.checksum){errors.push(meta.stream+'|'+meta.game_date);continue;}
-   readState.failures.delete(key);readState.documents.set(key,row);rows.push(row);
-  }catch(e){readState.failures.set(key,Date.now());errors.push(meta.stream+'|'+meta.game_date+':'+failure(e));}
-  // Checksum verification can be CPU-heavy; let dashboard requests run.
-  await new Promise(resolve=>setImmediate(resolve));
- }
+ const unique=metadata.filter(meta=>{const key=[sport,meta.stream,meta.game_date].join('|');if(seen.has(key))return false;seen.add(key);return true;});
+ // Two workers overlap network latency, while performanceReadSlot keeps the
+ // total database read concurrency capped at two across every sport.
+ let next=0;
+ const load=async()=>{
+  while(next<unique.length){
+   const meta=unique[next++],key=[sport,meta.stream,meta.game_date].join('|');
+   const cached=readState.documents.get(key);
+   if(cached?.checksum===meta.checksum){rows.push(cached);continue;}
+   if(Date.now()-started>=60000){errors.push(meta.stream+'|'+meta.game_date+':checking');continue;}
+   if(Date.now()-(readState.failures.get(key)||0)<300000){errors.push(meta.stream+'|'+meta.game_date+':unavailable');continue;}
+   try{
+    const page=await performanceReadSlot(()=>cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&stream=eq.${encodeURIComponent(meta.stream)}&game_date=eq.${meta.game_date}&limit=1`,{signal:AbortSignal.timeout(10000)}));
+    const row=page?.[0];
+    if(!row||row.stream!==meta.stream||row.game_date!==meta.game_date||checksum(row.payload)!==row.checksum){errors.push(meta.stream+'|'+meta.game_date);continue;}
+    readState.failures.delete(key);readState.documents.set(key,row);rows.push(row);
+   }catch(e){readState.failures.set(key,Date.now());errors.push(meta.stream+'|'+meta.game_date+':'+failure(e));}
+   await new Promise(resolve=>setImmediate(resolve));
+  }
+ };
+ await Promise.all([load(),load()]);
  return {rows,errors};
 }
 export async function listCloudPerformanceDocuments(sport){
