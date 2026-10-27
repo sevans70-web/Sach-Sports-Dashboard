@@ -8,11 +8,33 @@ export async function cloudRequest(route,options={}){
  const headers={apikey:key,'Content-Type':'application/json',...options.headers};if(!key.startsWith('sb_secret_'))headers.Authorization='Bearer '+key;
  const r=await fetch(base+'/rest/v1/'+route,{...options,headers,signal:options.signal??AbortSignal.timeout(20000),cache:'no-store'});if(!r.ok){const body=await r.text();let code;try{const parsed=JSON.parse(body);if(/^[A-Z0-9_]{1,24}$/.test(parsed.code||''))code=parsed.code;}catch{}const error=Error('Cloud history HTTP '+r.status+(code?' ('+code+')':''));error.status=r.status;if(code)error.code=code;throw error;}const text=await r.text();return text?JSON.parse(text):null;
 }
-export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt=new Date().toISOString()){
- const hash=checksum(payload),scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
- await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:payload,p_source_bytes:bytes,p_source_updated_at:sourceUpdatedAt})});
- const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
- if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');return true;
+// Snapshot caller-owned payloads, coalesce identical concurrent saves, and order
+// each document's writes through verification. Never cache a successful save.
+const pendingCloudSaves=new Map(),documentWrites=new Map(),writeStats=new Map();
+export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
+export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt){
+ let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0};writeStats.set(sport,stats);}stats.attempted++;
+ const snapshot=JSON.parse(JSON.stringify(payload)),hash=checksum(snapshot);
+ const sourceTime=sourceUpdatedAt??new Date().toISOString();
+ // Implicit timestamps describe invocation time, not a distinct source version.
+ const key=JSON.stringify([sport,stream,day,hash,bytes,sourceUpdatedAt??null]);
+ const documentKey=JSON.stringify([sport,stream,day]);
+ const existing=pendingCloudSaves.get(key);
+ // A -> B -> A must write the last A, rather than join the first A.
+ if(existing&&documentWrites.get(documentKey)===existing){stats.coalesced++;return existing;}
+ const previous=documentWrites.get(documentKey)??Promise.resolve();
+ const work=previous.catch(()=>{}).then(async()=>{
+  const scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
+  await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:snapshot,p_source_bytes:bytes,p_source_updated_at:sourceTime})});
+  const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
+  if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');
+  return true;
+ });
+ pendingCloudSaves.set(key,work);documentWrites.set(documentKey,work);
+ try{const result=await work;stats.verified++;return result;}catch(e){stats.failed++;throw e;}finally{
+  if(pendingCloudSaves.get(key)===work)pendingCloudSaves.delete(key);
+  if(documentWrites.get(documentKey)===work)documentWrites.delete(documentKey);
+ }
 }
 export async function readCloudDocument(sport,stream,day){const rows=await cloudRequest(`history_documents?select=payload,checksum&sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`,{signal:AbortSignal.timeout(2500)});const row=rows?.[0];if(!row)return null;if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');return row.payload;}
 export async function listCloudDocuments(sport){

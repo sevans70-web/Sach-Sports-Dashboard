@@ -42,9 +42,15 @@ async function retryUpload(fn,label){
  throw last;
 }
 let count=0,total=0,errors=[],deleted=0,freedBytes=0;
+const startedAt=new Date().toISOString(),verifiedFiles=[];let lastCheckpoint=0;
+const operationalFiles=new Set(['sach-history/_system/last-backup.json','sach-history/_system/backup-manifest.json']);
 const backupStatusFile=path.join(root,'sach-history','_system','last-backup.json');
 async function backupStatus(value){await fs.mkdir(path.dirname(backupStatusFile),{recursive:true});const temp=backupStatusFile+'.'+process.pid+'.tmp';await fs.writeFile(temp,JSON.stringify({...value,updatedAt:new Date().toISOString(),retentionCutoff:retentionCutoff(),scope:process.env.SACH_BACKUP_ORPHANS_ONLY==='1'?'orphan-temporary-files':'full-volume'}));await fs.rename(temp,backupStatusFile)}
-await backupStatus({status:'RUNNING',startedAt:new Date().toISOString()});
+await backupStatus({status:'RUNNING',startedAt,driveFolderId:backup,files:0,bytes:0});
+async function recordVerified(rel,size,remote){
+ verifiedFiles.push({path:rel,bytes:size,driveFileId:remote.id,md5:remote.md5Checksum});
+ if(Date.now()-lastCheckpoint>=30000){lastCheckpoint=Date.now();await backupStatus({status:'RUNNING',startedAt,driveFolderId:backup,files:count,bytes:total,lastVerifiedPath:rel,deleted,freedBytes,errors});}
+}
 console.log('RETENTION_CUTOFF',retentionCutoff());
 async function migrateDocument(full,rel,size){
  const info=historyFileInfo(rel);if(!info?.document)return true;
@@ -65,26 +71,8 @@ async function safelyPrune(full,rel,size,remoteFile){
  if(removed){deleted++;freedBytes+=size;console.log('RETENTION_DELETE_VERIFIED',rel,size);}
 }
 
-async function walk(dir,parent){
- const remote=await query("'"+parent+"' in parents and trashed = false");
- const remoteFiles=new Map();
- for(const f of remote.filter(f=>f.mimeType!=="application/vnd.google-apps.folder")){const same=remoteFiles.get(f.name)||[];same.push(f);remoteFiles.set(f.name,same);}
- const entries=await fs.readdir(dir,{withFileTypes:true});
- entries.sort((a,b)=>Number(expiredHistory(path.relative(root,path.join(dir,b.name))))-Number(expiredHistory(path.relative(root,path.join(dir,a.name))))||a.name.localeCompare(b.name));
- for(const entry of entries){
-  const full=path.join(dir,entry.name);
-  if(entry.isSymbolicLink())continue;
-  if(entry.isDirectory()){await walk(full,await directory(entry.name,parent));continue;}
-  if(!entry.isFile())continue;
-  if(process.env.SACH_BACKUP_ORPHANS_ONLY==='1'&&!orphanArchiveInfo(path.relative(root,full)))continue;
-  try{
-   const stat=await fs.stat(full);const size=stat.size;
-   // Replicate first: cloud migration belongs only to the independently verified retention path.
-   // Calling Supabase for every source file can stall the full Drive archive during cloud outages.
-   const candidates=(remoteFiles.get(entry.name)||[]).filter(f=>Number(f.size)===size&&f.md5Checksum);
-   if(candidates.length){const local=await md5File(full),remote=candidates.find(f=>f.md5Checksum.toLowerCase()===local.toLowerCase());if(remote){const rel=path.relative(root,full);count++;total+=size;console.log("BACKUP_SKIP",rel,size);await safelyPrune(full,rel,size,remote);continue;}console.log("BACKUP_REUPLOAD",path.relative(root,full));}
-   const uploaded=await retryUpload(async()=>{
-   const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name:entry.name,parents:[parent]})});
+async function uploadVerified(full,name,parent,size,rel){return retryUpload(async()=>{
+   const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name,parents:[parent]})});
    const location=session.headers.get("location");if(!location)throw Error("Missing upload session");
    let result;
    if(size===0){const r=await api(location,{method:"PUT",headers:{"Content-Length":"0","Content-Range":"bytes */0"}});result=await r.json();}
@@ -103,17 +91,48 @@ async function walk(dir,parent){
    if(Number(result.size)!==size)throw Error("Uploaded file size mismatch");
    if(!result.md5Checksum||await md5File(full)!==result.md5Checksum)throw Error("Uploaded file checksum mismatch");
    return result;
-   });
+   },rel);}
+
+async function walk(dir,parent){
+ const remote=await query("'"+parent+"' in parents and trashed = false");
+ const remoteFiles=new Map();
+ for(const f of remote.filter(f=>f.mimeType!=="application/vnd.google-apps.folder")){const same=remoteFiles.get(f.name)||[];same.push(f);remoteFiles.set(f.name,same);}
+ const entries=await fs.readdir(dir,{withFileTypes:true});
+ entries.sort((a,b)=>Number(expiredHistory(path.relative(root,path.join(dir,b.name))))-Number(expiredHistory(path.relative(root,path.join(dir,a.name))))||a.name.localeCompare(b.name));
+ for(const entry of entries){
+  const full=path.join(dir,entry.name);
+  if(entry.isSymbolicLink())continue;
+  if(entry.isDirectory()){await walk(full,await directory(entry.name,parent));continue;}
+  if(!entry.isFile())continue;
+  if(operationalFiles.has(path.relative(root,full)))continue;
+  if(process.env.SACH_BACKUP_ORPHANS_ONLY==='1'&&!orphanArchiveInfo(path.relative(root,full)))continue;
+  try{
+   const stat=await fs.stat(full);const size=stat.size;
+   // Replicate first: cloud migration belongs only to the independently verified retention path.
+   // Calling Supabase for every source file can stall the full Drive archive during cloud outages.
+   const candidates=(remoteFiles.get(entry.name)||[]).filter(f=>Number(f.size)===size&&f.md5Checksum);
+   if(candidates.length){const local=await md5File(full),remote=candidates.find(f=>f.md5Checksum.toLowerCase()===local.toLowerCase());if(remote){const rel=path.relative(root,full);count++;total+=size;console.log("BACKUP_SKIP",rel,size);await recordVerified(rel,size,remote);await safelyPrune(full,rel,size,remote);continue;}console.log("BACKUP_REUPLOAD",path.relative(root,full));}
+   const uploaded=await uploadVerified(full,entry.name,parent,size,path.relative(root,full));
    count++;total+=size;console.log("BACKUP_OK",path.relative(root,full),size);
+   await recordVerified(path.relative(root,full),size,uploaded);
    await safelyPrune(full,path.relative(root,full),size,uploaded);
   }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}
  }
 }
 console.log('STORAGE_BEFORE',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
-await walk(root,backup);
-await backupStatus({status:errors.length?'INCOMPLETE':'COMPLETE',files:count,bytes:total,deleted,freedBytes,errors});
+try{await walk(root,backup);}catch(e){errors.push({file:'.',error:String(e)});console.error('BACKUP_FAILED',String(e));}
+let manifest=null;
+try{
+ const manifestPath=path.join(root,'sach-history','_system','backup-manifest.json');
+ const body=JSON.stringify({version:1,startedAt,completedAt:new Date().toISOString(),driveFolderId:backup,files:verifiedFiles,errors});
+ await fs.writeFile(manifestPath,body);
+ const remote=await uploadVerified(manifestPath,'backup-manifest-'+startedAt.replace(/[:.]/g,'-')+'.json',backup,Buffer.byteLength(body),'backup-manifest');
+ manifest={driveFileId:remote.id,md5:remote.md5Checksum,files:verifiedFiles.length};
+ console.log('BACKUP_MANIFEST_VERIFIED',JSON.stringify(manifest));
+}catch(e){errors.push({file:'backup-manifest',error:String(e)});}
+await backupStatus({status:errors.length?'INCOMPLETE':'COMPLETE',startedAt,driveFolderId:backup,manifest,files:count,bytes:total,deleted,freedBytes,errors});
 console.log('STORAGE_AFTER',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
-console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,scope:process.env.SACH_BACKUP_ORPHANS_ONLY==='1'?'orphan-temporary-files':'full-volume',files:count,bytes:total,deleted,freedBytes,errors}));
+console.log(JSON.stringify({status:errors.length?"INCOMPLETE":"COMPLETE",driveFolderId:backup,scope:process.env.SACH_BACKUP_ORPHANS_ONLY==='1'?'orphan-temporary-files':'full-volume',files:count,bytes:total,deleted,freedBytes,manifest,errors}));
 // Retention runs only after matching MD5 checksums establish an archived copy.
 if(errors.length)process.exitCode=1;
 

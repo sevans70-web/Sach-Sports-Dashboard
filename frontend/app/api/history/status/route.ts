@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import {cloudWriteStatus} from "../../../../scripts/history-cloud.mjs";
 import { NextResponse } from "next/server";
 import { durableHistoryStatus, historyRoot } from "@/lib/durable-history";
 
@@ -24,6 +25,7 @@ export async function GET() {
       success: storage.ok,
       storage,
       capture,
+      cloudWrites: cloudWriteStatus(),
       backup,
       localRetentionDays:7,
       archiveDestination:"Google Drive",
