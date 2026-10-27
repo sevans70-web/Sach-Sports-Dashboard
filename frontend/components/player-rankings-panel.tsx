@@ -2209,7 +2209,7 @@ export function PlayerRankingsPanel({
         // should never turn the ranking section into a blank panel.
         setError(
           cause instanceof Error
-            ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : cause.message
+            ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : "Player rankings are temporarily unavailable. Retrying…"
             : "Player rankings are temporarily unavailable."
         );
         retryTimer=setTimeout(run,5000);

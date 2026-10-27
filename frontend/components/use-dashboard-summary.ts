@@ -10,7 +10,7 @@ export function fetchDashboardSummary(sport:DashboardSport,league="eng.1"){
 export function useDashboardSummary(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`;
  const [state,setState]=useState<{key:string,data:any,error:string}>({key,data:cached.get(key)?.data||null,error:""});
- useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const data=await fetchDashboardSummary(sport,league);if(live)setState({key,data,error:""})}catch(e){if(live)setState(s=>({...s,error:e instanceof Error?e.message:"Dashboard unavailable"}))}finally{running=false}};run();const id=setInterval(run,30_000);return()=>{live=false;clearInterval(id)}},[sport,league,key]);
+ useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const data=await fetchDashboardSummary(sport,league);if(live)setState({key,data,error:""})}catch(e){if(live)setState(s=>({...s,error:"Live updates are temporarily unavailable. Retrying shortly…"}))}finally{running=false}};run();const id=setInterval(run,30_000);return()=>{live=false;clearInterval(id)}},[sport,league,key]);
  return state.key===key?state:{key,data:cached.get(key)?.data||null,error:""};
 }
 export function useDashboardSchedule(sport:DashboardSport,league="eng.1"){
