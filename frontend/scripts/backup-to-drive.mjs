@@ -56,6 +56,8 @@ async function migrateDocument(full,rel,size){
  console.log('CLOUD_DOCUMENT_VERIFIED',rel,size);return payload;
 }
 async function safelyPrune(full,rel,size,remoteFile){
+ // Retention is disabled until explicitly enabled after independent full-archive verification.
+ if(process.env.SACH_ENABLE_BACKUP_PRUNE!=='1')return;
  const removed=await pruneVerifiedFile({full,rel,size,remoteFile,migrateDocument,quiescent:process.env.SACH_BACKUP_QUIESCENT==='1',
  verifyRemote:async id=>(await api(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,size,md5Checksum,trashed`)).json(),
  recordArchive:async record=>{await cloudRequest('history_archive_files?on_conflict=relative_path,md5',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(record)});}
@@ -77,7 +79,8 @@ async function walk(dir,parent){
   if(process.env.SACH_BACKUP_ORPHANS_ONLY==='1'&&!orphanArchiveInfo(path.relative(root,full)))continue;
   try{
    const stat=await fs.stat(full);const size=stat.size;
-   try{await migrateDocument(full,path.relative(root,full),size);}catch(e){console.error('CLOUD_DOCUMENT_PENDING',path.relative(root,full),String(e));}
+   // Replicate first: cloud migration belongs only to the independently verified retention path.
+   // Calling Supabase for every source file can stall the full Drive archive during cloud outages.
    const candidates=(remoteFiles.get(entry.name)||[]).filter(f=>Number(f.size)===size&&f.md5Checksum);
    if(candidates.length){const local=await md5File(full),remote=candidates.find(f=>f.md5Checksum.toLowerCase()===local.toLowerCase());if(remote){const rel=path.relative(root,full);count++;total+=size;console.log("BACKUP_SKIP",rel,size);await safelyPrune(full,rel,size,remote);continue;}console.log("BACKUP_REUPLOAD",path.relative(root,full));}
    const uploaded=await retryUpload(async()=>{
