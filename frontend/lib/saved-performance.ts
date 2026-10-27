@@ -43,7 +43,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const startedAt=Date.now();
  if(process.env.NODE_ENV==='production')console.info('[performance-start]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false}));
- const remoteWork=cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):listCloudPerformanceDocuments(sport).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
+ const remoteWork=cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):listCloudPerformanceDocuments(sport,[...historyDays(period,now)].sort()[0]).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
