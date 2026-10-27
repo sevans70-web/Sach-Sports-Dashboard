@@ -21,3 +21,10 @@ test('MLB inspector preserves first-seen timestamps and legacy projections witho
  const row=mlbAdminSnapshot(source,'2026-10-23')[0],r=adminResult(row);
  assert.equal(r.savedAt,'2026-10-24T01:00Z');assert.equal(row.capturedAt,'2026-10-24T03:00Z');assert.equal(r.modelProjection,.25);assert.equal(r.giScore,100);assert.equal(r.modelProbability,null);assert.equal(r.team,'Team');assert.equal(r.matchup,'Team vs Opponent');assert.equal(r.verifiedPick,false);assert.equal(r.status,'unknown');assert.match(r.reason,/participation/);
 });
+
+test('bundled August MLB records retain pitcher identity, original zero statistics and legacy labels without inventing betting grades',async()=>{
+ const {readBundledMlbHistory}=await loadTs(new URL('../lib/hidden-admin-history.ts',import.meta.url));
+ const result=await readBundledMlbHistory(new Set(['2026-08-19']));assert.deepEqual(result.errors,[]);assert(result.rows.length>0);
+ const pitchers=result.rows.filter(r=>r.historySection==='pitcher');assert(pitchers.length>1);assert(pitchers.every(r=>r.playerId&&r.playerName!=='Unknown player'));assert.equal(new Set(pitchers.map(r=>r.key)).size,pitchers.length);
+ assert(result.rows.some(r=>r.actual===0));assert(result.rows.every(r=>r.status==='unknown'));assert(result.rows.some(r=>r.legacyResult));
+});

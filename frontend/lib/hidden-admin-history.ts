@@ -10,13 +10,14 @@ export function mlbAdminSnapshot(payload:any,day:string){
   for(const [market,records] of Object.entries(payload?.[section]?.categories||{})){
    if(!Array.isArray(records))continue;
    for(const row of records)rows.push({...row,
-    key:String(row.key||`${day}|${section}|${market}|${row.gameId||row.game_pk||row.gamePk||''}|${row.playerId||row.player_id||row.name||''}`),
-    gameDate:day,market,historySection:section,playerId:String(row.playerId||row.player_id||''),
-    playerName:row.playerName||row.player_name||row.name||'Unknown player',
+    key:String(row.key||`${day}|${section}|${market}|${row.gameId||row.game_pk||row.gamePk||''}|${row.playerId||row.player_id||row.pitcher_id||row.name||row.pitcher_name||''}`),
+    gameDate:day,market,historySection:section,playerId:String(row.playerId||row.player_id||row.pitcher_id||''),
+    playerName:row.playerName||row.player_name||row.pitcher_name||row.name||'Unknown player',
     teamName:row.teamName||row.team_name||row.team||'',
     matchup:row.matchup||[row.team_name,row.opponent_name].filter(Boolean).join(' vs '),
     modelProjection:row.modelProjection??row.projection??null,giScore:row.giScore??row.gi_score??null,
     modelProbability:row.modelProbability??null,
+    actual:typeof row.actual==='number'?row.actual:typeof row['actual_'+(market==='home_runs_pool'?'home_runs':market)]==='number'?row['actual_'+(market==='home_runs_pool'?'home_runs':market)]:null,
     reviewReason:'Legacy snapshot: original sportsbook selection, price provenance, participation and pregame timing are not verified.',
     gameId:String(row.gameId||row.game_pk||row.gamePk||''),
     savedAt:row.savedAt||row.first_seen_at||row.captured_at||payload[section].captured_at||null,
@@ -27,6 +28,17 @@ export function mlbAdminSnapshot(payload:any,day:string){
   }
  }
  return rows;
+}
+/** The original Streamlit history is bundled with the existing repository.
+ * Read it in place; preserve legacy outcomes without inventing sportsbook calls. */
+export async function readBundledMlbHistory(days:Set<string>,directory=path.join(process.cwd(),'data')){
+ const rows:any[]=[],dates=new Set<string>(),errors:string[]=[];
+ for(const [section,name] of [['batter','mlb_performance_history.json'],['pitcher','mlb_pitcher_performance_history.json']]){
+  try{const history=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));if(!history.days||typeof history.days!=='object')throw Error('Invalid bundled history');
+   for(const [day,value] of Object.entries(history.days))if(days.has(day)){rows.push(...mlbAdminSnapshot({[section]:value},day));dates.add(day);}
+  }catch{errors.push('legacy:'+name);}
+ }
+ return {rows,dates:[...dates].sort(),errors};
 }
 export async function readMlbAdminHistory(period:string){
  const dir=path.join(historyRoot(),'mlb','performance');

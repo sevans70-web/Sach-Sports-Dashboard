@@ -10,7 +10,7 @@ import {setImmediate as yieldToRequests} from 'node:timers/promises';
 import path from 'node:path';
 import {historyRoot} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
-import {mlbAdminSnapshot} from '@/lib/hidden-admin-history';
+import {mlbAdminSnapshot,readBundledMlbHistory} from '@/lib/hidden-admin-history';
 
 export const HISTORY_SPORTS=['nfl','cfb','nba','wnba','nhl','cbb','mlb','soccer'] as const;
 export const HISTORY_PERIODS=['Today','Yesterday','Week','Month','Season'] as const;
@@ -52,6 +52,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
  const availableDates=new Set<string>(),observationTimes=new Map<string,number>();
+ if(sport==='mlb'&&root===historyRoot()){const legacy=await readBundledMlbHistory(days);rows.push(...legacy.rows);legacy.dates.forEach(day=>availableDates.add(day));errors.push(...legacy.errors);}
  const remember=(payload:any,observedAt?:string)=>{const key=String(payload.gameId),at=Date.parse(observedAt||payload.updatedAt||'')||0;if(!observations.has(key)||at>(observationTimes.get(key)||0)){observations.set(key,payload);observationTimes.set(key,at);}};
  const consume=(payload:any,stream:string,date:string)=>{
   if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}

@@ -10,7 +10,7 @@ export function reconcilePerformanceRecords(rows:any[]){
   (Number.isFinite(time(a))&&Number.isFinite(time(b))?time(a)-time(b):0));
  for(const row of ordered){
   const key=row.gameId&&row.playerId?[fixtureDay(row),row.historySection||'',row.market,row.gameId,row.playerId].join('|'):row.key||[fixtureDay(row),row.market,row.gameId,row.playerId].join('|');
-  const prior=unique.get(key);if(!prior){unique.set(key,row);continue;}duplicates++;
+  const prior=unique.get(key);if(!prior){unique.set(key,{...row,key});continue;}duplicates++;
   if(side(prior)!==side(row)||prior.sportsbookLine!==row.sportsbookLine)conflicts++;
   // Only an explicitly authenticated final observation can settle another copy.
   if((prior.verifiedResult!==true||!Number.isFinite(Date.parse(prior.gradedAt))||Date.parse(row.gradedAt)>=Date.parse(prior.gradedAt))&&row.verifiedResult===true&&row.resultSource==='official_final_boxscore'&&typeof row.actual==='number'&&Number.isFinite(row.actual)&&
