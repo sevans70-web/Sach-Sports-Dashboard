@@ -10,7 +10,11 @@ export async function cloudRequest(route,options={}){
 }
 // Snapshot caller-owned payloads, coalesce identical concurrent saves, and order
 // each document's writes through verification. Never cache a successful save.
-const pendingCloudSaves=new Map(),documentWrites=new Map(),writeStats=new Map();
+// Next.js may evaluate this module in multiple route chunks. Share the queues
+// across those instances so verification ordering holds for the whole process.
+const stateKey=Symbol.for('sach.history.cloudWrites.v1');
+const state=globalThis[stateKey]??(globalThis[stateKey]={pending:new Map(),documents:new Map(),stats:new Map()});
+const pendingCloudSaves=state.pending,documentWrites=state.documents,writeStats=state.stats;
 export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt){
  let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0};writeStats.set(sport,stats);}stats.attempted++;

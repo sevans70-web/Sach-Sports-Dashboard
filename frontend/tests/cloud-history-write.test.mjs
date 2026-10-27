@@ -31,6 +31,11 @@ test('real cloud writer preserves concurrent history and verifies every distinct
    maxActive=0;await Promise.all([1,2,3].map(actual=>saveCloudDocument('nba','ordered','2026-10-26',[{actual}])));
    assert.equal(maxActive,1);assert.deepEqual(rows.get('nba|ordered|2026-10-26').payload,[{actual:3}]);
   });
+  await t.test('separate route module instances share one verification queue',async()=>{
+   const other=await import('../scripts/history-cloud.mjs?other-route');maxActive=0;
+   await Promise.all([saveCloudDocument('nba','route_instances','2026-10-26',[1]),other.saveCloudDocument('nba','route_instances','2026-10-26',[2])]);
+   assert.equal(maxActive,1);assert.deepEqual(rows.get('nba|route_instances|2026-10-26').payload,[2]);
+  });
   await t.test('interleaved A B A preserves the final request',async()=>{
    const before=writes;await Promise.all([1,2,1].map(actual=>saveCloudDocument('nfl','interleaved','2026-10-26',[{actual}])));
    assert.equal(writes-before,3);assert.deepEqual(rows.get('nfl|interleaved|2026-10-26').payload,[{actual:1}]);
