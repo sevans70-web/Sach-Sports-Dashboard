@@ -152,12 +152,12 @@ export function evaluatePrice(values:number[],q:ExactQuote){
  return {...p,overEv,underEv,marketOver:impliedOver/(impliedOver+impliedUnder),
   candidateSide:conditional!=null&&conditional>=.55&&ev>=.03?side:null,conditionalWinProbability:conditional};
 }
-export function forecastDistribution(model:DistributionModel,history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>,availableAt=target.gameTime){
+export function forecastDistribution(model:DistributionModel,history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>,availableAt=target.gameTime,preparedBasketball?:ReturnType<typeof basketballFeatureIndex>){
  if(model.group!==groupOf(target as OpportunityGame))return {reason:'wrong_group' as string,forecast:null};
  // Features are reconstructed with a 48-hour result lag. This is not a
  // substitute for a frozen pregame role/injury/rotation snapshot.
  if(!validTime(availableAt)||Date.parse(availableAt)>Date.parse(target.gameTime)||Date.parse(availableAt)-48*3600000<=Date.parse(model.calibratedThrough))return {reason:'model_not_available_before_target',forecast:null};
- const input=model.featurePolicy==='basketball_context'?basketballFeatureIndex(history)(target,availableAt):probabilityInputs(history,target,availableAt);
+ const input=model.featurePolicy==='basketball_context'?(preparedBasketball||basketballFeatureIndex(history))(target,availableAt):probabilityInputs(history,target,availableAt);
  if(!input.features)return {reason:input.reason,forecast:null};
  const prediction=point(model,input.features);
  return {reason:null,forecast:{...prediction,values:workloadDistributionValues(model,prediction.projection,prediction.expectedWorkload)}};

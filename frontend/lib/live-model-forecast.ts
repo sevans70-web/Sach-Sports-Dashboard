@@ -1,3 +1,5 @@
+import {setImmediate as yieldToRequests} from 'node:timers/promises';
+import {basketballFeatureIndex} from '@/lib/basketball-model-inputs';
 import {predictionProbability} from '@/lib/prediction-probability';
 import {estimatedEv} from '@/lib/estimated-ev';
 import {refreshNbaObservations} from '@/lib/live-basketball-observations';
@@ -12,6 +14,11 @@ import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/l
 import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
+export function createRuntimeForecastIndex(observations:OpportunityGame[]){
+ const histories=new Map<string,OpportunityGame[]>(),basketball=new Map<string,ReturnType<typeof basketballFeatureIndex>>();
+ for(const game of observations){const key=game.sport+'|'+game.market;let rows=histories.get(key);if(!rows){rows=[];histories.set(key,rows)}rows.push(game);}
+ return {histories,basketball};
+}
 let cached:RuntimeBundle|null=null;
 function bundle():RuntimeBundle{
  if(cached)return cached;
@@ -27,7 +34,7 @@ function bundle():RuntimeBundle{
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** Experimental outputs remain separate from the validated recommendation
  * registry and never rewrite historical lines, bets, grades or probabilities. */
-export function fittedResearchForecast(row:any,sport:string,market:string,data:RuntimeBundle,now=Date.now()):any{
+export function fittedResearchForecast(row:any,sport:string,market:string,data:RuntimeBundle,now=Date.now(),index?:ReturnType<typeof createRuntimeForecastIndex>):any{
  if(row?.frozen||row?.lockedAtKickoff||['in','post'].includes(row?.gameState)||!Number.isFinite(Date.parse(row?.gameTime))||Date.parse(row.gameTime)<=now)return unavailable('pregame_only');
  const context=row.pregameContext;
  if(context&&(context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)))return unavailable('wrong_pregame_context_identity');
@@ -35,7 +42,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  if(!Number.isFinite(Date.parse(data.asOf))||Date.parse(data.asOf)>now)return unavailable('snapshot_not_available');
  const combination:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
  if(['nba','wnba','cbb'].includes(sport)&&combination[market]){
-  const parts=combination[market].map(component=>fittedResearchForecast({...row,market:component,sportsbookLine:null},sport,component,data,now));
+  const parts=combination[market].map(component=>fittedResearchForecast({...row,market:component,sportsbookLine:null},sport,component,data,now,index));
   if(parts.some(p=>p.status!=='available'||p.projection==null))return unavailable('component_forecast_unavailable');
   return {status:'available',projection:Math.round(parts.reduce((n,p)=>n+Number(p.projection),0)*10)/10,modelId:'sum_of_fitted_component_expectations',modelGroup:sport+'|'+market,calculatedAt:new Date(now).toISOString(),components:combination[market],giScore:null,giReason:'GI_exact_price_calibration_missing',priceComparison:null,modelSelection:null,validatedForBetting:false,reason:null};
  }
@@ -48,10 +55,12 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   opponentId:String(context?.opponentId||row.opponentId||''),season:String(context?.season||row.season),gameTime:row.gameTime,source:'current official fixture',retrievedAt:new Date(now).toISOString(),
   ...(model.featurePolicy==='basketball_context'?{basketballContext:{home:context.homeAway==='home'} as OpportunityGame['basketballContext']}:{}),
  };
- const history=data.observations.filter(g=>g.sport===sport&&g.market===market);
+ const history=index?.histories.get(key)||data.observations.filter(g=>g.sport===sport&&g.market===market);
  const latest=history.filter(g=>g.playerId===target.playerId&&g.teamId===target.teamId&&Date.parse(g.gameTime)<now-48*3600000).sort((a,b)=>a.gameTime.localeCompare(b.gameTime)).at(-1);
  if(!latest)return unavailable('player_team_history_unavailable');
- const result=forecastDistribution(model,history,target,new Date(now).toISOString());
+ let prepared=index?.basketball.get(key);
+ if(index&&model.featurePolicy==='basketball_context'&&!prepared){prepared=basketballFeatureIndex(history);index.basketball.set(key,prepared);}
+ const result=forecastDistribution(model,history,target,new Date(now).toISOString(),prepared);
  if(!result.forecast)return unavailable(result.reason||'forecast_inputs_unavailable');
  const f=result.forecast,values=[...f.values].sort((a,b)=>a-b);
  if(!Number.isFinite(f.projection)||!Number.isFinite(f.expectedWorkload)||!values.length||!values.every(Number.isFinite))return unavailable('invalid_fitted_output');
@@ -111,7 +120,13 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);
   data={...data,observations:[...merged.values()]};
  }
- const rows=payload.rows.map((r:any)=>({...r,researchForecast:nbaRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now)})).map((row:any)=>({...row,estimatedEv:estimatedEv(row,now),pregameProbability:predictionProbability(row,now)}));
+ const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
+ for(const r of payload.rows){
+  const row={...r,researchForecast:nbaRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  rows.push({...row,estimatedEv:estimatedEv(row,now),pregameProbability:predictionProbability(row,now)});
+  // Even a large slate must let health/history requests run between players.
+  await yieldToRequests();
+ }
  return {...payload,rows,fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast.status==='available').length,
   modelSelectionCount:rows.filter((r:any)=>r.researchForecast.modelSelection!=null).length};
 }
