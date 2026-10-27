@@ -7,11 +7,14 @@ import {dashboardDay} from '@/lib/dashboard-contract';
 export function mlbAdminSnapshot(payload:any,day:string){
  const rows:any[]=[];
  for(const section of ['batter','pitcher','emerging']){
-  for(const [market,records] of Object.entries(payload?.[section]?.categories||{})){
+  const history=payload?.[section],entries:any[]=history?.days&&typeof history.days==='object'?Object.entries(history.days):[[day,history]];
+  for(const [savedDay,snapshot] of entries){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(savedDay))continue;
+  for(const [market,records] of Object.entries(snapshot?.categories||{})){
    if(!Array.isArray(records))continue;
    for(const row of records)rows.push({...row,
-    key:String(row.key||`${day}|${section}|${market}|${row.gameId||row.game_pk||row.gamePk||''}|${row.playerId||row.player_id||row.pitcher_id||row.name||row.pitcher_name||''}`),
-    gameDate:day,market,historySection:section,playerId:String(row.playerId||row.player_id||row.pitcher_id||''),
+    key:String(row.key||`${savedDay}|${section}|${market}|${row.gameId||row.game_pk||row.gamePk||''}|${row.playerId||row.player_id||row.pitcher_id||row.name||row.pitcher_name||''}`),
+    gameDate:savedDay,market,historySection:section,playerId:String(row.playerId||row.player_id||row.pitcher_id||''),
     playerName:row.playerName||row.player_name||row.pitcher_name||row.name||'Unknown player',
     teamName:row.teamName||row.team_name||row.team||'',
     matchup:row.matchup||[row.team_name,row.opponent_name].filter(Boolean).join(' vs '),
@@ -20,11 +23,12 @@ export function mlbAdminSnapshot(payload:any,day:string){
     actual:typeof row.actual==='number'?row.actual:typeof row['actual_'+(market==='home_runs_pool'?'home_runs':market)]==='number'?row['actual_'+(market==='home_runs_pool'?'home_runs':market)]:null,
     reviewReason:'Legacy snapshot: original sportsbook selection, price provenance, participation and pregame timing are not verified.',
     gameId:String(row.gameId||row.game_pk||row.gamePk||''),
-    savedAt:row.savedAt||row.first_seen_at||row.captured_at||payload[section].captured_at||null,
-    capturedAt:row.captured_at||payload[section].captured_at||null,
+    savedAt:row.savedAt||row.first_seen_at||row.captured_at||snapshot.captured_at||null,
+    capturedAt:row.captured_at||snapshot.captured_at||null,
     // Legacy target-hit labels are not proof of a saved sportsbook prediction.
     status:row.status||'unknown',legacyResult:row.result_label||null,
    });
+  }
   }
  }
  return rows;

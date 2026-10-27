@@ -28,3 +28,8 @@ test('bundled August MLB records retain pitcher identity, original zero statisti
  const pitchers=result.rows.filter(r=>r.historySection==='pitcher');assert(pitchers.length>1);assert(pitchers.every(r=>r.playerId&&r.playerName!=='Unknown player'));assert.equal(new Set(pitchers.map(r=>r.key)).size,pitchers.length);
  assert(result.rows.some(r=>r.actual===0));assert(result.rows.every(r=>r.status==='unknown'));assert(result.rows.some(r=>r.legacyResult));
 });
+
+test('cumulative MLB archives keep each original history date instead of assigning every entry the backup date',()=>{
+ const payload={batter:{days:{'2026-09-02':{captured_at:'2026-09-02T10:00Z',categories:{hits:[{player_id:7,player_name:'Saved batter',actual_hits:0,result_label:'Original label'}]}},'2026-09-03':{captured_at:'2026-09-03T10:00Z',categories:{hits:[{player_id:7,player_name:'Saved batter',actual_hits:2}]}}}}};
+ const before=JSON.stringify(payload),rows=mlbAdminSnapshot(payload,'2026-09-27');assert.deepEqual(rows.map(r=>r.gameDate),['2026-09-02','2026-09-03']);assert.deepEqual(rows.map(r=>r.actual),[0,2]);assert.equal(rows[0].legacyResult,'Original label');assert(rows.every(r=>r.status==='unknown'));assert.notEqual(rows[0].key,rows[1].key);assert.equal(JSON.stringify(payload),before);
+});
