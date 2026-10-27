@@ -1,3 +1,4 @@
+import {recordedProjectionValue} from '@/lib/saved-projection';
 import {predictionAccuracy,predictionProbability} from '@/lib/prediction-probability';
 import {performanceView} from '@/lib/performance-view';
 import {schedulePerformanceRecovery} from '@/lib/performance-recovery-scheduler';
@@ -16,7 +17,7 @@ export async function GET(req:NextRequest){
   const categories=Object.fromEntries([...new Set(scopedRecords.map(r=>String(r.market)))].map(key=>[key,savedHistorySummary(scopedRecords.filter(r=>r.market===key))]));
   return NextResponse.json({success:data.records.length>0||data.coverage.complete,connected:data.records.length>0||data.coverage.complete,partial:!data.coverage.complete,sport,period,league,readOnly:true,researchSummary:savedHistorySummary(selected),probabilityAccuracy:predictionAccuracy(selected.map(r=>({...r,sport}))),overallSummary:savedHistorySummary(scopedRecords),categories,coverage:data.coverage,
    // Preserve the saved call and grade. These are historical forecasts, not newly validated picks.
-   records:selected.sort((a,b)=>String(b.gameTime||b.savedAt).localeCompare(String(a.gameTime||a.savedAt))).map(r=>({key:r.key,playerName:r.playerName,market:r.market,gameDate:Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate,storedGameDate:r.gameDate,gameTime:r.gameTime,savedAt:r.savedAt,pick:r.pickSide||r.pick||null,line:r.sportsbookLine??null,projection:r.modelProjection??null,actual:r.actual??null,status:r.status,gradedAt:r.gradedAt,legacyResult:r.legacyResult||null,probability:predictionProbability(r)})),
+   records:selected.sort((a,b)=>String(b.gameTime||b.savedAt).localeCompare(String(a.gameTime||a.savedAt))).map(r=>({key:r.key,playerName:r.playerName,market:r.market,gameDate:Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate,storedGameDate:r.gameDate,gameTime:r.gameTime,savedAt:r.savedAt,pick:r.pickSide||r.pick||null,line:r.sportsbookLine??null,projection:recordedProjectionValue(r),actual:r.actual??null,status:r.status,gradedAt:r.gradedAt,legacyResult:r.legacyResult||null,probability:predictionProbability(r)})),
    updatedAt:data.snapshotAt||new Date().toISOString(),refreshing:data.refreshing===true},{headers:{'Cache-Control':'no-store'}});
  }catch{return NextResponse.json({success:false,connected:false,error:'Saved history storage is unavailable. Counts cannot be verified.'},{status:503,headers:{'Cache-Control':'no-store'}});}
 }

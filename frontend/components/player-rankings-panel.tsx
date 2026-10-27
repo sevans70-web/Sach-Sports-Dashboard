@@ -1,4 +1,5 @@
 "use client";
+import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {cardObservationGames} from '@/lib/card-observation-games';
@@ -495,7 +496,8 @@ function normalizeCard(
       result?.sportsbookLine
   );
 
-  const projection = finite(
+  const savedProjection=savedProjectionEvidence({...row,market:market.key},result);
+  const projection = savedProjection?.projection ?? finite(
     row?.modelProjection ??
       row?.projection ??
       row?.perGame ??
@@ -674,7 +676,7 @@ function normalizeCard(
     liveProgressPct: progress,
     recentValues: recentValues(row),
     usage: usageRows(row),
-    raw: {...row,...recordNoteFields(result),historicalStatus:result?.historicalStatus||row.historicalStatus,originalResearchPick:row.originalResearchPick||result?.archivedOriginal?.prediction,originalResearchSavedAt:row.originalResearchSavedAt||result?.savedAt},
+    raw: {...row,savedProjectionReceipt:savedProjection,...recordNoteFields(result),historicalStatus:result?.historicalStatus||row.historicalStatus,originalResearchPick:row.originalResearchPick||result?.archivedOriginal?.prediction,originalResearchSavedAt:row.originalResearchSavedAt||result?.savedAt},
   };
 }
 
@@ -991,7 +993,7 @@ function PlayerCard({
   const footballForecast=footballForecastDisplay(card.raw);
   const displayedPick=modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction);
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
-  const displayedAverage=footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection);
+  const displayedAverage=savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 

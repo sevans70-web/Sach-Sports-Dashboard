@@ -1,4 +1,5 @@
 "use client";
+import {savedProjectionText} from '@/lib/saved-projection';
 import {fetchHistoryJson} from '@/lib/history-fetch';
 
 import { useEffect, useMemo, useState } from "react";
@@ -543,7 +544,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                   <p>Average predicted chance, excluding pushes: {g.meanProbability==null?'—':(100*g.meanProbability).toFixed(1)+'%'} · Actual win rate: {g.hitRate==null?'—':(100*g.hitRate).toFixed(1)+'%'}</p>
                 </article>):<p>No settled predictions with verified saved probabilities are available for this category and period.</p>}
               </details>
-              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}</article>)}</div></details>:null}
+              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""}</p><p>Original projection: {savedProjectionText(r)} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}</article>)}</div></details>:null}
 
               {categoryNote ? <p className={styles.categoryNote}>{categoryNote}</p> : null}
             </div>
