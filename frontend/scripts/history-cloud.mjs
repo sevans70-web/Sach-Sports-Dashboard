@@ -13,9 +13,14 @@ export async function cloudRequest(route,options={}){
 // Next.js may evaluate this module in multiple route chunks. Share the queues
 // across those instances so verification ordering holds for the whole process.
 const stateKey=Symbol.for('sach.history.cloudWrites.v1');
-const state=globalThis[stateKey]??(globalThis[stateKey]={pending:new Map(),documents:new Map(),stats:new Map()});
+const state=globalThis[stateKey]??(globalThis[stateKey]={pending:new Map(),documents:new Map(),stats:new Map(),active:0,waiting:[]});
+state.active??=0;state.waiting??=[];
+async function withCloudSaveSlot(work){
+ if(state.active>=4)await new Promise(resolve=>state.waiting.push(resolve));else state.active++;
+ try{return await work();}finally{const next=state.waiting.shift();if(next)next();else state.active--;}
+}
 const pendingCloudSaves=state.pending,documentWrites=state.documents,writeStats=state.stats;
-export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
+export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,activeSaves:state.active,queuedSaves:state.waiting.length,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt){
  let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0};writeStats.set(sport,stats);}stats.attempted++;
  const snapshot=JSON.parse(JSON.stringify(payload)),hash=checksum(snapshot);
@@ -27,13 +32,13 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
  // A -> B -> A must write the last A, rather than join the first A.
  if(existing&&documentWrites.get(documentKey)===existing){stats.coalesced++;return existing;}
  const previous=documentWrites.get(documentKey)??Promise.resolve();
- const work=previous.catch(()=>{}).then(async()=>{
+ const work=previous.catch(()=>{}).then(()=>withCloudSaveSlot(async()=>{
   const scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
   await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:snapshot,p_source_bytes:bytes,p_source_updated_at:sourceTime})});
   const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
   if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');
   return true;
- });
+ }));
  pendingCloudSaves.set(key,work);documentWrites.set(documentKey,work);
  try{const result=await work;stats.verified++;return result;}catch(e){stats.failed++;throw e;}finally{
   if(pendingCloudSaves.get(key)===work)pendingCloudSaves.delete(key);
