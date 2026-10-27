@@ -74,10 +74,10 @@ async function performanceReadSlot(work){
  if(readState.active>=2)await new Promise(resolve=>readState.waiting.push(resolve));else readState.active++;
  try{return await work();}finally{const next=readState.waiting.shift();if(next)next();else readState.active--;}
 }
-async function fetchCloudPerformanceDocuments(sport){
+async function fetchCloudPerformanceDocuments(sport,firstDay){
  if(!/^[a-z0-9_-]+$/i.test(sport))throw Error('Invalid history sport');
  const metadata=[],errors=[],rows=[];
- const scope=`sport=eq.${sport}&stream=not.like.featured_selections*&stream=not.like.featured_results*&or=(stream.not.like.protected_*,stream.like.protected_final_*,stream.like.protected_pregame_*)&stream=not.like.performance_view_*&stream=not.like.player_history_*`;
+ const scope=`sport=eq.${sport}&${firstDay?`game_date=gte.${firstDay}&`:''}stream=not.like.featured_selections*&stream=not.like.featured_results*&or=(stream.not.like.protected_*,stream.like.protected_final_*,stream.like.protected_pregame_*)&stream=not.like.performance_view_*&stream=not.like.player_history_*`;
  const failure=e=>typeof e.code==='string'?'unavailable:'+e.code:'unavailable';
  try{
   for(let offset=0;;offset+=200){
@@ -109,10 +109,12 @@ async function fetchCloudPerformanceDocuments(sport){
  await Promise.all([load(),load()]);
  return {rows,errors};
 }
-export async function listCloudPerformanceDocuments(sport){
- const cached=readState.cache.get(sport);if(cached&&Date.now()-cached.at<60000)return cached.value;
- let work=readState.pending.get(sport);
- if(!work){work=fetchCloudPerformanceDocuments(sport).then(value=>{readState.cache.set(sport,{at:Date.now(),value});return value;}).finally(()=>readState.pending.delete(sport));readState.pending.set(sport,work);}
+export async function listCloudPerformanceDocuments(sport,firstDay){
+ if(firstDay&&!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid history cutoff');
+ const scopeKey=sport+'|'+(firstDay||'all');
+ const cached=readState.cache.get(scopeKey);if(cached&&Date.now()-cached.at<60000)return cached.value;
+ let work=readState.pending.get(scopeKey);
+ if(!work){work=fetchCloudPerformanceDocuments(sport,firstDay).then(value=>{readState.cache.set(scopeKey,{at:Date.now(),value});return value;}).finally(()=>readState.pending.delete(scopeKey));readState.pending.set(scopeKey,work);}
  return work;
 }
 
