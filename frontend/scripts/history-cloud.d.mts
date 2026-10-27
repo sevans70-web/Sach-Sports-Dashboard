@@ -7,7 +7,7 @@ export function readCloudDocument(sport:string,stream:string,day:string):Promise
 export function listCloudDocuments(sport:string):Promise<any[]>;
 
 export function readCloudDocumentsForDay(sport:string,streams:string[],day:string):Promise<any[]>;
-export function listCloudPerformanceDocuments(sport:string):Promise<{rows:any[];errors:string[]}>;
+export function listCloudPerformanceDocuments(sport:string,firstDay?:string):Promise<{rows:any[];errors:string[]}>;
 export function readCloudDocumentRange(sport:string,stream:string,first:string,last:string):Promise<any[]>;
 
 export function cloudWriteStatus():{configured:boolean;pendingDocuments:number;activeSaves:number;queuedSaves:number;sports:Record<string,{attempted:number;verified:number;failed:number;coalesced:number;retried:number}>};
