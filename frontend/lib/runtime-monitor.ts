@@ -1,7 +1,9 @@
 import {monitorEventLoopDelay,performance} from 'node:perf_hooks';
 import {promises as fs} from 'node:fs';
+import {startCpuSampler} from '@/lib/runtime-cpu';
 /** Bounded numeric diagnostics only: no environment values or record contents. */
 export function startRuntimeMonitor(root:string){
+ const stopCpu=startCpuSampler();
  const delay=monitorEventLoopDelay({resolution:20});delay.enable();
  let cpu=process.cpuUsage(),last=performance.now(),busy=false,closed=false;
  const timer=setInterval(()=>{
@@ -13,5 +15,5 @@ export function startRuntimeMonitor(root:string){
    if(!closed)console.info('[runtime-monitor]',JSON.stringify({...sample,storageProbeMs:Math.round(performance.now()-probe),storageAccessible}));
   }).finally(()=>{busy=false;});
  },10000);timer.unref();
- return ()=>{closed=true;clearInterval(timer);delay.disable();};
+ return ()=>{closed=true;clearInterval(timer);delay.disable();stopCpu();};
 }
