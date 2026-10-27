@@ -8,11 +8,23 @@ export async function cloudRequest(route,options={}){
  const headers={apikey:key,'Content-Type':'application/json',...options.headers};if(!key.startsWith('sb_secret_'))headers.Authorization='Bearer '+key;
  const r=await fetch(base+'/rest/v1/'+route,{...options,headers,signal:options.signal??AbortSignal.timeout(20000),cache:'no-store'});if(!r.ok){const body=await r.text();let code;try{const parsed=JSON.parse(body);if(/^[A-Z0-9_]{1,24}$/.test(parsed.code||''))code=parsed.code;}catch{}const error=Error('Cloud history HTTP '+r.status+(code?' ('+code+')':''));error.status=r.status;if(code)error.code=code;throw error;}const text=await r.text();return text?JSON.parse(text):null;
 }
+// Coalesce concurrent saves of the same source payload in this process. Keep the
+// existing write + checksum round-trip intact; failures are never cached.
+const pendingCloudSaves=new Map();
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt=new Date().toISOString()){
- const hash=checksum(payload),scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
- await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:payload,p_source_bytes:bytes,p_source_updated_at:sourceUpdatedAt})});
- const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
- if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');return true;
+ const hash=checksum(payload);
+ const key=JSON.stringify([sport,stream,day,hash,bytes,sourceUpdatedAt]);
+ const existing=pendingCloudSaves.get(key);
+ if(existing)return existing;
+ const work=(async()=>{
+  const scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
+  await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:payload,p_source_bytes:bytes,p_source_updated_at:sourceUpdatedAt})});
+  const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
+  if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');
+  return true;
+ })();
+ pendingCloudSaves.set(key,work);
+ try{return await work;}finally{if(pendingCloudSaves.get(key)===work)pendingCloudSaves.delete(key);}
 }
 export async function readCloudDocument(sport,stream,day){const rows=await cloudRequest(`history_documents?select=payload,checksum&sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`,{signal:AbortSignal.timeout(2500)});const row=rows?.[0];if(!row)return null;if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');return row.payload;}
 export async function listCloudDocuments(sport){
