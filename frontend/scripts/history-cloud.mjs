@@ -84,7 +84,7 @@ async function fetchCloudPerformanceDocuments(sport,firstDay){
    const page=await performanceReadSlot(()=>cloudRequest(`history_documents?select=stream,game_date,checksum,source_bytes&${scope}&order=game_date.asc,stream.asc&limit=200&offset=${offset}`,{signal:AbortSignal.timeout(10000)}));
    metadata.push(...page);if(page.length<200)break;
   }
- }catch(e){return {rows:readState.cache.get(sport)?.value.rows||[],errors:[failure(e)]};}
+ }catch(e){return {rows:readState.cache.get(sport+'|'+(firstDay||'all'))?.value.rows||[],errors:[failure(e)]};}
  const seen=new Set(),started=Date.now();
  const unique=metadata.filter(meta=>{const key=[sport,meta.stream,meta.game_date].join('|');if(seen.has(key))return false;seen.add(key);return true;});
  // Two workers overlap network latency, while performanceReadSlot keeps the
