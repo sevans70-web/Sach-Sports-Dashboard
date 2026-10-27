@@ -649,7 +649,7 @@ function normalizeCard(
     modelProbability: row?.researchOnly || unverifiedFootballLine ? null : probability,
     giScore: row?.researchOnly || unverifiedFootballLine ? null : gi,
     prediction:
-      row?.researchOnly ? "NO PICK" : unverifiedFootballLine ? "Unverified" : footballScorer ? (row?.quoteVersion === 1 ? "YES" : "—") : isBinaryEventMarket(market.key) &&
+      row?.researchOnly ? "Forecast only" : unverifiedFootballLine ? "Line not confirmed" : footballScorer ? (row?.quoteVersion === 1 ? "YES" : "—") : isBinaryEventMarket(market.key) &&
       line == null &&
       probability != null
         ? "YES"
@@ -659,7 +659,7 @@ function normalizeCard(
             projection,
             probability
           ),
-    summary: row?.researchOnly ? row.summary : unverifiedFootballLine ? "This original line lacks saved bookmaker and market-type verification. It is retained for history and is not a verified recommendation." : String(
+    summary: row?.researchOnly ? row.summary : unverifiedFootballLine ? "The saved sportsbook and market details could not be confirmed. This record remains available for history, but it is not a verified pick." : String(
       row?.summary ??
         row?.why ??
         row?.ranking_reason ??
