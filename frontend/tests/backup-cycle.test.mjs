@@ -28,7 +28,7 @@ test('actual backup cycle records verified uploads and skips, and never complete
   let status=JSON.parse(await readFile(path.join(root,'sach-history/_system/last-backup.json'),'utf8'));
   assert.equal(status.status,'COMPLETE');assert.equal(status.files,7);assert.ok(peak>=2&&peak<=4);assert.equal(status.deleted,0);assert.equal(status.scope,'full-volume');assert.ok(status.manifest.driveFileId);
   const manifestName=[...uploaded.keys()].find(n=>n.startsWith('backup-manifest-')),body=uploaded.get(manifestName),manifest=JSON.parse(body);
-  assert.equal(status.manifest.md5,md5(body));assert.deepEqual(manifest.files.map(f=>f.path),['a.json','b.json','c.json','d.json','e.json','f.json','g.json']);assert.equal(manifest.files[1].driveFileId,'existing');
+  assert.equal(status.manifest.md5,md5(body));assert.equal(status.manifest.sourceFiles,7);assert.equal(status.manifest.unverifiedSourceFiles,0);assert.deepEqual(manifest.unverifiedSourcePaths,[]);assert.deepEqual(manifest.sourcePaths,manifest.files.map(f=>f.path));assert.deepEqual(manifest.files.map(f=>f.path),['a.json','b.json','c.json','d.json','e.json','f.json','g.json']);assert.equal(manifest.files[1].driveFileId,'existing');
   assert.equal(await readFile(path.join(root,'a.json'),'utf8'),'new');assert.equal(await readFile(path.join(root,'b.json'),'utf8'),'saved');
   failWalk=true;await import('../scripts/backup-to-drive.mjs?failed');status=JSON.parse(await readFile(path.join(root,'sach-history/_system/last-backup.json'),'utf8'));
   assert.equal(status.status,'INCOMPLETE');assert.ok(status.errors.length);assert.equal(status.deleted,0);assert.equal(process.exitCode,1);

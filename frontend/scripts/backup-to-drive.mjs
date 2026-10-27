@@ -51,6 +51,16 @@ async function recordVerified(rel,size,remote){
  verifiedFiles.push({path:rel,bytes:size,driveFileId:remote.id,md5:remote.md5Checksum});
  if(Date.now()-lastCheckpoint>=30000){lastCheckpoint=Date.now();await backupStatus({status:'RUNNING',startedAt,driveFolderId:backup,files:count,bytes:total,lastVerifiedPath:rel,deleted,freedBytes,errors});}
 }
+// Freeze the source path inventory before copying. New capture files may also
+// be copied, but every file present at cycle start must have a verified receipt.
+const sourcePaths=new Set();
+async function inventoryPaths(dir){for(const entry of await fs.readdir(dir,{withFileTypes:true})){
+ const full=path.join(dir,entry.name),rel=path.relative(root,full);
+ if(entry.isDirectory())await inventoryPaths(full);
+ else if(entry.isFile()&&!operationalFiles.has(rel))sourcePaths.add(rel);
+}}
+try{await inventoryPaths(root);}catch(e){errors.push({file:'source-inventory',error:String(e)});}
+console.log('BACKUP_SOURCE_INVENTORY',sourcePaths.size);
 console.log('RETENTION_CUTOFF',retentionCutoff());
 async function migrateDocument(full,rel,size){
  const info=historyFileInfo(rel);if(!info?.document)return true;
@@ -125,13 +135,16 @@ async function walk(dir,parent){
 }
 console.log('STORAGE_BEFORE',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
 try{await walk(root,backup);}catch(e){errors.push({file:'.',error:String(e)});console.error('BACKUP_FAILED',String(e));}
+const verifiedPaths=new Set(verifiedFiles.map(file=>file.path));
+const unverifiedSourcePaths=[...sourcePaths].filter(rel=>!verifiedPaths.has(rel));
+if(unverifiedSourcePaths.length)errors.push({file:'source-inventory',error:'Unverified source paths: '+unverifiedSourcePaths.length});
 let manifest=null;
 try{
  const manifestPath=path.join(root,'sach-history','_system','backup-manifest.json');
- const body=JSON.stringify({version:1,startedAt,completedAt:new Date().toISOString(),driveFolderId:backup,files:verifiedFiles.sort((a,b)=>a.path.localeCompare(b.path)),errors});
+ const body=JSON.stringify({version:1,startedAt,completedAt:new Date().toISOString(),driveFolderId:backup,sourcePaths:[...sourcePaths].sort(),unverifiedSourcePaths,excludedOperationalFiles:[...operationalFiles],files:verifiedFiles.sort((a,b)=>a.path.localeCompare(b.path)),errors});
  await fs.writeFile(manifestPath,body);
  const remote=await uploadVerified(manifestPath,'backup-manifest-'+startedAt.replace(/[:.]/g,'-')+'.json',backup,Buffer.byteLength(body),'backup-manifest');
- manifest={driveFileId:remote.id,md5:remote.md5Checksum,files:verifiedFiles.length};
+ manifest={driveFileId:remote.id,md5:remote.md5Checksum,files:verifiedFiles.length,sourceFiles:sourcePaths.size,unverifiedSourceFiles:unverifiedSourcePaths.length};
  console.log('BACKUP_MANIFEST_VERIFIED',JSON.stringify(manifest));
 }catch(e){errors.push({file:'backup-manifest',error:String(e)});}
 await backupStatus({status:errors.length?'INCOMPLETE':'COMPLETE',startedAt,driveFolderId:backup,manifest,files:count,bytes:total,deleted,freedBytes,errors});
