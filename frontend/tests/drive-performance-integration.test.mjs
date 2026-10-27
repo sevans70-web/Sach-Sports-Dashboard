@@ -1,0 +1,18 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {mkdtemp,mkdir,readdir,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';import {loadTs} from './load-ts.mjs';
+test('Drive receipts restore all sports through the actual performance reader while Supabase is offline, without writing originals',async()=>{
+ const keys=['BACKUP_DRIVE_FOLDER_ID','GOOGLE_OAUTH_CLIENT_ID','GOOGLE_OAUTH_CLIENT_SECRET','GOOGLE_OAUTH_REFRESH_TOKEN','SUPABASE_URL','SUPABASE_SECRET_KEY'],previous=Object.fromEntries(keys.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch,root=await mkdtemp(path.join(tmpdir(),'sach-drive-performance-'));
+ keys.forEach(k=>process.env[k]='test');process.env.SUPABASE_URL='https://offline.invalid';
+ const folder=(id,name)=>({id,name,mimeType:'application/vnd.google-apps.folder'}),sports=['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'];
+ const now=new Date(),start=new Date(+now-3600000).toISOString(),at=new Date(+now-9*86400000).toISOString(),day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at)),files=new Map();
+ for(const sport of sports){await mkdir(path.join(root,sport,sport==='mlb'?'performance':''),{recursive:true});
+  const row={playerId:'p',gameId:'g',market:'points',gameTime:start,quoteVerified:true,sportsbookLine:2.5,researchForecast:{status:'available',projection:1.5}};
+  const pre=[{savedAt:at,payload:{kind:'pregame_checkpoint',checkpointAt:at,rows:[row]}}],fin=[{savedAt:now.toISOString(),payload:{kind:'official_final_checkpoint',gameId:'g',source:'official_final_boxscore',boxscore:{success:true,gameId:'g',state:'post',rows:[{playerId:'p',stats:{points:0}}]}}}];
+  files.set(sport,[['protected_pregame_g_points',pre],['protected_final_g',fin]].map(([stream,payload])=>{const bytes=JSON.stringify(payload);return {id:sport+'-'+stream,name:stream+'_'+day+'.json',size:Buffer.byteLength(bytes),md5Checksum:createHash('md5').update(bytes).digest('hex'),modifiedTime:now.toISOString(),bytes};}));
+ }
+ globalThis.fetch=async(url)=>{const u=new URL(url);assert(['www.googleapis.com','oauth2.googleapis.com'].includes(u.hostname),'Must not require Supabase or a live result provider');if(u.hostname==='oauth2.googleapis.com')return Response.json({access_token:'test',expires_in:3600});
+  if(u.searchParams.get('alt')==='media'){const id=u.pathname.split('/').pop(),file=[...files.values()].flat().find(f=>f.id===id);return new Response(file.bytes);}
+  const parent=u.searchParams.get('q').match(/^'([^']+)'/)[1];return Response.json({files:parent==='test'?[folder('backup','railway-2026-10-24')]:parent==='backup'?[folder('history','sach-history')]:parent==='history'?sports.map(s=>folder(s,s)):files.get(parent)||[]});};
+ try{const {readSavedPerformance}=await loadTs(new URL('../lib/saved-performance.ts',import.meta.url));for(const sport of sports){const r=await readSavedPerformance(sport,'Week',now,root,{observe:false});assert.equal(r.records.length,1);assert.equal(r.records[0].modelProjection,1.5);assert.equal(r.records[0].sportsbookLine,2.5);assert.equal(r.records[0].pickSide,'UNDER');assert.equal(r.coverage.driveDocuments,2);assert.equal(r.coverage.complete,true);assert.equal(r.coverage.historySource,'Google Drive');if(!['mlb','soccer'].includes(sport)){assert.equal(r.records[0].actual,0);assert.equal(r.records[0].status,'hit');}assert.deepEqual(await readdir(path.join(root,sport,sport==='mlb'?'performance':'')),[]);}}
+ finally{globalThis.fetch=oldFetch;for(const k of keys)if(previous[k]===undefined)delete process.env[k];else process.env[k]=previous[k];await rm(root,{recursive:true,force:true});}
+});

@@ -387,7 +387,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
         const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
         if(!alive)return;
-        const cloudUnavailable=payload.coverage?.errors?.some((error:string)=>error.startsWith('cloud:unavailable'));
+        const cloudUnavailable=payload.coverage?.errors?.some((error:string)=>/^(cloud|drive):unavailable/.test(error));
         retryDelay=payload.refreshing&&!cloudUnavailable?5000:60000;
         setPartialHistory(payload.partial===true);setHistoryRefreshing(payload.refreshing===true&&!cloudUnavailable);
         if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");

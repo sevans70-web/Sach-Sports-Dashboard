@@ -3,6 +3,7 @@ import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
 import {cachedOfficialResult} from '@/lib/official-result-cache';
 import {savedResearchDecisions,observeSavedResearch} from '@/lib/saved-research-performance';
 import {cloudConfigured,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
+import {drivePerformanceConfigured,listDrivePerformanceDocuments} from '../scripts/drive-performance.mjs';
 
 import {promises as fs} from 'node:fs';
 import {setImmediate as yieldToRequests} from 'node:timers/promises';
@@ -43,7 +44,10 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const startedAt=Date.now();
  if(process.env.NODE_ENV==='production')console.info('[performance-start]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false}));
- const remoteWork=cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):listCloudPerformanceDocuments(sport,[...historyDays(period,now)].sort()[0]).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
+ // Capture dates can precede fixture dates. Read the saved season inventory
+ // from Drive, then apply the requested period to each record's fixture time.
+ const drive=drivePerformanceConfigured(),firstDay=[...historyDays(drive?'Season':period,now)].sort()[0];
+ const remoteWork=drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
@@ -67,10 +71,10 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   for(const item of batch){if(item.error){errors.push(item.name);continue;}try{const date=item.name.match(/(\d{4}-\d{2}-\d{2})\.json$/)![1],stream=item.name.replace(/_?\d{4}-\d{2}-\d{2}\.json$/,'')||'performance';consume(item.payload,stream,date);files++;}catch{errors.push(item.name);}}
   await yieldToRequests();
  }
- const localFinishedAt=Date.now(),remote=await remoteWork,cloudFinishedAt=Date.now();errors.push(...remote.errors.map((x:string)=>'cloud:'+x));
- for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push('cloud:'+doc.stream+'|'+doc.game_date);}
+ const localFinishedAt=Date.now(),remote=await remoteWork,cloudFinishedAt=Date.now();errors.push(...remote.errors.map((x:string)=>(drive?'drive:':'cloud:')+x));
+ for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push((drive?'drive:':'cloud:')+doc.stream+'|'+doc.game_date);}
  const reconciled=reconcilePerformanceRecords(rows);
  const records=await observeSavedResearch(reconciled.records.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
- if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments:remote.rows.length,cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
- return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date)])].sort(),cloudDocuments:remote.rows.length,errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
+ if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments:drive?0:remote.rows.length,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
+ return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date)])].sort(),cloudDocuments:drive?0:remote.rows.length,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
 }
