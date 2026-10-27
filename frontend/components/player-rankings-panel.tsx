@@ -2472,12 +2472,13 @@ export function PlayerRankingsPanel({
       ) : null}
 
       <div className={styles.tabsFrame}>
-        <div className={styles.tabs} ref={marketScroll.ref}>
+        <div className={`${styles.tabs} ${sport === "nba" ? styles.nbaMarketTabs : ""}`} role="group" aria-label={`${sport.toUpperCase()} player prop markets`} ref={marketScroll.ref}>
           {group.markets.map((item) => (
             <button
               type="button"
               key={item.key}
               className={item.key === market.key ? styles.activeTab : ""}
+              aria-pressed={item.key === market.key}
               onClick={() => selectMarket(item.key)}
             >
               <span>{item.icon}</span>
