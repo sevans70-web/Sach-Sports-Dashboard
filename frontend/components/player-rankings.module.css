@@ -1106,3 +1106,27 @@
 button.barSlot {border:0;padding:0;background:transparent;color:inherit;cursor:pointer;}
 button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px solid var(--gold);outline-offset:-2px;}
 .chartReadout {margin:8px 0 0;color:#e8d48a;font-size:12px;min-height:18px;}
+
+
+/* B04: fully highlighted, finger-friendly NBA market selection on mobile. */
+.nbaMarketTabs button {
+  min-height: 39px;
+  border: 2px solid #43484b;
+  border-radius: 10px;
+  background: #171a1b;
+  color: #f4f4f4;
+}
+.nbaMarketTabs button.activeTab,
+.nbaMarketTabs button[aria-pressed="true"] {
+  border: 2px solid #f6d56f;
+  background: #e7bd49;
+  color: #17120a;
+  box-shadow: 0 0 0 1px rgba(246,213,111,.55), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.nbaMarketTabs button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+@media (max-width: 430px) {
+  .nbaMarketTabs button { min-height: 42px; padding: 9px 12px; font-size: 11px; }
+}
