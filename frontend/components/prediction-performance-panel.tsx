@@ -421,7 +421,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     if (loading) return "Loading prediction history…";
     if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn${r.unknown?` · ${r.unknown} without a recorded grade`:""}${r.lateRecords?` · ${r.lateRecords} first saved after start`:""}`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
-      return categoryStat.research?.total ? `${categoryStat.research.total} saved forecast records: ${categoryStat.research.awaitingResult} awaiting results. No verified ${activeCategory?.label||""} picks for this period.` : `No saved validated ${activeCategory?.label || ""} picks for this period yet.`;
+      return categoryStat.research?.total ? `${categoryStat.research.total} saved forecast records: ${categoryStat.research.awaitingResult} awaiting results. No verified ${activeCategory?.label||""} picks for this period.` : `No saved ${activeCategory?.label || ""} forecasts for this period yet.`;
     }
     return "";
   }, [activeCategory, categoryStat, loading,researchView,sport]);
@@ -469,7 +469,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           Prediction Performance
         </h2>
 
-        {researchView ? <p>Saved forecast history · original calls and recorded results. Historical grades do not imply validated picks.</p> : null}
+        {researchView ? <p>Original saved forecasts and recorded results · some forecasts do not include a sportsbook price.</p> : null}
       {partialHistory?<p>Some archived results could not be loaded. Totals cover the verified records currently available.</p>:null}
       {historyRefreshing?<p>Showing saved records while final results and archive coverage are checked.</p>:null}
         {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
