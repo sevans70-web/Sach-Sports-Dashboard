@@ -1189,7 +1189,7 @@ function PlayerCard({
 
       {state === "final" ? (
         <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "LATE CAPTURE" : "LINE UNVERIFIED" : statusSymbol(result)}</strong>
+          <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
           <span>
             {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
             {!unverifiedFootballResult && card.sportsbookLine != null && current != null
