@@ -11,8 +11,9 @@ export function drivePerformanceConfigured(){return ['BACKUP_DRIVE_FOLDER_ID','G
 
 /** Read backed-up daily documents, never restore files to the Railway volume.
  * Folder discovery is independent of the Supabase archive catalog. */
-export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[]}){
+export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule}){
  const inventories=new Map(),pending=new Map(),results=new Map(),documents=new Map();
+ const scheduled=new Set();
  let active=0,cacheBytes=0;const waiting=[];
  const unpack=value=>({errors:value.errors,rows:value.rows.map(row=>({stream:row.stream,game_date:row.game_date,checksum:row.checksum,payload:JSON.parse(gunzipSync(row.zip).toString('utf8'))}))});
  async function slot(work){if(active>=2)await new Promise(resolve=>waiting.push(resolve));else active++;try{return await work();}finally{const next=waiting.shift();if(next)next();else active--;}}
@@ -54,13 +55,14 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
     const response=await request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(file.id)+'?alt=media',{signal:AbortSignal.timeout(streaming?120000:12000)});if(!response.ok||!response.body)throw Error('Backup read failed');
     let payload,bytes,size=0,stream=file.stream;const hash=createHash('md5');
     if(streaming){
-     const decoder=new StringDecoder('utf8'),staged=new Map();
+     const decoder=new StringDecoder('utf8'),staged=new Map();let stagedBytes=0;
      async function* chunks(){for await(const raw of response.body){const chunk=Buffer.from(raw);size+=chunk.length;hash.update(chunk);yield decoder.write(chunk);}const tail=decoder.end();if(tail)yield tail;}
      await visitJsonObjects(chunks(),snapshot=>{for(const record of projectSnapshot(sport,file.stream,file.game_date,snapshot)){
-      const identity=JSON.stringify([record.key,record.gameId,record.playerId,record.market,record.gameTime,record.savedAt,record.sportsbookLine,record.pickSide,record.archiveFinal?.gameId,record.archiveFinal?.observedAt,record.archiveFinal?.boxscore?.updatedAt]);staged.set(identity,record);
+      const identity=JSON.stringify([record.key,record.gameId,record.playerId,record.market,record.gameTime,record.savedAt,record.sportsbookLine,record.pickSide,record.archiveFinal?.gameId,record.archiveFinal?.observedAt,record.archiveFinal?.boxscore?.updatedAt]),recordBytes=Buffer.byteLength(JSON.stringify(record));
+      stagedBytes+=recordBytes-(staged.get(identity)?.bytes||0);if(stagedBytes>32*1024*1024)throw Error('Archive record byte capacity exceeded');staged.set(identity,{record,bytes:recordBytes});
       if(staged.size>200000)throw Error('Archive record capacity exceeded');
      }});
-     payload=[...staged.values()];bytes=Buffer.from(JSON.stringify(payload));stream='archive_records_'+file.stream;
+     payload=[...staged.values()].map(value=>value.record);bytes=Buffer.from(JSON.stringify(payload));stream='archive_records_'+file.stream;
     }else{const chunks=[];for await(const raw of response.body){const chunk=Buffer.from(raw);size+=chunk.length;if(size>16*1024*1024)throw Error('Backup document exceeds limit');hash.update(chunk);chunks.push(chunk);}bytes=Buffer.concat(chunks);payload=JSON.parse(bytes.toString('utf8'));}
     // Staged records are accepted only after the entire original file verifies.
     if(size!==Number(file.size)||hash.digest('hex')!==file.md5Checksum.toLowerCase())throw Error('Backup checksum mismatch');
@@ -73,15 +75,24 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
   }
   return {rows,errors};
  }
- return async(sport,firstDay)=>{
+ const read=async(sport,firstDay)=>{
   if(!['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'].includes(sport)||firstDay&&!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid backup history scope');
   const key=sport+'|'+(firstDay||'all'),cached=results.get(key);if(cached&&now()-cached.at<(cached.value.errors.some(e=>e.endsWith(':checking'))?5000:60000))return unpack(cached.value);
-  let work=pending.get(key);if(!work){work=load(sport,firstDay).then(value=>{results.set(key,{at:now(),value});return value;}).finally(()=>pending.delete(key));pending.set(key,work);}return unpack(await work);
+  let work=pending.get(key);if(!work){work=load(sport,firstDay).then(value=>{
+   results.set(key,{at:now(),value});
+   // Continue bounded work on the persistent server without requiring a browser
+   // poll. Transport/integrity failures alone never enter this fast retry loop.
+   if(schedule&&value.errors.some(error=>error.endsWith(':checking'))&&!scheduled.has(key)){
+    scheduled.add(key);schedule(()=>{scheduled.delete(key);return read(sport,firstDay).catch(()=>{});});
+   }
+   return value;
+  }).finally(()=>pending.delete(key));pending.set(key,work);}return unpack(await work);
  };
+ return read;
 }
 let reader;
 export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
- if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot});}
+ if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}});}
  return reader(sport,firstDay);
 }

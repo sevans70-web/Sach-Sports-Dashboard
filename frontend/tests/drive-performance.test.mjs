@@ -37,3 +37,11 @@ test('snapshot archives stream UTF-8 records, deduplicate repeated observations 
  const result=await createDrivePerformanceReader(options)('nba');assert.deepEqual(result.errors,[]);assert.equal(result.rows.length,1);assert.equal(result.rows[0].stream,'archive_records_snapshots_points');assert.deepEqual(result.rows[0].payload,snapshot.payload);
  altered=true;const corrupt=await createDrivePerformanceReader(options)('nba');assert.deepEqual(corrupt.rows,[]);assert.deepEqual(corrupt.errors,['snapshots_points|2026-10-16:unavailable']);
 });
+
+test('server continuation finishes bounded recovery without another browser request and does not fast-loop on failed reads',async()=>{
+ let clock=1000,downloads=0;const jobs=[],docs=Array.from({length:3},(_,i)=>document('d'+i,'points_2026-10-'+(16+i)+'.json',[{actual:i}]));
+ const request=async url=>{const u=new URL(url);if(u.searchParams.get('alt')==='media'){downloads++;clock+=20;return new Response(docs.find(d=>d.id===u.pathname.split('/').pop()).bytes);}const p=u.searchParams.get('q').match(/^'([^']+)'/)[1];return Response.json({files:p==='root'?[folder('backup','railway-2026-10-24')]:p==='backup'?[folder('history','sach-history')]:p==='history'?[folder('nfl','nfl')]:docs});};
+ const read=createDrivePerformanceReader({folderId:'root',request,now:()=>clock,budgetMs:30,schedule:job=>jobs.push(job)});
+ const first=await read('nfl');assert.equal(first.rows.length,2);assert.equal(jobs.length,1);clock+=5001;await jobs.shift()();assert.equal(downloads,3);assert.equal(jobs.length,0);assert.equal((await read('nfl')).rows.length,3);
+ const corrupt=createDrivePerformanceReader({folderId:'root',request:async url=>String(url).includes('alt=media')?new Response('bad'):request(url),schedule:job=>jobs.push(job)});const failed=await corrupt('nfl');assert.equal(failed.rows.length,0);assert.equal(jobs.length,0);
+});
