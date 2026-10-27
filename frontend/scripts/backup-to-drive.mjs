@@ -4,10 +4,11 @@ import {pruneVerifiedFile,md5File} from './retention-cleanup.mjs';
 import {expiredHistory,historyFileInfo,retentionCutoff,orphanArchiveInfo} from './retention-policy.mjs';
 import {cloudConfigured,saveCloudDocument,cloudRequest} from './history-cloud.mjs';
 // Railway startup launches this script after the dashboard server starts.\n// Run inside the Railway service: node scripts/backup-to-drive.mjs
-// Streams files directly from the mounted volume to Google Drive without staging a second copy.
+// Freezes small live files in bounded memory; streams larger immutable archives.
+// No second on-disk copy of the mounted volume is staged.
 import {promises as fs,createReadStream} from "node:fs";
 import path from "node:path";
-import {randomUUID} from "node:crypto";
+import {randomUUID,createHash} from "node:crypto";
 const root=process.env.RAILWAY_VOLUME_MOUNT_PATH||"/data";
 const rootStat=await fs.stat(root);
 if(!rootStat.isDirectory())throw Error("Railway backup source is not a directory: "+root);
@@ -44,6 +45,10 @@ async function retryUpload(fn,label){
 let count=0,total=0,errors=[],deleted=0,freedBytes=0;
 const startedAt=new Date().toISOString(),verifiedFiles=[];let lastCheckpoint=0;
 const operationalFiles=new Set(['sach-history/_system/last-backup.json','sach-history/_system/backup-manifest.json']);
+// The outbox contains retry pointers, not original receipts. Completed jobs are
+// removed by replication; the durable protected_* receipts remain in scope.
+const operationalPrefixes=['sach-history/_system/protected-outbox/'];
+const operationalFile=rel=>operationalFiles.has(rel)||operationalPrefixes.some(prefix=>rel.startsWith(prefix))||/^sach-history\/_system\/(?:last-backup|last-capture|save-safeguards-[a-z]+)\.json\..+\.tmp$/.test(rel);
 const backupStatusFile=path.join(root,'sach-history','_system','last-backup.json');
 async function backupStatus(value){await fs.mkdir(path.dirname(backupStatusFile),{recursive:true});const temp=backupStatusFile+'.'+process.pid+'.'+randomUUID()+'.tmp';await fs.writeFile(temp,JSON.stringify({...value,updatedAt:new Date().toISOString(),retentionCutoff:retentionCutoff(),scope:process.env.SACH_BACKUP_ORPHANS_ONLY==='1'?'orphan-temporary-files':'full-volume'}));await fs.rename(temp,backupStatusFile)}
 await backupStatus({status:'RUNNING',startedAt,driveFolderId:backup,files:0,bytes:0});
@@ -57,7 +62,7 @@ const sourcePaths=new Set();
 async function inventoryPaths(dir){for(const entry of await fs.readdir(dir,{withFileTypes:true})){
  const full=path.join(dir,entry.name),rel=path.relative(root,full);
  if(entry.isDirectory())await inventoryPaths(full);
- else if(entry.isFile()&&!operationalFiles.has(rel))sourcePaths.add(rel);
+ else if(entry.isFile()&&!operationalFile(rel))sourcePaths.add(rel);
 }}
 try{await inventoryPaths(root);}catch(e){errors.push({file:'source-inventory',error:String(e)});}
 console.log('BACKUP_SOURCE_INVENTORY',sourcePaths.size);
@@ -81,7 +86,14 @@ async function safelyPrune(full,rel,size,remoteFile){
  if(removed){deleted++;freedBytes+=size;console.log('RETENTION_DELETE_VERIFIED',rel,size);}
 }
 
-async function uploadVerified(full,name,parent,size,rel){return retryUpload(async()=>{
+async function uploadVerified(full,name,parent,size,rel){
+ // Atomic source replacements must not change bytes midway through a resumable
+ // upload. Freeze small live documents in bounded memory; large immutable
+ // archives remain streamed and must still match their source checksum.
+ const snapshot=size<=16*1024*1024?await fs.readFile(full):null;
+ if(snapshot)size=snapshot.length;
+ const expectedMd5=snapshot?createHash('md5').update(snapshot).digest('hex'):null;
+ return retryUpload(async()=>{
    const session=await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,md5Checksum",{method:"POST",headers:{"content-type":"application/json; charset=UTF-8","X-Upload-Content-Type":"application/octet-stream","X-Upload-Content-Length":String(size)},body:JSON.stringify({name,parents:[parent]})});
    const location=session.headers.get("location");if(!location)throw Error("Missing upload session");
    let result;
@@ -90,16 +102,17 @@ async function uploadVerified(full,name,parent,size,rel){return retryUpload(asyn
     let offset=0;const chunkSize=8*1024*1024;
     while(offset<size){
      const end=Math.min(size,offset+chunkSize)-1;
-     const chunks=[];for await(const c of createReadStream(full,{start:offset,end}))chunks.push(c);
-     const data=Buffer.concat(chunks);
+     let data;
+     if(snapshot)data=snapshot.subarray(offset,end+1);
+     else{const chunks=[];for await(const c of createReadStream(full,{start:offset,end}))chunks.push(c);data=Buffer.concat(chunks);}
      const r=await driveRequest(location,{method:"PUT",headers:{"Content-Length":String(data.length),"Content-Range":`bytes ${offset}-${end}/${size}`},body:data});
      if(r.status===308){offset=end+1;continue;}
-     if(!r.ok)throw Error("Upload failed "+r.status);
+     if(!r.ok)throw Error("Upload failed "+r.status+": "+(await r.text()).slice(0,200));
      result=await r.json();offset=size;
     }
    }
    if(Number(result.size)!==size)throw Error("Uploaded file size mismatch");
-   if(!result.md5Checksum||await md5File(full)!==result.md5Checksum)throw Error("Uploaded file checksum mismatch");
+   if(!result.md5Checksum||(expectedMd5??await md5File(full))!==result.md5Checksum)throw Error("Uploaded file checksum mismatch");
    return result;
    },rel);}
 
@@ -116,7 +129,7 @@ async function walk(dir,parent){
   if(entry.isSymbolicLink())continue;
   if(entry.isDirectory()){await flush();await walk(full,await directory(entry.name,parent));continue;}
   if(!entry.isFile())continue;
-  if(operationalFiles.has(path.relative(root,full)))continue;
+  if(operationalFile(path.relative(root,full)))continue;
   if(process.env.SACH_BACKUP_ORPHANS_ONLY==='1'&&!orphanArchiveInfo(path.relative(root,full)))continue;
   batch.push((async()=>{try{
    const stat=await fs.stat(full);const size=stat.size;
@@ -125,9 +138,9 @@ async function walk(dir,parent){
    const candidates=(remoteFiles.get(entry.name)||[]).filter(f=>Number(f.size)===size&&f.md5Checksum);
    if(candidates.length){const local=await md5File(full),remote=candidates.find(f=>f.md5Checksum.toLowerCase()===local.toLowerCase());if(remote){const rel=path.relative(root,full);count++;total+=size;console.log("BACKUP_SKIP",rel,size);await recordVerified(rel,size,remote);await safelyPrune(full,rel,size,remote);return;}console.log("BACKUP_REUPLOAD",path.relative(root,full));}
    const uploaded=await uploadVerified(full,entry.name,parent,size,path.relative(root,full));
-   count++;total+=size;console.log("BACKUP_OK",path.relative(root,full),size);
-   await recordVerified(path.relative(root,full),size,uploaded);
-   await safelyPrune(full,path.relative(root,full),size,uploaded);
+   const copiedSize=Number(uploaded.size);count++;total+=copiedSize;console.log("BACKUP_OK",path.relative(root,full),copiedSize);
+   await recordVerified(path.relative(root,full),copiedSize,uploaded);
+   await safelyPrune(full,path.relative(root,full),copiedSize,uploaded);
   }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}})());
   if(batch.length>=4)await flush();
  }
@@ -141,7 +154,7 @@ if(unverifiedSourcePaths.length)errors.push({file:'source-inventory',error:'Unve
 let manifest=null;
 try{
  const manifestPath=path.join(root,'sach-history','_system','backup-manifest.json');
- const body=JSON.stringify({version:1,startedAt,completedAt:new Date().toISOString(),driveFolderId:backup,sourcePaths:[...sourcePaths].sort(),unverifiedSourcePaths,excludedOperationalFiles:[...operationalFiles],files:verifiedFiles.sort((a,b)=>a.path.localeCompare(b.path)),errors});
+ const body=JSON.stringify({version:1,startedAt,completedAt:new Date().toISOString(),driveFolderId:backup,sourcePaths:[...sourcePaths].sort(),unverifiedSourcePaths,excludedOperationalFiles:[...operationalFiles],excludedOperationalPrefixes:operationalPrefixes,files:verifiedFiles.sort((a,b)=>a.path.localeCompare(b.path)),errors});
  await fs.writeFile(manifestPath,body);
  const remote=await uploadVerified(manifestPath,'backup-manifest-'+startedAt.replace(/[:.]/g,'-')+'.json',backup,Buffer.byteLength(body),'backup-manifest');
  manifest={driveFileId:remote.id,md5:remote.md5Checksum,files:verifiedFiles.length,sourceFiles:sourcePaths.size,unverifiedSourceFiles:unverifiedSourcePaths.length};

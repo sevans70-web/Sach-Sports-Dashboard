@@ -22,7 +22,7 @@ async function withCloudSaveSlot(work){
 const pendingCloudSaves=state.pending,documentWrites=state.documents,writeStats=state.stats;
 export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,activeSaves:state.active,queuedSaves:state.waiting.length,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt){
- let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0};writeStats.set(sport,stats);}stats.attempted++;
+ let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0,retried:0};writeStats.set(sport,stats);}stats.attempted++;
  const snapshot=JSON.parse(JSON.stringify(payload)),hash=checksum(snapshot);
  const sourceTime=sourceUpdatedAt??new Date().toISOString();
  // Implicit timestamps describe invocation time, not a distinct source version.
@@ -34,10 +34,16 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
  const previous=documentWrites.get(documentKey)??Promise.resolve();
  const work=previous.catch(()=>{}).then(()=>withCloudSaveSlot(async()=>{
   const scope=`sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`;
+  for(let attempt=0;;attempt++){try{
   await cloudRequest('rpc/write_history_document',{method:'POST',body:JSON.stringify({p_sport:sport,p_stream:stream,p_day:day,p_checksum:hash,p_payload:snapshot,p_source_bytes:bytes,p_source_updated_at:sourceTime})});
   const rows=await cloudRequest('history_documents?select=checksum,payload&'+scope);
   if(rows?.[0]?.checksum!==hash||checksum(rows[0].payload)!==hash)throw Error('Cloud history round-trip checksum mismatch');
   return true;
+  }catch(e){
+   const transient=['TimeoutError','AbortError'].includes(e?.name)||[429,502,503,504].includes(e?.status);
+   if(attempt||!transient)throw e;
+   stats.retried++;await new Promise(resolve=>setTimeout(resolve,500));
+  }}
  }));
  pendingCloudSaves.set(key,work);documentWrites.set(documentKey,work);
  try{const result=await work;stats.verified++;return result;}catch(e){stats.failed++;throw e;}finally{

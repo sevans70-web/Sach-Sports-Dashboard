@@ -6,7 +6,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 test('real cloud writer preserves concurrent history and verifies every distinct version',async t=>{
  const oldFetch=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;
  process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';
- let rows=new Map(),writes=0,reads=0,fail=false,corrupt=false,active=0,maxActive=0;
+ let rows=new Map(),writes=0,reads=0,fail=false,corrupt=false,timeoutRead=false,active=0,maxActive=0;
  globalThis.fetch=async(url,options={})=>{
   const u=new URL(url);
   if(u.pathname.endsWith('/rpc/write_history_document')){
@@ -14,7 +14,7 @@ test('real cloud writer preserves concurrent history and verifies every distinct
    if(fail){active--;return new Response('',{status:503});}
    const b=JSON.parse(options.body);rows.set([b.p_sport,b.p_stream,b.p_day].join('|'),{payload:b.p_payload,checksum:b.p_checksum});return new Response(null,{status:204});
   }
-  reads++;await tick();active--;
+  reads++;await tick();active--;if(timeoutRead){timeoutRead=false;throw new DOMException('stalled response','TimeoutError');}
   const key=['sport','stream','game_date'].map(k=>u.searchParams.get(k).slice(3)).join('|');
   const row=rows.get(key);return Response.json(row?[{...row,checksum:corrupt?'bad':row.checksum}]:[]);
  };
@@ -51,6 +51,10 @@ test('real cloud writer preserves concurrent history and verifies every distinct
   await t.test('explicit source versions stay independent and successes are not cached',async()=>{
    const before=writes;await Promise.all(['2026-10-26T01:00:00Z','2026-10-26T02:00:00Z'].map(time=>saveCloudDocument('nba','version','2026-10-26',[],0,time)));
    await saveCloudDocument('nba','version','2026-10-26',[],0,'2026-10-26T02:00:00Z');assert.equal(writes-before,3);
+  });
+  await t.test('one transient readback timeout retries the same immutable source and verifies it',async()=>{
+   const before=writes;timeoutRead=true;assert.equal(await saveCloudDocument('nba','timeout_retry','2026-10-26',[{actual:0}]),true);
+   assert.equal(writes-before,2);assert.deepEqual(rows.get('nba|timeout_retry|2026-10-26').payload,[{actual:0}]);
   });
   await t.test('failure and corruption reject; later calls retry',async()=>{
    fail=true;await assert.rejects(saveCloudDocument('nba','retry','2026-10-26',[]),/503/);fail=false;
