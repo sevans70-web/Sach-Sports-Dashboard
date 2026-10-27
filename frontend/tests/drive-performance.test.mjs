@@ -26,5 +26,14 @@ test('bounded jobs resume from verified copies and inventory failures retain ear
  const read=createDrivePerformanceReader({folderId:'root',request,now:()=>clock,budgetMs:30});
  const first=await read('nfl');assert.equal(first.rows.length,2);assert.deepEqual(first.errors,['points|2026-10-18:checking']);
  clock+=5001;const second=await read('nfl');assert.equal(second.rows.length,3);assert.deepEqual(second.errors,[]);assert.equal(reads,3);
- fail=true;clock+=60001;const outage=await read('nfl');assert.equal(outage.rows.length,3);assert.deepEqual(outage.errors,['unavailable']);
+ fail=true;clock+=300001;const outage=await read('nfl');assert.equal(outage.rows.length,3);assert.deepEqual(outage.errors,['unavailable']);
+});
+
+test('snapshot archives stream UTF-8 records, deduplicate repeated observations and discard all staged rows if the full checksum fails',async()=>{
+ const snapshot={capturedAt:'2026-10-16T10:00Z',payload:[{key:'original',playerName:'José { \\" }',market:'points',status:'hit',actual:0}]};
+ const file=document('archive','snapshots_points_2026-10-16.json',[snapshot,snapshot]);let altered=false;
+ const request=async url=>{const u=new URL(url);if(u.searchParams.get('alt')==='media'){const bytes=Buffer.from(file.bytes+(altered?' ':''));return new Response(new ReadableStream({start(c){for(let i=0;i<bytes.length;i+=7)c.enqueue(bytes.subarray(i,i+7));c.close();}}));}const p=u.searchParams.get('q').match(/^'([^']+)'/)[1];return Response.json({files:p==='root'?[folder('backup','railway-2026-10-24')]:p==='backup'?[folder('history','sach-history')]:p==='history'?[folder('nba','nba')]:[file]});};
+ const options={folderId:'root',request,projectSnapshot:(_s,_m,_d,snapshot)=>snapshot.payload};
+ const result=await createDrivePerformanceReader(options)('nba');assert.deepEqual(result.errors,[]);assert.equal(result.rows.length,1);assert.equal(result.rows[0].stream,'archive_records_snapshots_points');assert.deepEqual(result.rows[0].payload,snapshot.payload);
+ altered=true;const corrupt=await createDrivePerformanceReader(options)('nba');assert.deepEqual(corrupt.rows,[]);assert.deepEqual(corrupt.errors,['snapshots_points|2026-10-16:unavailable']);
 });

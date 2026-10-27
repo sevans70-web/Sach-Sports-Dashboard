@@ -8,7 +8,7 @@ test('Drive receipts restore all sports through the actual performance reader wh
  for(const sport of sports){await mkdir(path.join(root,sport,sport==='mlb'?'performance':''),{recursive:true});
   const row={playerId:'p',gameId:'g',market:'points',gameTime:start,quoteVerified:true,sportsbookLine:2.5,researchForecast:{status:'available',projection:1.5}};
   const pre=[{savedAt:at,payload:{kind:'pregame_checkpoint',checkpointAt:at,rows:[row]}}],fin=[{savedAt:now.toISOString(),payload:{kind:'official_final_checkpoint',gameId:'g',source:'official_final_boxscore',boxscore:{success:true,gameId:'g',state:'post',rows:[{playerId:'p',stats:{points:0}}]}}}];
-  files.set(sport,[['protected_pregame_g_points',pre],['protected_final_g',fin]].map(([stream,payload])=>{const bytes=JSON.stringify(payload);return {id:sport+'-'+stream,name:stream+'_'+day+'.json',size:Buffer.byteLength(bytes),md5Checksum:createHash('md5').update(bytes).digest('hex'),modifiedTime:now.toISOString(),bytes};}));
+  files.set(sport,[['protected_pregame_g_points',pre],['protected_final_g',fin]].map(([stream,payload])=>{const bytes=JSON.stringify(payload);return {id:sport+'-'+stream,name:'snapshots_'+stream+'_'+day+'.json',size:Buffer.byteLength(bytes),md5Checksum:createHash('md5').update(bytes).digest('hex'),modifiedTime:now.toISOString(),bytes};}));
  }
  globalThis.fetch=async(url)=>{const u=new URL(url);assert(['www.googleapis.com','oauth2.googleapis.com'].includes(u.hostname),'Must not require Supabase or a live result provider');if(u.hostname==='oauth2.googleapis.com')return Response.json({access_token:'test',expires_in:3600});
   if(u.searchParams.get('alt')==='media'){const id=u.pathname.split('/').pop(),file=[...files.values()].flat().find(f=>f.id===id);return new Response(file.bytes);}

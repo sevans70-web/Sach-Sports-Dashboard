@@ -32,6 +32,16 @@ export function historyGroup(row:any,sport:string){
 // Bound parsed-source reuse across periods/categories. Source mtimes invalidate it;
 // neither original files nor historical grades are rewritten by this cache.
 const parsedSources=new Map<string,{stamp:string;bytes:number;data:any}>(),sourceReads=new Map<string,Promise<any>>();let parsedBytes=0;
+function archivedPerformanceRows(sport:string,_stream:string,day:string,snapshot:any){
+ const payload=snapshot?.payload??snapshot?.data??snapshot;
+ if(payload?.kind==='official_final_checkpoint')return [{archiveFinal:payload}];
+ if(payload?.kind==='pregame_checkpoint')return savedResearchDecisions([{...payload,capturedAt:payload.checkpointAt||snapshot.savedAt}]);
+ if(payload&&typeof payload.market==='string'&&typeof payload.status==='string')return [payload];
+ if(sport==='mlb')return mlbAdminSnapshot(payload,day);
+ if(payload?.kind==='research_rankings'||Array.isArray(payload?.rows))return savedResearchDecisions([{...payload,capturedAt:payload.capturedAt||snapshot.capturedAt||snapshot.at||snapshot.savedAt}]);
+ if(Array.isArray(payload))return payload.filter(r=>r&&typeof r.market==='string'&&typeof r.status==='string');
+ return payload&&typeof payload.market==='string'&&typeof payload.status==='string'?[payload]:[];
+}
 async function sourceDocument(file:string){
  const stat=await fs.stat(file),stamp=[stat.size,stat.mtimeMs,stat.ctimeMs].join('|'),key=file+'|'+stamp;
  const cached=parsedSources.get(file);if(cached?.stamp===stamp)return cached.data;
@@ -47,7 +57,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  // Capture dates can precede fixture dates. Read the saved season inventory
  // from Drive, then apply the requested period to each record's fixture time.
  const drive=drivePerformanceConfigured(),firstDay=[...historyDays(drive?'Season':period,now)].sort()[0];
- const remoteWork=drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
+ const remoteWork=drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
@@ -55,6 +65,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  if(sport==='mlb'&&root===historyRoot()){const legacy=await readBundledMlbHistory(days);rows.push(...legacy.rows);legacy.dates.forEach(day=>availableDates.add(day));errors.push(...legacy.errors);}
  const remember=(payload:any,observedAt?:string)=>{const key=String(payload.gameId),at=Date.parse(observedAt||payload.updatedAt||'')||0;if(!observations.has(key)||at>(observationTimes.get(key)||0)){observations.set(key,payload);observationTimes.set(key,at);}};
  const consume=(payload:any,stream:string,date:string)=>{
+  if(stream.startsWith('archive_records_')){if(!Array.isArray(payload))throw Error('Invalid recovered archive');for(const row of payload){const item=row?.archiveFinal;if(item){if(item.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt);}else rows.push(row);}return;}
   if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}
   if(stream.startsWith('protected_pregame_')){if(!Array.isArray(payload))throw Error('Invalid pregame receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='pregame_checkpoint')rows.push(...savedResearchDecisions([{...item,capturedAt:item.checkpointAt}]).map(r=>({...r,performanceSource:'checkpoint'})));}return;}
   if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload);if(!p)throw Error('Invalid official result cache');remember(p,payload.savedAt);return;}

@@ -2,6 +2,8 @@ import {createHash} from 'node:crypto';
 import {driveAuth} from './drive-auth.mjs';
 import {checksum} from './history-cloud.mjs';
 import {gzipSync,gunzipSync} from 'node:zlib';
+import {StringDecoder} from 'node:string_decoder';
+import {visitJsonObjects} from './stream-history-json.mjs';
 
 const FOLDER='application/vnd.google-apps.folder';
 const escape=value=>String(value).replaceAll('\\','\\\\').replaceAll("'","\\'");
@@ -9,7 +11,7 @@ export function drivePerformanceConfigured(){return ['BACKUP_DRIVE_FOLDER_ID','G
 
 /** Read backed-up daily documents, never restore files to the Railway volume.
  * Folder discovery is independent of the Supabase archive catalog. */
-export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000}){
+export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[]}){
  const inventories=new Map(),pending=new Map(),results=new Map(),documents=new Map();
  let active=0,cacheBytes=0;const waiting=[];
  const unpack=value=>({errors:value.errors,rows:value.rows.map(row=>({stream:row.stream,game_date:row.game_date,checksum:row.checksum,payload:JSON.parse(gunzipSync(row.zip).toString('utf8'))}))});
@@ -22,7 +24,7 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
  }
  const directory=(files,name)=>files.filter(f=>f.mimeType===FOLDER&&f.name===name).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0];
  async function inventory(sport){
-  const old=inventories.get(sport);if(old&&now()-old.at<60000)return old.files;
+  const old=inventories.get(sport);if(old&&now()-old.at<300000)return old.files;
   const backups=(await list(folderId)).filter(f=>f.mimeType===FOLDER&&f.name.startsWith('railway-')).sort((a,b)=>b.name.localeCompare(a.name));if(!backups.length)throw Error('Verified backup folder is unavailable');
   const history=directory(await list(backups[0].id),'sach-history');if(!history)throw Error('History backup folder is unavailable');
   const sportFolder=directory(await list(history.id),sport);if(!sportFolder)throw Error('Sport backup folder is unavailable');
@@ -46,13 +48,26 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
    if(cached?.md5===file.md5Checksum){rows.push(cached);continue;}
    if(now()-started>=budgetMs){errors.push(file.stream+'|'+file.game_date+':checking');continue;}
    try{
-    if(!/^[a-f0-9]{32}$/i.test(file.md5Checksum||'')||!Number.isFinite(Number(file.size))||Number(file.size)>16*1024*1024)throw Error('Unverified or oversized backup document');
-    const response=await slot(()=>request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(file.id)+'?alt=media',{signal:AbortSignal.timeout(12000)}));if(!response.ok||!response.body)throw Error('Backup read failed');
-    const chunks=[];let size=0;for await(const chunk of response.body){size+=chunk.length;if(size>16*1024*1024)throw Error('Backup document exceeds limit');chunks.push(Buffer.from(chunk));}
-    const bytes=Buffer.concat(chunks);if(bytes.length!==Number(file.size)||createHash('md5').update(bytes).digest('hex')!==file.md5Checksum.toLowerCase())throw Error('Backup checksum mismatch');
-    const payload=JSON.parse(bytes.toString('utf8')),zip=gzipSync(bytes),row={stream:file.stream,game_date:file.game_date,md5:file.md5Checksum,checksum:checksum(payload),zip};
-    if(cacheBytes-(cached?.zip.length||0)+zip.length>64*1024*1024)throw Error('Backup reader cache capacity exceeded');
-    cacheBytes+=zip.length-(cached?.zip.length||0);documents.set(key,row);rows.push(row);
+    const streaming=file.stream.startsWith('snapshots_')||Number(file.size)>16*1024*1024;
+    if(!/^[a-f0-9]{32}$/i.test(file.md5Checksum||'')||!Number.isFinite(Number(file.size))||Number(file.size)>4*1024*1024*1024)throw Error('Unverified or oversized backup document');
+    const row=await slot(async()=>{
+    const response=await request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(file.id)+'?alt=media',{signal:AbortSignal.timeout(streaming?120000:12000)});if(!response.ok||!response.body)throw Error('Backup read failed');
+    let payload,bytes,size=0,stream=file.stream;const hash=createHash('md5');
+    if(streaming){
+     const decoder=new StringDecoder('utf8'),staged=new Map();
+     async function* chunks(){for await(const raw of response.body){const chunk=Buffer.from(raw);size+=chunk.length;hash.update(chunk);yield decoder.write(chunk);}const tail=decoder.end();if(tail)yield tail;}
+     await visitJsonObjects(chunks(),snapshot=>{for(const record of projectSnapshot(sport,file.stream,file.game_date,snapshot)){
+      const identity=JSON.stringify([record.key,record.gameId,record.playerId,record.market,record.gameTime,record.savedAt,record.sportsbookLine,record.pickSide,record.archiveFinal?.gameId,record.archiveFinal?.observedAt,record.archiveFinal?.boxscore?.updatedAt]);staged.set(identity,record);
+      if(staged.size>200000)throw Error('Archive record capacity exceeded');
+     }});
+     payload=[...staged.values()];bytes=Buffer.from(JSON.stringify(payload));stream='archive_records_'+file.stream;
+    }else{const chunks=[];for await(const raw of response.body){const chunk=Buffer.from(raw);size+=chunk.length;if(size>16*1024*1024)throw Error('Backup document exceeds limit');hash.update(chunk);chunks.push(chunk);}bytes=Buffer.concat(chunks);payload=JSON.parse(bytes.toString('utf8'));}
+    // Staged records are accepted only after the entire original file verifies.
+    if(size!==Number(file.size)||hash.digest('hex')!==file.md5Checksum.toLowerCase())throw Error('Backup checksum mismatch');
+    const zip=gzipSync(bytes);return {stream,game_date:file.game_date,md5:file.md5Checksum,checksum:checksum(payload),zip};
+    });
+    if(cacheBytes-(cached?.zip.length||0)+row.zip.length>64*1024*1024)throw Error('Backup reader cache capacity exceeded');
+    cacheBytes+=row.zip.length-(cached?.zip.length||0);documents.set(key,row);rows.push(row);
    }catch{errors.push(file.stream+'|'+file.game_date+':unavailable');}
    await new Promise(resolve=>setImmediate(resolve));
   }
@@ -65,8 +80,8 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
  };
 }
 let reader;
-export async function listDrivePerformanceDocuments(sport,firstDay){
+export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
- if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID});}
+ if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot});}
  return reader(sport,firstDay);
 }
