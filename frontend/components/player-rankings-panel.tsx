@@ -1147,7 +1147,7 @@ function PlayerCard({
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
             ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? "Scorer market" : "Main O/U"} · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
-            : "Original line unverified · retained for history; no verified recommendation."}</p>
+            : "Original sportsbook details could not be confirmed. Saved for history, not a verified pick."}</p>
           {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
       ) : null}
