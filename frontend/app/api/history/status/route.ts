@@ -20,6 +20,7 @@ export async function GET() {
   } catch {}
 
   let backup:any=null;try{backup=JSON.parse(await fs.readFile(path.join(root,"_system","last-backup.json"),"utf8"))}catch{}
+  let retention:any=null;try{retention=JSON.parse(await fs.readFile(path.join(root,"_system","last-retention-preview.json"),"utf8"))}catch{}
   return NextResponse.json(
     {
       success: storage.ok,
@@ -27,6 +28,7 @@ export async function GET() {
       capture,
       cloudWrites: cloudWriteStatus(),
       backup,
+      retention,
       localRetentionDays:7,
       archiveDestination:"Google Drive",
       pruningRequiresVerifiedArchive:true,

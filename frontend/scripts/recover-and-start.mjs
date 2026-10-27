@@ -7,6 +7,7 @@ function scheduleBackups(){setInterval(()=>{if(backupRunning)return;backupRunnin
 function startApplication(){
  const server=spawn(process.execPath,['server.js'],{stdio:'inherit',env:{...process.env,HOSTNAME:'0.0.0.0'}});
  process.on('SIGTERM',()=>server.kill('SIGTERM'));server.on('exit',code=>process.exit(code||0));scheduleBackups();
+ setTimeout(()=>{const preview=spawn(process.execPath,['scripts/retention-preview.mjs'],{stdio:'inherit'});preview.on('error',e=>console.error('RETENTION_PREVIEW_FAILED',e.message));},10000).unref();
 }
 const initialDisk=await fs.statfs(root),initialFree=initialDisk.bavail*initialDisk.bsize;
 const orphanOnly=initialFree>=1024*1024*1024&&process.env.SACH_FORCE_RECOVERY!=='1';

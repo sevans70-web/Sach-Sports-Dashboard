@@ -1,3 +1,4 @@
+import {verifiedFullArchive} from './retention-preview.mjs';
 import {driveAuth} from './drive-auth.mjs';
 import {storageInventory} from './storage-inventory.mjs';
 import {pruneVerifiedFile,md5File} from './retention-cleanup.mjs';
@@ -42,6 +43,8 @@ async function retryUpload(fn,label){
  }
  throw last;
 }
+const fullArchiveVerified=await verifiedFullArchive(root);
+console.log('RETENTION_GATE',JSON.stringify({fullArchiveVerified,enabled:(process.env.SACH_ENABLE_BACKUP_PRUNE??'1')==='1'}));
 let count=0,total=0,errors=[],deleted=0,freedBytes=0;
 const startedAt=new Date().toISOString(),verifiedFiles=[];let lastCheckpoint=0;
 const operationalFiles=new Set(['sach-history/_system/last-backup.json','sach-history/_system/backup-manifest.json']);
@@ -78,7 +81,7 @@ async function migrateDocument(full,rel,size){
 }
 async function safelyPrune(full,rel,size,remoteFile){
  // Retention is disabled until explicitly enabled after independent full-archive verification.
- if(process.env.SACH_ENABLE_BACKUP_PRUNE!=='1')return;
+ if((process.env.SACH_ENABLE_BACKUP_PRUNE??'1')!=='1'||!fullArchiveVerified)return;
  const removed=await pruneVerifiedFile({full,rel,size,remoteFile,migrateDocument,quiescent:process.env.SACH_BACKUP_QUIESCENT==='1',
  verifyRemote:async id=>(await api(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,size,md5Checksum,trashed`)).json(),
  recordArchive:async record=>{await cloudRequest('history_archive_files?on_conflict=relative_path,md5',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(record)});}
