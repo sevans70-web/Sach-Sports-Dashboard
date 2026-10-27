@@ -7,13 +7,14 @@ test('actual backup cycle records verified uploads and skips, and never complete
  const root=await mkdtemp(path.join(tmpdir(),'sach-backup-'));
  try{
   Object.assign(process.env,{RAILWAY_VOLUME_MOUNT_PATH:root,BACKUP_DRIVE_FOLDER_ID:'parent',GOOGLE_OAUTH_CLIENT_ID:'id',GOOGLE_OAUTH_CLIENT_SECRET:'secret',GOOGLE_OAUTH_REFRESH_TOKEN:'token',SACH_BACKUP_ORPHANS_ONLY:'0',SACH_ENABLE_BACKUP_PRUNE:'0'});
-  await mkdir(path.join(root,'sach-history','_system'),{recursive:true});await writeFile(path.join(root,'a.json'),'new');await writeFile(path.join(root,'b.json'),'saved');
-  let failWalk=false;const uploaded=new Map(),sessions=new Map();let sequence=0;
+  await mkdir(path.join(root,'sach-history','_system'),{recursive:true});await writeFile(path.join(root,'a.json'),'new');await writeFile(path.join(root,'b.json'),'saved');for(const name of ['c','d','e','f','g'])await writeFile(path.join(root,name+'.json'),name);
+  let failWalk=false;const uploaded=new Map(),sessions=new Map();let sequence=0,active=0,peak=0;
   globalThis.fetch=async(url,options={})=>{
    const u=new URL(url);
    if(u.hostname==='oauth2.googleapis.com')return Response.json({access_token:'valid',expires_in:3600});
    if(options.method==='POST'&&u.pathname.includes('/upload/')){const id='upload'+(++sequence);sessions.set(id,JSON.parse(options.body));return new Response(null,{status:200,headers:{location:'https://www.googleapis.com/session/'+id}});}
    if(options.method==='PUT'){
+    active++;peak=Math.max(peak,active);await new Promise(resolve=>setTimeout(resolve,10));active--;
     const id=u.pathname.split('/').at(-1),metadata=sessions.get(id),bytes=Buffer.from(options.body??'');uploaded.set(metadata.name,bytes);
     return Response.json({id,name:metadata.name,size:String(bytes.length),md5Checksum:md5(bytes)});
    }
@@ -25,9 +26,9 @@ test('actual backup cycle records verified uploads and skips, and never complete
   };
   await import('../scripts/backup-to-drive.mjs?complete');
   let status=JSON.parse(await readFile(path.join(root,'sach-history/_system/last-backup.json'),'utf8'));
-  assert.equal(status.status,'COMPLETE');assert.equal(status.files,2);assert.equal(status.deleted,0);assert.equal(status.scope,'full-volume');assert.ok(status.manifest.driveFileId);
+  assert.equal(status.status,'COMPLETE');assert.equal(status.files,7);assert.ok(peak>=2&&peak<=4);assert.equal(status.deleted,0);assert.equal(status.scope,'full-volume');assert.ok(status.manifest.driveFileId);
   const manifestName=[...uploaded.keys()].find(n=>n.startsWith('backup-manifest-')),body=uploaded.get(manifestName),manifest=JSON.parse(body);
-  assert.equal(status.manifest.md5,md5(body));assert.deepEqual(manifest.files.map(f=>f.path),['a.json','b.json']);assert.equal(manifest.files[1].driveFileId,'existing');
+  assert.equal(status.manifest.md5,md5(body));assert.deepEqual(manifest.files.map(f=>f.path),['a.json','b.json','c.json','d.json','e.json','f.json','g.json']);assert.equal(manifest.files[1].driveFileId,'existing');
   assert.equal(await readFile(path.join(root,'a.json'),'utf8'),'new');assert.equal(await readFile(path.join(root,'b.json'),'utf8'),'saved');
   failWalk=true;await import('../scripts/backup-to-drive.mjs?failed');status=JSON.parse(await readFile(path.join(root,'sach-history/_system/last-backup.json'),'utf8'));
   assert.equal(status.status,'INCOMPLETE');assert.ok(status.errors.length);assert.equal(status.deleted,0);assert.equal(process.exitCode,1);
