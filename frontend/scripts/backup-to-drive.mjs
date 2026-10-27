@@ -56,6 +56,8 @@ async function migrateDocument(full,rel,size){
  console.log('CLOUD_DOCUMENT_VERIFIED',rel,size);return payload;
 }
 async function safelyPrune(full,rel,size,remoteFile){
+ // Retention is disabled until explicitly enabled after independent full-archive verification.
+ if(process.env.SACH_ENABLE_BACKUP_PRUNE!=='1')return;
  const removed=await pruneVerifiedFile({full,rel,size,remoteFile,migrateDocument,quiescent:process.env.SACH_BACKUP_QUIESCENT==='1',
  verifyRemote:async id=>(await api(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,size,md5Checksum,trashed`)).json(),
  recordArchive:async record=>{await cloudRequest('history_archive_files?on_conflict=relative_path,md5',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(record)});}
