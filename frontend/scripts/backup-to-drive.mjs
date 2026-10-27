@@ -116,8 +116,14 @@ async function uploadVerified(full,name,parent,size,rel){
    return result;
    },rel);}
 
-async function walk(dir,parent){
+let activeFiles=0;const waitingFiles=[];
+async function withFileSlot(work){
+ if(activeFiles>=4)await new Promise(resolve=>waitingFiles.push(resolve));else activeFiles++;
+ try{return await work();}finally{const next=waitingFiles.shift();if(next)next();else activeFiles--;}
+}
+async function walkDirectory(dir,parent,nextDirectories){
  const remote=await query("'"+parent+"' in parents and trashed = false");
+ const remoteFolders=new Map(remote.filter(f=>f.mimeType==="application/vnd.google-apps.folder").map(f=>[f.name,f.id]));
  const remoteFiles=new Map();
  for(const f of remote.filter(f=>f.mimeType!=="application/vnd.google-apps.folder")){const same=remoteFiles.get(f.name)||[];same.push(f);remoteFiles.set(f.name,same);}
  const entries=await fs.readdir(dir,{withFileTypes:true});
@@ -127,11 +133,11 @@ async function walk(dir,parent){
  for(const entry of entries){
   const full=path.join(dir,entry.name);
   if(entry.isSymbolicLink())continue;
-  if(entry.isDirectory()){await flush();await walk(full,await directory(entry.name,parent));continue;}
+  if(entry.isDirectory()){await flush();nextDirectories.push({dir:full,parent:remoteFolders.get(entry.name)||await directory(entry.name,parent)});continue;}
   if(!entry.isFile())continue;
   if(operationalFile(path.relative(root,full)))continue;
   if(process.env.SACH_BACKUP_ORPHANS_ONLY==='1'&&!orphanArchiveInfo(path.relative(root,full)))continue;
-  batch.push((async()=>{try{
+  batch.push(withFileSlot(async()=>{try{
    const stat=await fs.stat(full);const size=stat.size;
    // Replicate first: cloud migration belongs only to the independently verified retention path.
    // Calling Supabase for every source file can stall the full Drive archive during cloud outages.
@@ -141,10 +147,20 @@ async function walk(dir,parent){
    const copiedSize=Number(uploaded.size);count++;total+=copiedSize;console.log("BACKUP_OK",path.relative(root,full),copiedSize);
    await recordVerified(path.relative(root,full),copiedSize,uploaded);
    await safelyPrune(full,path.relative(root,full),copiedSize,uploaded);
-  }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}})());
+  }catch(e){errors.push({file:path.relative(root,full),error:String(e)});console.error("BACKUP_FAILED",path.relative(root,full),String(e));}}));
   if(batch.length>=4)await flush();
  }
  await flush();
+}
+async function walk(dir,parent){
+ let directories=[{dir,parent}];
+ while(directories.length){
+  const next=[];
+  for(let i=0;i<directories.length;i+=4)await Promise.all(directories.slice(i,i+4).map(async item=>{
+   try{await walkDirectory(item.dir,item.parent,next);}catch(e){errors.push({file:path.relative(root,item.dir)||'.',error:String(e)});console.error('BACKUP_FAILED',String(e));}
+  }));
+  directories=next;
+ }
 }
 console.log('STORAGE_BEFORE',JSON.stringify(await fs.statfs(root).then(s=>({totalBytes:s.blocks*s.bsize,freeBytes:s.bavail*s.bsize}))));
 try{await walk(root,backup);}catch(e){errors.push({file:'.',error:String(e)});console.error('BACKUP_FAILED',String(e));}

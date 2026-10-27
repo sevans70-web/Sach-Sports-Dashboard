@@ -10,7 +10,7 @@ test('actual backup cycle records verified uploads and skips, and never complete
   await mkdir(path.join(root,'sach-history','_system'),{recursive:true});await writeFile(path.join(root,'a.json'),'new');await writeFile(path.join(root,'b.json'),'saved');for(const name of ['c','d','e','f','g'])await writeFile(path.join(root,name+'.json'),name);
   await mkdir(path.join(root,'sach-history/_system/protected-outbox'),{recursive:true});await writeFile(path.join(root,'sach-history/_system/protected-outbox/job.json'),'{"target":"receipt"}');
   await mkdir(path.join(root,'sach-history/nba'),{recursive:true});await writeFile(path.join(root,'sach-history/nba/protected_pregame_test_2026-10-26.json'),'[{"original":true}]');
-  let failWalk=false;const uploaded=new Map(),sessions=new Map();let sequence=0,active=0,peak=0;
+  let failWalk=false;const uploaded=new Map(),sessions=new Map();let sequence=0,active=0,peak=0,redundantHistoryLookups=0;
   globalThis.fetch=async(url,options={})=>{
    const u=new URL(url);
    if(u.hostname==='oauth2.googleapis.com')return Response.json({access_token:'valid',expires_in:3600});
@@ -22,13 +22,14 @@ test('actual backup cycle records verified uploads and skips, and never complete
    }
    const q=u.searchParams.get('q')||'';
    if(q.includes("name contains 'railway-'"))return Response.json({files:[{id:'backup',name:'railway-2026',mimeType:'application/vnd.google-apps.folder'}]});
+   if(q.includes("name = 'sach-history'"))redundantHistoryLookups++;
    if(q.includes('mimeType ='))return Response.json({files:[{id:'subdir',name:'folder',mimeType:'application/vnd.google-apps.folder'}]});
    if(failWalk)return new Response('listing failed',{status:503});
-   return Response.json({files:[{id:'existing',name:'b.json',size:'5',md5Checksum:md5('saved'),mimeType:'application/json'}]});
+   return Response.json({files:[{id:'existing',name:'b.json',size:'5',md5Checksum:md5('saved'),mimeType:'application/json'},...(q.startsWith("'backup' in parents")?[{id:'history-folder',name:'sach-history',mimeType:'application/vnd.google-apps.folder'}]:[])]});
   };
   await import('../scripts/backup-to-drive.mjs?complete');
   let status=JSON.parse(await readFile(path.join(root,'sach-history/_system/last-backup.json'),'utf8'));
-  assert.equal(status.status,'COMPLETE');assert.equal(status.files,8);assert.ok(peak>=2&&peak<=4);assert.equal(status.deleted,0);assert.equal(status.scope,'full-volume');assert.ok(status.manifest.driveFileId);
+  assert.equal(status.status,'COMPLETE');assert.equal(redundantHistoryLookups,0);assert.equal(status.files,8);assert.ok(peak>=2&&peak<=4);assert.equal(status.deleted,0);assert.equal(status.scope,'full-volume');assert.ok(status.manifest.driveFileId);
   const manifestName=[...uploaded.keys()].find(n=>n.startsWith('backup-manifest-')),body=uploaded.get(manifestName),manifest=JSON.parse(body);
   assert.equal(status.manifest.md5,md5(body));assert.equal(status.manifest.sourceFiles,8);assert.equal(status.manifest.unverifiedSourceFiles,0);assert.deepEqual(manifest.unverifiedSourcePaths,[]);assert.deepEqual(manifest.sourcePaths,manifest.files.map(f=>f.path));assert.deepEqual(manifest.files.map(f=>f.path),['a.json','b.json','c.json','d.json','e.json','f.json','g.json','sach-history/nba/protected_pregame_test_2026-10-26.json']);assert.equal(manifest.files[1].driveFileId,'existing');
   assert.equal(uploaded.get('a.json').toString(),'new');assert.equal(await readFile(path.join(root,'a.json'),'utf8'),'changed after snapshot');assert.equal(await readFile(path.join(root,'b.json'),'utf8'),'saved');
