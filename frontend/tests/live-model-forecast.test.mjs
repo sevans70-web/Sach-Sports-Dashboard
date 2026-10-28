@@ -34,6 +34,7 @@ test('GI requires exact fresh quote evidence and a prior calibration artifact',(
  assert.equal(fittedResearchForecast(row,'nfl','passing_yards',withGi,now).giScore,null);
  const quoted={...row,quoteVersion:1,sportsbookKey:'book',sportsbook:'Book',quoteId:'q',lineType:'main',sportsbookLine:200.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:'2026-09-01T11:59:00Z',capturedAt:'2026-09-01T11:59:30Z'};
  const f=fittedResearchForecast(quoted,'nfl','passing_yards',withGi,now);assert.equal(f.giScore,75);assert.equal(f.candidateSide,'OVER');assert.equal(f.validatedForBetting,false);assert.equal(quoted.prediction,'NO PICK');
+ const failed=fittedResearchForecast(quoted,'nfl','passing_yards',{...withGi,giStatus:{'nfl|passing_yards':{reason:'price_validation_failed'}}},now);assert.equal(failed.giScore,null);assert.equal(failed.candidateSide,null);assert.equal(failed.modelSelection,null);assert.equal(failed.selectionReason,'price_validation_failed');
  assert.equal(fittedResearchForecast({...quoted,quoteUpdatedAt:'2026-09-01T10:00:00Z'},'nfl','passing_yards',withGi,now).giScore,null);
  assert.equal(fittedResearchForecast(quoted,'nfl','passing_yards',{...withGi,gi:{'nfl|passing_yards':{...artifact,trainedThrough:'2026-09-02'}}},now).giScore,null);
 });

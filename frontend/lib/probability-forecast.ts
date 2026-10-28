@@ -5,7 +5,7 @@ import {basketballFeatureIndex} from '@/lib/basketball-model-inputs';
  * model registry. Fitting, calibration and price evaluation never certify GI. */
 export type LinearModel={means:number[];scales:number[];coefficients:number[]};
 export type DistributionModel={version:1;group:string;trainedThrough:string;calibratedThrough:string;
- workload:LinearModel;rate:LinearModel;residuals:number[];trainingRows:number;calibrationRows:number;
+ workload:LinearModel;rate:LinearModel;direct?:LinearModel;residuals:number[];trainingRows:number;calibrationRows:number;
  rateTrainingRows?:number;
  workloadCalibration?:{expectedWorkload:number;residual:number}[];
  featurePolicy?:'basketball_context';
@@ -62,10 +62,10 @@ export function predictLinear(model:LinearModel,x:number[]){
  if(x.length!==model.means.length||!x.every(Number.isFinite))throw Error('Invalid prediction features');
  return model.coefficients[0]+x.reduce((n,v,i)=>n+(v-model.means[i])/model.scales[i]*model.coefficients[i+1],0);
 }
-function point(model:Pick<DistributionModel,'workload'|'rate'|'minimum'>,x:number[]){
+function point(model:Pick<DistributionModel,'workload'|'rate'|'minimum'|'direct'>,x:number[]){
  const expectedWorkload=Math.max(0,predictLinear(model.workload,x));
  const expectedRate=predictLinear(model.rate,x);
- const raw=expectedWorkload*expectedRate;
+ const raw=model.direct?predictLinear(model.direct,x):expectedWorkload*expectedRate;
  return {expectedWorkload,expectedRate,projection:model.minimum==null?raw:Math.max(model.minimum,raw)};
 }
 function materialize(games:OpportunityGame[],featurePolicy?:'basketball_context'):FeatureRow[]{
@@ -165,7 +165,8 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
 /** Fixed 65%/35% chronological split of PRIOR-season feature dates for fitting
  * and calibration; later season retained for diagnostic evaluation. The later
  * season has already been inspected for v1, so it is NOT a fresh holdout. */
-export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context'}={}){
+export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context';pointPolicy?:'direct'}={}){
+ if(options.pointPolicy!=null&&options.pointPolicy!=='direct')throw Error('Unsupported point policy');
  if(options.calibration!=null&&!['pooled','workload'].includes(options.calibration))throw Error('Unsupported calibration policy');
  const conditional=options.calibration==='workload';
  const seen=new Set<string>();for(const g of games){
@@ -201,6 +202,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   const model:DistributionModel={version:1,group,trainedThrough,calibratedThrough,workload,rate,
    residuals:[],trainingRows:train.length,calibrationRows:calibration.length,minimum,integer:true,validatedForBetting:false};
   if(options.featurePolicy)model.featurePolicy=options.featurePolicy;
+  if(options.pointPolicy==='direct'){const direct=fitLinear(train.map(r=>({x:r.x,y:r.game.actual})));if(!direct)throw Error('Direct fit failed');model.direct=direct;}
   if(market.startsWith('q1_'))model.rateTrainingRows=rateTraining.length;
   // This separate basketball candidate fixes a maximum 401 chronological,
   // uniformly spaced calibration observations before inspecting outcomes.
@@ -260,7 +262,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
- return {modelId:options.featurePolicy?'basketball-context-distribution-candidate-v1':conditional?'local-workload-distribution-candidate-v1':quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
+ return {modelId:options.pointPolicy==='direct'?'direct-yardage-distribution-candidate-v1':options.featurePolicy?'basketball-context-distribution-candidate-v1':conditional?'local-workload-distribution-candidate-v1':quarter?'quarter-workload-distribution-candidate-v1':'workload-distribution-candidate-v2',validatedForBetting:false,giEnabled:false,
   observations:games.length,models,reports,limitations:options.featurePolicy?[
    'Two completed regular-season fixture windows replace current-board selection; athletes absent from final tables and incomplete boxes remain uncovered.',
    'Later-season development evaluation is not a prospective untouched holdout; official sources are current revisions.',

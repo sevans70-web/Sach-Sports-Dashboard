@@ -1,0 +1,406 @@
+{
+  "kind": "Retrospective audit of actually captured pregame forecasts; not a new untouched holdout",
+  "selection": "Every available NFL passing-yards saved probability captured before kickoff, fixture older than four hours; no side/grade/outcome filter",
+  "selected": [
+    {
+      "gameId": "401873009",
+      "playerId": "2577417",
+      "gameTime": "2026-10-27T00:15:00Z",
+      "savedAt": "2026-10-27T00:14:19.706Z",
+      "market": "passing_yards",
+      "line": 265.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 265.5,
+        "win": 0.6896551724137931,
+        "loss": 0.3103448275862069,
+        "push": 0,
+        "quoteId": "pinnacle-1638970374",
+        "calculatedAt": "2026-10-27T00:14:19.645Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873022",
+      "playerId": "3139477",
+      "gameTime": "2026-10-26T00:20:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 216.5,
+      "probability": {
+        "side": "OVER",
+        "line": 216.5,
+        "win": 0.5862068965517241,
+        "loss": 0.41379310344827586,
+        "push": 0,
+        "quoteId": "pinnacle-1638970380",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873022",
+      "playerId": "3912547",
+      "gameTime": "2026-10-26T00:20:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 225.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 225.5,
+        "win": 0.6275862068965518,
+        "loss": 0.3724137931034483,
+        "push": 0,
+        "quoteId": "pinnacle-1638970455",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873021",
+      "playerId": "14880",
+      "gameTime": "2026-10-25T20:25:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 236.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 236.5,
+        "win": 0.593103448275862,
+        "loss": 0.4068965517241379,
+        "push": 0,
+        "quoteId": "pinnacle-1638970296",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873021",
+      "playerId": "12483",
+      "gameTime": "2026-10-25T20:25:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 253.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 253.5,
+        "win": 0.7724137931034483,
+        "loss": 0.22758620689655173,
+        "push": 0,
+        "quoteId": "pinnacle-1638970410",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873020",
+      "playerId": "3046779",
+      "gameTime": "2026-10-25T20:25:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 278.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 278.5,
+        "win": 0.6482758620689655,
+        "loss": 0.35172413793103446,
+        "push": 0,
+        "quoteId": "pinnacle-1638970182",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873020",
+      "playerId": "4036378",
+      "gameTime": "2026-10-25T20:25:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 281.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 281.5,
+        "win": 0.7310344827586207,
+        "loss": 0.2689655172413793,
+        "push": 0,
+        "quoteId": "pinnacle-1638970227",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873019",
+      "playerId": "4426338",
+      "gameTime": "2026-10-25T20:05:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 219.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 219.5,
+        "win": 0.6068965517241379,
+        "loss": 0.3931034482758621,
+        "push": 0,
+        "quoteId": "pinnacle-1638970035",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873019",
+      "playerId": "2578570",
+      "gameTime": "2026-10-25T20:05:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 225.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 225.5,
+        "win": 0.6206896551724138,
+        "loss": 0.3793103448275862,
+        "push": 0,
+        "quoteId": "pinnacle-1638970131",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873014",
+      "playerId": "3917792",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 189.5,
+      "probability": {
+        "side": "OVER",
+        "line": 189.5,
+        "win": 0.6482758620689655,
+        "loss": 0.35172413793103446,
+        "push": 0,
+        "quoteId": "pinnacle-1638969945",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873018",
+      "playerId": "4685720",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 253.5,
+      "probability": {
+        "side": "OVER",
+        "line": 253.5,
+        "win": 0.5724137931034483,
+        "loss": 0.42758620689655175,
+        "push": 0,
+        "quoteId": "pinnacle-1638969781",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873016",
+      "playerId": "4432577",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 255.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 255.5,
+        "win": 0.6137931034482759,
+        "loss": 0.38620689655172413,
+        "push": 0,
+        "quoteId": "pinnacle-1638969445",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873015",
+      "playerId": "4242512",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 183.5,
+      "probability": {
+        "side": "OVER",
+        "line": 183.5,
+        "win": 0.6206896551724138,
+        "loss": 0.3793103448275862,
+        "push": 0,
+        "quoteId": "pinnacle-1638970050",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873013",
+      "playerId": "4688380",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 180.5,
+      "probability": {
+        "side": "OVER",
+        "line": 180.5,
+        "win": 0.5724137931034483,
+        "loss": 0.42758620689655175,
+        "push": 0,
+        "quoteId": "pinnacle-1638969616",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873013",
+      "playerId": "3122840",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 208.5,
+      "probability": {
+        "side": "OVER",
+        "line": 208.5,
+        "win": 0.593103448275862,
+        "loss": 0.4068965517241379,
+        "push": 0,
+        "quoteId": "pinnacle-1638969715",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873012",
+      "playerId": "3915511",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 260.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 260.5,
+        "win": 0.6551724137931034,
+        "loss": 0.3448275862068966,
+        "push": 0,
+        "quoteId": "pinnacle-1638969592",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873015",
+      "playerId": "15864",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 223.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 223.5,
+        "win": 0.5724137931034483,
+        "loss": 0.42758620689655175,
+        "push": 0,
+        "quoteId": "pinnacle-1638969933",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873018",
+      "playerId": "3052587",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 215.5,
+      "probability": {
+        "side": "OVER",
+        "line": 215.5,
+        "win": 0.6896551724137931,
+        "loss": 0.3103448275862069,
+        "push": 0,
+        "quoteId": "pinnacle-1638969730",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873014",
+      "playerId": "3917315",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 205.5,
+      "probability": {
+        "side": "OVER",
+        "line": 205.5,
+        "win": 0.6827586206896552,
+        "loss": 0.31724137931034485,
+        "push": 0,
+        "quoteId": "pinnacle-1638970038",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873017",
+      "playerId": "4361741",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 240.5,
+      "probability": {
+        "side": "OVER",
+        "line": 240.5,
+        "win": 0.5793103448275863,
+        "loss": 0.4206896551724138,
+        "push": 0,
+        "quoteId": "pinnacle-1638969876",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873017",
+      "playerId": "4360423",
+      "gameTime": "2026-10-25T17:00:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 229.5,
+      "probability": {
+        "side": "OVER",
+        "line": 229.5,
+        "win": 0.5793103448275863,
+        "loss": 0.4206896551724138,
+        "push": 0,
+        "quoteId": "pinnacle-1638969990",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    },
+    {
+      "gameId": "401873011",
+      "playerId": "4360689",
+      "gameTime": "2026-10-25T13:30:00Z",
+      "savedAt": "2026-10-25T12:29:21.035Z",
+      "market": "passing_yards",
+      "line": 221.5,
+      "probability": {
+        "side": "UNDER",
+        "line": 221.5,
+        "win": 0.6896551724137931,
+        "loss": 0.3103448275862069,
+        "push": 0,
+        "quoteId": "pinnacle-1638969643",
+        "calculatedAt": "2026-10-25T12:29:18.029Z",
+        "validatedForBetting": false
+      }
+    }
+  ],
+  "source": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/history/performance?sport=nfl&period=Season",
+  "sourceSha256": "5df3b03fca981a495228ab943c354a795d5031daf6020bc95f17773ecc7e3119",
+  "comparison": "Constant 0.5 conditional probability, not a no-vig market benchmark",
+  "promotion": false
+}

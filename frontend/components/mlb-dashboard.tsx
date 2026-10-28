@@ -1,4 +1,5 @@
 "use client";
+import {savedQuoteQuery} from '@/lib/saved-quote-evidence';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
@@ -115,7 +116,7 @@ function RankingCard({row,pitcher=false,resultRow=null,marketKey="",game=null}:{
       <details><summary>› Market Performance Evidence</summary><p>{evidence}</p></details>
       {!pitcher&&statcast?<details><summary>› Statcast Contact Quality</summary><p>{statcast}</p></details>:null}
       <details><summary>› Why This {pitcher?"Pitcher":"Player"} Ranks Here</summary><p>{why}</p></details>
-      {id?<Link className="openFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}&market=${encodeURIComponent(marketKey)}&role=${pitcher?"pitcher":"batter"}&projection=${encodeURIComponent(projection)}&gameTime=${encodeURIComponent(gameTime)}`}>Open full player card</Link>:null}
+      {id?<Link className="openFullCard" href={`/mlb/player/${id}?gi=${encodeURIComponent(gi)}&team=${encodeURIComponent(team)}&opp=${encodeURIComponent(opp)}&matchup=${encodeURIComponent(pitcherName)}&rank=${encodeURIComponent(String(row.rank||""))}&prob=${encodeURIComponent(probability)}&order=${encodeURIComponent(String(row.batting_order||""))}&market=${encodeURIComponent(marketKey)}&role=${pitcher?"pitcher":"batter"}&projection=${encodeURIComponent(projection)}&gameTime=${encodeURIComponent(gameTime)}${savedQuoteQuery(row)}`}>Open full player card</Link>:null}
     </div>:null}
   </article>
 }

@@ -69,7 +69,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   const quote:ExactQuote={sport,market,period:market.startsWith('q1_')?'q1':'game',gameId:target.gameId,playerId:target.playerId,bookmaker:row.sportsbookKey,quoteId:row.quoteId,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,updatedAt:row.quoteUpdatedAt,capturedAt:row.capturedAt||new Date(now).toISOString(),decisionAt:new Date(now).toISOString(),mainLine:true};
   if(!quoteProblem(quote,target)){
    pricing=evaluatePrice(values,quote);
-   const artifact=data.gi[key];if(artifact)gi=opportunityStrength(artifact,Math.max(pricing.overEv,pricing.underEv),quote.decisionAt);
+   const artifact=data.gi[key];if(artifact&&data.giStatus?.[key]?.reason!=='price_validation_failed')gi=opportunityStrength(artifact,Math.max(pricing.overEv,pricing.underEv),quote.decisionAt);
   }
  }
  // A directional model selection does not require a GI return-ranking fit.
@@ -89,7 +89,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   modelId:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
-  candidateSide:pricing?.candidateSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?pricing.candidateSide:null,
+  candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,
   selectionReason:modelSelection?null:data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
   // Comparison and probabilities are research calculations, never a pick.

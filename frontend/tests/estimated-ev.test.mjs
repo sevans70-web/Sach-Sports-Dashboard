@@ -17,3 +17,15 @@ test('saved pregame EV survives kickoff and final results without using outcomes
 test('shared EV arithmetic applies to all eight sports without a GI dependency',()=>{
  for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'])assert.equal(estimatedEvText({...row(),sport,giScore:null},now),'+10.0%');
 });
+
+test('saved probability evidence is deterministic across file order and exact fixture/quote constraints',async()=>{
+ const {selectSavedQuoteEvidence,savedQuoteQuery}=await loadTs(new URL('../lib/saved-quote-evidence.ts',import.meta.url));
+ const early=row(),late={...row('UNDER',100,[.45,.55,0]),boardCapturedAt:'2026-10-25T16:01Z'};
+ assert.equal(selectSavedQuoteEvidence([late,early],'g','q',now+60000).row,early);assert.equal(selectSavedQuoteEvidence([early,late],'g','q',now+60000).row,early);
+ assert.equal(selectSavedQuoteEvidence([early,{...late,gameId:'other'}],null,null,now).ambiguous,true);
+ assert.equal(selectSavedQuoteEvidence([early,{...late,quoteId:'other'}],'g',null,now).ambiguous,true);
+ assert.equal(selectSavedQuoteEvidence([early],'other','q',now).row,null);
+ const datedLate={...late,researchForecast:{...late.researchForecast,modelSelection:{...late.researchForecast.modelSelection,calculatedAt:'2026-10-25T16:01Z'}}};assert.equal(selectSavedQuoteEvidence([early,datedLate],'g','q',now+60000,'2026-10-25T16:01Z').row,datedLate);assert.equal(selectSavedQuoteEvidence([early],'g','q',now,'missing').row,null);
+ const featured={...late,_featured:true};assert.equal(selectSavedQuoteEvidence([early,featured],'g','q',now+60000).row,featured);
+ for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'])assert.equal(savedQuoteQuery({...early,sport,quoteId:'book x/1'}),'&gameId=g&quoteId=book%20x%2F1&forecastAt=2026-10-25T16%3A00Z');
+});

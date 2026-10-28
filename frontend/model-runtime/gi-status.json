@@ -1,10 +1,16 @@
 {
   "nfl|passing_yards": {
-    "status": "experimental",
-    "reason": "limited_independent_evaluation",
-    "forecasts": 16,
-    "modelBrier": 0.20383174791914388,
-    "bookBrier": 0.24894134082175057
+    "status": "withheld",
+    "reason": "price_validation_failed",
+    "forecasts": 22,
+    "independentGames": 13,
+    "modelBrier": 0.2981731704680575,
+    "constantHalfBrier": 0.25,
+    "hits": 8,
+    "underHits": 4,
+    "underSettled": 12,
+    "evaluation": "Retrospective independent official-final audit of original saved pregame forecasts; not an untouched prospective test",
+    "report": "model-research/2026-10-27/p01-saved-passing-audit/accuracy-audit.json"
   },
   "nfl|receiving_yards": {
     "status": "withheld",

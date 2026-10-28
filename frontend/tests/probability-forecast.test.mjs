@@ -83,3 +83,12 @@ test('native quarter workload fitting retains zero-opportunity outcomes while ef
  const model=evaluateProbabilityModels(rows).models[0];assert.ok(model);assert.ok(model.trainingRows>model.rateTrainingRows);
  assert.ok(model.workload.coefficients.every(Number.isFinite));assert.ok(model.rate.coefficients.every(Number.isFinite));
 });
+
+test('direct candidate fits on training only and remains research-only under later outcome changes',()=>{
+ const rows=dataset(),a=evaluateProbabilityModels(rows,[],{pointPolicy:'direct'});assert.ok(a.models[0].direct);assert.equal(a.validatedForBetting,false);assert.equal(a.giEnabled,false);
+ const later=rows.map(g=>g.season==='2026'?{...g,actual:g.actual+50}:g);
+ assert.deepEqual(evaluateProbabilityModels(later,[],{pointPolicy:'direct'}).models,a.models);
+ const changed=rows.map(g=>g.season==='2025'&&Date.parse(g.gameTime)>=Date.parse(a.reports[0].calibrationStartsAt)?{...g,actual:g.actual+25}:g);
+ assert.deepEqual(evaluateProbabilityModels(changed,[],{pointPolicy:'direct'}).models[0].direct,a.models[0].direct);
+ assert.throws(()=>evaluateProbabilityModels(rows,[],{pointPolicy:'unknown'}),/Unsupported point policy/);
+});

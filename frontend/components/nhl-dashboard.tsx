@@ -1,4 +1,5 @@
 "use client";
+import {savedQuoteQuery} from '@/lib/saved-quote-evidence';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
@@ -73,7 +74,7 @@ function Card({row,market}:{row:Row;market:NhlMarketKey}){
       <div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount}</b></div>
       <div className="projectionBox"><span>SACH PREDICTION</span><strong>{prediction}</strong><small>Model projection: {projection}</small></div>
       <div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div>
-      <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup||"")}&gameTime=${encodeURIComponent(row.gameTime||"")}&status=${encodeURIComponent(row.gameStatus||"")}&books=${row.bookmakerCount}&summary=${encodeURIComponent(row.summary||"")}&photo=${encodeURIComponent(row.headshot||"")}&logo=${encodeURIComponent(row.teamLogo||"")}`}>Open full player card</Link>
+      <Link className="fullCard" href={`/nhl/player/${encodeURIComponent(String(row.playerId))}?market=${market}&name=${encodeURIComponent(row.playerName)}&line=${row.sportsbookLine??""}&projection=${row.modelProjection??""}&prob=${row.modelProbability??""}&pick=${row.prediction??""}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup||"")}&gameTime=${encodeURIComponent(row.gameTime||"")}&status=${encodeURIComponent(row.gameStatus||"")}&books=${row.bookmakerCount}&summary=${encodeURIComponent(row.summary||"")}&photo=${encodeURIComponent(row.headshot||"")}&logo=${encodeURIComponent(row.teamLogo||"")}${savedQuoteQuery(row)}`}>Open full player card</Link>
     </div>:null}
   </article>
 }

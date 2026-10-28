@@ -1,4 +1,5 @@
 "use client";
+import {savedQuoteQuery} from '@/lib/saved-quote-evidence';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
@@ -196,7 +197,7 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       <div><span>POSITION</span><b>{row.position||"—"}</b></div>
       <section><span>SACH PREDICTION</span><strong>{proj}</strong>{row.projectionGames?<small>Recent sample: {row.projectionGames} games</small>:null}</section>
       <p>{row.summary}</p>
-      <Link href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link>
+      <Link href={`/cfb/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}${savedQuoteQuery(row)}`}>Open full player card</Link>
     </div>:null}
   </article>;
 }

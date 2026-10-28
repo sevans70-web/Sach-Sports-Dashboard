@@ -1,0 +1,9 @@
+{
+  "candidate": "Direct ridge fit to actual; existing workload estimate retained separately",
+  "selection": "Fixed candidate, no holdout-based hyperparameter tuning",
+  "split": "Existing chronological prior-season 65/35 train/calibration with 48h embargo; 2026 is a previously inspected development evaluation, not a fresh holdout",
+  "sourceSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "quoteSha256": "94b64b19b0ab5d113ab637587d173b3565701301b60e2e401032b5510feb75eb",
+  "validatedForBetting": false,
+  "livePromotion": false
+}

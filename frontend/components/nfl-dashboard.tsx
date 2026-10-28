@@ -1,4 +1,5 @@
 "use client";
+import {savedQuoteQuery} from '@/lib/saved-quote-evidence';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import {IntelligenceHero, UpdatedStamp} from "@/components/dashboard-chrome";
@@ -81,7 +82,7 @@ function RankingCard({row,market}:{row:NflRankingRow;market:NflMarketKey}){
     </div>
     <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Hide":"View"} Intelligence</button>
-    {open?<div className="detail"><div className="detailMetric green"><span>MODEL PROBABILITY</span><b>{predictionProbabilityText(row)}</b></div><div className="detailMetric"><span>REFERENCE LINE</span><b>{row.sportsbookLine??"—"}</b></div><div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div><div className="projectionBox"><span>SACH PREDICTION</span><strong>{projection}</strong></div><div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div><Link className="fullCard" href={`/nfl/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}`}>Open full player card</Link></div>:null}
+    {open?<div className="detail"><div className="detailMetric green"><span>MODEL PROBABILITY</span><b>{predictionProbabilityText(row)}</b></div><div className="detailMetric"><span>REFERENCE LINE</span><b>{row.sportsbookLine??"—"}</b></div><div className="detailMetric gold"><span>BOOKS</span><b>{row.bookmakerCount||0}</b></div><div className="projectionBox"><span>SACH PREDICTION</span><strong>{projection}</strong></div><div className="why"><b>Why This Player Ranks Here</b><p>{row.summary}</p></div><Link className="fullCard" href={`/nfl/player/${encodeURIComponent(row.playerId)}?market=${encodeURIComponent(market)}&name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName)}&matchup=${encodeURIComponent(row.matchup)}&prob=${row.modelProbability??""}&line=${row.sportsbookLine??""}&projection=${encodeURIComponent(String(row.modelProjection??""))}&img=${encodeURIComponent(row.headshot||"")}&position=${encodeURIComponent(row.position||"")}&teamId=${encodeURIComponent(row.teamId||"")}${savedQuoteQuery(row)}`}>Open full player card</Link></div>:null}
   </article>;
 }
 

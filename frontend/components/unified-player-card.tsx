@@ -663,7 +663,7 @@ export function UnifiedPlayerCard({
         </div>
 
         <b>
-          Model probability <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined}/> · Estimated EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined}/>
+          Model probability <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/> · Estimated EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>
 
         </b>
       </section>
