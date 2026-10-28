@@ -11,7 +11,7 @@ import {visitHistorySnapshots} from '@/lib/history-archive';
 import {writeDurableHistory} from '@/lib/durable-history';
 import {withHistoryLock} from '@/lib/history-lock';
 import {rankingResponse} from '@/lib/ranking-response-cache';
-import {nbaEmptyMarket} from '@/lib/nba-empty-market';
+import {nbaEmptyMarket,unpricedNbaQuarter} from '@/lib/nba-empty-market';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext,attachBasketballAvailability} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -668,6 +668,9 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
  const eligible=availablePregameRankings(await attachBasketballPregameContext(raw,'nba'));
  const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
+ // An unpriced quarter has no saved betting evidence. Do not let an empty
+ // featured archive write delay navigation or replace a prior quoted board.
+ if(unpricedNbaQuarter(payload))return publicNbaBoard({...payload,boardDay:day});
  // Archive the complete candidate pool, including honest abstentions, then
  // choose the supported Top 25 and persist exactly that public pregame board.
  await persist(()=>archiveResearchBoards('nba',[payload]));
