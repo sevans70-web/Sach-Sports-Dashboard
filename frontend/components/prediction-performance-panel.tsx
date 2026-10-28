@@ -1,4 +1,5 @@
 "use client";
+import {filterPerformanceResults,type PerformanceResultFilter} from '@/lib/performance-result-filter';
 import {savedProjectionText} from '@/lib/saved-projection';
 import {fetchHistoryJson} from '@/lib/history-fetch';
 
@@ -339,6 +340,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [categoryOpen, setCategoryOpen] = useState(true);
   const researchView=true;
   const [savedRecords,setSavedRecords]=useState<any[]>([]);
+  const [resultFilter,setResultFilter]=useState<PerformanceResultFilter>("all");
+  const visibleRecords=useMemo(()=>filterPerformanceResults(savedRecords,resultFilter),[savedRecords,resultFilter]);
   const [featured,setFeatured]=useState<any>(null);
   const [featuredError,setFeaturedError]=useState(false);
   const [partialHistory,setPartialHistory]=useState(false);
@@ -544,7 +547,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                   <p>Average predicted chance, excluding pushes: {g.meanProbability==null?'—':(100*g.meanProbability).toFixed(1)+'%'} · Actual win rate: {g.hitRate==null?'—':(100*g.hitRate).toFixed(1)+'%'}</p>
                 </article>):<p>No settled predictions with verified saved probabilities are available for this category and period.</p>}
               </details>
-              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""}</p><p>Original projection: {savedProjectionText(r)} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}{r.reviewReason?<p>{r.reviewReason}</p>:null}</article>)}</div></details>:null}
+              <div style={{marginTop:16}}><label>Filter saved results <select aria-label="Filter saved results" value={resultFilter} onChange={e=>setResultFilter(e.target.value as PerformanceResultFilter)} style={{minHeight:44,marginLeft:8}}>{[['all','All results'],['hit','Hits'],['miss','Misses'],['push','Pushes'],['pending','Pending'],['unknown','Unknown'],['void','Void / withdrawn']].map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label><p>Showing {visibleRecords.length} of {savedRecords.length} saved records. Summary totals cover all results in this category.</p><p>Week covers the last 7 calendar days; Month the last 31; Season the last 370.</p></div>
+              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {visibleRecords.length} {resultFilter==='all'?'saved records':resultFilter==='hit'?'hits':resultFilter+' results'}</summary>{!visibleRecords.length?<p>No matching results in this category and period.</p>:null}<div style={{maxHeight:480,overflow:"auto"}}>{visibleRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""}</p><p>Original projection: {savedProjectionText(r)} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}{r.reviewReason?<p>{r.reviewReason}</p>:null}</article>)}</div></details>:null}
 
               {categoryNote ? <p className={styles.categoryNote}>{categoryNote}</p> : null}
             </div>
