@@ -1,3 +1,4 @@
+import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {playerAvailabilityNote} from '@/lib/record-notes';
 /** Official participation is evidence of playing, not of having started. */
 export type PlayerParticipation={playerId:string;participationConfirmed:boolean;starterConfirmed:boolean};
@@ -38,6 +39,7 @@ export function playerAvailability(row:any){
  const played=row?.participationConfirmed===true&&(!row?.participationGameId||String(row.participationGameId)===String(row.gameId));
  const confirmed=row?.lineup_confirmed===true||row?.lineupConfirmed===true||row?.confirmed===true||row?.starterConfirmed===true||/^(confirmed|confirmed starter)$/i.test(String(row?.availability||''));
  if(played&&(live||final))return {confirmed:true,label:final?'Played':'Playing',detail:'Official game boxscore confirms participation; this does not establish starting status.'};
+ if(excludeUnavailableRanking(row))return {confirmed:false,label:'Unavailable',detail:'Reported unavailable for this fixture; an earlier lineup confirmation does not establish participation.'};
  if(confirmed)return {confirmed:true,label:'Confirmed',detail:'Provider confirms lineup status.'};
  return {confirmed:false,label:live||final?'Participation unconfirmed':'Lineup pending',detail:live||final?'Official participation has not been confirmed for this player.':'Starting status is still pending confirmation.'};
 }

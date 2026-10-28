@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {espnParticipation,nhlParticipation,playerAvailability,applyParticipationEvidence}=await loadTs(new URL('../lib/player-participation.ts',import.meta.url));
+const {cardStatusBadge,espnParticipation,nhlParticipation,playerAvailability,applyParticipationEvidence}=await loadTs(new URL('../lib/player-participation.ts',import.meta.url));
 const summary=(labels,athletes)=>({boxscore:{players:[{statistics:[{labels,athletes}]}]}});
 const athlete=(id,stats,extra={})=>({athlete:{id},stats,...extra});
 test('NFL and CFB zero-yard relief attempts confirm participation; unused backups and game clocks do not',()=>{
@@ -67,4 +67,12 @@ test('official appearance overrides injury notices only for the same fixture and
  assert.equal(row.availabilityEvidence.reportedAt,'2026-10-18T10:00Z');
  assert.match(playerStatusNotice({...row,gameId:'other'},'final'),/Out/);
  assert.match(playerStatusNotice({...row,participationConfirmed:false},'final'),/Out/);
+});
+
+test('a reported OUT player never gets a confirmed lineup badge from an earlier starter flag',()=>{
+ const row={gameId:'same',gameState:'pre',starterConfirmed:true,availabilityEvidence:{gameId:'same',code:'official_injury_status',text:'Reported Out'}};
+ assert.equal(playerAvailability(row).confirmed,false);
+ assert.equal(cardStatusBadge(row,'pregame').label,'Lineup pending');
+ assert.equal(playerAvailability({...row,gameState:'in',participationConfirmed:true,participationGameId:'same'}).label,'Playing');
+ assert.equal(playerAvailability({...row,gameState:'post',participationConfirmed:true,participationGameId:'same'}).label,'Played');
 });

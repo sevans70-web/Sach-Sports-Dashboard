@@ -14,7 +14,7 @@ test('exact official Out reports remove pregame candidates; questionable reports
  assert.equal(excludeUnavailablePregame({...row,pregameContext:null,availabilityEvidence:report},now),true);
 });
 test('participation, lineup confirmation and locked history take precedence over older reports',()=>{
- for(const patch of [{boardFrozen:true},{frozen:true},{lockedAtKickoff:true},{starterConfirmed:true},{lineupConfirmed:true},{gameState:'in'},{gameState:'post'},{participationConfirmed:true,participationGameId:row.gameId}])assert.equal(excludeUnavailablePregame({...row,...patch},now),false);
+ for(const patch of [{boardFrozen:true},{frozen:true},{lockedAtKickoff:true},{gameState:'in'},{gameState:'post'},{participationConfirmed:true,participationGameId:row.gameId}])assert.equal(excludeUnavailablePregame({...row,...patch},now),false);
  const kept={...row,playerId:'other',pregameContext:null,rank:2};
  const payload=availablePregameRankings({rows:[row,kept]},now);assert.equal(payload.rows.length,1);assert.equal(payload.rows[0].rank,1);assert.equal(payload.excludedUnavailable,1);
  const locked={...kept,frozen:true,rank:8};assert.equal(availablePregameRankings({rows:[row,locked]},now).rows[0].rank,8);
@@ -44,4 +44,12 @@ test('concurrent ranking requests share one build; force refresh and crossing ti
  await rankingResponse(key,build,true);assert.equal(calls,2);
  const original=Date.now;Date.now=()=>tip+1;
  try{await rankingResponse(key,build);assert.equal(calls,3)}finally{Date.now=original}
+});
+
+test('all sports keep explicit OUT/DNP ahead of starter flags; only exact participation overrides',()=>{
+ for(const sport of ['nba','wnba','cbb','nfl','cfb','nhl','soccer','mlb'])for(const status of ['Out','Inactive','Suspended','Injured reserve','DNP','Did not play']){
+ const r={sport,gameId:'x',playerId:'1',gameTime:new Date(now+3600000).toISOString(),gameState:'pre',starterConfirmed:true,lineupConfirmed:true,availabilityEvidence:{gameId:'x',code:'official_injury_status',text:'Reported '+status}};
+ const before=structuredClone(r);assert.equal(excludeUnavailablePregame(r,now),true);assert.equal(excludeUnavailableRanking({...r,boardFrozen:true},now),true);
+ assert.equal(excludeUnavailableRanking({...r,participationConfirmed:true,participationGameId:'x'},now),false);assert.equal(excludeUnavailableRanking({...r,participationConfirmed:true,participationGameId:'wrong'},now),true);assert.deepEqual(r,before);
+ }
 });
