@@ -11,6 +11,7 @@ import {visitHistorySnapshots} from '@/lib/history-archive';
 import {writeDurableHistory} from '@/lib/durable-history';
 import {withHistoryLock} from '@/lib/history-lock';
 import {rankingResponse} from '@/lib/ranking-response-cache';
+import {nbaEmptyMarket} from '@/lib/nba-empty-market';
 import {mainMarketQuotes} from "@/lib/main-market-quotes";
 import {attachBasketballPregameContext,attachBasketballAvailability} from '@/lib/basketball-pregame-context';
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -484,6 +485,8 @@ async function buildNbaMarketRankingsRaw(
    };
   }
 
+  const empty=nbaEmptyMarket(market,owlsOk);
+  if(empty)return empty;
   throw new Error(
    owlsOk
     ?`No eligible ${market} rows are available for the today/next NBA slate.`
