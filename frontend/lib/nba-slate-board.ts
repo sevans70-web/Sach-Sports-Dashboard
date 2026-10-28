@@ -1,3 +1,4 @@
+import {nbaSlateRows} from '@/lib/nba-slate-scope';
 import {selectNbaCandidates} from '@/lib/nba-ranking-candidates';
 import {retentionCutoff} from '../scripts/retention-policy.mjs';
 import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
@@ -44,7 +45,7 @@ export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now
    },captureDay>=retentionCutoff());
    if(board){board={...board,recoveredAt:new Date(now).toISOString()};await writeDurableHistory(sport,stream(market),boundary.day,[board],deferCloud);}
   }
-  const rows=(board?.rows||[]).map(saved=>{
+  const rows=nbaSlateRows(board?.day===boundary.day&&board?.market===market?board.rows:[],market,boundary.day).map(saved=>{
    const game=boundary.games.find(g=>String(g.gameId||g.id)===String(saved.gameId));
    return {...saved,rank:saved.rank,movement:'same',boardFrozen:true,frozen:true,lockedAtKickoff:true,boardCapturedAt:board!.capturedAt,boardDay:boundary.day,
     gameState:game?.state||saved.gameState,gameStatus:game?.status||saved.gameStatus,
@@ -70,6 +71,6 @@ export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.
  * date, a later snapshot or a post-tipoff reconstruction onto this board. */
 export function currentNbaPregameSnapshot(board:NbaSlateBoard|null,market:string,day:string,now=Date.now()){
  if(!board||board.market!==market||board.day!==day||!Number.isFinite(Date.parse(board.capturedAt))||Date.parse(board.capturedAt)>now||!Number.isFinite(Date.parse(board.lockAt))||Date.parse(board.capturedAt)>=Date.parse(board.lockAt)||now>=Date.parse(board.lockAt))return null;
- const rows=selectNbaCandidates(board.rows.filter(row=>torontoHistoryDay(row.gameTime)===day),market,now);
+ const rows=selectNbaCandidates(nbaSlateRows(board.rows,market,day),market,now);
  return rows.length?{success:true,market,boardDay:day,boardCapturedAt:board.capturedAt,boardFrozen:false,refreshing:true,source:'Recent saved pregame NBA board',rows,publicRankingCount:rows.length}:null;
 }

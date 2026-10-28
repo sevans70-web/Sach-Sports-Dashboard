@@ -617,7 +617,7 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  const persist=async(work:()=>Promise<any>)=>{if(options?.deferHistory){options.deferHistory(work);return;}await work();};
  const loaded=shared?.overview||await loadNbaOverview();
  const activeDay=activeNbaBoardDay(loaded.games||[]);
- const day=options?.day||((loaded.games||[]).some((g:any)=>torontoNbaDay(g.tipoff||'')===activeDay)?activeDay:undefined);
+ const day=options?.day||activeDay;
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day,'nba',options?.deferHistory);
  if(frozen&&market==='first_basket'){

@@ -1,4 +1,5 @@
 "use client";
+import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scope";
 import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
@@ -1491,7 +1492,7 @@ export function warmDefaultRankingCaches() {
     "/api/mlb/rankings",
     "/api/mlb/schedule",
     "/api/nfl/rankings?market=passing_yards",
-    "/api/nba/rankings?market=points",
+    nbaSlateRequest("points","active"),
     "/api/wnba/rankings?market=points",
     "/api/nhl/rankings?market=shots_on_goal",
     "/api/cbb/rankings?market=points",
@@ -1777,7 +1778,7 @@ export function PlayerRankingsPanel({
     nextGroup: string,
     nextMarket: string,
     nextSlate: CfbSlateKey = cfbSlate
-  ) => `${torontoDay()}|${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : sport === "nba" ? nbaSlate : "all"}`;
+  ) => `${torontoDay()}|${sport}|${league}|${nextGroup}|${nextMarket}|${sport === "cfb" ? nextSlate : sport === "nba" ? nbaSlateRequest(nextMarket,nbaSlate) : "all"}`;
 
   const restoreView = (nextGroup:string,nextMarket:string,nextSlate:CfbSlateKey=cfbSlate) => {
     const saved=rankingViewCache.get(viewCacheKey(nextGroup,nextMarket,nextSlate));
@@ -1986,7 +1987,7 @@ export function PlayerRankingsPanel({
       // NBA history recovery and roster loading are expensive. Prefetch only
       // the next market, with the correct slate; never fan out concurrently.
       for (const item of (sport === "nba" ? neighbors.slice(0,1) : neighbors)) {
-        prefetchJson(`/api/${sport}/rankings?market=${encodeURIComponent(item.key)}${sport === "nba" && nbaSlate !== "active" ? `&day=${nbaSlate}` : ""}`);
+        prefetchJson(sport === "nba" ? nbaSlateRequest(item.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(item.key)}`);
       }
     }, 120);
 
@@ -2070,7 +2071,7 @@ export function PlayerRankingsPanel({
           const rankingUrl =
             sport === "cfb"
               ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
-              : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}${sport==="nba"&&nbaSlate!=="active"?`&day=${nbaSlate}`:""}`;
+              : sport === "nba" ? nbaSlateRequest(market.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
 
           // Never make rankings wait for grading/performance data.
           const rankingPayload = await fetchJson(
@@ -2078,9 +2079,12 @@ export function PlayerRankingsPanel({
             controller.signal
           );
 
-          rawRows = rankingPayload?.rows || [];
-          if(sport==="nba"&&alive)setNbaBoardLabel(rankingPayload?.boardDay||"");
-          rawDropped = rankingPayload?.dropped || [];
+          if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
+          const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
+          const scoped=sport==='nba'?scopedNbaBoard(rankingPayload,requestedMarket,requestedDay||rankingPayload?.boardDay||nbaFixtureDay(new Date())):rankingPayload;
+          rawRows = scoped?.rows || [];
+          if(sport==="nba")setNbaBoardLabel(scoped?.boardDay||"");
+          rawDropped = scoped?.dropped || [];
 
           const performanceUrl =
             `/api/${sport}/performance?period=${sport==="nba"?"Week":"Today"}&market=${encodeURIComponent(market.key)}`;
