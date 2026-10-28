@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-10-28T20:18:39.691Z",
+  "files": {
+    "selection-protocol.json": "0fbc48ab8ad710d08529213d72c68bb5724d80de599199bd50a35ab70d8a9f98",
+    "saved-source.json.gz": "1e472aa49257b9ad5f62652017c8c28bd7f1599d25fb3264c8e2813d5febb4e9",
+    "selected-originals.json": "c7c30b059acc3cab1f908ecbd10febb4d2a9dd847d6017e2def0da8ac39235d5",
+    "official-responses.json.gz": "d0dabf5ab64468e6aa0ab8975c9ac8b536c24c48e66408417d2cda3869367609",
+    "accuracy-audit.json": "583a3193d54d14e4560c9910fe63f9079ff0e2e45b13c2198e1b3c8cc87e8d64"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "reportSha256": "05d5d3ee901ea94185c26b188a263c3a6b7fd084584ac8710a2e84cd9cdcc39d",
+  "overall": {
+    "samples": 323,
+    "fixtures": 20,
+    "originalHits": 171,
+    "candidateDirectionHits": 170,
+    "candidateAbstentions": 0,
+    "pairedBrierImprovementInterval": {
+      "clusters": 20,
+      "replicates": 1000,
+      "lower95": 0.0059617247968834115,
+      "upper95": 0.05364037129424196
+    }
+  },
+  "byOriginalSide": [
+    {
+      "side": "OVER",
+      "samples": 61,
+      "fixtures": 17,
+      "originalHits": 37,
+      "candidateDirectionHits": 37,
+      "candidateAbstentions": 0,
+      "pairedBrierImprovementInterval": {
+        "clusters": 17,
+        "replicates": 1000,
+        "lower95": -0.031128934388443764,
+        "upper95": 0.03893313666871592
+      }
+    },
+    {
+      "side": "UNDER",
+      "samples": 262,
+      "fixtures": 20,
+      "originalHits": 134,
+      "candidateDirectionHits": 133,
+      "candidateAbstentions": 0,
+      "pairedBrierImprovementInterval": {
+        "clusters": 20,
+        "replicates": 1000,
+        "lower95": 0.007093890531028654,
+        "upper95": 0.06826999420411484
+      }
+    }
+  ],
+  "limitation": "Retrospective development diagnostic; outcomes were already inspected. Reduced Brier error is not proof of direction-hit or prospective improvement."
+}

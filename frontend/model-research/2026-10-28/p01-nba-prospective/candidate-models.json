@@ -1,0 +1,55 @@
+{
+  "protocol": {
+    "createdAt": "2026-10-28T20:19:41.179Z",
+    "study": "P01 NBA conditional probability recalibration research",
+    "selection": "Every independently resolved original saved numeric NBA main-market probability in the frozen audit; no confidence, side or hit/miss filtering. Pushes excluded from binary calibration.",
+    "development": "Earliest60% of exact fixtures for training;latest40% for chronological diagnostic. All markets from one fixture stay in one partition. Earlier outcomes and this audit were already inspected: this is retrospective development, NOT untouched validation.",
+    "candidate": "Per-market monotone logistic calibration:intercept0/slope1 initial;2000 gradient steps at0.1;ridge1 toward identity;slope bounded0..5;minimum30 training records. Fixed settings, no holdout tuning. Final candidate fit to all available resolved records only for a later prospective cohort.",
+    "benchmark": "Original conditional OVER probability and constant0.5. No two-sided prices available: no no-vig book,EV or ROI claim.",
+    "livePromotion": false
+  },
+  "models": {
+    "threes_made": {
+      "intercept": 0.2672731462400852,
+      "slope": 0.3721694066760831,
+      "samples": 137,
+      "iterations": 2000,
+      "ridge": 1
+    },
+    "points": {
+      "intercept": 0.31324862877030657,
+      "slope": 0.21306162894069797,
+      "samples": 140,
+      "iterations": 2000,
+      "ridge": 1
+    },
+    "rebounds": {
+      "intercept": 0.6016514143333399,
+      "slope": 0.7083388718317183,
+      "samples": 137,
+      "iterations": 2000,
+      "ridge": 1
+    },
+    "assists": {
+      "intercept": -0.11877215547528545,
+      "slope": 0.10568698743810923,
+      "samples": 125,
+      "iterations": 2000,
+      "ridge": 1
+    },
+    "steals": {
+      "intercept": -0.3373993208984606,
+      "slope": 0.35040664836508106,
+      "samples": 57,
+      "iterations": 2000,
+      "ridge": 1
+    },
+    "blocks": {
+      "intercept": 0.20346750720227558,
+      "slope": 0.11602588738377762,
+      "samples": 83,
+      "iterations": 2000,
+      "ridge": 1
+    }
+  }
+}

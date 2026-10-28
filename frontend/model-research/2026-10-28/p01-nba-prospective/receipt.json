@@ -1,0 +1,12 @@
+{
+  "sha256": "a9e2c79b5bfac2f3747d6ff3483fbe6841e04b5ed3bd7e6285d3afbc773dede3",
+  "candidateSha256": "fe951920f4bc272390a3fbbfa43928ecd077f63643032c2c5edd53f3b18d04b7",
+  "decisions": 177,
+  "independentGames": 11,
+  "files": {
+    "protocol.json": "5026ec17acc914c2c378eee1df86fbef0117efbcb2c255f8828ad03b82b3142a",
+    "candidate-models.json": "fe951920f4bc272390a3fbbfa43928ecd077f63643032c2c5edd53f3b18d04b7",
+    "source.json.gz": "a44f565ad7849777210014daeab812820c2813b47e32f5bcdf34dc0363dbd3f8",
+    "official-fixtures.json.gz": "e2d6c229c3c5c057496633efd3063c9bc18239920acb455be508c39e5fc07b32"
+  }
+}

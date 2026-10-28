@@ -1,0 +1,8 @@
+{
+  "createdAt": "2026-10-28T20:16:21.566Z",
+  "kind": "Retrospective audit of original saved forecasts, NOT an untouched holdout",
+  "selection": "All available original main-market numeric OVER/UNDER probabilities with valid pregame saved/forecast timestamps, exact matching line and fixture older than four hours. Select without grade, outcome, side or confidence filtering. Earliest saved decision per market/fixture/player.",
+  "benchmark": "Constant 0.5 conditional probability only; no two-sided market prices available in this source, so no no-vig book or ROI claim.",
+  "sourceCoverage": "Report source coverage; missing finals/player statistics remain unresolved, never zero.",
+  "promotion": false
+}

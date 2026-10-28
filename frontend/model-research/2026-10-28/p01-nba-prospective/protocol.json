@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-10-28T20:21:03.744Z",
+  "study": "p01-nba-calibration-prospective-v1",
+  "candidateSha256": "fe951920f4bc272390a3fbbfa43928ecd077f63643032c2c5edd53f3b18d04b7",
+  "selection": "Every returned original main-market NBA numeric probability for a future exact official fixture with valid saved/calculated pregame timestamps, matching original line/side/quote ID and a fixed candidate. No grade, probability threshold, side or outcome filtering;earliest available original per market/game/player.",
+  "timing": "Candidate fixed before fresh source retrieval. Original forecast and new recalibrated research probability kept separately. Exact official pregame fixture/time verified. No fitting here.",
+  "scoring": "Exact completed official finals only;explicit player stats;no missing-to-zero conversion;pushes excluded from binary Brier. Report both original sides, original call hit rate, candidate direction hit rate, conditional Brier and fixture-cluster paired intervals. Constant0.5 comparison only. No odds,EV,ROI or production promotion.",
+  "limitations": "Selected archived probability cohort, not all players. Original model version/input receipts and two-sided prices are not available in this normalized source. Candidate is retrospective development and not validated;prospective samples cannot establish all-sport accuracy.",
+  "livePromotion": false,
+  "automaticFollowup": false
+}
