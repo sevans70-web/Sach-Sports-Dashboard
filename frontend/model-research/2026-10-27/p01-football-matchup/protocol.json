@@ -1,0 +1,20 @@
+{
+  "createdAt": "2026-10-28T03:56:32.865Z",
+  "candidate": "football-matchup-direct-v1",
+  "sourceSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "quoteSha256": "94b64b19b0ab5d113ab637587d173b3565701301b60e2e401032b5510feb75eb",
+  "features": "Existing prior-only player features plus own and opponent-allowed reported player totals: mean actual, mean workload, aggregate efficiency over last five bilateral team fixtures, minimum three, same season, 48-hour result lag.",
+  "fitting": "Fixed ridge penalty 20, direct actual target and separate workload/rate fits. First 65% of eligible prior-season dates train; last 35% calibrate with 48h embargo. At least100 training and100 calibration observations. No tuning or outcome-based quote selection.",
+  "comparison": "Current frozen evaluator versus new candidate on exactly the same eligible later-season targets and exact pregame quotes. Report candidate-only coverage and every group/side. Current model uses its original training/calibration population.",
+  "evaluation": "Previously inspected 2026 development outcomes; NOT an untouched holdout or prospective test. Improvement is diagnostic only.",
+  "unsupported": [
+    "NBA",
+    "NHL",
+    "CBB",
+    "Soccer",
+    "WNBA",
+    "MLB"
+  ],
+  "validatedForBetting": false,
+  "livePromotion": false
+}

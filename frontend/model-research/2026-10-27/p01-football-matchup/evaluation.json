@@ -1,0 +1,2185 @@
+{
+  "protocol": {
+    "createdAt": "2026-10-28T03:56:32.865Z",
+    "candidate": "football-matchup-direct-v1",
+    "sourceSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+    "quoteSha256": "94b64b19b0ab5d113ab637587d173b3565701301b60e2e401032b5510feb75eb",
+    "features": "Existing prior-only player features plus own and opponent-allowed reported player totals: mean actual, mean workload, aggregate efficiency over last five bilateral team fixtures, minimum three, same season, 48-hour result lag.",
+    "fitting": "Fixed ridge penalty 20, direct actual target and separate workload/rate fits. First 65% of eligible prior-season dates train; last 35% calibrate with 48h embargo. At least100 training and100 calibration observations. No tuning or outcome-based quote selection.",
+    "comparison": "Current frozen evaluator versus new candidate on exactly the same eligible later-season targets and exact pregame quotes. Report candidate-only coverage and every group/side. Current model uses its original training/calibration population.",
+    "evaluation": "Previously inspected 2026 development outcomes; NOT an untouched holdout or prospective test. Improvement is diagnostic only.",
+    "unsupported": [
+      "NBA",
+      "NHL",
+      "CBB",
+      "Soccer",
+      "WNBA",
+      "MLB"
+    ],
+    "validatedForBetting": false,
+    "livePromotion": false
+  },
+  "reports": [
+    {
+      "group": "nfl|passing_yards",
+      "trainingRows": 233,
+      "calibrationRows": 145,
+      "eligibleTargets": 68,
+      "totalLaterSeason": 209,
+      "pairedForecasts": 68,
+      "mae": 65.87736543228759,
+      "currentMae": 65.70218260849687,
+      "crps": 46.260241309365604,
+      "currentCrps": 46.25613485346576,
+      "pairedCrpsImprovement": {
+        "clusters": 42,
+        "replicates": 1000,
+        "lower95": -1.6137364482059169,
+        "upper95": 1.423941822192351
+      },
+      "exactSettledQuotes": 18,
+      "independentQuotedGames": 11,
+      "brier": 0.23119830889153123,
+      "currentBrier": 0.23606024573919943,
+      "bookBrier": 0.2555544943759921,
+      "pairedBrierImprovement": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.018451248513674193,
+        "upper95": 0.028106890293510253
+      },
+      "pairedBookBrierImprovement": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.035576230180232885,
+        "upper95": 0.08823912732588297
+      },
+      "currentSides": [
+        {
+          "side": "OVER",
+          "selections": 7,
+          "independentGames": 7,
+          "hits": 5,
+          "hitRate": 0.7142857142857143,
+          "roi": 0.3786060882893673,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 8,
+          "independentGames": 6,
+          "hits": 4,
+          "hitRate": 0.5,
+          "roi": -0.047017543859649125,
+          "roiInterval": null
+        }
+      ],
+      "matchupSides": [
+        {
+          "side": "OVER",
+          "selections": 8,
+          "independentGames": 8,
+          "hits": 5,
+          "hitRate": 0.625,
+          "roi": 0.2062803272531964,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 7,
+          "independentGames": 5,
+          "hits": 4,
+          "hitRate": 0.5714285714285714,
+          "roi": 0.08912280701754385,
+          "roiInterval": null
+        }
+      ],
+      "rejections": {},
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|receiving_yards",
+      "trainingRows": 1601,
+      "calibrationRows": 1078,
+      "eligibleTargets": 433,
+      "totalLaterSeason": 1471,
+      "pairedForecasts": 433,
+      "mae": 23.434196101197845,
+      "currentMae": 23.87077838922752,
+      "crps": 16.690542473932307,
+      "currentCrps": 17.083259409175007,
+      "pairedCrpsImprovement": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": 0.13177181362788087,
+        "upper95": 0.6625766237524264
+      },
+      "exactSettledQuotes": 22,
+      "independentQuotedGames": 10,
+      "brier": 0.3137479343536737,
+      "currentBrier": 0.3589789785185299,
+      "bookBrier": 0.253555493583993,
+      "pairedBrierImprovement": {
+        "clusters": 10,
+        "replicates": 1000,
+        "lower95": -0.0001072211647351053,
+        "upper95": 0.08731747446828284
+      },
+      "pairedBookBrierImprovement": {
+        "clusters": 10,
+        "replicates": 1000,
+        "lower95": -0.13527928082677876,
+        "upper95": 0.03296642947361991
+      },
+      "currentSides": [
+        {
+          "side": "OVER",
+          "selections": 12,
+          "independentGames": 7,
+          "hits": 5,
+          "hitRate": 0.4166666666666667,
+          "roi": -0.1949002959904915,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 4,
+          "independentGames": 3,
+          "hits": 1,
+          "hitRate": 0.25,
+          "roi": -0.5267857142857143,
+          "roiInterval": null
+        }
+      ],
+      "matchupSides": [
+        {
+          "side": "OVER",
+          "selections": 12,
+          "independentGames": 6,
+          "hits": 6,
+          "hitRate": 0.5,
+          "roi": -0.04153895145267633,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 6,
+          "independentGames": 4,
+          "hits": 3,
+          "hitRate": 0.5,
+          "roi": -0.04391208479993527,
+          "roiInterval": null
+        }
+      ],
+      "rejections": {},
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|receptions",
+      "trainingRows": 1601,
+      "calibrationRows": 1078,
+      "eligibleTargets": 433,
+      "totalLaterSeason": 1471,
+      "pairedForecasts": 433,
+      "mae": 1.6198059207133972,
+      "currentMae": 1.6302997104238914,
+      "crps": 1.1698098000937125,
+      "currentCrps": 1.1786611018241318,
+      "pairedCrpsImprovement": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": -0.0034174229587256,
+        "upper95": 0.022199271042728137
+      },
+      "exactSettledQuotes": 17,
+      "independentQuotedGames": 10,
+      "brier": 0.26897022934658765,
+      "currentBrier": 0.25497928974254563,
+      "bookBrier": 0.24418554576139573,
+      "pairedBrierImprovement": {
+        "clusters": 10,
+        "replicates": 1000,
+        "lower95": -0.038601531577942924,
+        "upper95": 0.004969520275642737
+      },
+      "pairedBookBrierImprovement": {
+        "clusters": 10,
+        "replicates": 1000,
+        "lower95": -0.10674556864435308,
+        "upper95": 0.05396866075862062
+      },
+      "currentSides": [
+        {
+          "side": "OVER",
+          "selections": 8,
+          "independentGames": 7,
+          "hits": 5,
+          "hitRate": 0.625,
+          "roi": 0.04546309310191028,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 6,
+          "independentGames": 3,
+          "hits": 4,
+          "hitRate": 0.6666666666666666,
+          "roi": 0.12301789459607111,
+          "roiInterval": null
+        }
+      ],
+      "matchupSides": [
+        {
+          "side": "OVER",
+          "selections": 9,
+          "independentGames": 7,
+          "hits": 6,
+          "hitRate": 0.6666666666666666,
+          "roi": 0.1094247508041825,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 6,
+          "independentGames": 3,
+          "hits": 4,
+          "hitRate": 0.6666666666666666,
+          "roi": 0.12301789459607111,
+          "roiInterval": null
+        }
+      ],
+      "rejections": {},
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|rushing_yards",
+      "trainingRows": 744,
+      "calibrationRows": 528,
+      "eligibleTargets": 200,
+      "totalLaterSeason": 721,
+      "pairedForecasts": 200,
+      "mae": 19.7362980891681,
+      "currentMae": 19.62811786135362,
+      "crps": 13.775182237861566,
+      "currentCrps": 14.010689386765371,
+      "pairedCrpsImprovement": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": -0.21719560627036405,
+        "upper95": 0.7481550266277703
+      },
+      "exactSettledQuotes": 17,
+      "independentQuotedGames": 11,
+      "brier": 0.3078723397072327,
+      "currentBrier": 0.3963376242370226,
+      "bookBrier": 0.2504873556200437,
+      "pairedBrierImprovement": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": 0.033899531747960905,
+        "upper95": 0.1746365166819712
+      },
+      "pairedBookBrierImprovement": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.12862146882656064,
+        "upper95": 0.03168826476705252
+      },
+      "currentSides": [
+        {
+          "side": "OVER",
+          "selections": 9,
+          "independentGames": 6,
+          "hits": 1,
+          "hitRate": 0.1111111111111111,
+          "roi": -0.7887887887887888,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 7,
+          "independentGames": 5,
+          "hits": 3,
+          "hitRate": 0.42857142857142855,
+          "roi": -0.1736591478696742,
+          "roiInterval": null
+        }
+      ],
+      "matchupSides": [
+        {
+          "side": "OVER",
+          "selections": 8,
+          "independentGames": 5,
+          "hits": 2,
+          "hitRate": 0.25,
+          "roi": -0.5332207207207207,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selections": 6,
+          "independentGames": 4,
+          "hits": 3,
+          "hitRate": 0.5,
+          "roi": -0.0359356725146199,
+          "roiInterval": null
+        }
+      ],
+      "rejections": {},
+      "validatedForBetting": false
+    }
+  ],
+  "decisions": [
+    {
+      "gameId": "401873004",
+      "playerId": "12483",
+      "quoteId": "pinnacle-1638361418",
+      "line": 279.5,
+      "actual": 222,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.1724137931034483,
+        "brier": 0.02972651605231867,
+        "side": "UNDER",
+        "won": true,
+        "profit": 1.08
+      },
+      "matchup": {
+        "overProbability": 0.2206896551724138,
+        "brier": 0.048703923900118906,
+        "side": "UNDER",
+        "won": true,
+        "profit": 1.08
+      },
+      "bookBrier": 0.2963681514472263
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "14880",
+      "quoteId": "pinnacle-1638361500",
+      "line": 249.5,
+      "actual": 313,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.754Z",
+      "current": {
+        "overProbability": 0.3103448275862069,
+        "brier": 0.47562425683709875,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.36551724137931035,
+        "brier": 0.4025683709869203,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.24580544355482636
+    },
+    {
+      "gameId": "401873001",
+      "playerId": "15864",
+      "quoteId": "pinnacle-1638402644",
+      "line": 216.5,
+      "actual": 252,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.4206896551724138,
+        "brier": 0.3356004756242569,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.4482758620689655,
+        "brier": 0.30439952437574314,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "2578570",
+      "quoteId": "pinnacle-1638361382",
+      "line": 237.5,
+      "actual": 218,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.3103448275862069,
+        "brier": 0.09631391200951249,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "matchup": {
+        "overProbability": 0.2689655172413793,
+        "brier": 0.0723424494649227,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "bookBrier": 0.24580544355482625
+    },
+    {
+      "gameId": "401873000",
+      "playerId": "2969939",
+      "quoteId": "pinnacle-1638361322",
+      "line": 218.5,
+      "actual": 152,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.756Z",
+      "current": {
+        "overProbability": 0.3103448275862069,
+        "brier": 0.09631391200951249,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.9259259259259259
+      },
+      "matchup": {
+        "overProbability": 0.36551724137931035,
+        "brier": 0.13360285374554104,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.9259259259259259
+      },
+      "bookBrier": 0.2584999061060188
+    },
+    {
+      "gameId": "401872997",
+      "playerId": "3122840",
+      "quoteId": "pinnacle-1638472581",
+      "line": 206.5,
+      "actual": 164,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.756Z",
+      "current": {
+        "overProbability": 0.6206896551724138,
+        "brier": 0.38525564803804996,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.6827586206896552,
+        "brier": 0.4661593341260405,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "3139477",
+      "quoteId": "pinnacle-1638402722",
+      "line": 226.5,
+      "actual": 272,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.5103448275862069,
+        "brier": 0.23976218787158143,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.4482758620689655,
+        "brier": 0.30439952437574314,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.2584999061060189
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "3917792",
+      "quoteId": "pinnacle-1638402590",
+      "line": 234.5,
+      "actual": 269,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.4068965517241379,
+        "brier": 0.3517717003567183,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.47586206896551725,
+        "brier": 0.27472057074910816,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.29506784494726945
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "3918298",
+      "quoteId": "pinnacle-1638361485",
+      "line": 239.5,
+      "actual": 255,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.5586206896551724,
+        "brier": 0.19481569560047562,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "matchup": {
+        "overProbability": 0.6206896551724138,
+        "brier": 0.14387633769322233,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4038941",
+      "quoteId": "pinnacle-1638402713",
+      "line": 195.5,
+      "actual": 204,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.754Z",
+      "current": {
+        "overProbability": 0.6413793103448275,
+        "brier": 0.12860879904875153,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.11
+      },
+      "matchup": {
+        "overProbability": 0.6827586206896552,
+        "brier": 0.10064209274673007,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.11
+      },
+      "bookBrier": 0.30359729417426495
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4360310",
+      "quoteId": "pinnacle-1638301879",
+      "line": 228.5,
+      "actual": 306,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.754Z",
+      "current": {
+        "overProbability": 0.5586206896551724,
+        "brier": 0.19481569560047562,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9009009009009009
+      },
+      "matchup": {
+        "overProbability": 0.6206896551724138,
+        "brier": 0.14387633769322233,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9009009009009009
+      },
+      "bookBrier": 0.25211031858619265
+    },
+    {
+      "gameId": "401872999",
+      "playerId": "4360423",
+      "quoteId": "fanduel-36160514-michaelpenixjr-passing_yards",
+      "line": 236.5,
+      "actual": 225,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.754Z",
+      "current": {
+        "overProbability": 0.6137931034482759,
+        "brier": 0.3767419738406659,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.5655172413793104,
+        "brier": 0.31980975029726516,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873000",
+      "playerId": "4360689",
+      "quoteId": "pinnacle-1638361367",
+      "line": 232.5,
+      "actual": 144,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.3103448275862069,
+        "brier": 0.09631391200951249,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.7407407407407407
+      },
+      "matchup": {
+        "overProbability": 0.2827586206896552,
+        "brier": 0.07995243757431629,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.7407407407407407
+      },
+      "bookBrier": 0.2075740452044964
+    },
+    {
+      "gameId": "401873001",
+      "playerId": "4431452",
+      "quoteId": "pinnacle-1638402623",
+      "line": 236.5,
+      "actual": 235,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.754Z",
+      "current": {
+        "overProbability": 0.5448275862068965,
+        "brier": 0.2968370986920333,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.4689655172413793,
+        "brier": 0.21992865636147443,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.23452395079308572
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4432577",
+      "quoteId": "pinnacle-1638301780",
+      "line": 256.5,
+      "actual": 312,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.754Z",
+      "current": {
+        "overProbability": 0.3448275862068966,
+        "brier": 0.42925089179548154,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.3586206896551724,
+        "brier": 0.41136741973840657,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401872998",
+      "playerId": "4685720",
+      "quoteId": "pinnacle-1638449618",
+      "line": 234.5,
+      "actual": 281,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.6827586206896552,
+        "brier": 0.10064209274673007,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8849557522123894
+      },
+      "matchup": {
+        "overProbability": 0.6206896551724138,
+        "brier": 0.14387633769322233,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8849557522123894
+      },
+      "bookBrier": 0.24789855090729782
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "4688380",
+      "quoteId": "pinnacle-1638402569",
+      "line": 200.5,
+      "actual": 102,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.5310344827586206,
+        "brier": 0.28199762187871574,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.6344827586206897,
+        "brier": 0.4025683709869204,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25423004338633415
+    },
+    {
+      "gameId": "401873002",
+      "playerId": "8439",
+      "quoteId": "pinnacle-1638449672",
+      "line": 226.5,
+      "actual": 253,
+      "market": "passing_yards",
+      "group": "nfl|passing_yards",
+      "decisionAt": "2026-10-18T03:10:32.753Z",
+      "current": {
+        "overProbability": 0.6275862068965518,
+        "brier": 0.13869203329369795,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "matchup": {
+        "overProbability": 0.5655172413793104,
+        "brier": 0.18877526753864446,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "16800",
+      "quoteId": "pinnacle-1638361370",
+      "line": 57.5,
+      "actual": 39,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.7931354359925789,
+        "brier": 0.6290638198271381,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.5918367346938775,
+        "brier": 0.3502707205331112,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.26498923262547214
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "2573401",
+      "quoteId": "pinnacle-1638361482",
+      "line": 32.5,
+      "actual": 22,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.8061224489795918,
+        "brier": 0.6498334027488547,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.6549165120593692,
+        "brier": 0.42891563776800984,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25211031858619265
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "3915411",
+      "quoteId": "pinnacle-1638402710",
+      "line": 15.5,
+      "actual": 24,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.8153988868274582,
+        "brier": 0.03407757098454158,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8849557522123894
+      },
+      "matchup": {
+        "overProbability": 0.8562152133580705,
+        "brier": 0.02067406486966519,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8849557522123894
+      },
+      "bookBrier": 0.24789855090729782
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "3925357",
+      "quoteId": "pinnacle-1638402563",
+      "line": 12.5,
+      "actual": 0,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.5037105751391465,
+        "brier": 0.2537243435070098,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.5018552875695733,
+        "brier": 0.2518587296615391,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873000",
+      "playerId": "3929645",
+      "quoteId": "pinnacle-1638361349",
+      "line": 39.5,
+      "actual": 0,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.4972170686456401,
+        "brier": 0.24722481335256316,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.4489795918367347,
+        "brier": 0.2015826738858809,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.9345794392523364
+      },
+      "bookBrier": 0.26065116650532183
+    },
+    {
+      "gameId": "401872997",
+      "playerId": "4360939",
+      "quoteId": "pinnacle-1638671552",
+      "line": 19.5,
+      "actual": 0,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.7810760667903525,
+        "brier": 0.6100798221126872,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.8153988868274582,
+        "brier": 0.664875344639458,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873000",
+      "playerId": "4361370",
+      "quoteId": "pinnacle-1638361277",
+      "line": 79.5,
+      "actual": 43,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.6846011131725418,
+        "brier": 0.46867868415708336,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.42115027829313545,
+        "brier": 0.17736755690638545,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.9090909090909091
+      },
+      "bookBrier": 0.25423004338633415
+    },
+    {
+      "gameId": "401873001",
+      "playerId": "4361432",
+      "quoteId": "fanduel-36160508-romeodoubs-receiving_yards",
+      "line": 31.5,
+      "actual": 42,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.46660482374768086,
+        "brier": 0.2845104140492426,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.4777365491651206,
+        "brier": 0.27275911207795644,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "4426515",
+      "quoteId": "pinnacle-1638361451",
+      "line": 92.5,
+      "actual": 80,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.48886827458256027,
+        "brier": 0.23899218989332954,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.5148423005565863,
+        "brier": 0.2650625944423983,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.2659704916735889
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "4429096",
+      "quoteId": "pinnacle-1638472659",
+      "line": 6.5,
+      "actual": 18,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.75139146567718,
+        "brier": 0.06180620333814079,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9259259259259259
+      },
+      "matchup": {
+        "overProbability": 0.6447124304267161,
+        "brier": 0.12622925709329105,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9259259259259259
+      },
+      "bookBrier": 0.2584999061060189
+    },
+    {
+      "gameId": "401872997",
+      "playerId": "4429615",
+      "quoteId": "pinnacle-1638671600",
+      "line": 58.5,
+      "actual": 66,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.9146567717996289,
+        "brier": 0.007283466599660617,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8928571428571429
+      },
+      "matchup": {
+        "overProbability": 0.8487940630797773,
+        "brier": 0.022863235359922355,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8928571428571429
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4430539",
+      "quoteId": "pinnacle-1638301765",
+      "line": 37.5,
+      "actual": 44,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.5473098330241187,
+        "brier": 0.20492838727665127,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.6066790352504638,
+        "brier": 0.15470138131150585,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8403361344537815
+      },
+      "bookBrier": 0.23544713513655036
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "4430737",
+      "quoteId": "pinnacle-1638361412",
+      "line": 19.5,
+      "actual": 17,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.8775510204081632,
+        "brier": 0.7700957934194085,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.7922077922077922,
+        "brier": 0.6275931860347446,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4432620",
+      "quoteId": "pinnacle-1638301864",
+      "line": 62.5,
+      "actual": 64,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.2829313543599258,
+        "brier": 0.5141874425600903,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.323747680890538,
+        "brier": 0.45731719910092566,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873002",
+      "playerId": "4569987",
+      "quoteId": "pinnacle-1638573312",
+      "line": 28.5,
+      "actual": 28,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.7810760667903525,
+        "brier": 0.6100798221126872,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.74860853432282,
+        "brier": 0.5604147376609608,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2628140790847443
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4683062",
+      "quoteId": "pinnacle-1638472964",
+      "line": 48.5,
+      "actual": 73,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.20408163265306123,
+        "brier": 0.6334860474802165,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.24025974025974026,
+        "brier": 0.5772052622701973,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.21958207684715766
+    },
+    {
+      "gameId": "401872998",
+      "playerId": "4685472",
+      "quoteId": "pinnacle-1638449663",
+      "line": 66.5,
+      "actual": 86,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.7662337662337663,
+        "brier": 0.054646652049249435,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.11
+      },
+      "matchup": {
+        "overProbability": 0.6836734693877551,
+        "brier": 0.10006247396917951,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.11
+      },
+      "bookBrier": 0.30359729417426495
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4686422",
+      "quoteId": "pinnacle-1638573098",
+      "line": 14.5,
+      "actual": 10,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.9434137291280148,
+        "brier": 0.8900294643072273,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.9471243042671614,
+        "brier": 0.8970444477335546,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2628140790847443
+    },
+    {
+      "gameId": "401872998",
+      "playerId": "4695883",
+      "quoteId": "pinnacle-1638449645",
+      "line": 55.5,
+      "actual": 97,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.3654916512059369,
+        "brier": 0.40260084468936835,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.3534322820037106,
+        "brier": 0.41804981395492924,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25211031858619265
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "4883647",
+      "quoteId": "pinnacle-1638402599",
+      "line": 15.5,
+      "actual": 3,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.48794063079777367,
+        "brier": 0.23808605918332928,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.48144712430426717,
+        "brier": 0.2317913335008485,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "4890973",
+      "quoteId": "pinnacle-1638361436",
+      "line": 25.5,
+      "actual": 36,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.8024118738404453,
+        "brier": 0.0390410675992441,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.847457627118644
+      },
+      "matchup": {
+        "overProbability": 0.8246753246753247,
+        "brier": 0.03073874177770282,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.847457627118644
+      },
+      "bookBrier": 0.23750616614396472
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "5082630",
+      "quoteId": "pinnacle-1638573399",
+      "line": 24.5,
+      "actual": 24,
+      "market": "receiving_yards",
+      "group": "nfl|receiving_yards",
+      "decisionAt": "2026-10-18T03:10:34.355Z",
+      "current": {
+        "overProbability": 0.23469387755102042,
+        "brier": 0.05508121615993337,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8928571428571429
+      },
+      "matchup": {
+        "overProbability": 0.25510204081632654,
+        "brier": 0.06507705122865473,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8928571428571429
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "2573401",
+      "quoteId": "pinnacle-1638361476",
+      "line": 2.5,
+      "actual": 4,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.898886827458256,
+        "brier": 0.010223873661456495,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.625
+      },
+      "matchup": {
+        "overProbability": 0.8061224489795918,
+        "brier": 0.03758850478967097,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.625
+      },
+      "bookBrier": 0.17405712534255263
+    },
+    {
+      "gameId": "401872999",
+      "playerId": "2973405",
+      "quoteId": "pinnacle-1638361280",
+      "line": 2.5,
+      "actual": 2,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.356Z",
+      "current": {
+        "overProbability": 0.8126159554730983,
+        "brier": 0.6603446910894565,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.8237476808905381,
+        "brier": 0.6785602417725397,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.28987490279357525
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "3045523",
+      "quoteId": "pinnacle-1638361400",
+      "line": 3.5,
+      "actual": 5,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.5018552875695733,
+        "brier": 0.2481481545223925,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.3821892393320965,
+        "brier": 0.3816901359970536,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.36638888349715226
+    },
+    {
+      "gameId": "401872997",
+      "playerId": "4360939",
+      "quoteId": "pinnacle-1638671546",
+      "line": 1.5,
+      "actual": 0,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.8237476808905381,
+        "brier": 0.6785602417725397,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.8274582560296846,
+        "brier": 0.6846871654716871,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.31559512557392067
+    },
+    {
+      "gameId": "401872998",
+      "playerId": "4372780",
+      "quoteId": "draftkings-378326035",
+      "line": 1.5,
+      "actual": 4,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.7569573283858998,
+        "brier": 0.05906974022531935,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7194244604316546
+      },
+      "matchup": {
+        "overProbability": 0.7374768089053804,
+        "brier": 0.06891842586250217,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7194244604316546
+      },
+      "bookBrier": 0.20372647424705395
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "4382466",
+      "quoteId": "draftkings-378194497",
+      "line": 2.5,
+      "actual": 1,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.29962894248608535,
+        "brier": 0.08977750317532984,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.6493506493506493
+      },
+      "matchup": {
+        "overProbability": 0.30890538033395176,
+        "brier": 0.0954225339992634,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.6493506493506493
+      },
+      "bookBrier": 0.18264067913597504
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "4385690",
+      "quoteId": "pinnacle-1638402692",
+      "line": 4.5,
+      "actual": 7,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.13079777365491652,
+        "brier": 0.7555125102832497,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.12987012987012986,
+        "brier": 0.7571259908922245,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.3396540444696386
+    },
+    {
+      "gameId": "401872999",
+      "playerId": "4426502",
+      "quoteId": "pinnacle-1638361256",
+      "line": 6.5,
+      "actual": 4,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.18181818181818182,
+        "brier": 0.03305785123966942,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.6622516556291391
+      },
+      "matchup": {
+        "overProbability": 0.17532467532467533,
+        "brier": 0.03073874177770282,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.6622516556291391
+      },
+      "bookBrier": 0.18619338496193172
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "4426515",
+      "quoteId": "pinnacle-1638361448",
+      "line": 7.5,
+      "actual": 6,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.6938775510204082,
+        "brier": 0.4814660558100791,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.7411873840445269,
+        "brier": 0.549358738266769,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2868043720524792
+    },
+    {
+      "gameId": "401873001",
+      "playerId": "4427095",
+      "quoteId": "fanduel-36160508-demariodouglas-receptions",
+      "line": 1.5,
+      "actual": 7,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.7801484230055659,
+        "brier": 0.0483347159069396,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.5319148936170213
+      },
+      "matchup": {
+        "overProbability": 0.7782931354359925,
+        "brier": 0.049153933794803144,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.5319148936170213
+      },
+      "bookBrier": 0.1517962556923596
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4430539",
+      "quoteId": "pinnacle-1638301762",
+      "line": 3.5,
+      "actual": 5,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.5890538033395176,
+        "brier": 0.16887677654971586,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.6465677179962894,
+        "brier": 0.1249143779623504,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.6211180124223602
+      },
+      "bookBrier": 0.1726835968168506
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "4569587",
+      "quoteId": "pinnacle-1638402680",
+      "line": 3.5,
+      "actual": 3,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.356Z",
+      "current": {
+        "overProbability": 0.5797773654916512,
+        "brier": 0.33614179353643964,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.5927643784786641,
+        "brier": 0.351369608393197,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.40084238160305574
+    },
+    {
+      "gameId": "401873002",
+      "playerId": "4596448",
+      "quoteId": "pinnacle-1638449684",
+      "line": 1.5,
+      "actual": 2,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.859925788497217,
+        "brier": 0.01962078472812638,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.6024096385542169
+      },
+      "matchup": {
+        "overProbability": 0.8589981447124304,
+        "brier": 0.019881523194536715,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.6024096385542169
+      },
+      "bookBrier": 0.16774842717262436
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4612826",
+      "quoteId": "pinnacle-1638671636",
+      "line": 3.5,
+      "actual": 1,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.357Z",
+      "current": {
+        "overProbability": 0.23469387755102042,
+        "brier": 0.05508121615993337,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8130081300813008
+      },
+      "matchup": {
+        "overProbability": 0.24582560296846012,
+        "brier": 0.06043022707480699,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8130081300813008
+      },
+      "bookBrier": 0.22842422377907626
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4683062",
+      "quoteId": "pinnacle-1638472950",
+      "line": 4.5,
+      "actual": 7,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.356Z",
+      "current": {
+        "overProbability": 0.20222634508348794,
+        "brier": 0.6364428044788502,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.20686456400742115,
+        "brier": 0.6290638198271381,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2659704916735889
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4686422",
+      "quoteId": "pinnacle-1638573095",
+      "line": 1.5,
+      "actual": 2,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.356Z",
+      "current": {
+        "overProbability": 0.8923933209647495,
+        "brier": 0.01157919737299541,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8849557522123894
+      },
+      "matchup": {
+        "overProbability": 0.8979591836734694,
+        "brier": 0.010412328196584757,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8849557522123894
+      },
+      "bookBrier": 0.24789855090729782
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "5082630",
+      "quoteId": "pinnacle-1638573396",
+      "line": 2.5,
+      "actual": 2,
+      "market": "receptions",
+      "group": "nfl|receptions",
+      "decisionAt": "2026-10-18T03:10:34.356Z",
+      "current": {
+        "overProbability": 0.20593692022263452,
+        "brier": 0.04241001511078373,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.6134969325153374
+      },
+      "matchup": {
+        "overProbability": 0.2077922077922078,
+        "brier": 0.043177601619160066,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.6134969325153374
+      },
+      "bookBrier": 0.1708553582245949
+    },
+    {
+      "gameId": "401872997",
+      "playerId": "3043078",
+      "quoteId": "pinnacle-1638472525",
+      "line": 89.5,
+      "actual": 58,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.7443181818181818,
+        "brier": 0.5540095557851239,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.45075757575757575,
+        "brier": 0.20318239210284664,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "3916148",
+      "quoteId": "pinnacle-1638402653",
+      "line": 54.5,
+      "actual": 76,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.4583333333333333,
+        "brier": 0.29340277777777785,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "matchup": {
+        "overProbability": 0.6609848484848485,
+        "brier": 0.11493127295684112,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8333333333333334
+      },
+      "bookBrier": 0.23452395079308572
+    },
+    {
+      "gameId": "401872998",
+      "playerId": "4241416",
+      "quoteId": "pinnacle-1638449627",
+      "line": 70.5,
+      "actual": 120,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.3503787878787879,
+        "brier": 0.4220077192378329,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.4943181818181818,
+        "brier": 0.25571410123966937,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.23248629937668006
+    },
+    {
+      "gameId": "401873003",
+      "playerId": "4242335",
+      "quoteId": "pinnacle-1638402608",
+      "line": 89.5,
+      "actual": 94,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.3106060606060606,
+        "brier": 0.4752640036730947,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.3087121212121212,
+        "brier": 0.47787893135904497,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25635972054506595
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "4373626",
+      "quoteId": "pinnacle-1638361470",
+      "line": 46.5,
+      "actual": 38,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.671Z",
+      "current": {
+        "overProbability": 0.14772727272727273,
+        "brier": 0.02182334710743802,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "matchup": {
+        "overProbability": 0.1856060606060606,
+        "brier": 0.03444960973370064,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873004",
+      "playerId": "4429096",
+      "quoteId": "pinnacle-1638361358",
+      "line": 42.5,
+      "actual": 42,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.2537878787878788,
+        "brier": 0.06440828741965106,
+        "side": "UNDER",
+        "won": true,
+        "profit": 1.03
+      },
+      "matchup": {
+        "overProbability": 0.30303030303030304,
+        "brier": 0.09182736455463729,
+        "side": "UNDER",
+        "won": true,
+        "profit": 1.03
+      },
+      "bookBrier": 0.28460237193732163
+    },
+    {
+      "gameId": "401872999",
+      "playerId": "4430807",
+      "quoteId": "pinnacle-1638361220",
+      "line": 90.5,
+      "actual": 61,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.671Z",
+      "current": {
+        "overProbability": 0.7992424242424242,
+        "brier": 0.6387884527089072,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.45265151515151514,
+        "brier": 0.20489339416896235,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.282390363594938
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4567048",
+      "quoteId": "pinnacle-1638402719",
+      "line": 90.5,
+      "actual": 128,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.671Z",
+      "current": {
+        "overProbability": 0.9090909090909091,
+        "brier": 0.00826446280991736,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9009009009009009
+      },
+      "matchup": {
+        "overProbability": 0.7784090909090909,
+        "brier": 0.049102530991735525,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9009009009009009
+      },
+      "bookBrier": 0.25211031858619265
+    },
+    {
+      "gameId": "401873001",
+      "playerId": "4569173",
+      "quoteId": "pinnacle-1638472491",
+      "line": 62.5,
+      "actual": 36,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.19507575757575757,
+        "brier": 0.03805455119375574,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "matchup": {
+        "overProbability": 0.1856060606060606,
+        "brier": 0.03444960973370064,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873002",
+      "playerId": "4569987",
+      "quoteId": "pinnacle-1638573306",
+      "line": 60.5,
+      "actual": 50,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.671Z",
+      "current": {
+        "overProbability": 0.7632575757575758,
+        "brier": 0.5825621269513316,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.7462121212121212,
+        "brier": 0.5568325298438935,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25423004338633415
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4596334",
+      "quoteId": "pinnacle-1638472838",
+      "line": 18.5,
+      "actual": 4,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.7064393939393939,
+        "brier": 0.4990566173094582,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.625,
+        "brier": 0.390625,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873002",
+      "playerId": "4596448",
+      "quoteId": "pinnacle-1638449681",
+      "line": 64.5,
+      "actual": 46,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.671Z",
+      "current": {
+        "overProbability": 0.6534090909090909,
+        "brier": 0.4269434400826447,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.6325757575757576,
+        "brier": 0.4001520890725436,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.23957101978750067
+    },
+    {
+      "gameId": "401873000",
+      "playerId": "4599739",
+      "quoteId": "pinnacle-1638573192",
+      "line": 34.5,
+      "actual": 70,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.3143939393939394,
+        "brier": 0.4700556703397612,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.3996212121212121,
+        "brier": 0.36045468893480254,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2437201587165426
+    },
+    {
+      "gameId": "401873001",
+      "playerId": "4685247",
+      "quoteId": "pinnacle-1638573234",
+      "line": 65.5,
+      "actual": 78,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.19128787878787878,
+        "brier": 0.6540152949954087,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.2178030303030303,
+        "brier": 0.6118320994031222,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "gameId": "401873006",
+      "playerId": "4685382",
+      "quoteId": "pinnacle-1638472883",
+      "line": 31.5,
+      "actual": 18,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.671Z",
+      "current": {
+        "overProbability": 0.8920454545454546,
+        "brier": 0.7957450929752067,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.8617424242424242,
+        "brier": 0.7426000057392103,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.26065116650532183
+    },
+    {
+      "gameId": "401872996",
+      "playerId": "4882093",
+      "quoteId": "pinnacle-1638301750",
+      "line": 63.5,
+      "actual": 39,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.6875,
+        "brier": 0.47265625,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.5606060606060606,
+        "brier": 0.31427915518824606,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.21763963231175884
+    },
+    {
+      "gameId": "401873005",
+      "playerId": "4890973",
+      "quoteId": "pinnacle-1638361427",
+      "line": 55.5,
+      "actual": 22,
+      "market": "rushing_yards",
+      "group": "nfl|rushing_yards",
+      "decisionAt": "2026-10-18T03:10:33.672Z",
+      "current": {
+        "overProbability": 0.5662878787878788,
+        "brier": 0.3206819616620753,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "matchup": {
+        "overProbability": 0.625,
+        "brier": 0.390625,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    }
+  ],
+  "livePromotion": false
+}

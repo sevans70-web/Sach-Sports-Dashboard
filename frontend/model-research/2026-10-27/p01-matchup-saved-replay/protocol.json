@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-10-28T03:58:47.470Z",
+  "candidateSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+  "sourceSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "originalSelectionSha256": "e56f257b33ef6bc9ca9fe5d962290b11abdb22cc0ebdfad168adfd3a1cad6f48",
+  "selection": "All22 frozen original pregame passing probabilities from the existing independent official-final audit; no side/result filtering. Candidate coefficients/residuals fixed before this replay; no refitting.",
+  "availability": "Only results older than48h before each original calculation can enter features. Verify exact game/player/season/team and final official result. Current revised data, not archived historical publication vintages.",
+  "comparison": "Paired conditional OVER Brier and direction at original line. No original two-sided prices available in this audit: no market/EV/ROI conclusion. Candidate direction is diagnostic, never an issued pick.",
+  "limitations": "This is a disjoint saved-quote cohort from the earlier18-quote candidate comparison, but its outcomes were already inspected in the original audit. NOT an untouched holdout or prospective validation.",
+  "livePromotion": false
+}
