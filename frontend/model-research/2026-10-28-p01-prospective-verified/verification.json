@@ -1,0 +1,7 @@
+{
+  "pairedDecisions": 21,
+  "individualForecastsReproduced": 42,
+  "allExactQuotePriceComparisonsReproduced": true,
+  "tamperedCohortRejectedBeforeScoring": true,
+  "liveModelPromotion": false
+}

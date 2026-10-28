@@ -1,0 +1,2155 @@
+{
+  "protocol": {
+    "createdAt": "2026-10-28T06:09:52.220Z",
+    "study": "p01-prospective-matchup-v1",
+    "candidateSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+    "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+    "sourceSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+    "officialSupplementSha256": "972819efcca59cc4a9c7943206f80e130841c9aee0eafb8153f74102ef332f59",
+    "selection": "All returned NFL main-line ranking rows across passing/rushing/receiving/receptions that have fresh exact two-sided prices and both candidate/baseline pregame inputs. No side, score, probability or outcome filtering. One quote per market/game/player; ambiguous targets excluded.",
+    "timing": "Freeze before kickoff. Compare both fixed models using the same frozen completed-game population and 48-hour prior-result lag. Exact input vectors, residual-artifact hashes and forecasts saved. No fitting or tuning in this script.",
+    "scoring": "After exact official final: conditional OVER Brier excluding pushes, OVER/UNDER direction hits, fixed >=55% conditional win and >=3% EV research selections, unit ROI refunding pushes, paired fixture-cluster intervals. Report unresolved, pushes and all markets/sides; no cherry-picking.",
+    "limitations": "Selected ranking-board cohort, not complete player population. Source revision and missing-context limitations remain. Models were developed on earlier inspected cohorts. Upcoming targets are new; only completion after this capture is eligible. Small samples cannot justify promotion; no fixed promised accuracy.",
+    "livePromotion": false,
+    "automaticFollowup": false
+  },
+  "completedAt": "2026-10-28T06:10:21.355Z",
+  "requests": [
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=passing_yards",
+      "receivedAt": "2026-10-28T06:09:59.495Z",
+      "rows": 2,
+      "responseSha256": "72cfe318d9d4d5b2326ecd0892f08f3544d7ba94b37581c5337d05e43e151176"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=rushing_yards",
+      "receivedAt": "2026-10-28T06:10:05.449Z",
+      "rows": 3,
+      "responseSha256": "a6d815fc74d19292bbbb764f2b3571f29f2364b1f61ada9462e7239703aa3a89"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=receiving_yards",
+      "receivedAt": "2026-10-28T06:10:15.899Z",
+      "rows": 11,
+      "responseSha256": "97e0757a3cba14122c02898b1ffb712c1611ec4a76581b0cf9113aeef817a80f"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=receptions",
+      "receivedAt": "2026-10-28T06:10:21.350Z",
+      "rows": 11,
+      "responseSha256": "80bcdb46c1934f664bdafaef6ddde3b7e7326a36e58b323449f6adb4fd3a6998"
+    }
+  ],
+  "fixtures": [
+    {
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873023",
+      "retrievedAt": "2026-10-28T06:10:02.205Z",
+      "sourceSha256": "f8edfa043efeb876514493e4ed7863029f11966a6d2d16ce50b9f417ecd15be6",
+      "season": "2026",
+      "gameTime": "2026-10-30T00:15Z",
+      "teams": [
+        "9",
+        "29"
+      ]
+    }
+  ],
+  "rejections": [
+    {
+      "market": "rushing_yards",
+      "gameId": "401873023",
+      "playerId": "4241416",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "market": "rushing_yards",
+      "gameId": "401873023",
+      "playerId": "4047365",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "market": "receiving_yards",
+      "gameId": "401873023",
+      "playerId": "4431487",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "market": "receiving_yards",
+      "gameId": "401873023",
+      "playerId": "4047365",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "market": "receptions",
+      "gameId": "401873023",
+      "playerId": "4047365",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "market": "receptions",
+      "gameId": "401873023",
+      "playerId": "4431487",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    }
+  ],
+  "decisions": [
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4036378",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4036378",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328845",
+        "line": 258.5,
+        "overPrice": -139,
+        "underPrice": 105,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:09:59.495Z",
+        "decisionAt": "2026-10-28T06:09:59.495Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 229.50112589018326,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|passing_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:09:59.495Z",
+          "features": [
+            35.333333333333336,
+            38.333333333333336,
+            45,
+            7.90566037735849,
+            7.3130434782608695,
+            268.86376811594204,
+            279.3333333333333,
+            280.3333333333333,
+            8.975274678557506,
+            4.159722222222222
+          ],
+          "sha256": "179e06bb318abc28e1448f425ebcf8a63975c9b685d237498657fe06e6124ec3"
+        },
+        "price": {
+          "over": 0.3448275862068966,
+          "under": 0.6551724137931034,
+          "push": 0,
+          "overEv": -0.407095013644257,
+          "underEv": 0.34310344827586203,
+          "marketOver": 0.5438496039698445,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6551724137931034
+        }
+      },
+      "candidate": {
+        "projection": 216.22770103864013,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|passing_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:09:59.495Z",
+          "features": [
+            35.333333333333336,
+            38.333333333333336,
+            45,
+            7.90566037735849,
+            7.3130434782608695,
+            268.86376811594204,
+            279.3333333333333,
+            280.3333333333333,
+            8.975274678557506,
+            4.159722222222222,
+            259,
+            37.6,
+            6.888297872340425,
+            196,
+            34.2,
+            5.730994152046784
+          ],
+          "sha256": "5824ab063a0215be428ac2e01b90aa9fd89367665730d83cd831a04a86c7de0d"
+        },
+        "price": {
+          "over": 0.2827586206896552,
+          "under": 0.7172413793103448,
+          "push": 0,
+          "overEv": -0.5138179111882908,
+          "underEv": 0.4703448275862069,
+          "marketOver": 0.5438496039698445,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.7172413793103448
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4685720",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4685720",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328800",
+        "line": 250.5,
+        "overPrice": -116,
+        "underPrice": -114,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:09:59.495Z",
+        "decisionAt": "2026-10-28T06:09:59.495Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 241.96847266287622,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|passing_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:09:59.495Z",
+          "features": [
+            35.666666666666664,
+            38,
+            27,
+            7.224299065420561,
+            7.508771929824562,
+            262.7397660818713,
+            257.6666666666667,
+            285.3333333333333,
+            6.27162924074226,
+            4.302083333333333
+          ],
+          "sha256": "9eacc65e5d6c2974da9f40f4fbba5dcbe7c33a59c17781afb349c9f1c70ec80e"
+        },
+        "price": {
+          "over": 0.42758620689655175,
+          "under": 0.5724137931034483,
+          "push": 0,
+          "overEv": -0.20380499405469682,
+          "underEv": 0.07453115547489414,
+          "marketOver": 0.5020223264843877,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.5724137931034483
+        }
+      },
+      "candidate": {
+        "projection": 231.45345656637735,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|passing_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:09:59.495Z",
+          "features": [
+            35.666666666666664,
+            38,
+            27,
+            7.224299065420561,
+            7.508771929824562,
+            262.7397660818713,
+            257.6666666666667,
+            285.3333333333333,
+            6.27162924074226,
+            4.302083333333333,
+            279.6,
+            39,
+            7.1692307692307695,
+            229.8,
+            33,
+            6.963636363636364
+          ],
+          "sha256": "19bbcffd97645b57e2b4d3289e413852dfedbcd47fdea58517216c979324720e"
+        },
+        "price": {
+          "over": 0.4,
+          "under": 0.6,
+          "push": 0,
+          "overEv": -0.2551724137931034,
+          "underEv": 0.12631578947368416,
+          "marketOver": 0.5020223264843877,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "rushing_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328869",
+        "line": 18.5,
+        "overPrice": -118,
+        "underPrice": -113,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:05.449Z",
+        "decisionAt": "2026-10-28T06:10:05.449Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 31.497007513375564,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|rushing_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:05.449Z",
+          "features": [
+            7.666666666666667,
+            7.666666666666667,
+            6,
+            2.782608695652174,
+            2.869565217391304,
+            21.666666666666668,
+            21.333333333333332,
+            22,
+            2.9814239699997196,
+            4.159722222222222
+          ],
+          "sha256": "5030ebb8d22a612f6dcc0da96f9ac5d66f5aefa47b7541597d27e030acbed1a2"
+        },
+        "price": {
+          "over": 0.7253787878787878,
+          "under": 0.2746212121212121,
+          "push": 0,
+          "overEv": 0.3401065742167437,
+          "underEv": -0.4823511665325825,
+          "marketOver": 0.5050233081498151,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7253787878787878
+        }
+      },
+      "candidate": {
+        "projection": 39.85780615122667,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|rushing_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:05.449Z",
+          "features": [
+            7.666666666666667,
+            7.666666666666667,
+            6,
+            2.782608695652174,
+            2.869565217391304,
+            21.666666666666668,
+            21.333333333333332,
+            22,
+            2.9814239699997196,
+            4.159722222222222,
+            59.2,
+            19.4,
+            3.051546391752577,
+            125.6,
+            27.8,
+            4.517985611510792
+          ],
+          "sha256": "dc6673522deb4bb0c00da28331f7ea6b06cd87faf94fe8e675279d065499d17f"
+        },
+        "price": {
+          "over": 0.8390151515151515,
+          "under": 0.16098484848484848,
+          "push": 0,
+          "overEv": 0.5500449409347714,
+          "underEv": -0.6965506838294448,
+          "marketOver": 0.5050233081498151,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.8390151515151515
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328836",
+        "line": 62.5,
+        "overPrice": -115,
+        "underPrice": -115,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 51.20056503131128,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            7,
+            7.8,
+            4,
+            5.904761904761905,
+            8.41025641025641,
+            50.1025641025641,
+            41.333333333333336,
+            65.6,
+            3.4292856398964493,
+            4.302083333333333
+          ],
+          "sha256": "92a656634add1131eff4f6c013d2c8c45b10141e344ee5d16c60cde83fa9e271"
+        },
+        "price": {
+          "over": 0.2300556586270872,
+          "under": 0.7699443413729128,
+          "push": 0,
+          "overEv": -0.56989594256675,
+          "underEv": 0.43946115995805435,
+          "marketOver": 0.5,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.7699443413729128
+        }
+      },
+      "candidate": {
+        "projection": 50.85717277361756,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            7,
+            7.8,
+            4,
+            5.904761904761905,
+            8.41025641025641,
+            50.1025641025641,
+            41.333333333333336,
+            65.6,
+            3.4292856398964493,
+            4.302083333333333,
+            279.6,
+            35.4,
+            7.898305084745763,
+            229.8,
+            31.2,
+            7.365384615384615
+          ],
+          "sha256": "b5c4d2297c4f3acb2ab45409badf86bd196713130486e2bd795d52cf886651cb"
+        },
+        "price": {
+          "over": 0.2300556586270872,
+          "under": 0.7699443413729128,
+          "push": 0,
+          "overEv": -0.56989594256675,
+          "underEv": 0.43946115995805435,
+          "marketOver": 0.5,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.7699443413729128
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328887",
+        "line": 73.5,
+        "overPrice": -119,
+        "underPrice": -111,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 82.54312395814034,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            10.333333333333334,
+            9,
+            6,
+            10.258064516129032,
+            9.462962962962964,
+            101.89197530864197,
+            106,
+            85.16666666666667,
+            3.559026084010437,
+            4.302083333333333
+          ],
+          "sha256": "bfbc6cf61fe6bfc99586bf231772c0b010a96c2f48f985bceb14c3d8e40df3b1"
+        },
+        "price": {
+          "over": 0.5380333951762524,
+          "under": 0.4619666048237477,
+          "push": 0,
+          "overEv": -0.009837701314291902,
+          "underEv": -0.1218472647044076,
+          "marketOver": 0.5080942166821806,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.5380333951762524
+        }
+      },
+      "candidate": {
+        "projection": 72.49505377649731,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            10.333333333333334,
+            9,
+            6,
+            10.258064516129032,
+            9.462962962962964,
+            101.89197530864197,
+            106,
+            85.16666666666667,
+            3.559026084010437,
+            4.302083333333333,
+            279.6,
+            35.4,
+            7.898305084745763,
+            229.8,
+            31.2,
+            7.365384615384615
+          ],
+          "sha256": "660220570e1e629a68114b7af1ef6cec293f3c16dc32e14bcf933900963a2ace"
+        },
+        "price": {
+          "over": 0.3534322820037106,
+          "under": 0.6465677179962894,
+          "push": 0,
+          "overEv": -0.34956580034611245,
+          "underEv": 0.22906115763258617,
+          "marketOver": 0.5080942166821806,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6465677179962894
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328830",
+        "line": 18.5,
+        "overPrice": -118,
+        "underPrice": -112,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 29.778127401576896,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            3.3333333333333335,
+            3.8333333333333335,
+            2,
+            8.6,
+            8.608695652173912,
+            28.681159420289855,
+            28.666666666666668,
+            33,
+            2.3392781412696997,
+            4.302083333333333
+          ],
+          "sha256": "b79aa164cb94fe71b3ffa6c92f6db447784e99f354bcaaa8c2aaf7011cc4a56f"
+        },
+        "price": {
+          "over": 0.6020408163265306,
+          "under": 0.3979591836734694,
+          "push": 0,
+          "overEv": 0.11224489795918369,
+          "underEv": -0.2467201166180758,
+          "marketOver": 0.5060689431946916,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.6020408163265306
+        }
+      },
+      "candidate": {
+        "projection": 27.280932719065603,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            3.3333333333333335,
+            3.8333333333333335,
+            2,
+            8.6,
+            8.608695652173912,
+            28.681159420289855,
+            28.666666666666668,
+            33,
+            2.3392781412696997,
+            4.302083333333333,
+            279.6,
+            35.4,
+            7.898305084745763,
+            229.8,
+            31.2,
+            7.365384615384615
+          ],
+          "sha256": "74d2da0623de53b36efa8286121a1f3d23ede38ea9a4aed3e819bc48042c83b4"
+        },
+        "price": {
+          "over": 0.538961038961039,
+          "under": 0.461038961038961,
+          "push": 0,
+          "overEv": -0.00429231785163986,
+          "underEv": -0.12731910946196662,
+          "marketOver": 0.5060689431946916,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.538961038961039
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328812",
+        "line": 66.5,
+        "overPrice": -131,
+        "underPrice": -101,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 77.65074323971231,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            6.333333333333333,
+            8,
+            8,
+            13,
+            11.0625,
+            76.19791666666666,
+            82.33333333333333,
+            88.5,
+            2.516611478423583,
+            4.159722222222222
+          ],
+          "sha256": "7b88990eeb5eb2afe5a24a961658405a465d7f726f585d645feda78f86107fe0"
+        },
+        "price": {
+          "over": 0.6001855287569573,
+          "under": 0.39981447124304265,
+          "push": 0,
+          "overEv": 0.05834242093784081,
+          "underEv": -0.20432961663513288,
+          "marketOver": 0.5302041802585478,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.6001855287569573
+        }
+      },
+      "candidate": {
+        "projection": 69.54376125962905,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            6.333333333333333,
+            8,
+            8,
+            13,
+            11.0625,
+            76.19791666666666,
+            82.33333333333333,
+            88.5,
+            2.516611478423583,
+            4.159722222222222,
+            259,
+            36.6,
+            7.076502732240437,
+            196,
+            33.4,
+            5.868263473053892
+          ],
+          "sha256": "1aba529410036e4ef16330374abd4bc64c5a8ef594a817b8224ef45c2d2e8388"
+        },
+        "price": {
+          "over": 0.42578849721706863,
+          "under": 0.5742115027829313,
+          "push": 0,
+          "overEv": -0.2491821155943293,
+          "underEv": 0.14273774316207127,
+          "marketOver": 0.5302041802585478,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.5742115027829313
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328875",
+        "line": 64.5,
+        "overPrice": -106,
+        "underPrice": -124,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 67.42781572180999,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            8.666666666666666,
+            9.333333333333334,
+            12,
+            7.038461538461538,
+            7.785714285714286,
+            64.23809523809524,
+            61,
+            72.66666666666667,
+            2.6874192494328497,
+            4.159722222222222
+          ],
+          "sha256": "953d0302ffada5fee957db04e89e2b005202d8b476b61c0477d1ba4a61f10fae"
+        },
+        "price": {
+          "over": 0.4100185528756957,
+          "under": 0.5899814471243042,
+          "push": 0,
+          "overEv": -0.20317149158119507,
+          "underEv": 0.06577293674067863,
+          "marketOver": 0.48173997727641615,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.5899814471243042
+        }
+      },
+      "candidate": {
+        "projection": 67.57174629673204,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            8.666666666666666,
+            9.333333333333334,
+            12,
+            7.038461538461538,
+            7.785714285714286,
+            64.23809523809524,
+            61,
+            72.66666666666667,
+            2.6874192494328497,
+            4.159722222222222,
+            259,
+            36.6,
+            7.076502732240437,
+            196,
+            33.4,
+            5.868263473053892
+          ],
+          "sha256": "4f1613ed55430f9dc229b1eb88e7db419638701c12e6a2ff7c968d1d6f815736"
+        },
+        "price": {
+          "over": 0.42578849721706863,
+          "under": 0.5742115027829313,
+          "push": 0,
+          "overEv": -0.17252424125739485,
+          "underEv": 0.037285295349811454,
+          "marketOver": 0.48173997727641615,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.5742115027829313
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "fanduel",
+        "quoteId": "fanduel-36215311-johnmetchieiii-receiving_yards",
+        "line": 15.5,
+        "overPrice": -114,
+        "underPrice": -114,
+        "updatedAt": "2026-10-28T06:09:47.472Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 32.54167130897099,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            4,
+            4.25,
+            4,
+            6.75,
+            5.882352941176471,
+            25.264705882352942,
+            27,
+            25,
+            0.82915619758885,
+            4.302083333333333
+          ],
+          "sha256": "b758854e75b1e9f5043a82768a60f5ec9ab91849ff154124a71367120377e236"
+        },
+        "price": {
+          "over": 0.7476808905380334,
+          "under": 0.2523191094619666,
+          "push": 0,
+          "overEv": 0.4035413208345539,
+          "underEv": -0.5263483383784135,
+          "marketOver": 0.5,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7476808905380334
+        }
+      },
+      "candidate": {
+        "projection": 32.534749363340325,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            4,
+            4.25,
+            4,
+            6.75,
+            5.882352941176471,
+            25.264705882352942,
+            27,
+            25,
+            0.82915619758885,
+            4.302083333333333,
+            279.6,
+            35.4,
+            7.898305084745763,
+            229.8,
+            31.2,
+            7.365384615384615
+          ],
+          "sha256": "c505d4a894014fcb702c9be2f96b64a36a294b13aefac6516f7740870705557e"
+        },
+        "price": {
+          "over": 0.7504638218923934,
+          "under": 0.24953617810760667,
+          "push": 0,
+          "overEv": 0.4087654200436156,
+          "underEv": -0.5315724375874753,
+          "marketOver": 0.5,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7504638218923934
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "fanduel",
+        "quoteId": "fanduel-36215311-marshawnlloyd-receiving_yards",
+        "line": 4.5,
+        "overPrice": -120,
+        "underPrice": -108,
+        "updatedAt": "2026-10-28T06:09:47.472Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 21.846982907109325,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            3,
+            2.5,
+            2,
+            6.333333333333333,
+            4.666666666666667,
+            16.5,
+            19,
+            11.666666666666666,
+            1.2583057392117916,
+            4.159722222222222
+          ],
+          "sha256": "bce67a95866af1d128a7db2a40050b3844bddbb37de132371032819f0215e600"
+        },
+        "price": {
+          "over": 0.7532467532467533,
+          "under": 0.24675324675324675,
+          "push": 0,
+          "overEv": 0.38095238095238104,
+          "underEv": -0.5247715247715248,
+          "marketOver": 0.5123152709359606,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7532467532467533
+        }
+      },
+      "candidate": {
+        "projection": 19.580774783422342,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            3,
+            2.5,
+            2,
+            6.333333333333333,
+            4.666666666666667,
+            16.5,
+            19,
+            11.666666666666666,
+            1.2583057392117916,
+            4.159722222222222,
+            259,
+            36.6,
+            7.076502732240437,
+            196,
+            33.4,
+            5.868263473053892
+          ],
+          "sha256": "68f0ae59691622d0f3036b9ffc3cec1e82e7ba5ed586a9b22c9bd0ae1cccbf96"
+        },
+        "price": {
+          "over": 0.7087198515769945,
+          "under": 0.2912801484230056,
+          "push": 0,
+          "overEv": 0.2993197278911565,
+          "underEv": -0.4390160104445819,
+          "marketOver": 0.5123152709359606,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7087198515769945
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328893",
+        "line": 41.5,
+        "overPrice": -137,
+        "underPrice": 103,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 46.9168906537847,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            6,
+            5.833333333333333,
+            6,
+            8.555555555555555,
+            7.428571428571429,
+            47.95238095238095,
+            51.333333333333336,
+            43.333333333333336,
+            1.5723301886761007,
+            4.159722222222222
+          ],
+          "sha256": "890e1d9c914ac10b97b794cbbce1ba116de1b4db67244c1be5fbeff8a12bfd02"
+        },
+        "price": {
+          "over": 0.46289424860853434,
+          "under": 0.5371057513914657,
+          "push": 0,
+          "overEv": -0.1992267378085939,
+          "underEv": 0.09032467532467525,
+          "marketOver": 0.5399040981537924,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.5371057513914657
+        }
+      },
+      "candidate": {
+        "projection": 44.90487757978857,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            6,
+            5.833333333333333,
+            6,
+            8.555555555555555,
+            7.428571428571429,
+            47.95238095238095,
+            51.333333333333336,
+            43.333333333333336,
+            1.5723301886761007,
+            4.159722222222222,
+            259,
+            36.6,
+            7.076502732240437,
+            196,
+            33.4,
+            5.868263473053892
+          ],
+          "sha256": "fd53059bb4a8b41ef74aee3d29783b6e5c6835b24b18ae5a39220446e2d7080d"
+        },
+        "price": {
+          "over": 0.4332096474953618,
+          "under": 0.5667903525046383,
+          "push": 0,
+          "overEv": -0.25057893097517714,
+          "underEv": 0.15058441558441565,
+          "marketOver": 0.5399040981537924,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.5667903525046383
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328824",
+        "line": 13.5,
+        "overPrice": -121,
+        "underPrice": -110,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 24.18026687654957,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            3,
+            3,
+            5,
+            3.888888888888889,
+            6.222222222222222,
+            15.166666666666666,
+            11.666666666666666,
+            18.666666666666668,
+            1.1547005383792515,
+            4.302083333333333
+          ],
+          "sha256": "e429e17035a9ef5305defd4aeb80f31a5f0223d915c02cb32acf8800df86fc82"
+        },
+        "price": {
+          "over": 0.5853432282003711,
+          "under": 0.41465677179962895,
+          "push": 0,
+          "overEv": 0.06909796225026454,
+          "underEv": -0.2083825265643448,
+          "marketOver": 0.5110619469026548,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.5853432282003711
+        }
+      },
+      "candidate": {
+        "projection": 23.972545640920465,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receiving_yards",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:15.899Z",
+          "features": [
+            3,
+            3,
+            5,
+            3.888888888888889,
+            6.222222222222222,
+            15.166666666666666,
+            11.666666666666666,
+            18.666666666666668,
+            1.1547005383792515,
+            4.302083333333333,
+            279.6,
+            35.4,
+            7.898305084745763,
+            229.8,
+            31.2,
+            7.365384615384615
+          ],
+          "sha256": "6a92349c5e497aac4c6a87e496f57b6c378d0bd530aeb7ffa0083dc8928bade5"
+        },
+        "price": {
+          "over": 0.5825602968460112,
+          "under": 0.4174397031539889,
+          "push": 0,
+          "overEv": 0.06401508762783858,
+          "underEv": -0.2030696576151122,
+          "marketOver": 0.5110619469026548,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.5825602968460112
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328827",
+        "line": 2.5,
+        "overPrice": 120,
+        "underPrice": -160,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 2.4177449801363764,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            3.3333333333333335,
+            3.8333333333333335,
+            2,
+            0.4,
+            0.6086956521739131,
+            1.681159420289855,
+            1.3333333333333333,
+            2.3333333333333335,
+            2.3392781412696997,
+            4.302083333333333
+          ],
+          "sha256": "ff125077c25c3cfbc71770561b56a21655917c2d009b478752f2eea06cf8d48f"
+        },
+        "price": {
+          "over": 0.3849721706864564,
+          "under": 0.6150278293135436,
+          "push": 0,
+          "overEv": -0.15306122448979598,
+          "underEv": -0.0005797773654916405,
+          "marketOver": 0.4248366013071895,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.6150278293135436
+        }
+      },
+      "candidate": {
+        "projection": 2.2603518788858494,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            3.3333333333333335,
+            3.8333333333333335,
+            2,
+            0.4,
+            0.6086956521739131,
+            1.681159420289855,
+            1.3333333333333333,
+            2.3333333333333335,
+            2.3392781412696997,
+            4.302083333333333,
+            23,
+            35.4,
+            0.6497175141242938,
+            21.8,
+            31.2,
+            0.6987179487179487
+          ],
+          "sha256": "c970d3d4f7c4519fbceb94e4ab6348112907ef1f32581f33dbe96abbde29f427"
+        },
+        "price": {
+          "over": 0.35714285714285715,
+          "under": 0.6428571428571429,
+          "push": 0,
+          "overEv": -0.21428571428571436,
+          "underEv": 0.04464285714285715,
+          "marketOver": 0.4248366013071895,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6428571428571429
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "fanduel",
+        "quoteId": "fanduel-36215311-johnmetchieiii-receptions",
+        "line": 1.5,
+        "overPrice": -130,
+        "underPrice": -102,
+        "updatedAt": "2026-10-28T06:09:47.472Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 2.801470364914567,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            4,
+            4.25,
+            4,
+            0.5833333333333334,
+            0.5294117647058824,
+            2.2254901960784315,
+            2.3333333333333335,
+            2.25,
+            0.82915619758885,
+            4.302083333333333
+          ],
+          "sha256": "51b4ad7b500db95eea12b3a0e2ac59d69e338e85bfce447caeca4de08dc641c2"
+        },
+        "price": {
+          "over": 0.7764378478664193,
+          "under": 0.22356215213358072,
+          "push": 0,
+          "overEv": 0.37369773084058805,
+          "underEv": -0.557259267343301,
+          "marketOver": 0.5281576830249397,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7764378478664193
+        }
+      },
+      "candidate": {
+        "projection": 2.7344756325546213,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            4,
+            4.25,
+            4,
+            0.5833333333333334,
+            0.5294117647058824,
+            2.2254901960784315,
+            2.3333333333333335,
+            2.25,
+            0.82915619758885,
+            4.302083333333333,
+            23,
+            35.4,
+            0.6497175141242938,
+            21.8,
+            31.2,
+            0.6987179487179487
+          ],
+          "sha256": "46f72e415b61e6d447ef6b8154707fd7ea9fc56ce9852f3383896f27afc46293"
+        },
+        "price": {
+          "over": 0.7717996289424861,
+          "under": 0.22820037105751392,
+          "push": 0,
+          "overEv": 0.36549165120593696,
+          "underEv": -0.5480737749645312,
+          "marketOver": 0.5281576830249397,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.7717996289424861
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328872",
+        "line": 4.5,
+        "overPrice": -123,
+        "underPrice": -108,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 4.851933113781402,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            8.666666666666666,
+            9.333333333333334,
+            12,
+            0.5769230769230769,
+            0.5357142857142857,
+            4.821428571428571,
+            5,
+            5,
+            2.6874192494328497,
+            4.159722222222222
+          ],
+          "sha256": "4fc5045cf3183577279feff00c586b1b4e179088c1ba6a04e1ccdab75445001c"
+        },
+        "price": {
+          "over": 0.49443413729128016,
+          "under": 0.5055658627087198,
+          "push": 0,
+          "overEv": -0.10358688930117499,
+          "underEv": -0.026317597746169208,
+          "marketOver": 0.5151002657646775,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.5055658627087198
+        }
+      },
+      "candidate": {
+        "projection": 4.961514494072705,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            8.666666666666666,
+            9.333333333333334,
+            12,
+            0.5769230769230769,
+            0.5357142857142857,
+            4.821428571428571,
+            5,
+            5,
+            2.6874192494328497,
+            4.159722222222222,
+            23.6,
+            36.6,
+            0.644808743169399,
+            20,
+            33.4,
+            0.5988023952095808
+          ],
+          "sha256": "cd3bbdc5f216bd89c64124e19342c3c6d79d1ce6f3a302598be4b18babc481a3"
+        },
+        "price": {
+          "over": 0.551948051948052,
+          "under": 0.44805194805194803,
+          "push": 0,
+          "overEv": 0.0006863055643543392,
+          "underEv": -0.13708513708513714,
+          "marketOver": 0.5151002657646775,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.551948051948052
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328884",
+        "line": 5.5,
+        "overPrice": 105,
+        "underPrice": -139,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 5.45661091242622,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            10.333333333333334,
+            9,
+            6,
+            0.7741935483870968,
+            0.6666666666666666,
+            7.4444444444444455,
+            8,
+            6,
+            3.559026084010437,
+            4.302083333333333
+          ],
+          "sha256": "60691f94c16c7ad21f6685c112c50452a6f35b30d55bac5a93b3b540b97e1bf3"
+        },
+        "price": {
+          "over": 0.3961038961038961,
+          "under": 0.6038961038961039,
+          "push": 0,
+          "overEv": -0.18798701298701298,
+          "underEv": 0.03835373259833691,
+          "marketOver": 0.4561503960301556,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6038961038961039
+        }
+      },
+      "candidate": {
+        "projection": 5.36847427178503,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            10.333333333333334,
+            9,
+            6,
+            0.7741935483870968,
+            0.6666666666666666,
+            7.4444444444444455,
+            8,
+            6,
+            3.559026084010437,
+            4.302083333333333,
+            23,
+            35.4,
+            0.6497175141242938,
+            21.8,
+            31.2,
+            0.6987179487179487
+          ],
+          "sha256": "d71dab09c25d0cdb8559b50abbe064a0a7068a4fcd2425810006d35f62e3e727"
+        },
+        "price": {
+          "over": 0.38589981447124305,
+          "under": 0.614100185528757,
+          "push": 0,
+          "overEv": -0.20890538033395178,
+          "underEv": 0.05589888015376199,
+          "marketOver": 0.4561503960301556,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.614100185528757
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328809",
+        "line": 4.5,
+        "overPrice": -110,
+        "underPrice": -120,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 4.83193538034242,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            6.333333333333333,
+            8,
+            8,
+            0.7368421052631579,
+            0.6458333333333334,
+            4.378472222222222,
+            4.666666666666667,
+            5.166666666666667,
+            2.516611478423583,
+            4.159722222222222
+          ],
+          "sha256": "b53d91ca5048e4ef456472821b0eeda29726dd5bc1ee2336da3f173495b7039d"
+        },
+        "price": {
+          "over": 0.48608534322820035,
+          "under": 0.5139146567717996,
+          "push": 0,
+          "overEv": -0.0720188902007084,
+          "underEv": -0.05782312925170069,
+          "marketOver": 0.48987854251012153,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.5139146567717996
+        }
+      },
+      "candidate": {
+        "projection": 4.628920175546262,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            6.333333333333333,
+            8,
+            8,
+            0.7368421052631579,
+            0.6458333333333334,
+            4.378472222222222,
+            4.666666666666667,
+            5.166666666666667,
+            2.516611478423583,
+            4.159722222222222,
+            23.6,
+            36.6,
+            0.644808743169399,
+            20,
+            33.4,
+            0.5988023952095808
+          ],
+          "sha256": "1229523bcd2f5f863a28a360d72ebcf43dfc6e29bff1b894ce71cca91286e53c"
+        },
+        "price": {
+          "over": 0.43413729128014844,
+          "under": 0.5658627087198516,
+          "push": 0,
+          "overEv": -0.1711924439197166,
+          "underEv": 0.037414965986394544,
+          "marketOver": 0.48987854251012153,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.5658627087198516
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328833",
+        "line": 4.5,
+        "overPrice": -147,
+        "underPrice": 111,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 4.133446563302287,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            7,
+            7.8,
+            4,
+            0.42857142857142855,
+            0.6410256410256411,
+            3.7435897435897436,
+            3,
+            5,
+            3.4292856398964493,
+            4.302083333333333
+          ],
+          "sha256": "22e1bb4676b3a55103c3a8c54093ad780904bf3f859631cdddb09414d5d28578"
+        },
+        "price": {
+          "over": 0.3181818181818182,
+          "under": 0.6818181818181818,
+          "push": 0,
+          "overEv": -0.4653679653679653,
+          "underEv": 0.43863636363636366,
+          "marketOver": 0.5566882639050919,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6818181818181818
+        }
+      },
+      "candidate": {
+        "projection": 4.098510337527689,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            7,
+            7.8,
+            4,
+            0.42857142857142855,
+            0.6410256410256411,
+            3.7435897435897436,
+            3,
+            5,
+            3.4292856398964493,
+            4.302083333333333,
+            23,
+            35.4,
+            0.6497175141242938,
+            21.8,
+            31.2,
+            0.6987179487179487
+          ],
+          "sha256": "58613c19a5cd41414409e2445bf18bd9362042573b760abca93c6ba5af069771"
+        },
+        "price": {
+          "over": 0.3228200371057514,
+          "under": 0.6771799628942486,
+          "push": 0,
+          "overEv": -0.4575744954753701,
+          "underEv": 0.4288497217068647,
+          "marketOver": 0.5566882639050919,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.6771799628942486
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328890",
+        "line": 4.5,
+        "overPrice": -104,
+        "underPrice": -127,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 4.114890062342395,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            6,
+            5.833333333333333,
+            6,
+            0.8333333333333334,
+            0.6857142857142857,
+            4.557142857142857,
+            5,
+            4,
+            1.5723301886761007,
+            4.159722222222222
+          ],
+          "sha256": "3436cc37bc5e3257c2c3fe95272609e29cc96f0bba04af78c08907aa6203cedf"
+        },
+        "price": {
+          "over": 0.313543599257885,
+          "under": 0.686456400742115,
+          "push": 0,
+          "overEv": -0.38497217068645634,
+          "underEv": 0.22697325172015836,
+          "marketOver": 0.4767751837789805,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.686456400742115
+        }
+      },
+      "candidate": {
+        "projection": 3.8420175484014663,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            6,
+            5.833333333333333,
+            6,
+            0.8333333333333334,
+            0.6857142857142857,
+            4.557142857142857,
+            5,
+            4,
+            1.5723301886761007,
+            4.159722222222222,
+            23.6,
+            36.6,
+            0.644808743169399,
+            20,
+            33.4,
+            0.5988023952095808
+          ],
+          "sha256": "ded9df0232e5c0db6e694147ec104d7f51a4d47d94a26282dd34990b541a994f"
+        },
+        "price": {
+          "over": 0.26159554730983303,
+          "under": 0.738404452690167,
+          "push": 0,
+          "overEv": -0.4868702725845583,
+          "underEv": 0.3198252815800623,
+          "marketOver": 0.4767751837789805,
+          "candidateSide": "UNDER",
+          "conditionalWinProbability": 0.738404452690167
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328821",
+        "line": 2.5,
+        "overPrice": 115,
+        "underPrice": -153,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 2.674625586894248,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            3,
+            3,
+            5,
+            0.6666666666666666,
+            0.8333333333333334,
+            2.25,
+            2,
+            2.5,
+            1.1547005383792515,
+            4.302083333333333
+          ],
+          "sha256": "c0d6d9ba2553dccc9ecbef4401241a59846d881fab7dad187ba14a0f87af66b6"
+        },
+        "price": {
+          "over": 0.437847866419295,
+          "under": 0.562152133580705,
+          "push": 0,
+          "overEv": -0.05862708719851584,
+          "underEv": -0.07042817126850742,
+          "marketOver": 0.4347452530286107,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.437847866419295
+        }
+      },
+      "candidate": {
+        "projection": 2.6094472390213688,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            3,
+            3,
+            5,
+            0.6666666666666666,
+            0.8333333333333334,
+            2.25,
+            2,
+            2.5,
+            1.1547005383792515,
+            4.302083333333333,
+            23,
+            35.4,
+            0.6497175141242938,
+            21.8,
+            31.2,
+            0.6987179487179487
+          ],
+          "sha256": "a04f60dfe0e946cb4d88a325b1d3e71d711edd2ddaa520bd9b8fc5d50dce98e1"
+        },
+        "price": {
+          "over": 0.4322820037105751,
+          "under": 0.5677179962894249,
+          "push": 0,
+          "overEv": -0.07059369202226351,
+          "underEv": -0.061224489795918324,
+          "marketOver": 0.4347452530286107,
+          "candidateSide": null,
+          "conditionalWinProbability": 0.5677179962894249
+        }
+      }
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "betmgm",
+        "quoteId": "betmgm-6:48482-4224499",
+        "line": 1.5,
+        "overPrice": 145,
+        "underPrice": -200,
+        "updatedAt": "2026-10-28T06:09:03.126Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "baseline": {
+        "projection": 2.2627583065728567,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            3,
+            2.5,
+            2,
+            0.8888888888888888,
+            0.8,
+            2.533333333333333,
+            2.6666666666666665,
+            2,
+            1.2583057392117916,
+            4.159722222222222
+          ],
+          "sha256": "bc039d38f121d3516434fd4afe4c28a9283a28e320f1f92b573b5414a4cda1c5"
+        },
+        "price": {
+          "over": 0.634508348794063,
+          "under": 0.3654916512059369,
+          "push": 0,
+          "overEv": 0.5545454545454545,
+          "underEv": -0.45176252319109456,
+          "marketOver": 0.379746835443038,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.634508348794063
+        }
+      },
+      "candidate": {
+        "projection": 2.01821487020106,
+        "inputReceipt": {
+          "version": 1,
+          "group": "nfl|receptions",
+          "snapshotSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+          "decisionAt": "2026-10-28T06:10:21.350Z",
+          "features": [
+            3,
+            2.5,
+            2,
+            0.8888888888888888,
+            0.8,
+            2.533333333333333,
+            2.6666666666666665,
+            2,
+            1.2583057392117916,
+            4.159722222222222,
+            23.6,
+            36.6,
+            0.644808743169399,
+            20,
+            33.4,
+            0.5988023952095808
+          ],
+          "sha256": "36dc8ae152d5406b37997c4a8453fca32f073a16f01e869227af7651d9e44058"
+        },
+        "price": {
+          "over": 0.5705009276437848,
+          "under": 0.4294990723562152,
+          "push": 0,
+          "overEv": 0.3977272727272727,
+          "underEv": -0.3557513914656772,
+          "marketOver": 0.379746835443038,
+          "candidateSide": "OVER",
+          "conditionalWinProbability": 0.5705009276437848
+        }
+      }
+    }
+  ],
+  "livePromotion": false
+}

@@ -1,0 +1,493 @@
+{
+  "cohortSha256": "51fb917b20802cc7fc6fb840e43a91e074d8782f0aef8f763f737e22cb20b757",
+  "scoredAt": "2026-10-28T06:11:14.055Z",
+  "selected": 21,
+  "resolved": 0,
+  "pending": 21,
+  "complete": false,
+  "reports": [
+    {
+      "market": "passing_yards",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "rushing_yards",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "receiving_yards",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "receptions",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    }
+  ],
+  "unresolved": [
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4036378",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4685720",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "reason": "upcoming"
+    }
+  ],
+  "decisions": [],
+  "requests": [],
+  "validatedForBetting": false,
+  "livePromotion": false
+}
