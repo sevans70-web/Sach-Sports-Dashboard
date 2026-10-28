@@ -1,3 +1,4 @@
+import {rawFinalPerformance} from '@/lib/raw-final-performance';
 import {isOfficialFinal} from '@/lib/history-save-policy';
 import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
 import {cachedOfficialResult} from '@/lib/official-result-cache';
@@ -65,8 +66,8 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  if(sport==='mlb'&&root===historyRoot()){const legacy=await readBundledMlbHistory(days);rows.push(...legacy.rows);legacy.dates.forEach(day=>availableDates.add(day));errors.push(...legacy.errors);}
  const remember=(payload:any,observedAt?:string)=>{const key=String(payload.gameId),at=Date.parse(observedAt||payload.updatedAt||'')||0;if(!observations.has(key)||at>(observationTimes.get(key)||0)){observations.set(key,payload);observationTimes.set(key,at);}};
  const consume=(payload:any,stream:string,date:string)=>{
-  if(stream.startsWith('archive_records_')){if(!Array.isArray(payload))throw Error('Invalid recovered archive');for(const row of payload){const item=row?.archiveFinal;if(item){if(item.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt);}else rows.push(row);}return;}
-  if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}
+  if(stream.startsWith('archive_records_')){if(!Array.isArray(payload))throw Error('Invalid recovered archive');for(const row of payload){const item=row?.archiveFinal;if(item){if(['mlb','soccer'].includes(sport))item.boxscore=rawFinalPerformance(sport,String(item.gameId),item.boxscore,item.observedAt)||item.boxscore;if(item.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt);}else rows.push(row);}return;}
+  if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item&&['mlb','soccer'].includes(sport))item.boxscore=rawFinalPerformance(sport,String(item.gameId),item.boxscore,item.observedAt)||item.boxscore;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}
   if(stream.startsWith('protected_pregame_')){if(!Array.isArray(payload))throw Error('Invalid pregame receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='pregame_checkpoint')rows.push(...savedResearchDecisions([{...item,capturedAt:item.checkpointAt}]).map(r=>({...r,performanceSource:'checkpoint'})));}return;}
   if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload);if(!p)throw Error('Invalid official result cache');remember(p,payload.savedAt);return;}
   if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(stream)){
@@ -75,6 +76,15 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   if(sport==='mlb')rows.push(...mlbAdminSnapshot(payload,date));
   else {if(!Array.isArray(payload))throw Error('Invalid history array');rows.push(...payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
  };
+ // MLB performance snapshots live in a child directory; protected receipts and
+ // newly captured boards use the shared sport root like every other sport.
+ if(sport==='mlb'){
+  const shared=path.join(root,sport),sharedNames=await fs.readdir(shared).catch(()=>[]);
+  for(const name of sharedNames.filter(n=>/^(protected_(?:pregame_|final_)|official_final_|featured_|slate_board_|slate_locked_)/.test(n)&&n.endsWith('.json'))){
+   const date=name.match(/(\d{4}-\d{2}-\d{2})\.json$/)?.[1];if(!date||!fileDays.has(date))continue;
+   try{consume(await sourceDocument(path.join(shared,name)),name.replace(/_?\d{4}-\d{2}-\d{2}\.json$/,''),date);availableDates.add(date);files++;}catch{errors.push(name);}
+  }
+ }
  const selected=[...names].filter(name=>{const date=name.match(/(?:^|_)(\d{4}-\d{2}-\d{2})\.json$/)?.[1];
   if(!date||/^(performance_view_|player_history_|featured_selections_|featured_results_)/.test(name)||(/^protected_/.test(name)&&!/^protected_(final_|pregame_)/.test(name)))return false;availableDates.add(date);return fileDays.has(date);
  }).sort((a,b)=>Number(!a.startsWith('slate_locked_'))-Number(!b.startsWith('slate_locked_')));

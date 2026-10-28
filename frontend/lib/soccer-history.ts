@@ -318,7 +318,7 @@ function dedupeAppearances(rows: SoccerAppearance[]) {
 
   for (const row of rows) {
     if (!row.playerName) continue;
-    const key = `${row.gameId}|${normalizeName(row.playerName)}|${row.teamId}`;
+    const key = `${row.gameId}|${row.playerId||normalizeName(row.playerName)}|${row.teamId}`;
     const existing = merged.get(key);
 
     if (!existing) {

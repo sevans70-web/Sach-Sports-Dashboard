@@ -41,11 +41,11 @@ test('all sports read their existing immutable pregame/final receipts without ca
   const market='points',dir=path.join(root,sport);await mkdir(dir,{recursive:true});if(sport==='mlb')await mkdir(path.join(dir,'performance'));
   const row={playerId:'p',gameId:'g',market,gameTime,quoteVerified:true,sportsbookLine:2.5,researchForecast:{status:'available',projection:1.5}};
   const pre=JSON.stringify([{savedAt:at,payload:{kind:'pregame_checkpoint',gameId:'g',market,checkpointAt:at,rows:[row]}}]),fin=JSON.stringify([{savedAt:new Date().toISOString(),payload:{kind:'official_final_checkpoint',gameId:'g',gameTime,source:'official_final_boxscore',boxscore:{success:true,gameId:'g',state:'post',rows:[{playerId:'p',stats:{points:0}}]}}}]);
-  const target=sport==='mlb'?path.join(dir,'performance'):dir;
+  const target=dir;
   const file=path.join(target,`protected_pregame_g_points_${day}.json`),finalFile=path.join(target,`protected_final_g_${day}.json`);await writeFile(file,pre);await writeFile(finalFile,fin);
   const result=await readSavedPerformance(sport,'Week',new Date(),root,{observe:false});assert.equal(result.records.length,1);
-  // Soccer/MLB have raw final adapters, so generic research settlement remains unsupported.
-  if(!['soccer','mlb'].includes(sport)){assert.equal(result.records[0].status,'hit');assert.equal(result.records[0].actual,0);}else assert.equal(result.records[0].status,'pending');
+  // Authenticated normalized final observations settle the exact original call in all eight integrations.
+  assert.equal(result.records[0].status,'hit');assert.equal(result.records[0].actual,0);
   assert.equal(await readFile(file,'utf8'),pre);assert.equal(await readFile(finalFile,'utf8'),fin);
  }assert.equal(calls,0);}finally{globalThis.fetch=originalFetch;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldPublic===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_URL;else process.env.NEXT_PUBLIC_SUPABASE_URL=oldPublic;await rm(root,{recursive:true,force:true});}
 });

@@ -419,7 +419,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const categoryNote = useMemo(() => {
     if (activeCategory?.note && !researchView) return activeCategory.note;
     if (loading) return "Loading prediction history…";
-    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn${r.unknown?` · ${r.unknown} without a recorded grade`:""}${r.lateRecords?` · ${r.lateRecords} first saved after start`:""}`:"No saved forecasts for this period.";}
+    if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn${r.unknown?` · ${r.unknown} without a verifiable grade`:""}${r.lateRecords?` · ${r.lateRecords} first saved after start`:""}`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved forecast records: ${categoryStat.research.awaitingResult} awaiting results. No verified ${activeCategory?.label||""} picks for this period.` : `No saved ${activeCategory?.label || ""} forecasts for this period yet.`;
     }
@@ -544,7 +544,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                   <p>Average predicted chance, excluding pushes: {g.meanProbability==null?'—':(100*g.meanProbability).toFixed(1)+'%'} · Actual win rate: {g.hitRate==null?'—':(100*g.hitRate).toFixed(1)+'%'}</p>
                 </article>):<p>No settled predictions with verified saved probabilities are available for this category and period.</p>}
               </details>
-              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""}</p><p>Original projection: {savedProjectionText(r)} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}</article>)}</div></details>:null}
+              {researchView&&savedRecords.length?<details style={{marginTop:16}}><summary>View {savedRecords.length} saved records</summary><div style={{maxHeight:480,overflow:"auto"}}>{savedRecords.map((r,i)=><article key={`${r.key}|${i}`} style={{padding:"12px 0",borderBottom:"1px solid #454036"}}><strong>{r.playerName}</strong><p>{r.gameDate} · {String(r.market).replaceAll("_"," ")} · {r.status||"Unknown"}</p><p>Saved call: {r.pick||"Not recorded"} {r.line??""}</p><p>Original projection: {savedProjectionText(r)} · Actual: {r.actual??"Not reported"}</p>{r.legacyResult?<p>Legacy result: {r.legacyResult}</p>:null}{r.reviewReason?<p>{r.reviewReason}</p>:null}</article>)}</div></details>:null}
 
               {categoryNote ? <p className={styles.categoryNote}>{categoryNote}</p> : null}
             </div>
