@@ -814,7 +814,7 @@ function PlayerWatchCard({
         {row ? (
           <>
             <li>
-              Estimated EV{" "}
+              EV{" "}
               {estimatedEvText(row)}
             </li>
             <li>
@@ -884,7 +884,7 @@ function TeamRankingTable({
         <span>Pos</span>
         <span>Line</span>
         <span>Baseline / forecast</span>
-        <span>Estimated EV</span>
+        <span>EV</span>
       </div>
 
       {rows.length ? (
@@ -1545,7 +1545,7 @@ function ExpandedGame({
                     </span>
 
                     <em>
-                      Estimated EV{" "}
+                      EV{" "}
                       {estimatedEvText(row)}
                     </em>
                     <small>{propIntelligence(row,sport,String(row.market||"")).face}</small>
@@ -1596,7 +1596,7 @@ function ExpandedGame({
                       </strong>
 
                       <em>
-                        Estimated EV{" "}
+                        EV{" "}
                         {estimatedEvText(row)}
                       </em>
                     </Link>

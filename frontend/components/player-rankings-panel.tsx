@@ -1063,18 +1063,18 @@ function PlayerCard({
         </div>
 
         {!firstBasket?<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
-          <span>Estimated EV</span>
+          <span>EV</span>
           <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
         </div>:null}
       </div>
 
-      <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`}>
+      <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent||quarterTarget?2:3}, minmax(0, 1fr))`}}>
         {quarterTarget?<>
           <div><span>Q1 Target</span><strong>{shortNumber(card.sportsbookLine)}+ yards</strong></div>
           <div><span>Sportsbook odds</span><strong>{Number(card.raw.overPrice)>0?'+':''}{card.raw.overPrice}</strong></div>
-          <div><span>Book-implied chance</span><strong>{shortNumber(card.raw.overPrice>0?10000/(card.raw.overPrice+100):100*-card.raw.overPrice/(-card.raw.overPrice+100))}%</strong><small>Milestone · not a two-way O/U</small></div>
+
         </>:firstBasket?<>
-          <div><span>First basket chance</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong><small>Book-implied likelihood</small></div>
+
           <div><span>Sportsbook odds</span><strong>{scorerQuote?`${scorerQuote.price>0?'+':''}${scorerQuote.price}`:'—'}</strong></div>
           <div><span>Sportsbook</span><strong>{scorerQuote?.sportsbook||'—'}</strong></div>
         </>:<>
@@ -1113,7 +1113,7 @@ function PlayerCard({
           {footballForecast?.side&&state==='final'?<small>Forecast result: {footballForecastOutcome(footballForecast.side,current,card.sportsbookLine)||'Awaiting official result'}</small>:null}
         </div>
 
-        <div>
+{!binaryEvent?        <div>
           <span>
             {binaryEvent
               ? "HR Probability"
@@ -1126,21 +1126,15 @@ function PlayerCard({
                 : `${shortNumber(card.modelProbability)}%`
               : displayedAverage==null?'Unavailable':shortNumber(displayedAverage)}
           </strong>
-        </div>
+        </div>:null}
 
-        <div><span>Model probability</span><strong>{predictionProbabilityText(card.raw)}</strong><small>Saved pregame estimate</small></div>
 
-        <div>
-          <span>Estimated EV</span>
-          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
-        </div>
         </>}
       </div>
 
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
-          {!firstBasket&&!quarterTarget?<p>{evNotice}</p>:null}
           <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
@@ -1211,6 +1205,7 @@ function PlayerCard({
 
       {open ? (
         <div className={styles.intelligence}>
+          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied chance':'Model probability'}</span><strong>{quarterTarget?`${shortNumber(card.raw.overPrice>0?10000/(card.raw.overPrice+100):100*-card.raw.overPrice/(-card.raw.overPrice+100))}%`:predictionProbabilityText(card.raw)}</strong><small>{quarterTarget?'Milestone · not a two-way O/U':'Saved pregame estimate'}</small></div>:null}
           <div className={`${styles.expandedHeader} ${firstBasket?styles.firstBasketExpanded:''}`}>
             {firstBasket?<>
               <div><b>First basket chance</b><span>Book-implied likelihood</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>
@@ -1257,7 +1252,7 @@ function PlayerCard({
             </div>
             <div>
               <b>EV</b>
-              <span>Estimated return</span>
+              <span>Expected return</span>
               <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
             </div>
             </>}

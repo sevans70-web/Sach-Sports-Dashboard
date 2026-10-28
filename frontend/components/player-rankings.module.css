@@ -1130,3 +1130,8 @@ button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px so
 @media (max-width: 430px) {
   .nbaMarketTabs button { min-height: 42px; padding: 9px 12px; font-size: 11px; }
 }
+
+.probabilityDetail { display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:12px;border:1px solid #33363a;border-radius:10px;margin-bottom:12px; }
+.probabilityDetail span { color:#b9bbc0;font-size:12px; }
+.probabilityDetail strong { color:var(--gold); }
+.probabilityDetail small { color:#b9bbc0;font-size:11px; }

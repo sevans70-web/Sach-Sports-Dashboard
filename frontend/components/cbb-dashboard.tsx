@@ -59,10 +59,9 @@ function Card({row,market}:{row:Row;market:CbbMarketKey}){
       {row.gameState==="in"?<div className="liveProgress"><b>● LIVE</b><span>{row.gameStatus||"In progress"}</span></div>:row.gameState==="post"?<p className="finalResult"><b>FINAL</b><span>Final stat grading updates from saved prediction history.</span></p>:null}
 
       <p className="projectionLine"><b>Sach Prediction:</b> {prediction}</p>
-      <p className="confidenceLine"><b>Model probability:</b> {confidence}</p>
     </div>
 
-    <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
+    <div className="rankGi"><span>EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
 
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>ⓘ {open?"Hide":"View"} Intelligence</button>
 
@@ -172,7 +171,7 @@ export function CbbDashboard({data}:{data:CbbOverview}){
     <section className="section rankings">
       <div className="rankHeader"><h2>Player Rankings</h2><p>Model projections · matchup intelligence</p></div>
       <ScrollTabs>{CBB_MARKETS.map(([k,label])=><button className={market===k?"active":""} onClick={()=>{setMarket(k);setFull(false)}} key={k}>{label}</button>)}</ScrollTabs>
-      <div className="marketHead"><h2>{meta(market)[1]} Rankings</h2><p>Estimated EV compares model probabilities with the exact sportsbook payout. </p></div>
+      <div className="marketHead"><h2>{meta(market)[1]} Rankings</h2><p>EV compares model probabilities with the exact sportsbook payout. </p></div>
       {r.data.error?<div className="dataWarning">{r.data.error}</div>:null}
       <div className="cards">{(full?rows:rows.slice(0,5)).map(x=><Card row={x} market={market} key={`${x.playerId}-${x.rank}`}/>)}</div>
       {!r.loading&&!rows.length?<div className="empty">No verified {meta(market)[1]} rankings are currently available.</div>:null}

@@ -81,9 +81,6 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
         <div className="origProp">
           <b>Sach Prediction:</b> {row.projection==null?"—":row.projection.toFixed(2)} {unit}
         </div>
-        <div className="origProp">
-          <b>Model probability:</b> {predictionProbabilityText(row)}
-        </div>
         <p>{row.why}</p>
         <div className="soccerStatus">
           {row.availability} · {Math.round(row.expectedMinutes)} expected min
@@ -91,7 +88,7 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
       </div>
 
       <div className="origGi">
-        <small>Estimated EV</small>
+        <small>EV</small>
         <strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong>
       </div>
 
@@ -101,7 +98,7 @@ function RankCard({ row, market }: { row: SoccerRanking; market: SoccerMarketKey
 
       {open ? (
         <div className="origInlineIntel">
-          <div className="intelKpis">
+          <div className="intelKpis"><article><span>Model probability</span><strong>{predictionProbabilityText(row)}</strong></article>
             <article><span>Recent Avg</span><strong>{row.avgMetric.toFixed(2)}</strong></article>
             <article><span>Avg Minutes</span><strong>{Math.round(row.avgMinutes)}</strong></article>
             <article><span>Start Rate</span><strong>{Math.round(row.startRate * 100)}%</strong></article>

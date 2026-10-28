@@ -663,10 +663,15 @@ export function UnifiedPlayerCard({
         </div>
 
         <b>
-          Model probability <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/> · Estimated EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>
+          EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>
 
         </b>
       </section>
+
+      <details style={{margin:"12px 0",padding:"12px 16px",border:"1px solid #454036",borderRadius:12}}>
+        <summary>Probability details</summary>
+        <p>Model probability <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/></p>
+      </details>
 
       {hasPrediction ? (
         <>

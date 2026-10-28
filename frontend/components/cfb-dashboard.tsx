@@ -185,10 +185,9 @@ function Card({row,market,live}:{row:Row;market:CfbMarketKey;live:LiveResponse})
       {lg?.state==="in"?<div className="livePanel"><div className="liveHeader">● LIVE · {quarterLabel(lg.quarter)}{lg.clock?` · ${lg.clock}`:""}</div><div className="liveCurrent">Current: <b>{actual??"—"} {unit(market)}</b></div><div className="progressTrack" role="progressbar" aria-label="Live player progress toward model projection" aria-valuemin={0} aria-valuemax={100} aria-valuenow={actual==null?undefined:progress}><div className="progressFill" style={{width:`${progress}%`}}/></div><div className="progressNote">{actual==null?"Awaiting verified player statistics":row.modelProjection!=null?`${Number(actual)} / ${Number(row.modelProjection).toFixed(1)} projected ${unit(market)} · ${progress.toFixed(0)}%`:"Projection unavailable"}</div></div>:null}
       {lg?.completed?<div className="finalPanel"><div className="finalHeader">RESULT <span className="resultSymbol">{row.resultSymbol||derivedSymbol}</span></div><div>Actual: <b>{actual??row.actualResult??"—"} {unit(market)}</b></div><div className="resultText">{derivedResult==="hit"?"HIT":derivedResult==="miss"?"MISS":derivedResult.toUpperCase()}</div></div>:null}
       <p className="projectionLine"><b>Sach Prediction:</b> {proj}</p>
-      <p className="confidenceLine"><b>Model probability:</b> {confidence}</p>
       {row.frozen?<span className="locked">LOCKED AT KICKOFF</span>:null}
     </div>
-    <div className="rankGi"><span>Estimated EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
+    <div className="rankGi"><span>EV</span><strong title={estimatedEvNotice(row)}>{estimatedEvText(row)}</strong></div>
     <button className="intelButton" onClick={()=>setOpen(v=>!v)}>{open?"ⓘ Hide Intelligence":"ⓘ View Intelligence"}</button>
     {open?<div className="detail">
       <div><span>MODEL PROBABILITY</span><b>{predictionProbabilityText(row)}</b></div>
