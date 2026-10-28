@@ -15,6 +15,11 @@ import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
+const BASKETBALL_COMBINATIONS:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
+export function runtimeSupportsMarket(data:Pick<RuntimeBundle,'models'>,sport:string,market:string){
+ if(data.models.some(m=>m.group===sport+'|'+market))return true;
+ return ['nba','wnba','cbb'].includes(sport)&&!!BASKETBALL_COMBINATIONS[market]&&BASKETBALL_COMBINATIONS[market].every(part=>data.models.some(m=>m.group===sport+'|'+part));
+}
 export function createRuntimeForecastIndex(observations:OpportunityGame[]){
  const histories=new Map<string,OpportunityGame[]>(),basketball=new Map<string,ReturnType<typeof basketballFeatureIndex>>();
  for(const game of observations){const key=game.sport+'|'+game.market;let rows=histories.get(key);if(!rows){rows=[];histories.set(key,rows)}rows.push(game);}
@@ -41,7 +46,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  if(context&&(context.gameId!==String(row.gameId)||context.playerId!==String(row.playerId)||context.teamId!==String(row.teamId)||Date.parse(context.gameTime)!==Date.parse(row.gameTime)))return unavailable('wrong_pregame_context_identity');
  if(!row?.gameId||!row?.playerId||!row?.teamId||!(context?.season||row?.season))return unavailable('missing_fixture_or_team_identity');
  if(!Number.isFinite(Date.parse(data.asOf))||Date.parse(data.asOf)>now)return unavailable('snapshot_not_available');
- const combination:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
+ const combination=BASKETBALL_COMBINATIONS;
  if(['nba','wnba','cbb'].includes(sport)&&combination[market]){
   const parts=combination[market].map(component=>fittedResearchForecast({...row,market:component,sportsbookLine:null},sport,component,data,now,index));
   if(parts.some(p=>p.status!=='available'||p.projection==null))return unavailable('component_forecast_unavailable');
@@ -115,7 +120,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
  let nbaRefreshUnavailable=new Set<string>();
- if(sport==='nba'){
+ if(sport==='nba'&&runtimeSupportsMarket(data,sport,String(payload.market||payload.rows[0]?.market||''))){
   const refresh=await refreshNbaObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),now);
   nbaRefreshUnavailable=new Set(refresh.unavailablePlayers);
   const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));

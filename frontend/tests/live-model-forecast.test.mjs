@@ -1,5 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {fittedResearchForecast}=await loadTs(new URL('../lib/live-model-forecast.ts',import.meta.url));
+const {fittedResearchForecast,runtimeSupportsMarket}=await loadTs(new URL('../lib/live-model-forecast.ts',import.meta.url));
+test('unsupported markets cannot trigger unused observation refresh; combinations require every fitted component',()=>{
+ const data={models:['points','rebounds','assists'].map(m=>({group:'nba|'+m}))};
+ for(const m of ['points','rebounds','assists','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts'])assert.equal(runtimeSupportsMarket(data,'nba',m),true);
+ for(const m of ['first_basket','q1_points','q1_rebounds','q1_assists','q1_threes_made','q1_pts_rebs_asts'])assert.equal(runtimeSupportsMarket(data,'nba',m),false);
+ assert.equal(runtimeSupportsMarket({models:data.models.slice(0,1)},'nba','pts_rebs'),false);
+ for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'])assert.equal(runtimeSupportsMarket({models:[]},sport,'points'),false);
+});
 const linear=n=>({means:Array(10).fill(0),scales:Array(10).fill(1),coefficients:[n,...Array(10).fill(0)]});
 const model={version:1,group:'nfl|passing_yards',trainedThrough:'2025-01-01',calibratedThrough:'2025-03-01',workload:linear(30),rate:linear(8),residuals:[-10,0,10],minimum:0,integer:true,validatedForBetting:false};
 const history=Array.from({length:6},(_,i)=>({sport:'nfl',market:'passing_yards',season:'2026',playerId:'p',playerName:'P',teamId:'A',opponentId:'B',gameId:'prior'+i,gameTime:new Date(Date.UTC(2026,0,1+i*7)).toISOString(),actual:100,workload:30}));
