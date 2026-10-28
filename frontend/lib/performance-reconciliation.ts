@@ -16,7 +16,9 @@ export function reconcilePerformanceRecords(rows:any[]){
   if((prior.verifiedResult!==true||!Number.isFinite(Date.parse(prior.gradedAt))||Date.parse(row.gradedAt)>=Date.parse(prior.gradedAt))&&row.verifiedResult===true&&row.resultSource==='official_final_boxscore'&&typeof row.actual==='number'&&Number.isFinite(row.actual)&&
    ['OVER','UNDER'].includes(side(prior))&&typeof prior.sportsbookLine==='number'&&Number.isFinite(prior.sportsbookLine)){
    const actual=row.actual,line=prior.sportsbookLine;
-   unique.set(key,{...prior,actual,status:actual===line?'push':(side(prior)==='OVER'?actual>line:actual<line)?'hit':'miss',
+   const scorer=['anytime_td','first_td','first_basket'].includes(prior.market);
+   const status=scorer?((side(prior)==='UNDER'?actual===0:actual>0)?'hit':'miss'):actual===line?'push':(side(prior)==='OVER'?actual>line:actual<line)?'hit':'miss';
+   unique.set(key,{...prior,actual,status,
     verifiedResult:true,resultSource:row.resultSource,gradedAt:row.gradedAt});
   }
  }

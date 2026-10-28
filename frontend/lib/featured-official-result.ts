@@ -6,7 +6,8 @@ export function officialFeaturedResult(row:any,payload:any){
  if(typeof stat!=='number'||!Number.isFinite(stat))return null;
  const side=String(row.prediction||'').toUpperCase(),line=row.sportsbookLine;
  let status:string;
- if(['YES','FIRST BASKET'].includes(side))status=stat>0?'hit':'miss';
+ if(['anytime_td','first_td','first_basket'].includes(row.market)&&['YES','OVER','FIRST BASKET','UNDER','NO'].includes(side))status=(['UNDER','NO'].includes(side)?stat===0:stat>0)?'hit':'miss';
+ else if(['YES','FIRST BASKET'].includes(side))status=stat>0?'hit':'miss';
  else {if(!['OVER','UNDER'].includes(side)||typeof line!=='number'||!Number.isFinite(line))return null;status=stat===line?'push':(side==='OVER'?stat>line:stat<line)?'hit':'miss';}
  return {status,actual:stat,verifiedResult:true,resultSource:'official_final_boxscore',gradedAt:payload.updatedAt||new Date().toISOString()};
 }

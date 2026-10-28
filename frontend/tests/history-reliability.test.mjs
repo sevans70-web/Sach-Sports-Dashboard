@@ -72,3 +72,11 @@ test('failed cloud coverage backs off while preserving saved records and retries
   await performanceView('nba','Season',work=>jobs.push(work),now+61000,root,reader);assert.equal(jobs.length,1);await jobs.shift()();
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('reconciliation preserves scorer occurrence semantics on the original legacy line',()=>{
+ for(const market of ['anytime_td','first_td','first_basket']){
+ const original={gameDate:'2026-10-25',gameId:'g',playerId:'p',market,sportsbookLine:1,pickSide:'OVER',status:'pending'};
+ const official={...original,actual:1,status:'hit',verifiedResult:true,resultSource:'official_final_boxscore',gradedAt:'2026-10-26T12:00Z'};
+ const result=reconcilePerformanceRecords([original,official]).records[0];assert.equal(result.status,'hit');assert.equal(result.sportsbookLine,1);
+ }
+});
