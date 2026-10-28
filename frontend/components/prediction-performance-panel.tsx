@@ -443,7 +443,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
               key={item}
               type="button"
               className={period === item ? styles.activeTab : ""}
-              onClick={() => setPeriod(item)}
+              onClick={() => {if(item===period)return;setFeatured(null);setFeaturedError(false);setPeriod(item);}}
             >
               {item}
             </button>
