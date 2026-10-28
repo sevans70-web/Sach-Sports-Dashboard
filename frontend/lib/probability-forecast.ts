@@ -160,7 +160,7 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
  const input=model.featurePolicy==='basketball_context'?(preparedBasketball||basketballFeatureIndex(history))(target,availableAt):probabilityInputs(history,target,availableAt);
  if(!input.features)return {reason:input.reason,forecast:null};
  const prediction=point(model,input.features);
- return {reason:null,forecast:{...prediction,values:workloadDistributionValues(model,prediction.projection,prediction.expectedWorkload)}};
+ return {reason:null,forecast:{...prediction,inputFeatures:[...input.features],values:workloadDistributionValues(model,prediction.projection,prediction.expectedWorkload)}};
 }
 /** Fixed 65%/35% chronological split of PRIOR-season feature dates for fitting
  * and calibration; later season retained for diagnostic evaluation. The later

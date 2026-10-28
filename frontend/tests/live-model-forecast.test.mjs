@@ -6,7 +6,7 @@ const history=Array.from({length:6},(_,i)=>({sport:'nfl',market:'passing_yards',
 const row={sport:'nfl',market:'passing_yards',season:'2026',playerId:'p',playerName:'P',teamId:'A',opponentId:'B',gameId:'g',gameTime:'2026-09-01T13:00:00Z',modelProjection:100,giScore:null,modelProbability:null,prediction:'NO PICK'};
 const data={models:[model],observations:history,digest:'test',asOf:'2026-08-30T00:00:00Z',gi:{}},now=Date.parse('2026-09-01T12:00:00Z');
 test('fitted workload and rate produce a projection distinct from the unchanged historical mean',()=>{
- const f=fittedResearchForecast(row,'nfl','passing_yards',data,now);assert.equal(f.projection,240);assert.equal(f.expectedWorkload,30);assert.equal(f.validatedForBetting,false);assert.equal(f.giScore,null);assert.equal(row.modelProjection,100);assert.equal(row.prediction,'NO PICK');
+ const f=fittedResearchForecast(row,'nfl','passing_yards',data,now);assert.equal(f.projection,240);assert.equal(f.expectedWorkload,30);assert.equal(f.validatedForBetting,false);assert.equal(f.giScore,null);assert.equal(row.modelProjection,100);assert.equal(row.prediction,'NO PICK');assert.equal(f.inputReceipt.group,'nfl|passing_yards');assert.equal(f.inputReceipt.features.length,10);
 });
 test('target outcomes, book line and archived heuristic scores cannot alter the forecast',()=>{
  const f=fittedResearchForecast(row,'nfl','passing_yards',data,now);
@@ -58,7 +58,7 @@ test('combination forecasts sum fitted component expectations without inventing 
  const models=['points','rebounds'].map((market,i)=>({...model,group:'nba|'+market,rate:linear(i?2:8)}));
  const observations=['points','rebounds'].flatMap(market=>history.map(g=>({...g,sport:'nba',market})));
  const f=fittedResearchForecast(comboRow,'nba','pts_rebs',{...data,models,observations},now);
- assert.equal(f.projection,300);assert.equal(f.modelSelection,null);assert.equal(f.priceComparison,null);assert.equal(f.giScore,null);assert.equal(f.validatedForBetting,false);
+ assert.equal(f.componentInputReceipts.length,2);assert.deepEqual(f.componentInputReceipts.map(r=>r.group),['nba|points','nba|rebounds']);assert.equal(f.projection,300);assert.equal(f.modelSelection,null);assert.equal(f.priceComparison,null);assert.equal(f.giScore,null);assert.equal(f.validatedForBetting,false);
  assert.equal(fittedResearchForecast(comboRow,'nba','pts_rebs',{...data,models:models.slice(0,1),observations},now).reason,'component_forecast_unavailable');
  assert.equal(fittedResearchForecast({...comboRow,market:'q1_pts_rebs_asts'},'nba','q1_pts_rebs_asts',{...data,models,observations},now).reason,'market_model_not_fitted');
 });

@@ -13,6 +13,7 @@ import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/lib/opportunity-backtest';
 import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
+import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
 export function createRuntimeForecastIndex(observations:OpportunityGame[]){
  const histories=new Map<string,OpportunityGame[]>(),basketball=new Map<string,ReturnType<typeof basketballFeatureIndex>>();
@@ -44,7 +45,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  if(['nba','wnba','cbb'].includes(sport)&&combination[market]){
   const parts=combination[market].map(component=>fittedResearchForecast({...row,market:component,sportsbookLine:null},sport,component,data,now,index));
   if(parts.some(p=>p.status!=='available'||p.projection==null))return unavailable('component_forecast_unavailable');
-  return {status:'available',projection:Math.round(parts.reduce((n,p)=>n+Number(p.projection),0)*10)/10,modelId:'sum_of_fitted_component_expectations',modelGroup:sport+'|'+market,calculatedAt:new Date(now).toISOString(),components:combination[market],giScore:null,giReason:'GI_exact_price_calibration_missing',priceComparison:null,modelSelection:null,validatedForBetting:false,reason:null};
+  return {status:'available',projection:Math.round(parts.reduce((n,p)=>n+Number(p.projection),0)*10)/10,modelId:'sum_of_fitted_component_expectations',modelGroup:sport+'|'+market,calculatedAt:new Date(now).toISOString(),components:combination[market],componentInputReceipts:parts.map(p=>p.inputReceipt),giScore:null,giReason:'GI_exact_price_calibration_missing',priceComparison:null,modelSelection:null,validatedForBetting:false,reason:null};
  }
  const key=sport+'|'+market,model=data.models.find(m=>m.group===key);
  if(!model)return unavailable('market_model_not_fitted');
@@ -88,6 +89,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   interval80:{lower:Math.round(values[Math.floor((values.length-1)*.1)]*10)/10,upper:Math.round(values[Math.floor((values.length-1)*.9)]*10)/10},
   modelId:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
+  inputReceipt:forecastInputReceipt(key,data.digest,new Date(now).toISOString(),f.inputFeatures),
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,
