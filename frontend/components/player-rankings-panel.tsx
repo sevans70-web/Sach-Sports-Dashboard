@@ -1,4 +1,5 @@
 "use client";
+import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
@@ -1426,6 +1427,7 @@ async function networkJson(url: string) {
   }
 
   const payload = await response.json();
+  if(!payload||payload.success===false)throw new Error(payload?.error||'Ranking data is unavailable');
   rankingJsonCache.set(url, { at: Date.now(), payload });
   // Warm the visible preview while the user is still on the prior category.
   for (const row of (payload?.rows || []).slice(0,15)) {
@@ -1455,8 +1457,7 @@ async function fetchJson(url: string, signal: AbortSignal) {
 
   let running = rankingJsonInflight.get(url);
   if (!running) {
-    running = networkJson(url).finally(() => rankingJsonInflight.delete(url));
-    rankingJsonInflight.set(url, running);
+    running = sharedJsonRequest(rankingJsonInflight,url,()=>networkJson(url));
   }
 
   if (signal.aborted) {
@@ -1471,10 +1472,8 @@ function prefetchJson(url: string) {
   if (cached && Date.now() - cached.at < JSON_FRESH_MS) return;
 
   if (!rankingJsonInflight.has(url)) {
-    const work = networkJson(url)
-      .catch(() => null)
-      .finally(() => rankingJsonInflight.delete(url));
-    rankingJsonInflight.set(url, work);
+    const work = sharedJsonRequest(rankingJsonInflight,url,()=>networkJson(url));
+    void work.catch(() => {});
   }
 }
 
