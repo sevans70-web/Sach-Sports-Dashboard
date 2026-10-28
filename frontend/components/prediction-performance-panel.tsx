@@ -437,6 +437,21 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         <div className={styles.categoryBody}>
           <h2>⭐ Featured Picks Performance</h2>
           <p>Original saved selections only · recorded results, not placed bets</p>
+        <div className={styles.periodTabs} aria-label="Prediction performance period">
+          {PERIODS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={period === item ? styles.activeTab : ""}
+              onClick={() => setPeriod(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+          <p>Featured results · {period}</p>
+          {featured?.historyComplete===false?<p>Some featured history could not be verified. Totals cover only the saved selections currently available.</p>:null}
           <div className={styles.summaryMetrics}>
             {([["play","⭐ Play of the Day"],["value","💎 Best Value"],["first","🏀 First Basket"],["long","🚀 Long Shot"]] as const)
               .filter(([key])=>key!=="first"||["nba","wnba","cbb"].includes(sport))
@@ -477,18 +492,6 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
       {historyRefreshing?<p>Showing saved records while final results and archive coverage are checked.</p>:null}
         {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
 
-        <div className={styles.periodTabs} aria-label="Prediction performance period">
-          {PERIODS.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={period === item ? styles.activeTab : ""}
-              onClick={() => setPeriod(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
 
         <PerformanceCards stat={researchView?researchStat(overall):overall} research={researchView} />
 
