@@ -90,9 +90,12 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
     // A stable book preference avoids picking whichever line flatters our projection.
     const priority = ["bet365", "pinnacle", "fanduel", "draftkings", "caesars", "betmgm"];
     const order = (r: FootballBookRow) => { const i = priority.indexOf(r.sportsbookKey); return i < 0 ? 99 : i; };
-    rows.sort((a, b) => order(a) - order(b) || Date.parse(b.quoteUpdatedAt) - Date.parse(a.quoteUpdatedAt) || (a.lineType==='milestone'&&b.lineType==='milestone'?Number(a.line)-Number(b.line):0) || a.quoteId.localeCompare(b.quoteId));
+    // Prefer a real two-way contract before sportsbook preference; a
+    // one-sided target must not hide an available main line. Within a book,
+    // choose the lowest milestone before its update time.
+    rows.sort((a, b) => Number(a.lineType==='milestone') - Number(b.lineType==='milestone') || order(a) - order(b) || (a.lineType==='milestone'&&b.lineType==='milestone'?Number(a.line)-Number(b.line):0) || Date.parse(b.quoteUpdatedAt) - Date.parse(a.quoteUpdatedAt) || a.quoteId.localeCompare(b.quoteId));
     const selected = rows[0];
-    return {...selected, bookmakerCount: new Set(rows.filter(r => r.line === selected.line).map(r => r.sportsbookKey)).size};
+    return {...selected, bookmakerCount: new Set(rows.filter(r => r.lineType === selected.lineType && r.line === selected.line).map(r => r.sportsbookKey)).size};
   });
 }
 
