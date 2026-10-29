@@ -471,7 +471,9 @@ export async function getNflRankings(market:NflMarketKey):Promise<NflRankingRow[
     });
   }
 
-  if(!out.length){
+  // Total touchdowns cannot identify who scored the game's first TD.
+  // Do not substitute season TD leaders when authentic first-scorer quotes are absent.
+  if(!out.length && market!=="first_td"){
     const [schedule,leaders]=await Promise.all([getEspnNflSchedule(),getLeagueStatFallback(market)]);
     const scheduledTeams=new Set(schedule.flatMap(g=>[cleanName(g.awayTeam),cleanName(g.homeTeam)]));
     const filtered=leaders
