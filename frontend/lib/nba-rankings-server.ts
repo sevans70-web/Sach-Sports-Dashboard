@@ -301,7 +301,7 @@ async function rowsForMarket(
    ...footballQuoteFields(b),sportsbookLine:b.line,
    bookmakerCount:b.bookmakerCount,
    modelProjection:firstBasket?null:projection,
-   projectionMethod:market.startsWith("q1_")?"pace_estimate":firstBasket?"market_implied":"season_baseline",
+   projectionMethod:market.startsWith("q1_")?"quarter_unavailable":firstBasket?"market_implied":"season_baseline",
    modelProbability,
    giScore:gi,
    prediction:
@@ -319,7 +319,7 @@ async function rowsForMarket(
      ?`Current-roster First Basket candidate backed by ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"}${modelProbability!=null?` with ${modelProbability.toFixed(1)}% market-implied probability`:""}.`
      :projection==null||edge==null
        ?`Current-roster player with a verified sportsbook line ${b.line}. Historical baseline is still loading.`
-       :`Current-roster ${rosterTeam} player · ${market.startsWith("q1_")?"Q1 pace estimate (full-game baseline ÷ 4, not quarter-trained)":"2025–26 baseline"} ${projection.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} represented.`,
+       :`Current-roster ${rosterTeam} player · ${market.startsWith("q1_")?"Quarter-specific model unavailable":"2025–26 baseline"} ${projection.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} represented.`,
   };
  }).filter(Boolean) as any[];
 
@@ -388,7 +388,7 @@ async function rowsForMarket(
    lineupConfirmed:Boolean(rosterPlayer.starter),
    summary:
     `${rosterTeam||roster.teamName} current-roster player for the today/next NBA slate · `+
-    `${market.startsWith("q1_")?"Q1 pace estimate (full-game baseline ÷ 4, not quarter-trained)":"2025–26 baseline"} ${projection.toFixed(1)}. `+
+    `${market.startsWith("q1_")?"Quarter-specific model unavailable":"2025–26 baseline"} ${projection.toFixed(1)}. `+
     `No verified sportsbook line is available yet, so this row is model-only and is not saved or graded.`,
   };
  }).filter(Boolean) as any[];
@@ -476,7 +476,7 @@ async function buildNbaMarketRankingsRaw(
     saved,
     feedWarning:payload?.feedWarning||null,
     verifiedPredictions:marketBacked.length,
-    warning:market.startsWith("q1_")?"Q1 projections are pace estimates (full-game baseline ÷ 4), not quarter-trained averages. Only verified Q1 book lines are saved.":market==="first_basket"?"Probabilities are sportsbook-implied, not an independent first-basket model.":undefined,
+    warning:market.startsWith("q1_")?"No quarter-trained projection is available. Q1 bookmaker quotes are shown as market evidence, not Sasha picks.":market==="first_basket"?"Probabilities are sportsbook-implied, not an independent first-basket model.":undefined,
     updatedAt:new Date().toISOString(),
     source:
      marketBacked.length
