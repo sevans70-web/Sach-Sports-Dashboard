@@ -24,6 +24,8 @@ export function cardProgressLine(row:any,line:any,market:string){
 export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
  const note=voidRecordNote(row);if(note)return {label:'VOID · NOT SCORED',detail:note.text};
  const value=num(actual),threshold=num(line);
+ // First TD requires the verified game's first touchdown scorer, not total player touchdowns.
+ if(market==='first_td')return {label:'FIRST TD RESULT UNVERIFIED',detail:'Official first-touchdown scoring order is not verified; touchdown totals cannot determine this result.'};
  if(value==null)return {label:'FINAL · STAT UNAVAILABLE',detail:'Official final statistic has not been reported.'};
  if(row.lineType==='milestone'&&market.startsWith('q1_')&&threshold!=null)return {label:value>=threshold?'Q1 TARGET REACHED':'Q1 TARGET MISSED',detail:`Official Q1 ${value} ${cardStatUnit(market)} · target ${threshold}+ · bookmaker milestone`};
  if(market==='first_basket')return {label:value===1?'FIRST BASKET SCORED':'DID NOT SCORE FIRST',detail:'Official first-score result · displayed percentage was bookmaker-implied.'};
