@@ -14,3 +14,9 @@ export function firstTouchdownResult(payload:any,name:string):number|null{
  if(got.length>=2&&want.length>=2&&got[0].length===1&&got[0]===want[0][0]&&got.slice(1).join(' ')===want.slice(1).join(' '))return 1;
  return 0;
 }
+
+export function verifiedFirstTouchdownScorerId(payload:any,rows:{playerId:string;playerName:string}[]):string|null{
+ const hits=rows.filter(r=>r.playerId&&r.playerName&&firstTouchdownResult(payload,r.playerName)===1);
+ const ids=[...new Set(hits.map(r=>String(r.playerId)))];
+ return ids.length===1?ids[0]:null;
+}
