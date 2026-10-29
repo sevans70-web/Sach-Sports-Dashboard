@@ -1,4 +1,4 @@
-import {firstTouchdownResult} from '@/lib/first-td-scoring-order';
+import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
 import {readDurableHistory} from '@/lib/durable-history';
 import {independentFootballRankings,footballSlate} from '@/lib/football-slate-rankings';
@@ -257,7 +257,7 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null||b==null?null:a+b}
  if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null||b==null?null:a+b}
  if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null||b==null?null:a+b}
- if(market==="first_td")return firstTouchdownResult(payload,playerName);
+ if(market==="first_td")return null;
 
  return null;
 }
@@ -268,7 +268,13 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
  await Promise.all([...gameMap.values()].filter((g:any)=>g.state==="in"||g.completed||g.state==="post").map(async(g:any)=>{
   try{const r=await fetch(`${ESPN_SUMMARY}?event=${encodeURIComponent(g.id)}`,{cache:"no-store"});if(r.ok)summaries.set(String(g.id),await r.json())}catch{}
  }));
- const observedByGame=new Map([...summaries].map(([id,payload])=>[id,new Map(footballRowsForMarket(payload,market).map(p=>[p.playerId,p.stats]))]));
+ const firstTdVerified=new Map<string,boolean>();
+ const observedByGame=new Map([...summaries].map(([id,payload])=>{
+  const observed=footballRowsForMarket(payload,market);
+  const checked=market==='first_td'?withVerifiedFirstTouchdownResults(payload,observed):{verified:false,rows:observed};
+  firstTdVerified.set(id,checked.verified);
+  return [id,new Map(checked.rows.map(p=>[p.playerId,p.stats]))];
+ }));
  return rows.map(row=>{
   const g=matchupGame(schedule,row.matchup);
   if(!g)return row;
@@ -277,7 +283,7 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
   const current=payload&&String(payload?.header?.id)===String(g.id)?observedByGame.get(String(g.id))?.get(String(row.playerId))?.[market]??null:null;
   const line=Number(row.sportsbookLine);
   const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
-  return {...row,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
+  return {...row,firstTouchdownVerified:market==='first_td'&&firstTdVerified.get(String(g.id))===true,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
  });
 }
 
