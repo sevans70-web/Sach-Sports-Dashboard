@@ -47,7 +47,7 @@ export async function lockedNflBoard(market:string,games:any[],now=Date.now()){
     if(!loaded){await visitHistorySnapshots('nfl',market,day,s=>snapshots.push(s),true);loaded=true}
     saved=selectRecordedFootballSlate(snapshots,market,day,b.slate,Math.min(...b.times));
    }
-   if(saved&&!existing){void writeDurableHistory('nfl',stream,day,[saved]).catch(e=>console.error('[NFL board persistence]',e));}
+   if(saved&&!existing){try{await writeDurableHistory('nfl',stream,day,[saved]);}catch(e){console.error('[NFL board persistence]',e)}}
    if(saved)blocks.push({...saved,slateKey:b.slate});
   }
   return {success:true,market,boardDay:day,lockedSlates:blocks.map(b=>b.slateKey),source:'Saved pregame NFL slate boards',updatedAt:new Date(now).toISOString(),rows:blocks.flatMap(saved=>saved.rows.map((r:any)=>{
