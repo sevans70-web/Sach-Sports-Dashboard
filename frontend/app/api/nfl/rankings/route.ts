@@ -304,7 +304,8 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    if(retained){
     const key=market+'|'+day;
     if(!refreshes.has(key)){refreshes.add(key);after(async()=>{try{await rankings(req,true)}catch(e){console.error('[NFL background refresh]',market,e)}finally{refreshes.delete(key)}})}
-    return NextResponse.json(retained,{headers:{'Cache-Control':'no-store'}});
+    const rows=(market==='first_td'||market==='anytime_td')&&retained.rows.some((r:any)=>Date.parse(r.gameTime)<=Date.now())?await liveContext(retained.rows,lockSchedule,market):retained.rows;
+     return NextResponse.json({...retained,rows},{headers:{'Cache-Control':'no-store'}});
    }
   }
   let providerError:string|null=null;
