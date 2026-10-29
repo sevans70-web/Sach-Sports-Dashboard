@@ -1,0 +1,146 @@
+{
+  "checkedAt": "2026-10-29T21:42:20.212Z",
+  "scope": [
+    "nfl",
+    "nba"
+  ],
+  "complete": false,
+  "markets": [
+    {
+      "sport": "nfl",
+      "market": "q1_passing_yards",
+      "httpStatus": 200,
+      "rowCount": 2,
+      "verifiedQuotes": 2,
+      "mainPairs": 2,
+      "milestones": 0,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 2
+      },
+      "gaps": [
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_rushing_yards",
+      "httpStatus": 200,
+      "rowCount": 3,
+      "verifiedQuotes": 3,
+      "mainPairs": 2,
+      "milestones": 1,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 3
+      },
+      "gaps": [
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_receiving_yards",
+      "httpStatus": 200,
+      "rowCount": 10,
+      "verifiedQuotes": 10,
+      "mainPairs": 4,
+      "milestones": 6,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 10
+      },
+      "gaps": [
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    },
+    {
+      "sport": "nba",
+      "market": "q1_points",
+      "httpStatus": 200,
+      "rowCount": 19,
+      "verifiedQuotes": 19,
+      "mainPairs": 19,
+      "milestones": 0,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 19
+      },
+      "gaps": [
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    },
+    {
+      "sport": "nba",
+      "market": "q1_rebounds",
+      "httpStatus": 200,
+      "rowCount": 19,
+      "verifiedQuotes": 19,
+      "mainPairs": 0,
+      "milestones": 19,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 19
+      },
+      "gaps": [
+        "no_verified_two_way_quarter_contract",
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    },
+    {
+      "sport": "nba",
+      "market": "q1_assists",
+      "httpStatus": 200,
+      "rowCount": 17,
+      "verifiedQuotes": 17,
+      "mainPairs": 0,
+      "milestones": 17,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 17
+      },
+      "gaps": [
+        "no_verified_two_way_quarter_contract",
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    },
+    {
+      "sport": "nba",
+      "market": "q1_threes_made",
+      "httpStatus": 200,
+      "rowCount": 17,
+      "verifiedQuotes": 17,
+      "mainPairs": 0,
+      "milestones": 17,
+      "numericForecasts": 0,
+      "directionalForecasts": 0,
+      "reasons": {
+        "market_model_not_fitted": 17
+      },
+      "gaps": [
+        "no_verified_two_way_quarter_contract",
+        "no_supported_numeric_quarter_projection",
+        "no_supported_over_under_forecast"
+      ],
+      "complete": false
+    }
+  ]
+}
