@@ -1,4 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server';
+import {verifiedFirstTouchdownScorerId} from '@/lib/first-td-scoring-order';
 import {providerFetch} from '@/lib/provider-fetch';
 import {espnParticipation} from '@/lib/player-participation';
 import {footballQuarterRows} from '@/lib/football-quarter-stats';
@@ -14,6 +15,7 @@ export async function GET(req:NextRequest){
   if(!response.ok)throw Error(`Official boxscore unavailable (${response.status})`);
   const payload=await response.json();if(String(payload?.header?.id||'')!==gameId)throw Error('Football boxscore game identity mismatch');
   const state=payload.header?.competitions?.[0]?.status?.type?.state||'pre';
-  return NextResponse.json({success:true,sport,gameId,state,rows:footballQuarterRows(payload),participants:espnParticipation(payload,sport),availability:officialAvailabilityRows(payload,sport,gameId),updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
+  const rows=footballQuarterRows(payload);const scorerId=sport==='nfl'&&['post','final','off'].includes(String(state).toLowerCase())?verifiedFirstTouchdownScorerId(payload,rows):null;
+  return NextResponse.json({success:true,sport,gameId,state,rows,firstTouchdownVerified:Boolean(scorerId),firstTouchdownScorerPlayerId:scorerId,participants:espnParticipation(payload,sport),availability:officialAvailabilityRows(payload,sport,gameId),updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
  }catch(e){return NextResponse.json({success:false,participants:[],gameId,error:e instanceof Error?e.message:'Participation unavailable'},{status:502,headers:{'Cache-Control':'no-store'}})}
 }
