@@ -91,7 +91,9 @@ async function fetchOwlsRows(market:NflMarketKey){
  const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),market.startsWith('q1_')?getSgoSupplement('NFL'):Promise.resolve({data:[]})]);
  const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
  if(!primary&&!extra?.data?.length)throw Error('NFL book feeds are unavailable');
- return footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now(),market.startsWith('q1_'));
+ const quotes=footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now(),market.startsWith('q1_'));
+  if(market==='anytime_td'||market==='first_td')console.info('[N04 quote audit]',JSON.stringify({market,quotes:quotes.length,events:new Set(quotes.map(r=>r.eventId)).size,verifiedSourceFields:quotes.filter(r=>r.quoteVersion===1&&r.lineType==='scorer'&&r.sportsbookKey&&r.quoteUpdatedAt).length}));
+  return quotes;
 }
 
 async function resolvePlayer(name:string,teamName:string,matchup:string,schedule:any[]){
@@ -366,7 +368,8 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    console.error('[NFL history read]',market,e instanceof Error?e.message:String(e));
    return {connected:false,writable:false,predictions:[] as SavedNflPrediction[],snapshotCount:0};
   });
-  const results=new Map<string,SavedNflPrediction>();
+  if(market==='anytime_td'||market==='first_td')console.info('[N04 history audit]',JSON.stringify({market,savedPredictions:savedToday.predictions.length,frozen:savedToday.predictions.filter(r=>Boolean(r.frozenAt)).length,final:savedToday.predictions.filter(r=>r.status==='hit'||r.status==='miss').length}));
+   const results=new Map<string,SavedNflPrediction>();
   for(const p of savedToday.predictions){results.set(`${p.playerId}|game:${p.gameId}`,p);results.set(`${p.playerId}|matchup:${cleanName(p.matchup)}`,p)}
   const historySaved=false;
   after(async()=>{try{await saveNflPregamePredictions(market,ranked,schedule)}catch(e){console.error('[NFL history save]',market,e instanceof Error?e.message:String(e))}});
