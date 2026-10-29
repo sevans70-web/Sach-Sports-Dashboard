@@ -1144,7 +1144,7 @@ function PlayerCard({
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
-            ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? "Scorer market" : "Main O/U"} · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
+            ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
             : "Original sportsbook details could not be confirmed. Saved for history, not a verified pick."}</p>
           {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
@@ -1190,7 +1190,7 @@ function PlayerCard({
           <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
           <span>
             {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
-            {!unverifiedFootballResult && card.sportsbookLine != null && current != null
+            {!footballScorer && !unverifiedFootballResult && card.sportsbookLine != null && current != null
               ? ` · ${current - card.sportsbookLine >= 0 ? "+" : ""}${shortNumber(current - card.sportsbookLine)} vs line`
               : ""}
           </span>
