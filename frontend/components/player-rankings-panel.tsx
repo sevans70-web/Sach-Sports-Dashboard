@@ -995,6 +995,8 @@ function PlayerCard({
   const firstBasket=card.market==='first_basket';
   const quarterCard=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_');
   const quarterTarget=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_')&&card.raw?.lineType==='milestone';
+  const milestonePrice=Number(card.raw?.overPrice);
+  const milestoneChance=quarterTarget&&Number.isFinite(milestonePrice)&&milestonePrice!==0?(milestonePrice>0?10000/(milestonePrice+100):100*(-milestonePrice)/(-milestonePrice+100)):null;
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
   const displayedPick=quarterTarget ? null : (modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction));
@@ -1211,7 +1213,7 @@ function PlayerCard({
 
       {open ? (
         <div className={styles.intelligence}>
-          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied chance':'Model probability'}</span><strong>{quarterTarget?`${shortNumber(card.raw.overPrice>0?10000/(card.raw.overPrice+100):100*-card.raw.overPrice/(-card.raw.overPrice+100))}%`:predictionProbabilityText(card.raw)}</strong><small>{quarterTarget?'Milestone · not a two-way O/U':'Saved pregame estimate'}</small></div>:null}
+          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):predictionProbabilityText(card.raw)}</strong><small>{quarterTarget?'Milestone · not a two-way O/U':'Saved pregame estimate'}</small></div>:null}
           <div className={`${styles.expandedHeader} ${firstBasket?styles.firstBasketExpanded:''}`}>
             {firstBasket?<>
               <div><b>First basket chance</b><span>Book-implied likelihood</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>
