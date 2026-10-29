@@ -21,7 +21,7 @@ export function selectRecordedFootballSlate(snapshots:any[],market:string,day:st
    candidates.set(key,{at,row});if(at>Date.parse(capturedAt||'1970-01-01'))capturedAt=snapshot.capturedAt;
   }
  }
- const rows=[...candidates.values()].sort((a,b)=>b.at-a.at||Number(a.row.rank)-Number(b.row.rank)).slice(0,25).map(({row,at},i)=>({...row,originalRank:row.rank,rank:i+1,slateKey:slate,boardCapturedAt:new Date(at).toISOString()}));
+ const rows=[...candidates.values()].sort((a,b)=>(Number.isFinite(Number(a.row.rank))?Number(a.row.rank):Infinity)-(Number.isFinite(Number(b.row.rank))?Number(b.row.rank):Infinity)||b.at-a.at).slice(0,25).map(({row,at},i)=>({...row,originalRank:row.rank,rank:i+1,slateKey:slate,boardCapturedAt:new Date(at).toISOString()}));
  return rows.length?{rows,capturedAt}:null;
 }
 
