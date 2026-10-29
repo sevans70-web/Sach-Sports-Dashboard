@@ -1,0 +1,9 @@
+{
+  "sourceSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "files": {
+    "protocol.json": "78712e661219b329097c878f2806622e0519fc1dfb4236b25a43ff12812fbc3e",
+    "development-report.json": "f38dd258da7aeb30c22604e71c967361e01d2951cf01bf91de0d79404d9d41f5",
+    "candidate-models.json.gz": "7d21696947c9f0fb7a519058053e8afa9786a9c215029e901a326536727c7bf2",
+    "saved-line-diagnostic.json": "883a549074153b83eb9e7baf60b3f3a8320ec313fde2d886c967867255864481"
+  }
+}
