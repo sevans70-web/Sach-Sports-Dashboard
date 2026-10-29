@@ -1096,7 +1096,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>Sach Pick</span>
+          <span>{modelSelection?"Saved selection":footballForecast?.side?"Forecast direction":"Sach Pick"}</span>
           <strong
             className={
               displayedPick === "UNDER"

@@ -1,5 +1,5 @@
 "use client";
-import {SavedEstimatedEv} from '@/components/saved-estimated-ev';
+import {SavedEstimatedEv,useSavedSelection} from '@/components/saved-estimated-ev';
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -292,15 +292,13 @@ export function UnifiedPlayerCard({
       position
     );
 
-  const line = finite(query.line);
-  const projection = first(query.projectionSource)==='fitted_model'
-    ? finite(query.projection) : null;
+  const savedEvidence=useSavedSelection(sport,playerId,researchMarket,first(query.gameId)||undefined,first(query.quoteId)||undefined,first(query.forecastAt)||undefined);
+  const savedSelection=savedEvidence.selection;
+  const line = savedSelection?.line ?? savedEvidence.forecast?.line ?? finite(query.line);
+  const projection = savedEvidence.forecast?.projection ?? null;
   const probability = null;
   const actual =
     finite(query.actual);
-
-  const pick =
-    first(query.pick).toUpperCase();
 
   const gameState =
     first(query.state).toLowerCase();
@@ -317,11 +315,11 @@ export function UnifiedPlayerCard({
       (
         projection != null ||
         probability != null ||
-        pick
+        savedSelection || savedEvidence.forecast || first(query.mode)==='prediction'
       )
   );
 
-  const effectivePick = ['OVER','UNDER','YES','FIRST BASKET'].includes(pick)?pick:'';
+  const effectivePick = savedSelection?.side || '';
   // Direction from a model estimate is not a verified betting selection.
   const forecastDirection = !effectivePick && projection != null && line != null
     ? projection > line ? 'OVER' : projection < line ? 'UNDER' : 'AT LINE'
@@ -663,14 +661,14 @@ export function UnifiedPlayerCard({
         </div>
 
         <b>
-          EV <SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>
+          EV {savedSelection?<SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>:"—"}
 
         </b>
       </section>
 
       <details style={{margin:"12px 0",padding:"12px 16px",border:"1px solid #454036",borderRadius:12}}>
         <summary>Probability details</summary>
-        <p>Model probability <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/></p>
+        <p>Model probability {savedSelection?<SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>:"—"}</p>
       </details>
 
       {hasPrediction ? (
@@ -680,7 +678,7 @@ export function UnifiedPlayerCard({
           >
             <article>
               <span>
-                Sportsbook Line
+                {savedSelection||savedEvidence.forecast?"Sportsbook Line":"Reference Line"}
               </span>
               <strong>
                 {fmt(line)}
@@ -698,7 +696,7 @@ export function UnifiedPlayerCard({
 
             <article>
               <span>
-                {effectivePick ? "Sach Pick" : "Forecast Direction"}
+                {effectivePick ? "Saved selection" : "Forecast Direction"}
               </span>
               <strong
                 className={
@@ -737,7 +735,7 @@ export function UnifiedPlayerCard({
               <div>
                 <span>
                   <b>Main Play</b>
-                  <small>{effectivePick ? "Sportsbook-backed selection" : "Forecast only — no verified selection"}</small>
+                  <small>{effectivePick ? `${savedSelection?.sportsbook} · ${savedSelection?.odds>0?'+':''}${savedSelection?.odds} · saved pregame` : "Forecast only — no verified selection"}</small>
                 </span>
                 <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:forecastDirection?`Forecast ${forecastDirection} ${fmt(line)}`:'Not established'}</strong>
               </div>

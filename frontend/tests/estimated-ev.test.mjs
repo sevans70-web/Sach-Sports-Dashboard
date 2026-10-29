@@ -29,3 +29,29 @@ test('saved probability evidence is deterministic across file order and exact fi
  const featured={...late,_featured:true};assert.equal(selectSavedQuoteEvidence([early,featured],'g','q',now+60000).row,featured);
  for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'])assert.equal(savedQuoteQuery({...early,sport,quoteId:'book x/1'}),'&gameId=g&quoteId=book%20x%2F1&forecastAt=2026-10-25T16%3A00Z');
 });
+
+test('all eight sports reject failed, retimed and quote-spliced selection evidence',()=>{
+ for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb']){
+  const r={...row('UNDER',-120,[.35,.55,.1]),sport};
+  assert.ok(Math.abs(estimatedEv(r,now).percent-(.55*100/120-.35)*100)<1e-10);
+  const f=r.researchForecast;
+  for(const bad of [
+   {...r,researchForecast:{...f,status:'unavailable'}},
+   {...r,researchForecast:{...f,selectionReason:'price_validation_failed'}},
+   {...r,researchForecast:{...f,calculatedAt:'2026-10-25T15:59Z'}},
+   {...r,researchForecast:{...f,modelSelection:{...f.modelSelection,calculatedAt:'2026-10-25T15:58Z'}}},
+   {...r,researchForecast:{...f,priceComparison:{...f.priceComparison,quoteEvidence:{quoteId:'other',line:r.sportsbookLine,sportsbookKey:r.sportsbookKey,overPrice:r.overPrice,underPrice:r.underPrice,calculatedAt:f.modelSelection.calculatedAt}}}},
+  ])assert.equal(estimatedEv(bad,now).status,'unavailable',sport);
+ }
+});
+
+test('new quote-bound probability evidence remains usable and rejects every altered identity field',()=>{
+ const r={...row(),sport:'nba',market:'points'},f=r.researchForecast;
+ const quoteEvidence={sport:r.sport,market:r.market,gameId:r.gameId,playerId:r.playerId,quoteId:r.quoteId,sportsbookKey:r.sportsbookKey,line:r.sportsbookLine,overPrice:r.overPrice,underPrice:r.underPrice,calculatedAt:f.modelSelection.calculatedAt};
+ const bound={...r,researchForecast:{...f,calculatedAt:f.modelSelection.calculatedAt,priceComparison:{...f.priceComparison,quoteEvidence}}};
+ assert.equal(estimatedEvText(bound,now),'+10.0%');
+ for(const [key,value] of Object.entries(quoteEvidence)){
+  const bad={...bound,researchForecast:{...bound.researchForecast,priceComparison:{...bound.researchForecast.priceComparison,quoteEvidence:{...quoteEvidence,[key]:typeof value==='number'?value+1:'other'}}}};
+  assert.equal(estimatedEv(bad,now).status,'unavailable',key);
+ }
+});

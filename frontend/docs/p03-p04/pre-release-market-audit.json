@@ -1,0 +1,2292 @@
+{
+  "createdAt": "2026-10-29T15:12:49.553Z",
+  "scope": "Read-only live market/quote/selection/EV audit; hidden sports backend only",
+  "checks": [
+    {
+      "sport": "nfl",
+      "market": "qb_rushing_yards",
+      "path": "/api/nfl/rankings?market=qb_rushing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 2,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "market": "qb_rushing_yards",
+          "line": 9.5,
+          "quoteId": "pinnacle-1639328794",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "market": "qb_rushing_yards",
+          "line": 5.5,
+          "quoteId": "pinnacle-1639328839",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_tds",
+      "path": "/api/nfl/rankings?market=passing_tds",
+      "http": 200,
+      "success": true,
+      "rows": 2,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "market": "passing_tds",
+          "line": 1.5,
+          "quoteId": "pinnacle-1639328851",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "market": "passing_tds",
+          "line": 1.5,
+          "quoteId": "pinnacle-1639328806",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_yards",
+      "path": "/api/nfl/rankings?market=passing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 2,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "market": "passing_yards",
+          "line": 264.5,
+          "quoteId": "pinnacle-1639328845",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "market": "passing_yards",
+          "line": 252.5,
+          "quoteId": "pinnacle-1639328800",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_rushing_yards",
+      "path": "/api/nfl/rankings?market=passing_rushing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 2,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "market": "passing_rushing_yards",
+          "line": 270.5,
+          "quoteId": "draftkings-382675330",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "market": "passing_rushing_yards",
+          "line": 266.5,
+          "quoteId": "draftkings-382675255",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "rushing_yards",
+      "path": "/api/nfl/rankings?market=rushing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 5,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4241416",
+          "gameId": "401873023",
+          "market": "rushing_yards",
+          "line": 66.5,
+          "quoteId": "pinnacle-1639328818",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "prior_workload_role_uncertain"
+        },
+        {
+          "playerId": "4429023",
+          "gameId": "401873023",
+          "market": "rushing_yards",
+          "line": 16.5,
+          "quoteId": "pinnacle-1639328869",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        },
+        {
+          "playerId": "4431487",
+          "gameId": "401873023",
+          "market": "rushing_yards",
+          "line": 3.5,
+          "quoteId": "pinnacle-1639533628",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "fewer_than_three_same_season_team_appearances"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "rushing_tds",
+      "path": "/api/nfl/rankings?market=rushing_tds",
+      "http": 200,
+      "success": true,
+      "rows": 7,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "receiving_yards",
+      "path": "/api/nfl/rankings?market=receiving_yards",
+      "http": 200,
+      "success": true,
+      "rows": 16,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4701936",
+          "gameId": "401873023",
+          "market": "receiving_yards",
+          "line": 59.5,
+          "quoteId": "pinnacle-1639328875",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        },
+        {
+          "playerId": "4683243",
+          "gameId": "401873023",
+          "market": "receiving_yards",
+          "line": 6.5,
+          "quoteId": "pinnacle-1639533622",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        },
+        {
+          "playerId": "2576925",
+          "gameId": "401873023",
+          "market": "receiving_yards",
+          "line": 21.5,
+          "quoteId": "pinnacle-1639328830",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "rushing_receiving_yards",
+      "path": "/api/nfl/rankings?market=rushing_receiving_yards",
+      "http": 200,
+      "success": true,
+      "rows": 4,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4241416",
+          "gameId": "401873023",
+          "market": "rushing_receiving_yards",
+          "line": 88.5,
+          "quoteId": "fanduel-36215311-chubahubbard-rush_rec_yards",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4429023",
+          "gameId": "401873023",
+          "market": "rushing_receiving_yards",
+          "line": 24.5,
+          "quoteId": "fanduel-36215311-marshawnlloyd-rush_rec_yards",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4431487",
+          "gameId": "401873023",
+          "market": "rushing_receiving_yards",
+          "line": 30.5,
+          "quoteId": "fanduel-36215311-savionwilliams-rush_rec_yards",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "receptions",
+      "path": "/api/nfl/rankings?market=receptions",
+      "http": 200,
+      "success": true,
+      "rows": 16,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4683243",
+          "gameId": "401873023",
+          "market": "receptions",
+          "line": 0.5,
+          "quoteId": "pinnacle-1639533616",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        },
+        {
+          "playerId": "4701936",
+          "gameId": "401873023",
+          "market": "receptions",
+          "line": 4.5,
+          "quoteId": "pinnacle-1639328872",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        },
+        {
+          "playerId": "4567096",
+          "gameId": "401873023",
+          "market": "receptions",
+          "line": 1.5,
+          "quoteId": "pinnacle-1639430865",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Probability accuracy checks not met"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_validation_failed"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "anytime_td",
+      "path": "/api/nfl/rankings?market=anytime_td",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "first_td",
+      "path": "/api/nfl/rankings?market=first_td",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "sacks",
+      "path": "/api/nfl/rankings?market=sacks",
+      "http": 200,
+      "success": true,
+      "rows": 1,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4686906",
+          "gameId": "401873023",
+          "market": "sacks",
+          "line": 0.25,
+          "quoteId": "draftkings-382675197",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "tackles",
+      "path": "/api/nfl/rankings?market=tackles",
+      "http": 200,
+      "success": true,
+      "rows": 8,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4259493",
+          "gameId": "401873023",
+          "market": "tackles",
+          "line": 3.5,
+          "quoteId": "draftkings-382675066",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4241470",
+          "gameId": "401873023",
+          "market": "tackles",
+          "line": 2.5,
+          "quoteId": "draftkings-382674975",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4688930",
+          "gameId": "401873023",
+          "market": "tackles",
+          "line": 2.5,
+          "quoteId": "draftkings-382675080",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "tackles_assists",
+      "path": "/api/nfl/rankings?market=tackles_assists",
+      "http": 200,
+      "success": true,
+      "rows": 8,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4428863",
+          "gameId": "401873023",
+          "market": "tackles_assists",
+          "line": 6.5,
+          "quoteId": "draftkings-382675575",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4241470",
+          "gameId": "401873023",
+          "market": "tackles_assists",
+          "line": 4.5,
+          "quoteId": "draftkings-382674873",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4688930",
+          "gameId": "401873023",
+          "market": "tackles_assists",
+          "line": 5.5,
+          "quoteId": "draftkings-382675731",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_passing_yards",
+      "path": "/api/nfl/rankings?market=q1_passing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 2,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "market": "q1_passing_yards",
+          "line": 20,
+          "quoteId": "betmgm-6:48482-4265574",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "market": "q1_passing_yards",
+          "line": 52.5,
+          "quoteId": "caesars-ae052079-4fa9-3218-9827-97ac4a034b1e",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_receiving_yards",
+      "path": "/api/nfl/rankings?market=q1_receiving_yards",
+      "http": 200,
+      "success": true,
+      "rows": 10,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4685472",
+          "gameId": "401873023",
+          "market": "q1_receiving_yards",
+          "line": 5,
+          "quoteId": "betmgm-6:48482-4265590",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4695883",
+          "gameId": "401873023",
+          "market": "q1_receiving_yards",
+          "line": 5,
+          "quoteId": "betmgm-6:48482-4265586",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4701936",
+          "gameId": "401873023",
+          "market": "q1_receiving_yards",
+          "line": 5,
+          "quoteId": "betmgm-6:48482-4265583",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_receptions",
+      "path": "/api/nfl/rankings?market=q1_receptions",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_qb_rushing_yards",
+      "path": "/api/nfl/rankings?market=q1_qb_rushing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_rushing_yards",
+      "path": "/api/nfl/rankings?market=q1_rushing_yards",
+      "http": 200,
+      "success": true,
+      "rows": 3,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4241416",
+          "gameId": "401873023",
+          "market": "q1_rushing_yards",
+          "line": 5,
+          "quoteId": "betmgm-6:48482-4265648",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4047365",
+          "gameId": "401873023",
+          "market": "q1_rushing_yards",
+          "line": 5,
+          "quoteId": "betmgm-6:48482-4265510",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        },
+        {
+          "playerId": "4429023",
+          "gameId": "401873023",
+          "market": "q1_rushing_yards",
+          "line": 5,
+          "quoteId": "betmgm-6:48482-4265637",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted"
+        }
+      ]
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_pass_attempts",
+      "path": "/api/nfl/rankings?market=q1_pass_attempts",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_pass_completions",
+      "path": "/api/nfl/rankings?market=q1_pass_completions",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_rushing_receiving_yards",
+      "path": "/api/nfl/rankings?market=q1_rushing_receiving_yards",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_anytime_td",
+      "path": "/api/nfl/rankings?market=q1_anytime_td",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_rush_attempts",
+      "path": "/api/nfl/rankings?market=q1_rush_attempts",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "passing_yards",
+      "path": "/api/cfb/rankings?market=passing_yards",
+      "http": 500,
+      "success": false,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "rushing_yards",
+      "path": "/api/cfb/rankings?market=rushing_yards",
+      "http": 500,
+      "success": false,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "receptions",
+      "path": "/api/cfb/rankings?market=receptions",
+      "http": 500,
+      "success": false,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "receiving_yards",
+      "path": "/api/cfb/rankings?market=receiving_yards",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "anytime_td",
+      "path": "/api/cfb/rankings?market=anytime_td",
+      "http": 500,
+      "success": false,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "pass_completions",
+      "path": "/api/cfb/rankings?market=pass_completions",
+      "http": 500,
+      "success": false,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cfb",
+      "market": "first_td",
+      "path": "/api/cfb/rankings?market=first_td",
+      "http": 500,
+      "success": false,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nba",
+      "market": "assists",
+      "path": "/api/nba/rankings?market=assists",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 17,
+      "availableEv": 17,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4683678",
+          "gameId": "401909895",
+          "market": "assists",
+          "line": 1.5,
+          "quoteId": "kalshi-KXNBAAST-26OCT29MEMPOR-PORSHENDERSON00-2",
+          "pick": "OVER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 5.675327068361891,
+            "reason": null,
+            "side": "OVER",
+            "line": 1.5,
+            "odds": -270,
+            "winProbability": 0.7711442786069652,
+            "pushProbability": 0,
+            "lossProbability": 0.22885572139303484,
+            "sportsbook": "Kalshi",
+            "sportsbookKey": "kalshi",
+            "quoteId": "kalshi-KXNBAAST-26OCT29MEMPOR-PORSHENDERSON00-2",
+            "gameId": "401909895",
+            "playerId": "4683678",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "3995",
+          "gameId": "401909895",
+          "market": "assists",
+          "line": 3.5,
+          "quoteId": "pinnacle-1639533373",
+          "pick": "OVER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 7.386146192116344,
+            "reason": null,
+            "side": "OVER",
+            "line": 3.5,
+            "odds": -130,
+            "winProbability": 0.6069651741293532,
+            "pushProbability": 0,
+            "lossProbability": 0.39303482587064675,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533373",
+            "gameId": "401909895",
+            "playerId": "3995",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4431736",
+          "gameId": "401909895",
+          "market": "assists",
+          "line": 1.5,
+          "quoteId": "kalshi-KXNBAAST-26OCT29MEMPOR-PORTCAMARA33-2",
+          "pick": "OVER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 17.626865671641784,
+            "reason": null,
+            "side": "OVER",
+            "line": 1.5,
+            "odds": 113,
+            "winProbability": 0.5522388059701493,
+            "pushProbability": 0,
+            "lossProbability": 0.44776119402985076,
+            "sportsbook": "Kalshi",
+            "sportsbookKey": "kalshi",
+            "quoteId": "kalshi-KXNBAAST-26OCT29MEMPOR-PORTCAMARA33-2",
+            "gameId": "401909895",
+            "playerId": "4431736",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "rebounds",
+      "path": "/api/nba/rankings?market=rebounds",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 11,
+      "availableEv": 11,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "2490149",
+          "gameId": "401909893",
+          "market": "rebounds",
+          "line": 2.5,
+          "quoteId": "fanduel-36245923-cjmccollum-rebounds",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 6.567164179104479,
+            "reason": null,
+            "side": "UNDER",
+            "line": 2.5,
+            "odds": -125,
+            "winProbability": 0.5920398009950248,
+            "pushProbability": 0,
+            "lossProbability": 0.4079601990049751,
+            "sportsbook": "FanDuel",
+            "sportsbookKey": "fanduel",
+            "quoteId": "fanduel-36245923-cjmccollum-rebounds",
+            "gameId": "401909893",
+            "playerId": "2490149",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4395628",
+          "gameId": "401909894",
+          "market": "rebounds",
+          "line": 4.5,
+          "quoteId": "fanduel-36245922-zionwilliamson-rebounds",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 30.14925373134328,
+            "reason": null,
+            "side": "UNDER",
+            "line": 4.5,
+            "odds": 118,
+            "winProbability": 0.5970149253731343,
+            "pushProbability": 0,
+            "lossProbability": 0.40298507462686567,
+            "sportsbook": "FanDuel",
+            "sportsbookKey": "fanduel",
+            "quoteId": "fanduel-36245922-zionwilliamson-rebounds",
+            "gameId": "401909894",
+            "playerId": "4395628",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4431680",
+          "gameId": "401909893",
+          "market": "rebounds",
+          "line": 6.5,
+          "quoteId": "pinnacle-1639533454",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 7.731832640078301,
+            "reason": null,
+            "side": "UNDER",
+            "line": 6.5,
+            "odds": -122,
+            "winProbability": 0.5920398009950248,
+            "pushProbability": 0,
+            "lossProbability": 0.4079601990049751,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533454",
+            "gameId": "401909893",
+            "playerId": "4431680",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "points",
+      "path": "/api/nba/rankings?market=points",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 12,
+      "availableEv": 12,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "3995",
+          "gameId": "401909895",
+          "market": "points",
+          "line": 12.5,
+          "quoteId": "pinnacle-1639533376",
+          "pick": "OVER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 26.86567164179105,
+            "reason": null,
+            "side": "OVER",
+            "line": 12.5,
+            "odds": -104,
+            "winProbability": 0.6467661691542289,
+            "pushProbability": 0,
+            "lossProbability": 0.35323383084577115,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533376",
+            "gameId": "401909895",
+            "playerId": "3995",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "5105565",
+          "gameId": "401909895",
+          "market": "points",
+          "line": 9.5,
+          "quoteId": "pinnacle-1639533346",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 9.299655568312293,
+            "reason": null,
+            "side": "UNDER",
+            "line": 9.5,
+            "odds": -104,
+            "winProbability": 0.5572139303482587,
+            "pushProbability": 0,
+            "lossProbability": 0.4427860696517413,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533346",
+            "gameId": "401909895",
+            "playerId": "5105565",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "5144091",
+          "gameId": "401909894",
+          "market": "points",
+          "line": 11.5,
+          "quoteId": "pinnacle-1639533514",
+          "pick": "OVER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 42.948522692659154,
+            "reason": null,
+            "side": "OVER",
+            "line": 11.5,
+            "odds": -147,
+            "winProbability": 0.8507462686567164,
+            "pushProbability": 0,
+            "lossProbability": 0.14925373134328357,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533514",
+            "gameId": "401909894",
+            "playerId": "5144091",
+            "calculatedAt": "2026-10-29T15:13:38.007Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "threes_made",
+      "path": "/api/nba/rankings?market=threes_made",
+      "http": 200,
+      "success": true,
+      "rows": 22,
+      "selections": 12,
+      "availableEv": 12,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4066757",
+          "gameId": "401909893",
+          "market": "threes_made",
+          "line": 1.5,
+          "quoteId": "kalshi-KXNBA3PT-26OCT29CLEATL-CLESMERRILL5-2",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 28.119402985074633,
+            "reason": null,
+            "side": "UNDER",
+            "line": 1.5,
+            "odds": 122,
+            "winProbability": 0.5771144278606966,
+            "pushProbability": 0,
+            "lossProbability": 0.4228855721393035,
+            "sportsbook": "Kalshi",
+            "sportsbookKey": "kalshi",
+            "quoteId": "kalshi-KXNBA3PT-26OCT29CLEATL-CLESMERRILL5-2",
+            "gameId": "401909893",
+            "playerId": "4066757",
+            "calculatedAt": "2026-10-29T15:13:41.018Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "3995",
+          "gameId": "401909895",
+          "market": "threes_made",
+          "line": 1.5,
+          "quoteId": "pinnacle-1639533370",
+          "pick": "OVER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 18.25396825396825,
+            "reason": null,
+            "side": "OVER",
+            "line": 1.5,
+            "odds": -168,
+            "winProbability": 0.7412935323383084,
+            "pushProbability": 0,
+            "lossProbability": 0.25870646766169153,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533370",
+            "gameId": "401909895",
+            "playerId": "3995",
+            "calculatedAt": "2026-10-29T15:13:41.018Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4397688",
+          "gameId": "401909894",
+          "market": "threes_made",
+          "line": 2.5,
+          "quoteId": "pinnacle-1639533523",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 9.376844590606288,
+            "reason": null,
+            "side": "UNDER",
+            "line": 2.5,
+            "odds": -118,
+            "winProbability": 0.5920398009950248,
+            "pushProbability": 0,
+            "lossProbability": 0.4079601990049751,
+            "sportsbook": "Pinnacle",
+            "sportsbookKey": "pinnacle",
+            "quoteId": "pinnacle-1639533523",
+            "gameId": "401909894",
+            "playerId": "4397688",
+            "calculatedAt": "2026-10-29T15:13:41.018Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "pts_rebs",
+      "path": "/api/nba/rankings?market=pts_rebs",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4600663",
+          "gameId": "401909895",
+          "market": "pts_rebs",
+          "line": 15.5,
+          "quoteId": "fanduel-36245924-zachedey-pts_rebs",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "3992",
+          "gameId": "401909893",
+          "market": "pts_rebs",
+          "line": 21.5,
+          "quoteId": "fanduel-36245923-jamesharden-pts_rebs",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4431680",
+          "gameId": "401909893",
+          "market": "pts_rebs",
+          "line": 17.5,
+          "quoteId": "fanduel-36245923-onyekaokongwu-pts_rebs",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "pts_rebs_asts",
+      "path": "/api/nba/rankings?market=pts_rebs_asts",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "3995",
+          "gameId": "401909895",
+          "market": "pts_rebs_asts",
+          "line": 20.5,
+          "quoteId": "fanduel-36245924-jrueholiday-pts_rebs_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "3992",
+          "gameId": "401909893",
+          "market": "pts_rebs_asts",
+          "line": 28.5,
+          "quoteId": "pinnacle-1639533433",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4431680",
+          "gameId": "401909893",
+          "market": "pts_rebs_asts",
+          "line": 20.5,
+          "quoteId": "fanduel-36245923-onyekaokongwu-pts_rebs_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "steals",
+      "path": "/api/nba/rankings?market=steals",
+      "http": 200,
+      "success": true,
+      "rows": 8,
+      "selections": 2,
+      "availableEv": 2,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "5112087",
+          "gameId": "401909895",
+          "market": "steals",
+          "line": 0.5,
+          "quoteId": "kalshi-KXNBASTL-26OCT29MEMPOR-MEMJWELLS0-1",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 43.034825870646756,
+            "reason": null,
+            "side": "UNDER",
+            "line": 0.5,
+            "odds": 150,
+            "winProbability": 0.572139303482587,
+            "pushProbability": 0,
+            "lossProbability": 0.42786069651741293,
+            "sportsbook": "Kalshi",
+            "sportsbookKey": "kalshi",
+            "quoteId": "kalshi-KXNBASTL-26OCT29MEMPOR-MEMJWELLS0-1",
+            "gameId": "401909895",
+            "playerId": "5112087",
+            "calculatedAt": "2026-10-29T15:13:42.198Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "3908809",
+          "gameId": "401909893",
+          "market": "steals",
+          "line": 1.5,
+          "quoteId": "fanduel-36245923-donovanmitchell-steals",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 5.375898286346042,
+            "reason": null,
+            "side": "UNDER",
+            "line": 1.5,
+            "odds": -144,
+            "winProbability": 0.6218905472636815,
+            "pushProbability": 0,
+            "lossProbability": 0.3781094527363184,
+            "sportsbook": "FanDuel",
+            "sportsbookKey": "fanduel",
+            "quoteId": "fanduel-36245923-donovanmitchell-steals",
+            "gameId": "401909893",
+            "playerId": "3908809",
+            "calculatedAt": "2026-10-29T15:13:42.198Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4278039",
+          "gameId": "401909893",
+          "market": "steals",
+          "line": 0.5,
+          "quoteId": "kalshi-KXNBASTL-26OCT29CLEATL-ATLNALEXANDERWALKER7-1",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Original pregame forecast needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": "price_threshold_not_met"
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "pts_asts",
+      "path": "/api/nba/rankings?market=pts_asts",
+      "http": 200,
+      "success": true,
+      "rows": 22,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "3995",
+          "gameId": "401909895",
+          "market": "pts_asts",
+          "line": 16.5,
+          "quoteId": "fanduel-36245924-jrueholiday-pts_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4431680",
+          "gameId": "401909893",
+          "market": "pts_asts",
+          "line": 13.5,
+          "quoteId": "fanduel-36245923-onyekaokongwu-pts_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "3992",
+          "gameId": "401909893",
+          "market": "pts_asts",
+          "line": 24.5,
+          "quoteId": "fanduel-36245923-jamesharden-pts_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "rebs_asts",
+      "path": "/api/nba/rankings?market=rebs_asts",
+      "http": 200,
+      "success": true,
+      "rows": 22,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "3995",
+          "gameId": "401909895",
+          "market": "rebs_asts",
+          "line": 7.5,
+          "quoteId": "fanduel-36245924-jrueholiday-rebs_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "2490149",
+          "gameId": "401909893",
+          "market": "rebs_asts",
+          "line": 5.5,
+          "quoteId": "fanduel-36245923-cjmccollum-rebs_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "5144091",
+          "gameId": "401909894",
+          "market": "rebs_asts",
+          "line": 5.5,
+          "quoteId": "fanduel-36245922-jeremiahfears-rebs_asts",
+          "pick": null,
+          "ev": {
+            "version": 1,
+            "status": "unavailable",
+            "percent": null,
+            "reason": "Independent model probability needed"
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "q1_points",
+      "path": "/api/nba/rankings?market=q1_points",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nba",
+      "market": "blocks",
+      "path": "/api/nba/rankings?market=blocks",
+      "http": 200,
+      "success": true,
+      "rows": 6,
+      "selections": 5,
+      "availableEv": 5,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4066328",
+          "gameId": "401909893",
+          "market": "blocks",
+          "line": 1.5,
+          "quoteId": "fanduel-36245923-jarrettallen-blocks",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 32.96309151914845,
+            "reason": null,
+            "side": "UNDER",
+            "line": 1.5,
+            "odds": -172,
+            "winProbability": 0.8407960199004975,
+            "pushProbability": 0,
+            "lossProbability": 0.15920398009950248,
+            "sportsbook": "FanDuel",
+            "sportsbookKey": "fanduel",
+            "quoteId": "fanduel-36245923-jarrettallen-blocks",
+            "gameId": "401909893",
+            "playerId": "4066328",
+            "calculatedAt": "2026-10-29T15:13:42.656Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4432158",
+          "gameId": "401909893",
+          "market": "blocks",
+          "line": 1.5,
+          "quoteId": "fanduel-36245923-evanmobley-blocks",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 24.902882846043745,
+            "reason": null,
+            "side": "UNDER",
+            "line": 1.5,
+            "odds": -146,
+            "winProbability": 0.7412935323383084,
+            "pushProbability": 0,
+            "lossProbability": 0.25870646766169153,
+            "sportsbook": "FanDuel",
+            "sportsbookKey": "fanduel",
+            "quoteId": "fanduel-36245923-evanmobley-blocks",
+            "gameId": "401909893",
+            "playerId": "4432158",
+            "calculatedAt": "2026-10-29T15:13:42.656Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        },
+        {
+          "playerId": "4869342",
+          "gameId": "401909893",
+          "market": "blocks",
+          "line": 0.5,
+          "quoteId": "betmgm-20030831-4278989",
+          "pick": "UNDER",
+          "ev": {
+            "version": 1,
+            "status": "available",
+            "percent": 7.960199004975122,
+            "reason": null,
+            "side": "UNDER",
+            "line": 0.5,
+            "odds": -210,
+            "winProbability": 0.7313432835820896,
+            "pushProbability": 0,
+            "lossProbability": 0.26865671641791045,
+            "sportsbook": "BetMGM",
+            "sportsbookKey": "betmgm",
+            "quoteId": "betmgm-20030831-4278989",
+            "gameId": "401909893",
+            "playerId": "4869342",
+            "calculatedAt": "2026-10-29T15:13:42.656Z",
+            "basis": "model_probability_and_exact_quote",
+            "validatedForBetting": false
+          },
+          "forecastStatus": "available",
+          "forecastReason": null
+        }
+      ]
+    },
+    {
+      "sport": "nba",
+      "market": "q1_rebounds",
+      "path": "/api/nba/rankings?market=q1_rebounds",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nba",
+      "market": "q1_assists",
+      "path": "/api/nba/rankings?market=q1_assists",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nba",
+      "market": "q1_threes_made",
+      "path": "/api/nba/rankings?market=q1_threes_made",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nba",
+      "market": "q1_pts_rebs_asts",
+      "path": "/api/nba/rankings?market=q1_pts_rebs_asts",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nba",
+      "market": "first_basket",
+      "path": "/api/nba/rankings?market=first_basket",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "wnba",
+      "market": "points",
+      "path": "/api/wnba/rankings?market=points",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "rebounds",
+      "path": "/api/wnba/rankings?market=rebounds",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "assists",
+      "path": "/api/wnba/rankings?market=assists",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "threes_made",
+      "path": "/api/wnba/rankings?market=threes_made",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "pts_rebs_asts",
+      "path": "/api/wnba/rankings?market=pts_rebs_asts",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "pts_rebs",
+      "path": "/api/wnba/rankings?market=pts_rebs",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "pts_asts",
+      "path": "/api/wnba/rankings?market=pts_asts",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "rebs_asts",
+      "path": "/api/wnba/rankings?market=rebs_asts",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "wnba",
+      "market": "steals",
+      "path": "/api/wnba/rankings?market=steals",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "nhl",
+      "market": "points",
+      "path": "/api/nhl/rankings?market=points",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nhl",
+      "market": "shots_on_goal",
+      "path": "/api/nhl/rankings?market=shots_on_goal",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nhl",
+      "market": "goals",
+      "path": "/api/nhl/rankings?market=goals",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nhl",
+      "market": "blocked_shots",
+      "path": "/api/nhl/rankings?market=blocked_shots",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nhl",
+      "market": "goalie_saves",
+      "path": "/api/nhl/rankings?market=goalie_saves",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "nhl",
+      "market": "assists",
+      "path": "/api/nhl/rankings?market=assists",
+      "http": 200,
+      "success": true,
+      "rows": 25,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "rebounds",
+      "path": "/api/cbb/rankings?market=rebounds",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "points",
+      "path": "/api/cbb/rankings?market=points",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "assists",
+      "path": "/api/cbb/rankings?market=assists",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "threes_made",
+      "path": "/api/cbb/rankings?market=threes_made",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "pts_rebs_asts",
+      "path": "/api/cbb/rankings?market=pts_rebs_asts",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "pts_rebs",
+      "path": "/api/cbb/rankings?market=pts_rebs",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "pts_asts",
+      "path": "/api/cbb/rankings?market=pts_asts",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "rebs_asts",
+      "path": "/api/cbb/rankings?market=rebs_asts",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "steals",
+      "path": "/api/cbb/rankings?market=steals",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "cbb",
+      "market": "blocks",
+      "path": "/api/cbb/rankings?market=blocks",
+      "http": 200,
+      "success": true,
+      "rows": 23,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "mlb",
+      "market": "combined",
+      "path": "/api/mlb/rankings",
+      "http": 200,
+      "success": true,
+      "rows": 0,
+      "selections": 0,
+      "availableEv": 0,
+      "issues": [],
+      "samples": []
+    },
+    {
+      "sport": "wnba",
+      "market": "blocks",
+      "path": "/api/wnba/rankings?market=blocks",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "sport": "soccer",
+      "market": "combined",
+      "path": "/api/soccer/dashboard?league=eng.1",
+      "error": "The operation was aborted due to timeout"
+    }
+  ],
+  "limitations": [
+    "Unavailable source rows are distinguished from populated evidence. No probability accuracy claim. No history writes or sport visibility changes."
+  ],
+  "finishedAt": "2026-10-29T15:17:04.325Z",
+  "summary": {
+    "markets": 75,
+    "populated": 43,
+    "rows": 721,
+    "availableEv": 59,
+    "failures": [
+      {
+        "sport": "cfb",
+        "market": "passing_yards",
+        "path": "/api/cfb/rankings?market=passing_yards",
+        "http": 500,
+        "success": false,
+        "rows": 0,
+        "selections": 0,
+        "availableEv": 0,
+        "issues": [],
+        "samples": []
+      },
+      {
+        "sport": "cfb",
+        "market": "rushing_yards",
+        "path": "/api/cfb/rankings?market=rushing_yards",
+        "http": 500,
+        "success": false,
+        "rows": 0,
+        "selections": 0,
+        "availableEv": 0,
+        "issues": [],
+        "samples": []
+      },
+      {
+        "sport": "cfb",
+        "market": "receptions",
+        "path": "/api/cfb/rankings?market=receptions",
+        "http": 500,
+        "success": false,
+        "rows": 0,
+        "selections": 0,
+        "availableEv": 0,
+        "issues": [],
+        "samples": []
+      },
+      {
+        "sport": "cfb",
+        "market": "anytime_td",
+        "path": "/api/cfb/rankings?market=anytime_td",
+        "http": 500,
+        "success": false,
+        "rows": 0,
+        "selections": 0,
+        "availableEv": 0,
+        "issues": [],
+        "samples": []
+      },
+      {
+        "sport": "cfb",
+        "market": "pass_completions",
+        "path": "/api/cfb/rankings?market=pass_completions",
+        "http": 500,
+        "success": false,
+        "rows": 0,
+        "selections": 0,
+        "availableEv": 0,
+        "issues": [],
+        "samples": []
+      },
+      {
+        "sport": "cfb",
+        "market": "first_td",
+        "path": "/api/cfb/rankings?market=first_td",
+        "http": 500,
+        "success": false,
+        "rows": 0,
+        "selections": 0,
+        "availableEv": 0,
+        "issues": [],
+        "samples": []
+      },
+      {
+        "sport": "wnba",
+        "market": "points",
+        "path": "/api/wnba/rankings?market=points",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "rebounds",
+        "path": "/api/wnba/rankings?market=rebounds",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "assists",
+        "path": "/api/wnba/rankings?market=assists",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "threes_made",
+        "path": "/api/wnba/rankings?market=threes_made",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "pts_rebs_asts",
+        "path": "/api/wnba/rankings?market=pts_rebs_asts",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "pts_rebs",
+        "path": "/api/wnba/rankings?market=pts_rebs",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "pts_asts",
+        "path": "/api/wnba/rankings?market=pts_asts",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "rebs_asts",
+        "path": "/api/wnba/rankings?market=rebs_asts",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "steals",
+        "path": "/api/wnba/rankings?market=steals",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "wnba",
+        "market": "blocks",
+        "path": "/api/wnba/rankings?market=blocks",
+        "error": "The operation was aborted due to timeout"
+      },
+      {
+        "sport": "soccer",
+        "market": "combined",
+        "path": "/api/soccer/dashboard?league=eng.1",
+        "error": "The operation was aborted due to timeout"
+      }
+    ]
+  }
+}
