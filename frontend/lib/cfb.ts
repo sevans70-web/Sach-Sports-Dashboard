@@ -7,6 +7,9 @@ export const CFB_MARKETS = [
   ["receptions", "🧤", "Receptions"],
   ["anytime_td", "🔥", "Anytime TD"],
   ["first_td", "1️⃣", "First TD"],
+  ["q1_passing_yards", "1Q", "Q1 Passing Yards"],
+  ["q1_rushing_yards", "1Q", "Q1 Rushing Yards"],
+  ["q1_receiving_yards", "1Q", "Q1 Receiving Yards"],
 ] as const;
 
 export type CfbMarketKey = typeof CFB_MARKETS[number][0];

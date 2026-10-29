@@ -2,7 +2,7 @@ import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
 import {type CfbMarketKey} from "@/lib/cfb";
 import {getEspnCfbSchedule} from "@/lib/cfb-server";
-import {footballObservedRows} from "@/lib/football-observed-stats";
+import {footballRowsForMarket} from "@/lib/football-quarter-stats";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -30,7 +30,7 @@ async function fetchJson(url:string,ms=8000){
 }
 
 function extractPlayerStats(payload:any,market:CfbMarketKey){
-  return footballObservedRows(payload).filter(row=>row.stats[market]!=null).map(row=>({playerId:row.playerId,playerName:row.playerName,value:row.stats[market]!}));
+  return footballRowsForMarket(payload,market).filter(row=>row.stats[market]!=null).map(row=>({playerId:row.playerId,playerName:row.playerName,value:row.stats[market]!}));
 }
 
 function extractFirstTd(payload:any){

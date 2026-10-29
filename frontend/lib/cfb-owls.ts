@@ -10,6 +10,9 @@ const MARKET_ALIASES:Record<CfbMarketKey,string[]>={
   receiving_yards:["receiving_yards","receivingyards","reception_yards","receptionyards","player_reception_yds"],
   receptions:["receptions","receiving_receptions","receivingreceptions","player_receptions"],
   anytime_td:["anytime_td","anytime_touchdown","anytime_touchdown_scorer","touchdown_scorer","touchdowns","player_anytime_td"],
+  q1_passing_yards:["passing_yards_1q","q1_passing_yards","first_quarter_passing_yards"],
+  q1_rushing_yards:["rushing_yards_1q","q1_rushing_yards","first_quarter_rushing_yards"],
+  q1_receiving_yards:["receiving_yards_1q","q1_receiving_yards","first_quarter_receiving_yards"],
   first_td:["first_td","first_td_scorer","firstTouchdownScorer","first_touchdown","first_touchdown_scorer","first_scorer","player_1st_td"],
 };
 

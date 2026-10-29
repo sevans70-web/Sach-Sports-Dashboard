@@ -226,6 +226,8 @@ function gradeableBoardRow(
 
   if (row.quoteVersion === 1 && (!/^\d+$/.test(String(row.playerId || "")) || !row.gameId)) return false;
 
+  if(market.startsWith("q1_"))return row.quoteVersion===1&&finiteNumber(row.sportsbookLine);
+
   /*
     TD scorer markets are sportsbook-backed by price/probability
     rather than a traditional O/U yardage line.
@@ -779,6 +781,8 @@ async function marketRows(
     }
   } catch {}
 
+  if(market.startsWith("q1_"))return [];
+
   const sportsbook =
     await timeout(
       getCfbMarketRows(market),
@@ -1024,7 +1028,7 @@ async function buildFreshBoard(
   // slate populated with a clearly marked model-watch board. These rows
   // never receive a fake sportsbook line and are not graded as bets.
   const fallbackRaw =
-    scopedRaw.length
+    scopedRaw.length || market.startsWith("q1_")
       ? []
       : await rosterFallbackRows(market,schedule,[],gameDay,slate);
 
@@ -1147,7 +1151,7 @@ async function buildFreshBoard(
                   recent.games
                 ),
               modelProbability:
-                probability ??
+                market.startsWith("q1_")?null:probability ??
                 earlyConfidence ??
                 rankingProbability,
               sportsbookLine:

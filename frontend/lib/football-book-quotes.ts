@@ -15,6 +15,7 @@ const implied = (n: number) => n > 0 ? 100 / (n + 100) : -n / (-n + 100);
 export type FootballBookRow = {
   eventId: string; matchup: string; gameTime: string; playerName: string; teamName: string;
   line: number | null; price: number; prob: number; bookmakerCount: number;
+  quoteMarket: string; quotePeriod: string; sourceCategory: string; sourcePeriod: string;
   quoteVersion: number; sportsbook: string; sportsbookKey: string;
   overPrice: number; underPrice: number | null; quoteUpdatedAt: string;
   lineType: "main" | "scorer" | "milestone"; quoteId: string; quoteUrl: string; capturedAt: string;
@@ -70,6 +71,9 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
         const p = implied(overPrice);
         const prob = Math.round((underPrice == null ? p : p / (p + implied(underPrice))) * 1000) / 10;
         const row: FootballBookRow = {
+          quoteMarket:market,quotePeriod:quarter?"q1":"game",
+          sourceCategory:String(prop.sourceCategory??prop.category??prop.market??prop.type??""),
+          sourcePeriod:String(prop.sourcePeriod??prop.periodID??prop.periodId??prop.period??""),
           eventId: String(game.gameId || game.eventId || game.id || ""), matchup, gameTime,
           playerName, teamName: String(prop.team || prop.teamName || ""), line,
           price: overPrice, prob, bookmakerCount: 1, quoteVersion: FOOTBALL_QUOTE_VERSION,
@@ -93,7 +97,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
 }
 
 export function footballQuoteFields(row: any) {
-  return {...recordNoteFields(row),quoteVersion: row.quoteVersion, sportsbook: row.sportsbook, sportsbookKey: row.sportsbookKey,
+  return {...recordNoteFields(row),quoteMarket:row.quoteMarket,quotePeriod:row.quotePeriod,sourceCategory:row.sourceCategory,sourcePeriod:row.sourcePeriod,quoteVersion: row.quoteVersion, sportsbook: row.sportsbook, sportsbookKey: row.sportsbookKey,
     overPrice: row.overPrice, underPrice: row.underPrice, quoteUpdatedAt: row.quoteUpdatedAt,
     lineType: row.lineType, quoteId: row.quoteId, quoteUrl: row.quoteUrl, capturedAt: row.capturedAt || row.savedAt};
 }

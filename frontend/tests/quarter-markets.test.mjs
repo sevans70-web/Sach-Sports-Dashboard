@@ -16,7 +16,7 @@ test('basketball period matching never leaks a full game, half or team total int
 });
 test('book-implied first basket and scaled Q1 estimates are not validated predictions',()=>{
  assert.equal(verified({marketBacked:true,prediction:'FIRST BASKET',modelProbability:12},'first_basket'),false);assert.equal(verified({marketBacked:false,prediction:'OVER',modelProjection:5,sportsbookLine:4.5},'q1_points'),false);assert.equal(verified({marketBacked:true,prediction:'OVER',modelProjection:5,sportsbookLine:4.5},'q1_points'),false);
- assert.equal(playerBaseline({pointsPerGame:24},'q1_points'),6);assert.equal(playerBaseline({pointsPerGame:null},'q1_points'),null);
+ assert.equal(playerBaseline({pointsPerGame:24},'q1_points'),null);assert.equal(playerBaseline({pointsPerGame:null},'q1_points'),null);
 });
 function payload(){return {header:{competitions:[{status:{period:2,type:{completed:false}},competitors:[{linescores:[{value:4}]},{linescores:[{value:3}]}]}]},plays:[
  {sequenceNumber:1,period:{number:1},text:'Alex One makes free throw 1 of 2',scoringPlay:true,scoreValue:1,homeScore:1,awayScore:0},

@@ -9,6 +9,7 @@ export function cfbPredictionProbability(
   line:number|null,
   marketProb:number|null
 ):number|null{
+  if(market.startsWith("q1_"))return null; // Quarter-specific model has not been validated.
   const marketP=marketProb!=null&&Number.isFinite(marketProb)
     ? clamp(marketProb/100,.05,.95)
     : .5;

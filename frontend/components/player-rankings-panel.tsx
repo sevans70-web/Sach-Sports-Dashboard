@@ -198,6 +198,7 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
     groups: [
       { key: "QB", label: "QB", icon: "🏈", markets: CFB_QB },
       { key: "Offense", label: "Offense", icon: "🏃", markets: CFB_OFFENSE },
+      { key: "Q1", label: "Q1", icon: "⏱️", markets: NFL_Q1 },
     ],
   },
   nba: {

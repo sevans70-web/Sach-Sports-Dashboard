@@ -1,3 +1,4 @@
+import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {retainPlayerHistory} from '@/lib/player-history-cloud';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {NextRequest,NextResponse} from "next/server";
@@ -65,6 +66,22 @@ function parseSeason(payload:any,season:number,market:CfbMarketKey){
 async function loadHistory(req:NextRequest,{params}:{params:Promise<{id:string}>}){
   const{id}=await params;
   const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as CfbMarketKey;
+  if(["q1_passing_yards","q1_rushing_yards","q1_receiving_yards"].includes(market)){
+    const base=market.slice(3) as CfbMarketKey;
+    const cutoff=Date.parse(req.nextUrl.searchParams.get('before')||new Date().toISOString());
+    const logs=await Promise.all([2025,2026].map(async season=>{try{return parseSeason(await fetchLog(id,season),season,base)}catch{return []}}));
+    const games=logs.flat().filter(p=>Date.parse(p.date)<cutoff).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-8);
+    const points=(await Promise.all(games.map(async game=>{
+      try{
+        const response=await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${encodeURIComponent(game.gameId)}`,{cache:'no-store',signal:AbortSignal.timeout(5000)});
+        if(!response.ok)return null;const payload=await response.json();
+        if(String(payload?.header?.id)!==String(game.gameId)||payload?.header?.competitions?.[0]?.status?.type?.completed!==true)return null;
+        const value=footballQuarterRows(payload).find(p=>p.playerId===id)?.stats[market];
+        return value==null?null:{...game,value,period:'q1',source:'Official play-by-play reconciled to boxscore'};
+      }catch{return null}
+    }))).filter(p=>p!=null);
+    return NextResponse.json({success:true,supported:true,points,statLabel:'First-quarter yards',message:points.length?'':'No complete, reconciled first-quarter history available.'});
+  }
   if(market==="first_td")return NextResponse.json({success:true,supported:false,points:[],statLabel:"First TD",message:"First TD does not have a reliable game-by-game stat series."});
   if(!STAT_KEYS[market])return NextResponse.json({success:true,supported:false,points:[],statLabel:"Player History",message:"This market does not have a reliable game-by-game history series."});
   const blocks=await Promise.all([2025,2026].map(async season=>{try{return parseSeason(await fetchLog(id,season),season,market)}catch{return []}}));

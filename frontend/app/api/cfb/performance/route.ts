@@ -1,3 +1,4 @@
+import {footballQuarterRows} from "@/lib/football-quarter-stats";
 import {guardPerformancePayload} from "@/lib/prop-integrity";
 import {reconcileOfficialGrade} from "@/lib/grade-reconciliation";
 import {footballSummaryStat} from "@/lib/football-history";
@@ -32,7 +33,8 @@ const LABELS:Record<CfbMarketKey,string[]>={
   receiving_yards:["receivingyards","receiving yards","rec yds"],
   receptions:["receptions","rec"],
   anytime_td:["totaltouchdowns","touchdowns","td"],
-  first_td:["first touchdown","firsttd"]
+  first_td:["first touchdown","firsttd"],
+  q1_passing_yards:[],q1_rushing_yards:[],q1_receiving_yards:[]
 };
 
 const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -110,7 +112,7 @@ function statIndex(labels:any[],market:CfbMarketKey){
   return -1;
 }
 
-function actualFromSummary(payload:any,market:CfbMarketKey,playerId:string,playerName:string){return footballSummaryStat(payload,market,playerId,playerName)}
+function actualFromSummary(payload:any,market:CfbMarketKey,playerId:string,playerName:string){return market.startsWith("q1_")?footballQuarterRows(payload).find(row=>row.playerId===String(playerId))?.stats[market]??null:footballSummaryStat(payload,market,playerId,playerName)}
 
 function firstTdResult(payload:any,playerName:string){
   const plays=Array.isArray(payload?.scoringPlays)?payload.scoringPlays:[];

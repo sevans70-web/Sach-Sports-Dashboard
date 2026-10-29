@@ -1,0 +1,1108 @@
+{
+  "generatedAt": "2026-10-29T19:33:12.559Z",
+  "note": "Read-only settlement coverage audit. Counts establish available reconciled observations, not independent model accuracy or proof that an unavailable provider quote exists.",
+  "sports": {
+    "nfl": {
+      "source": "model-research/2026-10-27/p01-matchup-saved-replay/official-responses.json.gz",
+      "sha256": "972819efcca59cc4a9c7943206f80e130841c9aee0eafb8153f74102ef332f59",
+      "completedFixtures": 13,
+      "games": [
+        {
+          "gameId": "401873009",
+          "counts": {
+            "passing_yards": {
+              "known": 10,
+              "unknown": 1
+            },
+            "rushing_yards": {
+              "known": 20,
+              "unknown": 0
+            },
+            "receiving_yards": {
+              "known": 19,
+              "unknown": 1
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "4685201",
+              "playerName": "Tanner McKee",
+              "quarter": 66,
+              "fullGame": 211,
+              "audit": {
+                "parsedYards": 211,
+                "officialYards": 211,
+                "parsedCount": 35,
+                "officialCount": 35,
+                "quarterCount": 7,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "2577417",
+              "playerName": "Dak Prescott",
+              "quarter": 0,
+              "fullGame": 8,
+              "audit": {
+                "parsedYards": 8,
+                "officialYards": 8,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4241389",
+              "playerName": "CeeDee Lamb",
+              "quarter": 9,
+              "fullGame": 74,
+              "audit": {
+                "parsedYards": 74,
+                "officialYards": 74,
+                "parsedCount": 5,
+                "officialCount": 5,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873011",
+          "counts": {
+            "passing_yards": {
+              "known": 0,
+              "unknown": 2
+            },
+            "rushing_yards": {
+              "known": 17,
+              "unknown": 1
+            },
+            "receiving_yards": {
+              "known": 15,
+              "unknown": 3
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "8439",
+              "playerName": "Aaron Rodgers",
+              "quarter": 0,
+              "fullGame": 6,
+              "audit": {
+                "parsedYards": 6,
+                "officialYards": 6,
+                "parsedCount": 3,
+                "officialCount": 3,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4569987",
+              "playerName": "Jaylen Warren",
+              "quarter": 10,
+              "fullGame": 36,
+              "audit": {
+                "parsedYards": 36,
+                "officialYards": 36,
+                "parsedCount": 3,
+                "officialCount": 3,
+                "quarterCount": 2,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873012",
+          "counts": {
+            "passing_yards": {
+              "known": 2,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 21,
+              "unknown": 0
+            },
+            "receiving_yards": {
+              "known": 21,
+              "unknown": 0
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "3915511",
+              "playerName": "Joe Burrow",
+              "quarter": 12,
+              "fullGame": 292,
+              "audit": {
+                "parsedYards": 292,
+                "officialYards": 292,
+                "parsedCount": 30,
+                "officialCount": 30,
+                "quarterCount": 6,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "3915511",
+              "playerName": "Joe Burrow",
+              "quarter": 9,
+              "fullGame": 12,
+              "audit": {
+                "parsedYards": 12,
+                "officialYards": 12,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4362238",
+              "playerName": "Chase Brown",
+              "quarter": 3,
+              "fullGame": 19,
+              "audit": {
+                "parsedYards": 19,
+                "officialYards": 19,
+                "parsedCount": 4,
+                "officialCount": 4,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873013",
+          "counts": {
+            "passing_yards": {
+              "known": 14,
+              "unknown": 2
+            },
+            "rushing_yards": {
+              "known": 14,
+              "unknown": 2
+            },
+            "receiving_yards": {
+              "known": 14,
+              "unknown": 2
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "3122840",
+              "playerName": "Deshaun Watson",
+              "quarter": 0,
+              "fullGame": 19,
+              "audit": {
+                "parsedYards": 19,
+                "officialYards": 19,
+                "parsedCount": 3,
+                "officialCount": 3,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4685702",
+              "playerName": "Quinshon Judkins",
+              "quarter": 0,
+              "fullGame": 8,
+              "audit": {
+                "parsedYards": 8,
+                "officialYards": 8,
+                "parsedCount": 1,
+                "officialCount": 1,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873014",
+          "counts": {
+            "passing_yards": {
+              "known": 2,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 20,
+              "unknown": 0
+            },
+            "receiving_yards": {
+              "known": 19,
+              "unknown": 1
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "3917792",
+              "playerName": "Daniel Jones",
+              "quarter": 25,
+              "fullGame": 108,
+              "audit": {
+                "parsedYards": 108,
+                "officialYards": 108,
+                "parsedCount": 22,
+                "officialCount": 22,
+                "quarterCount": 6,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "3917792",
+              "playerName": "Daniel Jones",
+              "quarter": 0,
+              "fullGame": 13,
+              "audit": {
+                "parsedYards": 13,
+                "officialYards": 13,
+                "parsedCount": 4,
+                "officialCount": 4,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4242335",
+              "playerName": "Jonathan Taylor",
+              "quarter": 0,
+              "fullGame": 15,
+              "audit": {
+                "parsedYards": 15,
+                "officialYards": 15,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873015",
+          "counts": {
+            "passing_yards": {
+              "known": 2,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 18,
+              "unknown": 1
+            },
+            "receiving_yards": {
+              "known": 19,
+              "unknown": 0
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "4242512",
+              "playerName": "Malik Willis",
+              "quarter": 84,
+              "fullGame": 208,
+              "audit": {
+                "parsedYards": 208,
+                "officialYards": 208,
+                "parsedCount": 21,
+                "officialCount": 21,
+                "quarterCount": 8,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "4242512",
+              "playerName": "Malik Willis",
+              "quarter": 12,
+              "fullGame": 37,
+              "audit": {
+                "parsedYards": 37,
+                "officialYards": 37,
+                "parsedCount": 8,
+                "officialCount": 8,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4569603",
+              "playerName": "Malik Washington",
+              "quarter": 22,
+              "fullGame": 27,
+              "audit": {
+                "parsedYards": 27,
+                "officialYards": 27,
+                "parsedCount": 3,
+                "officialCount": 3,
+                "quarterCount": 2,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873016",
+          "counts": {
+            "passing_yards": {
+              "known": 9,
+              "unknown": 2
+            },
+            "rushing_yards": {
+              "known": 16,
+              "unknown": 4
+            },
+            "receiving_yards": {
+              "known": 19,
+              "unknown": 1
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "4433970",
+              "playerName": "J.J. McCarthy",
+              "quarter": 0,
+              "fullGame": 1,
+              "audit": {
+                "parsedYards": 1,
+                "officialYards": 1,
+                "parsedCount": 1,
+                "officialCount": 1,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4040761",
+              "playerName": "Devin Singletary",
+              "quarter": 0,
+              "fullGame": 14,
+              "audit": {
+                "parsedYards": 14,
+                "officialYards": 14,
+                "parsedCount": 3,
+                "officialCount": 3,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873017",
+          "counts": {
+            "passing_yards": {
+              "known": 12,
+              "unknown": 2
+            },
+            "rushing_yards": {
+              "known": 17,
+              "unknown": 6
+            },
+            "receiving_yards": {
+              "known": 20,
+              "unknown": 3
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "4361741",
+              "playerName": "Brock Purdy",
+              "quarter": 0,
+              "fullGame": 5,
+              "audit": {
+                "parsedYards": 5,
+                "officialYards": 5,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4696044",
+              "playerName": "Kaelon Black",
+              "quarter": 0,
+              "fullGame": -4,
+              "audit": {
+                "parsedYards": -4,
+                "officialYards": -4,
+                "parsedCount": 1,
+                "officialCount": 1,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873018",
+          "counts": {
+            "passing_yards": {
+              "known": 10,
+              "unknown": 2
+            },
+            "rushing_yards": {
+              "known": 21,
+              "unknown": 2
+            },
+            "receiving_yards": {
+              "known": 21,
+              "unknown": 2
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "3052587",
+              "playerName": "Baker Mayfield",
+              "quarter": 23,
+              "fullGame": 64,
+              "audit": {
+                "parsedYards": 64,
+                "officialYards": 64,
+                "parsedCount": 11,
+                "officialCount": 11,
+                "quarterCount": 4,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "4371733",
+              "playerName": "Kenny Gainwell",
+              "quarter": 8,
+              "fullGame": 88,
+              "audit": {
+                "parsedYards": 88,
+                "officialYards": 88,
+                "parsedCount": 14,
+                "officialCount": 14,
+                "quarterCount": 4,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4608810",
+              "playerName": "Tez Johnson",
+              "quarter": 19,
+              "fullGame": 33,
+              "audit": {
+                "parsedYards": 33,
+                "officialYards": 33,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873019",
+          "counts": {
+            "passing_yards": {
+              "known": 2,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 15,
+              "unknown": 4
+            },
+            "receiving_yards": {
+              "known": 16,
+              "unknown": 3
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "4426338",
+              "playerName": "Bo Nix",
+              "quarter": 60,
+              "fullGame": 222,
+              "audit": {
+                "parsedYards": 222,
+                "officialYards": 222,
+                "parsedCount": 29,
+                "officialCount": 29,
+                "quarterCount": 12,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "4702555",
+              "playerName": "Jonah Coleman",
+              "quarter": 2,
+              "fullGame": 54,
+              "audit": {
+                "parsedYards": 54,
+                "officialYards": 54,
+                "parsedCount": 9,
+                "officialCount": 9,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4568490",
+              "playerName": "RJ Harvey",
+              "quarter": 0,
+              "fullGame": 54,
+              "audit": {
+                "parsedYards": 54,
+                "officialYards": 54,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873020",
+          "counts": {
+            "passing_yards": {
+              "known": 2,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 17,
+              "unknown": 3
+            },
+            "receiving_yards": {
+              "known": 19,
+              "unknown": 1
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "4036378",
+              "playerName": "Jordan Love",
+              "quarter": 122,
+              "fullGame": 274,
+              "audit": {
+                "parsedYards": 274,
+                "officialYards": 274,
+                "parsedCount": 45,
+                "officialCount": 45,
+                "quarterCount": 14,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "4047365",
+              "playerName": "Josh Jacobs",
+              "quarter": 5,
+              "fullGame": 36,
+              "audit": {
+                "parsedYards": 36,
+                "officialYards": 36,
+                "parsedCount": 11,
+                "officialCount": 11,
+                "quarterCount": 4,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4047365",
+              "playerName": "Josh Jacobs",
+              "quarter": 10,
+              "fullGame": 55,
+              "audit": {
+                "parsedYards": 55,
+                "officialYards": 55,
+                "parsedCount": 5,
+                "officialCount": 5,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873021",
+          "counts": {
+            "passing_yards": {
+              "known": 3,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 19,
+              "unknown": 2
+            },
+            "receiving_yards": {
+              "known": 21,
+              "unknown": 0
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "12483",
+              "playerName": "Matthew Stafford",
+              "quarter": 49,
+              "fullGame": 195,
+              "audit": {
+                "parsedYards": 195,
+                "officialYards": 195,
+                "parsedCount": 29,
+                "officialCount": 29,
+                "quarterCount": 8,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "12483",
+              "playerName": "Matthew Stafford",
+              "quarter": 0,
+              "fullGame": -3,
+              "audit": {
+                "parsedYards": -3,
+                "officialYards": -3,
+                "parsedCount": 3,
+                "officialCount": 3,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4430737",
+              "playerName": "Kyren Williams",
+              "quarter": 0,
+              "fullGame": 22,
+              "audit": {
+                "parsedYards": 22,
+                "officialYards": 22,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        },
+        {
+          "gameId": "401873022",
+          "counts": {
+            "passing_yards": {
+              "known": 11,
+              "unknown": 0
+            },
+            "rushing_yards": {
+              "known": 17,
+              "unknown": 3
+            },
+            "receiving_yards": {
+              "known": 20,
+              "unknown": 0
+            }
+          },
+          "examples": [
+            {
+              "market": "q1_passing_yards",
+              "playerId": "3139477",
+              "playerName": "Patrick Mahomes",
+              "quarter": 58,
+              "fullGame": 165,
+              "audit": {
+                "parsedYards": 165,
+                "officialYards": 165,
+                "parsedCount": 33,
+                "officialCount": 33,
+                "quarterCount": 8,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_rushing_yards",
+              "playerId": "3139477",
+              "playerName": "Patrick Mahomes",
+              "quarter": 0,
+              "fullGame": 14,
+              "audit": {
+                "parsedYards": 14,
+                "officialYards": 14,
+                "parsedCount": 2,
+                "officialCount": 2,
+                "quarterCount": 0,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            },
+            {
+              "market": "q1_receiving_yards",
+              "playerId": "4567048",
+              "playerName": "Kenneth Walker III",
+              "quarter": 6,
+              "fullGame": 21,
+              "audit": {
+                "parsedYards": 21,
+                "officialYards": 21,
+                "parsedCount": 4,
+                "officialCount": 4,
+                "quarterCount": 1,
+                "complete": true,
+                "ambiguousYardage": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "cfb": {
+      "source": "docs/n05-quarter-coverage/cfb-official-finals.json.gz",
+      "sha256": "4d231f75cef192e88fe17a31379cc04ee4aae5122caf0e8c9002362e09b5d26b",
+      "completedFixtures": 3,
+      "games": [
+        {
+          "gameId": "401858274",
+          "counts": {
+            "passing_yards": {
+              "known": 25,
+              "unknown": 3
+            },
+            "rushing_yards": {
+              "known": 17,
+              "unknown": 11
+            },
+            "receiving_yards": {
+              "known": 9,
+              "unknown": 19
+            }
+          },
+          "examples": []
+        },
+        {
+          "gameId": "401856835",
+          "counts": {
+            "passing_yards": {
+              "known": 19,
+              "unknown": 3
+            },
+            "rushing_yards": {
+              "known": 10,
+              "unknown": 12
+            },
+            "receiving_yards": {
+              "known": 7,
+              "unknown": 15
+            }
+          },
+          "examples": []
+        },
+        {
+          "gameId": "401858496",
+          "counts": {
+            "passing_yards": {
+              "known": 17,
+              "unknown": 2
+            },
+            "rushing_yards": {
+              "known": 11,
+              "unknown": 8
+            },
+            "receiving_yards": {
+              "known": 7,
+              "unknown": 12
+            }
+          },
+          "examples": []
+        }
+      ]
+    },
+    "nba": {
+      "source": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "sha256": "7b23069a9e316e141ea9f58821ed9fab51595ae899f072ccdf93728dc838e6da",
+      "completedFixtures": 11,
+      "games": [
+        {
+          "gameId": "401909889",
+          "counts": {
+            "q1_points": {
+              "known": 18
+            },
+            "q1_rebounds": {
+              "known": 18
+            },
+            "q1_assists": {
+              "known": 18
+            },
+            "q1_threes_made": {
+              "known": 18
+            },
+            "q1_pts_rebs_asts": {
+              "known": 18
+            }
+          }
+        },
+        {
+          "gameId": "401909881",
+          "counts": {
+            "q1_points": {
+              "known": 18
+            },
+            "q1_rebounds": {
+              "known": 18
+            },
+            "q1_assists": {
+              "known": 18
+            },
+            "q1_threes_made": {
+              "known": 18
+            },
+            "q1_pts_rebs_asts": {
+              "known": 18
+            }
+          }
+        },
+        {
+          "gameId": "401909882",
+          "counts": {
+            "q1_points": {
+              "known": 16
+            },
+            "q1_rebounds": {
+              "known": 16
+            },
+            "q1_assists": {
+              "known": 16
+            },
+            "q1_threes_made": {
+              "known": 16
+            },
+            "q1_pts_rebs_asts": {
+              "known": 16
+            }
+          }
+        },
+        {
+          "gameId": "401909890",
+          "counts": {
+            "q1_points": {
+              "known": 18
+            },
+            "q1_rebounds": {
+              "known": 18
+            },
+            "q1_assists": {
+              "known": 18
+            },
+            "q1_threes_made": {
+              "known": 18
+            },
+            "q1_pts_rebs_asts": {
+              "known": 18
+            }
+          }
+        },
+        {
+          "gameId": "401909888",
+          "counts": {
+            "q1_points": {
+              "known": 19
+            },
+            "q1_rebounds": {
+              "known": 19
+            },
+            "q1_assists": {
+              "known": 19
+            },
+            "q1_threes_made": {
+              "known": 19
+            },
+            "q1_pts_rebs_asts": {
+              "known": 19
+            }
+          }
+        },
+        {
+          "gameId": "401909886",
+          "counts": {
+            "q1_points": {
+              "known": 19
+            },
+            "q1_rebounds": {
+              "known": 19
+            },
+            "q1_assists": {
+              "known": 19
+            },
+            "q1_threes_made": {
+              "known": 19
+            },
+            "q1_pts_rebs_asts": {
+              "known": 19
+            }
+          }
+        },
+        {
+          "gameId": "401909885",
+          "counts": {
+            "q1_points": {
+              "known": 18
+            },
+            "q1_rebounds": {
+              "known": 18
+            },
+            "q1_assists": {
+              "known": 18
+            },
+            "q1_threes_made": {
+              "known": 18
+            },
+            "q1_pts_rebs_asts": {
+              "known": 18
+            }
+          }
+        },
+        {
+          "gameId": "401909884",
+          "counts": {
+            "q1_points": {
+              "known": 20
+            },
+            "q1_rebounds": {
+              "known": 20
+            },
+            "q1_assists": {
+              "known": 20
+            },
+            "q1_threes_made": {
+              "known": 20
+            },
+            "q1_pts_rebs_asts": {
+              "known": 20
+            }
+          }
+        },
+        {
+          "gameId": "401909883",
+          "counts": {
+            "q1_points": {
+              "known": 18
+            },
+            "q1_rebounds": {
+              "known": 18
+            },
+            "q1_assists": {
+              "known": 18
+            },
+            "q1_threes_made": {
+              "known": 18
+            },
+            "q1_pts_rebs_asts": {
+              "known": 18
+            }
+          }
+        },
+        {
+          "gameId": "401909891",
+          "counts": {
+            "q1_points": {
+              "known": 18
+            },
+            "q1_rebounds": {
+              "known": 18
+            },
+            "q1_assists": {
+              "known": 18
+            },
+            "q1_threes_made": {
+              "known": 18
+            },
+            "q1_pts_rebs_asts": {
+              "known": 18
+            }
+          }
+        },
+        {
+          "gameId": "401909887",
+          "counts": {
+            "q1_points": {
+              "known": 19
+            },
+            "q1_rebounds": {
+              "known": 19
+            },
+            "q1_assists": {
+              "known": 19
+            },
+            "q1_threes_made": {
+              "known": 19
+            },
+            "q1_pts_rebs_asts": {
+              "known": 19
+            }
+          }
+        }
+      ]
+    }
+  }
+}

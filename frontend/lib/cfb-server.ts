@@ -1,3 +1,4 @@
+import {getOwlsCfbRows} from "@/lib/cfb-owls";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { CFB_MARKETS, type CfbMarketKey, type CfbRankingRow, type CfbRosterPlayer, cleanName, safeNumber } from "@/lib/cfb";
 
@@ -9,7 +10,7 @@ const ESPN_ATHLETE="https://site.web.api.espn.com/apis/common/v3/sports/football
 const ODDS_BASE="https://api.the-odds-api.com/v4";
 const ODDS_SPORT="americanfootball_ncaaf";
 
-const ODDS_MARKETS:Record<CfbMarketKey,string>={
+const ODDS_MARKETS:Partial<Record<CfbMarketKey,string>>={
   passing_yards:"player_pass_yds",
   pass_completions:"player_pass_completions",
   rushing_yards:"player_rush_yds",
@@ -26,6 +27,7 @@ const SGO_STATS:Record<CfbMarketKey,string[]>={
   receiving_yards:["receiving_yards","receivingYards","receiving yards","reception_yards","receptionYards","player_reception_yds"],
   receptions:["receptions","receiving_receptions","receivingReceptions","player_receptions"],
   anytime_td:["touchdowns","anytimeTouchdown","anytime_touchdown","anytime td","anytime_td","player_anytime_td"],
+  q1_passing_yards:[],q1_rushing_yards:[],q1_receiving_yards:[],
   first_td:["firstTouchdownScorer","first_touchdown_scorer","firstTouchdown","first_touchdown","first td","first_td","player_1st_td"],
 };
 
@@ -62,6 +64,7 @@ const LEADER_ALIASES:Record<CfbMarketKey,string[]>={
   receiving_yards:["receivingyards","receiving yards"],
   receptions:["receptions"],
   anytime_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
+  q1_passing_yards:[],q1_rushing_yards:[],q1_receiving_yards:[],
   first_td:["totaltouchdowns","touchdowns","rushingtouchdowns","receivingtouchdowns"],
 };
 
@@ -149,6 +152,7 @@ function sgoMatchup(e:any){
 }
 
 export async function getCfbMarketRows(market:CfbMarketKey){
+  if(market.startsWith("q1_"))return getOwlsCfbRows(market);
   const sgoKey=process.env.SPORTSGAMEODDS_API_KEY||process.env.SPORTS_GAME_ODDS_API_KEY||process.env.SPORTSGAMEODDS_KEY;
   if(sgoKey){
     try{
@@ -345,6 +349,7 @@ function findMatchupForTeam(schedule:any[],teamName:string,teamId?:string){
 }
 
 export async function getCfbRankings(market:CfbMarketKey,knownMarketRows?:any[]):Promise<CfbRankingRow[]>{
+  if(market.startsWith("q1_"))return []; // No full-game leader/model fallback for quarters.
   const marketRows=knownMarketRows??await getCfbMarketRows(market);
   const out:CfbRankingRow[]=[];
   for(const r of marketRows.slice(0,50)){

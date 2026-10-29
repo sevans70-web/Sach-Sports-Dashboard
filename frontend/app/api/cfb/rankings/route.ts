@@ -1,3 +1,4 @@
+import {footballRowsForMarket} from "@/lib/football-quarter-stats";
 import {publishFeaturedBoards} from '@/lib/research-capture';
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
@@ -175,6 +176,7 @@ async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:an
 }
 
 async function marketRows(market:CfbMarketKey){
+  if(market.startsWith("q1_"))return timeout(getOwlsCfbRows(market),8000,[]);
   try{
     const rows=await timeout(getOwlsCfbRows(market),4000,[]);
     if(rows.length)return rows;
@@ -199,7 +201,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   const [initialRaw,schedule]=await Promise.all([marketRows(market),timeout(getEspnCfbSchedule(),5000,[])]);
   const today=day(new Date());
   let raw=initialRaw;
-  const earlyMode=raw.length===0||raw.every((r:any)=>r.earlyModel);
+  const earlyMode=!market.startsWith("q1_")&&(raw.length===0||raw.every((r:any)=>r.earlyModel));
   if(earlyMode){
     const supplement=await timeout(rosterFallbackRows(market,schedule,raw),6500,[]);
     raw=[...raw,...supplement];
@@ -229,12 +231,13 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     const rankingProbability=probability??row.prob??earlyConfidence??50;
     return {
       ...footballQuoteFields(row),
+      gameId:String(footballQuoteGame(row,schedule)?.id||""),market,
       rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,
       teamName:profile.teamName||row.teamName||"CFB",teamId:profile.teamId,position:profile.position,
       headshot:profile.headshot,teamLogo:profile.teamLogo,matchup:row.matchup,
       gameTime:rowGameTime(row,schedule)||row.gameTime,
       giScore:cfbGiScore(rankingProbability,row.bookmakerCount||0,m.games),
-      modelProbability:probability??earlyConfidence??rankingProbability,sportsbookLine:row.line,
+      modelProbability:market.startsWith("q1_")?null:probability??earlyConfidence??rankingProbability,sportsbookLine:row.line,
       sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount||0,
       perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,
       seasonTotal:null,gamesPlayed:m.games,season:2026,
@@ -247,6 +250,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
 
   const validEnriched=enriched.filter((row): row is NonNullable<typeof row>=>{
     if(!row)return false;
+    if(market.startsWith("q1_"))return row.quoteVersion===1&&Boolean(row.gameId)&&row.sportsbookLine!=null;
     const value=Number(row.modelProjection);
     return row.modelProjection!=null&&Number.isFinite(value)&&value>=0;
   });
@@ -355,6 +359,22 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     return p?{...r,resultStatus:p.status,actualResult:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅":p.status==="miss"?"❌":p.status==="push"?"➖":p.status==="void"?"VOID":""}:r;
   });
 
+  // The quarter parser reconciles its tape with the official box score. Missing
+  // or truncated tape stays unknown, never a full-game total or an assumed zero.
+  if(market.startsWith("q1_")){
+    const summaries=new Map<string,Promise<any>>();
+    await Promise.all(withResults.map(async(row:any)=>{
+      const game=schedule.find((g:any)=>String(g.id)===String(row.gameId));
+      row.quarterObservationChecked=true;row.observedQuarterValue=null;row.liveCurrent=null;
+      row.gameState=game?.state||"pre";row.gameStatus=game?.status||"";
+      if(!game||!["in","post"].includes(game.state))return;
+      if(!summaries.has(row.gameId))summaries.set(row.gameId,fetchJson(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${encodeURIComponent(row.gameId)}`,5000).catch(()=>null));
+      const payload=await summaries.get(row.gameId);
+      if(String(payload?.header?.id||payload?.header?.competitions?.[0]?.id||"")!==String(row.gameId))return;
+      row.observedQuarterValue=footballRowsForMarket(payload,market).find(p=>p.playerId===row.playerId)?.stats[market]??null;
+      row.liveCurrent=row.observedQuarterValue;
+    }));
+  }
   const hasEarlyModel=withResults.some((row:any)=>!row.marketBacked);
   return {success:true,source:hasEarlyModel?"Sach Model + ESPN":"Owls Insight",market,rows:withResults,dropped,sportsbookOnly:!hasEarlyModel,validRankingCount:withResults.length,updatedAt:new Date().toISOString()};
 }

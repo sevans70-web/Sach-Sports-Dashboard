@@ -18,7 +18,12 @@ export function basketballQ1Actual(payload:any,p:{playerId?:string;playerName?:s
  });
  const scored=plays.reduce((n,x)=>n+(x.scoringPlay===true?Number(x.scoreValue)||0:0),0);
  if(scores.length!==2||scores.some((x:number)=>!Number.isFinite(x))||scores.reduce((a:number,b:number)=>a+b,0)!==scored||!plays.length)return null;
- const name=String(p.playerName||"");if(!name)return null;
+ const athletes=(payload?.boxscore?.players||[]).flatMap((team:any)=>(team.statistics||[]).flatMap((group:any)=>group.athletes||[]));
+ const exact=p.playerId?athletes.find((a:any)=>String(a.athlete?.id)===String(p.playerId)):null;
+ if(p.playerId&&athletes.length&&(!exact||exact.didNotPlay===true))return null;
+ const name=String(exact?.athlete?.displayName||exact?.athlete?.fullName||p.playerName||"");if(!name)return null;
+ const identities=new Set(athletes.filter((a:any)=>clean(a.athlete?.displayName||a.athlete?.fullName)===clean(name)).map((a:any)=>String(a.athlete?.id)));
+ if(identities.size>1)return null; // Text-only play attribution cannot disambiguate names.
  const starter=Boolean(p.playerId&&(payload?.boxscore?.players||[]).some((team:any)=>(team.statistics||[]).some((group:any)=>(group.athletes||[]).some((a:any)=>String(a.athlete?.id)===String(p.playerId)&&a.starter===true&&a.didNotPlay!==true))));
  let points=0,rebounds=0,assists=0,threes=0,participated=starter;
  for(const play of plays){

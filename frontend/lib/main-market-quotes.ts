@@ -11,13 +11,13 @@ export function mainMarketQuotes(payload:any,market:string,matches:(prop:any)=>b
         // Count-stat markets use whole/half thresholds. An aggregate such as
         // 8.8 points must not masquerade as an executable main-market quote.
         return Number.isFinite(line)&&line>=0&&Number.isInteger(line*2);
-      }).map((p:any)=>({...p,category:market})),
+      }).map((p:any)=>({...p,sourceCategory:p.category??p.market??p.statID??p.type,sourcePeriod:p.periodID??p.periodId??p.period??p.periodName??"",category:market})),
     })),
   }));
   // FIRST BASKET is a one-sided scorer quote, not an over/under threshold.
   const scorer=market==="first_basket";
   return footballBookRows({data},scorer?"first_td":market,[market]).map(row=>({...row,
-    playerTeam:row.teamName.toUpperCase(),bookProbability:row.prob,...footballQuoteFields(row)}));
+    playerTeam:row.teamName.toUpperCase(),bookProbability:row.prob,...footballQuoteFields(row),quoteMarket:market}));
 }
 
 export function quoteMatchesFixture(quote:any,game:any,toleranceMs=5*60_000){
