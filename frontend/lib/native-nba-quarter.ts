@@ -11,7 +11,9 @@ export function nativeNbaQuarterRows(payload:any,readAt:number,overview:any,mark
  const events=new Map<string,any>(),markets:any[]=[],stack=[{v:payload?.data,d:0}];let count=0;
  while(stack.length&&count++<100000){const {v,d}=stack.pop()!;if(!v||typeof v!=='object'||d>16)continue;
   if(v.eventId&&v.openDate&&v.name&&!v.marketType)events.set(String(v.eventId),v);
-  if(typeof v.marketType==='string'&&v.marketStatus==='OPEN')markets.push(v);
+  // A market is a leaf for discovery. Its runner/price tree is read below;
+  // descending through it here exhausted the scan budget before later games.
+  if(typeof v.marketType==='string'){if(v.marketStatus==='OPEN')markets.push(v);continue;}
   for(const x of Object.values(v))if(x&&typeof x==='object')stack.push({v:x,d:d+1});
  }
  const rows:any[]=[];

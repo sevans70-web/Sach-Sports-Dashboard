@@ -16,4 +16,8 @@ NFL live lookup confirmed15 genuine quarter quotes across passing(2),rushing(3),
 
 ## Validation
 
-Native parser regressions cover exact pair prices, identity/fixture binding, stale/suspended/wrong-period feeds, missing/mismatched pairs, each supported milestone, stable deduplication, exact-target history and public quote-only cards. Full suite458tests and production build pass before release. Independent official-quarter parser regressions remain in the suite. Production row counts and browser verification belong in the completion tracker after exact deployment READY; no prospective accuracy claim follows from displaying quotes.
+Native parser regressions cover exact pair prices, identity/fixture binding, stale/suspended/wrong-period feeds, missing/mismatched pairs, each supported milestone, stable deduplication, exact-target history and public quote-only cards. Full suite459tests and production build pass before release. Independent official-quarter parser regressions remain in the suite. Production row counts and browser verification belong in the completion tracker after exact deployment READY; no prospective accuracy claim follows from displaying quotes.
+
+## Complete native traversal
+
+The initial diagnostic hit its100,000-node scan bound while descending through runner price trees. Quarter discovery now treats every market object as a leaf, then reads only its relevant runners in the translation pass. This prevents unrelated full-game runner trees from consuming the discovery budget before later fixture markets. A regression with over100,000 unrelated nested runners verifies that a later relevant quote remains discoverable. The source-discovery snapshot's `truncated:true` is retained as evidence of this finding, not an all-source coverage claim.

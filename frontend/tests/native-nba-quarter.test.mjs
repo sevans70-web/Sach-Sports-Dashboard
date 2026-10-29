@@ -33,3 +33,7 @@ test('authentic quarter quote cards remain public with no model or selection; in
  const [row]=rows(payload([main]),now,overview,'q1_points',now);const guarded=integrityRow(row,'nba','q1_points',now);assert.equal(guarded.quoteVerified,true);assert.equal(guarded.modelProjection,null);assert.equal(guarded.recommendationEligible,false);assert.equal(publicNbaRanking(guarded,now),true);
  assert.equal(publicNbaRanking({...guarded,quoteVersion:0},now),false);assert.equal(publicNbaRanking({...guarded,withdrawnFromBoard:true},now),false);
 });
+test('large unrelated runner trees do not exhaust discovery before another fixture market',()=>{
+ const irrelevant={...main,marketId:'unrelated',marketType:'FULL_GAME_TEAM_TOTAL',runners:Array.from({length:100100},()=>({nested:{unneeded:1}}))};
+ const result=rows(payload([main,irrelevant]),now,overview,'q1_points',now);assert.equal(result.length,1);assert.equal(result[0].sportsbookLine,2.5);
+});
