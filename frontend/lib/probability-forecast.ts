@@ -165,7 +165,8 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
 /** Fixed 65%/35% chronological split of PRIOR-season feature dates for fitting
  * and calibration; later season retained for diagnostic evaluation. The later
  * season has already been inspected for v1, so it is NOT a fresh holdout. */
-export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context';pointPolicy?:'direct';participation?:'played'}={}){
+export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context';pointPolicy?:'direct';participation?:'played';evaluationSeason?:string}={}){
+ if(options.evaluationSeason!=null&&!/^\d{4}(\d{4})?$/.test(options.evaluationSeason))throw Error('Unsupported evaluation season');
  if(options.pointPolicy!=null&&options.pointPolicy!=='direct')throw Error('Unsupported point policy');
  if(options.calibration!=null&&!['pooled','workload'].includes(options.calibration))throw Error('Unsupported calibration policy');
  if(options.participation!=null&&options.participation!=='played')throw Error('Unsupported participation policy');
@@ -179,7 +180,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
  const all=materialize(games,options.featurePolicy).filter(r=>options.participation!=='played'||r.game.workload>0),groups=[...new Set(games.map(groupOf))].sort(),models:DistributionModel[]=[],reports=[];
  const quoteMap=new Map<string,ExactQuote>();for(const q of quotes){const key=[q.sport,q.market,q.playerId,q.gameId].join('|');if(quoteMap.has(key))throw Error('Multiple selected quotes '+key);quoteMap.set(key,q)}
  for(const group of groups){
-  const [sport,market]=group.split('|'),testSeason=sport==='nhl'?'20252026':'2026';
+  const [sport,market]=group.split('|'),testSeason=options.evaluationSeason||(sport==='nhl'?'20252026':'2026');
   const source=games.filter(g=>groupOf(g)===group),rows=all.filter(r=>groupOf(r.game)===group);
   const prior=rows.filter(r=>r.game.season<testSeason).sort((a,b)=>a.game.gameTime.localeCompare(b.game.gameTime));
   const test=rows.filter(r=>r.game.season===testSeason),dates=[...new Set(prior.map(r=>r.game.gameTime))].sort();

@@ -1,0 +1,5 @@
+# P01 later-season full-population refit — not promoted
+
+See sibling ../2026-10-29-p01-nba-full-history/README.md for source recovery,comparison and limitations. This candidate changes the research evaluation season to2027:prior2025/2026 observations only are available for fitting and residual calibration,with chronological65/35 split and48h embargo. Targets in2027are never used in fitting. Full positive-minute population:26385training rows,13962calibration rows. Saved-line comparison194paired points targets:candidate95hits vs savedoriginal96/runtime94. This does not improve direction accuracy. Candidate Brier0.28590 remains above constant0.5benchmark0.25. No runtime promotion or independent-validation claim.
+
+Reproduce via scripts/evaluate-p01-nba-nextseason.mjs with NEW output directory and full immutable observation gzip path,then copy the fixed saved-line accuracy-audit.json.gz and run scripts/replay-p01-nba-nextseason.mjs. Exact source and model digests retained. A second fit reproduces all coefficients and residuals.429tests+clean build pass. Prospective cohorts and original historical records unchanged.

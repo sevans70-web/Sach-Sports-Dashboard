@@ -1,0 +1,199 @@
+{
+  "createdAt": "2026-10-29T14:57:25.309Z",
+  "fullSourceObservations": 372468,
+  "fullSourceFixtures": 2469,
+  "pointsObservations": 62078,
+  "fullSourceSha256": "b4593fb5a9bb910365d40281e62db26cfc03407970774a0c6d707602b90112c4",
+  "sourceArchiveLibraryId": "libfile_edaba80604188191800d87be8af125d9",
+  "sourceArchiveSha256": "0186bd9424db69ed93862b686e585936e05a3f80bfb14cf97ef330a195f02375",
+  "savedLineResults": {
+    "full_population_conditioning": {
+      "reports": [
+        {
+          "market": "points",
+          "paired": 194,
+          "baseline": {
+            "calls": 194,
+            "hits": 94,
+            "brier": 0.2997978768005385
+          },
+          "candidate": {
+            "calls": 194,
+            "hits": 96,
+            "brier": 0.2885974038103069
+          }
+        }
+      ],
+      "baselineTrainingRows": 13453,
+      "candidateTrainingRows": 12168,
+      "candidateCalibrationRows": 6804
+    },
+    "nextseason_refit": {
+      "reports": [
+        {
+          "market": "points",
+          "paired": 194,
+          "baseline": {
+            "calls": 194,
+            "hits": 94,
+            "brier": 0.2997978768005385
+          },
+          "candidate": {
+            "calls": 194,
+            "hits": 95,
+            "brier": 0.28589562318172684
+          }
+        }
+      ],
+      "baselineTrainingRows": 29171,
+      "candidateTrainingRows": 26385,
+      "candidateCalibrationRows": 13962
+    }
+  },
+  "empiricalResults": {
+    "reports": [
+      {
+        "policy": "original",
+        "paired": 194,
+        "calls": 194,
+        "hits": 96,
+        "brier": 0.2971578482414821,
+        "sides": [
+          {
+            "side": "OVER",
+            "calls": 67,
+            "hits": 39,
+            "meanConfidence": 0.677656493651147,
+            "atLeast80": {
+              "calls": 9,
+              "hits": 5
+            }
+          },
+          {
+            "side": "UNDER",
+            "calls": 127,
+            "hits": 57,
+            "meanConfidence": 0.7033337250754099,
+            "atLeast80": {
+              "calls": 23,
+              "hits": 10
+            }
+          }
+        ]
+      },
+      {
+        "policy": "baseline",
+        "paired": 194,
+        "calls": 194,
+        "hits": 94,
+        "brier": 0.2997978768005385,
+        "sides": [
+          {
+            "side": "OVER",
+            "calls": 69,
+            "hits": 39,
+            "meanConfidence": 0.6963732064316097,
+            "atLeast80": {
+              "calls": 12,
+              "hits": 8
+            }
+          },
+          {
+            "side": "UNDER",
+            "calls": 125,
+            "hits": 55,
+            "meanConfidence": 0.7003383084577113,
+            "atLeast80": {
+              "calls": 23,
+              "hits": 9
+            }
+          }
+        ]
+      },
+      {
+        "policy": "candidate",
+        "paired": 194,
+        "calls": 194,
+        "hits": 96,
+        "brier": 0.2885974038103069,
+        "sides": [
+          {
+            "side": "OVER",
+            "calls": 71,
+            "hits": 41,
+            "meanConfidence": 0.7079391773526729,
+            "atLeast80": {
+              "calls": 14,
+              "hits": 10
+            }
+          },
+          {
+            "side": "UNDER",
+            "calls": 123,
+            "hits": 55,
+            "meanConfidence": 0.684706548558023,
+            "atLeast80": {
+              "calls": 15,
+              "hits": 6
+            }
+          }
+        ]
+      },
+      {
+        "policy": "empirical",
+        "paired": 194,
+        "calls": 181,
+        "hits": 97,
+        "brier": 0.2729120543594806,
+        "sides": [
+          {
+            "side": "OVER",
+            "calls": 115,
+            "hits": 68,
+            "meanConfidence": 0.6395799426489966,
+            "atLeast80": {
+              "calls": 5,
+              "hits": 2
+            }
+          },
+          {
+            "side": "UNDER",
+            "calls": 66,
+            "hits": 29,
+            "meanConfidence": 0.659462507699148,
+            "atLeast80": {
+              "calls": 9,
+              "hits": 3
+            }
+          }
+        ]
+      }
+    ],
+    "commonNonTiedCalls": 181,
+    "originalHitsOnCommonCalls": 90,
+    "runtimeHitsOnCommonCalls": 88,
+    "empiricalHitsOnCommonCalls": 97,
+    "tiedCalls": 13,
+    "pairedBrierImprovementVsBaseline": {
+      "clusters": 54,
+      "replicates": 1000,
+      "lower95": 0.002155682991320431,
+      "upper95": 0.05024371524208791
+    },
+    "pairedDirectionImprovementVsBaseline": {
+      "clusters": 53,
+      "replicates": 1000,
+      "lower95": -0.017142857142857144,
+      "upper95": 0.12060301507537688
+    }
+  },
+  "limitations": [
+    "Retrospective inspected saved outcomes;multiple candidate development attempts,not independent validation.",
+    "No candidate promoted;UNDER accuracy remains weak.",
+    "Development MAE/CRPS raw baseline/candidate populations differ because candidate omits DNP targets;do not interpret their difference as paired improvement.",
+    "All exact-line comparisons use same paired historical targets;empirical13ties are reported separately and comparisons use181common calls.",
+    "Historicalstatistical outcomes alone do not supply exact sportsbook lines;194points quotes remain the line-direction sample.",
+    "No expected ROI verification or all-sport completion."
+  ],
+  "livePromotion": false
+}

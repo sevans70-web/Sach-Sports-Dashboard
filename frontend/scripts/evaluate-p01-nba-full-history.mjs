@@ -1,0 +1,15 @@
+import{readFile,writeFile,mkdir}from'node:fs/promises';import{gunzipSync,gzipSync}from'node:zlib';import{createHash}from'node:crypto';import{loadTs}from'../tests/load-ts.mjs';
+const out=process.argv[2];if(!out)throw Error('NEW output directory required');await mkdir(out,{recursive:false});
+const sourcePath=process.argv[3];if(!sourcePath)throw Error('Full immutable observation source path required');
+const bytes=await readFile(sourcePath),sha=createHash('sha256').update(bytes).digest('hex'),source={observations:JSON.parse(gunzipSync(bytes))};if(sha!=='b4593fb5a9bb910365d40281e62db26cfc03407970774a0c6d707602b90112c4')throw Error('Full source hash mismatch');
+const protocol={createdAt:new Date().toISOString(),study:'p01-nba-full-history-played-development-v1',sourceSha256:sha,policy:'Compare separate workload-times-rate against participation-conditioned minutes-times-rate regression using identical archived observations,features,chronological split and workload-conditioned residual calibration. Fixed ridge and feature policy from existing evaluator; no tuning on diagnostic outcomes.',scope:'NBA points only from the full frozen population. No archived probabilities or grades altered.',limitations:['Full immutable NBA source:372468 observations/2469 games;points-only candidate fixes the prior subset-fitting mismatch.','Later-season outcomes have been inspected before: retrospective development, not untouched validation.','No exact sportsbook quotes in this input: no direction hit-rate, no-vig, EV or ROI certification.','Official source revisions and no archived pregame injury vintages; conservative 48h result lag.','This tests point/distribution error; no live promotion or all-eight-sport accuracy claim.'],livePromotion:false};await writeFile(out+'/protocol.json',JSON.stringify(protocol,null,2)+'\n');
+const{evaluateProbabilityModels:evaluate}=await loadTs(new URL('../lib/probability-forecast.ts',import.meta.url));const reports=[],models=[];
+for(const market of ['points']){
+ const rows=source.observations.filter(r=>r.sport==='nba'&&r.market===market);
+ const options={featurePolicy:'basketball_context',calibration:'workload'};
+ const baseline=evaluate(rows,[],options),candidate=evaluate(rows,[],{...options,participation:'played'});
+ reports.push({market,sourceRows:rows.length,baseline:baseline.reports[0],candidate:candidate.reports[0]});models.push(...candidate.models);
+ await writeFile(out+'/development-report.json',JSON.stringify({protocol,reports},null,2)+'\n');console.log(JSON.stringify({market,baselineMae:baseline.reports[0].mae,candidateMae:candidate.reports[0].mae,baselineCrps:baseline.reports[0].crps,candidateCrps:candidate.reports[0].crps}));
+}
+await writeFile(out+'/candidate-models.json.gz',gzipSync(JSON.stringify({modelId:'nba-full-history-points-played-research-v1',protocol,models}),{level:9}));
+const files={};for(const f of ['protocol.json','development-report.json','candidate-models.json.gz'])files[f]=createHash('sha256').update(await readFile(out+'/'+f)).digest('hex');await writeFile(out+'/receipt.json',JSON.stringify({sourceSha256:sha,files},null,2)+'\n');

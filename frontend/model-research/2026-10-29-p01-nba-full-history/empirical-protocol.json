@@ -1,0 +1,12 @@
+{
+  "createdAt": "2026-10-29T14:57:25.309Z",
+  "study": "p01-nba-points-empirical30-beta2-retrospective-v1",
+  "policy": "Fixed nonparametric comparator:most recent30 positive-minute points observations in prior365days,minimum10;48h availability lag. Beta(2,2) smoothing on conditional exact-line OVER frequency. No scaling,model fitting,outcome threshold tuning,side flipping or50/50 selection quota. Existing baseline eligible-input gate retained.",
+  "limitations": [
+    "Saved outcomes already inspected;retrospective model development,not independent validation.",
+    "Empirical player outcomes omit pregame injury/rotation/opponent changes;not a validated recommendation.",
+    "DNP omitted only from outcome sample;original lagged role gating retains full participation history.",
+    "Probabilities exclude empirical pushes from conditional win frequency. Exact sportsbook prices unavailable;no ROI claim."
+  ],
+  "livePromotion": false
+}

@@ -1,0 +1,16 @@
+{
+  "sourceSha256": "b4593fb5a9bb910365d40281e62db26cfc03407970774a0c6d707602b90112c4",
+  "files": {
+    "README.md": "519b31ff04987b3c47f166b8a29caff80ea149762131f938755946ec11fa5d25",
+    "saved-line-diagnostic.json.gz": "f1f4ea2c01dd71fc022f94e3ed056de45b9ca62a0cf34b47d1475723f52b50eb",
+    "development-report.json": "e32cdbf2721b28b68c86e3bd50d14fa1e3c89850291169ca9efe30f0f827032d",
+    "accuracy-audit.json.gz": "c48f643cbd0bda79cae00d59026130f5ff2d98dab6465c9226966af81b0c35e3",
+    "full-history-summary.json": "510860ef90394340cf38a01c0d9ba52cb6b457030e6d2b853d54272c9f0e0e78",
+    "empirical-protocol.json": "19235fb6f0a480a9d35d44e16256eed6cf0babedcb35c4d522130824ebd2e1f0",
+    "empirical-report.json.gz": "a0148663817a6042f5f37107a1c5947b57fcbe09fb20a22fb19179f9e2d87b06",
+    "protocol.json": "5c7dec7bec698aa7ed612878f362bf39358cee76b4bccc95975cf7c9f734951b",
+    "candidate-models.json.gz": "d98e3d31835a98dd1d4c4fe78011d059f947f31b2193129f95d83a2fecd631d5"
+  },
+  "sourceArchiveLibraryId": "libfile_edaba80604188191800d87be8af125d9",
+  "sourceArchiveSha256": "0186bd9424db69ed93862b686e585936e05a3f80bfb14cf97ef330a195f02375"
+}

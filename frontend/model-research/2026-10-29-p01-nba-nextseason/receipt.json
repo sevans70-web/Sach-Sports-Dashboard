@@ -1,0 +1,13 @@
+{
+  "sourceSha256": "b4593fb5a9bb910365d40281e62db26cfc03407970774a0c6d707602b90112c4",
+  "files": {
+    "README.md": "bf864dbefb08ec677cacf5fb35e315a8f8c9024da0772a5a63574ae01c2f3ecf",
+    "saved-line-diagnostic.json.gz": "667859ca08a2879195462ce5e92af6f9be5bc126268e1efde6d733fbf8ff7353",
+    "development-report.json": "8075b6dc824552d9719e44654a8366bf6ada17e4a2075f5a036fa07c0ca8ead5",
+    "accuracy-audit.json.gz": "c48f643cbd0bda79cae00d59026130f5ff2d98dab6465c9226966af81b0c35e3",
+    "protocol.json": "38a9a1490beba3feba85e9b79c5ac6a9b66daebcca4bbc0961b657047456b11d",
+    "candidate-models.json.gz": "d5eb2e928bc23ebf076b73ab05a875ac3a2db5df9bde7c759723d0e199de3ca0"
+  },
+  "sourceArchiveLibraryId": "libfile_edaba80604188191800d87be8af125d9",
+  "sourceArchiveSha256": "0186bd9424db69ed93862b686e585936e05a3f80bfb14cf97ef330a195f02375"
+}

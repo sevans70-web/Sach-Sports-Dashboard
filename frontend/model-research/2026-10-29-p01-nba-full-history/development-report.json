@@ -1,0 +1,263 @@
+{
+  "protocol": {
+    "createdAt": "2026-10-29T14:54:52.570Z",
+    "study": "p01-nba-full-history-played-development-v1",
+    "sourceSha256": "b4593fb5a9bb910365d40281e62db26cfc03407970774a0c6d707602b90112c4",
+    "policy": "Compare separate workload-times-rate against participation-conditioned minutes-times-rate regression using identical archived observations,features,chronological split and workload-conditioned residual calibration. Fixed ridge and feature policy from existing evaluator; no tuning on diagnostic outcomes.",
+    "scope": "NBA points only from the full frozen population. No archived probabilities or grades altered.",
+    "limitations": [
+      "Full immutable NBA source:372468 observations/2469 games;points-only candidate fixes the prior subset-fitting mismatch.",
+      "Later-season outcomes have been inspected before: retrospective development, not untouched validation.",
+      "No exact sportsbook quotes in this input: no direction hit-rate, no-vig, EV or ROI certification.",
+      "Official source revisions and no archived pregame injury vintages; conservative 48h result lag.",
+      "This tests point/distribution error; no live promotion or all-eight-sport accuracy claim."
+    ],
+    "livePromotion": false
+  },
+  "reports": [
+    {
+      "market": "points",
+      "sourceRows": 62078,
+      "baseline": {
+        "group": "nba|points",
+        "targetAppearances": 31045,
+        "eligibleTargets": 23461,
+        "zeroWorkloadTrainingRows": 1285,
+        "zeroWorkloadTargets": 2142,
+        "trainingRows": 13453,
+        "calibrationRows": 7645,
+        "exactQuoteSamples": 0,
+        "validatedForBetting": false,
+        "reason": null,
+        "trainedThrough": "2025-02-11T02:00:00.000Z",
+        "calibrationStartsAt": "2025-02-13T02:30:00.000Z",
+        "calibratedThrough": "2025-04-13T19:30:00.000Z",
+        "forecasts": 23461,
+        "mae": 4.850055058974848,
+        "baselineMae": 4.915094123537913,
+        "workloadMae": 5.723747341898498,
+        "crps": 3.4303335701677176,
+        "interval80Coverage": 0.824986147223051,
+        "baselineCrps": 3.497096862351432,
+        "pairedCrpsImprovement": {
+          "clusters": 1185,
+          "replicates": 1000,
+          "lower95": 0.05466287296181869,
+          "upper95": 0.07806234159298506
+        },
+        "calibrationPolicy": "nearest_half_workload_minimum_100",
+        "pairedPooledCrpsImprovement": {
+          "clusters": 1185,
+          "replicates": 1000,
+          "lower95": 0.020420079979192613,
+          "upper95": 0.026641941963555245
+        },
+        "pairedPooledBrierImprovement": null,
+        "meanIntervalWidth": 14.447593879203785,
+        "brier": null,
+        "marketBrier": null,
+        "candidateBets": 0,
+        "pairedBrierImprovement": null,
+        "candidateSettled": 0,
+        "candidatePushes": 0,
+        "candidateRoi": null,
+        "candidateRoiInterval": null,
+        "quoteRejections": {
+          "missing_quote": 23461
+        },
+        "calibrationBins": [
+          {
+            "from": 0,
+            "to": 0.1,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.1,
+            "to": 0.2,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.2,
+            "to": 0.3,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          }
+        ]
+      },
+      "candidate": {
+        "group": "nba|points",
+        "targetAppearances": 31045,
+        "eligibleTargets": 21319,
+        "zeroWorkloadTrainingRows": 0,
+        "zeroWorkloadTargets": 0,
+        "trainingRows": 12168,
+        "calibrationRows": 6804,
+        "exactQuoteSamples": 0,
+        "validatedForBetting": false,
+        "reason": null,
+        "trainedThrough": "2025-02-11T02:00:00.000Z",
+        "calibrationStartsAt": "2025-02-13T02:30:00.000Z",
+        "calibratedThrough": "2025-04-13T19:30:00.000Z",
+        "forecasts": 21319,
+        "mae": 4.799178746238844,
+        "baselineMae": 4.901192711526213,
+        "workloadMae": 4.908760543745465,
+        "crps": 3.405457782099182,
+        "interval80Coverage": 0.8583892302640836,
+        "baselineCrps": 3.492011927147707,
+        "pairedCrpsImprovement": {
+          "clusters": 1185,
+          "replicates": 1000,
+          "lower95": 0.07303337566638911,
+          "upper95": 0.09864773357936449
+        },
+        "calibrationPolicy": "nearest_half_workload_minimum_100",
+        "pairedPooledCrpsImprovement": {
+          "clusters": 1185,
+          "replicates": 1000,
+          "lower95": 0.007446333370081639,
+          "upper95": 0.012224527897150592
+        },
+        "pairedPooledBrierImprovement": null,
+        "meanIntervalWidth": 16.298700689525774,
+        "brier": null,
+        "marketBrier": null,
+        "candidateBets": 0,
+        "pairedBrierImprovement": null,
+        "candidateSettled": 0,
+        "candidatePushes": 0,
+        "candidateRoi": null,
+        "candidateRoiInterval": null,
+        "quoteRejections": {
+          "missing_quote": 21319
+        },
+        "calibrationBins": [
+          {
+            "from": 0,
+            "to": 0.1,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.1,
+            "to": 0.2,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.2,
+            "to": 0.3,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "count": 0,
+            "predicted": null,
+            "observed": null
+          }
+        ]
+      }
+    }
+  ]
+}

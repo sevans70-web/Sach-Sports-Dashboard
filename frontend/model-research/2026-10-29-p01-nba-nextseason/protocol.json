@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-10-29T14:58:48.137Z",
+  "study": "p01-nba-full-history-nextseason-played-development-v1",
+  "sourceSha256": "b4593fb5a9bb910365d40281e62db26cfc03407970774a0c6d707602b90112c4",
+  "policy": "Compare separate workload-times-rate against participation-conditioned minutes-times-rate regression using identical archived observations,features,chronological split and workload-conditioned residual calibration. Fixed ridge and feature policy from existing evaluator; no tuning on diagnostic outcomes.",
+  "scope": "NBA points only from the full frozen population. No archived probabilities or grades altered.",
+  "limitations": [
+    "Full immutable NBA source:372468 observations/2469 games;points-only candidate fixes the prior subset-fitting mismatch.",
+    "Oct2026 saved outcomes already inspected;retrospective diagnostic. Fit/calibration only before season2027;no Oct2026 target outcomes enter coefficients or residual calibration.",
+    "No exact sportsbook quotes in this input: no direction hit-rate, no-vig, EV or ROI certification.",
+    "Official source revisions and no archived pregame injury vintages; conservative 48h result lag.",
+    "This tests point/distribution error; no live promotion or all-eight-sport accuracy claim."
+  ],
+  "livePromotion": false
+}

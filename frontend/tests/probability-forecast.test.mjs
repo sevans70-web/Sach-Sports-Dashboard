@@ -105,3 +105,10 @@ test('research participation condition excludes nonparticipants without discardi
  assert.deepEqual(evaluateProbabilityModels(rows).models,all.models);
  assert.throws(()=>evaluateProbabilityModels(rows,[],{participation:'unknown'}),/Unsupported participation policy/);
 });
+
+test('explicit research evaluation season trains on prior seasons and never target outcomes',()=>{
+ const prior=dataset(),future=prior.filter(r=>r.season==='2026').map(r=>({...r,season:'2027',gameId:'future-'+r.gameId,gameTime:r.gameTime.replace('2026','2027')})),rows=[...prior,...future];
+ const result=evaluateProbabilityModels(rows,[],{evaluationSeason:'2027'});assert.ok(result.models.length);assert.ok(result.reports[0].trainingRows>evaluateProbabilityModels(rows).reports[0].trainingRows);
+ const changed=rows.map(r=>r.season==='2027'?{...r,actual:r.actual+100}:r);assert.deepEqual(evaluateProbabilityModels(changed,[],{evaluationSeason:'2027'}).models,result.models);
+ assert.throws(()=>evaluateProbabilityModels(rows,[],{evaluationSeason:'invalid'}),/Unsupported evaluation season/);
+});
