@@ -15,7 +15,7 @@ import {matchingPredictionResult} from "@/lib/prediction-results";
 import {prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
-import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
+import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
 import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
 import {firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
@@ -993,7 +993,7 @@ function PlayerCard({
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
   const modelSelection=cardModelPick(card.raw);
   const firstBasket=card.market==='first_basket';
-  const quarterTarget=sport==='nfl'&&card.raw?.lineType==='milestone';
+  const quarterTarget=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_')&&card.raw?.lineType==='milestone';
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
   const displayedPick=modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction);
@@ -1075,7 +1075,7 @@ function PlayerCard({
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent||quarterTarget?2:3}, minmax(0, 1fr))`}}>
         {quarterTarget?<>
-          <div><span>Q1 Target</span><strong>{propLineText(card.sportsbookLine)}+ yards</strong></div>
+          <div><span>Q1 Target</span><strong>{propLineText(card.sportsbookLine)}+ {cardStatUnit(card.market)}</strong></div>
           <div><span>Sportsbook odds</span><strong>{Number(card.raw.overPrice)>0?'+':''}{card.raw.overPrice}</strong></div>
 
         </>:firstBasket?<>
@@ -1145,7 +1145,7 @@ function PlayerCard({
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
-            ? `${card.raw.sportsbook} · ${card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
+            ? `${card.raw.sportsbook} · ${quarterTarget?`Q1 milestone · ${propLineText(card.sportsbookLine)}+ · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice}`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
             : "Original sportsbook details could not be confirmed. Saved for history, not a verified pick."}</p>
           {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
@@ -2291,7 +2291,7 @@ export function PlayerRankingsPanel({
           const updatedRaw=applyParticipationEvidence({...card.raw,gameId:String(game.id),playerId:card.playerId},payload,String(game.id));
           const current = payload?.success===true&&String(payload.gameId)===String(game.id)?finite(row?.stats?.[card.market]):null;
           if (current == null) {
-            const checkedQuarter=['nfl','cfb'].includes(sport)&&card.market.startsWith('q1_')&&row?.stats&&Object.hasOwn(row.stats,card.market);
+            const checkedQuarter=['nfl','cfb','nba'].includes(sport)&&card.market.startsWith('q1_')&&row?.stats&&Object.hasOwn(row.stats,card.market);
             return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,...(checkedQuarter?{actual:null,liveCurrent:null,liveProgressPct:null}:{}),raw:{...updatedRaw,...(checkedQuarter?{quarterObservationChecked:true,observedQuarterValue:null,actualResult:null,liveCurrent:null,officialFinalObservation:null}: {})},lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
           }
 
@@ -2309,7 +2309,7 @@ export function PlayerRankingsPanel({
             liveProgressPct: progress,
             raw: {
               ...updatedRaw,
-              ...(['nfl','cfb'].includes(sport)&&card.market.startsWith('q1_')?{quarterObservationChecked:true,observedQuarterValue:current}:{}),
+              ...(['nfl','cfb','nba'].includes(sport)&&card.market.startsWith('q1_')?{quarterObservationChecked:true,observedQuarterValue:current}:{}),
               gameState:payload.state==="post"?"post":String(game.state||card.gameState),
               liveCurrent: game.state === "in" ? current : card.liveCurrent,
               actualResult: payload.state === "post" || game.state === "post" ? current : card.actual,

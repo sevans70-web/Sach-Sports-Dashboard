@@ -25,7 +25,8 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
  const unit=cardStatUnit(market);
  if(count){
   facts.push(`Last ${count}: ${values.map(fmt).join(', ')} ${unit}.`);
-  if(line!=null&&!/anytime|first/.test(market))facts.push(`${values.filter((v:number)=>v>line).length} of the last ${count} finished above ${propLineText(line)}; ${values.filter((v:number)=>v<line).length} below${values.some((v:number)=>v===line)?`, ${values.filter((v:number)=>v===line).length} on the line`:''}.`);
+  if(line!=null&&row.lineType==='milestone')facts.push(`${values.filter((v:number)=>v>=line).length} of the last ${count} reached ${propLineText(line)}+; ${values.filter((v:number)=>v<line).length} below the target.`);
+  else if(line!=null&&!/anytime|first/.test(market))facts.push(`${values.filter((v:number)=>v>line).length} of the last ${count} finished above ${propLineText(line)}; ${values.filter((v:number)=>v<line).length} below${values.some((v:number)=>v===line)?`, ${values.filter((v:number)=>v===line).length} on the line`:''}.`);
   if(count>=5){const recent=(values.at(-1)!+values.at(-2)!)/2,earlier=values.slice(0,-2).reduce((a:number,b:number)=>a+b,0)/(count-2);facts.push(`Latest two average ${fmt(recent)} ${unit}, versus ${fmt(earlier)} in the preceding ${count-2}.`)}
   const workload=cohort.slice(-5).map((p:any)=>num(p.workload));
   if(/passing/.test(market)&&workload.length&&workload.every((v:any)=>v!=null))facts.push(`Passing workload: ${fmt(workload.reduce((a:number,b:number)=>a+b!,0)/workload.length)} attempts per game in this sample.`);

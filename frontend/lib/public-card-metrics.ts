@@ -15,6 +15,7 @@ export function firstBasketQuote(row:any,now=Date.now()){
  * original full board in durable history for audit, including abstentions. */
 export function publicNbaRanking(row:any,now=Date.now()){
  if(row?.market==='first_basket')return firstBasketQuote(row,now)!=null;
+ if(String(row?.market||'').startsWith('q1_'))return verifiedPropQuote(row,now,row.boardFrozen===true)&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
  return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
 }
 

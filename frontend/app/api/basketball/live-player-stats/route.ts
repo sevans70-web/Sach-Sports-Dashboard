@@ -1,3 +1,4 @@
+import {basketballQ1Actual} from '@/lib/basketball-period-settlement';
 import {NextRequest,NextResponse} from "next/server";
 import {providerFetch} from "@/lib/provider-fetch";
 import {basketballObservedRows} from "@/lib/observed-player-stats";
@@ -15,6 +16,6 @@ export async function GET(req:NextRequest){
   const payload=await response.json();
   if(String(payload?.header?.id||"")!==gameId)throw Error("Basketball boxscore game identity mismatch");
   const status=payload.header?.competitions?.[0]?.status?.type;
-  return NextResponse.json({success:true,sport,gameId,state:status?.state||"pre",rows:basketballObservedRows(payload),participants:espnParticipation(payload,sport),availability:officialAvailabilityRows(payload,sport,gameId),updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({success:true,sport,gameId,state:status?.state||"pre",rows:basketballObservedRows(payload).map(row=>sport!=='nba'?row:{...row,stats:{...row.stats,...Object.fromEntries(['q1_points','q1_rebounds','q1_assists','q1_threes_made','q1_pts_rebs_asts'].map(m=>[m,basketballQ1Actual(payload,row,m)]))}}),participants:espnParticipation(payload,sport),availability:officialAvailabilityRows(payload,sport,gameId),updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store"}});
  }catch(e){return NextResponse.json({success:false,rows:[],gameId,error:e instanceof Error?e.message:"Live stats unavailable"},{status:502,headers:{"Cache-Control":"no-store"}})}
 }

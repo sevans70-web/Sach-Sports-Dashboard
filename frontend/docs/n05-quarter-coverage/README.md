@@ -31,3 +31,7 @@ The deeper final-archive check exposed that the initial coverage counts were lar
 `production-after.jsonl` verifies the first release's11 quarter endpoints: all HTTP200/success; NFL2/3/10 verified quote rows; CFB3 supported empty yardage endpoints, NBA5 supported empty endpoints; no model projection/probability fabricated.
 
 The primary CFB diagnostic at approximately19:36UTC showed66 events/10,958 props, including989`touchdowns_1q` offers but no quarter-yardage categories. TD scorer offers are separate contracts and are not substituted into yardage tabs. NBA primary coverage at19:27UTC showed3,198 props, only full-game categories, and0 matched/priced Q1 markets. These are current feed limitations, not proof that all quarter products are unavailable permanently. CFB Q1 touchdown integration and its official scorer settlement are not certified by this release. N05 remains open.
+
+## Scope correction from Sach
+
+N05 acceptance is NBA and NFL only. CFB is excluded. The later native FanDuel source discovery also corrects the earlier broad NBA-source-gap conclusion: NBA quarter prices exist in the included native source, and require the adapter documented in `../n05-nba-native/README.md`. Original coverage snapshots above remain historical observations of the merged endpoint, not a claim that all OWL sources lack quarter prices.

@@ -1,3 +1,4 @@
+import {nativeNbaQuarterRows} from '@/lib/native-nba-quarter';
 import {retentionCutoff} from '../scripts/retention-policy.mjs';
 import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {basketballMarketCoverage} from '@/lib/basketball-market-coverage';
@@ -434,13 +435,13 @@ async function buildNbaMarketRankingsRaw(
   if(slateDays.length)fallbackDays=slateDays;
 
   // Scorer quotes need an official fixture/player match, not full prop rosters.
-  if(market==='first_basket')try{
+  if(market==='first_basket'||market.startsWith('q1_'))try{
    const native=await getNbaFirstBasketSource();
    const futureGames=(overview.games||[]).filter((game:any)=>Date.parse(game.tipoff)>Date.now());
    const currentRosters=await Promise.all(futureGames.map((game:any)=>loadNbaGameRosters(String(game.gameId)).catch(()=>[])));
-   const players=currentRosters.flatMap(rosters=>rosters.flatMap((roster:any)=>roster.players.filter((p:any)=>p.active!==false).map((player:any)=>({...player,team:roster.teamAbbr}))));
-   const rows=nativeFirstBasketRows(native.payload,native.readAt,{...overview,players});
-   if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:'Current FanDuel first-basket prices',warning:'Probabilities are sportsbook-implied, not an independent first-basket model.'};
+   const players=currentRosters.flatMap(rosters=>rosters.flatMap((roster:any)=>roster.players.filter((p:any)=>p.active!==false).map((player:any)=>({...player,team:roster.teamAbbr,teamId:roster.teamId,teamLogo:roster.teamLogo}))));
+   const rows=market==='first_basket'?nativeFirstBasketRows(native.payload,native.readAt,{...overview,players}):nativeNbaQuarterRows(native.payload,native.readAt,{...overview,players},market);
+   if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:market==='first_basket'?'Current FanDuel first-basket prices':'Current FanDuel first-quarter prices',warning:market==='first_basket'?'Probabilities are sportsbook-implied, not an independent first-basket model.':'Authentic first-quarter quotes; quarter forecast unavailable.'};
   }catch{}
 
   let payload:any=shared?.payload??{data:[]};
