@@ -1,0 +1,13 @@
+{
+  "createdAt": "2026-10-29T14:09:49.423Z",
+  "study": "p01-nba-points-participation-prospective-v1",
+  "candidateSha256": "d76b7e6b2b1706ed335c5161167e9833d0162860900639138569787c341a09ee",
+  "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "candidateSourceSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "selection": "All returned NBA points main-line ranking rows that have fresh exact two-sided prices and both candidate/baseline pregame inputs. No side, score, probability or outcome filtering. One quote per market/game/player; ambiguous targets excluded.",
+  "timing": "Freeze before kickoff. Compare both fixed models using the same frozen completed-game population and 48-hour prior-result lag. Exact input vectors, residual-artifact hashes and forecasts saved. No fitting or tuning in this script.",
+  "scoring": "After exact official final: conditional OVER Brier excluding pushes, OVER/UNDER direction hits, fixed >=55% conditional win and >=3% EV research selections, unit ROI refunding pushes, paired fixture-cluster intervals. Report unresolved, pushes and all markets/sides; no cherry-picking.",
+  "limitations": "Selected ranking-board cohort, not complete player population. Source revision and missing-context limitations remain. Models were developed on earlier inspected cohorts. Upcoming targets are new; only completion after this capture is eligible. Small samples cannot justify promotion; no fixed promised accuracy.",
+  "livePromotion": false,
+  "automaticFollowup": false
+}

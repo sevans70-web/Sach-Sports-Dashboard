@@ -1,0 +1,388 @@
+{
+  "cohortSha256": "54688fdd6117fcc9c99ca7becd03c273a141c06f49271a429e698b1fdfdd58a4",
+  "scoredAt": "2026-10-29T14:11:20.412Z",
+  "selected": 17,
+  "resolved": 0,
+  "pending": 17,
+  "complete": false,
+  "reports": [
+    {
+      "market": "points",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "pairedBrierSamples": 0,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "allDirections": {
+        "baseline": [
+          {
+            "side": "OVER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          },
+          {
+            "side": "UNDER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          }
+        ],
+        "candidate": [
+          {
+            "side": "OVER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          },
+          {
+            "side": "UNDER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          }
+        ]
+      }
+    }
+  ],
+  "unresolved": [
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "3995",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "5105565",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "5144091",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "3",
+        "opponentId": "23",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4431736",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "4431679",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "23",
+        "opponentId": "3",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4066211",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "3992",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4431680",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "1",
+        "opponentId": "5",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "4397688",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "3",
+        "opponentId": "23",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4066328",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "3908809",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "2490149",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "1",
+        "opponentId": "5",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4066757",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "3064440",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "23",
+        "opponentId": "3",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4683021",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4701230",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "1",
+        "opponentId": "5",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4432158",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    }
+  ],
+  "decisions": [],
+  "requests": [],
+  "validatedForBetting": false,
+  "livePromotion": false
+}
