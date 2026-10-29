@@ -1,0 +1,12 @@
+{
+  "files": {
+    "saved-line-diagnostic.json.gz": "1f9de829a635450b13ab616589722c5ed4ec39cfe09ebb40e585ca5ee6a68dde",
+    "accuracy-audit.json.gz": "c48f643cbd0bda79cae00d59026130f5ff2d98dab6465c9226966af81b0c35e3",
+    "source.json.gz": "c1aa6d7285661e1a45e40113bb0ea73e948f3aafb9e582195017b2acaaf4512c",
+    "comparison-summary.json": "0e4350faa57f4e8613fdec936cb4f7124436b181238564299564389e5f5376bc"
+  },
+  "officialSources": {
+    "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz": "d0dabf5ab64468e6aa0ab8975c9ac8b536c24c48e66408417d2cda3869367609",
+    "model-research/2026-10-29-p01-nba-scored/official-results.json.gz": "7b23069a9e316e141ea9f58821ed9fab51595ae899f072ccdf93728dc838e6da"
+  }
+}

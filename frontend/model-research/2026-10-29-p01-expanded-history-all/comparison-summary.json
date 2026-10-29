@@ -1,0 +1,1139 @@
+{
+  "createdAt": "2026-10-29T14:49:09.422Z",
+  "sourceCoverage": {
+    "files": 655,
+    "availableDates": [
+      "2026-10-21",
+      "2026-10-22",
+      "2026-10-23",
+      "2026-10-24",
+      "2026-10-25",
+      "2026-10-26",
+      "2026-10-27",
+      "2026-10-28",
+      "2026-10-29"
+    ],
+    "cloudDocuments": 0,
+    "driveDocuments": 0,
+    "historySource": "Google Drive",
+    "errors": [
+      "drive:checking"
+    ],
+    "complete": false,
+    "duplicatesReconciled": 2208,
+    "conflictingCopies": 33
+  },
+  "verifiedOriginalTargets": 862,
+  "verifiedSettledTargets": 862,
+  "officialFixtures": 61,
+  "groups": [
+    {
+      "market": "ALL",
+      "verifiedOriginals": 862,
+      "paired": 849,
+      "fixtures": 61,
+      "policies": {
+        "original": {
+          "calls": 849,
+          "hits": 452,
+          "hitRate": 0.5323910482921084,
+          "meanConfidence": 0.7061805225931591,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 208,
+              "hits": 118,
+              "hitRate": 0.5673076923076923,
+              "meanConfidence": 0.7047215843857639,
+              "atLeast80": {
+                "calls": 41,
+                "hits": 24,
+                "hitRate": 0.5853658536585366,
+                "meanConfidence": 0.8598471059337461
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 641,
+              "hits": 334,
+              "hitRate": 0.5210608424336973,
+              "meanConfidence": 0.7066539377993024,
+              "atLeast80": {
+                "calls": 129,
+                "hits": 70,
+                "hitRate": 0.5426356589147286,
+                "meanConfidence": 0.8603108488564923
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 849,
+          "hits": 453,
+          "hitRate": 0.5335689045936396,
+          "meanConfidence": 0.7053718451324065,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 213,
+              "hits": 121,
+              "hitRate": 0.568075117370892,
+              "meanConfidence": 0.7147828930465046,
+              "atLeast80": {
+                "calls": 51,
+                "hits": 35,
+                "hitRate": 0.6862745098039216,
+                "meanConfidence": 0.8601112086625695
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 636,
+              "hits": 332,
+              "hitRate": 0.5220125786163522,
+              "meanConfidence": 0.7022200319158927,
+              "atLeast80": {
+                "calls": 122,
+                "hits": 63,
+                "hitRate": 0.5163934426229508,
+                "meanConfidence": 0.8613489927412115
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 849,
+          "hits": 461,
+          "hitRate": 0.5429917550058893,
+          "meanConfidence": 0.6997345428335356,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 249,
+              "hits": 143,
+              "hitRate": 0.5742971887550201,
+              "meanConfidence": 0.7197546404523566,
+              "atLeast80": {
+                "calls": 70,
+                "hits": 44,
+                "hitRate": 0.6285714285714286,
+                "meanConfidence": 0.8755508173418617
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 600,
+              "hits": 318,
+              "hitRate": 0.53,
+              "meanConfidence": 0.6914262023217255,
+              "atLeast80": {
+                "calls": 107,
+                "hits": 58,
+                "hitRate": 0.5420560747663551,
+                "meanConfidence": 0.858371692937183
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 61,
+        "replicates": 1000,
+        "lower95": -0.0032502708559046588,
+        "upper95": 0.02418379685610641
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 61,
+        "replicates": 1000,
+        "lower95": -0.0035671819262782403,
+        "upper95": 0.021541950113378686
+      }
+    },
+    {
+      "market": "points",
+      "verifiedOriginals": 197,
+      "paired": 194,
+      "fixtures": 54,
+      "policies": {
+        "original": {
+          "calls": 194,
+          "hits": 96,
+          "hitRate": 0.4948453608247423,
+          "meanConfidence": 0.6944658152536286,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 67,
+              "hits": 39,
+              "hitRate": 0.582089552238806,
+              "meanConfidence": 0.677656493651147,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 5,
+                "hitRate": 0.5555555555555556,
+                "meanConfidence": 0.8529574350469873
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 127,
+              "hits": 57,
+              "hitRate": 0.44881889763779526,
+              "meanConfidence": 0.7033337250754099,
+              "atLeast80": {
+                "calls": 23,
+                "hits": 10,
+                "hitRate": 0.43478260869565216,
+                "meanConfidence": 0.855937702790396
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 194,
+          "hits": 94,
+          "hitRate": 0.4845360824742268,
+          "meanConfidence": 0.6989280402113143,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 69,
+              "hits": 39,
+              "hitRate": 0.5652173913043478,
+              "meanConfidence": 0.6963732064316097,
+              "atLeast80": {
+                "calls": 12,
+                "hits": 8,
+                "hitRate": 0.6666666666666666,
+                "meanConfidence": 0.855721393034826
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 125,
+              "hits": 55,
+              "hitRate": 0.44,
+              "meanConfidence": 0.7003383084577113,
+              "atLeast80": {
+                "calls": 23,
+                "hits": 9,
+                "hitRate": 0.391304347826087,
+                "meanConfidence": 0.8650227125243349
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 194,
+          "hits": 102,
+          "hitRate": 0.5257731958762887,
+          "meanConfidence": 0.6742575780889369,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 105,
+              "hits": 61,
+              "hitRate": 0.580952380952381,
+              "meanConfidence": 0.7144752428334519,
+              "atLeast80": {
+                "calls": 31,
+                "hits": 17,
+                "hitRate": 0.5483870967741935,
+                "meanConfidence": 0.893275557695394
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 89,
+              "hits": 41,
+              "hitRate": 0.4606741573033708,
+              "meanConfidence": 0.6268097713678796,
+              "atLeast80": {
+                "calls": 8,
+                "hits": 4,
+                "hitRate": 0.5,
+                "meanConfidence": 0.8320895522388059
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 54,
+        "replicates": 1000,
+        "lower95": -0.0273224043715847,
+        "upper95": 0.08717948717948718
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 54,
+        "replicates": 1000,
+        "lower95": -0.015463917525773196,
+        "upper95": 0.096045197740113
+      }
+    },
+    {
+      "market": "rebounds",
+      "verifiedOriginals": 171,
+      "paired": 168,
+      "fixtures": 54,
+      "policies": {
+        "original": {
+          "calls": 168,
+          "hits": 88,
+          "hitRate": 0.5238095238095238,
+          "meanConfidence": 0.6874259654110397,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 15,
+              "hits": 11,
+              "hitRate": 0.7333333333333333,
+              "meanConfidence": 0.6563847429519071,
+              "atLeast80": {
+                "calls": 1,
+                "hits": 1,
+                "hitRate": 1,
+                "meanConfidence": 0.9054726368159204
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 153,
+              "hits": 77,
+              "hitRate": 0.5032679738562091,
+              "meanConfidence": 0.6904692225148762,
+              "atLeast80": {
+                "calls": 27,
+                "hits": 18,
+                "hitRate": 0.6666666666666666,
+                "meanConfidence": 0.8570112400958174
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 168,
+          "hits": 88,
+          "hitRate": 0.5238095238095238,
+          "meanConfidence": 0.6841092158256339,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 15,
+              "hits": 11,
+              "hitRate": 0.7333333333333333,
+              "meanConfidence": 0.6819237147595357,
+              "atLeast80": {
+                "calls": 2,
+                "hits": 2,
+                "hitRate": 1,
+                "meanConfidence": 0.8805970149253731
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 153,
+              "hits": 77,
+              "hitRate": 0.5032679738562091,
+              "meanConfidence": 0.6843234806360357,
+              "atLeast80": {
+                "calls": 24,
+                "hits": 15,
+                "hitRate": 0.625,
+                "meanConfidence": 0.855514096185738
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 168,
+          "hits": 88,
+          "hitRate": 0.5238095238095238,
+          "meanConfidence": 0.6841092158256339,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 15,
+              "hits": 11,
+              "hitRate": 0.7333333333333333,
+              "meanConfidence": 0.6819237147595357,
+              "atLeast80": {
+                "calls": 2,
+                "hits": 2,
+                "hitRate": 1,
+                "meanConfidence": 0.8805970149253731
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 153,
+              "hits": 77,
+              "hitRate": 0.5032679738562091,
+              "meanConfidence": 0.6843234806360357,
+              "atLeast80": {
+                "calls": 24,
+                "hits": 15,
+                "hitRate": 0.625,
+                "meanConfidence": 0.855514096185738
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 54,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 54,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      }
+    },
+    {
+      "market": "assists",
+      "verifiedOriginals": 160,
+      "paired": 157,
+      "fixtures": 52,
+      "policies": {
+        "original": {
+          "calls": 157,
+          "hits": 84,
+          "hitRate": 0.535031847133758,
+          "meanConfidence": 0.719491713407485,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 59,
+              "hits": 29,
+              "hitRate": 0.4915254237288136,
+              "meanConfidence": 0.7240914073699303,
+              "atLeast80": {
+                "calls": 16,
+                "hits": 8,
+                "hitRate": 0.5,
+                "meanConfidence": 0.8647388059701493
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 98,
+              "hits": 55,
+              "hitRate": 0.5612244897959183,
+              "meanConfidence": 0.7167225098994819,
+              "atLeast80": {
+                "calls": 26,
+                "hits": 14,
+                "hitRate": 0.5384615384615384,
+                "meanConfidence": 0.8794489092996556
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 157,
+          "hits": 84,
+          "hitRate": 0.535031847133758,
+          "meanConfidence": 0.7277307728871565,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 59,
+              "hits": 29,
+              "hitRate": 0.4915254237288136,
+              "meanConfidence": 0.7427270427523402,
+              "atLeast80": {
+                "calls": 19,
+                "hits": 11,
+                "hitRate": 0.5789473684210527,
+                "meanConfidence": 0.8675045823514009
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 98,
+              "hits": 55,
+              "hitRate": 0.5612244897959183,
+              "meanConfidence": 0.7187024063356687,
+              "atLeast80": {
+                "calls": 26,
+                "hits": 14,
+                "hitRate": 0.5384615384615384,
+                "meanConfidence": 0.8767699961729813
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 157,
+          "hits": 84,
+          "hitRate": 0.535031847133758,
+          "meanConfidence": 0.7277307728871565,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 59,
+              "hits": 29,
+              "hitRate": 0.4915254237288136,
+              "meanConfidence": 0.7427270427523402,
+              "atLeast80": {
+                "calls": 19,
+                "hits": 11,
+                "hitRate": 0.5789473684210527,
+                "meanConfidence": 0.8675045823514009
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 98,
+              "hits": 55,
+              "hitRate": 0.5612244897959183,
+              "meanConfidence": 0.7187024063356687,
+              "atLeast80": {
+                "calls": 26,
+                "hits": 14,
+                "hitRate": 0.5384615384615384,
+                "meanConfidence": 0.8767699961729813
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 52,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 52,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      }
+    },
+    {
+      "market": "threes_made",
+      "verifiedOriginals": 165,
+      "paired": 163,
+      "fixtures": 52,
+      "policies": {
+        "original": {
+          "calls": 163,
+          "hits": 89,
+          "hitRate": 0.5460122699386503,
+          "meanConfidence": 0.7100387632390194,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 35,
+              "hits": 22,
+              "hitRate": 0.6285714285714286,
+              "meanConfidence": 0.7178393745557924,
+              "atLeast80": {
+                "calls": 7,
+                "hits": 5,
+                "hitRate": 0.7142857142857143,
+                "meanConfidence": 0.8649609097370291
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 128,
+              "hits": 67,
+              "hitRate": 0.5234375,
+              "meanConfidence": 0.7079057835820897,
+              "atLeast80": {
+                "calls": 22,
+                "hits": 13,
+                "hitRate": 0.5909090909090909,
+                "meanConfidence": 0.8464495703301673
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 163,
+          "hits": 89,
+          "hitRate": 0.5460122699386503,
+          "meanConfidence": 0.7053688612153952,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 35,
+              "hits": 22,
+              "hitRate": 0.6285714285714286,
+              "meanConfidence": 0.7253731343283581,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 7,
+                "hitRate": 0.7777777777777778,
+                "meanConfidence": 0.8645660585959093
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 128,
+              "hits": 67,
+              "hitRate": 0.5234375,
+              "meanConfidence": 0.6998989427860696,
+              "atLeast80": {
+                "calls": 20,
+                "hits": 11,
+                "hitRate": 0.55,
+                "meanConfidence": 0.8534825870646765
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 163,
+          "hits": 89,
+          "hitRate": 0.5460122699386503,
+          "meanConfidence": 0.7053688612153952,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 35,
+              "hits": 22,
+              "hitRate": 0.6285714285714286,
+              "meanConfidence": 0.7253731343283581,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 7,
+                "hitRate": 0.7777777777777778,
+                "meanConfidence": 0.8645660585959093
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 128,
+              "hits": 67,
+              "hitRate": 0.5234375,
+              "meanConfidence": 0.6998989427860696,
+              "atLeast80": {
+                "calls": 20,
+                "hits": 11,
+                "hitRate": 0.55,
+                "meanConfidence": 0.8534825870646765
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 52,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 52,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      }
+    },
+    {
+      "market": "steals",
+      "verifiedOriginals": 69,
+      "paired": 68,
+      "fixtures": 37,
+      "policies": {
+        "original": {
+          "calls": 68,
+          "hits": 43,
+          "hitRate": 0.6323529411764706,
+          "meanConfidence": 0.6889815627743634,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 13,
+              "hits": 5,
+              "hitRate": 0.38461538461538464,
+              "meanConfidence": 0.6804439341752774,
+              "atLeast80": {
+                "calls": 1,
+                "hits": 1,
+                "hitRate": 1,
+                "meanConfidence": 0.8656716417910447
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 55,
+              "hits": 38,
+              "hitRate": 0.6909090909090909,
+              "meanConfidence": 0.6909995477159656,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 7,
+                "hitRate": 0.7777777777777778,
+                "meanConfidence": 0.8352681039248204
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 68,
+          "hits": 45,
+          "hitRate": 0.6617647058823529,
+          "meanConfidence": 0.682396839332748,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 11,
+              "hits": 5,
+              "hitRate": 0.45454545454545453,
+              "meanConfidence": 0.6463138851198552,
+              "atLeast80": {
+                "calls": 1,
+                "hits": 1,
+                "hitRate": 1,
+                "meanConfidence": 0.8656716417910447
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 57,
+              "hits": 40,
+              "hitRate": 0.7017543859649122,
+              "meanConfidence": 0.6893602164615519,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 7,
+                "hitRate": 0.7777777777777778,
+                "meanConfidence": 0.8341625207296849
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 68,
+          "hits": 45,
+          "hitRate": 0.6617647058823529,
+          "meanConfidence": 0.682396839332748,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 11,
+              "hits": 5,
+              "hitRate": 0.45454545454545453,
+              "meanConfidence": 0.6463138851198552,
+              "atLeast80": {
+                "calls": 1,
+                "hits": 1,
+                "hitRate": 1,
+                "meanConfidence": 0.8656716417910447
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 57,
+              "hits": 40,
+              "hitRate": 0.7017543859649122,
+              "meanConfidence": 0.6893602164615519,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 7,
+                "hitRate": 0.7777777777777778,
+                "meanConfidence": 0.8341625207296849
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 37,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0.09876543209876543
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 37,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      }
+    },
+    {
+      "market": "blocks",
+      "verifiedOriginals": 100,
+      "paired": 99,
+      "fixtures": 47,
+      "policies": {
+        "original": {
+          "calls": 99,
+          "hits": 52,
+          "hitRate": 0.5252525252525253,
+          "meanConfidence": 0.7453138348660736,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 19,
+              "hits": 12,
+              "hitRate": 0.631578947368421,
+              "meanConfidence": 0.7706205813040065,
+              "atLeast80": {
+                "calls": 7,
+                "hits": 4,
+                "hitRate": 0.5714285714285714,
+                "meanConfidence": 0.8450604122245914
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 80,
+              "hits": 40,
+              "hitRate": 0.5,
+              "meanConfidence": 0.7393034825870644,
+              "atLeast80": {
+                "calls": 22,
+                "hits": 8,
+                "hitRate": 0.36363636363636365,
+                "meanConfidence": 0.8704206241519675
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 99,
+          "hits": 53,
+          "hitRate": 0.5353535353535354,
+          "meanConfidence": 0.7344087642595106,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 24,
+              "hits": 15,
+              "hitRate": 0.625,
+              "meanConfidence": 0.7354892205638475,
+              "atLeast80": {
+                "calls": 8,
+                "hits": 6,
+                "hitRate": 0.75,
+                "meanConfidence": 0.8383084577114427
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 75,
+              "hits": 38,
+              "hitRate": 0.5066666666666667,
+              "meanConfidence": 0.7340630182421227,
+              "atLeast80": {
+                "calls": 20,
+                "hits": 7,
+                "hitRate": 0.35,
+                "meanConfidence": 0.864179104477612
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 99,
+          "hits": 53,
+          "hitRate": 0.5353535353535354,
+          "meanConfidence": 0.7344087642595106,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 24,
+              "hits": 15,
+              "hitRate": 0.625,
+              "meanConfidence": 0.7354892205638475,
+              "atLeast80": {
+                "calls": 8,
+                "hits": 6,
+                "hitRate": 0.75,
+                "meanConfidence": 0.8383084577114427
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 75,
+              "hits": 38,
+              "hitRate": 0.5066666666666667,
+              "meanConfidence": 0.7340630182421227,
+              "atLeast80": {
+                "calls": 20,
+                "hits": 7,
+                "hitRate": 0.35,
+                "meanConfidence": 0.864179104477612
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 47,
+        "replicates": 1000,
+        "lower95": -0.021052631578947368,
+        "upper95": 0.047619047619047616
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 47,
+        "replicates": 1000,
+        "lower95": 0,
+        "upper95": 0
+      }
+    }
+  ],
+  "pointsByArchive": [
+    {
+      "archive": "earlier_50_fixtures",
+      "verifiedOriginals": 140,
+      "paired": 138,
+      "fixtures": 43,
+      "policies": {
+        "original": {
+          "calls": 138,
+          "hits": 73,
+          "hitRate": 0.5289855072463768,
+          "meanConfidence": 0.6941019539981252,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 50,
+              "hits": 32,
+              "hitRate": 0.64,
+              "meanConfidence": 0.68318407960199,
+              "atLeast80": {
+                "calls": 7,
+                "hits": 4,
+                "hitRate": 0.5714285714285714,
+                "meanConfidence": 0.8642501776830135
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 88,
+              "hits": 41,
+              "hitRate": 0.4659090909090909,
+              "meanConfidence": 0.7003052917232016,
+              "atLeast80": {
+                "calls": 15,
+                "hits": 7,
+                "hitRate": 0.4666666666666667,
+                "meanConfidence": 0.8567164179104478
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 138,
+          "hits": 71,
+          "hitRate": 0.5144927536231884,
+          "meanConfidence": 0.6982478909798832,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 52,
+              "hits": 32,
+              "hitRate": 0.6153846153846154,
+              "meanConfidence": 0.7058936088786834,
+              "atLeast80": {
+                "calls": 10,
+                "hits": 7,
+                "hitRate": 0.7,
+                "meanConfidence": 0.8611940298507463
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 86,
+              "hits": 39,
+              "hitRate": 0.45348837209302323,
+              "meanConfidence": 0.693624898762004,
+              "atLeast80": {
+                "calls": 14,
+                "hits": 5,
+                "hitRate": 0.35714285714285715,
+                "meanConfidence": 0.8642501776830135
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 138,
+          "hits": 77,
+          "hitRate": 0.5579710144927537,
+          "meanConfidence": 0.6832504145936983,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 84,
+              "hits": 51,
+              "hitRate": 0.6071428571428571,
+              "meanConfidence": 0.7239990523572613,
+              "atLeast80": {
+                "calls": 27,
+                "hits": 16,
+                "hitRate": 0.5925925925925926,
+                "meanConfidence": 0.8988391376451078
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 54,
+              "hits": 26,
+              "hitRate": 0.48148148148148145,
+              "meanConfidence": 0.6198636447392665,
+              "atLeast80": {
+                "calls": 4,
+                "hits": 3,
+                "hitRate": 0.75,
+                "meanConfidence": 0.8246268656716418
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": -0.043795620437956206,
+        "upper95": 0.0979020979020979
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 43,
+        "replicates": 1000,
+        "lower95": -0.029197080291970802,
+        "upper95": 0.1111111111111111
+      }
+    },
+    {
+      "archive": "additional_11_fixtures",
+      "verifiedOriginals": 57,
+      "paired": 56,
+      "fixtures": 11,
+      "policies": {
+        "original": {
+          "calls": 56,
+          "hits": 23,
+          "hitRate": 0.4107142857142857,
+          "meanConfidence": 0.695362473347548,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 17,
+              "hits": 7,
+              "hitRate": 0.4117647058823529,
+              "meanConfidence": 0.6613988879133742,
+              "atLeast80": {
+                "calls": 2,
+                "hits": 1,
+                "hitRate": 0.5,
+                "meanConfidence": 0.8134328358208955
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 39,
+              "hits": 16,
+              "hitRate": 0.41025641025641024,
+              "meanConfidence": 0.7101671131521877,
+              "atLeast80": {
+                "calls": 8,
+                "hits": 3,
+                "hitRate": 0.375,
+                "meanConfidence": 0.8544776119402986
+              }
+            }
+          ]
+        },
+        "baseline": {
+          "calls": 56,
+          "hits": 23,
+          "hitRate": 0.4107142857142857,
+          "meanConfidence": 0.7006041222459134,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 17,
+              "hits": 7,
+              "hitRate": 0.4117647058823529,
+              "meanConfidence": 0.6672519754170325,
+              "atLeast80": {
+                "calls": 2,
+                "hits": 1,
+                "hitRate": 0.5,
+                "meanConfidence": 0.8283582089552239
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 39,
+              "hits": 16,
+              "hitRate": 0.41025641025641024,
+              "meanConfidence": 0.7151422375302972,
+              "atLeast80": {
+                "calls": 9,
+                "hits": 4,
+                "hitRate": 0.4444444444444444,
+                "meanConfidence": 0.8662244333886124
+              }
+            }
+          ]
+        },
+        "candidate": {
+          "calls": 56,
+          "hits": 25,
+          "hitRate": 0.44642857142857145,
+          "meanConfidence": 0.6520966595593459,
+          "sides": [
+            {
+              "side": "OVER",
+              "calls": 21,
+              "hits": 10,
+              "hitRate": 0.47619047619047616,
+              "meanConfidence": 0.6763800047382137,
+              "atLeast80": {
+                "calls": 4,
+                "hits": 1,
+                "hitRate": 0.25,
+                "meanConfidence": 0.8557213930348259
+              }
+            },
+            {
+              "side": "UNDER",
+              "calls": 35,
+              "hits": 15,
+              "hitRate": 0.42857142857142855,
+              "meanConfidence": 0.6375266524520257,
+              "atLeast80": {
+                "calls": 4,
+                "hits": 1,
+                "hitRate": 0.25,
+                "meanConfidence": 0.8395522388059702
+              }
+            }
+          ]
+        }
+      },
+      "pairedHitImprovementVsOriginal": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.030303030303030304,
+        "upper95": 0.11320754716981132
+      },
+      "pairedHitImprovementVsReconstructed": {
+        "clusters": 11,
+        "replicates": 1000,
+        "lower95": -0.030303030303030304,
+        "upper95": 0.11320754716981132
+      }
+    }
+  ],
+  "limitations": [
+    "Retrospective development comparison. Outcomes in both archives were previously inspected; no independent validation claim.",
+    "Current history response partial; supplemental frozen historical audits retained. One earliest valid original per market/game/player, no result/side filtering.",
+    "Candidate used only for points; other markets retain runtime baseline. Original probabilities remain separate from reconstructed baseline.",
+    "Reconstructed lagged features are not exact original input receipts; candidate and baseline training populations differ.",
+    "No live coefficients, historic grades or hidden-sport settings changed. No two-sided-price ROI certification."
+  ],
+  "livePromotion": false
+}
