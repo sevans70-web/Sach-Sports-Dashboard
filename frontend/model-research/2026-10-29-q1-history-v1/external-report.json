@@ -1,0 +1,144 @@
+{
+  "createdAt": "2026-10-29T21:04:43.865Z",
+  "protocol": {
+    "frozenAt": "2026-10-29T21:03:49.039Z",
+    "candidateSha256": "db107e27b772a814b2fa4162cfe3a06f20b478517cc0629d52cd7b1519f9a1b9",
+    "dates": "20261020-20261026",
+    "sports": [
+      "nba",
+      "nfl"
+    ],
+    "selection": "Every discovered completed regular-season fixture in the declared date window, with 48h result-availability lag. No outcome-driven inclusion.",
+    "classification": "New temporal external check; current revised official data, not a prospective historical-price test.",
+    "policy": "No refitting or candidate changes after retrieval. Report all groups, eligibility, exclusions, errors, MAE and distribution error. Compare prior-Q1-history mean and empirical distribution."
+  },
+  "reports": [
+    {
+      "group": "nba|q1_assists",
+      "targets": 880,
+      "forecasts": 601,
+      "missingPriorHistory": 279,
+      "fixtures": 47,
+      "mae": 0.7391854869185616,
+      "baselineMae": 0.7990729736154033,
+      "improvementPct": 7.494620475759677,
+      "crps": 0.4898131195078953,
+      "baselineCrps": 0.5180101066124352,
+      "maeGainInterval": {
+        "clusters": 47,
+        "replicates": 1000,
+        "lower95": 0.025651649156373156,
+        "upper95": 0.09357824799137222
+      }
+    },
+    {
+      "group": "nba|q1_points",
+      "targets": 880,
+      "forecasts": 601,
+      "missingPriorHistory": 279,
+      "fixtures": 47,
+      "mae": 2.248035168030785,
+      "baselineMae": 2.3682037873385635,
+      "improvementPct": 5.074251631141356,
+      "crps": 1.5726831365348821,
+      "baselineCrps": 1.6406411680960071,
+      "maeGainInterval": {
+        "clusters": 47,
+        "replicates": 1000,
+        "lower95": 0.027201399543712177,
+        "upper95": 0.2144155465857735
+      }
+    },
+    {
+      "group": "nba|q1_rebounds",
+      "targets": 880,
+      "forecasts": 601,
+      "missingPriorHistory": 279,
+      "fixtures": 47,
+      "mae": 0.9612373136854591,
+      "baselineMae": 0.9994440482793233,
+      "improvementPct": 3.8227987509298056,
+      "crps": 0.6665805843600859,
+      "baselineCrps": 0.7088957290255724,
+      "maeGainInterval": {
+        "clusters": 47,
+        "replicates": 1000,
+        "lower95": 0.009689387279129652,
+        "upper95": 0.06387287139407449
+      }
+    },
+    {
+      "group": "nba|q1_threes_made",
+      "targets": 880,
+      "forecasts": 601,
+      "missingPriorHistory": 279,
+      "fixtures": 47,
+      "mae": 0.46332805786047826,
+      "baselineMae": 0.4926451945170748,
+      "improvementPct": 5.950963692102026,
+      "crps": 0.2701177279173735,
+      "baselineCrps": 0.2940583367290343,
+      "maeGainInterval": {
+        "clusters": 47,
+        "replicates": 1000,
+        "lower95": 0.009963003257017202,
+        "upper95": 0.04988732375612493
+      }
+    },
+    {
+      "group": "nfl|q1_passing_yards",
+      "targets": 17,
+      "forecasts": 11,
+      "missingPriorHistory": 6,
+      "fixtures": 8,
+      "mae": 33.57721898212237,
+      "baselineMae": 36.763636363636365,
+      "improvementPct": 8.66730741757022,
+      "crps": 23.184673836111987,
+      "baselineCrps": 24.958181818181814,
+      "maeGainInterval": null
+    },
+    {
+      "group": "nfl|q1_receiving_yards",
+      "targets": 191,
+      "forecasts": 134,
+      "missingPriorHistory": 57,
+      "fixtures": 13,
+      "mae": 8.772292211759174,
+      "baselineMae": 8.77236733001658,
+      "improvementPct": 0.000856305425666861,
+      "crps": 5.9546158464440895,
+      "baselineCrps": 5.818073061797963,
+      "maeGainInterval": {
+        "clusters": 13,
+        "replicates": 1000,
+        "lower95": -0.4730387723563289,
+        "upper95": 0.4767971064000908
+      }
+    },
+    {
+      "group": "nfl|q1_rushing_yards",
+      "targets": 76,
+      "forecasts": 53,
+      "missingPriorHistory": 23,
+      "fixtures": 13,
+      "mae": 5.061588121412002,
+      "baselineMae": 5.749423480083857,
+      "improvementPct": 11.96355358158142,
+      "crps": 3.3435809582259886,
+      "baselineCrps": 3.5440683962264146,
+      "maeGainInterval": {
+        "clusters": 13,
+        "replicates": 1000,
+        "lower95": 0.17902254078755786,
+        "upper95": 1.219041114877501
+      }
+    }
+  ],
+  "promoted": false,
+  "limitations": [
+    "Temporal external check, not a frozen prospective pregame test.",
+    "Small recent fixture samples; NBA labels conditional on certifiable quarter participation.",
+    "No exact historical sportsbook prices; point/distribution errors do not establish profitable betting or calibrated high-confidence recommendations."
+  ]
+}

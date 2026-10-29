@@ -1,0 +1,74 @@
+{
+  "createdAt": "2026-10-29T21:02:41.575Z",
+  "modelSha256": "db107e27b772a814b2fa4162cfe3a06f20b478517cc0629d52cd7b1519f9a1b9",
+  "snapshots": [
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nba/rankings?market=q1_assists",
+      "decisionAt": "2026-10-29T21:02:39.900Z",
+      "sha256": "f9fae2012b6de03fe06a6b66388ad6d20aeceb0b7d05e113e6ba47d0a13a4347"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nba/rankings?market=q1_points",
+      "decisionAt": "2026-10-29T21:02:40.214Z",
+      "sha256": "45f58ddd382d5852aad0995f05a710dd65a83ec2db7401492f6f537bc7497432"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nba/rankings?market=q1_rebounds",
+      "decisionAt": "2026-10-29T21:02:40.502Z",
+      "sha256": "7f994e0f71ff4a8759e40627d3fc924fb9a23468c662277fad565c8b6e322988"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nba/rankings?market=q1_threes_made",
+      "decisionAt": "2026-10-29T21:02:40.786Z",
+      "sha256": "a09f3793d660ad5167a236272986899ab730318740469372f7d096ce298d0d8f"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=q1_passing_yards",
+      "decisionAt": "2026-10-29T21:02:41.062Z",
+      "sha256": "c556666406f2ad426ba55d19f0715266d8462996a315f84b6332eb0800a902b2"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=q1_receiving_yards",
+      "decisionAt": "2026-10-29T21:02:41.318Z",
+      "sha256": "a1f5448f84b7151a3332c473423711944312565881bd0df11140ac9a151a2c4c"
+    },
+    {
+      "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nfl/rankings?market=q1_rushing_yards",
+      "decisionAt": "2026-10-29T21:02:41.562Z",
+      "sha256": "5815760bb0b75c5e44db14ff69bede0dda774284a46c60bac6e703712440a870"
+    }
+  ],
+  "forecasts": 68,
+  "abstentions": 19,
+  "groups": [
+    {
+      "group": "nba|q1_assists",
+      "forecasts": 13
+    },
+    {
+      "group": "nba|q1_points",
+      "forecasts": 15
+    },
+    {
+      "group": "nba|q1_rebounds",
+      "forecasts": 15
+    },
+    {
+      "group": "nba|q1_threes_made",
+      "forecasts": 13
+    },
+    {
+      "group": "nfl|q1_passing_yards",
+      "forecasts": 2
+    },
+    {
+      "group": "nfl|q1_receiving_yards",
+      "forecasts": 8
+    },
+    {
+      "group": "nfl|q1_rushing_yards",
+      "forecasts": 2
+    }
+  ],
+  "promoted": false
+}

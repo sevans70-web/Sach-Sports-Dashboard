@@ -1,0 +1,178 @@
+{
+  "createdAt": "2026-10-29T21:01:29.607Z",
+  "policy": "Fixed ridge=20; first65% prior-season timestamps fit; remaining35% calibrate; 48h embargo; 2026 retrospective evaluation; no test-driven model selection.",
+  "sources": [
+    {
+      "path": "/workspace/scratch/541edff4d14a/q1-evidence-recovery/nba-events-census-oct24/event-observations.json",
+      "sha256": "5d46aa2d15a6794f1d6fefee12af1bb6b18a197fe5a3d898c88471a19fdb3089"
+    },
+    {
+      "path": "model-research/2026-10-19/nfl-quarter-population/opportunity-observations.json.gz",
+      "sha256": "1898049c5fbc83381974fd468f10cdb18792e8f2ac720da92b2ddae9a10319a4"
+    }
+  ],
+  "reports": [
+    {
+      "group": "nba|q1_assists",
+      "trainingRows": 7284,
+      "calibrationRows": 5362,
+      "testRows": 14753,
+      "testFixtures": 886,
+      "mae": 0.7118984193586074,
+      "baselineMae": 0.7118488948709956,
+      "maeImprovementPct": -0.006957162955326051,
+      "crps": 0.45401052836749584,
+      "baselineCrps": 0.4705136935030784,
+      "interval80Coverage": 0.9271334643801261,
+      "bias": -0.018920235136623456,
+      "maeGainInterval": {
+        "clusters": 886,
+        "replicates": 1000,
+        "lower95": -0.003048356260183358,
+        "upper95": 0.002908833202051625
+      },
+      "status": "not_improved_on_both_metrics",
+      "validatedForBetting": false
+    },
+    {
+      "group": "nba|q1_points",
+      "trainingRows": 7284,
+      "calibrationRows": 5362,
+      "testRows": 14753,
+      "testFixtures": 886,
+      "mae": 2.2364072342995214,
+      "baselineMae": 2.2716584681727188,
+      "maeImprovementPct": 1.551784054121166,
+      "crps": 1.547051845000774,
+      "baselineCrps": 1.6218305828241095,
+      "interval80Coverage": 0.8538602318172575,
+      "bias": -0.052986871317247726,
+      "maeGainInterval": {
+        "clusters": 886,
+        "replicates": 1000,
+        "lower95": 0.025529501817594658,
+        "upper95": 0.04516800550200583
+      },
+      "status": "retrospective_point_and_distribution_gain",
+      "validatedForBetting": false
+    },
+    {
+      "group": "nba|q1_rebounds",
+      "trainingRows": 7284,
+      "calibrationRows": 5362,
+      "testRows": 14753,
+      "testFixtures": 886,
+      "mae": 0.9340420227232297,
+      "baselineMae": 0.9472004617839417,
+      "maeImprovementPct": 1.389192635730944,
+      "crps": 0.6257027990908728,
+      "baselineCrps": 0.6612349816813143,
+      "interval80Coverage": 0.9042906527485935,
+      "bias": -0.006449343704594355,
+      "maeGainInterval": {
+        "clusters": 886,
+        "replicates": 1000,
+        "lower95": 0.010026503630684434,
+        "upper95": 0.01677499805815472
+      },
+      "status": "retrospective_point_and_distribution_gain",
+      "validatedForBetting": false
+    },
+    {
+      "group": "nba|q1_threes_made",
+      "trainingRows": 7284,
+      "calibrationRows": 5362,
+      "testRows": 14753,
+      "testFixtures": 886,
+      "mae": 0.500635688615785,
+      "baselineMae": 0.4769793929456406,
+      "maeImprovementPct": -4.959605387572873,
+      "crps": 0.28800137653778474,
+      "baselineCrps": 0.2955984376059219,
+      "interval80Coverage": 0.9345895750016946,
+      "bias": 0.0011096243577358661,
+      "maeGainInterval": {
+        "clusters": 886,
+        "replicates": 1000,
+        "lower95": -0.02606151676546055,
+        "upper95": -0.021237825671372283
+      },
+      "status": "not_improved_on_both_metrics",
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|q1_passing_yards",
+      "trainingRows": 201,
+      "calibrationRows": 136,
+      "testRows": 64,
+      "testFixtures": 51,
+      "mae": 25.102629235746264,
+      "baselineMae": 27.6468501984127,
+      "maeImprovementPct": 9.20257079706139,
+      "crps": 17.412410115700695,
+      "baselineCrps": 20.177671130952383,
+      "interval80Coverage": 0.78125,
+      "bias": 2.8805602314937495,
+      "maeGainInterval": {
+        "clusters": 51,
+        "replicates": 1000,
+        "lower95": -0.21542386309395423,
+        "upper95": 5.627116778057103
+      },
+      "status": "retrospective_point_and_distribution_gain",
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|q1_receiving_yards",
+      "trainingRows": 2640,
+      "calibrationRows": 2060,
+      "testRows": 767,
+      "testFixtures": 80,
+      "mae": 7.632175416638053,
+      "baselineMae": 7.591077895738913,
+      "maeImprovementPct": -0.5413924275788242,
+      "crps": 5.161671718730854,
+      "baselineCrps": 5.008847736557072,
+      "interval80Coverage": 0.8396349413298566,
+      "bias": 0.40879722199886415,
+      "maeGainInterval": {
+        "clusters": 80,
+        "replicates": 1000,
+        "lower95": -0.24167611728392507,
+        "upper95": 0.14916289746950248
+      },
+      "status": "not_improved_on_both_metrics",
+      "validatedForBetting": false
+    },
+    {
+      "group": "nfl|q1_rushing_yards",
+      "trainingRows": 774,
+      "calibrationRows": 661,
+      "testRows": 281,
+      "testFixtures": 80,
+      "mae": 5.936594899496281,
+      "baselineMae": 6.194324408292381,
+      "maeImprovementPct": 4.160736374269899,
+      "crps": 4.230814929197075,
+      "baselineCrps": 4.222262392864092,
+      "interval80Coverage": 0.8505338078291815,
+      "bias": -0.015392081216023727,
+      "maeGainInterval": {
+        "clusters": 80,
+        "replicates": 1000,
+        "lower95": -0.08703353059407896,
+        "upper95": 0.6079692237094247
+      },
+      "status": "not_improved_on_both_metrics",
+      "validatedForBetting": false
+    }
+  ],
+  "limitations": [
+    "Retrospective evaluation already inspected; not an independent holdout.",
+    "NBA labels conditional on certifiable quarter participation; absent labels never filled with zero.",
+    "Historical pregame availability and sportsbook quarter participation rules remain uncertified.",
+    "No exact historical prices or betting-profit evidence.",
+    "Cross-season same-team priors permitted with NBA366/NFL730-day lookback; current role confirmation still required."
+  ],
+  "promoted": false
+}

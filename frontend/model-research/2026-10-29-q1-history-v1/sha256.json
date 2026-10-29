@@ -1,0 +1,16 @@
+{
+  "external-nfl-observations.json.gz": "dcb99f5271587f3f9ea40a0af45155ce058397bed1cd7122e1a64e6d6299ef9b",
+  "external-report.json": "41c3544a51bce67d64c3591aaefcce133dacc96389ecb22268ec8c5774414abd",
+  "README.md": "0eb3491e4b246cbad2eb8f94c68d1a44f82c61c6e8345d535be428c6e8f948c4",
+  "external-predictions.jsonl.gz": "6ca5c668e5f5d6bf402f4776b10d5023f40407169a6d07cca0c1c077fa43154b",
+  "external-nba-events.json.gz": "70b5ee40145b7e44c755595c02b841d872739a2f4a3f482b9a6010c5cddb4334",
+  "verification.json": "5d8a0a3a27137cce1c06e2d1ed1fc7de9dcf7cfe26375c29706a4b07aaeead21",
+  "candidates.json.gz": "0b71e63d5a5118d000705adb24a5914597e8310f34876a795340ab4fda7e6e61",
+  "external-protocol.json": "9b195381bbfa02bb9e707dc42e2c87b629f25cc816768d0351e85faa8024bcb3",
+  "prospective-manifest.json": "fd70c7f6f4e84d89e84c742cade0452be58a23370484f13d0a80916bd6b41b88",
+  "external-source-manifest.json": "6d660b84b4959f47cc2898c1ec45fd80b7d4f6a856ecb3230b3ca31c8578baf0",
+  "prospective-cohort.tar.gz": "ceae83c16b6a7e61a60d1539b1431e69adccd97bbc59a88ecd09a478448a0e33",
+  "external-official-sources.tar.gz": "f8615a4ee4589b89949b229432333c7c80e888fc936c20c5efd995e631d518ff",
+  "retrospective-report.json": "18dab4b71afa225fd5b692e1ed17654500ff39293095f56e4a19c0bbf35f6db9",
+  "initial-score.json": "8653ad0ec2376ebdd2a153647aa049921945ee19dc5049aa89a4848caa58aa77"
+}

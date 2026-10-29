@@ -1,0 +1,12 @@
+{
+  "frozenAt": "2026-10-29T21:03:49.039Z",
+  "candidateSha256": "db107e27b772a814b2fa4162cfe3a06f20b478517cc0629d52cd7b1519f9a1b9",
+  "dates": "20261020-20261026",
+  "sports": [
+    "nba",
+    "nfl"
+  ],
+  "selection": "Every discovered completed regular-season fixture in the declared date window, with 48h result-availability lag. No outcome-driven inclusion.",
+  "classification": "New temporal external check; current revised official data, not a prospective historical-price test.",
+  "policy": "No refitting or candidate changes after retrieval. Report all groups, eligibility, exclusions, errors, MAE and distribution error. Compare prior-Q1-history mean and empirical distribution."
+}

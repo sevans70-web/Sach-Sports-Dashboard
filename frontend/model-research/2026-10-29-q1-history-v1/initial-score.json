@@ -1,0 +1,12 @@
+{
+  "createdAt": "2026-10-29T21:05:44.716Z",
+  "integritySha256": "c6f8c98ff085c18922e786d6f5c290392e3486aa21780603075e2a30fb3efa06",
+  "forecasts": 68,
+  "settled": 0,
+  "pending": 68,
+  "unresolved": 0,
+  "sources": [],
+  "errors": [],
+  "complete": false,
+  "promoted": false
+}

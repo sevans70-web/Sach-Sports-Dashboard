@@ -1,0 +1,9 @@
+{
+  "verifiedAt": "2026-10-29T21:07:07.784Z",
+  "forecastsReproduced": 68,
+  "allFrozenBeforeStart": true,
+  "testsPassed": 463,
+  "productionBuildPassed": true,
+  "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "liveModelsChanged": false
+}
