@@ -9,7 +9,7 @@ import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {espnParticipation} from "@/lib/player-participation";
 import {footballRowsForMarket} from "@/lib/football-quarter-stats";
 import {footballResearchSample} from "@/lib/football-history";
-import {guardRankingPayload} from "@/lib/prop-integrity";
+import {guardRankingPayload,verifiedPropQuote} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
 import {footballBookRows,footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
