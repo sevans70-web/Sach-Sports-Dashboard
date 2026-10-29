@@ -19,7 +19,7 @@ export function verifiedPropQuote(row:any, now=Date.now(), historical=false){
   // A frozen pregame quote remains valid evidence after the game ends. It is
   // not replaced with a live quote or subjected to today's freshness cutoff.
   if(historical || kickoff<=now){
-    const capture=Date.parse(row.savedAt||row.capturedAt||"");
+    const capture=Date.parse(row.boardCapturedAt||row.savedAt||row.capturedAt||"");
     return Number.isFinite(capture)&&capture<kickoff&&stamp<=capture+60_000&&capture-stamp<=15*60_000;
   }
   return stamp<=now+60_000&&now-stamp<=15*60_000;
