@@ -363,6 +363,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const nextDay=playableDays.find((d:string)=>d>primaryDay)||"";
   const priority=(r:any)=>{const day=easternDayKey(rowGameTime(r,schedule));return day===primaryDay?12:day===nextDay?3:0};
   rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const boardDay=schedule.some((g:any)=>easternDayKey(g.date)===today)?today:primaryDay;const ranked=independentFootballRankings(rows,25,boardDay);
+   if(market==='anytime_td'||market==='first_td')console.info('[N04 ranked audit]',JSON.stringify({market,marketQuotes:owlsRows.length,matched:resolved.length,ranked:ranked.length,verifiedQuotes:ranked.filter(r=>verifiedPropQuote(r)).length,matchedEvents:new Set(ranked.map(r=>r.gameId).filter(Boolean)).size}));
   // Storage is optional for rendering a fresh board, never for overwriting
   // historical records. Failed reads stay failed on the persistence path.
   const savedToday=await getNflPredictions(market,today).catch(e=>{
