@@ -1,0 +1,8 @@
+{
+  "cohortSha256": "a9e2c79b5bfac2f3747d6ff3483fbe6841e04b5ed3bd7e6285d3afbc773dede3",
+  "files": {
+    "report.json": "1e0d544e9fb836aa843e86048a4105aa81e0a2393f2afc6ed4d286796e0c78e7",
+    "official-results.json.gz": "7b23069a9e316e141ea9f58821ed9fab51595ae899f072ccdf93728dc838e6da",
+    "README.md": "eeda941f99b315f65e81d76c57fec5ff740498a26c1ebdc42f9e35bc0dd8a206"
+  }
+}
