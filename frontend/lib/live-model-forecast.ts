@@ -134,6 +134,9 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   // Even a large slate must let health/history requests run between players.
   await yieldToRequests();
  }
+ const forecastBlockers:Record<string,number>={};
+ for(const row of rows){const reason=row.researchForecast?.status==='available'?(row.researchForecast.modelSelection?'selected':row.researchForecast.selectionReason||'forecast_without_selection'):row.researchForecast?.reason||'unknown';forecastBlockers[reason]=(forecastBlockers[reason]||0)+1;}
+ if(String(payload.market||'').startsWith('q1_'))console.info('[N05 forecast audit]',JSON.stringify({sport,market:payload.market,rows:rows.length,modelAvailable:runtimeSupportsMarket(data,sport,String(payload.market||'')),blockers:forecastBlockers}));
  return {...payload,rows,fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast.status==='available').length,
   modelSelectionCount:rows.filter((r:any)=>r.researchForecast.modelSelection!=null).length};
 }
