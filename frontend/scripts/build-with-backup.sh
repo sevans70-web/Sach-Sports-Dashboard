@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+node --test tests/first-td-scoring-order.test.mjs tests/featured-official-result.test.mjs tests/football-book-quotes.test.mjs
 npm run build
 cp -r public .next/standalone/
 mkdir -p .next/standalone/.next .next/standalone/scripts
