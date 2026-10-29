@@ -1,0 +1,8 @@
+{"sport": "nba", "market": "q1_points", "status": 200, "success": true, "rows": 19, "main": 19, "milestone": 0, "issues": [], "seconds": 5.58}
+{"sport": "nba", "market": "q1_rebounds", "status": 200, "success": true, "rows": 19, "main": 0, "milestone": 19, "issues": [], "seconds": 5.61}
+{"sport": "nba", "market": "q1_assists", "status": 200, "success": true, "rows": 17, "main": 0, "milestone": 17, "issues": [], "seconds": 5.62}
+{"sport": "nba", "market": "q1_threes_made", "status": 200, "success": true, "rows": 17, "main": 0, "milestone": 17, "issues": [], "seconds": 5.62}
+{"sport": "nba", "market": "q1_pts_rebs_asts", "status": 200, "success": true, "rows": 0, "main": 0, "milestone": 0, "issues": [], "seconds": 7.74}
+{"sport": "nfl", "market": "q1_passing_yards", "status": 200, "success": true, "rows": 2, "main": 2, "milestone": 0, "issues": [], "seconds": 4.16}
+{"sport": "nfl", "market": "q1_rushing_yards", "status": 200, "success": true, "rows": 3, "main": 2, "milestone": 1, "issues": [], "seconds": 4.06}
+{"sport": "nfl", "market": "q1_receiving_yards", "status": 200, "success": true, "rows": 10, "main": 4, "milestone": 6, "issues": [], "seconds": 4.05}
