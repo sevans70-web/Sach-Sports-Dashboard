@@ -12,9 +12,20 @@ test('wrong fixture, live, missing stats and post-start selections never become 
 });
 
 test('scorer markets settle occurrence, never a numeric push at the legacy line',()=>{
- for(const market of ['anytime_td','first_td','first_basket'])for(const prediction of ['OVER','UNDER'])for(const stat of [0,1,2]){
+ for(const market of ['anytime_td','first_basket'])for(const prediction of ['OVER','UNDER'])for(const stat of [0,1,2]){
  const row={gameId:'7',playerId:'9',market,prediction,sportsbookLine:1,boardCapturedAt:'2026-10-25T16:55:00Z',gameTime:'2026-10-25T17:00:00Z'};
  const payload={success:true,gameId:'7',state:'post',rows:[{playerId:'9',stats:{[market]:stat}}]};
  assert.equal(officialFeaturedResult(row,payload).status,(prediction==='UNDER'?stat===0:stat>0)?'hit':'miss');
  }
+});
+
+test('First TD requires verified event ordering rather than player touchdown totals',()=>{
+ const pick={...row,market:'first_td',prediction:'YES'};
+ const scored={...payload,rows:[{playerId:'4',stats:{first_td:2}}]};
+ assert.equal(officialFeaturedResult(pick,scored),null);
+ assert.equal(officialFeaturedResult(pick,{...scored,firstTouchdownVerified:true,firstTouchdownScorerPlayerId:'9'}).status,'miss');
+ const hit=officialFeaturedResult(pick,{...scored,firstTouchdownVerified:true,firstTouchdownScorerPlayerId:'4'});
+ assert.equal(hit.status,'hit');
+ assert.equal(hit.actual,1);
+ assert.equal(hit.resultSource,'verified_first_touchdown_order');
 });
