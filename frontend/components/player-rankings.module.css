@@ -1135,3 +1135,8 @@ button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px so
 .probabilityDetail span { color:#b9bbc0;font-size:12px; }
 .probabilityDetail strong { color:var(--gold); }
 .probabilityDetail small { color:#b9bbc0;font-size:11px; }
+
+/* Quarter cards retain the same three fields on narrow screens and milestones. */
+.faceMetrics.quarterMetrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.faceMetrics.quarterMetrics span { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
+.faceMetrics.quarterMetrics strong { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.3; }

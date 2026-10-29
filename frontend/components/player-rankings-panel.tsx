@@ -993,6 +993,7 @@ function PlayerCard({
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
   const modelSelection=cardModelPick(card.raw);
   const firstBasket=card.market==='first_basket';
+  const quarterCard=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_');
   const quarterTarget=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_')&&card.raw?.lineType==='milestone';
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
@@ -1073,11 +1074,11 @@ function PlayerCard({
         </div>:null}
       </div>
 
-      <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent||quarterTarget?2:3}, minmax(0, 1fr))`}}>
-        {quarterTarget?<>
-          <div><span>Q1 Target</span><strong>{propLineText(card.sportsbookLine)}+ {cardStatUnit(card.market)}</strong></div>
-          <div><span>Sportsbook odds</span><strong>{Number(card.raw.overPrice)>0?'+':''}{card.raw.overPrice}</strong></div>
-
+      <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
+        {quarterCard?<>
+          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+ ${cardStatUnit(card.market)}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
+          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
+          <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
           <div><span>Sportsbook odds</span><strong>{scorerQuote?`${scorerQuote.price>0?'+':''}${scorerQuote.price}`:'—'}</strong></div>
@@ -1099,7 +1100,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{modelSelection?"Saved selection":footballForecast?.side?"Forecast direction":"Sach Pick"}</span>
+          <span>{"Sach Prediction"}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1122,7 +1123,7 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : "Sach projection"}
+              : "Sach Projection"}
           </span>
           <strong>
             {binaryEvent
@@ -1139,7 +1140,7 @@ function PlayerCard({
 
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
-          {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}</p> : null}
+          {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}{quarterTarget?` · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice}`:""}</p> : null}
           <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
