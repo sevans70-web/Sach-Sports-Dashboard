@@ -1,4 +1,5 @@
 export const FOOTBALL_SLATES=['early','afternoon','evening'] as const;
+const footballDay=(value:string)=>{const d=new Date(value);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(d):null;};
 export function footballSlate(time:string){
  const date=new Date(time);if(!Number.isFinite(date.getTime()))return null;
  const hour=Number(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',hour:'2-digit',hourCycle:'h23'}).format(date));
@@ -15,7 +16,7 @@ export function selectRecordedFootballSlate(snapshots:any[],market:string,day:st
   const at=Date.parse(snapshot.capturedAt),p=snapshot.payload;
   if(!Number.isFinite(at)||at>=lockAt||p?.market!==market||(p.kind!=null&&p.kind!=='research_rankings'))continue;
   for(const row of p.rows||[]){
-   if(footballSlate(row.gameTime)!==slate||!String(row.gameTime).startsWith(day)||at>=Date.parse(row.gameTime))continue;
+   if(footballSlate(row.gameTime)!==slate||footballDay(row.gameTime)!==day||at>=Date.parse(row.gameTime))continue;
    const key=row.playerId+'|'+row.gameId;
    candidates.set(key,{at,row});if(at>Date.parse(capturedAt||'1970-01-01'))capturedAt=snapshot.capturedAt;
   }
