@@ -997,7 +997,7 @@ function PlayerCard({
   const quarterTarget=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_')&&card.raw?.lineType==='milestone';
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
-  const displayedPick=modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction);
+  const displayedPick=quarterTarget ? null : (modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction));
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection);
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
@@ -1076,8 +1076,8 @@ function PlayerCard({
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
-          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+ ${cardStatUnit(card.market)}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
-          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
+          <div><span>{quarterTarget?`${card.marketLabel} · Milestone` : card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+ ${cardStatUnit(card.market)}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
+          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>Milestone quote · no two-way O/U pick</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
