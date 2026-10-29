@@ -1,3 +1,4 @@
+import {propLineText} from '@/lib/prop-line-format';
 const num=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 const fmt=(v:number)=>Number(v.toFixed(1)).toString();
 /** Descriptive pregame history only; never a forecast, edge, or GI score. */
@@ -24,14 +25,14 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
  const unit=cardStatUnit(market);
  if(count){
   facts.push(`Last ${count}: ${values.map(fmt).join(', ')} ${unit}.`);
-  if(line!=null&&!/anytime|first/.test(market))facts.push(`${values.filter((v:number)=>v>line).length} of the last ${count} finished above ${fmt(line)}; ${values.filter((v:number)=>v<line).length} below${values.some((v:number)=>v===line)?`, ${values.filter((v:number)=>v===line).length} on the line`:''}.`);
+  if(line!=null&&!/anytime|first/.test(market))facts.push(`${values.filter((v:number)=>v>line).length} of the last ${count} finished above ${propLineText(line)}; ${values.filter((v:number)=>v<line).length} below${values.some((v:number)=>v===line)?`, ${values.filter((v:number)=>v===line).length} on the line`:''}.`);
   if(count>=5){const recent=(values.at(-1)!+values.at(-2)!)/2,earlier=values.slice(0,-2).reduce((a:number,b:number)=>a+b,0)/(count-2);facts.push(`Latest two average ${fmt(recent)} ${unit}, versus ${fmt(earlier)} in the preceding ${count-2}.`)}
   const workload=cohort.slice(-5).map((p:any)=>num(p.workload));
   if(/passing/.test(market)&&workload.length&&workload.every((v:any)=>v!=null))facts.push(`Passing workload: ${fmt(workload.reduce((a:number,b:number)=>a+b!,0)/workload.length)} attempts per game in this sample.`);
  }
  if(row.availabilityEvidence?.text&&String(row.availabilityEvidence.gameId)===String(row.gameId))facts.push(row.availabilityEvidence.text);
  const actual=num(row.gameState==='post'?row.actualResult:row.liveCurrent);
- if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line==null?'':actual===line?`; on the ${fmt(line)} line`:`; ${fmt(Math.abs(actual-line))} ${actual>line?'above':'below'} the ${fmt(line)} line`}.`);
+ if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line==null?'':actual===line?`; on the ${propLineText(line)} line`:`; ${propLineText(Math.abs(actual-line))} ${actual>line?'above':'below'} the ${propLineText(line)} line`}.`);
  if(row.gameState==='post'&&actual==null)facts.unshift('Final statistic is not available yet.');
  if(!facts.length)facts.push(row.historyLoaded===true?'Recent results are unavailable for this market.':'Loading recent player results…');
  return {facts,face:facts.slice(0,row.gameState==='post'?1:2).join(' '),recentAverage:average,recentCount:count,recentLabel:count?`Last ${count} avg.`:'Recent avg.'};

@@ -1,4 +1,5 @@
 "use client";
+import {propLineText} from '@/lib/prop-line-format';
 import {SavedEstimatedEv,useSavedSelection} from '@/components/saved-estimated-ev';
 
 import { useEffect, useMemo, useState } from "react";
@@ -681,7 +682,7 @@ export function UnifiedPlayerCard({
                 {savedSelection||savedEvidence.forecast?"Sportsbook Line":"Reference Line"}
               </span>
               <strong>
-                {fmt(line)}
+                {propLineText(line)}
               </strong>
             </article>
 
@@ -728,7 +729,7 @@ export function UnifiedPlayerCard({
                 <small>SACH PLAY</small>
                 <h2>{marketLabel(researchMarket)}</h2>
               </div>
-              <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:forecastDirection?`Forecast ${forecastDirection} ${fmt(line)}`:'Not established'}</strong>
+              <strong>{effectivePick?`${effectivePick} ${propLineText(line)}`:forecastDirection?`Forecast ${forecastDirection} ${propLineText(line)}`:'Not established'}</strong>
             </div>
 
             <div className={styles.playRows}>
@@ -737,7 +738,7 @@ export function UnifiedPlayerCard({
                   <b>Main Play</b>
                   <small>{effectivePick ? `${savedSelection?.sportsbook} · ${savedSelection?.odds>0?'+':''}${savedSelection?.odds} · saved pregame` : "Forecast only — no verified selection"}</small>
                 </span>
-                <strong>{effectivePick?`${effectivePick} ${fmt(line)}`:forecastDirection?`Forecast ${forecastDirection} ${fmt(line)}`:'Not established'}</strong>
+                <strong>{effectivePick?`${effectivePick} ${propLineText(line)}`:forecastDirection?`Forecast ${forecastDirection} ${propLineText(line)}`:'Not established'}</strong>
               </div>
               <div>
                 <span>

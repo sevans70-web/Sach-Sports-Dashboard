@@ -16,6 +16,7 @@ import {prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget} from "@/lib/card-results";
+import {propLineText} from '@/lib/prop-line-format';
 import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
 import {firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
@@ -1073,7 +1074,7 @@ function PlayerCard({
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent||quarterTarget?2:3}, minmax(0, 1fr))`}}>
         {quarterTarget?<>
-          <div><span>Q1 Target</span><strong>{shortNumber(card.sportsbookLine)}+ yards</strong></div>
+          <div><span>Q1 Target</span><strong>{propLineText(card.sportsbookLine)}+ yards</strong></div>
           <div><span>Sportsbook odds</span><strong>{Number(card.raw.overPrice)>0?'+':''}{card.raw.overPrice}</strong></div>
 
         </>:firstBasket?<>
@@ -1092,7 +1093,7 @@ function PlayerCard({
               ? "HR YES"
               : card.sportsbookLine == null
                 ? "Line —"
-                : `O/U ${shortNumber(card.sportsbookLine)}`}
+                : `O/U ${propLineText(card.sportsbookLine)}`}
           </strong>
         </div>
 
@@ -1109,7 +1110,7 @@ function PlayerCard({
             }
           >
             {["OVER", "UNDER"].includes(displayedPick) && card.sportsbookLine != null
-              ? `${displayedPick} ${shortNumber(card.sportsbookLine)}`
+              ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
               : displayedPick}
           </strong>
           {footballForecast?.side?<small>{footballForecast.basis}</small>:state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
@@ -1170,7 +1171,7 @@ function PlayerCard({
                     ? `✅ ${shortNumber(current)} HR`
                     : "0 HR · live"
                   : card.sportsbookLine != null
-                    ? `${shortNumber(current)} / ${shortNumber(card.sportsbookLine)} · ${shortNumber(Math.max(0, card.sportsbookLine - current))} to line`
+                    ? `${shortNumber(current)} / ${propLineText(card.sportsbookLine)} · ${propLineText(Math.max(0, card.sportsbookLine - current))} to line`
                     : `${shortNumber(current)} current`}
             </span>
           </div>
@@ -1224,7 +1225,7 @@ function PlayerCard({
               <strong>
                 {footballScorer?scorerTarget(card.market):binaryEvent
                   ? "YES"
-                  : shortNumber(card.sportsbookLine)}
+                  : propLineText(card.sportsbookLine)}
               </strong>
             </div>
             <div>
@@ -1379,11 +1380,11 @@ function PlayerCard({
                 <b>→</b>
                 <div>
                   <span>{researchOnly ? "Recorded quote" : state === "pregame" ? "Current" : "Close"}</span>
-                  <strong>{shortNumber(card.sportsbookLine)}</strong>
+                  <strong>{propLineText(card.sportsbookLine)}</strong>
                 </div>
                 {lineMovement != null && lineMovement !== 0 ? (
                   <em>
-                    {`${lineMovement >= 0 ? "+" : ""}${shortNumber(lineMovement)}`}
+                    {`${lineMovement >= 0 ? "+" : ""}${propLineText(lineMovement)}`}
                   </em>
                 ) : null}
               </div>
