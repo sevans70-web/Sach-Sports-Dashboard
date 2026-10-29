@@ -1,4 +1,4 @@
-import {firstTouchdownResult} from '@/lib/first-td-scoring-order';
+import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
 import {readDurableHistory} from '@/lib/durable-history';
 import {independentFootballRankings,footballSlate} from '@/lib/football-slate-rankings';
@@ -257,7 +257,7 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null||b==null?null:a+b}
  if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null||b==null?null:a+b}
  if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null||b==null?null:a+b}
- if(market==="first_td")return firstTouchdownResult(payload,playerName);
+ if(market==="first_td")return null;
 
  return null;
 }
@@ -268,7 +268,13 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
  await Promise.all([...gameMap.values()].filter((g:any)=>g.state==="in"||g.completed||g.state==="post").map(async(g:any)=>{
   try{const r=await fetch(`${ESPN_SUMMARY}?event=${encodeURIComponent(g.id)}`,{cache:"no-store"});if(r.ok)summaries.set(String(g.id),await r.json())}catch{}
  }));
- const observedByGame=new Map([...summaries].map(([id,payload])=>[id,new Map(footballRowsForMarket(payload,market).map(p=>[p.playerId,p.stats]))]));
+ const firstTdVerified=new Map<string,boolean>();
+ const observedByGame=new Map([...summaries].map(([id,payload])=>{
+  const observed=footballRowsForMarket(payload,market);
+  const checked=market==='first_td'?withVerifiedFirstTouchdownResults(payload,observed):{verified:false,rows:observed};
+  firstTdVerified.set(id,checked.verified);
+  return [id,new Map(checked.rows.map(p=>[p.playerId,p.stats]))];
+ }));
  return rows.map(row=>{
   const g=matchupGame(schedule,row.matchup);
   if(!g)return row;
@@ -277,7 +283,7 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
   const current=payload&&String(payload?.header?.id)===String(g.id)?observedByGame.get(String(g.id))?.get(String(row.playerId))?.[market]??null:null;
   const line=Number(row.sportsbookLine);
   const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
-  return {...row,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
+  return {...row,firstTouchdownVerified:market==='first_td'&&payload&&String(payload?.header?.id)===String(g.id)&&firstTdVerified.get(String(g.id))===true,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
  });
 }
 
@@ -388,7 +394,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
         gameId:String(g?.id||""),gameState:g?.completed?"post":String(g?.state||"post"),gameStatus:String(g?.status||""),liveCurrent:p.actual,liveProgressPct:p.actual!=null&&p.sportsbookLine&&p.sportsbookLine>0?Math.max(0,Math.min(200,Math.round(p.actual/p.sportsbookLine*100))):null};
     });
   const currentGameFor=(r:any)=>r.gameId?schedule.find((g:any)=>String(g.id)===String(r.gameId)):matchupGame(schedule,r.matchup);
-  const observedArchived=market.startsWith('q1_')?await liveContext(archived,schedule,market):archived;
+  const observedArchived=(market.startsWith('q1_')||market==='first_td')?await liveContext(archived,schedule,market):archived;
   const liveByKey=new Map([...observedArchived,...liveRows].map((r:any)=>[`${r.playerId}|${r.gameId||cleanName(r.matchup)}`,r]));
   // HARD KICKOFF LOCK: rebuild started rows from the durable pregame snapshot.
   // Live feeds may update Current/Actual and game status, but never rank, line,
@@ -398,7 +404,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
     const key=`${p.playerId}|${p.gameId||cleanName(p.matchup)}`;
     const live=liveByKey.get(key) as any;
     const margin=p.actual!=null&&p.sportsbookLine!=null?p.actual-p.sportsbookLine:null;
-    return {...footballQuoteFields(p),originalResearchPick:p.pickSide,originalResearchSavedAt:p.savedAt,rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,researchCohort:live?.researchCohort,...(market.startsWith("q1_")?{quarterObservationChecked:true,observedQuarterValue:live?.liveCurrent??null}:{}),sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:market.startsWith("q1_")?live?.liveCurrent??null:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),participationConfirmed:live?.participationConfirmed===true,starterConfirmed:live?.starterConfirmed===true,participationGameId:String(g?.id||p.gameId||""),liveCurrent:market.startsWith("q1_")?live?.liveCurrent??null:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
+    return {...footballQuoteFields(p),originalResearchPick:p.pickSide,originalResearchSavedAt:p.savedAt,rank:Number(p.lastSeenRank||p.originalRank||99),playerId:p.playerId,playerName:p.playerName,teamName:p.teamName,teamId:p.teamId||live?.teamId||"",position:p.position||live?.position||"",headshot:p.headshot||live?.headshot||"",teamLogo:p.teamLogo||live?.teamLogo||"",matchup:p.matchup,gameTime:p.gameTime,giScore:p.giScore,modelProbability:p.modelProbability,modelProjection:p.modelProjection,projectionGames:live?.projectionGames??null,researchCohort:live?.researchCohort,...(market.startsWith("q1_")?{quarterObservationChecked:true,observedQuarterValue:live?.liveCurrent??null}:{}),sportsbookLine:p.sportsbookLine,sportsbookProbability:p.sportsbookProbability??null,bookmakerCount:p.bookmakerCount,perGame:p.modelProjection,seasonTotal:null,gamesPlayed:live?.gamesPlayed??null,season:2026,summary:`Frozen pregame ${NFL_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction. Rank, line, projection and confidence were locked at kickoff.`,marketBacked:true,resultStatus:p.status,actualResult:market.startsWith("q1_")?live?.liveCurrent??null:p.actual,resultMargin:margin,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",gameId:String(g?.id||p.gameId||""),gameState:g?.completed?"post":String(g?.state||"in"),gameStatus:String(g?.status||live?.gameStatus||""),firstTouchdownVerified:live?.firstTouchdownVerified===true,participationConfirmed:live?.participationConfirmed===true,starterConfirmed:live?.starterConfirmed===true,participationGameId:String(g?.id||p.gameId||""),liveCurrent:market.startsWith("q1_")?live?.liveCurrent??null:live?.liveCurrent??p.actual,liveProgressPct:live?.liveProgressPct??null,frozen:true,lockedAtKickoff:true};
   });
   const futureCurrent=liveRows.filter((r:any)=>!started(currentGameFor(r)));
   const lockedKeys=new Set(frozenStarted.map((r:any)=>`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));

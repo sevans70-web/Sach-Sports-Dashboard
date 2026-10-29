@@ -20,3 +20,8 @@ export function verifiedFirstTouchdownScorerId(payload:any,rows:{playerId:string
  const ids=[...new Set(hits.map(r=>String(r.playerId)))];
  return ids.length===1?ids[0]:null;
 }
+
+export function withVerifiedFirstTouchdownResults(payload:any,rows:any[]){
+ const id=verifiedFirstTouchdownScorerId(payload,rows);
+ return {verified:id!=null,rows:id==null?rows:rows.map(r=>({...r,stats:{...r.stats,first_td:String(r.playerId)===id?1:0}}))};
+}

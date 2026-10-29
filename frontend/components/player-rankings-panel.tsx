@@ -958,7 +958,7 @@ function PlayerCard({
     isBinaryEventMarket(card.market);
   const footballScorer = (sport === "cfb" || sport === "nfl") && ["anytime_td", "first_td", "q1_anytime_td"].includes(card.market);
   const researchOnly = card.raw?.researchOnly === true;
-  const unverifiedFootballResult = researchOnly || (sport === "cfb" || sport === "nfl") && (card.raw?.quoteVersion !== 1 || card.raw?.recoveredAfterStart === true);
+  const unverifiedFootballResult = researchOnly || card.market==="first_td"&&card.raw?.firstTouchdownVerified!==true || (sport === "cfb" || sport === "nfl") && (card.raw?.quoteVersion !== 1 || card.raw?.recoveredAfterStart === true);
 
   const result =
     card.resultStatus ||
@@ -1187,7 +1187,7 @@ function PlayerCard({
 
       {state === "final" ? (
         <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
+          <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.market==='first_td'?'First TD scoring order unverified':card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
           <span>
             {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
             {!footballScorer && !unverifiedFootballResult && card.sportsbookLine != null && current != null
