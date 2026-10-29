@@ -68,7 +68,7 @@ export function cleanNbaName(v:string){return v.toLowerCase().normalize("NFD").r
 export function playerBaseline(p:NbaPlayer|undefined,market:NbaMarketKey):number|null{
  if(!p)return null;
  // Explicit pace estimate, not a measured quarter average; shown as such on rows.
- if(market.startsWith("q1_")){const full=playerBaseline(p,market.slice(3) as NbaMarketKey);return full==null?null:Math.round(full/4*10)/10}
+ if(market.startsWith("q1_"))return null; // No quarter-specific training data: abstain rather than divide full-game stats.
  const a=p.pointsPerGame,r=p.reboundsPerGame,s=p.assistsPerGame;
  const sum=(...xs:(number|null)[])=>xs.some(x=>x==null)?null:xs.reduce<number>((t,x)=>t+(x??0),0);
  return market==="first_basket"?null:market==="points"?a:market==="rebounds"?r:market==="assists"?s:market==="threes_made"?p.threesPerGame:market==="pts_rebs_asts"?sum(a,r,s):market==="pts_rebs"?sum(a,r):market==="pts_asts"?sum(a,s):market==="rebs_asts"?sum(r,s):market==="steals"?p.stealsPerGame:p.blocksPerGame;
