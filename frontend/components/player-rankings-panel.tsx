@@ -112,6 +112,7 @@ const MLB_PITCHER: Market[] = [
 const NFL_QB: Market[] = [
   { key: "passing_yards", label: "Passing Yards", icon: "🏈" },
   { key: "passing_tds", label: "Passing TDs", icon: "🎯" },
+  { key: "passing_interceptions", label: "Interceptions", icon: "🛑" },
   { key: "qb_rushing_yards", label: "QB Rushing Yards", icon: "🏃" },
   { key: "passing_rushing_yards", label: "Pass + Rush Yards", icon: "⚡" },
 ];

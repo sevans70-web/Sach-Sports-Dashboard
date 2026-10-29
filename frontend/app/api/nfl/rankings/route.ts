@@ -6,7 +6,7 @@ import {publishFeaturedBoards} from '@/lib/research-capture';
 import {rankingSourceState} from '@/lib/ranking-source-state';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {espnParticipation} from "@/lib/player-participation";
-import {footballQuarterRows} from "@/lib/football-quarter-stats";
+import {footballRowsForMarket} from "@/lib/football-quarter-stats";
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
@@ -35,6 +35,7 @@ async function cachedRoster(teamId:string){
 }
 
 const OWLS_MARKETS:Record<NflMarketKey,string[]>={
+ passing_interceptions:["passing_interceptions","interceptions_thrown","pass_interceptions","player_pass_interceptions","interceptions"],
  sacks:["sacks","player_sacks"],tackles:["tackles","solo_tackles"],tackles_assists:["tackles_assists","total_tackles"],
  passing_yards:["passing_yards","passingyards","pass_yards","passyards"],
  passing_tds:["passing_tds","pass_tds","passing_touchdowns","passingtouchdowns"],
@@ -59,6 +60,7 @@ const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  q1_rush_attempts:["rush_attempts_1q","rushing_attempts_1q","1q_rush_attempts","first_quarter_rush_attempts"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
+ passing_interceptions:["passinginterceptions","interceptionsthrown","interceptions","int"],
  sacks:["sacks","totalsacks"],tackles:["solotackles","solo"],tackles_assists:["totaltackles","tackles","combinedtackles"],
  passing_yards:["passingyards","passyards"],
  passing_tds:["passingtouchdowns","passingtds","passtds","td"],
@@ -135,7 +137,7 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  return {id:"",headshot:"",teamName:teamName||"NFL",teamId:"",position:"",teamLogo:""};
 }
 async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
- if(market==="first_td"||market.startsWith("q1_")||["sacks","tackles","tackles_assists"].includes(market))return [];
+ if(market==="passing_interceptions"||market==="first_td"||market.startsWith("q1_")||["sacks","tackles","tackles_assists"].includes(market))return [];
  const positions=market.startsWith("passing")||market==="qb_rushing_yards"?new Set(["QB"]):
    market.startsWith("rushing")?new Set(["RB","FB"]):new Set(["WR","TE","RB","FB"]);
  const games=schedule.filter(g=>g.state==="pre"&&easternDayKey(g.date)>=easternDayKey(new Date()));
@@ -256,14 +258,15 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  const receivingTd=()=>statFromSummary(payload,playerId,playerName,"receiving","TD");
  if(market==="passing_yards")return passingYds();
  if(market==="passing_tds")return passingTd();
+ if(market==="passing_interceptions")return statFromSummary(payload,playerId,playerName,"passing","INT");
  if(market==="qb_rushing_yards"||market==="rushing_yards")return rushingYds();
  if(market==="rushing_tds")return rushingTd();
  if(market==="receiving_yards")return receivingYds();
  if(market==="receptions")return receptions();
  if(["sacks","tackles","tackles_assists"].includes(market))return statFromSummary(payload,playerId,playerName,"defensive",market==="sacks"?"SACKS":market==="tackles"?"SOLO":"TOT");
- if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null&&b==null?null:(a||0)+(b||0)}
- if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null&&b==null?null:(a||0)+(b||0)}
- if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null&&b==null?null:(a||0)+(b||0)}
+ if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null||b==null?null:a+b}
+ if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null||b==null?null:a+b}
+ if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null||b==null?null:a+b}
  if(market==="first_td")return firstTdFromSummary(payload,playerName);
 
  return null;
@@ -275,12 +278,13 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
  await Promise.all([...gameMap.values()].filter((g:any)=>g.state==="in"||g.completed||g.state==="post").map(async(g:any)=>{
   try{const r=await fetch(`${ESPN_SUMMARY}?event=${encodeURIComponent(g.id)}`,{cache:"no-store"});if(r.ok)summaries.set(String(g.id),await r.json())}catch{}
  }));
+ const observedByGame=new Map([...summaries].map(([id,payload])=>[id,new Map(footballRowsForMarket(payload,market).map(p=>[p.playerId,p.stats]))]));
  return rows.map(row=>{
   const g=matchupGame(schedule,row.matchup);
   if(!g)return row;
   const payload=summaries.get(String(g.id));
   const participant=payload&&String(payload?.header?.id)===String(g.id)?espnParticipation(payload,"nfl").find(p=>p.playerId===String(row.playerId)):null;
-  const current=payload&&String(payload?.header?.id)===String(g.id)?footballQuarterRows(payload).find(p=>p.playerId===String(row.playerId))?.stats[market]??null:null;
+  const current=payload&&String(payload?.header?.id)===String(g.id)?observedByGame.get(String(g.id))?.get(String(row.playerId))?.[market]??null:null;
   const line=Number(row.sportsbookLine);
   const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
   return {...row,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
@@ -322,9 +326,10 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    const quoteGame=row.quoteVersion===1?footballQuoteGame(row,schedule):null;
    if(row.quoteVersion===1&&(!profile.id||!quoteGame||![String(quoteGame.awayTeamId),String(quoteGame.homeTeamId)].includes(String(profile.teamId))))return null;
    const pos=String(profile.position||"").toUpperCase();
-   const qbOnly=market==="qb_rushing_yards"||market==="q1_qb_rushing_yards";
+   const qbOnly=market==="passing_interceptions"||market==="qb_rushing_yards"||market==="q1_qb_rushing_yards";
    const nonQbRush=market==="rushing_yards"||market==="q1_rushing_yards";
    if(qbOnly&&pos&&pos!=="QB")return null;
+   if(market==="passing_interceptions"&&pos!=="QB")return null;
    if(nonQbRush&&pos==="QB")return null;
    const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
    if(row.earlyModel&&(m.projection==null||m.games<2))return null;
@@ -347,7 +352,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const resolved=built.filter(Boolean) as any[];
   const unique=new Map<string,any>();
   for(const row of resolved){
-    const key=row.marketBacked===false&&["passing_yards","passing_tds","passing_rushing_yards"].includes(market)?`${row.teamId}|${row.gameId}`:String(row.playerId||cleanName(row.playerName));
+    const key=row.marketBacked===false&&["passing_yards","passing_tds","passing_interceptions","passing_rushing_yards"].includes(market)?`${row.teamId}|${row.gameId}`:String(row.playerId||cleanName(row.playerName));
     const prior=unique.get(key);
     if(!prior||(row.marketBacked===false&&Number(row.modelProjection)>Number(prior.modelProjection))||Number(row.bookmakerCount||0)>Number(prior.bookmakerCount||0)||(Number(row.bookmakerCount||0)===Number(prior.bookmakerCount||0)&&Number(row.giScore||0)>Number(prior.giScore||0))) unique.set(key,row);
   }

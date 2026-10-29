@@ -8,7 +8,7 @@ export function cardStatUnit(market:string){
  const key=market.replace(/^q1_/,'');
  if(key.includes('yards'))return 'yards';
  if(/(?:^|_)tds?$|touchdown/.test(key))return 'touchdowns';
- return ({points:'points',rebounds:'rebounds',assists:'assists',threes_made:'threes',steals:'steals',blocks:'blocks',receptions:'receptions',shots_on_goal:'shots on goal',goalie_saves:'saves',goals:'goals',blocked_shots:'blocked shots',sacks:'sacks',tackles:'solo tackles',tackles_assists:'tackles + assists',pts_rebs_asts:'points + rebounds + assists',pts_rebs:'points + rebounds',pts_asts:'points + assists',rebs_asts:'rebounds + assists'} as Record<string,string>)[key]||'recorded';
+ return ({passing_interceptions:'interceptions thrown',points:'points',rebounds:'rebounds',assists:'assists',threes_made:'threes',steals:'steals',blocks:'blocks',receptions:'receptions',shots_on_goal:'shots on goal',goalie_saves:'saves',goals:'goals',blocked_shots:'blocked shots',sacks:'sacks',tackles:'solo tackles',tackles_assists:'tackles + assists',pts_rebs_asts:'points + rebounds + assists',pts_rebs:'points + rebounds',pts_asts:'points + assists',rebs_asts:'rebounds + assists'} as Record<string,string>)[key]||'recorded';
 }
 export function scorerTarget(market:string){return market==='first_td'?'First TD scorer':market==='first_basket'?'First basket scorer':'1+ TD'}
 export function cardObservedProgress(actual:any,line:any,market:string){

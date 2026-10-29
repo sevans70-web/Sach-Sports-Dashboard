@@ -2,6 +2,7 @@ import {nullableNumber} from "@/lib/provider-fetch";
 export const NFL_MARKETS = [
   ["passing_yards", "🏈", "Passing Yards"],
   ["passing_tds", "🎯", "Passing TDs"],
+  ["passing_interceptions", "🛑", "Passing Interceptions"],
   ["qb_rushing_yards", "🏃", "QB Rushing Yards"],
   ["passing_rushing_yards", "⚡", "Passing + Rushing Yards"],
   ["rushing_yards", "🏃", "Rushing Yards"],

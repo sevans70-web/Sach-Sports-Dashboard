@@ -66,3 +66,9 @@ export function footballQuarterRows(payload:any){
   return {...row,stats,quarterAudit};
  });
 }
+
+/** Full-game/live totals come directly from the official box score. Only a
+ * quarter market requires the more expensive reconciled play-by-play pass. */
+export function footballRowsForMarket(payload:any,market:string){
+ return market.startsWith('q1_')?footballQuarterRows(payload):footballObservedRows(payload);
+}

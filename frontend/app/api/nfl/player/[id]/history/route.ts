@@ -16,6 +16,7 @@ type HistoryMarket =
   | "sacks";
 
 const STAT_KEYS:Partial<Record<HistoryMarket,string[]>>={
+  passing_interceptions:["passinginterceptions","interceptionsthrown","interceptions","int"],
   passing_yards:["passingyards","passyards","yds"],
   passing_tds:["passingtouchdowns","passingtds","passtds","td"],
   qb_rushing_yards:["rushingyards","rushyards","yds"],
@@ -32,6 +33,7 @@ const STAT_KEYS:Partial<Record<HistoryMarket,string[]>>={
 };
 
 const LABELS:Partial<Record<HistoryMarket,string>>={
+  passing_interceptions:"Passing Interceptions",
   passing_yards:"Passing Yards",
   passing_tds:"Passing TDs",
   qb_rushing_yards:"QB Rushing Yards",

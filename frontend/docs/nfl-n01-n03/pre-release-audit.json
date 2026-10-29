@@ -1,0 +1,554 @@
+{
+  "startedAt": "2026-10-29T15:41:32.527Z",
+  "checks": [
+    {
+      "round": 1,
+      "market": "passing_interceptions",
+      "error": "Unexpected end of JSON input",
+      "ms": 3960
+    },
+    {
+      "round": 1,
+      "market": "passing_tds",
+      "http": 200,
+      "success": true,
+      "ms": 7795,
+      "rows": 2,
+      "quoted": 2,
+      "historyBaselines": 2,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "playerName": "Jordan Love",
+          "position": "QB",
+          "market": "passing_tds",
+          "line": 1.5,
+          "quoteId": "pinnacle-1639328851",
+          "modelProjection": 1.8,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "playerName": "Bryce Young",
+          "position": "QB",
+          "market": "passing_tds",
+          "line": 1.5,
+          "quoteId": "pinnacle-1639328806",
+          "modelProjection": 1.7,
+          "researchGames": 6,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "qb_rushing_yards",
+      "http": 200,
+      "success": true,
+      "ms": 3893,
+      "rows": 2,
+      "quoted": 2,
+      "historyBaselines": 2,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "playerName": "Bryce Young",
+          "position": "QB",
+          "market": "qb_rushing_yards",
+          "line": 9.5,
+          "quoteId": "pinnacle-1639328794",
+          "modelProjection": 5.6,
+          "researchGames": 6,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "playerName": "Jordan Love",
+          "position": "QB",
+          "market": "qb_rushing_yards",
+          "line": 5.5,
+          "quoteId": "pinnacle-1639328839",
+          "modelProjection": 2.5,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "passing_yards",
+      "http": 200,
+      "success": true,
+      "ms": 7994,
+      "rows": 2,
+      "quoted": 2,
+      "historyBaselines": 2,
+      "fittedForecasts": 2,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "playerName": "Jordan Love",
+          "position": "QB",
+          "market": "passing_yards",
+          "line": 264.5,
+          "quoteId": "pinnacle-1639328845",
+          "modelProjection": 278.9,
+          "researchGames": 7,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "playerName": "Bryce Young",
+          "position": "QB",
+          "market": "passing_yards",
+          "line": 252.5,
+          "quoteId": "pinnacle-1639328800",
+          "modelProjection": 262.2,
+          "researchGames": 6,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "passing_rushing_yards",
+      "http": 200,
+      "success": true,
+      "ms": 1370,
+      "rows": 2,
+      "quoted": 2,
+      "historyBaselines": 2,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4036378",
+          "gameId": "401873023",
+          "playerName": "Jordan Love",
+          "position": "QB",
+          "market": "passing_rushing_yards",
+          "line": 270.5,
+          "quoteId": "draftkings-382675330",
+          "modelProjection": 281.4,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4685720",
+          "gameId": "401873023",
+          "playerName": "Bryce Young",
+          "position": "QB",
+          "market": "passing_rushing_yards",
+          "line": 266.5,
+          "quoteId": "draftkings-382675255",
+          "modelProjection": 267.9,
+          "researchGames": 6,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "rushing_yards",
+      "http": 200,
+      "success": true,
+      "ms": 2546,
+      "rows": 5,
+      "quoted": 5,
+      "historyBaselines": 2,
+      "fittedForecasts": 1,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4241416",
+          "gameId": "401873023",
+          "playerName": "Chuba Hubbard",
+          "position": "RB",
+          "market": "rushing_yards",
+          "line": 66.5,
+          "quoteId": "pinnacle-1639328818",
+          "modelProjection": 80.3,
+          "researchGames": 6,
+          "forecastStatus": "unavailable",
+          "forecastReason": "prior_workload_role_uncertain",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4429023",
+          "gameId": "401873023",
+          "playerName": "MarShawn Lloyd",
+          "position": "RB",
+          "market": "rushing_yards",
+          "line": 16.5,
+          "quoteId": "pinnacle-1639328869",
+          "modelProjection": 18.5,
+          "researchGames": 7,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "receiving_yards",
+      "http": 200,
+      "success": true,
+      "ms": 2799,
+      "rows": 16,
+      "quoted": 16,
+      "historyBaselines": 14,
+      "fittedForecasts": 13,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4701936",
+          "gameId": "401873023",
+          "playerName": "Matthew Golden",
+          "position": "WR",
+          "market": "receiving_yards",
+          "line": 59.5,
+          "quoteId": "pinnacle-1639328875",
+          "modelProjection": 75.3,
+          "researchGames": 7,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4683243",
+          "gameId": "401873023",
+          "playerName": "Mitchell Evans",
+          "position": "TE",
+          "market": "receiving_yards",
+          "line": 6.5,
+          "quoteId": "pinnacle-1639533622",
+          "modelProjection": 19.5,
+          "researchGames": 6,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "receptions",
+      "http": 200,
+      "success": true,
+      "ms": 1623,
+      "rows": 16,
+      "quoted": 16,
+      "historyBaselines": 14,
+      "fittedForecasts": 13,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4683243",
+          "gameId": "401873023",
+          "playerName": "Mitchell Evans",
+          "position": "TE",
+          "market": "receptions",
+          "line": 0.5,
+          "quoteId": "pinnacle-1639533616",
+          "modelProjection": 1.3,
+          "researchGames": 6,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4701936",
+          "gameId": "401873023",
+          "playerName": "Matthew Golden",
+          "position": "WR",
+          "market": "receptions",
+          "line": 4.5,
+          "quoteId": "pinnacle-1639328872",
+          "modelProjection": 5.3,
+          "researchGames": 7,
+          "forecastStatus": "available",
+          "forecastReason": null,
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "rushing_receiving_yards",
+      "http": 200,
+      "success": true,
+      "ms": 599,
+      "rows": 4,
+      "quoted": 4,
+      "historyBaselines": 2,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4429023",
+          "gameId": "401873023",
+          "playerName": "MarShawn Lloyd",
+          "position": "RB",
+          "market": "rushing_receiving_yards",
+          "line": 24.5,
+          "quoteId": "fanduel-36215311-marshawnlloyd-rush_rec_yards",
+          "modelProjection": 29.6,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4241416",
+          "gameId": "401873023",
+          "playerName": "Chuba Hubbard",
+          "position": "RB",
+          "market": "rushing_receiving_yards",
+          "line": 87.5,
+          "quoteId": "fanduel-36215311-chubahubbard-rush_rec_yards",
+          "modelProjection": 96.5,
+          "researchGames": 6,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "sacks",
+      "http": 200,
+      "success": true,
+      "ms": 744,
+      "rows": 1,
+      "quoted": 1,
+      "historyBaselines": 1,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4686906",
+          "gameId": "401873023",
+          "playerName": "Lukas Van Ness",
+          "position": "DE",
+          "market": "sacks",
+          "line": 0.25,
+          "quoteId": "draftkings-382675197",
+          "modelProjection": 0.4,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "tackles",
+      "http": 200,
+      "success": true,
+      "ms": 886,
+      "rows": 8,
+      "quoted": 8,
+      "historyBaselines": 8,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4259493",
+          "gameId": "401873023",
+          "playerName": "Keisean Nixon",
+          "position": "CB",
+          "market": "tackles",
+          "line": 3.5,
+          "quoteId": "draftkings-382675066",
+          "modelProjection": 4.9,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4241470",
+          "gameId": "401873023",
+          "playerName": "Xavier McKinney",
+          "position": "S",
+          "market": "tackles",
+          "line": 2.5,
+          "quoteId": "draftkings-382674975",
+          "modelProjection": 2.6,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "market": "tackles_assists",
+      "http": 200,
+      "success": true,
+      "ms": 685,
+      "rows": 8,
+      "quoted": 8,
+      "historyBaselines": 8,
+      "fittedForecasts": 0,
+      "withLiveStats": 0,
+      "issues": [],
+      "samples": [
+        {
+          "playerId": "4428863",
+          "gameId": "401873023",
+          "playerName": "Evan Williams",
+          "position": "S",
+          "market": "tackles_assists",
+          "line": 6.5,
+          "quoteId": "draftkings-382675575",
+          "modelProjection": 8.7,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        },
+        {
+          "playerId": "4241470",
+          "gameId": "401873023",
+          "playerName": "Xavier McKinney",
+          "position": "S",
+          "market": "tackles_assists",
+          "line": 4.5,
+          "quoteId": "draftkings-382674873",
+          "modelProjection": 5,
+          "researchGames": 7,
+          "forecastStatus": "unavailable",
+          "forecastReason": "market_model_not_fitted",
+          "liveCurrent": null
+        }
+      ]
+    }
+  ],
+  "official": [
+    {
+      "gameId": "401873009",
+      "stats": 185,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873011",
+      "stats": 170,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873012",
+      "stats": 181,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873013",
+      "stats": 162,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873014",
+      "stats": 169,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873015",
+      "stats": 163,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873016",
+      "stats": 177,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873017",
+      "stats": 174,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873018",
+      "stats": 176,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873019",
+      "stats": 176,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873020",
+      "stats": 160,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873021",
+      "stats": 176,
+      "mismatches": 0
+    },
+    {
+      "gameId": "401873022",
+      "stats": 174,
+      "mismatches": 0
+    }
+  ],
+  "scope": "NFL N01/N02/N03 only;no model promotion or hidden-sport changes",
+  "finishedAt": "2026-10-29T15:41:44.638Z",
+  "summary": {
+    "checks": 12,
+    "rows": 66,
+    "failures": [
+      {
+        "round": 1,
+        "market": "passing_interceptions",
+        "error": "Unexpected end of JSON input",
+        "ms": 3960
+      }
+    ],
+    "officialFinals": 13,
+    "officialStatComparisons": 2243,
+    "officialMismatches": 0
+  }
+}

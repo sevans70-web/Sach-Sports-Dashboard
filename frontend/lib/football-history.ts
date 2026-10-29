@@ -4,15 +4,15 @@ export function footballHistoryValues(payload:any,aliases:readonly (string|reado
  const norm=(v:unknown)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
  const names=(Array.isArray(payload?.names)?payload.names:[]).map(norm);
  const groups=Array.isArray(aliases[0])?aliases as readonly (readonly string[])[]:[aliases as readonly string[]];
- const indices=groups.map(group=>{for(const alias of group){const index=names.indexOf(norm(alias));if(index>=0)return index}return -1}).filter(index=>index>=0);
- if(!indices.length)return [];
+ const indices=groups.map(group=>{for(const alias of group){const index=names.indexOf(norm(alias));if(index>=0)return index}return -1});
+ if(!indices.length||indices.some(index=>index<0))return [];
  const seen=new Set<string>(),rows:{date:string;value:number}[]=[];
  for(const season of payload?.seasonTypes||[])for(const category of season?.categories||[]){
   if(category?.type!=="event")continue;
   for(const event of category?.events||[]){
    const id=String(event?.eventId||"");if(!id||seen.has(id))continue;
-   const parts=indices.map(index=>statNumber(Array.isArray(event?.stats)?event.stats[index]:null)).filter((value):value is number=>value!=null);
-   if(!parts.length)continue;const value=parts.reduce((sum,n)=>sum+n,0);
+   const parts=indices.map(index=>statNumber(Array.isArray(event?.stats)?event.stats[index]:null));
+   if(!parts.length||parts.some(value=>value==null))continue;const value=parts.reduce<number>((sum,n)=>sum+n!,0);
    const meta=payload?.events?.[id];const date=String(meta?.gameDate||meta?.date||event?.gameDate||event?.date||id);
    seen.add(id);rows.push({date,value});
   }
@@ -52,7 +52,7 @@ export function footballResearchSample(payload:any,aliases:readonly (string|read
  const names=(payload?.names||[]).map(norm);
  const groups=Array.isArray(aliases[0])?aliases as readonly (readonly string[])[]:[aliases as readonly string[]];
  const indices=groups.map(group=>group.map(norm).map(alias=>names.indexOf(alias)).find(index=>index>=0)??-1);
- const passing=["passing_yards","passing_tds","pass_completions","passing_rushing_yards"].includes(market);
+ const passing=["passing_yards","passing_tds","passing_interceptions","pass_completions","passing_rushing_yards"].includes(market);
  const attempts=names.findIndex((name:string)=>["passingattempts","passattempts","attempts"].includes(name));
  const cutoff=Math.min(Date.parse(asOf),Date.now());
  const seen=new Set<string>();

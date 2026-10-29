@@ -139,7 +139,7 @@ function daysFor(period:string){
 export async function GET(req:NextRequest){
  const period=req.nextUrl.searchParams.get("period")||"Today",group=req.nextUrl.searchParams.get("group")||"QB";
  const marketParam=req.nextUrl.searchParams.get("market") as NflMarketKey|null;
- const groupMarkets=group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","qb_rushing_yards","passing_rushing_yards"]):group==="Q1"?new Set<NflMarketKey>(["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"]):new Set<NflMarketKey>(["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
+ const groupMarkets=group==="Defense"?new Set<NflMarketKey>(["sacks","tackles","tackles_assists"]):group==="QB"?new Set<NflMarketKey>(["passing_yards","passing_tds","passing_interceptions","qb_rushing_yards","passing_rushing_yards"]):group==="Q1"?new Set<NflMarketKey>(["q1_passing_yards","q1_receiving_yards","q1_rushing_yards"]):new Set<NflMarketKey>(["rushing_yards","rushing_tds","receiving_yards","receptions","rushing_receiving_yards","anytime_td","first_td"]);
  const markets=(marketParam?[marketParam]:[...groupMarkets]).filter(m=>NFL_MARKETS.some(x=>x[0]===m));
  try{
    const schedule=await getEspnNflSchedule(),days=daysFor(period),all:SavedNflPrediction[]=[];let connected=true,writable=true,recoveredSnapshots=0;const unavailable:string[]=[];

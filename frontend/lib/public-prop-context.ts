@@ -9,7 +9,7 @@ export function datedCardHistoryPoints(points:any[],kickoff:string,market:string
   .filter(p=>!/^\d{4}-\d{2}-\d{2}$/.test(p.date)||p.date<day)
   .filter(p=>!market.startsWith('q1_')||p.period==='q1')
   .filter(p=>!['nfl','cfb'].includes(sport)||p.season==null||Number(p.season)===new Date(cutoff).getUTCFullYear())
-  .filter(p=>!['nfl','cfb'].includes(sport)||!['passing_yards','passing_tds','passing_rushing_yards'].includes(market.replace(/^q1_/,''))||num(p.workload)!=null&&Number(p.workload)>=10)
+  .filter(p=>!['nfl','cfb'].includes(sport)||!['passing_yards','passing_tds','passing_interceptions','passing_rushing_yards'].includes(market.replace(/^q1_/,''))||num(p.workload)!=null&&Number(p.workload)>=10)
   .sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-20).map(p=>({...p,value:Number(p.value)}));
 }
 export function datedCardHistory(points:any[],kickoff:string,market:string,sport:string,gameId?:string){

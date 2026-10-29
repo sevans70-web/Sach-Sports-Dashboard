@@ -9,6 +9,7 @@ export function nflPredictionProbability(
   line:number|null,
   marketProb:number|null
 ):number|null{
+  if(market==='passing_interceptions')return null; // No fitted interception probability is approved.
   const marketP=marketProb!=null&&Number.isFinite(marketProb)
     ? clamp(marketProb/100,.05,.95)
     : .5;
