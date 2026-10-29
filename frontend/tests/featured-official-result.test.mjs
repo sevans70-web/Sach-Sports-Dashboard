@@ -20,9 +20,10 @@ test('scorer markets settle occurrence, never a numeric push at the legacy line'
 });
 
 test('First TD requires verified event ordering rather than player touchdown totals',()=>{
- const pick={...row,market:'first_td',prediction:'YES'};
+ const pick={...row,market:'first_td',prediction:'YES',lineType:'scorer',quoteVersion:1,sportsbookKey:'pinnacle',sportsbook:'Pinnacle',quoteUpdatedAt:'2026-10-25T09:59:00Z',capturedAt:'2026-10-25T10:00:00Z',overPrice:700};
  const scored={...payload,rows:[{playerId:'4',stats:{first_td:2}}]};
  assert.equal(officialFeaturedResult(pick,scored),null);
+ assert.equal(officialFeaturedResult({...pick,quoteVersion:undefined},{...scored,firstTouchdownVerified:true,firstTouchdownScorerPlayerId:'4'}),null);
  assert.equal(officialFeaturedResult(pick,{...scored,firstTouchdownVerified:true,firstTouchdownScorerPlayerId:'9'}).status,'miss');
  const hit=officialFeaturedResult(pick,{...scored,firstTouchdownVerified:true,firstTouchdownScorerPlayerId:'4'});
  assert.equal(hit.status,'hit');

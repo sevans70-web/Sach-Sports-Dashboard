@@ -14,3 +14,12 @@ test('disputed October 25 NFL Long Shot is excluded without substituting an unve
  assert.equal(featuredSelectionDispute('nfl','2026-10-25','play'),null);
  assert.equal(featuredSelectionDispute('nba','2026-10-25','long'),null);
 });
+
+test('First TD saved result matches only verified scoring order with identical original scorer quote',()=>{
+ const pick={playerId:'1',gameId:'2',market:'first_td',prediction:'YES',sportsbookLine:null,quoteVersion:1,sportsbookKey:'pinnacle',quoteUpdatedAt:'2026-10-25T10:00:00Z'};
+ const grade={...pick,pickSide:'YES',status:'hit',actual:1,resultSource:'verified_first_touchdown_order'};
+ assert.equal(matchingFeaturedResult(pick,[grade]),grade);
+ assert.equal(matchingFeaturedResult(pick,[{...grade,resultSource:'official_final_boxscore'}]),null);
+ assert.equal(matchingFeaturedResult(pick,[{...grade,sportsbookKey:'other'}]),null);
+ assert.equal(matchingFeaturedResult(pick,[{...grade,gameId:'wrong'}]),null);
+});
