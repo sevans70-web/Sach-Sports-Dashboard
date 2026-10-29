@@ -36,3 +36,20 @@ test('NBA Q1 results bind to exact official player identity and reject ambiguous
  delete p.boxscore.players[0].statistics[0].athletes[0].didNotPlay;
  p.boxscore.players[0].statistics[0].athletes.push({athlete:{id:'2',displayName:'Real Player'}});assert.equal(basketballQ1Actual(p,{playerId:'1',playerName:'Real Player'},'q1_points'),null);
 });
+
+const {readFile}=await import('node:fs/promises');const {gunzipSync}=await import('node:zlib');
+const {footballQuarterRows}=await loadTs(new URL('../lib/football-quarter-stats.ts',import.meta.url));
+test('official CFB formation/jersey text yields actual Q1 values, never full-game yardage',async()=>{
+ const archive=JSON.parse(gunzipSync(await readFile(new URL('../docs/n05-quarter-coverage/cfb-official-finals.json.gz',import.meta.url))));
+ const p=archive.find(g=>g.gameId==='401856835').data;
+ const qb=footballQuarterRows(p).find(r=>r.playerId==='5141367');
+ // Q1 completions are 15 + 11 + 27 yards, versus the official 257 full game.
+ assert.equal(qb.stats.q1_passing_yards,53);assert.equal(qb.stats.passing_yards,257);assert.equal(qb.stats.q1_rushing_yards,13);assert.equal(qb.stats.rushing_yards,37);
+ const broken=structuredClone(p);for(const drive of broken.drives.previous)drive.plays=drive.plays.filter(play=>!String(play.text).includes('for 27 yards to the UCF00 TOUCHDOWN'));
+ assert.equal(footballQuarterRows(broken).find(r=>r.playerId==='5141367').stats.q1_passing_yards,null);
+});
+test('NCAA sack attempts and negative rushing yards stay separate from NFL rules',()=>{
+ const p={header:{league:{id:'23'}},boxscore:{players:[{team:{id:'1'},statistics:[{name:'rushing',labels:['CAR','YDS'],athletes:[{athlete:{id:'10',displayName:'Alex Smith'},stats:['1','-5']}]}]}]},plays:[{id:'start',period:1,clock:{displayValue:'15:00'},type:{text:'Kickoff'}},{id:'sack',period:1,start:{team:{id:'1'}},type:{text:'Sack'},text:'(09:00) No Huddle-Shotgun #10 A.Smith sacked for loss of 5 yards',statYardage:-5},{id:'later',period:2,type:{text:'End Period'}}]};
+ assert.equal(footballQuarterRows(p)[0].stats.q1_rushing_yards,-5);
+ p.header.league.id='28';assert.equal(footballQuarterRows(p)[0].stats.q1_rushing_yards,null);
+});

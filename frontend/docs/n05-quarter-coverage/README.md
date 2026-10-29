@@ -21,3 +21,13 @@ Scope: the tracker explicitly covers NFL, CFB and NBA. This extends the existing
 Reproduce with `node scripts/audit-n05-quarter-coverage.mjs /tmp/NEW-unique-report.json` from frontend. Output is exclusive-create, avoiding accidental replacement of evidence.
 
 Quarter data missing from an active provider feed must remain unavailable. Completion requires confirming actual CFB/NBA Q1 quote coverage and quote-to-official-quarter results; test fixtures and historical observation availability alone do not establish that end-to-end path. No validated quarter model is claimed and P01 remains separate.
+
+## CFB parser follow-up
+
+The deeper final-archive check exposed that the initial coverage counts were largely reconciled zeros: NCAA play text has `Shotgun`, `No Huddle-Shotgun` and `#jersey` prefixes, unlike the NFL examples. The follow-up parser removes those structural prefixes while preserving team and unique player identity; it also accounts for NCAA sacks as rushing attempts/yards only when the official header identifies college football. The full-game yardage AND workload reconciliation remains mandatory. Unknowns are retained.
+
+`official-parser-followup.json` preserves the new replay separately from the initial report. NFL and NBA counts are unchanged; CFB known observations increase to64 passing,63 rushing,65 receiving. This now includes actual nonzero passer/rusher/receiver values. A fixed official regression checks Bear Bachmeier's three Q1 completions (15+11+27=53 yards) against his257 full-game yards, his13 Q1 rushing yards versus37 full-game, and rejects truncated tape. A separate NCAA/NFL test prevents applying the college sack rule to NFL.
+
+`production-after.jsonl` verifies the first release's11 quarter endpoints: all HTTP200/success; NFL2/3/10 verified quote rows; CFB3 supported empty yardage endpoints, NBA5 supported empty endpoints; no model projection/probability fabricated.
+
+The primary CFB diagnostic at approximately19:36UTC showed66 events/10,958 props, including989`touchdowns_1q` offers but no quarter-yardage categories. TD scorer offers are separate contracts and are not substituted into yardage tabs. NBA primary coverage at19:27UTC showed3,198 props, only full-game categories, and0 matched/priced Q1 markets. These are current feed limitations, not proof that all quarter products are unavailable permanently. CFB Q1 touchdown integration and its official scorer settlement are not certified by this release. N05 remains open.

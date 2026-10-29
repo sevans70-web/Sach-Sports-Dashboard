@@ -4,6 +4,7 @@ const value=(v:any)=>v==null||String(v).trim()===''?null:Number.isFinite(Number(
 /** Quarter-specific observed yards. Ambiguous identities or unreconciled tape stay unknown.
  * Counts AND yards must agree with the official full-game/to-date player row. */
 export function footballQuarterRows(payload:any){
+ const college=String(payload?.header?.league?.id)==='23'||payload?.header?.league?.slug==='college-football';
  const observed=footballObservedRows(payload),aliases=new Map<string,Set<string>>();
  const add=(team:string,alias:string,id:string)=>{const key=team+'|'+norm(alias);if(!norm(alias))return;const ids=aliases.get(key)||new Set<string>();ids.add(id);aliases.set(key,ids)};
  for(const team of payload?.boxscore?.players||[])for(const group of team.statistics||[])for(const row of group.athletes||[]){
@@ -23,7 +24,7 @@ export function footballQuarterRows(payload:any){
  const record=(id:string|null,market:string,yards:number,count:number,quarter:number)=>{if(!id)return;const key=id+'|'+market,r=totals.get(key)||{yards:0,count:0,q1:0,q1Count:0};r.yards+=yards;r.count+=count;if(quarter===1){r.q1+=yards;r.q1Count+=count}totals.set(key,r)};
  for(const play of unique){
   const quarter=Number(play.period?.number??play.period),team=String(play.start?.team?.id||play.team?.id||play.driveTeam||'');
-  const raw=String(play.text||play.shortText||''),text=raw.replace(/^.*?reported in as eligible\.\s*/i,'').replace(/^(?:\s*\([^)]*\)\s*)+/,'').trim(),type=String(play.type?.text||'').toLowerCase();
+  const raw=String(play.text||play.shortText||''),text=raw.replace(/^.*?reported in as eligible\.\s*/i,'').replace(/^(?:\s*\([^)]*\)\s*)+/,'').replace(/^(?:(?:no huddle[- ]?)?(?:shotgun|under center)|no huddle)\s+/i,'').replace(/#\d+\s+/g,'').trim(),type=String(play.type?.text||'').toLowerCase();
   if(/no play|play nullified/i.test(raw))continue;
   const pass=text.match(/^(\S+)\s+(?:pass(?:es|ed)?\b|spikes?\b)/i);
   if(pass&&!/sack|two.point|conversion/i.test(type)){
@@ -46,6 +47,10 @@ export function footballQuarterRows(payload:any){
      if(n==null){if(id)bad.add(id+'|receiving_yards')}else record(id,'receiving_yards',n,0,quarter);
     }
    }
+  }else if(college&&/sack/.test(type)){
+   // NCAA charges sack yardage and attempts to the rusher; NFL does not.
+   const token=text.match(/^(\S+)\s/),id=token?identify(team,token[1]):null,n=value(play.statYardage??play.yards??play.yardage);
+   if(n==null){if(id)bad.add(id+'|rushing_yards')}else record(id,'rushing_yards',n,1,quarter);
   }else if(/rush|rushing|kneel|scramble/.test(type)&&!/return|two.point|conversion/i.test(type+' '+raw)){
    const token=text.match(/^(\S+)\s/),id=token?identify(team,token[1]):null,n=value(play.statYardage??play.yards??play.yardage);
    if(n==null){if(id)bad.add(id+'|rushing_yards')}else record(id,'rushing_yards',n,1,quarter);

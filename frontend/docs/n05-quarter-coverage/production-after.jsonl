@@ -1,0 +1,11 @@
+{"sport": "nfl", "market": "q1_passing_yards", "status": 200, "success": true, "rows": 2, "verified": 2, "forecasts": 0, "seconds": 5.05}
+{"sport": "nfl", "market": "q1_rushing_yards", "status": 200, "success": true, "rows": 3, "verified": 3, "forecasts": 0, "seconds": 5.3}
+{"sport": "nfl", "market": "q1_receiving_yards", "status": 200, "success": true, "rows": 10, "verified": 10, "forecasts": 0, "seconds": 5.22}
+{"sport": "nba", "market": "q1_points", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 5.34}
+{"sport": "nba", "market": "q1_rebounds", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 3.32}
+{"sport": "nba", "market": "q1_assists", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 3.14}
+{"sport": "nba", "market": "q1_threes_made", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 3.16}
+{"sport": "nba", "market": "q1_pts_rebs_asts", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 3.06}
+{"sport": "cfb", "market": "q1_passing_yards", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 4.51}
+{"sport": "cfb", "market": "q1_rushing_yards", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 4.51}
+{"sport": "cfb", "market": "q1_receiving_yards", "status": 200, "success": true, "rows": 0, "verified": 0, "forecasts": 0, "seconds": 4.39}
