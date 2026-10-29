@@ -1,3 +1,4 @@
+import {firstTouchdownResult} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
 import {readDurableHistory} from '@/lib/durable-history';
 import {independentFootballRankings,footballSlate} from '@/lib/football-slate-rankings';
@@ -227,17 +228,6 @@ function participantMatches(participant:any,playerId:string,playerName:string){
  const wanted=cleanName(playerName),last=wanted.split(" ").filter(Boolean).pop()||wanted;
  return Boolean((playerId&&id&&id===String(playerId))||(wanted&&name&&(name===wanted||name.includes(wanted)||wanted.includes(name)))||(last.length>=3&&name.split(" ").includes(last)));
 }
-function firstTdFromSummary(payload:any,playerName:string){
- const plays=Array.isArray(payload?.scoringPlays)?payload.scoringPlays:[];
- const td=plays.find((x:any)=>{
-  const kind=cleanName(x?.scoringType?.name||x?.scoringType?.abbreviation||x?.type?.text||"");
-  const text=cleanName(x?.text||x?.shortText||"");
-  return kind.includes("touchdown")||kind==="td"||text.includes("touchdown");
- });
- if(!td)return 0;
- const text=cleanName(td?.text||td?.shortText||""),name=cleanName(playerName),last=name.split(" ").filter(Boolean).pop()||name;
- return text.includes(name)||(last.length>=3&&text.split(" ").includes(last))?1:0;
-}
 function q1TouchdownsFromSummary(payload:any,playerName:string){
  const name=cleanName(playerName),last=name.split(" ").filter(Boolean).pop()||name;let count=0;
  for(const drive of payload?.drives?.previous||[])for(const play of drive?.plays||[]){
@@ -267,7 +257,7 @@ function currentMarketStat(payload:any,market:NflMarketKey,playerId:string,playe
  if(market==="passing_rushing_yards"){const a=passingYds(),b=rushingYds();return a==null||b==null?null:a+b}
  if(market==="rushing_receiving_yards"){const a=rushingYds(),b=receivingYds();return a==null||b==null?null:a+b}
  if(market==="anytime_td"){const a=rushingTd(),b=receivingTd();return a==null||b==null?null:a+b}
- if(market==="first_td")return firstTdFromSummary(payload,playerName);
+ if(market==="first_td")return firstTouchdownResult(payload,playerName);
 
  return null;
 }
