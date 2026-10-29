@@ -283,7 +283,7 @@ async function liveContext(rows:any[],schedule:any[],market:NflMarketKey){
   const current=payload&&String(payload?.header?.id)===String(g.id)?observedByGame.get(String(g.id))?.get(String(row.playerId))?.[market]??null:null;
   const line=Number(row.sportsbookLine);
   const pct=current!=null&&Number.isFinite(line)&&line>0?Math.max(0,Math.min(200,Math.round(current/line*100))):null;
-  return {...row,firstTouchdownVerified:market==='first_td'&&firstTdVerified.get(String(g.id))===true,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
+  return {...row,firstTouchdownVerified:market==='first_td'&&payload&&String(payload?.header?.id)===String(g.id)&&firstTdVerified.get(String(g.id))===true,participationConfirmed:participant?.participationConfirmed===true,starterConfirmed:participant?.starterConfirmed===true,participationGameId:String(g.id),gameId:String(g.id||""),gameState:String(g.state||"pre"),gameStatus:String(g.status||""),gameTime:row.gameTime||g.date||"",liveCurrent:current,liveProgressPct:pct};
  });
 }
 
