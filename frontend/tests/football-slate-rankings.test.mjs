@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {independentFootballRankings,selectRecordedFootballSlate}=await loadTs(new URL('../lib/football-slate-rankings.ts',import.meta.url));
+const {independentFootballRankings,selectRecordedFootballSlate,nearestQuotedFootballDay}=await loadTs(new URL('../lib/football-slate-rankings.ts',import.meta.url));
 test('each slate selects from its whole pool before capping; all day can exceed 25',()=>{
  const rows=['17:00','20:25','23:20'].flatMap((time,b)=>Array.from({length:35},(_,i)=>({playerId:b+'-'+i,gameId:b,gameTime:'2026-10-25T'+time+'Z',rank:b*35+i+1})));
  const ranked=independentFootballRankings(rows);assert.equal(ranked.length,75);
@@ -17,4 +17,12 @@ test('all day never mixes tomorrow evening into the current calendar day',()=>{
  const rows=[{gameTime:'2026-10-25T17:00Z'},{gameTime:'2026-10-26T00:20Z'},{gameTime:'2026-10-27T00:15Z'}];
  assert.equal(independentFootballRankings(rows,25,'2026-10-25').length,2);
  assert.equal(independentFootballRankings(rows,25,'2026-10-26').length,1);
+});
+
+test('N04 uses next day that actually has eligible scorer quotes',()=>{
+ const next=[{gameTime:'2026-11-01T18:00:00Z'}];
+ assert.equal(nearestQuotedFootballDay(next,'2026-10-29','2026-10-29'),'2026-11-01');
+ assert.equal(nearestQuotedFootballDay([...next,{gameTime:'2026-10-29T23:00:00Z'}],'2026-10-29','2026-10-29'),'2026-10-29');
+ assert.equal(nearestQuotedFootballDay([], '2026-10-29','2026-10-29'),'2026-10-29');
+ assert.equal(nearestQuotedFootballDay([{gameTime:'2026-10-25T17:00:00Z'}],'2026-10-29','2026-10-29'),'2026-10-29');
 });

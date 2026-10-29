@@ -23,3 +23,10 @@ export function selectRecordedFootballSlate(snapshots:any[],market:string,day:st
  const rows=[...candidates.values()].sort((a,b)=>b.at-a.at||Number(a.row.rank)-Number(b.row.rank)).slice(0,25).map(({row,at},i)=>({...row,originalRank:row.rank,rank:i+1,slateKey:slate,boardCapturedAt:new Date(at).toISOString()}));
  return rows.length?{rows,capturedAt}:null;
 }
+
+/** Show the nearest future day with an actual qualifying sportsbook quote. */
+export function nearestQuotedFootballDay(rows:any[],preferred:string,today:string){
+ const date=(v:string)=>{const d=new Date(v);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(d):null};
+ const dates=[...new Set(rows.map(row=>date(String(row.gameTime||''))).filter((d):d is string=>Boolean(d)&&d>=today))].sort();
+ return dates.includes(preferred)?preferred:(dates[0]||preferred);
+}
