@@ -1,0 +1,422 @@
+[
+  {
+    "cohort": "original-audit",
+    "market": "ALL",
+    "side": "OVER",
+    "settled": 168,
+    "hits": 100
+  },
+  {
+    "cohort": "original-audit",
+    "market": "ALL",
+    "side": "UNDER",
+    "settled": 511,
+    "hits": 266
+  },
+  {
+    "cohort": "original-audit",
+    "market": "points",
+    "side": "OVER",
+    "settled": 50,
+    "hits": 32
+  },
+  {
+    "cohort": "original-audit",
+    "market": "points",
+    "side": "UNDER",
+    "settled": 90,
+    "hits": 43
+  },
+  {
+    "cohort": "original-audit",
+    "market": "rebounds",
+    "side": "OVER",
+    "settled": 15,
+    "hits": 11
+  },
+  {
+    "cohort": "original-audit",
+    "market": "rebounds",
+    "side": "UNDER",
+    "settled": 122,
+    "hits": 61
+  },
+  {
+    "cohort": "original-audit",
+    "market": "assists",
+    "side": "OVER",
+    "settled": 49,
+    "hits": 24
+  },
+  {
+    "cohort": "original-audit",
+    "market": "assists",
+    "side": "UNDER",
+    "settled": 76,
+    "hits": 42
+  },
+  {
+    "cohort": "original-audit",
+    "market": "threes_made",
+    "side": "OVER",
+    "settled": 30,
+    "hits": 20
+  },
+  {
+    "cohort": "original-audit",
+    "market": "threes_made",
+    "side": "UNDER",
+    "settled": 107,
+    "hits": 56
+  },
+  {
+    "cohort": "original-audit",
+    "market": "steals",
+    "side": "OVER",
+    "settled": 11,
+    "hits": 4
+  },
+  {
+    "cohort": "original-audit",
+    "market": "steals",
+    "side": "UNDER",
+    "settled": 46,
+    "hits": 29
+  },
+  {
+    "cohort": "original-audit",
+    "market": "blocks",
+    "side": "OVER",
+    "settled": 13,
+    "hits": 9
+  },
+  {
+    "cohort": "original-audit",
+    "market": "blocks",
+    "side": "UNDER",
+    "settled": 70,
+    "hits": 35
+  },
+  {
+    "cohort": "prospective",
+    "market": "ALL",
+    "side": "OVER",
+    "settled": 38,
+    "hits": 18
+  },
+  {
+    "cohort": "prospective",
+    "market": "ALL",
+    "side": "UNDER",
+    "settled": 133,
+    "hits": 73
+  },
+  {
+    "cohort": "prospective",
+    "market": "points",
+    "side": "OVER",
+    "settled": 17,
+    "hits": 7
+  },
+  {
+    "cohort": "prospective",
+    "market": "points",
+    "side": "UNDER",
+    "settled": 37,
+    "hits": 16
+  },
+  {
+    "cohort": "prospective",
+    "market": "rebounds",
+    "side": "OVER",
+    "settled": 0,
+    "hits": 0
+  },
+  {
+    "cohort": "prospective",
+    "market": "rebounds",
+    "side": "UNDER",
+    "settled": 30,
+    "hits": 17
+  },
+  {
+    "cohort": "prospective",
+    "market": "assists",
+    "side": "OVER",
+    "settled": 10,
+    "hits": 5
+  },
+  {
+    "cohort": "prospective",
+    "market": "assists",
+    "side": "UNDER",
+    "settled": 23,
+    "hits": 15
+  },
+  {
+    "cohort": "prospective",
+    "market": "threes_made",
+    "side": "OVER",
+    "settled": 4,
+    "hits": 2
+  },
+  {
+    "cohort": "prospective",
+    "market": "threes_made",
+    "side": "UNDER",
+    "settled": 23,
+    "hits": 12
+  },
+  {
+    "cohort": "prospective",
+    "market": "steals",
+    "side": "OVER",
+    "settled": 1,
+    "hits": 1
+  },
+  {
+    "cohort": "prospective",
+    "market": "steals",
+    "side": "UNDER",
+    "settled": 9,
+    "hits": 8
+  },
+  {
+    "cohort": "prospective",
+    "market": "blocks",
+    "side": "OVER",
+    "settled": 6,
+    "hits": 3
+  },
+  {
+    "cohort": "prospective",
+    "market": "blocks",
+    "side": "UNDER",
+    "settled": 11,
+    "hits": 5
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "ALL",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 173,
+    "hits": 103
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "ALL",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 495,
+    "hits": 258
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "ALL",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 259,
+    "hits": 144
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "ALL",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 409,
+    "hits": 213
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "points",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 52,
+    "hits": 32
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "points",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 86,
+    "hits": 39
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "points",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 84,
+    "hits": 51
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "points",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 54,
+    "hits": 26
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "rebounds",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 15,
+    "hits": 11
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "rebounds",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 120,
+    "hits": 61
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "rebounds",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 36,
+    "hits": 18
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "rebounds",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 99,
+    "hits": 47
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "assists",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 49,
+    "hits": 24
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "assists",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 73,
+    "hits": 39
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "assists",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 69,
+    "hits": 34
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "assists",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 53,
+    "hits": 29
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "threes_made",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 30,
+    "hits": 20
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "threes_made",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 105,
+    "hits": 55
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "threes_made",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 32,
+    "hits": 20
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "threes_made",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 103,
+    "hits": 53
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "steals",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 9,
+    "hits": 4
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "steals",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 47,
+    "hits": 31
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "steals",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 21,
+    "hits": 10
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "steals",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 35,
+    "hits": 25
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "blocks",
+    "policy": "baseline",
+    "side": "OVER",
+    "settled": 18,
+    "hits": 12
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "blocks",
+    "policy": "baseline",
+    "side": "UNDER",
+    "settled": 64,
+    "hits": 33
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "blocks",
+    "policy": "candidate",
+    "side": "OVER",
+    "settled": 17,
+    "hits": 11
+  },
+  {
+    "cohort": "reconstructed-diagnostic",
+    "market": "blocks",
+    "policy": "candidate",
+    "side": "UNDER",
+    "settled": 65,
+    "hits": 33
+  }
+]

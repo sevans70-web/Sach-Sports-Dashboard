@@ -92,3 +92,16 @@ test('direct candidate fits on training only and remains research-only under lat
  assert.deepEqual(evaluateProbabilityModels(changed,[],{pointPolicy:'direct'}).models[0].direct,a.models[0].direct);
  assert.throws(()=>evaluateProbabilityModels(rows,[],{pointPolicy:'unknown'}),/Unsupported point policy/);
 });
+
+test('research participation condition excludes nonparticipants without discarding real zero production',()=>{
+ const rows=dataset().map((g,i)=>({...g,market:'q1_passing_yards',roleWorkload:30,workload:i%8===7?0:8,actual:i%8===7||i%9===0?0:50}));
+ const all=evaluateProbabilityModels(rows),played=evaluateProbabilityModels(rows,[],{participation:'played'});
+ assert.ok(played.models.length);assert.ok(played.models[0].trainingRows<all.models[0].trainingRows);
+ assert.ok(played.reports[0].forecasts<all.reports[0].forecasts);
+ const later=rows.map(g=>g.season==='2026'?{...g,actual:g.actual+50}:g);
+ assert.deepEqual(evaluateProbabilityModels(later,[],{participation:'played'}).models,played.models);
+ const changedZeros=rows.map(g=>g.workload>0&&g.actual===0?{...g,actual:10}:g);
+ assert.notDeepEqual(evaluateProbabilityModels(changedZeros,[],{participation:'played'}).models,played.models);
+ assert.deepEqual(evaluateProbabilityModels(rows).models,all.models);
+ assert.throws(()=>evaluateProbabilityModels(rows,[],{participation:'unknown'}),/Unsupported participation policy/);
+});

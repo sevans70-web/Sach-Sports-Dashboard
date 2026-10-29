@@ -165,16 +165,18 @@ export function forecastDistribution(model:DistributionModel,history:Opportunity
 /** Fixed 65%/35% chronological split of PRIOR-season feature dates for fitting
  * and calibration; later season retained for diagnostic evaluation. The later
  * season has already been inspected for v1, so it is NOT a fresh holdout. */
-export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context';pointPolicy?:'direct'}={}){
+export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQuote[]=[],options:{calibration?:'pooled'|'workload';featurePolicy?:'basketball_context';pointPolicy?:'direct';participation?:'played'}={}){
  if(options.pointPolicy!=null&&options.pointPolicy!=='direct')throw Error('Unsupported point policy');
  if(options.calibration!=null&&!['pooled','workload'].includes(options.calibration))throw Error('Unsupported calibration policy');
+ if(options.participation!=null&&options.participation!=='played')throw Error('Unsupported participation policy');
  const conditional=options.calibration==='workload';
  const seen=new Set<string>();for(const g of games){
   if(seen.has(outcomeKey(g)))throw Error('Duplicate observation '+outcomeKey(g));seen.add(outcomeKey(g));
   if(!validTime(g.gameTime)||!Number.isFinite(g.actual)||!Number.isFinite(g.workload)||g.workload<0)throw Error('Invalid observation '+outcomeKey(g));
  }
  if(options.featurePolicy!=null&&options.featurePolicy!=='basketball_context')throw Error('Unsupported feature policy');
- const all=materialize(games,options.featurePolicy),groups=[...new Set(games.map(groupOf))].sort(),models:DistributionModel[]=[],reports=[];
+ // Research-only fitting condition. Keep the full census for lagged role features.
+ const all=materialize(games,options.featurePolicy).filter(r=>options.participation!=='played'||r.game.workload>0),groups=[...new Set(games.map(groupOf))].sort(),models:DistributionModel[]=[],reports=[];
  const quoteMap=new Map<string,ExactQuote>();for(const q of quotes){const key=[q.sport,q.market,q.playerId,q.gameId].join('|');if(quoteMap.has(key))throw Error('Multiple selected quotes '+key);quoteMap.set(key,q)}
  for(const group of groups){
   const [sport,market]=group.split('|'),testSeason=sport==='nhl'?'20252026':'2026';

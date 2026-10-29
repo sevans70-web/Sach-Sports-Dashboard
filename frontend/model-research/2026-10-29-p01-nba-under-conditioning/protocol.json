@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-10-29T13:56:54.450Z",
+  "study": "p01-nba-played-conditioning-development-v1",
+  "sourceSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "policy": "Compare separate workload-times-rate against participation-conditioned minutes-times-rate regression using identical archived observations,features,chronological split and workload-conditioned residual calibration. Fixed ridge and feature policy from existing evaluator; no tuning on diagnostic outcomes.",
+  "scope": "All six NBA numeric main markets present in the frozen runtime input. No archived probabilities or grades altered.",
+  "limitations": [
+    "Retained runtime observations are a subset of full historical population.",
+    "Later-season outcomes have been inspected before: retrospective development, not untouched validation.",
+    "No exact sportsbook quotes in this input: no direction hit-rate, no-vig, EV or ROI certification.",
+    "Official source revisions and no archived pregame injury vintages; conservative 48h result lag.",
+    "This tests point/distribution error; no live promotion or all-eight-sport accuracy claim."
+  ],
+  "livePromotion": false
+}
