@@ -14,10 +14,11 @@ import {SOCCER_MARKETS} from '@/lib/soccer';
 import {BATTER_MARKETS,PITCHER_MARKETS} from '@/lib/mlb';
 import {after,NextRequest,NextResponse} from 'next/server';
 import {DASHBOARD_SPORTS,type DashboardSport} from '@/lib/dashboard-contract';
-import {readDurableHistoryBatch,readDurableHistory} from '@/lib/durable-history';
+import {readDurableHistoryBatch} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {topPlayMarketState,topPlayMarketRows} from '@/lib/top-plays-store';
+import {FEATURED_STREAMS,mergeFeaturedOriginals,readFeaturedOriginals} from '@/lib/featured-originals';
 export const dynamic='force-dynamic';
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'';
@@ -25,11 +26,11 @@ export async function GET(req:NextRequest){
  const day=dashboardDay(new Date());
  const definitions:Record<string,readonly (readonly any[])[]>={nba:NBA_MARKETS,nfl:NFL_MARKETS,cfb:CFB_MARKETS,nhl:NHL_MARKETS,cbb:CBB_MARKETS,wnba:WNBA_MARKETS,soccer:SOCCER_MARKETS,mlb:[...BATTER_MARKETS,...PITCHER_MARKETS]};
  const markets=[...new Set(definitions[sport].map(m=>String(m[0])))];
- const saved=await readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),'featured_selections'],day).catch(()=>[]);
+ const saved=await readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),...FEATURED_STREAMS],day).catch(()=>[]);
  for(const record of saved){const board=record.payload?.[0],stamp=Date.parse(board?.featuredCapturedAt||'');if(board&&Number.isFinite(stamp)&&Date.now()-stamp<15*60000)updateTopPlayMarket(sport,board,stamp);}
  const state=topPlayMarketState(sport),selectionDay=state.slateDay;
- const previous=selectionDay===day?saved.find(r=>r.stream==='featured_selections')?.payload||[]:await readDurableHistory<any>(sport,'featured_selections',selectionDay).catch(()=>[]);
- const boards=saved.filter(r=>r.stream!=='featured_selections').map(r=>r.payload?.[0]).filter(Boolean);
+ const previous=selectionDay===day?mergeFeaturedOriginals(saved,day):await readFeaturedOriginals(sport,selectionDay).catch(()=>[]);
+ const boards=saved.filter(r=>!FEATURED_STREAMS.includes(r.stream)).map(r=>r.payload?.[0]).filter(Boolean);
  // First-basket refreshes legitimately become empty at tipoff. Original scorer
  // quotes remain in the immutable research archive and must not disappear.
  if(['nba','wnba','cbb'].includes(sport)&&!state.plays.find(p=>p.key==='first')?.pick&&!previous.find((p:any)=>p.key==='first')?.pick){
