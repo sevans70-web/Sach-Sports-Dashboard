@@ -163,7 +163,7 @@ export async function GET(req: NextRequest) {
   try {
     const result = await buildWnbaMarketRankings(market);
 
-    if (Array.isArray(result?.rows) && result.rows.length) {
+    if (result?.boardFrozen === true || (Array.isArray(result?.rows) && result.rows.length)) {
       return rankingJson(result, {
         status: 200,
         headers: {
