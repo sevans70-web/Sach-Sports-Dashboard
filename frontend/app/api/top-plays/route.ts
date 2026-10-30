@@ -21,15 +21,19 @@ import {topPlayMarketState,topPlayMarketRows} from '@/lib/top-plays-store';
 import {FEATURED_STREAMS,mergeFeaturedOriginals,readFeaturedOriginals} from '@/lib/featured-originals';
 export const dynamic='force-dynamic';
 export async function GET(req:NextRequest){
+ try{return await featuredResponse(req);}
+ catch{return NextResponse.json({success:false,error:'Saved featured selections temporarily unavailable'},{status:503,headers:{'Cache-Control':'no-store'}});}
+}
+async function featuredResponse(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'';
  if(!DASHBOARD_SPORTS.includes(sport as DashboardSport))return NextResponse.json({error:'Unsupported sport'},{status:400});
  const day=dashboardDay(new Date());
  const definitions:Record<string,readonly (readonly any[])[]>={nba:NBA_MARKETS,nfl:NFL_MARKETS,cfb:CFB_MARKETS,nhl:NHL_MARKETS,cbb:CBB_MARKETS,wnba:WNBA_MARKETS,soccer:SOCCER_MARKETS,mlb:[...BATTER_MARKETS,...PITCHER_MARKETS]};
  const markets=[...new Set(definitions[sport].map(m=>String(m[0])))];
- const saved=await readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),...FEATURED_STREAMS],day).catch(()=>[]);
+ const saved=await readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),...FEATURED_STREAMS],day,{requireComplete:true});
  for(const record of saved){const board=record.payload?.[0],stamp=Date.parse(board?.featuredCapturedAt||'');if(board&&Number.isFinite(stamp)&&Date.now()-stamp<15*60000)updateTopPlayMarket(sport,board,stamp);}
  const state=topPlayMarketState(sport),selectionDay=state.slateDay;
- const previous=selectionDay===day?mergeFeaturedOriginals(saved,day):await readFeaturedOriginals(sport,selectionDay).catch(()=>[]);
+ const previous=selectionDay===day?mergeFeaturedOriginals(saved,day):await readFeaturedOriginals(sport,selectionDay);
  const boards=saved.filter(r=>!FEATURED_STREAMS.includes(r.stream)).map(r=>r.payload?.[0]).filter(Boolean);
  // First-basket refreshes legitimately become empty at tipoff. Original scorer
  // quotes remain in the immutable research archive and must not disappear.

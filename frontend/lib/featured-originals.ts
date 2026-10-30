@@ -20,5 +20,5 @@ export function mergeFeaturedOriginals(documents:{stream:string;payload:any[]}[]
 }
 
 export async function readFeaturedOriginals(sport:string,day:string){
- return mergeFeaturedOriginals(await readDurableHistoryBatch(sport,FEATURED_STREAMS,day),day);
+ return mergeFeaturedOriginals(await readDurableHistoryBatch(sport,FEATURED_STREAMS,day,{requireComplete:true}),day);
 }

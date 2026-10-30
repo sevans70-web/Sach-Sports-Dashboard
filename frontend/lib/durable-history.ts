@@ -28,13 +28,13 @@ export async function durableHistoryStatus(){
 }
 
 /** Prefer local current records, then fetch only missing streams for this day. */
-export async function readDurableHistoryBatch(sport:string,streams:string[],day:string):Promise<any[]>{
+export async function readDurableHistoryBatch(sport:string,streams:string[],day:string,options:{requireComplete?:boolean}={}):Promise<any[]>{
  const local=await Promise.all(streams.map(async stream=>{
   try{const payload=JSON.parse(await fs.readFile(file(sport,stream,day),'utf8'));return Array.isArray(payload)?{stream,payload}:null;}catch{return null;}
  }));
  const found=local.filter(Boolean) as {stream:string;payload:any[]}[];
  const missing=streams.filter(stream=>!found.some(row=>row.stream===stream));
- const remote=await readCloudDocumentsForDay(sport,missing,day).catch(()=>[]);
+ const remote=await readCloudDocumentsForDay(sport,missing,day).catch(error=>{if(options.requireComplete)throw error;return [];});
  return [...found,...remote];
 }
 
