@@ -249,6 +249,13 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    const wins=calls.filter(r=>(r.profit??0)>0).length,losses=calls.filter(r=>(r.profit??0)<0).length,pushes=calls.filter(r=>r.profit===0).length;
    return [side,{settled:calls.length,wins,losses,pushes,hitRate:wins+losses?wins/(wins+losses):null,roi:calls.length?mean(calls.map(r=>r.profit!)):null}];
   }));
+  const directionalCalibration=Object.fromEntries((['OVER','UNDER'] as const).map(side=>{
+   const eligible=candidates.filter(r=>r.candidateSide===side&&r.profit!==0&&r.candidateConfidence!=null&&Number.isFinite(r.candidateConfidence));
+   const describe=(items:typeof eligible)=>({count:items.length,averageConfidence:items.length?mean(items.map(r=>r.candidateConfidence!)):null,
+    hitRate:items.length?mean(items.map(r=>Number(r.profit!>0))):null,
+    brier:items.length?mean(items.map(r=>(r.candidateConfidence!-Number(r.profit!>0))**2)):null});
+   return [side,{all:describe(eligible),confidence80Plus:describe(eligible.filter(r=>r.candidateConfidence!>=.8))}];
+  }));
   const quoteRejections:Record<string,number>={};for(const r of results)if(r.quoteIssue)quoteRejections[r.quoteIssue]=(quoteRejections[r.quoteIssue]||0)+1;
   const bins=Array.from({length:10},(_,i)=>{
    const items=results.filter(r=>r.probability!=null&&r.outcome!=null&&Math.min(9,Math.floor(r.probability*10))===i);
@@ -267,7 +274,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    meanIntervalWidth:results.length?mean(results.map(r=>r.width)):null,exactQuoteSamples:results.filter(r=>!r.quoteIssue).length,
    brier:metric('brier'),marketBrier:metric('marketBrier'),candidateBets:results.filter(r=>r.candidate).length,
    pairedBrierImprovement:clusteredMeanInterval(results.filter(r=>r.brier!=null&&r.marketBrier!=null).map(r=>({gameId:r.gameId,value:r.marketBrier!-r.brier!}))),
-   candidateDirections,candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
+   candidateDirections,directionalCalibration,candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
