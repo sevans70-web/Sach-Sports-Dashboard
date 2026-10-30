@@ -1,0 +1,14 @@
+{
+  "createdAt": "2026-10-30T17:08:36.528Z",
+  "study": "p01-prospective-matchup-v1",
+  "candidateSha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2",
+  "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "sourceSha256": "f51a2bfe053177873e74de1bdad383d0eabaacfdaf61fc487a13cb839a80d8f1",
+  "officialSupplementSha256": "972819efcca59cc4a9c7943206f80e130841c9aee0eafb8153f74102ef332f59",
+  "selection": "All returned NFL main-line ranking rows across passing/rushing/receiving/receptions that have fresh exact two-sided prices and both candidate/baseline pregame inputs. No side, score, probability or outcome filtering. One quote per market/game/player; ambiguous targets excluded.",
+  "timing": "Freeze before kickoff. Compare both fixed models using the same frozen completed-game population and 48-hour prior-result lag. Exact input vectors, residual-artifact hashes and forecasts saved. No fitting or tuning in this script.",
+  "scoring": "After exact official final: conditional OVER Brier excluding pushes, OVER/UNDER direction hits, fixed >=55% conditional win and >=3% EV research selections, unit ROI refunding pushes, paired fixture-cluster intervals. Report unresolved, pushes and all markets/sides; no cherry-picking.",
+  "limitations": "Selected ranking-board cohort, not complete player population. Source revision and missing-context limitations remain. Models were developed on earlier inspected cohorts. Upcoming targets are new; only completion after this capture is eligible. Small samples cannot justify promotion; no fixed promised accuracy.",
+  "livePromotion": false,
+  "automaticFollowup": false
+}

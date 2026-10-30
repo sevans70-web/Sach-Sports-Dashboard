@@ -1,0 +1,33 @@
+// Research-only future test of the already archived CFB model, versus exact
+// no-vig book prices. No runtime model, dashboard selection or history writes.
+import {readFile,writeFile,mkdir} from 'node:fs/promises';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';import assert from 'node:assert/strict';import {loadTs} from '../tests/load-ts.mjs';
+const out=process.argv[2];if(!out)throw Error('NEW cohort directory required');
+const hash=b=>createHash('sha256').update(b).digest('hex'),source='model-research/2026-10-24-football/';
+const bytes=Buffer.from(await readFile(source+'cfb-candidate.json.gz.base64','utf8'),'base64'),manifest=JSON.parse(await readFile(source+'cfb-candidate-manifest.json'));assert.equal(hash(bytes),manifest.sha256);const artifact=JSON.parse(gunzipSync(bytes));
+const {forecastDistribution,evaluatePrice,quoteProblem}=await loadTs(new URL('../lib/probability-forecast.ts',import.meta.url)),{forecastInputReceipt}=await loadTs(new URL('../lib/forecast-input-receipt.ts',import.meta.url));
+await mkdir(out,{recursive:false});
+const protocol={createdAt:new Date().toISOString(),study:'p01-cfb-fixed-candidate-prospective-v1',artifactSha256:hash(bytes),selection:'All returned full-game CFB passing/rushing main-line quotes with fresh exact two-sided prices, unique market/player/fixture identity, exact official upcoming fixture/team/kickoff, and available prior-only archived candidate inputs. No confidence, side, result or score filtering.',timing:'No fitting. Frozen October24 candidate and observation population, conservative48h availability lag. Forecast, full distribution, exact input receipt, quote, official pregame payload and ranking response retained before kickoff.',benchmark:'Exact two-sided no-vig sportsbook OVER probability; no unsupported CFB runtime forecast is invented. Compare conditional Brier, both directions/sides, pushes and fixed existing research >=55% confidence / >=3% EV selections after exact official finals.',limitations:['Prior retrospective training/evaluation was inspected; only these future outcomes are prospective.','Original CFB source has incomplete weekly coverage and missing receiving workloads. Passing/rushing only.','No promotion until adequate independent games and both-side coverage support direction, calibration and return improvement.','This is research, not an issued pick or replacement historical forecast. NHL/CBB/Soccer/MLB/WNBA not evaluated here.'],livePromotion:false};
+await writeFile(out+'/protocol.json',JSON.stringify(protocol,null,2)+'\n');
+const decisions=[],rejections=[],requests=[],fixtures=new Map(),base='https://marvelous-wholeness-production-c8d3.up.railway.app';
+for(const market of ['passing_yards','rushing_yards']){
+ const url=base+'/api/cfb/rankings?market='+market;let data;
+ try{const r=await fetch(url,{signal:AbortSignal.timeout(45000)});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}catch(e){requests.push({url,error:e.message});continue;}
+ const decisionAt=new Date().toISOString();requests.push({url,receivedAt:decisionAt,payload:data,responseSha256:hash(JSON.stringify(data))});
+ const counts=new Map();for(const r of data.rows||[]){const k=[r.gameId,r.playerId].join('|');counts.set(k,(counts.get(k)||0)+1);}
+ for(const r of data.rows||[]){
+  const identity={market,gameId:String(r.gameId||''),playerId:String(r.playerId||'')},reject=reason=>rejections.push({...identity,reason});
+  if(counts.get([r.gameId,r.playerId].join('|'))!==1){reject('ambiguous_target');continue;}
+  if(r.frozen||r.lockedAtKickoff||['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=Date.parse(decisionAt)){reject('not_new_pregame');continue;}
+  let fixture=fixtures.get(identity.gameId);
+  if(!fixture){const fixtureUrl='https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event='+encodeURIComponent(identity.gameId);try{const response=await fetch(fixtureUrl,{signal:AbortSignal.timeout(20000)});if(!response.ok)throw Error('HTTP '+response.status);const payload=await response.json(),c=payload.header?.competitions?.[0];if(String(payload.header?.id)!==identity.gameId||c?.status?.type?.state!=='pre'||c?.status?.type?.completed===true||c?.competitors?.length!==2)throw Error('Exact upcoming official fixture unavailable');fixture={url:fixtureUrl,payload,retrievedAt:new Date().toISOString(),sourceSha256:hash(JSON.stringify(payload)),gameTime:c.date,season:String(payload.header.season.year),teams:c.competitors.map(v=>String(v.team.id))};}catch(e){fixture={error:e.message};}fixtures.set(identity.gameId,fixture);}
+  if(fixture.error||Date.parse(fixture.gameTime)!==Date.parse(r.gameTime)||!fixture.teams.includes(String(r.teamId))){reject('official_fixture_identity_unavailable');continue;}
+  const target={...identity,sport:'cfb',season:fixture.season,teamId:String(r.teamId),opponentId:fixture.teams.find(t=>t!==String(r.teamId)),gameTime:r.gameTime};
+  const quote={...identity,sport:'cfb',period:'game',bookmaker:r.sportsbookKey,quoteId:r.quoteId,line:r.sportsbookLine,overPrice:r.overPrice,underPrice:r.underPrice,updatedAt:r.quoteUpdatedAt,capturedAt:decisionAt,decisionAt,mainLine:r.lineType==='main'};
+  const issue=quoteProblem(quote,target);if(issue){reject(issue);continue;}
+  const model=artifact.models.find(m=>m.group==='cfb|'+market);if(!model||Date.parse(model.calibratedThrough)>=Date.parse(decisionAt)-48*3600000){reject('model_not_prior');continue;}
+  const result=forecastDistribution(model,artifact.observations,target,decisionAt);if(!result.forecast){reject(result.reason||'inputs_unavailable');continue;}
+  const f=result.forecast;decisions.push({target,quote,candidate:{projection:f.projection,values:f.values,inputReceipt:forecastInputReceipt(model.group,hash(bytes),decisionAt,f.inputFeatures),price:evaluatePrice(f.values,quote)}});
+ }
+}
+const completedAt=new Date().toISOString();if(decisions.some(d=>Date.parse(d.target.gameTime)<=Date.parse(completedAt)))throw Error('Fixture started during freeze');
+const cohort={protocol,completedAt,decisions,rejections,requests,fixtures:[...fixtures.values()],livePromotion:false},text=JSON.stringify(cohort,null,2)+'\n';await writeFile(out+'/cohort.json',text);await writeFile(out+'/receipt.json',JSON.stringify({sha256:hash(text),decisions:decisions.length,independentGames:new Set(decisions.map(d=>d.target.gameId)).size},null,2)+'\n');console.log(JSON.stringify({decisions:decisions.length,games:new Set(decisions.map(d=>d.target.gameId)).size,rejections:rejections.length,requests:requests.map(r=>({url:r.url,error:r.error,rows:r.payload?.rows?.length}))}));

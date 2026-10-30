@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-10-30T17:11:30.437Z",
+  "study": "p01-cfb-fixed-candidate-prospective-v1",
+  "artifactSha256": "bd09b867ea3476162a5350511d400dcccd29eddbe8935a5009e43d8e20b80a86",
+  "selection": "All returned full-game CFB passing/rushing main-line quotes with fresh exact two-sided prices, unique market/player/fixture identity, exact official upcoming fixture/team/kickoff, and available prior-only archived candidate inputs. No confidence, side, result or score filtering.",
+  "timing": "No fitting. Frozen October24 candidate and observation population, conservative48h availability lag. Forecast, full distribution, exact input receipt, quote, official pregame payload and ranking response retained before kickoff.",
+  "benchmark": "Exact two-sided no-vig sportsbook OVER probability; no unsupported CFB runtime forecast is invented. Compare conditional Brier, both directions/sides, pushes and fixed existing research >=55% confidence / >=3% EV selections after exact official finals.",
+  "limitations": [
+    "Prior retrospective training/evaluation was inspected; only these future outcomes are prospective.",
+    "Original CFB source has incomplete weekly coverage and missing receiving workloads. Passing/rushing only.",
+    "No promotion until adequate independent games and both-side coverage support direction, calibration and return improvement.",
+    "This is research, not an issued pick or replacement historical forecast. NHL/CBB/Soccer/MLB/WNBA not evaluated here."
+  ],
+  "livePromotion": false
+}

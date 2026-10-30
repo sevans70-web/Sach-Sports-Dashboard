@@ -1,0 +1,2783 @@
+{
+  "cohortSha256": "51fb917b20802cc7fc6fb840e43a91e074d8782f0aef8f763f737e22cb20b757",
+  "scoredAt": "2026-10-30T17:13:37.798Z",
+  "selected": 21,
+  "resolved": 21,
+  "pending": 0,
+  "voids": 0,
+  "unresolved": 0,
+  "complete": true,
+  "reports": [
+    {
+      "market": "passing_yards",
+      "settled": 2,
+      "pushes": 0,
+      "independentGames": 1,
+      "pairedBrierSamples": 2,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": 0.3060404280618311,
+      "candidateBrier": 0.33721759809750296,
+      "bookBrier": 0.23004980004363246,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 2,
+            "meanConfidence": 0.6137931034482759,
+            "hits": 1,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.11379310344827587,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 1,
+                "meanConfidence": 0.5724137931034483,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.4275862068965517
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6551724137931034,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.6551724137931034
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 2,
+            "meanConfidence": 0.6137931034482759,
+            "hits": 1,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.11379310344827587,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 1,
+                "meanConfidence": 0.5724137931034483,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.4275862068965517
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6551724137931034,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.6551724137931034
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 2,
+            "meanConfidence": 0.6586206896551724,
+            "hits": 1,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.1586206896551724,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.4
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7172413793103448,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.7172413793103448
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 2,
+            "meanConfidence": 0.6586206896551724,
+            "hits": 1,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.1586206896551724,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.4
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7172413793103448,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.7172413793103448
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 2,
+          "settled": 2,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": -0.06140350877192985,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 2,
+          "settled": 2,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": -0.06140350877192985,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "rushing_yards",
+      "settled": 1,
+      "pushes": 0,
+      "independentGames": 1,
+      "pairedBrierSamples": 1,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": 0.5261743859044995,
+      "candidateBrier": 0.7039464244719926,
+      "bookBrier": 0.2550485417745831,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 1,
+            "meanConfidence": 0.7253787878787878,
+            "hits": 0,
+            "hitRate": 0,
+            "overconfidenceGap": 0.7253787878787878,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7253787878787878,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.7253787878787878
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 1,
+            "meanConfidence": 0.7253787878787878,
+            "hits": 0,
+            "hitRate": 0,
+            "overconfidenceGap": 0.7253787878787878,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7253787878787878,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.7253787878787878
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 1,
+            "meanConfidence": 0.8390151515151515,
+            "hits": 0,
+            "hitRate": 0,
+            "overconfidenceGap": 0.8390151515151515,
+            "atLeast80": {
+              "count": 1,
+              "meanConfidence": 0.8390151515151515,
+              "hits": 0,
+              "hitRate": 0,
+              "overconfidenceGap": 0.8390151515151515
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 1,
+                "meanConfidence": 0.8390151515151515,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.8390151515151515
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 1,
+            "meanConfidence": 0.8390151515151515,
+            "hits": 0,
+            "hitRate": 0,
+            "overconfidenceGap": 0.8390151515151515,
+            "atLeast80": {
+              "count": 1,
+              "meanConfidence": 0.8390151515151515,
+              "hits": 0,
+              "hitRate": 0,
+              "overconfidenceGap": 0.8390151515151515
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 1,
+                "meanConfidence": 0.8390151515151515,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.8390151515151515
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 1,
+          "settled": 1,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": -1,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 1,
+          "settled": 1,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": -1,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "receiving_yards",
+      "settled": 9,
+      "pushes": 0,
+      "independentGames": 1,
+      "pairedBrierSamples": 9,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": 0.2547916788574091,
+      "candidateBrier": 0.2523671075221566,
+      "bookBrier": 0.24357245836851404,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 9,
+            "meanConfidence": 0.6359513502370646,
+            "hits": 4,
+            "hitRate": 0.4444444444444444,
+            "overconfidenceGap": 0.1915069057926202,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 4,
+                "meanConfidence": 0.5626159554730984,
+                "hits": 1,
+                "hitRate": 0.25,
+                "overconfidenceGap": 0.3126159554730984
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 2,
+                "meanConfidence": 0.601113172541744,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.10111317254174401
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 3,
+                "meanConfidence": 0.7569573283858998,
+                "hits": 2,
+                "hitRate": 0.6666666666666666,
+                "overconfidenceGap": 0.09029066171923317
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 6,
+            "meanConfidence": 0.6377551020408164,
+            "hits": 3,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.13775510204081642,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 2,
+                "meanConfidence": 0.5616883116883118,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.06168831168831179
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 2,
+                "meanConfidence": 0.601113172541744,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.10111317254174401
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 2,
+                "meanConfidence": 0.7504638218923934,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.25046382189239336
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 3,
+            "meanConfidence": 0.6323438466295609,
+            "hits": 1,
+            "hitRate": 0.3333333333333333,
+            "overconfidenceGap": 0.2990105132962276,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 2,
+                "meanConfidence": 0.563543599257885,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.563543599257885
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7699443413729128,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.2300556586270872
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 9,
+            "meanConfidence": 0.6347144918573489,
+            "hits": 4,
+            "hitRate": 0.4444444444444444,
+            "overconfidenceGap": 0.19027004741290443,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 5,
+                "meanConfidence": 0.5673469387755102,
+                "hits": 1,
+                "hitRate": 0.2,
+                "overconfidenceGap": 0.3673469387755102
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6465677179962894,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.3534322820037106
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 3,
+                "meanConfidence": 0.7430426716141002,
+                "hits": 2,
+                "hitRate": 0.6666666666666666,
+                "overconfidenceGap": 0.07637600494743357
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 4,
+            "meanConfidence": 0.6451762523191096,
+            "hits": 2,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.14517625231910958,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 2,
+                "meanConfidence": 0.5607606679035251,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.06076066790352508
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 2,
+                "meanConfidence": 0.7295918367346939,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.22959183673469385
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 5,
+            "meanConfidence": 0.6263450834879405,
+            "hits": 2,
+            "hitRate": 0.4,
+            "overconfidenceGap": 0.22634508348794047,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 3,
+                "meanConfidence": 0.5717377860235003,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.5717377860235003
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6465677179962894,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.3534322820037106
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7699443413729128,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.2300556586270872
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 5,
+          "settled": 5,
+          "pushes": 0,
+          "hits": 3,
+          "unitRoi": 0.08462767859020462,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 2,
+          "settled": 2,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": -0.06521739130434784,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 3,
+          "settled": 3,
+          "pushes": 0,
+          "hits": 2,
+          "unitRoi": 0.2199265381083563,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 5,
+          "settled": 5,
+          "pushes": 0,
+          "hits": 2,
+          "unitRoi": -0.24590677634155894,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "receptions",
+      "settled": 9,
+      "pushes": 0,
+      "independentGames": 1,
+      "pairedBrierSamples": 9,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": 0.26373968376353746,
+      "candidateBrier": 0.26388061830680437,
+      "bookBrier": 0.2490702194190838,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 9,
+            "meanConfidence": 0.6199752628324057,
+            "hits": 3,
+            "hitRate": 0.3333333333333333,
+            "overconfidenceGap": 0.28664192949907236,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 3,
+                "meanConfidence": 0.5272108843537414,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.5272108843537414
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 5,
+                "meanConfidence": 0.6443413729128015,
+                "hits": 2,
+                "hitRate": 0.4,
+                "overconfidenceGap": 0.24434137291280145
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7764378478664193,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.22356215213358066
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 2,
+            "meanConfidence": 0.7054730983302412,
+            "hits": 1,
+            "hitRate": 0.5,
+            "overconfidenceGap": 0.2054730983302412,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.634508348794063,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.634508348794063
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7764378478664193,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.22356215213358066
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 7,
+            "meanConfidence": 0.5955473098330241,
+            "hits": 2,
+            "hitRate": 0.2857142857142857,
+            "overconfidenceGap": 0.30983302411873836,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 3,
+                "meanConfidence": 0.5272108843537414,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.5272108843537414
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 4,
+                "meanConfidence": 0.6467996289424861,
+                "hits": 2,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.1467996289424861
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 9,
+            "meanConfidence": 0.6333745619459905,
+            "hits": 4,
+            "hitRate": 0.4444444444444444,
+            "overconfidenceGap": 0.1889301175015461,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 4,
+                "meanConfidence": 0.5640074211502784,
+                "hits": 1,
+                "hitRate": 0.25,
+                "overconfidenceGap": 0.31400742115027835
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 3,
+                "meanConfidence": 0.6447124304267161,
+                "hits": 2,
+                "hitRate": 0.6666666666666666,
+                "overconfidenceGap": -0.02195423623995052
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 2,
+                "meanConfidence": 0.7551020408163265,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.2551020408163265
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 3,
+            "meanConfidence": 0.6314162028447744,
+            "hits": 2,
+            "hitRate": 0.6666666666666666,
+            "overconfidenceGap": -0.03525046382189223,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 2,
+                "meanConfidence": 0.5612244897959184,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.061224489795918435
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.7717996289424861,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.2282003710575139
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 6,
+            "meanConfidence": 0.6343537414965986,
+            "hits": 2,
+            "hitRate": 0.3333333333333333,
+            "overconfidenceGap": 0.3010204081632653,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 2,
+                "meanConfidence": 0.5667903525046383,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.5667903525046383
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 3,
+                "meanConfidence": 0.6447124304267161,
+                "hits": 2,
+                "hitRate": 0.6666666666666666,
+                "overconfidenceGap": -0.02195423623995052
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 1,
+                "meanConfidence": 0.738404452690167,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.738404452690167
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 2,
+          "settled": 2,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": -0.11538461538461536,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 3,
+          "settled": 3,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": -0.29666666666666663,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 2,
+          "settled": 2,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": -0.11538461538461536,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 5,
+          "settled": 5,
+          "pushes": 0,
+          "hits": 2,
+          "unitRoi": -0.253,
+          "roiInterval": null
+        }
+      ]
+    }
+  ],
+  "excludedOrPending": [],
+  "decisions": [
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4036378",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4036378",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328845",
+        "line": 258.5,
+        "overPrice": -139,
+        "underPrice": 105,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:09:59.495Z",
+        "decisionAt": "2026-10-28T06:09:59.495Z",
+        "mainLine": true
+      },
+      "actual": 288,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.3448275862068966,
+        "brier": 0.42925089179548154,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.2827586206896552,
+        "brier": 0.5144351961950059,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2080731837984677
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4685720",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "passing_yards",
+        "gameId": "401873023",
+        "playerId": "4685720",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328800",
+        "line": 250.5,
+        "overPrice": -116,
+        "underPrice": -114,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:09:59.495Z",
+        "decisionAt": "2026-10-28T06:09:59.495Z",
+        "mainLine": true
+      },
+      "actual": 209,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.42758620689655175,
+        "brier": 0.18282996432818074,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.4,
+        "brier": 0.16000000000000003,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "bookBrier": 0.2520264162887972
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "rushing_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328869",
+        "line": 18.5,
+        "overPrice": -118,
+        "underPrice": -113,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:05.449Z",
+        "decisionAt": "2026-10-28T06:10:05.449Z",
+        "mainLine": true
+      },
+      "actual": 7,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.7253787878787878,
+        "brier": 0.5261743859044995,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.8390151515151515,
+        "brier": 0.7039464244719926,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2550485417745831
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328836",
+        "line": 62.5,
+        "overPrice": -115,
+        "underPrice": -115,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 36,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.2300556586270872,
+        "brier": 0.05292560606634289,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8695652173913043
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.2300556586270872,
+        "brier": 0.05292560606634289,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8695652173913043
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328887",
+        "line": 73.5,
+        "overPrice": -119,
+        "underPrice": -111,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 58,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.5380333951762524,
+        "brier": 0.28947993432488534,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.3534322820037106,
+        "brier": 0.1249143779623504,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.9009009009009009
+      },
+      "bookBrier": 0.2581597330258787
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328830",
+        "line": 18.5,
+        "overPrice": -118,
+        "underPrice": -112,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 11,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.6020408163265306,
+        "brier": 0.3624531445231154,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.538961038961039,
+        "brier": 0.2904790015179626,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.25610577526619205
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328812",
+        "line": 66.5,
+        "overPrice": -131,
+        "underPrice": -101,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 113,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.6001855287569573,
+        "brier": 0.1598516114153538,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7633587786259542
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.42578849721706863,
+        "brier": 0.32971884992823236,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.22070811224654308
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328875",
+        "line": 64.5,
+        "overPrice": -106,
+        "underPrice": -124,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 79,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.4100185528756957,
+        "brier": 0.34807810795088834,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.42578849721706863,
+        "brier": 0.32971884992823236,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2685934511534496
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "fanduel",
+        "quoteId": "fanduel-36215311-johnmetchieiii-receiving_yards",
+        "line": 15.5,
+        "overPrice": -114,
+        "underPrice": -114,
+        "updatedAt": "2026-10-28T06:09:47.472Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 14,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.7476808905380334,
+        "brier": 0.5590267140757468,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.7504638218923934,
+        "brier": 0.5631959479693379,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.25
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "fanduel",
+        "quoteId": "fanduel-36215311-marshawnlloyd-receiving_yards",
+        "line": 4.5,
+        "overPrice": -120,
+        "underPrice": -108,
+        "updatedAt": "2026-10-28T06:09:47.472Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 9,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7532467532467533,
+        "brier": 0.060887164783268666,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8333333333333334
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7087198515769945,
+        "brier": 0.08484412486532814,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8333333333333334
+      },
+      "bookBrier": 0.2378363949622655
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328893",
+        "line": 41.5,
+        "overPrice": -137,
+        "underPrice": 103,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 53,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.46289424860853434,
+        "brier": 0.28848258817779093,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.4332096474953618,
+        "brier": 0.3212513036923321,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.21168823889567512
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receiving_yards",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328824",
+        "line": 13.5,
+        "overPrice": -121,
+        "underPrice": -110,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:15.899Z",
+        "decisionAt": "2026-10-28T06:10:15.899Z",
+        "mainLine": true
+      },
+      "actual": 38,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.5853432282003711,
+        "brier": 0.1719402383992895,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8264462809917356
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.5825602968460112,
+        "brier": 0.17425590576929031,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8264462809917356
+      },
+      "bookBrier": 0.23906041976662232
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "2576925",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328827",
+        "line": 2.5,
+        "overPrice": 120,
+        "underPrice": -160,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 1,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.3849721706864564,
+        "brier": 0.14820357220304212,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.35714285714285715,
+        "brier": 0.12755102040816327,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.625
+      },
+      "bookBrier": 0.18048613781024386
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4567096",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "fanduel",
+        "quoteId": "fanduel-36215311-johnmetchieiii-receptions",
+        "line": 1.5,
+        "overPrice": -130,
+        "underPrice": -102,
+        "updatedAt": "2026-10-28T06:09:47.472Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 3,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7764378478664193,
+        "brier": 0.049980035866598264,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7692307692307693
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7717996289424861,
+        "brier": 0.05207540935078703,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7692307692307693
+      },
+      "bookBrier": 0.22263517208839328
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4701936",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328872",
+        "line": 4.5,
+        "overPrice": -123,
+        "underPrice": -108,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 7,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.49443413729128016,
+        "brier": 0.25559684153641216,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.551948051948052,
+        "brier": 0.20075054815314555,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.2351277522614864
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4685472",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328884",
+        "line": 5.5,
+        "overPrice": 105,
+        "underPrice": -139,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 6,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.3961038961038961,
+        "brier": 0.36469050430089395,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.38589981447124305,
+        "brier": 0.3771190378664536,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.29577239173815656
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4248528",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328809",
+        "line": 4.5,
+        "overPrice": -110,
+        "underPrice": -120,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 8,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.48608534322820035,
+        "brier": 0.26410827444487656,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.43413729128014844,
+        "brier": 0.32020060511976756,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2602239013915979
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4695883",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328833",
+        "line": 4.5,
+        "overPrice": -147,
+        "underPrice": 111,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 2,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.3181818181818182,
+        "brier": 0.1012396694214876,
+        "side": "UNDER",
+        "won": true,
+        "profit": 1.11
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.3228200371057514,
+        "brier": 0.10421277635695872,
+        "side": "UNDER",
+        "won": true,
+        "profit": 1.11
+      },
+      "bookBrier": 0.3099018231696652
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4572680",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328890",
+        "line": 4.5,
+        "overPrice": -104,
+        "underPrice": -127,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 6,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.313543599257885,
+        "brier": 0.4712223901198192,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.26159554730983303,
+        "brier": 0.545241135752665,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2737642083095197
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "29",
+        "opponentId": "9",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4241416",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639328821",
+        "line": 2.5,
+        "overPrice": 115,
+        "underPrice": -153,
+        "updatedAt": "2026-10-28T06:09:47.302Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 7,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.437847866419295,
+        "brier": 0.3160150212893387,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.4322820037105751,
+        "brier": 0.3223037233108794,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.3195129289736894
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "9",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T00:15:00Z"
+      },
+      "quote": {
+        "market": "receptions",
+        "gameId": "401873023",
+        "playerId": "4429023",
+        "sport": "nfl",
+        "period": "game",
+        "bookmaker": "betmgm",
+        "quoteId": "betmgm-6:48482-4224499",
+        "line": 1.5,
+        "overPrice": 145,
+        "underPrice": -200,
+        "updatedAt": "2026-10-28T06:09:03.126Z",
+        "capturedAt": "2026-10-28T06:10:21.350Z",
+        "decisionAt": "2026-10-28T06:10:21.350Z",
+        "mainLine": true
+      },
+      "actual": 1,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.634508348794063,
+        "brier": 0.40260084468936835,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.5705009276437848,
+        "brier": 0.32547130844241895,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.1442076590290018
+    }
+  ],
+  "requests": [
+    {
+      "id": "401873023",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873023",
+      "retrievedAt": "2026-10-30T17:06:59.732Z",
+      "sha256": "2ebcaded42dea1baaecce9978a167ec89872e905870cfae0fc03128cad51a6e7"
+    }
+  ],
+  "validatedForBetting": false,
+  "livePromotion": false,
+  "officialResultsSha256": "49402c5744a7fdbf993dcd39b1950d16bc9c1517845d010c00b280aac1b10f5e"
+}

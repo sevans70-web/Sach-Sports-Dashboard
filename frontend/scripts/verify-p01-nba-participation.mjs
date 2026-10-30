@@ -1,6 +1,7 @@
+import{readResearchCohort}from'./p01-official-results.mjs';
 import{readFile}from'node:fs/promises';import{gunzipSync}from'node:zlib';import{createHash}from'node:crypto';import assert from'node:assert/strict';import{loadTs}from'../tests/load-ts.mjs';
 const dir=process.argv[2];if(!dir)throw Error('Frozen study directory required');
-const hash=b=>createHash('sha256').update(b).digest('hex'),raw=await readFile(dir+'/cohort.json'),receipt=JSON.parse(await readFile(dir+'/receipt.json'));assert.equal(hash(raw),receipt.sha256);const c=JSON.parse(raw);
+const hash=b=>createHash('sha256').update(b).digest('hex'),raw=await readResearchCohort(dir),receipt=JSON.parse(await readFile(dir+'/receipt.json'));assert.equal(hash(raw),receipt.sha256);const c=JSON.parse(raw);
 const rb=await readFile(dir+'/runtime-snapshot.json.gz'),cb=await readFile(dir+'/candidate-models.json.gz');assert.equal(hash(rb),c.protocol.runtimeSha256);assert.equal(hash(cb),c.protocol.candidateSha256);
 const runtime=JSON.parse(gunzipSync(rb)),candidate=JSON.parse(gunzipSync(cb)),history=runtime.observations.filter(r=>r.sport==='nba');
 const{basketballFeatureIndex}=await loadTs(new URL('../lib/basketball-model-inputs.ts',import.meta.url)),{forecastDistribution,evaluatePrice,quoteProblem}=await loadTs(new URL('../lib/probability-forecast.ts',import.meta.url));const index=basketballFeatureIndex(history);

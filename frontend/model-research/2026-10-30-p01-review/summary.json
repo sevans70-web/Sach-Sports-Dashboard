@@ -1,0 +1,68 @@
+{
+  "createdAt": "2026-10-30T17:15:53.067729+00:00",
+  "activeSports": [
+    "nba",
+    "nfl",
+    "nhl",
+    "cbb",
+    "cfb"
+  ],
+  "productionCommit": "d686ba911136c5381c3a805111f89d7c2d7b34d2",
+  "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "futureTests": {
+    "nba-points": {
+      "targets": 21,
+      "games": 8,
+      "earliestStart": "2026-10-30T23:00Z",
+      "latestStart": "2026-10-31T02:00Z",
+      "cohortSha256": "ab16c78fbdb713f147c223c211b8b6e3d8deed43471c3b90b6c970b15dcc6e0c"
+    },
+    "nfl": {
+      "targets": 165,
+      "games": 12,
+      "earliestStart": "2026-11-01T18:00:00Z",
+      "latestStart": "2026-11-02T01:20:00Z",
+      "cohortSha256": "01d87f52100ca0227f4724103cb8cbc1864bf3a5bd2a2703f9a87eecf79605a4"
+    },
+    "cfb": {
+      "targets": 28,
+      "games": 18,
+      "earliestStart": "2026-10-31T16:00:00Z",
+      "latestStart": "2026-11-01T00:00:00.000Z",
+      "cohortSha256": "102151a06a1527234eca59d3c3b58397ae439017b46c76f44079cc117744df7c"
+    }
+  },
+  "completedTests": {
+    "nba-points": {
+      "selected": 17,
+      "resolved": 16,
+      "pending": 0,
+      "voids": 0,
+      "unresolved": 1,
+      "complete": false,
+      "hits": {
+        "baseline": 11,
+        "candidate": 11
+      }
+    },
+    "nfl": {
+      "selected": 21,
+      "resolved": 21,
+      "pending": 0,
+      "voids": 0,
+      "unresolved": 0,
+      "complete": true,
+      "hits": {
+        "baseline": 8,
+        "candidate": 9
+      }
+    }
+  },
+  "remainingSourceGaps": {
+    "nhl": "shots_on_goal check:15 rows,15 fitted forecasts,0 verified quotes; no exact-priced direction certification.",
+    "cbb": "points check:23 rows,0 verified quotes,0 available fitted forecasts; prior player/team history unavailable.",
+    "cfb": "passing check:25 verified quotes but no fitted production CFB model. Archived research candidate frozen separately for passing/rushing."
+  },
+  "livePromotion": false,
+  "p01Complete": false
+}
