@@ -4,7 +4,7 @@ import {limitAvailablePregameRankings} from '@/lib/ranking-availability';
 import {prioritizeModelPicks} from '@/lib/saved-model-pick';
 import {rankingResponse} from '@/lib/ranking-response-cache';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard} from '@/lib/nba-slate-board';
-import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
+import {fixtureQuoteRows,mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
@@ -35,22 +35,12 @@ async function fetchOwlsPayload(){return getOwlsPayload("wnba")}
 
 function boardForMarket(payload:any,market:WnbaMarketKey){return mainMarketQuotes(payload,market,p=>marketMatches(p.category??p.market??p.type,market))}
 
-function gameForRow(games:any[],team:string,b:any){
- const teamGames=games.filter(g=>[g.awayAbbr,g.homeAbbr].map((x:any)=>String(x).toUpperCase()).includes(team));
- if(!teamGames.length)return undefined;
- const propDay=torontoWnbaDay(b.gameTime||"");
- const sameDay=propDay?teamGames.filter(g=>torontoWnbaDay(g.tipoff||"")===propDay):[];
- const pool=sameDay.length?sameDay:teamGames;
- const target=new Date(b.gameTime||0).getTime();
- return [...pool].sort((a,c)=>Math.abs(new Date(a.tipoff||0).getTime()-target)-Math.abs(new Date(c.tipoff||0).getTime()-target))[0];
-}
-
 function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
  const board=boardForMarket(payload,market);const byName=new Map(overview.players.map((p:any)=>[cleanWnbaName(p.playerName),p]));const today=torontoWnbaDay(new Date());
  const activeGames:any[]=activeRankingSlate(overview.games,torontoWnbaDay);
- const uniqueBoard=[...board.reduce((acc:Map<string,any>,b:any)=>{const key=cleanWnbaName(b.playerName);const existing=acc.get(key);if(!existing||Number(b.bookmakerCount||0)>Number(existing.bookmakerCount||0))acc.set(key,b);return acc},new Map<string,any>()).values()] as any[];
- const rows=uniqueBoard.map((b:any)=>{
-  const p:any=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();const game=gameForRow(activeGames,team,b);if(!game||!quoteMatchesFixture(b,game))return null;
+ const matched=fixtureQuoteRows(board,activeGames,(b:any)=>{const p:any=byName.get(cleanWnbaName(b.playerName));return String(p?.team||"").toUpperCase();},cleanWnbaName);
+ const rows=matched.map(({quote:b,game}:any)=>{
+  const p:any=byName.get(cleanWnbaName(b.playerName));const team=String(p?.team||"").toUpperCase();
   const gameDay=torontoWnbaDay(game.tipoff||""),propDay=torontoWnbaDay(b.gameTime||"");if(propDay&&propDay!==gameDay)return null;
   const actualMatchup=`${game.awayTeam} @ ${game.homeTeam}`,actualTime=game.tipoff||b.gameTime,teamLogo=String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo;
   const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;
