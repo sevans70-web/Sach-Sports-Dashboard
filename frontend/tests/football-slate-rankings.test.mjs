@@ -26,3 +26,11 @@ test('N04 uses next day that actually has eligible scorer quotes',()=>{
  assert.equal(nearestQuotedFootballDay([], '2026-10-29','2026-10-29'),'2026-10-29');
  assert.equal(nearestQuotedFootballDay([{gameTime:'2026-10-25T17:00:00Z'}],'2026-10-29','2026-10-29'),'2026-10-29');
 });
+
+const {activeFootballBoardDay}=await loadTs(new URL('../lib/football-slate-rankings.ts',import.meta.url));
+test('S02 retains original slate windows across Toronto midnight until the last live game finishes',()=>{
+ const games=[{date:'2026-11-01T18:00Z',state:'post'},{date:'2026-11-01T21:25Z',state:'post'},{date:'2026-11-02T01:20Z',state:'in'},{date:'2026-11-02T23:00Z',state:'pre'}];
+ const now=new Date('2026-11-02T05:30Z');assert.equal(activeFootballBoardDay(games,now),'2026-11-01');
+ const rows=games.map((g,i)=>({gameTime:g.date,playerId:String(i)}));assert.equal(independentFootballRankings(rows,25,activeFootballBoardDay(games,now)).length,3);
+ games[2].state='post';assert.equal(activeFootballBoardDay(games,now),'2026-11-02');
+});

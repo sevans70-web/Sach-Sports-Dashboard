@@ -1,3 +1,4 @@
+import {dashboardDay} from '@/lib/dashboard-contract';
 export const FOOTBALL_SLATES=['early','afternoon','evening'] as const;
 const footballDay=(value:string)=>{const d=new Date(value);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(d):null;};
 export function footballSlate(time:string){
@@ -30,4 +31,11 @@ export function nearestQuotedFootballDay(rows:any[],preferred:string,today:strin
  const date=(v:string)=>{const d=new Date(v);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(d):null};
  const dates=[...new Set(rows.map(row=>date(String(row.gameTime||''))).filter((d):d is string=>d!==null&&d>=today))].sort();
  return dates.includes(preferred)?preferred:(dates[0]||preferred);
+}
+
+/** Keep yesterday's entire board while one of its games is still live. */
+export function activeFootballBoardDay(games:any[],now=new Date()){
+ const today=dashboardDay(now);
+ const liveDays=games.filter(g=>g.state==='in').map(g=>dashboardDay(g.date||g.gameTime||'')).filter(d=>d&&d<=today).sort();
+ return liveDays[0]||today;
 }

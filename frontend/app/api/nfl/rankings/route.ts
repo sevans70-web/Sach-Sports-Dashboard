@@ -1,7 +1,7 @@
 import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
 import {readDurableHistory} from '@/lib/durable-history';
-import {independentFootballRankings,footballSlate,nearestQuotedFootballDay} from '@/lib/football-slate-rankings';
+import {independentFootballRankings,activeFootballBoardDay,footballSlate,nearestQuotedFootballDay} from '@/lib/football-slate-rankings';
 import {lockedNflBoard} from '@/lib/nfl-locked-board';
 import {publishFeaturedBoards} from '@/lib/research-capture';
 import {rankingSourceState} from '@/lib/ranking-source-state';
@@ -300,7 +300,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const lockSchedule=await getEspnNflSchedule();
   locked=await lockedNflBoard(market,lockSchedule);
   if(!refresh){
-   const day=easternDayKey(new Date()),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
+   const day=activeFootballBoardDay(lockSchedule),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
    const retained=retainedNflRankingPayload(locked,published,market,day);
    if(retained){
     const key=market+'|'+day;
@@ -315,7 +315,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
     // Legacy fallback rows have already lost per-book prices and market structure.
     // They cannot establish a verified O/U quote; fall back to model watch instead.
     return [];
-  }),getEspnNflSchedule()]),today=easternDayKey(new Date());
+  }),getEspnNflSchedule()]),today=activeFootballBoardDay(lockSchedule);
   const candidates=owlsRows.length?owlsRows:await modelOnlyRows(market,schedule);
   const frozenSlates=new Set(locked?.lockedSlates||[]);
   const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(frozenSlates.has(footballSlate(t)))return false;if(!t||Date.parse(t)<=Date.now())return false;const k=easternDayKey(t);return !k||k>=today});
