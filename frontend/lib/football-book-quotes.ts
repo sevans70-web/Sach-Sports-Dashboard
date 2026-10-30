@@ -40,7 +40,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
       if (!sportsbookKey) continue;
       for (const prop of Array.isArray(book.props) ? book.props : []) {
         const category = categoryKey(prop.category ?? prop.market ?? prop.type);
-        const period = norm(prop.periodID ?? prop.periodId ?? prop.period ?? "");
+        const period = norm(prop.periodID ?? prop.periodId ?? prop.period ?? prop.periodName ?? "");
         const quarter = market.startsWith("q1_");
         const base = market.replace(/^q1_/, "");
         const q1Period = ["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period);
@@ -66,6 +66,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
         const underPrice = price(prop.underPrice ?? prop.under_price);
         const line = nullableNumber(prop.line ?? prop.point ?? prop.total);
         const milestone=allowQuarterMilestones&&quarter&&structure==='milestone'&&line!=null&&line>0&&underPrice==null&&prop.isAlternate!==true;
+        if(binary&&alternate)continue;
         if (overPrice == null || (!binary && !milestone && (alternate || underPrice == null || line == null))) continue;
         // With both sides available, remove the bookmaker margin for the model input.
         const p = implied(overPrice);
@@ -73,7 +74,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
         const row: FootballBookRow = {
           quoteMarket:market,quotePeriod:quarter?"q1":"game",
           sourceCategory:String(prop.sourceCategory??prop.category??prop.market??prop.type??""),
-          sourcePeriod:String(prop.sourcePeriod??prop.periodID??prop.periodId??prop.period??""),
+          sourcePeriod:String(prop.sourcePeriod??prop.periodID??prop.periodId??prop.period??prop.periodName??""),
           eventId: String(game.gameId || game.eventId || game.id || ""), matchup, gameTime,
           playerName, teamName: String(prop.team || prop.teamName || ""), line,
           price: overPrice, prob, bookmakerCount: 1, quoteVersion: FOOTBALL_QUOTE_VERSION,
