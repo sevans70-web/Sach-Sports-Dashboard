@@ -11,7 +11,7 @@ import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-fo
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence} from "@/lib/card-intelligence";
 import {datedCardHistoryPoints,publicPropContext} from "@/lib/public-prop-context";
-import {trackRankBoard,type RankBoard} from "@/lib/rank-movement";
+import {currentDroppedRows,trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {prepareRankingImage} from "@/lib/ranking-images";
@@ -2209,7 +2209,7 @@ export function PlayerRankingsPanel({
           const raw=retainParticipation(card.raw,old?.raw);
           return retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
         }));
-        setDropped(rawDropped);
+        setDropped(currentDroppedRows(rawDropped,rawRows,requestedMarket,rawRows[0]?.boardDay||torontoDay(new Date().toISOString())));
       } catch (cause) {
         if (!alive || controller.signal.aborted || requestId!==rankingRequestSeq.current) return;
         // Keep the last good board on screen. A background refresh failure
