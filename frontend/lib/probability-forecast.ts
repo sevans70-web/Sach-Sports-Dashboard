@@ -239,6 +239,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
     brier:probability!=null&&decided?(probability-Number(r.game.actual>q!.line))**2:null,
     marketBrier:price&&decided?(price.marketOver-Number(r.game.actual>q!.line))**2:null,
     probability,outcome:q&&decided?Number(r.game.actual>q.line):null,profit,candidateSide:price?.candidateSide||null,
+    marketFavoredSide:price?(price.marketOver>=.5?'OVER':'UNDER'):null,
     candidateConfidence:price?.candidateSide?(price.candidateSide==='OVER'?price.over:price.under)/(1-price.push):null,
     push:price!=null&&q?.line===r.game.actual,candidate:price?.candidateSide!=null};
   });
@@ -257,6 +258,16 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
     brier:items.length?mean(items.map(r=>(r.candidateConfidence!-Number(r.profit!>0))**2)):null});
    return [side,{all:describe(eligible),confidence80Plus:describe(eligible.filter(r=>r.candidateConfidence!>=.8))}];
   }));
+  // Paired directional benchmark on the identical quoted decisions.
+  // Market-favored direction is a diagnostic, not an actionable betting strategy.
+  const marketDirectionComparison=(()=>{
+   const paired=candidates.filter(r=>r.profit!==0&&r.marketFavoredSide!=null);
+   const candidateHits=paired.filter(r=>r.profit!>0).length;
+   const marketHits=paired.filter(r=>r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER')).length;
+   return {paired:paired.length,candidateHits,marketFavoredHits:marketHits,
+    candidateHitRate:paired.length?candidateHits/paired.length:null,
+    marketFavoredHitRate:paired.length?marketHits/paired.length:null};
+  })();
   const quoteRejections:Record<string,number>={};for(const r of results)if(r.quoteIssue)quoteRejections[r.quoteIssue]=(quoteRejections[r.quoteIssue]||0)+1;
   const bins=Array.from({length:10},(_,i)=>{
    const items=results.filter(r=>r.probability!=null&&r.outcome!=null&&Math.min(9,Math.floor(r.probability*10))===i);
@@ -275,7 +286,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    meanIntervalWidth:results.length?mean(results.map(r=>r.width)):null,exactQuoteSamples:results.filter(r=>!r.quoteIssue).length,
    brier:metric('brier'),marketBrier:metric('marketBrier'),candidateBets:results.filter(r=>r.candidate).length,
    pairedBrierImprovement:clusteredMeanInterval(results.filter(r=>r.brier!=null&&r.marketBrier!=null).map(r=>({gameId:r.gameId,value:r.marketBrier!-r.brier!}))),
-   candidateDirections,directionalCalibration,candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
+   candidateDirections,directionalCalibration,marketDirectionComparison,candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
