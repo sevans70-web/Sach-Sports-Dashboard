@@ -7,6 +7,25 @@ export function rankingCardState(row:any,status:string):"pregame"|"live"|"final"
   return ['hit','miss','push','void'].includes(status)?'final':'pregame';
 }
 
+/** Stable display order only. Original ranks and selection evidence stay intact. */
+export function completedRankingsLast<T extends {raw?:any;gameState?:string;resultStatus?:string}>(cards:T[]):T[]{
+ const final=(card:T)=>rankingCardState({...card.raw,gameState:card.gameState||card.raw?.gameState},card.resultStatus||'')==='final';
+ return [...cards].sort((a,b)=>Number(final(a))-Number(final(b)));
+}
+
+/** Use supplied clock/period evidence; elapsed time never establishes a live game. */
+export function rankingStatusText(game:any,sport:string){
+ const state=String(game?.state||game?.gameState||'').toLowerCase();
+ if(['post','final'].includes(state))return game.status||'Final';
+ if(!['in','live'].includes(state))return game.status||'Scheduled';
+ const period=Number(game.period),clock=typeof game.clock==='string'?game.clock.trim():'';
+ const regulation=sport==='nhl'?3:sport==='cbb'?2:4;
+ const periodText=game.periodLabel||game.quarter||(Number.isInteger(period)&&period>0?(['nfl','cfb','nba','wnba','cbb','nhl'].includes(sport)?period>regulation?`OT${period-regulation}`:`${sport==='nhl'?'P':sport==='cbb'?'H':'Q'}${period}`:`Period ${period}`):'');
+ const parts=[String(game.status||'In Progress')];
+ for(const part of [periodText,clock])if(part&&!parts.some(text=>text.toLowerCase().includes(String(part).toLowerCase())))parts.push(String(part));
+ return parts.join(' · ');
+}
+
 /** Always put completed games after live and scheduled games within a date. */
 export function playableSlateOrder<T extends {state:string;date:string;id?:string}>(games:T[]):T[]{
  const priority:Record<string,number>={in:0,live:0,pre:1,scheduled:1,post:2,final:2};

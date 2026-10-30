@@ -12,5 +12,5 @@ export function selectSavedQuoteEvidence(rows:any[],gameId?:string|null,quoteId?
 /** Preserve identities in existing full-card links; never pass probability as evidence. */
 export function savedQuoteQuery(row:any){
  const game=row?.gameId||row?.game_pk||row?.gamePk||row?.game_id,quote=row?.quoteId,forecastAt=row?.researchForecast?.modelSelection?.calculatedAt;
- return (game?'&gameId='+encodeURIComponent(String(game)):'')+(quote?'&quoteId='+encodeURIComponent(String(quote)):'')+(forecastAt?'&forecastAt='+encodeURIComponent(String(forecastAt)):'');
+ return (game?'&gameId='+encodeURIComponent(String(game)):'')+(quote?'&quoteId='+encodeURIComponent(String(quote)):'')+(forecastAt?'&forecastAt='+encodeURIComponent(String(forecastAt)):'')+(Number.isFinite(Date.parse(row?.gameTime||''))?'&gameTime='+encodeURIComponent(row.gameTime):'');
 }
