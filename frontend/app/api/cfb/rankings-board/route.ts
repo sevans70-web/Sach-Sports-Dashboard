@@ -36,6 +36,7 @@ export const revalidate = 0;
 type SlateKey = "all" | "early" | "afternoon" | "evening";
 
 type BoardPayload = {
+  boardDay?: string;
   success: boolean;
   source: string;
   market: CfbMarketKey;
@@ -1535,6 +1536,7 @@ async function build(
         : "Sach Model + ESPN + CFB hard-lock board",
     market,
     slate,
+    boardDay:gameDay,
     slateLabel:
       SLATE_LABELS[slate],
     rows,
@@ -1550,10 +1552,12 @@ async function build(
 
 async function getPayload(
   market: CfbMarketKey,
-  slate: SlateKey
+  slate: SlateKey,
+  scopedDay?: string
 ):Promise<BoardPayload> {
+  const boardDay=scopedDay||targetGameDay(await getEspnCfbSchedule(true));
   const key =
-    `${day(new Date())}|${market}|${slate}`;
+    `${boardDay}|${market}|${slate}`;
 
   const cached =
     cache.get(key);
@@ -1561,13 +1565,13 @@ async function getPayload(
   // A process restart must not make users wait for player-history enrichment
   // before seeing an already-saved board. Refresh it in the background.
   if (!cached) {
-    const saved=await readBoardState(market,slate,day(new Date()));
+    const saved=await readBoardState(market,slate,boardDay);
     const rows=(saved?.rows||[]).filter(row=>gradeableBoardRow(row,market)&&
       (Date.parse(row.gameTime||"")<=Date.now() || (row.quoteVersion===1&&Date.now()-Date.parse(row.quoteUpdatedAt||"")<15*60_000)));
     if(rows.length){
-      cache.set(key,{at:Date.now()-FRESH_MS,payload:{success:true,source:"Saved CFB daily board",market,slate,slateLabel:SLATE_LABELS[slate],
+      cache.set(key,{at:Date.now()-FRESH_MS,payload:{success:true,source:"Saved CFB daily board",market,slate,boardDay,slateLabel:SLATE_LABELS[slate],
         rows,sportsbookOnly:rows.every(row=>row.marketBacked===true),validRankingCount:rows.length,updatedAt:saved!.updatedAt,lockSource:"Railway volume"}});
-      return getPayload(market,slate);
+      return getPayload(market,slate,boardDay);
     }
   }
 
@@ -1717,11 +1721,13 @@ export async function GET(
     );
   }
 
+  let boardDay=day(new Date());
   try {
+    boardDay=targetGameDay(await getEspnCfbSchedule(true));
     if (slate === "all") {
       const combined=await loadIndependentFootballBlocks(
-        key=>timeout(getPayload(market,key),12_000,null as BoardPayload | null),
-        key=>cache.get(`${day(new Date())}|${market}|${key}`)?.payload
+        key=>timeout(getPayload(market,key,boardDay),12_000,null as BoardPayload | null),
+        key=>cache.get(`${boardDay}|${market}|${key}`)?.payload
       );
       const rows=combined.rows;
 
@@ -1731,6 +1737,7 @@ export async function GET(
           source: "CFB independent time-block boards",
           market,
           slate: "all",
+          boardDay,
           slateLabel: "All Day",
           rows,
           sportsbookOnly: rows.length > 0 && rows.every((row: any) => row.marketBacked === true),
@@ -1749,7 +1756,8 @@ export async function GET(
       await timeout(
         getPayload(
           market,
-          slate
+          slate,
+          boardDay
         ),
         12_000,
         null as BoardPayload | null
@@ -1769,7 +1777,7 @@ export async function GET(
 
     const cached =
       cache.get(
-        `${day(new Date())}|${market}|${slate}`
+        `${boardDay}|${market}|${slate}`
       );
 
     if (cached) {
@@ -1802,7 +1810,7 @@ export async function GET(
   } catch (error) {
     const cached =
       cache.get(
-        `${market}|${slate}`
+        `${boardDay}|${market}|${slate}`
       );
 
     if (cached) {
