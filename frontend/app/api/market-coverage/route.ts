@@ -14,7 +14,7 @@ export async function GET(req:NextRequest){
   const inspect=(value:any,supplement=false)=>{
    const games=supplement?value:Array.isArray(value?.data)?value.data:[],categories:Record<string,number>={};let props=0;
    for(const g of games)for(const b of g.books||[])for(const p of b.props||[]){const key=String(p.category??p.market??p.type??'unknown');categories[key]=(categories[key]||0)+1;props++;}
-   return {games:games.length,props,categories,fixtures:games.slice(0,12).map((g:any)=>({awayTeam:String(g.awayTeam||g.away_team||''),homeTeam:String(g.homeTeam||g.home_team||''),gameTime:String(g.commenceTime||g.commence_time||g.startTime||g.date||''),books:(g.books||[]).length}))};
+   return {games:games.length,props,categories,fixtures:games.slice(0,12).map((g:any)=>({awayTeam:String(g.awayTeam||g.away_team||''),homeTeam:String(g.homeTeam||g.home_team||''),gameTime:String(g.commenceTime||g.commence_time||g.startTime||g.date||''),books:(g.books||[]).length,samples:(g.books||[]).slice(0,2).map((b:any)=>({book:String(b.key||''),props:(b.props||[]).slice(0,3).map((p:any)=>Object.fromEntries(['playerName','category','periodID','periodId','period','line','overPrice','underPrice','lastUpdate','marketStructure','isMainLine','isAlternate','active'].filter(k=>['string','number','boolean'].includes(typeof p[k])).map(k=>[k,p[k]])))}))}))};
   };
   return NextResponse.json({sport,primary:sources[0].status==='fulfilled'?inspect(sources[0].value):{error:'Primary quote feed unavailable'},supplement:sources[1].status==='fulfilled'?inspect(sources[1].value,true):{error:'Supplemental quote feed unavailable'},updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
  }
