@@ -239,6 +239,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
     brier:probability!=null&&decided?(probability-Number(r.game.actual>q!.line))**2:null,
     marketBrier:price&&decided?(price.marketOver-Number(r.game.actual>q!.line))**2:null,
     probability,outcome:q&&decided?Number(r.game.actual>q.line):null,profit,candidateSide:price?.candidateSide||null,
+    candidateConfidence:price?.candidateSide?(price.candidateSide==='OVER'?price.over:price.under)/(1-price.push):null,
     push:price!=null&&q?.line===r.game.actual,candidate:price?.candidateSide!=null};
   });
   const metric=(key:'brier'|'marketBrier'|'profit')=>{const xs=results.map(r=>r[key]).filter((v):v is number=>v!=null);return xs.length?mean(xs):null};
