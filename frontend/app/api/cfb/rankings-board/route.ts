@@ -1,3 +1,4 @@
+import {activeFootballBoardDay} from '@/lib/football-slate-rankings';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload} from "@/lib/prop-integrity";
@@ -535,47 +536,7 @@ function gameStarted(
   );
 }
 
-function targetGameDay(
-  schedule: any[]
-) {
-  const today = day(new Date());
-  // Finished games belong to today's board until Toronto midnight.
-  if (schedule.some(game => day(game.date || game.gameTime || "") === today)) return today;
-
-  const playable = schedule.filter((game: any) => {
-    const state = String(game?.state || "").toLowerCase();
-    return !game?.completed && state !== "post" && state !== "final";
-  });
-
-  const todayGames = playable.filter(
-    (game: any) =>
-      day(
-        game.date ||
-        game.gameTime ||
-        ""
-      ) === today
-  );
-
-  if (todayGames.length) return today;
-
-  const futureDays =
-    playable
-      .map(
-        (game: any) =>
-          day(
-            game.date ||
-            game.gameTime ||
-            ""
-          )
-      )
-      .filter(
-        (value: string) =>
-          value && value >= today
-      )
-      .sort();
-
-  return futureDays[0] || today;
-}
+function targetGameDay(schedule:any[]){return activeFootballBoardDay(schedule,new Date(),true);}
 
 async function prefetchRosters(
   rows: any[],

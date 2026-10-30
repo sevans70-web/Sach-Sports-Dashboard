@@ -34,8 +34,10 @@ export function nearestQuotedFootballDay(rows:any[],preferred:string,today:strin
 }
 
 /** Keep yesterday's entire board while one of its games is still live. */
-export function activeFootballBoardDay(games:any[],now=new Date()){
+export function activeFootballBoardDay(games:any[],now=new Date(),nextAvailable=false){
  const today=dashboardDay(now);
  const liveDays=games.filter(g=>g.state==='in').map(g=>dashboardDay(g.date||g.gameTime||'')).filter(d=>d&&d<=today).sort();
- return liveDays[0]||today;
+ if(liveDays.length)return liveDays[0];
+ if(!nextAvailable||games.some(g=>dashboardDay(g.date||g.gameTime||'')===today))return today;
+ return games.filter(g=>!g.completed&&!['post','final'].includes(String(g.state).toLowerCase())).map(g=>dashboardDay(g.date||g.gameTime||'')).filter(d=>d&&d>=today).sort()[0]||today;
 }

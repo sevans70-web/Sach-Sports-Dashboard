@@ -34,3 +34,11 @@ test('S02 retains original slate windows across Toronto midnight until the last 
  const rows=games.map((g,i)=>({gameTime:g.date,playerId:String(i)}));assert.equal(independentFootballRankings(rows,25,activeFootballBoardDay(games,now)).length,3);
  games[2].state='post';assert.equal(activeFootballBoardDay(games,now),'2026-11-02');
 });
+
+test('CFB keeps a late live slate before considering today or the next available Saturday',()=>{
+ const now=new Date('2026-11-07T05:30Z'),late={date:'2026-11-07T02:00Z',state:'in'},next={date:'2026-11-07T17:00Z',state:'pre'};
+ assert.equal(activeFootballBoardDay([late,next],now,true),'2026-11-06');
+ assert.equal(activeFootballBoardDay([{...late,state:'post'},next],now,true),'2026-11-07');
+ assert.equal(activeFootballBoardDay([{date:'2026-11-14T17:00Z',state:'pre'}],now,true),'2026-11-14');
+ assert.equal(activeFootballBoardDay([{date:'2026-11-14T17:00Z',state:'pre'}],now),'2026-11-07');
+});
