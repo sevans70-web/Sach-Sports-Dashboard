@@ -1,3 +1,4 @@
+import {loadIndependentFootballBlocks} from '@/lib/independent-football-blocks';
 import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {activeFootballBoardDay} from '@/lib/football-slate-rankings';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
@@ -1718,33 +1719,15 @@ export async function GET(
 
   try {
     if (slate === "all") {
-      const blockKeys: Array<Exclude<SlateKey, "all">> = [
-        "early",
-        "afternoon",
-        "evening",
-      ];
-
-      // Each block owns its original daily Top 25. Splitting one current
-      // list loses completed games after books remove their props.
-      const blocks = await Promise.all(blockKeys.map(key =>
-        timeout(getPayload(market,key),12_000,null as BoardPayload | null)
-      ));
-
-      const usable = blocks.filter(
-        (block): block is BoardPayload => Boolean(block)
+      const combined=await loadIndependentFootballBlocks(
+        key=>timeout(getPayload(market,key),12_000,null as BoardPayload | null),
+        key=>cache.get(`${day(new Date())}|${market}|${key}`)?.payload
       );
-
-      const rows = usable.flatMap((block) =>
-        (block.rows || []).map((row: any) => ({
-          ...row,
-          slateKey: block.slate,
-          slateLabel: block.slateLabel,
-        }))
-      );
+      const rows=combined.rows;
 
       return rankingJson(
         {
-          success: usable.length > 0,
+          success: combined.blocks.length > 0,
           source: "CFB independent time-block boards",
           market,
           slate: "all",
@@ -1753,9 +1736,10 @@ export async function GET(
           sportsbookOnly: rows.length > 0 && rows.every((row: any) => row.marketBacked === true),
           validRankingCount: rows.length,
           updatedAt: new Date().toISOString(),
-          blockCounts: Object.fromEntries(
-            usable.map((block) => [block.slate, block.rows?.length || 0])
-          ),
+          blockCounts: combined.blockCounts,
+          complete: combined.complete,
+          unavailableSlates: combined.unavailableSlates,
+          stale: combined.stale,
         },
         { headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" } }
       );
