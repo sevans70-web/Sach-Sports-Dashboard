@@ -17,3 +17,13 @@ test('official scoreboard loader preserves neutral flag and school aliases for q
  globalThis.fetch=async()=>new Response(JSON.stringify({events:[{id:game.gameId,date:game.tipoff,season:{year:2027},status:{type:{state:'pre'}},competitions:[{neutralSite:true,competitors:[{homeAway:'away',team:{id:'87',displayName:game.awayTeam,shortDisplayName:'Notre Dame',abbreviation:'ND'}},{homeAway:'home',team:{id:'222',displayName:game.homeTeam,shortDisplayName:'Villanova',abbreviation:'VILL'}}]}]}]}));
  try{const games=await loadCbbGames();assert.equal(games.length,1);assert.equal(games[0].neutralSite,true);assert.equal(uniqueQuoteFixture(quote,games,'ND'),games[0]);}finally{globalThis.fetch=original}
 });
+test('book school tags are removed from name matching, retained as evidence and checked against the current team',async()=>{
+ const {cbbQuotePlayerName,cbbQuoteTeam}=await loadTs(new URL('../lib/cbb-fixture-identity.ts',import.meta.url));
+ assert.deepEqual(cbbQuotePlayerName('Braeden Shrewsberry (ND)'),{name:'Braeden Shrewsberry',teamTag:'ND'});
+ assert.deepEqual(cbbQuotePlayerName('Devin Royal (VILL)'),{name:'Devin Royal',teamTag:'VILL'});
+ assert.deepEqual(cbbQuotePlayerName('Tyler Perkins'),{name:'Tyler Perkins',teamTag:null});
+ assert.equal(cbbQuoteTeam({providerTeamTag:'ND'},{team:'ND'}),'ND');
+ assert.equal(cbbQuoteTeam({providerTeamTag:'ND'},{team:'VILL'}),'');
+ assert.equal(cbbQuoteTeam({providerTeamTag:'ND'},undefined),'');
+ assert.equal(cbbQuoteTeam({providerTeamTag:null},{team:'VILL'}),'VILL');
+});

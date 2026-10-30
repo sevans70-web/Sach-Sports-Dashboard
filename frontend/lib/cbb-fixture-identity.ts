@@ -11,3 +11,14 @@ export function cbbFixtureIdentity(game:any,team:string){
   season:game?.season||null,
  };
 }
+
+/** Provider team suffixes label identity; they are not part of a player's name.
+ * A suffix conflicting with current official roster membership is rejected. */
+export function cbbQuotePlayerName(value:string){
+ const source=String(value||'').trim(),match=source.match(/^(.*?)\s+\(([A-Za-z0-9& .-]{1,16})\)$/);
+ return {name:match?match[1].trim():source,teamTag:match?match[2].trim().toUpperCase():null};
+}
+export function cbbQuoteTeam(quote:any,player:any){
+ const team=String(player?.team||quote.playerTeam||'').trim().toUpperCase();
+ return quote.providerTeamTag&&quote.providerTeamTag!==team?'':team;
+}

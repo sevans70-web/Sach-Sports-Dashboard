@@ -1,6 +1,6 @@
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
 import {limitAvailablePregameRankings} from '@/lib/ranking-availability';
-import {cbbFixtureIdentity} from '@/lib/cbb-fixture-identity';
+import {cbbFixtureIdentity,cbbQuotePlayerName,cbbQuoteTeam} from '@/lib/cbb-fixture-identity';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {fixtureQuoteRows,mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -32,7 +32,7 @@ async function fetchOwlsPayload(){
  return getOwlsPayload("cbb");
 }
 
-function boardForMarket(payload:any,market:CbbMarketKey){return mainMarketQuotes(payload,market,p=>marketMatches(p.category??p.market??p.type,market))}
+function boardForMarket(payload:any,market:CbbMarketKey){return mainMarketQuotes(payload,market,p=>marketMatches(p.category??p.market??p.type,market)).map(q=>{const identity=cbbQuotePlayerName(q.playerName);return {...q,providerPlayerName:q.playerName,providerTeamTag:identity.teamTag,playerName:identity.name}})}
 
 function baselineRows(overview:any,market:CbbMarketKey){
  const today=torontoCbbDay(new Date());
@@ -63,9 +63,9 @@ function baselineRows(overview:any,market:CbbMarketKey){
 
 function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
  const board=boardForMarket(payload,market);const byName=new Map(overview.players.map((p:any)=>[cleanCbbName(p.playerName),p]));const today=torontoCbbDay(new Date());
- const matched=fixtureQuoteRows(board,activeRankingSlate(overview.games,torontoCbbDay),(b:any)=>{const p:any=byName.get(cleanCbbName(b.playerName));return String(b.playerTeam||p?.team||"").toUpperCase();},cleanCbbName);
+ const matched=fixtureQuoteRows(board,activeRankingSlate(overview.games,torontoCbbDay),(b:any)=>{const p:any=byName.get(cleanCbbName(b.playerName));return cbbQuoteTeam(b,p);},cleanCbbName);
  const rows=matched.map(({quote:b,game}:any)=>{
-  const p:any=byName.get(cleanCbbName(b.playerName));const team=String(b.playerTeam||p?.team||"").toUpperCase();
+  const p:any=byName.get(cleanCbbName(b.playerName));const team=cbbQuoteTeam(b,p);
   const gameDay=torontoCbbDay(game.tipoff||"");if(b.gameTime&&torontoCbbDay(b.gameTime)!==gameDay)return null;
   const actualMatchup=`${game.awayTeam} @ ${game.homeTeam}`,actualTime=game.tipoff||b.gameTime,teamLogo=String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo;
   const baseline=playerBaseline(p,market);const edge:number|null=baseline!=null&&b.line!=null?baseline-b.line:null;
@@ -73,7 +73,7 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
   
   const modelProbability=edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10));
   const gi=Math.round((50+edgePct*35+reliability*15)*10)/10;
-  return{...cbbFixtureIdentity(game,team),playerId:p?.playerId||cleanCbbName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"CBB",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?cbbHeadshot(p.playerId):"",...footballQuoteFields(b),providerGameTime:b.gameTime,providerMatchup:b.matchup,sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2025–26 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
+  return{...cbbFixtureIdentity(game,team),playerId:p?.playerId||cleanCbbName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"CBB",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?cbbHeadshot(p.playerId):"",...footballQuoteFields(b),providerGameTime:b.gameTime,providerMatchup:b.matchup,providerPlayerName:b.providerPlayerName,providerTeamTag:b.providerTeamTag,sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2025–26 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
  }).filter(Boolean) as any[];
  
  if(!rows.length)return baselineRows(overview,market);

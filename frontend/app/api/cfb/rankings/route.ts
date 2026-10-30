@@ -178,7 +178,8 @@ async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:an
 async function marketRows(market:CfbMarketKey){
   if(market.startsWith("q1_"))return timeout(getOwlsCfbRows(market),8000,[]);
   try{
-    const rows=await timeout(getOwlsCfbRows(market),4000,[]);
+    // The full college feed can take longer than four seconds on a cold request.
+    const rows=await timeout(getOwlsCfbRows(market),8000,[]);
     if(rows.length)return rows;
   }catch{}
   const earlyPromise=timeout(getCfbRankings(market,[]),6000,[]);

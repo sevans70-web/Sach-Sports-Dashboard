@@ -1,0 +1,166 @@
+{
+  "sport": "cbb",
+  "primary": {
+    "games": 3,
+    "props": 63,
+    "categories": {
+      "points": 31,
+      "rebounds": 6,
+      "assists": 6,
+      "pts_rebs": 7,
+      "pts_asts": 4,
+      "threes_made": 3,
+      "pts_rebs_asts": 3,
+      "combos": 3
+    },
+    "fixtures": [
+      {
+        "awayTeam": "Villanova",
+        "homeTeam": "Notre Dame",
+        "gameTime": "2026-11-01T14:30:33.000Z",
+        "books": 2,
+        "samples": [
+          {
+            "book": "fanduel",
+            "props": [
+              {
+                "playerName": "Devin Royal (VILL)",
+                "category": "points",
+                "line": 14.5,
+                "overPrice": -108,
+                "underPrice": -120,
+                "lastUpdate": "2026-10-30T19:12:36.444Z"
+              },
+              {
+                "playerName": "Braeden Shrewsberry (ND)",
+                "category": "points",
+                "line": 13.5,
+                "overPrice": -118,
+                "underPrice": -110,
+                "lastUpdate": "2026-10-30T19:12:36.444Z"
+              },
+              {
+                "playerName": "Braeden Smith (ND)",
+                "category": "points",
+                "line": 8.5,
+                "overPrice": -120,
+                "underPrice": -108,
+                "lastUpdate": "2026-10-30T19:12:36.444Z"
+              }
+            ]
+          },
+          {
+            "book": "draftkings",
+            "props": [
+              {
+                "playerName": "Tyler Perkins",
+                "category": "points",
+                "line": 8,
+                "overPrice": -1800,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              },
+              {
+                "playerName": "Devin Royal",
+                "category": "points",
+                "line": 8,
+                "overPrice": -2000,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              },
+              {
+                "playerName": "Braeden Shrewsberry",
+                "category": "points",
+                "line": 8,
+                "overPrice": -900,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "awayTeam": "Florida",
+        "homeTeam": "Miami",
+        "gameTime": "2026-11-02T23:00:00.0000000Z",
+        "books": 1,
+        "samples": [
+          {
+            "book": "draftkings",
+            "props": [
+              {
+                "playerName": "Malik Reneau",
+                "category": "points",
+                "line": 10,
+                "overPrice": -2500,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              },
+              {
+                "playerName": "Thomas Haugh",
+                "category": "points",
+                "line": 10,
+                "overPrice": -1000,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              },
+              {
+                "playerName": "Alex Condon",
+                "category": "points",
+                "line": 8,
+                "overPrice": -1600,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "awayTeam": "UCLA",
+        "homeTeam": "Arizona",
+        "gameTime": "2026-11-03T03:00:00.0000000Z",
+        "books": 1,
+        "samples": [
+          {
+            "book": "draftkings",
+            "props": [
+              {
+                "playerName": "Jaylen Petty",
+                "category": "points",
+                "line": 8,
+                "overPrice": -1000,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              },
+              {
+                "playerName": "Motiejus Krivas",
+                "category": "points",
+                "line": 8,
+                "overPrice": -1200,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              },
+              {
+                "playerName": "Trent Perry",
+                "category": "points",
+                "line": 8,
+                "overPrice": -1100,
+                "lastUpdate": "2026-10-30T19:13:04.416Z",
+                "marketStructure": "milestone"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "supplement": {
+    "games": 0,
+    "props": 0,
+    "categories": {},
+    "fixtures": []
+  },
+  "updatedAt": "2026-10-30T19:13:06.873Z"
+}

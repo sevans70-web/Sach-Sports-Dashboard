@@ -1,0 +1,12 @@
+{
+  "purpose": "Pregame source-coverage verification; not paired candidate improvement validation",
+  "url": "https://marvelous-wholeness-production-c8d3.up.railway.app/api/nhl/rankings?market=shots_on_goal",
+  "responseUpdatedAt": "2026-10-30T19:08:59.434Z",
+  "release": "60ce4ca35b971feb2bd3b6eaa35a2041e280b176",
+  "compressedSha256": "d45250b3b37a035ecd8de2d82c5c4932c76dad145a54e19bd0119e0e65bfc5f5",
+  "rawSha256": "fe4d318f116a8b759a53b71a8a69ea446ab14ec4105d612c50a938bb1f90894d",
+  "rows": 15,
+  "verifiedQuoteCount": 14,
+  "fittedResearchForecastCount": 15,
+  "livePromotion": false
+}
