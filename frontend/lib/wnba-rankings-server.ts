@@ -112,8 +112,7 @@ export async function buildWnbaMarketRankings(...args:Parameters<typeof buildWnb
  return rankingResponse('wnba|'+args[0],async()=>{
  const overview=args[1]?.overview||await loadWnbaOverview();
  const today=torontoWnbaDay(new Date());
- const current=overview.games.filter((g:any)=>torontoWnbaDay(g.tipoff||'')===today);
- const games=current.length?current:activeRankingSlate(overview.games,torontoWnbaDay);
+ const games=activeRankingSlate(overview.games,torontoWnbaDay);
  const day=games[0]?.tipoff?torontoWnbaDay(games[0].tipoff):torontoWnbaDay(new Date());
  const frozen=await frozenNbaSlateBoard(args[0],games,Date.now(),day,'wnba');
  if(frozen)return frozen;
