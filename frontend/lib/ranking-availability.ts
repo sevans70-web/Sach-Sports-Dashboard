@@ -6,10 +6,13 @@ export function excludeUnavailablePregame(row:any,now=Date.now()){
  const context=row?.pregameContext;
  const exact=context&&String(context.gameId)===String(row.gameId)&&String(context.playerId)===String(row.playerId)&&String(context.teamId)===String(row.teamId);
  const reports=exact?context.availability||[]:[];
- const statuses=[...reports.map((r:any)=>r.status),row?.injuryStatus,row?.injury_status,row?.playerStatus,row?.injury?.status];
+ const statuses=[...reports.map((r:any)=>r.status),row?.availabilityStatus,row?.injuryStatus,row?.injury_status,row?.playerStatus,row?.injury?.status];
  const evidence=row?.availabilityEvidence;
  if(String(evidence?.gameId||'')===String(row?.gameId)&&['official_injury_status','official_dnp'].includes(evidence?.code))statuses.push(String(evidence.text||'').replace(/^Reported\s+/i,'').split(/\s*[·:]\s*/)[0]);
- return row?.inactive===true||row?.isOut===true||row?.didNotPlay===true||statuses.some(s=>/^(out|inactive|suspended|injured reserve|dnp|did not play)$/i.test(String(s||'')));
+ return row?.inactive===true||row?.isOut===true||row?.didNotPlay===true||statuses.some(s=>{
+  const status=String(s||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');
+  return /^(out|inactive|suspended|injured reserve|ir|dnp|did not play|scratched|healthy scratch|injured list|il|disabled list|dl|minor leagues|minors|assigned to minors|optioned to minors)$/.test(status)||/^(?:7|10|15|60) day (?:il|injured list|dl|disabled list)$/.test(status);
+ });
 }
 
 /** A locked board freezes predictions, not injury status. Suppress an officially
