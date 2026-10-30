@@ -229,7 +229,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    const pooledPrice=conditional&&q&&!quoteIssue&&quotedForecast?.forecast?evaluatePrice(distributionValues(model,quotedForecast.forecast.projection),q):null;
    const pooledProbability=pooledPrice&&pooledPrice.over+pooledPrice.under>0?pooledPrice.over/(pooledPrice.over+pooledPrice.under):null;
    const decided=q&&r.game.actual!==q.line,won=price?.candidateSide&&decided?(price.candidateSide==='OVER'?r.game.actual>q!.line:r.game.actual<q!.line):null;
-   const profit=won==null?null:won?payout(price!.candidateSide==='OVER'?q!.overPrice:q!.underPrice):-1;
+   const profit=!price?.candidateSide||!q?null:r.game.actual===q.line?0:won?payout(price.candidateSide==='OVER'?q.overPrice:q.underPrice):-1;
    return {gameId:r.game.gameId,actual:r.game.actual,projection:pred.projection,workload:pred.expectedWorkload,baseline:r.baseline,
     workloadError:Math.abs(pred.expectedWorkload-r.game.workload),crps:empiricalCrps(values,r.game.actual),
     pooledCrps:conditional?empiricalCrps(distributionValues(model,pred.projection),r.game.actual):null,
