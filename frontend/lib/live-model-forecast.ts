@@ -3,7 +3,7 @@ import {setImmediate as yieldToRequests} from 'node:timers/promises';
 import {basketballFeatureIndex} from '@/lib/basketball-model-inputs';
 import {predictionProbability} from '@/lib/prediction-probability';
 import {estimatedEv} from '@/lib/estimated-ev';
-import {refreshNbaObservations} from '@/lib/live-basketball-observations';
+import {refreshNbaObservations,refreshCbbObservations} from '@/lib/live-basketball-observations';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {gunzipSync} from 'node:zlib';
@@ -121,17 +121,19 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   }));
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
- let nbaRefreshUnavailable=new Set<string>();
- if(sport==='nba'&&runtimeSupportsMarket(data,sport,String(payload.market||payload.rows[0]?.market||''))){
-  const refresh=await refreshNbaObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),now);
-  nbaRefreshUnavailable=new Set(refresh.unavailablePlayers);
+ let basketballRefreshUnavailable=new Set<string>();
+ if(['nba','cbb'].includes(sport)&&runtimeSupportsMarket(data,sport,String(payload.market||payload.rows[0]?.market||''))){
+  const refresh=sport==='cbb'
+   ?await refreshCbbObservations(payload.rows,now)
+   :await refreshNbaObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),now);
+  basketballRefreshUnavailable=new Set(refresh.unavailablePlayers);
   const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));
   for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);
   data={...data,observations:[...merged.values()]};
  }
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){
-  const row={...r,researchForecast:nbaRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  const row={...r,researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
   rows.push({...row,estimatedEv:estimatedEv(row,now),pregameProbability:predictionProbability(row,now)});
   // Even a large slate must let health/history requests run between players.
   await yieldToRequests();

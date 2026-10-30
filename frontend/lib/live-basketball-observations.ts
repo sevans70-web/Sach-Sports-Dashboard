@@ -14,10 +14,11 @@ async function officialJson(url:string){
 /** Refresh the complete two-team census for recent fixtures discovered in each
  * ranked player's official log. Never infer usage from a player's points mean.
  * The research engine's existing 48-hour availability lag remains unchanged. */
-export async function refreshNbaObservations(rows:any[],now=Date.now(),get:JsonSource=officialJson):Promise<Refresh>{
+export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[],now=Date.now(),get:JsonSource=officialJson):Promise<Refresh>{
+ const league=sport==='cbb'?'mens-college-basketball':'nba';
  const players=[...new Map<string,any>(rows.filter(r=>/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff&&!['in','post'].includes(r.gameState)).map(r=>[String(r.playerId),r])).values()];
  const seasonFor=(r:any)=>String(r.pregameContext?.season||r.season||'');
- const key=players.map(r=>r.playerId+'|'+seasonFor(r)).sort().join(',');
+ const key=sport+'|'+players.map(r=>r.playerId+'|'+seasonFor(r)).sort().join(',');
  if(!players.length)return {observations:[],unavailablePlayers:[],checkedAt:new Date(now).toISOString()};
  // Injected source readers are used by deterministic tests; never share their cache.
  if(get===officialJson){const hit=cache.get(key);if(hit&&hit.expires>now)return hit.value;if(pending.has(key))return pending.get(key)!}
@@ -28,7 +29,7 @@ export async function refreshNbaObservations(rows:any[],now=Date.now(),get:JsonS
    const playerId=String(row.playerId),season=seasonFor(row);
    if(!/^\d{4}$/.test(season)){unavailable.add(playerId);return}
    try{
-    const p=await get(`https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/${playerId}/gamelog?season=${season}`);
+    const p=await get(`https://site.web.api.espn.com/apis/common/v3/sports/basketball/${league}/athletes/${playerId}/gamelog?season=${season}`);
     if(!Array.isArray(p?.seasonTypes)||!p.events||typeof p.events!=='object')throw Error('Missing official gamelog');
     for(const group of basketballRegularSeasonGroups(p))for(const category of group.categories||[])if(category.type==='event')for(const event of category.events||[]){
      const id=String(event.eventId||''),meta=p.events[id],time=Date.parse(meta?.gameDate||'');
@@ -44,9 +45,9 @@ export async function refreshNbaObservations(rows:any[],now=Date.now(),get:JsonS
   // A bounded request must abstain for omitted evidence, not silently call it fresh.
   for(const [,fixture] of jobs.slice(64))for(const id of fixture.players)unavailable.add(id);
   for(let i=0;i<Math.min(jobs.length,64);i+=4)await Promise.all(jobs.slice(i,Math.min(i+4,64)).map(async([gameId,fixture])=>{
-   const source=`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${gameId}`;
+   const source=`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/summary?event=${gameId}`;
    try{
-    const p=await get(source),parsed=basketballModelObservations(p,{sport:'nba',season:fixture.season,gameId,source,retrievedAt:new Date(now).toISOString()});
+    const p=await get(source),parsed=basketballModelObservations(p,{sport,season:fixture.season,gameId,source,retrievedAt:new Date(now).toISOString()});
     if(!parsed.length||[...fixture.players].some(id=>!parsed.some(r=>r.playerId===id)))throw Error('Incomplete official fixture census');
     observations.push(...parsed);
    }catch{for(const id of fixture.players)unavailable.add(id)}
@@ -58,3 +59,6 @@ export async function refreshNbaObservations(rows:any[],now=Date.now(),get:JsonS
  if(get===officialJson)pending.set(key,task);
  try{return await task}finally{if(get===officialJson)pending.delete(key)}
 }
+
+export function refreshNbaObservations(rows:any[],now=Date.now(),get:JsonSource=officialJson){return refreshBasketballObservations('nba',rows,now,get)}
+export function refreshCbbObservations(rows:any[],now=Date.now(),get:JsonSource=officialJson){return refreshBasketballObservations('cbb',rows,now,get)}

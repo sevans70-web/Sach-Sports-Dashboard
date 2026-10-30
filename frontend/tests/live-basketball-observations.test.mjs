@@ -20,3 +20,15 @@ test('locked and started cards never refresh or replace historical inputs',async
  let calls=0;const r=await refreshNbaObservations([{...row,frozen:true},{...row,gameState:'in'},{...row,gameTime:'2026-10-23'}],now,async()=>{calls++;return log});
  assert.equal(calls,0);assert.equal(r.observations.length,0);
 });
+test('college refresh uses current college season and complete official census, with no NBA endpoint or prior-season substitution',async()=>{
+ const {refreshCbbObservations}=await loadTs(new URL('../lib/live-basketball-observations.ts',import.meta.url));
+ const urls=[];const p=await refreshCbbObservations([row],now,async url=>{urls.push(url);const value=box();for(const team of value.boxscore.players)for(const a of team.statistics[0].athletes)a.stats[0]='40';return url.includes('/gamelog')?log:value});
+ assert.equal(p.observations.length,60);assert.ok(p.observations.every(r=>r.sport==='cbb'&&r.season==='2027'&&r.workload===40));
+ assert.ok(urls.every(url=>url.includes('/mens-college-basketball/')));assert.ok(urls[0].endsWith('season=2027'));assert.deepEqual(p.unavailablePlayers,[]);
+ const empty=await refreshCbbObservations([row],now,async url=>url.includes('/gamelog')?{events:{},seasonTypes:[]}:box());assert.equal(empty.observations.length,0);assert.deepEqual(empty.unavailablePlayers,[]);
+});
+test('college history errors abstain; a mismatched fixture season cannot supply usable observations',async()=>{
+ const {refreshCbbObservations}=await loadTs(new URL('../lib/live-basketball-observations.ts',import.meta.url));
+ const p=await refreshCbbObservations([row],now,async url=>{if(url.includes('/gamelog'))return log;const value=box();value.header.season.year=2026;return value});
+ assert.equal(p.observations.length,0);assert.deepEqual(p.unavailablePlayers,['5144091']);
+});
