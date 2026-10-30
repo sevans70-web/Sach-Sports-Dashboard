@@ -1,4 +1,5 @@
 "use client";
+import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {propLineText} from '@/lib/prop-line-format';
 import {SavedEstimatedEv,useSavedSelection} from '@/components/saved-estimated-ev';
 
@@ -249,6 +250,7 @@ function shortDate(value: string) {
       month: "numeric",
       day: "numeric",
       year: "2-digit",
+      timeZone: /^\d{4}-\d{2}-\d{2}$/.test(value)?"UTC":"America/Toronto",
     }
   ).format(date);
 }
@@ -282,6 +284,8 @@ export function UnifiedPlayerCard({
 
   const requestedMarket =
     first(query.market);
+
+  const historyCutoff = first(query.gameTime)||first(query.date);
 
   const position =
     first(query.position);
@@ -353,10 +357,11 @@ export function UnifiedPlayerCard({
     const controller =
       new AbortController();
 
+    setHistory([]);
+    setHistoryLabel("");
     setHistoryLoading(true);
 
-    fetch(
-      historyUrl(
+    const historyPath = historyUrl(
         sport,
         playerId,
         name,
@@ -364,8 +369,9 @@ export function UnifiedPlayerCard({
         researchMarket,
         first(query.league)||'eng.1',
         first(query.source)
-      ),
-      {
+      );
+    const requestUrl = historyPath+(historyCutoff?'&before='+encodeURIComponent(historyCutoff):'');
+    fetch(requestUrl, {
         cache: "no-store",
         signal: controller.signal,
       }
@@ -390,72 +396,7 @@ export function UnifiedPlayerCard({
           )
         );
 
-        const points: HistoryPoint[] =
-          Array.isArray(payload?.points)
-            ? payload.points
-                .map((point: any) => ({
-                  value: Number(
-                    point?.value
-                  ),
-                  date: String(
-                    point?.date || ""
-                  ),
-                  opponent: String(
-                    point?.opponent || ""
-                  ),
-                }))
-                .filter((point: HistoryPoint) =>
-                  Number.isFinite(
-                    point.value
-                  )
-                )
-            : Array.isArray(
-                payload?.values
-              )
-              ? payload.values
-                  .map(
-                    (
-                      value: any
-                    ): HistoryPoint => ({
-                      value:
-                        Number(value),
-                    })
-                  )
-                  .filter((point: HistoryPoint) =>
-                    Number.isFinite(
-                      point.value
-                    )
-                  )
-              : Array.isArray(
-                  payload?.games
-                )
-                ? payload.games
-                    .map(
-                      (
-                        game: any
-                      ): HistoryPoint => ({
-                        value: Number(
-                          game?.value ??
-                          game?.actual ??
-                          game?.stat
-                        ),
-                        date: String(
-                          game?.date || ""
-                        ),
-                        opponent:
-                          String(
-                            game?.opponent ||
-                            ""
-                          ),
-                      })
-                    )
-                    .filter(
-                      (point: HistoryPoint) =>
-                        Number.isFinite(
-                          point.value
-                        )
-                    )
-                : [];
+        const points = playerCardHistory(payload,sport,researchMarket,historyCutoff||undefined,first(query.gameId)||undefined);
 
         setHistory(
           points.slice(-20)
@@ -480,6 +421,8 @@ export function UnifiedPlayerCard({
     researchMarket,
     query.league,
     query.source,
+    historyCutoff,
+    query.gameId,
   ]);
 
   const visibleHistory =
@@ -840,6 +783,7 @@ export function UnifiedPlayerCard({
                   ? styles.activeHistory
                   : ""
               }
+              aria-pressed={span===value}
               onClick={() =>
                 setSpan(value)
               }
@@ -871,6 +815,8 @@ export function UnifiedPlayerCard({
               )}
           </strong>
         </div>
+
+        {visibleHistory.length?<p>Last {visibleHistory.length} average: {fmt(historyAverage(visibleHistory))} · Historical results</p>:null}
 
         {historyLoading &&
         !visibleHistory.length ? (

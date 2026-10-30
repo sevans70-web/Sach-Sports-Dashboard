@@ -28,7 +28,7 @@ test('retained scorer quotes and genuine zero results keep their recorded values
 });
 test('all-day hides empty blocks and identifies finished blocks for default collapse',()=>{
  const blocks=rankingTimeBlocks([{gameState:'post',raw:{slateKey:'early'}},{gameState:'in',raw:{slateKey:'evening'}}]);
- assert.deepEqual(blocks.map(b=>b.key),['early','evening']);assert.equal(blocks[0].completed,true);assert.equal(blocks[1].completed,false);
+ assert.deepEqual(blocks.map(b=>b.key),['evening','early']);assert.equal(blocks[0].completed,false);assert.equal(blocks[1].completed,true);
  assert.deepEqual(rankingTimeBlocks([]),[]);
 });
 test('time blocks use Toronto time, including games after UTC midnight',()=>{

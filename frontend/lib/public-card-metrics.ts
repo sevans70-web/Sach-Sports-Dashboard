@@ -2,6 +2,17 @@ import {footballForecastDisplay} from '@/lib/football-forecast-display';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
 
+export function cardProjectionLabel(row:any){
+ return row?.researchForecast?.status==='available'&&typeof row.researchForecast.projection==='number'&&Number.isFinite(row.researchForecast.projection)||String(row?.market||'').startsWith('q1_')?'Sach Projection':'Historical Baseline';
+}
+export function cardQuotePrices(row:any){
+ if(row?.quoteVerified!==true)return '';
+ const price=(v:any)=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)>=100?`${v>0?'+':''}${v}`:null;
+ const over=price(row.overPrice),under=price(row.underPrice);
+ if(row.lineType==='scorer'||row.lineType==='milestone')return over?`Odds ${over}`:'';
+ return over&&under?`Over ${over} / Under ${under}`:'';
+}
+
 /** A scorer has a price and a chance, never an O/U threshold. The percentage
  * is explicitly bookmaker-implied; it is not an independently fitted forecast. */
 export function firstBasketQuote(row:any,now=Date.now()){

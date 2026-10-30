@@ -1,5 +1,6 @@
 "use client";
 
+import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {quarterTargetDisplay} from '@/lib/quarter-target-display';
 import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scope";
 import {sharedJsonRequest} from '@/lib/shared-json-request';
@@ -10,17 +11,17 @@ import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence} from "@/lib/card-intelligence";
-import {datedCardHistoryPoints,publicPropContext} from "@/lib/public-prop-context";
+import {publicPropContext} from "@/lib/public-prop-context";
 import {currentDroppedRows,trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
-import {rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
+import {rankingStatusText,completedRankingsLast,rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
 import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
-import {firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
+import {cardProjectionLabel,cardQuotePrices,firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
@@ -791,6 +792,7 @@ async function loadRecentFormForCard(
       playerName: card.playerName,
       team: card.teamName,
       market: card.market,
+      before: card.gameTime,
     });
 
     if (sport === "soccer" && league) {
@@ -809,14 +811,7 @@ async function loadRecentFormForCard(
 
   const payload = await response.json();
 
-  const values = Array.isArray(payload?.points)
-    ? datedCardHistoryPoints(payload.points,card.gameTime,card.market,sport,card.raw?.gameId)
-    : Array.isArray(payload?.values)
-      ? payload.values
-          .map((value: any) => Number(value))
-          .filter((value: number) => Number.isFinite(value)).map((value:number)=>({value}))
-      : [];
-
+  const values = playerCardHistory(payload,sport,card.market,card.gameTime,card.raw?.gameId);
   const recent = values.slice(-20);
   if (recent.length) recentFormCache.set(key, recent);
   return recent;
@@ -912,6 +907,7 @@ function PlayerCard({
 
     loadRecentFormForCard(card, sport, league, controller.signal)
       .then((values) => {
+        if(controller.signal.aborted)return;
         setHistoryPoints(values);
         setHistoryValues(values.map(p=>p.value));
       })
@@ -1001,7 +997,7 @@ function PlayerCard({
   const milestoneChance=quarterTarget&&Number.isFinite(milestonePrice)&&milestonePrice!==0?(milestonePrice>0?10000/(milestonePrice+100):100*(-milestonePrice)/(-milestonePrice+100)):null;
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
-  const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction));
+  const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Direction unavailable':card.prediction));
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection));
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
@@ -1128,7 +1124,7 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : "Sach Projection"}
+              : cardProjectionLabel(card.raw)}
           </span>
           <strong>
             {binaryEvent
@@ -1145,7 +1141,7 @@ function PlayerCard({
 
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
-          {card.raw.quoteVerified ? <p>Book: {card.raw.sportsbook}{quarterTarget?` · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice}`:""}</p> : null}
+          {card.raw.quoteVerified ? <p>{card.raw.boardFrozen?"Saved pregame book: ":"Book: "}{card.raw.sportsbook}{cardQuotePrices(card.raw)?` · ${cardQuotePrices(card.raw)}`:""}</p> : null}
           <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
@@ -1239,9 +1235,9 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : "Sach Projection"}
+                  : cardProjectionLabel(card.raw)}
               </b>
-              <span>{displayedAverage==null?'Unavailable':'Model estimate'}</span>
+              <span>{displayedAverage==null?'Unavailable':cardProjectionLabel(card.raw)==='Historical Baseline'?'Past-game baseline':'Model estimate'}</span>
               <strong>
                 {binaryEvent
                   ? card.modelProbability == null
@@ -1251,7 +1247,7 @@ function PlayerCard({
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? "Projection vs line" : "Actual"}</b>
+              <b>{state === "pregame" ? cardProjectionLabel(card.raw)==='Historical Baseline'?"Baseline vs line":"Projection vs line" : "Actual"}</b>
               <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"
@@ -1336,6 +1332,7 @@ function PlayerCard({
               </div>
             </div>
 
+            {recentFormValues.length?<p>Last {recentFormValues.length} average: {shortNumber(historyAverage(historyPoints.slice(-formSpan)))} · Historical results</p>:null}
             {historyLoading && !recentFormValues.length ? (
               <div className={styles.chartEmpty}>
                 Loading recent game-by-game form…
@@ -1600,17 +1597,20 @@ type SharedStatusGame = {
   homeAbbr?: string;
   state?: string;
   status?: string;
+  period?: number;
+  periodLabel?: string;
+  clock?: string;
 };
 
 function sharedGameForCard(card: RankingCard, games: SharedStatusGame[]) {
   return rankingGameForRow({...card.raw,matchup:card.matchup,teamName:card.teamName,gameTime:card.gameTime},games);
 }
 
-function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null) {
+function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null, sport:RankingsSport) {
   if (!game) return card;
   const state = String(game.state || "").toLowerCase();
   if (state !== "in" && state !== "post") return card;
-  const gameStatus = String(game.status || (state === "in" ? "In Progress" : "Final"));
+  const gameStatus = rankingStatusText(game,sport);
   return {
     ...card,
     lineupStatus: card.lineupStatus,
@@ -1704,7 +1704,7 @@ function applyCfbLiveState(card: RankingCard, game: CfbLiveGame | null) {
   ].filter(Boolean);
 
   const gameStatus =
-    statusParts.length
+    isFinal ? "Final" : statusParts.length
       ? statusParts.join(" · ")
       : String(game.status || (isLive ? "In progress" : "Final"));
 
@@ -2338,7 +2338,7 @@ export function PlayerRankingsPanel({
   }, [sport, market.key, cards.length, sharedStatusGames]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  const displayCards = useMemo(() => {
+  const scopedDisplayCards = useMemo(() => {
     const activeDays = new Set(
       sharedStatusGames
         .map((game) => torontoDay(game.date || ""))
@@ -2348,7 +2348,7 @@ export function PlayerRankingsPanel({
     const withStatus = cards.filter(card=>card.market===market.key)
       .map((card) => {
         const sharedGame = sharedGameForCard(card, sharedStatusGames);
-        let next = applySharedGameStatus(card, sharedGame);
+        let next = applySharedGameStatus(card, sharedGame,sport);
         if (sport === "cfb") {
           const cfbGame = cfbGameForCard(next, cfbLiveGames);
           next = applyCfbLiveState(next, cfbGame);
@@ -2390,6 +2390,8 @@ export function PlayerRankingsPanel({
         return a.rank - b.rank;
       });
   }, [sport, market.key, cfbSlate, nflSlate, cards, cfbLiveGames, sharedStatusGames]);
+
+  const displayCards = useMemo(()=>completedRankingsLast(scopedDisplayCards),[scopedDisplayCards]);
 
   const visible = full
     ? displayCards

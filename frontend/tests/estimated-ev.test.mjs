@@ -27,7 +27,7 @@ test('saved probability evidence is deterministic across file order and exact fi
  assert.equal(selectSavedQuoteEvidence([early],'other','q',now).row,null);
  const datedLate={...late,researchForecast:{...late.researchForecast,modelSelection:{...late.researchForecast.modelSelection,calculatedAt:'2026-10-25T16:01Z'}}};assert.equal(selectSavedQuoteEvidence([early,datedLate],'g','q',now+60000,'2026-10-25T16:01Z').row,datedLate);assert.equal(selectSavedQuoteEvidence([early],'g','q',now,'missing').row,null);
  const featured={...late,_featured:true};assert.equal(selectSavedQuoteEvidence([early,featured],'g','q',now+60000).row,featured);
- for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'])assert.equal(savedQuoteQuery({...early,sport,quoteId:'book x/1'}),'&gameId=g&quoteId=book%20x%2F1&forecastAt=2026-10-25T16%3A00Z');
+ for(const sport of ['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'])assert.equal(savedQuoteQuery({...early,sport,quoteId:'book x/1'}),'&gameId=g&quoteId=book%20x%2F1&forecastAt=2026-10-25T16%3A00Z&gameTime=2026-10-25T17%3A00Z');
 });
 
 test('all eight sports reject failed, retimed and quote-spliced selection evidence',()=>{
