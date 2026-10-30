@@ -22,3 +22,16 @@ test('alternate scorer contracts cannot masquerade as anytime TD or first basket
  }
  assert.equal(footballBookRows(payload({category:'anytime_td',underPrice:null}),'anytime_td',['anytime_td'],now).length,1);
 });
+test('blank or conflicting period aliases cannot authorize the wrong contract',()=>{
+ for(const fields of [{periodID:'',periodName:'First Quarter'},{periodID:'game',periodName:'First Quarter'},{periodId:'q1',period:'full game'}])assert.equal(mainMarketQuotes(payload(fields),'points',()=>true).length,0);
+ assert.equal(mainMarketQuotes(payload({periodID:'game',periodName:'Full Game'}),'points',()=>true).length,1);
+ assert.equal(footballBookRows(payload({category:'passing_yards'}),'q1_passing_yards',['passing_yards'],now).length,0);
+ assert.equal(mainMarketQuotes(payload({category:'points'}),'q1_points',()=>true).length,0);
+ assert.equal(mainMarketQuotes(payload({category:'points',periodID:'q1',periodName:'First Quarter'}),'q1_points',()=>true).length,1);
+});
+test('fixture validation rejects absent or indistinguishable teams even at the same kickoff',async()=>{
+ const {quoteMatchesFixture}=await loadTs(new URL('../lib/main-market-quotes.ts',import.meta.url));
+ const tipoff=new Date(now+3600000).toISOString();
+ for(const game of [{tipoff},{tipoff,awayTeam:'TBD',homeTeam:'TBD'}])assert.equal(quoteMatchesFixture({gameTime:tipoff,matchup:game.awayTeam?'TBD @ TBD':'@'},game),false);
+ assert.equal(quoteMatchesFixture({gameTime:tipoff,matchup:'Away @ Home'},{tipoff,awayTeam:'Away',homeTeam:'Home'}),true);
+});
