@@ -1,6 +1,6 @@
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
-import {availablePregameRankings} from '@/lib/ranking-availability';
+import {limitAvailablePregameRankings} from '@/lib/ranking-availability';
 import {prioritizeModelPicks} from '@/lib/saved-model-pick';
 import {rankingResponse} from '@/lib/ranking-response-cache';
 import {frozenNbaSlateBoard,savePregameNbaSlateBoard} from '@/lib/nba-slate-board';
@@ -76,7 +76,7 @@ function rowsForMarket(payload:any,overview:any,market:WnbaMarketKey){
  }).filter(Boolean) as any[];
  rows.sort((a:any,b:any)=>b.giScore-a.giScore);
  fillers.sort((a:any,b:any)=>b.modelProjection-a.modelProjection||b.giScore-a.giScore);
- return [...rows,...fillers].slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+ return [...rows,...fillers].map((x:any,i:number)=>({...x,rank:i+1}));
 }
 
 async function buildWnbaMarketRankingsRaw(market:WnbaMarketKey,shared?:{payload:any;overview:any}){
@@ -118,7 +118,7 @@ export async function buildWnbaMarketRankings(...args:Parameters<typeof buildWnb
  const frozen=await frozenNbaSlateBoard(args[0],games,Date.now(),day,'wnba');
  if(frozen)return frozen;
  const source=args[1]||{overview,payload:await fetchOwlsPayload().catch(()=>({data:[]}))};
- const contextual=availablePregameRankings(await attachBasketballPregameContext(await buildWnbaMarketRankingsRaw(args[0],source),'wnba'));
+ const contextual=limitAvailablePregameRankings(await attachBasketballPregameContext(await buildWnbaMarketRankingsRaw(args[0],source),'wnba'));
  const payload=await attachFittedResearchForecasts(guardRankingPayload(contextual,'wnba'),'wnba');
  return savePregameNbaSlateBoard({...payload,rows:prioritizeModelPicks(payload.rows||[])},games,Date.now(),day,'wnba');
  },Boolean(args[1]));

@@ -31,3 +31,11 @@ export function availablePregameRankings(payload:any,now=Date.now()){
  const locked=rows.some((r:any)=>r.boardFrozen||r.frozen||r.lockedAtKickoff);
  return {...payload,rows:locked?rows:rows.map((r:any,i:number)=>({...r,rank:i+1})),excludedUnavailable:payload.rows.length-rows.length};
 }
+
+/** Inspect the full candidate pool before applying a public ranking limit.
+ * Frozen boards and their recorded ranks must never be replaced by new fits. */
+export function limitAvailablePregameRankings(payload:any,limit=25,now=Date.now()){
+ const eligible=availablePregameRankings(payload,now);
+ if(!Array.isArray(eligible?.rows)||eligible.boardFrozen||eligible.rows.some((r:any)=>r.boardFrozen||r.frozen||r.lockedAtKickoff))return eligible;
+ return {...eligible,rows:eligible.rows.slice(0,limit).map((r:any,i:number)=>({...r,rank:i+1}))};
+}

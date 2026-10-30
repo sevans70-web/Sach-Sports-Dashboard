@@ -19,6 +19,8 @@ test('both quoted and unpriced CBB ranking paths pass fixture identity into the 
  const fixture={...game,gameId:'g',tipoff:new Date(Date.now()+86400000).toISOString(),state:'pre',awayTeam:'Cornell',homeTeam:'Michigan State'};
  const overview={season:'2026',players:[{playerId:123,playerName:'Current player',team:'CORN',gamesPlayed:30}],games:[fixture]};
  const mocks={
+  '@/lib/basketball-pregame-context':{attachBasketballPregameContext:async p=>({...p,rows:p.rows.map(r=>({...r,availabilityEvidence:String(r.playerId).startsWith("blocked")?{gameId:r.gameId,code:"official_injury_status",text:"Reported Out"}:undefined}))})},
+  '@/lib/ranking-availability':await loadTs(new URL('../lib/ranking-availability.ts',import.meta.url)),
   '@/lib/cbb-fixture-identity':{cbbFixtureIdentity},
   '@/lib/cbb':{cleanCbbName:s=>s.toLowerCase().replaceAll(' ',''),playerBaseline:()=>12,cbbHeadshot:()=>'',CBB_MARKETS:[['points']]},
   '@/lib/main-market-quotes':{mainMarketQuotes:p=>p.rows||[],quoteMatchesFixture:()=>true},
@@ -36,4 +38,10 @@ test('both quoted and unpriced CBB ranking paths pass fixture identity into the 
   assert.equal(board.success,true);assert.equal(board.rows.length,1);
   assert.equal(board.rows[0].teamId,'172');assert.equal(board.rows[0].opponentId,'127');assert.equal(board.rows[0].season,'2027');
  }
+ const players=Array.from({length:40},(_,i)=>({playerId:i<5?'blocked'+i:'eligible'+i,playerName:'Player '+i,team:'CORN',gamesPlayed:30}));
+ for(const rows of [[],players.map(p=>({playerName:p.playerName,playerTeam:'CORN',gameTime:fixture.tipoff,line:10.5}))]){
+  const board=await module.exports.buildCbbMarketRankings('points',{overview:{...overview,players},payload:{rows}});
+  assert.equal(board.rows.length,25);assert.equal(board.rows[0].playerId,'eligible5');assert.equal(board.rows[24].playerId,'eligible29');assert.equal(board.rows[24].rank,25);
+ }
+
 });
