@@ -1,3 +1,4 @@
+import {cbbFixtureIdentity} from '@/lib/cbb-fixture-identity';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
@@ -63,7 +64,7 @@ function baselineRows(overview:any,market:CbbMarketKey){
    if(nextGames.length&&!game)return null;
    const reliability=Math.min(1,Math.max(0,Number(p?.gamesPlayed||0)/82));
    const matchup=game?`${game.awayTeam} @ ${game.homeTeam}`:"2025–26 regular-season baseline";
-   return{playerId:p.playerId,playerName:p.playerName,teamName:p.team||"CBB",teamLogo:game?(String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo)||"":"",matchup,gameTime:game?.tipoff||"",gameId:game?.gameId||"",gameState:game?.state||"pre",gameStatus:game?.status||(game?"Scheduled":"Baseline"),headshot:cbbHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((baseline*10+reliability)*10)/10,prediction:null,marketBacked:false,earlyModel:true,summary:game?`Next-slate model watch · 2025–26 baseline ${baseline.toFixed(1)} · sportsbook line pending`:`2025–26 statistical baseline ${baseline.toFixed(1)}. This offseason ranking is model-only and is not saved or graded as a sportsbook prediction.`};
+   return{...cbbFixtureIdentity(game,team),playerId:p.playerId,playerName:p.playerName,teamName:p.team||"CBB",teamLogo:game?(String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo)||"":"",matchup,gameTime:game?.tipoff||"",gameId:game?.gameId||"",gameState:game?.state||"pre",gameStatus:game?.status||(game?"Scheduled":"Baseline"),headshot:cbbHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((baseline*10+reliability)*10)/10,prediction:null,marketBacked:false,earlyModel:true,summary:game?`Next-slate model watch · 2025–26 baseline ${baseline.toFixed(1)} · sportsbook line pending`:`2025–26 statistical baseline ${baseline.toFixed(1)}. This offseason ranking is model-only and is not saved or graded as a sportsbook prediction.`};
  }).filter(Boolean).sort((a:any,b:any)=>Number(b.modelProjection||0)-Number(a.modelProjection||0)||Number(b.giScore||0)-Number(a.giScore||0)).slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
  return candidates;
 }
@@ -80,7 +81,7 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
   
   const modelProbability=edge==null?null:Math.max(50,Math.min(82,Math.round((54+Math.abs(edge)*2.2+reliability*5)*10)/10));
   const gi=Math.round((50+edgePct*35+reliability*15)*10)/10;
-  return{playerId:p?.playerId||cleanCbbName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"CBB",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?cbbHeadshot(p.playerId):"",...footballQuoteFields(b),sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2025–26 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
+  return{...cbbFixtureIdentity(game,team),playerId:p?.playerId||cleanCbbName(b.playerName),playerName:b.playerName,teamName:team||p?.team||"CBB",teamLogo:teamLogo||"",matchup:actualMatchup,gameTime:actualTime,gameId:game.gameId||"",gameState:game.state||"pre",gameStatus:game.status||"Scheduled",headshot:p?cbbHeadshot(p.playerId):"",...footballQuoteFields(b),sportsbookLine:b.line,bookmakerCount:b.bookmakerCount,modelProjection:baseline,modelProbability,giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:baseline==null||edge==null?`Verified sportsbook line ${b.line}. Statistical baseline is still loading.`:`2025–26 baseline ${baseline.toFixed(1)} vs verified line ${Number(b.line).toFixed(1)} (${edge>=0?"+":""}${edge.toFixed(1)} edge). ${b.bookmakerCount} sportsbook source${b.bookmakerCount===1?"":"s"} currently represented.`}
  }).filter(Boolean) as any[];
  
  if(!rows.length)return baselineRows(overview,market);

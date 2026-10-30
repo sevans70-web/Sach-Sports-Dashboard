@@ -16,7 +16,13 @@ export async function captureFeaturedSelections(sport:string,boards:any[],now=Da
 export async function saveFeaturedSelections(sport:string,candidates:any[],day:string,now=Date.now(),deferCloud?:(work:()=>Promise<any>)=>void,candidateRows?:any[]){
  return withHistoryLock('featured-selections|'+sport+'|'+day,async()=>{
   const previous=await readDurableHistory<any>(sport,'featured_selections',day);
-  if(candidateRows)candidates=todayTopPlays(candidateRows.filter(r=>dashboardDay(r.gameTime)===day),sport,now,previous);
+  if(candidateRows){
+   // A competing capture may save an original after the initial selection.
+   // Reserve it and recovered pregame cards before choosing from the full pool.
+   const originals=candidates.map(card=>({...card,pick:previous.find(c=>c.key===card.key)?.pick||(card.pick?.row?.featuredRetained?card.pick:null)}));
+   const rows=[...candidateRows.filter(r=>dashboardDay(r.gameTime)===day),...originals.flatMap(c=>c.pick?[c.pick.row]:[])];
+   candidates=todayTopPlays(rows,sport,now,originals);
+  }
   let merged=distinctFeaturedPlayers(candidates.map(card=>{
    const prior=previous.find(c=>c.key===card.key)?.pick;
    const saved=prior&&dashboardDay(prior.row.gameTime)===day?prior:null;
