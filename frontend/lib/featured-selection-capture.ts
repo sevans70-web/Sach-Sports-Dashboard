@@ -1,8 +1,9 @@
 import {protectHistory,replicateProtectedHistory} from '@/lib/protected-history';
 import {todayTopPlays,distinctFeaturedPlayers} from '@/lib/top-plays';
 import {dashboardDay} from '@/lib/dashboard-contract';
-import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
+import {writeDurableHistory} from '@/lib/durable-history';
 import {withHistoryLock} from '@/lib/history-lock';
+import {readFeaturedOriginals} from '@/lib/featured-originals';
 /** Capture the choices independently of whether anyone opens a dashboard. */
 export async function captureFeaturedSelections(sport:string,boards:any[],now=Date.now()){
  const today=dashboardDay(new Date(now));
@@ -15,7 +16,7 @@ export async function captureFeaturedSelections(sport:string,boards:any[],now=Da
 }
 export async function saveFeaturedSelections(sport:string,candidates:any[],day:string,now=Date.now(),deferCloud?:(work:()=>Promise<any>)=>void,candidateRows?:any[]){
  return withHistoryLock('featured-selections|'+sport+'|'+day,async()=>{
-  const previous=await readDurableHistory<any>(sport,'featured_selections',day);
+  const previous=await readFeaturedOriginals(sport,day);
   if(candidateRows){
    // A competing capture may save an original after the initial selection.
    // Reserve it and recovered pregame cards before choosing from the full pool.
