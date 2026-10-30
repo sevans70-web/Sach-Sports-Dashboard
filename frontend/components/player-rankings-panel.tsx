@@ -1,4 +1,6 @@
 "use client";
+
+import {quarterTargetDisplay} from '@/lib/quarter-target-display';
 import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scope";
 import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
@@ -1002,6 +1004,7 @@ function PlayerCard({
   const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?'YES':null)||(researchOnly?'Forecast unavailable':card.prediction));
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection));
+  const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
 
@@ -1079,7 +1082,7 @@ function PlayerCard({
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
           <div><span>{quarterTarget?`${card.marketLabel} · Milestone` : card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+ ${cardStatUnit(card.market)}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
-          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>Milestone quote · no two-way O/U pick</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
+          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?targetForecast?.label||'—':['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>{targetForecast?'Model target forecast':'Milestone quote · forecast unavailable'}</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
