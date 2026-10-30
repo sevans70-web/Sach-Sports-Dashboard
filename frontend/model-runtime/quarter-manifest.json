@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "sha256": "7265f41b180e27e34c4713e72a6f26e47e4a268df82dc9858e1ab8513e1ca11e",
+  "asOf": "2026-10-29T22:08:29.469Z",
+  "observations": 161968,
+  "groups": [
+    "nba|q1_assists",
+    "nba|q1_points",
+    "nba|q1_rebounds",
+    "nba|q1_threes_made",
+    "nfl|q1_passing_yards",
+    "nfl|q1_receiving_yards",
+    "nfl|q1_rushing_yards"
+  ],
+  "modelId": "direct-quarter-history-ridge-v1",
+  "sourceCandidateSha256": "7c4329f6a1605807a8bddf021d9563cc471f453075a4938a90f5a22f28fa6702",
+  "nbaSourceManifestSha256": "371de8afd7d00542e5b8f1b778dd4610f9db42fcbfc3c707d4367fa668f7c1aa",
+  "nflSourceSha256": "1898049c5fbc83381974fd468f10cdb18792e8f2ac720da92b2ddae9a10319a4",
+  "forecastType": "point_expectation",
+  "validatedForBetting": false,
+  "probabilitiesAvailable": false
+}

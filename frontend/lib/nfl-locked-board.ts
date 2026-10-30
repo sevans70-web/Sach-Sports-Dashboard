@@ -1,4 +1,4 @@
-import {FOOTBALL_SLATES,footballSlate,selectRecordedFootballSlate} from '@/lib/football-slate-rankings';
+import {FOOTBALL_SLATES,activeFootballBoardDay,footballSlate,selectRecordedFootballSlate} from '@/lib/football-slate-rankings';
 import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
 import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {withHistoryLock} from '@/lib/history-lock';
@@ -19,7 +19,7 @@ export function selectNflLockedBoard(snapshots:any[],market:string,day:string,no
 }
 const pending=new Map<string,Promise<any>>();
 export async function lockedNflBoard(market:string,games:any[],now=Date.now()){
- const day=torontoHistoryDay(new Date(now)),today=games.filter(g=>torontoHistoryDay(g.date)===day);
+ const day=activeFootballBoardDay(games,new Date(now)),today=games.filter(g=>torontoHistoryDay(g.date)===day);
  const boundaries=FOOTBALL_SLATES.map(slate=>({slate,times:today.filter(g=>footballSlate(g.date)===slate).map(g=>Date.parse(g.date))})).filter(b=>b.times.length&&Math.min(...b.times)<=now);
  if(!boundaries.length)return null;
  const key=market+'|'+day;
