@@ -1608,9 +1608,10 @@ function sharedGameForCard(card: RankingCard, games: SharedStatusGame[]) {
 
 function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null, sport:RankingsSport) {
   if (!game) return card;
-  const state = String(game.state || "").toLowerCase();
+  const suppliedState = String(game.state || "").toLowerCase();
+  const state = suppliedState === "live" ? "in" : suppliedState === "final" ? "post" : suppliedState;
   if (state !== "in" && state !== "post") return card;
-  const gameStatus = rankingStatusText(game,sport);
+  const gameStatus = rankingStatusText({...game,state},sport);
   return {
     ...card,
     lineupStatus: card.lineupStatus,
