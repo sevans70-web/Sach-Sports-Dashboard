@@ -23,7 +23,7 @@ test('both quoted and unpriced CBB ranking paths pass fixture identity into the 
   '@/lib/ranking-availability':await loadTs(new URL('../lib/ranking-availability.ts',import.meta.url)),
   '@/lib/cbb-fixture-identity':{cbbFixtureIdentity},
   '@/lib/cbb':{cleanCbbName:s=>s.toLowerCase().replaceAll(' ',''),playerBaseline:()=>12,cbbHeadshot:()=>'',CBB_MARKETS:[['points']]},
-  '@/lib/main-market-quotes':{mainMarketQuotes:p=>p.rows||[],quoteMatchesFixture:()=>true},
+  '@/lib/main-market-quotes':{...await loadTs(new URL('../lib/main-market-quotes.ts',import.meta.url)),mainMarketQuotes:p=>p.rows||[],quoteMatchesFixture:()=>true},
   '@/lib/football-book-quotes':{footballQuoteFields:()=>({})},
   '@/lib/prop-integrity':{guardRankingPayload:p=>p},
   '@/lib/live-model-forecast':{attachFittedResearchForecasts:p=>p},
@@ -33,13 +33,13 @@ test('both quoted and unpriced CBB ranking paths pass fixture identity into the 
  };
  const code=ts.transpileModule(await readFile(new URL('../lib/cbb-rankings-server.ts',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
  const module={exports:{}};vm.runInNewContext(code,{module,exports:module.exports,require:name=>mocks[name],Date,Intl,console});
- for(const rows of [[],[{playerName:'Current player',playerTeam:'CORN',gameTime:fixture.tipoff,line:10.5}]]){
+ for(const rows of [[],[{playerName:'Current player',playerTeam:'CORN',matchup:'Cornell @ Michigan State',gameTime:fixture.tipoff,line:10.5}]]){
   const board=await module.exports.buildCbbMarketRankings('points',{overview,payload:{rows}});
   assert.equal(board.success,true);assert.equal(board.rows.length,1);
   assert.equal(board.rows[0].teamId,'172');assert.equal(board.rows[0].opponentId,'127');assert.equal(board.rows[0].season,'2027');
  }
  const players=Array.from({length:40},(_,i)=>({playerId:i<5?'blocked'+i:'eligible'+i,playerName:'Player '+i,team:'CORN',gamesPlayed:30}));
- for(const rows of [[],players.map(p=>({playerName:p.playerName,playerTeam:'CORN',gameTime:fixture.tipoff,line:10.5}))]){
+ for(const rows of [[],players.map(p=>({playerName:p.playerName,playerTeam:'CORN',matchup:'Cornell @ Michigan State',gameTime:fixture.tipoff,line:10.5}))]){
   const board=await module.exports.buildCbbMarketRankings('points',{overview:{...overview,players},payload:{rows}});
   assert.equal(board.rows.length,25);assert.equal(board.rows[0].playerId,'eligible5');assert.equal(board.rows[24].playerId,'eligible29');assert.equal(board.rows[24].rank,25);
  }

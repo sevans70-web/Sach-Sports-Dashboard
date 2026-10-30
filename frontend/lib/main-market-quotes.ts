@@ -27,3 +27,22 @@ export function quoteMatchesFixture(quote:any,game:any,toleranceMs=5*60_000){
   const delta=Math.abs(Date.parse(quote.gameTime||"")-Date.parse(game.tipoff||game.date||""));
   return norm(quote.matchup)===expected&&Number.isFinite(delta)&&delta<=toleranceMs;
 }
+
+/** Never attach an executable quote to an arbitrary first/nearest fixture. */
+export function uniqueQuoteFixture(quote:any,games:any[],team:string){
+ if(!team)return null;
+ const matched=games.filter(g=>[g.awayAbbr,g.homeAbbr].some(v=>String(v||'').toUpperCase()===team.toUpperCase())&&quoteMatchesFixture(quote,g));
+ const ids=new Set(matched.map(g=>String(g.gameId||g.id||'')));
+ return ids.size===1&&!ids.has('')?matched[0]:null;
+}
+
+/** Resolve fixtures before deduplicating: another day's quote cannot hide today's. */
+export function fixtureQuoteRows(board:any[],games:any[],teamFor:(quote:any)=>string,nameKey:(name:string)=>string){
+ const selected=new Map<string,{quote:any;game:any}>();
+ for(const quote of board){
+  const game=uniqueQuoteFixture(quote,games,teamFor(quote));if(!game)continue;
+  const key=nameKey(quote.playerName)+'|'+String(game.gameId||game.id),old=selected.get(key);
+  if(!old||Number(quote.bookmakerCount||0)>Number(old.quote.bookmakerCount||0))selected.set(key,{quote,game});
+ }
+ return [...selected.values()];
+}
