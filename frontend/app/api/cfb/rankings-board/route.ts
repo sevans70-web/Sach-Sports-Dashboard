@@ -1,3 +1,4 @@
+import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {activeFootballBoardDay} from '@/lib/football-slate-rankings';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {footballResearchSample} from "@/lib/football-history";
@@ -1166,7 +1167,7 @@ async function buildFreshBoard(
       Number(a.giScore || 0)
   );
 
-  return uniqueRankingRows(valid)
+  return uniqueRankingRows(await eligibleFootballPregameRows(valid,'cfb'))
     .slice(0, 25)
     .map(
       (row: any, index: number) => ({
