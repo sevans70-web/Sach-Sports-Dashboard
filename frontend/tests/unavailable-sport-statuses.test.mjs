@@ -14,3 +14,14 @@ for(const sport of ['nba','nfl','cfb','nhl','cbb','soccer','wnba','mlb'])test(sp
  for(const status of ['Questionable','Probable','Day-to-day','Pending','Active','Available',''])assert.equal(excludeUnavailablePregame({...base,availabilityStatus:status},now),false,status);
  assert.equal(excludeUnavailablePregame({...base,pregameContext:{gameId:'other',playerId:'p',teamId:'t',availability:[{status:'Out'}]}},now),false);
 });
+
+test('eligibility examines the full pool before limiting and preserves frozen history',async()=>{
+ const {limitAvailablePregameRankings}=await loadTs(new URL('../lib/ranking-availability.ts',import.meta.url));
+ for(const sport of ['nba','nfl','cfb','nhl','cbb','soccer','wnba','mlb']){
+  const rows=Array.from({length:40},(_,i)=>({sport,playerId:String(i),gameId:'g',gameTime:'2026-10-29T20:00Z',rank:i+1,availabilityStatus:i<5?'Out':'Pending'}));
+  const board=limitAvailablePregameRankings({rows},25,now);
+  assert.equal(board.rows.length,25);assert.equal(board.rows[0].playerId,'5');assert.equal(board.rows[24].playerId,'29');assert.equal(board.rows[24].rank,25);
+  assert.equal(limitAvailablePregameRankings({rows:rows.slice(0,12)},25,now).rows.length,7);
+  const frozen={boardFrozen:true,rows};assert.equal(limitAvailablePregameRankings(frozen,25,now),frozen);
+ }
+});

@@ -1,3 +1,5 @@
+import {attachBasketballPregameContext} from '@/lib/basketball-pregame-context';
+import {limitAvailablePregameRankings} from '@/lib/ranking-availability';
 import {cbbFixtureIdentity} from '@/lib/cbb-fixture-identity';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
@@ -65,7 +67,7 @@ function baselineRows(overview:any,market:CbbMarketKey){
    const reliability=Math.min(1,Math.max(0,Number(p?.gamesPlayed||0)/82));
    const matchup=game?`${game.awayTeam} @ ${game.homeTeam}`:"2025–26 regular-season baseline";
    return{...cbbFixtureIdentity(game,team),playerId:p.playerId,playerName:p.playerName,teamName:p.team||"CBB",teamLogo:game?(String(game.awayAbbr).toUpperCase()===team?game.awayLogo:game.homeLogo)||"":"",matchup,gameTime:game?.tipoff||"",gameId:game?.gameId||"",gameState:game?.state||"pre",gameStatus:game?.status||(game?"Scheduled":"Baseline"),headshot:cbbHeadshot(p.playerId),sportsbookLine:null,bookmakerCount:0,modelProjection:baseline,modelProbability:null,giScore:Math.round((baseline*10+reliability)*10)/10,prediction:null,marketBacked:false,earlyModel:true,summary:game?`Next-slate model watch · 2025–26 baseline ${baseline.toFixed(1)} · sportsbook line pending`:`2025–26 statistical baseline ${baseline.toFixed(1)}. This offseason ranking is model-only and is not saved or graded as a sportsbook prediction.`};
- }).filter(Boolean).sort((a:any,b:any)=>Number(b.modelProjection||0)-Number(a.modelProjection||0)||Number(b.giScore||0)-Number(a.giScore||0)).slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+ }).filter(Boolean).sort((a:any,b:any)=>Number(b.modelProjection||0)-Number(a.modelProjection||0)||Number(b.giScore||0)-Number(a.giScore||0)).map((x:any,i:number)=>({...x,rank:i+1}));
  return candidates;
 }
 
@@ -88,7 +90,7 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
  const used=new Set(rows.map((x:any)=>cleanCbbName(x.playerName)));
  const fill=baselineRows(overview,market).filter((x:any)=>!used.has(cleanCbbName(x.playerName)));
  rows.sort((a:any,b:any)=>b.giScore-a.giScore);
- return [...rows,...fill].slice(0,25).map((x:any,i:number)=>({...x,rank:i+1}));
+ return [...rows,...fill].map((x:any,i:number)=>({...x,rank:i+1}));
 }
 
 async function buildCbbMarketRankingsRaw(market:CbbMarketKey,shared?:{payload:any;overview:any}){
@@ -118,4 +120,7 @@ export async function captureAllCbbMarkets(){
  return {...research,success:research.researchArchived||results.some(x=>x.success&&x.saved===true),verifiedPredictions:results.reduce((n,x:any)=>n+(x.saved===true?(x.rows||[]).filter((r:any)=>r.recommendationEligible===true).length:0),0),warning:"Research snapshots archived separately; no validated CBB betting picks are available.",markets:results.map(x=>({market:x.market,rows:x.rows?.length||0,saved:x.saved===true,success:x.success,error:x.error||null})),updatedAt:new Date().toISOString()};
 }
 
-export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbMarketRankingsRaw>){return attachFittedResearchForecasts(guardRankingPayload(await buildCbbMarketRankingsRaw(...args),"cbb"),"cbb")}
+export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbMarketRankingsRaw>){
+ const contextual=await attachBasketballPregameContext(await buildCbbMarketRankingsRaw(...args),"cbb");
+ return attachFittedResearchForecasts(guardRankingPayload(limitAvailablePregameRankings(contextual),"cbb"),"cbb");
+}
