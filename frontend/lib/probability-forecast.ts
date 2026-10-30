@@ -229,7 +229,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    const pooledPrice=conditional&&q&&!quoteIssue&&quotedForecast?.forecast?evaluatePrice(distributionValues(model,quotedForecast.forecast.projection),q):null;
    const pooledProbability=pooledPrice&&pooledPrice.over+pooledPrice.under>0?pooledPrice.over/(pooledPrice.over+pooledPrice.under):null;
    const decided=q&&r.game.actual!==q.line,won=price?.candidateSide&&decided?(price.candidateSide==='OVER'?r.game.actual>q!.line:r.game.actual<q!.line):null;
-   const profit=won==null?null:won?payout(price!.candidateSide==='OVER'?q!.overPrice:q!.underPrice):-1;
+   const profit=!price?.candidateSide||!q?null:r.game.actual===q.line?0:won?payout(price.candidateSide==='OVER'?q.overPrice:q.underPrice):-1;
    return {gameId:r.game.gameId,actual:r.game.actual,projection:pred.projection,workload:pred.expectedWorkload,baseline:r.baseline,
     workloadError:Math.abs(pred.expectedWorkload-r.game.workload),crps:empiricalCrps(values,r.game.actual),
     pooledCrps:conditional?empiricalCrps(distributionValues(model,pred.projection),r.game.actual):null,
@@ -238,10 +238,16 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
     covered:r.game.actual>=lower&&r.game.actual<=upper,width:upper-lower,quoteIssue,
     brier:probability!=null&&decided?(probability-Number(r.game.actual>q!.line))**2:null,
     marketBrier:price&&decided?(price.marketOver-Number(r.game.actual>q!.line))**2:null,
-    probability,outcome:q&&decided?Number(r.game.actual>q.line):null,profit,
+    probability,outcome:q&&decided?Number(r.game.actual>q.line):null,profit,candidateSide:price?.candidateSide||null,
     push:price!=null&&q?.line===r.game.actual,candidate:price?.candidateSide!=null};
   });
   const metric=(key:'brier'|'marketBrier'|'profit')=>{const xs=results.map(r=>r[key]).filter((v):v is number=>v!=null);return xs.length?mean(xs):null};
+  const candidates=results.filter(r=>r.candidate&&r.profit!=null);
+  const candidateDirections=Object.fromEntries((['OVER','UNDER'] as const).map(side=>{
+   const calls=candidates.filter(r=>r.candidateSide===side);
+   const wins=calls.filter(r=>(r.profit??0)>0).length,losses=calls.filter(r=>(r.profit??0)<0).length,pushes=calls.filter(r=>r.profit===0).length;
+   return [side,{settled:calls.length,wins,losses,pushes,hitRate:wins+losses?wins/(wins+losses):null,roi:calls.length?mean(calls.map(r=>r.profit!)):null}];
+  }));
   const quoteRejections:Record<string,number>={};for(const r of results)if(r.quoteIssue)quoteRejections[r.quoteIssue]=(quoteRejections[r.quoteIssue]||0)+1;
   const bins=Array.from({length:10},(_,i)=>{
    const items=results.filter(r=>r.probability!=null&&r.outcome!=null&&Math.min(9,Math.floor(r.probability*10))===i);
@@ -260,7 +266,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    meanIntervalWidth:results.length?mean(results.map(r=>r.width)):null,exactQuoteSamples:results.filter(r=>!r.quoteIssue).length,
    brier:metric('brier'),marketBrier:metric('marketBrier'),candidateBets:results.filter(r=>r.candidate).length,
    pairedBrierImprovement:clusteredMeanInterval(results.filter(r=>r.brier!=null&&r.marketBrier!=null).map(r=>({gameId:r.gameId,value:r.marketBrier!-r.brier!}))),
-   candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
+   candidateDirections,candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
