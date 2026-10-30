@@ -21,11 +21,17 @@ export function mainMarketQuotes(payload:any,market:string,matches:(prop:any)=>b
 }
 
 export function quoteMatchesFixture(quote:any,game:any,toleranceMs=5*60_000){
-  const norm=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const norm=(v:any)=>String(v||"").normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,"");
   if(!norm(game.awayTeam)||!norm(game.homeTeam)||norm(game.awayTeam)===norm(game.homeTeam))return false;
-  const expected=norm(`${game.awayTeam} @ ${game.homeTeam}`);
+  const sides=String(quote.matchup||'').split(/\s*@\s*/);
+  if(sides.length!==2)return false;
+  const names=(primary:string,aliases:unknown)=>[primary,...(Array.isArray(aliases)?aliases.filter(v=>typeof v==='string'):[])].map(norm).filter(Boolean);
+  const away=names(game.awayTeam,game.awayTeamAliases),home=names(game.homeTeam,game.homeTeamAliases);
+  // Ambiguous identity is never rescued by an alias.
+  if(away.some(n=>home.includes(n)))return false;
+  const identity=away.includes(norm(sides[0]))&&home.includes(norm(sides[1]));
   const delta=Math.abs(Date.parse(quote.gameTime||"")-Date.parse(game.tipoff||game.date||""));
-  return norm(quote.matchup)===expected&&Number.isFinite(delta)&&delta<=toleranceMs;
+  return identity&&Number.isFinite(delta)&&delta<=toleranceMs;
 }
 
 /** Never attach an executable quote to an arbitrary first/nearest fixture. */

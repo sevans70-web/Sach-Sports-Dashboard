@@ -8,7 +8,17 @@ export const dynamic='force-dynamic';
  * account records are returned; snapshots share the provider request cache.
  * The archive probe exposes only bounded public quote fields, never outcomes. */
 export async function GET(req:NextRequest){
- const sport=req.nextUrl.searchParams.get('sport');if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
+ const sport=req.nextUrl.searchParams.get('sport');
+ if((sport==='nhl'||sport==='cbb')&&req.nextUrl.searchParams.get('mode')==='source-audit'){
+  const sources=await Promise.allSettled([getOwlsPayload(sport),sport==='nhl'?getSgoSupplement('NHL').then(sgoBookGames):Promise.resolve([])]);
+  const inspect=(value:any,supplement=false)=>{
+   const games=supplement?value:Array.isArray(value?.data)?value.data:[],categories:Record<string,number>={};let props=0;
+   for(const g of games)for(const b of g.books||[])for(const p of b.props||[]){const key=String(p.category??p.market??p.type??'unknown');categories[key]=(categories[key]||0)+1;props++;}
+   return {games:games.length,props,categories,fixtures:games.slice(0,12).map((g:any)=>({awayTeam:String(g.awayTeam||g.away_team||''),homeTeam:String(g.homeTeam||g.home_team||''),gameTime:String(g.commenceTime||g.commence_time||g.startTime||g.date||''),books:(g.books||[]).length}))};
+  };
+  return NextResponse.json({sport,primary:sources[0].status==='fulfilled'?inspect(sources[0].value):{error:'Primary quote feed unavailable'},supplement:sources[1].status==='fulfilled'?inspect(sources[1].value,true):{error:'Supplemental quote feed unavailable'},updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});
+ }
+ if(sport!=='nfl'&&sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
  if(req.nextUrl.searchParams.get('mode')==='nba-period-source'){
   if(sport!=='nba')return NextResponse.json({error:'Unsupported sport'},{status:400});
   try{return NextResponse.json(await getOwlsNbaPeriodSourceCoverage(),{headers:{'Cache-Control':'no-store'}})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Source unavailable'},{status:503,headers:{'Cache-Control':'no-store'}})}
