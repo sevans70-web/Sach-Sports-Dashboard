@@ -1,0 +1,41 @@
+{
+  "sourceSha256": "42c83afcc0a2f075a80581b3991f92e498c90f3f7e4db196a224de709d7c29c1",
+  "cohortSha256": "54688fdd6117fcc9c99ca7becd03c273a141c06f49271a429e698b1fdfdd58a4",
+  "selected": 17,
+  "resolved": 16,
+  "pending": 0,
+  "unresolved": 1,
+  "transitions": [
+    {
+      "market": "points",
+      "baselineSide": "OVER",
+      "candidateSide": "OVER",
+      "calls": 7,
+      "baselineHits": 6,
+      "candidateHits": 6,
+      "independentGames": 3,
+      "netHits": 0
+    },
+    {
+      "market": "points",
+      "baselineSide": "UNDER",
+      "candidateSide": "OVER",
+      "calls": 8,
+      "baselineHits": 4,
+      "candidateHits": 4,
+      "independentGames": 2,
+      "netHits": 0
+    },
+    {
+      "market": "points",
+      "baselineSide": "UNDER",
+      "candidateSide": "UNDER",
+      "calls": 1,
+      "baselineHits": 1,
+      "candidateHits": 1,
+      "independentGames": 1,
+      "netHits": 0
+    }
+  ],
+  "livePromotion": false
+}

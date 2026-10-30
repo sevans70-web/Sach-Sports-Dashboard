@@ -53,3 +53,12 @@ node scripts/score-p01-cfb.mjs model-research/2026-10-30-p01-cfb-prospective /tm
 ```
 
 Checks:574 tests pass; production build passes. Regression coverage rejects corrupted official archives, changed payloads, wrong fixture/kickoff/teams, false missing-to-zero grades and participation conflicts. An offline CFB end-to-end test replays actual frozen model inputs against explicitly synthetic test-only final payloads, rejects wrong kickoff and performs no network access. Historical forecasts/grades are never written by these tools. Runtime snapshot SHA256 remainsb45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080.
+
+## Paired direction-change audit
+
+The new `nba-direction-changes.json` and `nfl-direction-changes.json` trace each fixed-model direction change to the checksummed scored report. These are diagnostics of previously completed tests, not new independent validation.
+
+* NBA: eight UNDER → OVER changes across two games gained four correct calls and lost four correct calls: zero net improvement. Seven unchanged OVER calls hit six; the sole unchanged UNDER hit. Reducing the UNDER share therefore did not repair accuracy in this cohort.
+* NFL: the single net extra hit came from one UNDER → OVER receptions change. Two receiving-yard OVER → UNDER changes gained one and lost one. All observations remain from one game.
+
+Reproduce into a NEW file with `node scripts/p01-direction-changes.mjs <scored-report.json> <new-output.json>`. The script excludes pushes and missing directional grades, rejects contradictory paired outcomes, preserves source/cohort hashes and refuses to overwrite an existing output. It never changes models, historical grades, frozen cohorts or live selections. P01 remains open.
