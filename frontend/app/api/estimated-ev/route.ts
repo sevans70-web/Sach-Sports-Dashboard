@@ -1,4 +1,4 @@
-import {verifiedPropQuote} from '@/lib/prop-integrity';
+import {recordedCardForecast} from '@/lib/full-card-forecast';
 import {selectSavedQuoteEvidence} from '@/lib/saved-quote-evidence';
 import {predictionProbability,predictionProbabilityText} from '@/lib/prediction-probability';
 import {promises as fs} from 'node:fs';
@@ -23,7 +23,6 @@ export async function GET(req:NextRequest){
   }
  }catch{}
  const {row,ambiguous}=selectSavedQuoteEvidence(rows,gameId,quoteId,Date.now(),forecastAt);
- const f=row?.researchForecast,capture=Date.parse(row?.boardCapturedAt||''),calculated=Date.parse(f?.calculatedAt||''),start=Date.parse(row?.gameTime||'');
- const forecast=f?.status==='available'&&Number.isFinite(f.projection)&&Number.isFinite(calculated)&&calculated<=capture&&capture<start&&capture<=Date.now()&&verifiedPropQuote(row,capture,true)?{projection:f.projection,line:row.sportsbookLine,playerId:row.playerId,gameId:row.gameId,quoteId:row.quoteId,calculatedAt:f.calculatedAt}:null;
+ const forecast=recordedCardForecast(row);
  return NextResponse.json({forecast,probability:predictionProbability(row),probabilityText:predictionProbabilityText(row),ev:estimatedEv(row),text:estimatedEvText(row),notice:ambiguous?'Select a specific game and saved quote to view its EV':estimatedEvNotice(row)},{headers:{'Cache-Control':'no-store'}});
 }
