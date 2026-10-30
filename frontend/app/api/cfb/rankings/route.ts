@@ -408,6 +408,7 @@ export async function GET(req:NextRequest){
     if(cached)return rankingJson({...cached.payload,cached:true,stale:true});
     return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:"CFB ranking build timed out; retrying from cache."},{status:503});
   }catch(e){
+    console.error("[CFB rankings failed]",market,e);
     const cached=rankingCache.get(market);
     if(cached)return rankingJson({...cached.payload,cached:true,stale:true});
     return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"CFB rankings unavailable"},{status:500});

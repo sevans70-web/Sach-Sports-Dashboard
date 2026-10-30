@@ -21,3 +21,20 @@ test('scheduler extracts exact market rows from football, baseball and soccer pa
  }
  assert.deepEqual(featuredBoardsFromCapture({error:'unavailable'},'dashboard'),[]);
 });
+test('a failed featured publication cannot prevent immutable research snapshots being saved',async()=>{
+ const {default:ts}=await import('typescript'),{default:vm}=await import('node:vm');
+ const events=[],mocks={
+ '@/lib/protected-history':{protectHistory:async()=>{}},
+ '@/lib/history-save-policy':{pregameCheckpointRows:()=>[]},
+ '@/lib/featured-selection-capture':{captureFeaturedSelections:async()=>{}},
+ '@/lib/durable-history':{writeDurableHistory:async()=>{events.push('publish');throw Error('publication timeout')}},
+ '@/lib/dashboard-contract':{dashboardDay:()=> '2026-10-30'},
+ '@/lib/top-plays-store':{updateTopPlayMarket:()=>{}},
+ '@/lib/history-archive':{appendHistorySnapshot:async()=>{events.push('archive');return {ok:true}}},
+ '@/lib/history-lock':{withHistoryLock:async(_,fn)=>fn()}
+ };
+ const code=ts.transpileModule(await readFile(new URL('../lib/research-capture.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+ const module={exports:{}};vm.runInNewContext(code,{module,exports:module.exports,require:name=>mocks[name],Date,Map,Set,Error});
+ const result=await module.exports.archiveResearchBoards('nhl',[{market:'shots_on_goal',rows:[{integrityVersion:1}]}]);
+ assert.equal(result.researchArchived,true);assert.equal(result.archivedMarkets,1);assert.equal(events[0],'archive');assert.equal(result.publicationError,'publication timeout');assert.equal(result.archiveErrors[0].stage,'featured_publication');
+});

@@ -10,7 +10,6 @@ import {withHistoryLock} from "@/lib/history-lock";
  * enter wager history or be reported as a successfully validated betting pick.
  * Reuse the existing archive root/day/backup/retention policy unchanged. */
 export async function archiveResearchBoards(sport:string,boards:any[]){
-  await publishFeaturedBoards(sport,boards);
   const markets=await Promise.all(boards.map(async board=>{
     if(!board?.market||!Array.isArray(board.rows)||!board.rows.length||board.rows.some((r:any)=>r.integrityVersion!==1))return {market:board?.market,archived:false};
     try{
@@ -19,7 +18,10 @@ export async function archiveResearchBoards(sport:string,boards:any[]){
       return {market:board.market,archived:result.ok};
     }catch(e){return {market:board.market,archived:false,error:e instanceof Error?e.message:String(e)}}
   }));
-  return {researchArchived:markets.some(m=>m.archived),archivedMarkets:markets.filter(m=>m.archived).length,archiveErrors:markets.filter(m=>m.error)};
+  let publicationError:string|null=null;
+  try{await publishFeaturedBoards(sport,boards)}catch(e){publicationError=e instanceof Error?e.message:String(e)}
+  return {researchArchived:markets.some(m=>m.archived),archivedMarkets:markets.filter(m=>m.archived).length,
+    publicationError,archiveErrors:[...markets.filter(m=>m.error),...(publicationError?[{stage:'featured_publication',error:publicationError}]:[])]};
 }
 
 /** Shared by ranking routes and the independent all-sport scheduler. */
