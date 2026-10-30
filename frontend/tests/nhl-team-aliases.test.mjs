@@ -24,3 +24,11 @@ test('accented official Montréal identity matches the unaccented book spelling'
  const g={...game,awayTeam:'Canadiens',awayAbbr:'MTL',awayTeamAliases:nhlTeamAliases({standings:[row('MTL','Montréal Canadiens','Canadiens')]},'20262027').get('MTL')};
  assert.equal(uniqueQuoteFixture({...quote,matchup:'Montreal Canadiens @ Vegas Golden Knights'},[g],'MTL'),g);
 });
+test('NHL puck-drop offset requires an explicit bounded tolerance and keeps fixture uniqueness',()=>{
+ const q={...quote,gameTime:'2026-10-30T22:07:00Z'};
+ assert.equal(uniqueQuoteFixture(q,[game],'NJD'),null);
+ assert.equal(uniqueQuoteFixture(q,[game],'NJD',15*60_000),game);
+ assert.equal(q.gameTime,'2026-10-30T22:07:00Z');
+ assert.equal(uniqueQuoteFixture({...q,gameTime:'2026-10-30T22:16:00Z'},[game],'NJD',15*60_000),null);
+ assert.equal(uniqueQuoteFixture(q,[game,{...game,gameId:'other'}],'NJD',15*60_000),null);
+});

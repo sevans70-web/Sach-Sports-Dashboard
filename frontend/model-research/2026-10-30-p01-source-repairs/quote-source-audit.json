@@ -1,0 +1,121 @@
+{
+  "nhl": {
+    "sport": "nhl",
+    "primary": {
+      "games": 8,
+      "props": 4319,
+      "categories": {
+        "goals": 1294,
+        "hockey_assists": 92,
+        "shots_on_goal": 858,
+        "hockey_points": 96,
+        "saves": 24,
+        "first_goal_scorer": 708,
+        "assists": 481,
+        "points": 695,
+        "power_play_points": 71
+      },
+      "fixtures": [
+        {
+          "awayTeam": "Winnipeg Jets",
+          "homeTeam": "Florida Panthers",
+          "gameTime": "2026-10-30T23:07:00Z",
+          "books": 7
+        },
+        {
+          "awayTeam": "Seattle Kraken",
+          "homeTeam": "Calgary Flames",
+          "gameTime": "2026-10-31T00:07:00Z",
+          "books": 7
+        },
+        {
+          "awayTeam": "New Jersey Devils",
+          "homeTeam": "Vegas Golden Knights",
+          "gameTime": "2026-10-30T22:07:00Z",
+          "books": 7
+        },
+        {
+          "awayTeam": "Chicago Blackhawks",
+          "homeTeam": "Boston Bruins",
+          "gameTime": "2026-10-31T17:09:00.000Z",
+          "books": 4
+        },
+        {
+          "awayTeam": "St. Louis Blues",
+          "homeTeam": "Detroit Red Wings",
+          "gameTime": "2026-10-31T17:10:00.000Z",
+          "books": 3
+        },
+        {
+          "awayTeam": "Tampa Bay Lightning",
+          "homeTeam": "Nashville Predators",
+          "gameTime": "2026-10-31T18:10:00.000Z",
+          "books": 1
+        },
+        {
+          "awayTeam": "Toronto Maple Leafs",
+          "homeTeam": "Vancouver Canucks",
+          "gameTime": "2026-10-31T23:09:00.000Z",
+          "books": 1
+        },
+        {
+          "awayTeam": "Pittsburgh Penguins",
+          "homeTeam": "Montreal Canadiens",
+          "gameTime": "2026-10-30T19:01:03.559Z",
+          "books": 1
+        }
+      ]
+    },
+    "supplement": {
+      "games": 0,
+      "props": 0,
+      "categories": {},
+      "fixtures": []
+    },
+    "updatedAt": "2026-10-30T19:02:46.455Z"
+  },
+  "cbb": {
+    "sport": "cbb",
+    "primary": {
+      "games": 3,
+      "props": 57,
+      "categories": {
+        "points": 31,
+        "rebounds": 5,
+        "assists": 4,
+        "pts_rebs": 6,
+        "pts_asts": 2,
+        "threes_made": 3,
+        "pts_rebs_asts": 3,
+        "combos": 3
+      },
+      "fixtures": [
+        {
+          "awayTeam": "Villanova",
+          "homeTeam": "Notre Dame",
+          "gameTime": "2026-11-01T14:30:33.000Z",
+          "books": 2
+        },
+        {
+          "awayTeam": "Florida",
+          "homeTeam": "Miami",
+          "gameTime": "2026-11-02T23:00:00.0000000Z",
+          "books": 1
+        },
+        {
+          "awayTeam": "UCLA",
+          "homeTeam": "Arizona",
+          "gameTime": "2026-11-03T03:00:00.0000000Z",
+          "books": 1
+        }
+      ]
+    },
+    "supplement": {
+      "games": 0,
+      "props": 0,
+      "categories": {},
+      "fixtures": []
+    },
+    "updatedAt": "2026-10-30T19:02:45.893Z"
+  }
+}

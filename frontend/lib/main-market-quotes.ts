@@ -29,15 +29,18 @@ export function quoteMatchesFixture(quote:any,game:any,toleranceMs=5*60_000){
   const away=names(game.awayTeam,game.awayTeamAliases),home=names(game.homeTeam,game.homeTeamAliases);
   // Ambiguous identity is never rescued by an alias.
   if(away.some(n=>home.includes(n)))return false;
-  const identity=away.includes(norm(sides[0]))&&home.includes(norm(sides[1]));
+  const ordered=away.includes(norm(sides[0]))&&home.includes(norm(sides[1]));
+  // Only an explicitly official neutral venue permits provider home/away reversal.
+  const reversed=game.neutralSite===true&&home.includes(norm(sides[0]))&&away.includes(norm(sides[1]));
+  const identity=ordered||reversed;
   const delta=Math.abs(Date.parse(quote.gameTime||"")-Date.parse(game.tipoff||game.date||""));
   return identity&&Number.isFinite(delta)&&delta<=toleranceMs;
 }
 
 /** Never attach an executable quote to an arbitrary first/nearest fixture. */
-export function uniqueQuoteFixture(quote:any,games:any[],team:string){
+export function uniqueQuoteFixture(quote:any,games:any[],team:string,toleranceMs=5*60_000){
  if(!team)return null;
- const matched=games.filter(g=>[g.awayAbbr,g.homeAbbr].some(v=>String(v||'').toUpperCase()===team.toUpperCase())&&quoteMatchesFixture(quote,g));
+ const matched=games.filter(g=>[g.awayAbbr,g.homeAbbr].some(v=>String(v||'').toUpperCase()===team.toUpperCase())&&quoteMatchesFixture(quote,g,toleranceMs));
  const ids=new Set(matched.map(g=>String(g.gameId||g.id||'')));
  return ids.size===1&&!ids.has('')?matched[0]:null;
 }

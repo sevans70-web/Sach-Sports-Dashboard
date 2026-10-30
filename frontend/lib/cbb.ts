@@ -18,7 +18,7 @@ export type CbbPlayer={
   pointsPerGame:number|null;reboundsPerGame:number|null;assistsPerGame:number|null;threesPerGame:number|null;
   stealsPerGame:number|null;blocksPerGame:number|null
 };
-export type CbbGame={gameId:string;season?:string|null;tipoff:string|null;awayTeamId?:string;homeTeamId?:string;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
+export type CbbGame={gameId:string;season?:string|null;tipoff:string|null;neutralSite?:boolean;awayTeamAliases?:string[];homeTeamAliases?:string[];awayTeamId?:string;homeTeamId?:string;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
 export type CbbOverview={season:string;updatedAt:string;players:CbbPlayer[];games:CbbGame[];warnings:string[]};
 
 type JsonRecord=Record<string,unknown>;
@@ -53,7 +53,7 @@ export async function loadCbbGames():Promise<CbbGame[]>{
   const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;
   const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;
   const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);
-  seen.add(id);games.push({gameId:id,season:text(record(e.season).year??record(payload.season).year)||null,awayTeamId:text(at.id),homeTeamId:text(ht.id),tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
+  seen.add(id);games.push({gameId:id,season:text(record(e.season).year??record(payload.season).year)||null,awayTeamId:text(at.id),homeTeamId:text(ht.id),tipoff:text(e.date)||null,neutralSite:c.neutralSite===true,awayTeamAliases:[at.displayName,at.shortDisplayName,at.abbreviation].map(text).filter(Boolean),homeTeamAliases:[ht.displayName,ht.shortDisplayName,ht.abbreviation].map(text).filter(Boolean),awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
  }
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }

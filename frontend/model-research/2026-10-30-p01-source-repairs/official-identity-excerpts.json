@@ -1,0 +1,1360 @@
+{
+  "nhlScore": {
+    "url": "https://api-web.nhle.com/v1/score/2026-10-30",
+    "rawSha256": "dee64b4e755ef1e83093091367cf87c1c057b33dc098e3fbeff22d5978bdada9",
+    "games": [
+      {
+        "id": 2026020214,
+        "season": 20262027,
+        "startTimeUTC": "2026-10-30T22:00:00Z",
+        "awayTeam": {
+          "id": 1,
+          "name": {
+            "default": "Devils"
+          },
+          "abbrev": "NJD",
+          "record": "8-5-0",
+          "logo": "https://assets.nhle.com/logos/nhl/svg/NJD_light.svg",
+          "odds": [
+            {
+              "providerId": 3,
+              "value": "1.95"
+            },
+            {
+              "providerId": 7,
+              "value": "-110"
+            },
+            {
+              "providerId": 8,
+              "value": "-110"
+            },
+            {
+              "providerId": 9,
+              "value": "-105"
+            },
+            {
+              "providerId": 6,
+              "value": "1.92"
+            },
+            {
+              "providerId": 10,
+              "value": "2.50"
+            }
+          ]
+        },
+        "homeTeam": {
+          "id": 54,
+          "name": {
+            "default": "Golden Knights"
+          },
+          "abbrev": "VGK",
+          "record": "9-4-1",
+          "logo": "https://assets.nhle.com/logos/nhl/svg/VGK_light.svg",
+          "odds": [
+            {
+              "providerId": 3,
+              "value": "1.89"
+            },
+            {
+              "providerId": 7,
+              "value": "-110"
+            },
+            {
+              "providerId": 8,
+              "value": "-113"
+            },
+            {
+              "providerId": 9,
+              "value": "-115"
+            },
+            {
+              "providerId": 6,
+              "value": "1.87"
+            },
+            {
+              "providerId": 10,
+              "value": "2.45"
+            }
+          ]
+        }
+      },
+      {
+        "id": 2026020215,
+        "season": 20262027,
+        "startTimeUTC": "2026-10-30T23:00:00Z",
+        "awayTeam": {
+          "id": 52,
+          "name": {
+            "default": "Jets"
+          },
+          "abbrev": "WPG",
+          "record": "4-6-3",
+          "logo": "https://assets.nhle.com/logos/nhl/svg/WPG_light.svg",
+          "odds": [
+            {
+              "providerId": 8,
+              "value": "+186"
+            },
+            {
+              "providerId": 9,
+              "value": "+185"
+            },
+            {
+              "providerId": 3,
+              "value": "2.83"
+            },
+            {
+              "providerId": 7,
+              "value": "+190"
+            },
+            {
+              "providerId": 6,
+              "value": "3.21"
+            },
+            {
+              "providerId": 10,
+              "value": "3.95"
+            }
+          ]
+        },
+        "homeTeam": {
+          "id": 13,
+          "name": {
+            "default": "Panthers"
+          },
+          "abbrev": "FLA",
+          "record": "7-4-2",
+          "logo": "https://assets.nhle.com/logos/nhl/svg/FLA_light.svg",
+          "odds": [
+            {
+              "providerId": 8,
+              "value": "-234"
+            },
+            {
+              "providerId": 9,
+              "value": "-225"
+            },
+            {
+              "providerId": 3,
+              "value": "1.43"
+            },
+            {
+              "providerId": 7,
+              "value": "-235"
+            },
+            {
+              "providerId": 6,
+              "value": "1.35"
+            },
+            {
+              "providerId": 10,
+              "value": "1.75"
+            }
+          ]
+        }
+      },
+      {
+        "id": 2026020216,
+        "season": 20262027,
+        "startTimeUTC": "2026-10-31T00:00:00Z",
+        "awayTeam": {
+          "id": 55,
+          "name": {
+            "default": "Kraken"
+          },
+          "abbrev": "SEA",
+          "record": "8-4-1",
+          "logo": "https://assets.nhle.com/logos/nhl/svg/SEA_light.svg",
+          "odds": [
+            {
+              "providerId": 6,
+              "value": "1.90"
+            },
+            {
+              "providerId": 8,
+              "value": "-118"
+            },
+            {
+              "providerId": 7,
+              "value": "-120"
+            },
+            {
+              "providerId": 9,
+              "value": "-115"
+            },
+            {
+              "providerId": 3,
+              "value": "1.88"
+            },
+            {
+              "providerId": 10,
+              "value": "2.40"
+            }
+          ]
+        },
+        "homeTeam": {
+          "id": 20,
+          "name": {
+            "default": "Flames"
+          },
+          "abbrev": "CGY",
+          "record": "5-7-0",
+          "logo": "https://assets.nhle.com/logos/nhl/svg/CGY_light.svg",
+          "odds": [
+            {
+              "providerId": 6,
+              "value": "1.90"
+            },
+            {
+              "providerId": 8,
+              "value": "-104"
+            },
+            {
+              "providerId": 7,
+              "value": "+100"
+            },
+            {
+              "providerId": 9,
+              "value": "-105"
+            },
+            {
+              "providerId": 3,
+              "value": "1.96"
+            },
+            {
+              "providerId": 10,
+              "value": "2.55"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "nhlNames": {
+    "url": "https://api-web.nhle.com/v1/standings/2026-10-30",
+    "rawSha256": "5458aba3643e1b00cd590bf67b6499bea0691cfd65d722aaa430b8188b2daebc",
+    "standings": [
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "CAR"
+        },
+        "teamName": {
+          "default": "Carolina Hurricanes",
+          "fr": "Hurricanes de la Caroline"
+        },
+        "teamCommonName": {
+          "default": "Hurricanes"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "MIN"
+        },
+        "teamName": {
+          "default": "Minnesota Wild",
+          "fr": "Wild du Minnesota"
+        },
+        "teamCommonName": {
+          "default": "Wild"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "EDM"
+        },
+        "teamName": {
+          "default": "Edmonton Oilers",
+          "fr": "Oilers d'Edmonton"
+        },
+        "teamCommonName": {
+          "default": "Oilers"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "BOS"
+        },
+        "teamName": {
+          "default": "Boston Bruins",
+          "fr": "Bruins de Boston"
+        },
+        "teamCommonName": {
+          "default": "Bruins"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "VGK"
+        },
+        "teamName": {
+          "default": "Vegas Golden Knights",
+          "fr": "Golden Knights de Vegas"
+        },
+        "teamCommonName": {
+          "default": "Golden Knights"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "MTL"
+        },
+        "teamName": {
+          "default": "Montr\u00e9al Canadiens",
+          "fr": "Canadiens de Montr\u00e9al"
+        },
+        "teamCommonName": {
+          "default": "Canadiens"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "UTA"
+        },
+        "teamName": {
+          "default": "Utah Mammoth",
+          "fr": "Mammoth de l'Utah"
+        },
+        "teamCommonName": {
+          "default": "Mammoth"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "TBL"
+        },
+        "teamName": {
+          "default": "Tampa Bay Lightning",
+          "fr": "Lightning de Tampa Bay"
+        },
+        "teamCommonName": {
+          "default": "Lightning"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "SEA"
+        },
+        "teamName": {
+          "default": "Seattle Kraken",
+          "fr": "Kraken de Seattle"
+        },
+        "teamCommonName": {
+          "default": "Kraken"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "OTT"
+        },
+        "teamName": {
+          "default": "Ottawa Senators",
+          "fr": "S\u00e9nateurs d'Ottawa"
+        },
+        "teamCommonName": {
+          "default": "Senators",
+          "fr": "S\u00e9nateurs"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "WSH"
+        },
+        "teamName": {
+          "default": "Washington Capitals",
+          "fr": "Capitals de Washington"
+        },
+        "teamCommonName": {
+          "default": "Capitals"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "NJD"
+        },
+        "teamName": {
+          "default": "New Jersey Devils",
+          "fr": "Devils du New Jersey"
+        },
+        "teamCommonName": {
+          "default": "Devils"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "FLA"
+        },
+        "teamName": {
+          "default": "Florida Panthers",
+          "fr": "Panthers de la Floride"
+        },
+        "teamCommonName": {
+          "default": "Panthers"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "NYI"
+        },
+        "teamName": {
+          "default": "New York Islanders",
+          "fr": "Islanders de New York"
+        },
+        "teamCommonName": {
+          "default": "Islanders"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "TOR"
+        },
+        "teamName": {
+          "default": "Toronto Maple Leafs",
+          "fr": "Maple Leafs de Toronto"
+        },
+        "teamCommonName": {
+          "default": "Maple Leafs"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "COL"
+        },
+        "teamName": {
+          "default": "Colorado Avalanche",
+          "fr": "Avalanche du Colorado"
+        },
+        "teamCommonName": {
+          "default": "Avalanche"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "DAL"
+        },
+        "teamName": {
+          "default": "Dallas Stars",
+          "fr": "Stars de Dallas"
+        },
+        "teamCommonName": {
+          "default": "Stars"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "BUF"
+        },
+        "teamName": {
+          "default": "Buffalo Sabres",
+          "fr": "Sabres de Buffalo"
+        },
+        "teamCommonName": {
+          "default": "Sabres"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "DET"
+        },
+        "teamName": {
+          "default": "Detroit Red Wings",
+          "fr": "Red Wings de Detroit"
+        },
+        "teamCommonName": {
+          "default": "Red Wings"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "NYR"
+        },
+        "teamName": {
+          "default": "New York Rangers",
+          "fr": "Rangers de New York"
+        },
+        "teamCommonName": {
+          "default": "Rangers"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "SJS"
+        },
+        "teamName": {
+          "default": "San Jose Sharks",
+          "fr": "Sharks de San Jose"
+        },
+        "teamCommonName": {
+          "default": "Sharks"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "STL"
+        },
+        "teamName": {
+          "default": "St. Louis Blues",
+          "fr": "Blues de St. Louis"
+        },
+        "teamCommonName": {
+          "default": "Blues"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "NSH"
+        },
+        "teamName": {
+          "default": "Nashville Predators",
+          "fr": "Predators de Nashville"
+        },
+        "teamCommonName": {
+          "default": "Predators"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "PIT"
+        },
+        "teamName": {
+          "default": "Pittsburgh Penguins",
+          "fr": "Penguins de Pittsburgh"
+        },
+        "teamCommonName": {
+          "default": "Penguins"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "ANA"
+        },
+        "teamName": {
+          "default": "Anaheim Ducks",
+          "fr": "Ducks d'Anaheim"
+        },
+        "teamCommonName": {
+          "default": "Ducks"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "WPG"
+        },
+        "teamName": {
+          "default": "Winnipeg Jets",
+          "fr": "Jets de Winnipeg"
+        },
+        "teamCommonName": {
+          "default": "Jets"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "CBJ"
+        },
+        "teamName": {
+          "default": "Columbus Blue Jackets",
+          "fr": "Blue Jackets de Columbus"
+        },
+        "teamCommonName": {
+          "default": "Blue Jackets"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "CGY"
+        },
+        "teamName": {
+          "default": "Calgary Flames",
+          "fr": "Flames de Calgary"
+        },
+        "teamCommonName": {
+          "default": "Flames"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "LAK"
+        },
+        "teamName": {
+          "default": "Los Angeles Kings",
+          "fr": "Kings de Los Angeles"
+        },
+        "teamCommonName": {
+          "default": "Kings"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "PHI"
+        },
+        "teamName": {
+          "default": "Philadelphia Flyers",
+          "fr": "Flyers de Philadelphie"
+        },
+        "teamCommonName": {
+          "default": "Flyers"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "CHI"
+        },
+        "teamName": {
+          "default": "Chicago Blackhawks",
+          "fr": "Blackhawks de Chicago"
+        },
+        "teamCommonName": {
+          "default": "Blackhawks"
+        }
+      },
+      {
+        "seasonId": 20262027,
+        "teamAbbrev": {
+          "default": "VAN"
+        },
+        "teamName": {
+          "default": "Vancouver Canucks",
+          "fr": "Canucks de Vancouver"
+        },
+        "teamCommonName": {
+          "default": "Canucks"
+        }
+      }
+    ]
+  },
+  "cbbNeutral": {
+    "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?dates=20261101&groups=50&limit=1000",
+    "rawSha256": "88e420fbd8462d0a2808996f64e370cbe82ff085a1381d73612bb32df6b4b702",
+    "events": [
+      {
+        "id": "401920982",
+        "uid": "s:40~l:41~e:401920982",
+        "date": "2026-11-01T14:30Z",
+        "name": "Notre Dame Fighting Irish at Villanova Wildcats",
+        "shortName": "ND VS VILL",
+        "season": {
+          "year": 2027,
+          "type": 2,
+          "slug": "regular-season"
+        },
+        "competitions": [
+          {
+            "id": "401920982",
+            "uid": "s:40~l:41~e:401920982~c:401920982",
+            "date": "2026-11-01T14:30Z",
+            "attendance": 0,
+            "type": {
+              "id": "1",
+              "abbreviation": "STD"
+            },
+            "timeValid": true,
+            "neutralSite": true,
+            "conferenceCompetition": false,
+            "playByPlayAvailable": false,
+            "recent": false,
+            "venue": {
+              "id": "3282",
+              "fullName": "Palazzo dello Sport",
+              "address": {
+                "city": "Rome",
+                "state": "Italy"
+              },
+              "indoor": true
+            },
+            "competitors": [
+              {
+                "id": "222",
+                "uid": "s:40~l:41~t:222",
+                "type": "team",
+                "order": 0,
+                "homeAway": "home",
+                "team": {
+                  "id": "222",
+                  "uid": "s:40~l:41~t:222",
+                  "location": "Villanova",
+                  "name": "Wildcats",
+                  "abbreviation": "VILL",
+                  "displayName": "Villanova Wildcats",
+                  "shortDisplayName": "Villanova",
+                  "color": "00205b",
+                  "alternateColor": "13b5ea",
+                  "isActive": true,
+                  "venue": {
+                    "id": "1969"
+                  },
+                  "links": [
+                    {
+                      "rel": [
+                        "clubhouse",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/_/id/222/villanova-wildcats",
+                      "text": "Clubhouse",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "roster",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/roster/_/id/222",
+                      "text": "Roster",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "roster",
+                        "sportscenter",
+                        "app",
+                        "team"
+                      ],
+                      "href": "sportscenter://x-callback-url/showClubhouse?uid=s:40~l:41~t:222&section=roster",
+                      "text": "Roster",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "stats",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/stats/_/id/222",
+                      "text": "Statistics",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "stats",
+                        "sportscenter",
+                        "app",
+                        "team"
+                      ],
+                      "href": "sportscenter://x-callback-url/showClubhouse?uid=s:40~l:41~t:222&section=stats",
+                      "text": "Statistics",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "schedule",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/schedule/_/id/222",
+                      "text": "Schedule",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "schedule",
+                        "sportscenter",
+                        "app",
+                        "team"
+                      ],
+                      "href": "sportscenter://x-callback-url/showClubhouse?uid=s:40~l:41~t:222&section=scores",
+                      "text": "Schedule",
+                      "isExternal": false,
+                      "isPremium": false
+                    }
+                  ],
+                  "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/222.png",
+                  "logoDark": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/222.png",
+                  "conferenceId": "4"
+                },
+                "score": "0",
+                "curatedRank": {
+                  "current": 99
+                },
+                "statistics": [],
+                "records": [
+                  {
+                    "name": "overall",
+                    "abbreviation": "Season",
+                    "type": "total",
+                    "summary": "0-0"
+                  },
+                  {
+                    "name": "Home",
+                    "abbreviation": "Home",
+                    "type": "home",
+                    "summary": "0-0"
+                  },
+                  {
+                    "name": "Road",
+                    "abbreviation": "AWAY",
+                    "type": "road",
+                    "summary": "0-0"
+                  },
+                  {
+                    "name": "vs. Conf.",
+                    "abbreviation": "VS CONF",
+                    "type": "vsconf",
+                    "summary": "0-0"
+                  }
+                ]
+              },
+              {
+                "id": "87",
+                "uid": "s:40~l:41~t:87",
+                "type": "team",
+                "order": 1,
+                "homeAway": "away",
+                "team": {
+                  "id": "87",
+                  "uid": "s:40~l:41~t:87",
+                  "location": "Notre Dame",
+                  "name": "Fighting Irish",
+                  "abbreviation": "ND",
+                  "displayName": "Notre Dame Fighting Irish",
+                  "shortDisplayName": "Notre Dame",
+                  "color": "062340",
+                  "alternateColor": "c99700",
+                  "isActive": true,
+                  "venue": {
+                    "id": "282"
+                  },
+                  "links": [
+                    {
+                      "rel": [
+                        "clubhouse",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/_/id/87/notre-dame-fighting-irish",
+                      "text": "Clubhouse",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "roster",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/roster/_/id/87",
+                      "text": "Roster",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "roster",
+                        "sportscenter",
+                        "app",
+                        "team"
+                      ],
+                      "href": "sportscenter://x-callback-url/showClubhouse?uid=s:40~l:41~t:87&section=roster",
+                      "text": "Roster",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "stats",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/stats/_/id/87",
+                      "text": "Statistics",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "stats",
+                        "sportscenter",
+                        "app",
+                        "team"
+                      ],
+                      "href": "sportscenter://x-callback-url/showClubhouse?uid=s:40~l:41~t:87&section=stats",
+                      "text": "Statistics",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "schedule",
+                        "desktop",
+                        "team"
+                      ],
+                      "href": "https://www.espn.com/mens-college-basketball/team/schedule/_/id/87",
+                      "text": "Schedule",
+                      "isExternal": false,
+                      "isPremium": false
+                    },
+                    {
+                      "rel": [
+                        "schedule",
+                        "sportscenter",
+                        "app",
+                        "team"
+                      ],
+                      "href": "sportscenter://x-callback-url/showClubhouse?uid=s:40~l:41~t:87&section=scores",
+                      "text": "Schedule",
+                      "isExternal": false,
+                      "isPremium": false
+                    }
+                  ],
+                  "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png",
+                  "logoDark": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/87.png",
+                  "conferenceId": "2"
+                },
+                "score": "0",
+                "curatedRank": {
+                  "current": 99
+                },
+                "statistics": [],
+                "records": [
+                  {
+                    "name": "overall",
+                    "abbreviation": "Season",
+                    "type": "total",
+                    "summary": "0-0"
+                  },
+                  {
+                    "name": "Home",
+                    "abbreviation": "Home",
+                    "type": "home",
+                    "summary": "0-0"
+                  },
+                  {
+                    "name": "Road",
+                    "abbreviation": "AWAY",
+                    "type": "road",
+                    "summary": "0-0"
+                  },
+                  {
+                    "name": "vs. Conf.",
+                    "abbreviation": "VS CONF",
+                    "type": "vsconf",
+                    "summary": "0-0"
+                  }
+                ]
+              }
+            ],
+            "notes": [
+              {
+                "type": "event",
+                "headline": "Eternal City Tip-Off"
+              }
+            ],
+            "status": {
+              "clock": 0.0,
+              "displayClock": "0:00",
+              "period": 0,
+              "type": {
+                "id": "1",
+                "name": "STATUS_SCHEDULED",
+                "state": "pre",
+                "completed": false,
+                "description": "Scheduled",
+                "detail": "Sun, November 1st at 9:30 AM EST",
+                "shortDetail": "11/1 - 9:30 AM EST"
+              }
+            },
+            "broadcasts": [
+              {
+                "market": "national",
+                "names": [
+                  "Fox"
+                ]
+              }
+            ],
+            "format": {
+              "regulation": {
+                "periods": 2
+              }
+            },
+            "startDate": "2026-11-01T14:30Z",
+            "broadcast": "Fox",
+            "geoBroadcasts": [
+              {
+                "type": {
+                  "id": "1",
+                  "shortName": "TV"
+                },
+                "market": {
+                  "id": "1",
+                  "type": "National"
+                },
+                "media": {
+                  "shortName": "Fox"
+                },
+                "lang": "en",
+                "region": "us"
+              }
+            ],
+            "odds": [
+              {
+                "provider": {
+                  "id": "100",
+                  "name": "DraftKings",
+                  "priority": 1,
+                  "logos": [
+                    {
+                      "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
+                      "rel": [
+                        "light"
+                      ]
+                    },
+                    {
+                      "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
+                      "rel": [
+                        "dark"
+                      ]
+                    }
+                  ],
+                  "displayName": "DraftKings"
+                },
+                "details": "VILL -7.5",
+                "overUnder": 147.5,
+                "spread": -7.5,
+                "awayTeamOdds": {
+                  "favorite": false,
+                  "underdog": true,
+                  "team": {
+                    "id": "87",
+                    "uid": "s:40~l:41~t:87",
+                    "abbreviation": "ND",
+                    "name": "Fighting Irish",
+                    "displayName": "Notre Dame Fighting Irish",
+                    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png"
+                  },
+                  "favoriteAtOpen": false
+                },
+                "homeTeamOdds": {
+                  "favorite": true,
+                  "underdog": false,
+                  "team": {
+                    "id": "222",
+                    "uid": "s:40~l:41~t:222",
+                    "abbreviation": "VILL",
+                    "name": "Wildcats",
+                    "displayName": "Villanova Wildcats",
+                    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/222.png"
+                  },
+                  "favoriteAtOpen": true
+                },
+                "moneyline": {
+                  "displayName": "Moneyline",
+                  "shortDisplayName": "ML",
+                  "home": {
+                    "close": {
+                      "odds": "-305",
+                      "link": {
+                        "language": "en-US",
+                        "rel": [
+                          "home",
+                          "desktop",
+                          "bets",
+                          "draftkings"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865%3Foutcomes%3D0ML86833053_3",
+                        "text": "Home Bet",
+                        "shortText": "Home Bet",
+                        "isExternal": true,
+                        "isPremium": false,
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "mens-college-basketball",
+                            "sport": "basketball",
+                            "gameId": 401920982,
+                            "betSide": "home",
+                            "betType": "straight"
+                          }
+                        }
+                      }
+                    },
+                    "open": {
+                      "odds": "-305"
+                    }
+                  },
+                  "away": {
+                    "close": {
+                      "odds": "+245",
+                      "link": {
+                        "language": "en-US",
+                        "rel": [
+                          "away",
+                          "desktop",
+                          "bets",
+                          "draftkings"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865%3Foutcomes%3D0ML86833053_1",
+                        "text": "Away Bet",
+                        "shortText": "Away Bet",
+                        "isExternal": true,
+                        "isPremium": false,
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "mens-college-basketball",
+                            "sport": "basketball",
+                            "gameId": 401920982,
+                            "betSide": "away",
+                            "betType": "straight"
+                          }
+                        }
+                      }
+                    },
+                    "open": {
+                      "odds": "+245"
+                    }
+                  }
+                },
+                "pointSpread": {
+                  "displayName": "Spread",
+                  "shortDisplayName": "Spread",
+                  "home": {
+                    "close": {
+                      "line": "-7.5",
+                      "odds": "-110",
+                      "link": {
+                        "language": "en-US",
+                        "rel": [
+                          "homeSpread",
+                          "desktop",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865%3Foutcomes%3D0HC86833053N750_3",
+                        "text": "Home Point Spread",
+                        "shortText": "Home Point Spread",
+                        "isExternal": true,
+                        "isPremium": false,
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "mens-college-basketball",
+                            "sport": "basketball",
+                            "gameId": 401920982,
+                            "betSide": "none",
+                            "betType": "straight",
+                            "betDetails": "Spread:VILL-7.5"
+                          }
+                        }
+                      }
+                    },
+                    "open": {
+                      "line": "-7.5",
+                      "odds": "-110"
+                    }
+                  },
+                  "away": {
+                    "close": {
+                      "line": "+7.5",
+                      "odds": "-110",
+                      "link": {
+                        "language": "en-US",
+                        "rel": [
+                          "awaySpread",
+                          "desktop",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865%3Foutcomes%3D0HC86833053P750_1",
+                        "text": "Away Point Spread",
+                        "shortText": "Away Point Spread",
+                        "isExternal": true,
+                        "isPremium": false,
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "mens-college-basketball",
+                            "sport": "basketball",
+                            "gameId": 401920982,
+                            "betSide": "none",
+                            "betType": "straight",
+                            "betDetails": "Spread:ND+7.5"
+                          }
+                        }
+                      }
+                    },
+                    "open": {
+                      "line": "+7.5",
+                      "odds": "-110"
+                    }
+                  }
+                },
+                "total": {
+                  "displayName": "Total",
+                  "shortDisplayName": "Total",
+                  "over": {
+                    "close": {
+                      "line": "o147.5",
+                      "odds": "-108",
+                      "link": {
+                        "language": "en-US",
+                        "rel": [
+                          "over",
+                          "desktop",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865%3Foutcomes%3D0OU86833053O14750_1",
+                        "text": "Over Odds",
+                        "shortText": "Over Odds",
+                        "isExternal": true,
+                        "isPremium": false,
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "mens-college-basketball",
+                            "sport": "basketball",
+                            "gameId": 401920982,
+                            "betSide": "over",
+                            "betType": "straight",
+                            "betDetails": "Over:147.5"
+                          }
+                        }
+                      }
+                    },
+                    "open": {
+                      "line": "o149.5",
+                      "odds": "-110"
+                    }
+                  },
+                  "under": {
+                    "close": {
+                      "line": "u147.5",
+                      "odds": "-112",
+                      "link": {
+                        "language": "en-US",
+                        "rel": [
+                          "under",
+                          "desktop",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865%3Foutcomes%3D0OU86833053U14750_3",
+                        "text": "Under Odds",
+                        "shortText": "Under Odds",
+                        "isExternal": true,
+                        "isPremium": false,
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "mens-college-basketball",
+                            "sport": "basketball",
+                            "gameId": 401920982,
+                            "betSide": "under",
+                            "betType": "straight",
+                            "betDetails": "Under:147.5"
+                          }
+                        }
+                      }
+                    },
+                    "open": {
+                      "line": "u149.5",
+                      "odds": "-110"
+                    }
+                  }
+                },
+                "link": {
+                  "language": "en-US",
+                  "rel": [
+                    "game",
+                    "desktop",
+                    "bets"
+                  ],
+                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34864865",
+                  "text": "See More Odds",
+                  "shortText": "Game",
+                  "isExternal": true,
+                  "isPremium": false,
+                  "tracking": {
+                    "campaign": "betting-integrations",
+                    "tags": {
+                      "league": "mens-college-basketball",
+                      "sport": "basketball",
+                      "gameId": 401920982,
+                      "betSide": "none",
+                      "betType": "straight"
+                    }
+                  }
+                },
+                "header": {
+                  "logo": {
+                    "dark": "https://a.espncdn.com/i/espnbet/dark/espn-bet-square-off.svg",
+                    "light": "https://a.espncdn.com/i/espnbet/espn-bet-square-off.svg",
+                    "exclusivesLogoDark": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg",
+                    "exclusivesLogoLight": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg"
+                  },
+                  "text": "Game Odds"
+                },
+                "footer": {
+                  "disclaimer": "GAMBLING PROBLEM? CALL 1-800-GAMBLER or 1-800-MY-RESET, (800) 327-5050 or visit gamblinghelplinema.org (MA). Call 877-8-HOPENY/text HOPENY (467369) (NY). Call 888-789-7777/visit ccpg.org (CT), or visit www.mdgamblinghelp.org (MD), 1-800-981-0023 (PR). 21+ and present in most states. (18+ DC/KY/NH/PR/WY). Void in ONT. Eligibility restrictions apply. Terms: draftkings.com/sportsbook. On behalf of Boot Hill Casino (KS). Pass-thru of per wager tax may apply in IL."
+                }
+              }
+            ],
+            "highlights": []
+          }
+        ],
+        "links": [
+          {
+            "language": "en-US",
+            "rel": [
+              "summary",
+              "desktop",
+              "event"
+            ],
+            "href": "https://www.espn.com/mens-college-basketball/game/_/gameId/401920982/notre-dame-villanova",
+            "text": "Gamecast",
+            "shortText": "Gamecast",
+            "isExternal": false,
+            "isPremium": false
+          }
+        ],
+        "status": {
+          "clock": 0.0,
+          "displayClock": "0:00",
+          "period": 0,
+          "type": {
+            "id": "1",
+            "name": "STATUS_SCHEDULED",
+            "state": "pre",
+            "completed": false,
+            "description": "Scheduled",
+            "detail": "Sun, November 1st at 9:30 AM EST",
+            "shortDetail": "11/1 - 9:30 AM EST"
+          }
+        }
+      }
+    ]
+  }
+}
