@@ -37,6 +37,8 @@ export async function GET(req:NextRequest){
   boards.push(...snapshots.map(s=>({...s.payload,capturedAt:s.capturedAt})));
  }
  const retained=retainedTopPlays(boards,sport);
+ const originals=state.plays.map(card=>({...card,pick:previous.find((p:any)=>p.key===card.key)?.pick||retained.find(p=>p.key===card.key)?.pick||null}));
+ state.plays=topPlayMarketState(sport,Date.now(),originals).plays;
  const used=new Set<string>();
  state.plays=state.plays.map(card=>{
   // A verified choice saved for this slate is immutable, even before kickoff.
@@ -50,7 +52,9 @@ export async function GET(req:NextRequest){
   return {...card,pick:null};
  });
  state.plays=distinctFeaturedPlayers(state.plays);
- state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay,Date.now(),work=>after(work));
+ // Retained originals were already merged. Empty categories have nothing
+ // to persist: avoid an optional cloud retry causing a 500 or any empty write.
+ if(state.plays.some(card=>card.pick))state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay,Date.now(),work=>after(work));
  const presented={...state,plays:state.plays.map(card=>{const reportedOriginal=reportedFeaturedOriginal(sport,selectionDay,card.key);return reportedOriginal?{...card,pick:null,reportedOriginal}:card.pick?{...card,pick:{...card.pick,row:{...card.pick.row,estimatedEv:estimatedEv(card.pick.row)}}}:card;})};
  return NextResponse.json(presented,{headers:{'Cache-Control':'no-store'}});
 }

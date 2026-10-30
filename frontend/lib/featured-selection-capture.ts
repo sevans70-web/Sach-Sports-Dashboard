@@ -10,12 +10,13 @@ export async function captureFeaturedSelections(sport:string,boards:any[],now=Da
  const days=[...new Set<string>(rows.map((r:any)=>dashboardDay(r.gameTime)).filter((d:string)=>d>=today))];
  for(const day of days){
   const candidates=todayTopPlays(rows.filter((r:any)=>dashboardDay(r.gameTime)===day),sport,now);
-  if(candidates.some(c=>c.pick))await saveFeaturedSelections(sport,candidates,day,now);
+  if(candidates.some(c=>c.pick))await saveFeaturedSelections(sport,candidates,day,now,undefined,rows);
  }
 }
-export async function saveFeaturedSelections(sport:string,candidates:any[],day:string,now=Date.now(),deferCloud?:(work:()=>Promise<any>)=>void){
+export async function saveFeaturedSelections(sport:string,candidates:any[],day:string,now=Date.now(),deferCloud?:(work:()=>Promise<any>)=>void,candidateRows?:any[]){
  return withHistoryLock('featured-selections|'+sport+'|'+day,async()=>{
   const previous=await readDurableHistory<any>(sport,'featured_selections',day);
+  if(candidateRows)candidates=todayTopPlays(candidateRows.filter(r=>dashboardDay(r.gameTime)===day),sport,now,previous);
   let merged=distinctFeaturedPlayers(candidates.map(card=>{
    const prior=previous.find(c=>c.key===card.key)?.pick;
    const saved=prior&&dashboardDay(prior.row.gameTime)===day?prior:null;

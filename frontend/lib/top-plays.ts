@@ -7,7 +7,7 @@ export function topPlayDay(rows:any[],now=Date.now()){
  const days=[...new Set(rows.map(r=>dashboardDay(r.gameTime)).filter(d=>d&&d>=today))].sort();
  return days.includes(today)?today:days[0]||today;
 }
-export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
+export function todayTopPlays(rows:any[],sport:string,now=Date.now(),locked:any[]=[]){
  const slateDay=topPlayDay(rows,now);
  const eligible=rows.filter(row=>
   dashboardDay(row.gameTime)===slateDay&&Date.parse(row.gameTime)>now&&
@@ -30,20 +30,22 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now()){
   return [{row:{...row,prediction:row.market==='first_basket'?'FIRST BASKET':'YES'},probability:Math.round(probability*10)/10,price,expectedReturn:0,basis:'bookmaker_implied'}];
  });
 
- return selectFeaturedCandidates(priced,scorers,sport);
+ return selectFeaturedCandidates(priced,scorers,sport,locked.filter(c=>c.pick&&dashboardDay(c.pick.row.gameTime)===slateDay));
 }
 
 /** Apply category requirements to a complete candidate pool, including saved evidence. */
-export function selectFeaturedCandidates(priced:any[],scorers:any[],sport:string){
- const used=new Set<string>();
+export function selectFeaturedCandidates(priced:any[],scorers:any[],sport:string,locked:any[]=[]){
+ const originals=distinctFeaturedPlayers(locked);
+ const used=new Set<string>(originals.filter(c=>c.pick).map(c=>String(c.pick.row.playerId||c.pick.row.playerName).trim().toLowerCase()));
+ const choose=(key:string,find:()=>any)=>originals.find(c=>c.key===key)?.pick||take(find());
  const identity=(p:any)=>String(p.row.playerId||p.row.playerName).trim().toLowerCase();
  const take=(pick:any)=>{if(!pick||used.has(identity(pick)))return null;used.add(identity(pick));return pick};
  const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].filter(p=>!used.has(identity(p))).sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
  return [
-  {key:'play',title:'⭐ Play of the Day',pick:take(best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability))},
-  {key:'value',title:'💎 Best Value',pick:take(best(priced.filter(p=>p.expectedReturn>0),p=>p.expectedReturn))},
-  ...(['nba','wnba','cbb'].includes(sport)?[{key:'first',title:'🏀 First Basket',pick:take(best(scorers.filter(p=>p.row.market==='first_basket'),p=>p.probability))}]:[]),
-  {key:'long',title:'🚀 Long Shot',pick:take(best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)||best(scorers.filter(p=>p.price>=300),p=>p.probability))},
+  {key:'play',title:'⭐ Play of the Day',pick:choose('play',()=>best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability))},
+  {key:'value',title:'💎 Best Value',pick:choose('value',()=>best(priced.filter(p=>p.expectedReturn>0),p=>p.expectedReturn))},
+  ...(['nba','wnba','cbb'].includes(sport)?[{key:'first',title:'🏀 First Basket',pick:choose('first',()=>best(scorers.filter(p=>p.row.market==='first_basket'),p=>p.probability))}]:[]),
+  {key:'long',title:'🚀 Long Shot',pick:choose('long',()=>best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)||best(scorers.filter(p=>p.price>=300),p=>p.probability))},
  ];
 }
 
