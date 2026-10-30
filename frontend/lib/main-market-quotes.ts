@@ -22,6 +22,7 @@ export function mainMarketQuotes(payload:any,market:string,matches:(prop:any)=>b
 
 export function quoteMatchesFixture(quote:any,game:any,toleranceMs=5*60_000){
   const norm=(v:any)=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  if(!norm(game.awayTeam)||!norm(game.homeTeam)||norm(game.awayTeam)===norm(game.homeTeam))return false;
   const expected=norm(`${game.awayTeam} @ ${game.homeTeam}`);
   const delta=Math.abs(Date.parse(quote.gameTime||"")-Date.parse(game.tipoff||game.date||""));
   return norm(quote.matchup)===expected&&Number.isFinite(delta)&&delta<=toleranceMs;

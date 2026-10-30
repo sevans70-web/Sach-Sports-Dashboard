@@ -40,7 +40,10 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
       if (!sportsbookKey) continue;
       for (const prop of Array.isArray(book.props) ? book.props : []) {
         const category = categoryKey(prop.category ?? prop.market ?? prop.type);
-        const period = norm(prop.periodID ?? prop.periodId ?? prop.period ?? prop.periodName ?? "");
+        const periods=[prop.periodID,prop.periodId,prop.period,prop.periodName].map(norm).filter(Boolean);
+        const periodKey=(value:string)=>["game","fullgame","ft","0"].includes(value)?"game":["1q","q1","1","1stquarter","firstquarter"].includes(value)?"q1":value;
+        if(new Set(periods.map(periodKey)).size>1)continue;
+        const period = periods[0]||"";
         const quarter = market.startsWith("q1_");
         const base = market.replace(/^q1_/, "");
         const q1Period = ["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period);
@@ -50,7 +53,9 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
           receiving_yards:["receivingyards","receptionyards","playerreceivingyards"],
         };
         const bases=baseAliases[base]||[norm(base)];
-        const explicitQuarter=quarter&&bases.some(name=>["q1"+name,name+"q1","1q"+name,name+"1q","firstquarter"+name,name+"firstquarter"].includes(category));
+        const evidenceCategory=categoryKey(prop.sourceCategory??prop.category??prop.market??prop.type);
+        const explicitQuarter=quarter&&bases.some(name=>["q1"+name,name+"q1","1q"+name,name+"1q","firstquarter"+name,name+"firstquarter"].includes(evidenceCategory));
+        if(quarter&&!explicitQuarter&&!q1Period)continue;
         if (!categories.has(category) && !explicitQuarter && !(quarter && q1Period && bases.includes(category))) continue;
         if (period && (market.startsWith("q1_") ? !["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period) : !["game", "fullgame", "ft", "0"].includes(period))) continue;
         const playerName = String(prop.playerName || prop.player_name || "").trim();
@@ -74,7 +79,7 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
         const row: FootballBookRow = {
           quoteMarket:market,quotePeriod:quarter?"q1":"game",
           sourceCategory:String(prop.sourceCategory??prop.category??prop.market??prop.type??""),
-          sourcePeriod:String(prop.sourcePeriod??prop.periodID??prop.periodId??prop.period??prop.periodName??""),
+          sourcePeriod:String([prop.sourcePeriod,prop.periodID,prop.periodId,prop.period,prop.periodName].find(v=>String(v??'').trim())??""),
           eventId: String(game.gameId || game.eventId || game.id || ""), matchup, gameTime,
           playerName, teamName: String(prop.team || prop.teamName || ""), line,
           price: overPrice, prob, bookmakerCount: 1, quoteVersion: FOOTBALL_QUOTE_VERSION,
