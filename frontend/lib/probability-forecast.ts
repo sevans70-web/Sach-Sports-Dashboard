@@ -253,6 +253,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    const eligible=candidates.filter(r=>r.candidateSide===side&&r.profit!==0&&r.candidateConfidence!=null&&Number.isFinite(r.candidateConfidence));
    const describe=(items:typeof eligible)=>({count:items.length,averageConfidence:items.length?mean(items.map(r=>r.candidateConfidence!)):null,
     hitRate:items.length?mean(items.map(r=>Number(r.profit!>0))):null,
+    confidenceGap:items.length?mean(items.map(r=>r.candidateConfidence!-Number(r.profit!>0))):null,
     brier:items.length?mean(items.map(r=>(r.candidateConfidence!-Number(r.profit!>0))**2)):null});
    return [side,{all:describe(eligible),confidence80Plus:describe(eligible.filter(r=>r.candidateConfidence!>=.8))}];
   }));
