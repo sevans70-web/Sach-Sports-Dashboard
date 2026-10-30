@@ -1,0 +1,14 @@
+import test from'node:test';import assert from'node:assert/strict';import{readFile,writeFile,mkdtemp,mkdir,rm}from'node:fs/promises';import{tmpdir}from'node:os';import{join,dirname}from'node:path';import{fileURLToPath}from'node:url';import{gzipSync}from'node:zlib';import{createHash}from'node:crypto';import{execFileSync}from'node:child_process';import{readResearchCohort}from'../scripts/p01-official-results.mjs';
+const root=fileURLToPath(new URL('../',import.meta.url)),source='model-research/2026-10-30-p01-cfb-prospective',hash=b=>createHash('sha256').update(b).digest('hex');
+test('CFB frozen forecasts replay and scorer preserves zero/missing/pending with exact kickoff checks',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'p01-cfb-score-'));try{
+  const c=JSON.parse(await readResearchCohort(join(root,source))),target=c.decisions[0].target;assert.equal(target.market,'passing_yards');
+  const url=id=>'https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event='+id;
+  const payload={header:{id:target.gameId,competitions:[{date:target.gameTime,status:{type:{completed:true}},competitors:[{team:{id:target.teamId}},{team:{id:target.opponentId}}]}]},boxscore:{players:[{team:{id:target.teamId},statistics:[{name:'passing',labels:['YDS'],athletes:[{athlete:{id:target.playerId},stats:['0']}]}]}]}};
+  const archive=join(dir,'official');await mkdir(archive);const save=async()=>{const records=[...new Set(c.decisions.map(d=>d.target.gameId))].map(id=>id===target.gameId?{id,url:url(id),data:payload,sha256:hash(JSON.stringify(payload))}:{id,url:url(id),status:'pending_official_final'}),b=gzipSync(JSON.stringify(records));await writeFile(archive+'/official-results.json.gz',b);await writeFile(archive+'/receipt.json',JSON.stringify({files:{'official-results.json.gz':hash(b)}}));};
+  const clock=join(dir,'clock.mjs');await writeFile(clock,"Date.now=()=>Date.parse('2026-11-10T00:00:00Z');globalThis.fetch=()=>{throw Error('Unexpected network request in offline test')};");
+  const run=out=>execFileSync(process.execPath,['--import',clock,'scripts/score-p01-cfb.mjs',source,out,archive],{cwd:root,stdio:'pipe'});
+  await save();const out=join(dir,'first');run(out);const r=JSON.parse(await readFile(out+'/report.json'));const observed=r.decisions.find(d=>d.target.gameId===target.gameId&&d.target.playerId===target.playerId);assert.equal(observed.actual,0);assert.ok(r.pending>0);assert.equal(r.resolved+r.pending+r.voids+r.unresolved,r.selected);assert.equal(r.livePromotion,false);
+  payload.header.competitions[0].date='2026-11-09T00:00:00Z';await save();const bad=join(dir,'wrong-kickoff');run(bad);const rejected=JSON.parse(await readFile(bad+'/report.json'));assert.equal(rejected.resolved,0);assert.equal(rejected.pending,rejected.selected);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});

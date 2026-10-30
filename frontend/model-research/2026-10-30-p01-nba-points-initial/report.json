@@ -1,0 +1,838 @@
+{
+  "cohortSha256": "ab16c78fbdb713f147c223c211b8b6e3d8deed43471c3b90b6c970b15dcc6e0c",
+  "scoredAt": "2026-10-30T17:12:37.460Z",
+  "selected": 21,
+  "resolved": 0,
+  "pending": 21,
+  "voids": 0,
+  "unresolved": 0,
+  "complete": false,
+  "reports": [
+    {
+      "market": "points",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "pairedBrierSamples": 0,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "allDirections": {
+        "baseline": [
+          {
+            "side": "OVER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          },
+          {
+            "side": "UNDER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          }
+        ],
+        "candidate": [
+          {
+            "side": "OVER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          },
+          {
+            "side": "UNDER",
+            "calls": 0,
+            "hits": 0,
+            "meanConfidence": null
+          }
+        ]
+      }
+    }
+  ],
+  "excludedOrPending": [
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909278",
+        "playerId": "4395626",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "4",
+        "opponentId": "2",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909281",
+        "playerId": "3134908",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "28",
+        "opponentId": "19",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909286",
+        "playerId": "5203685",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "21",
+        "opponentId": "7",
+        "gameTime": "2026-10-31T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909285",
+        "playerId": "3213",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "9",
+        "opponentId": "13",
+        "gameTime": "2026-10-31T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909279",
+        "playerId": "4278562",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "8",
+        "opponentId": "17",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909277",
+        "playerId": "4576060",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "30",
+        "opponentId": "27",
+        "gameTime": "2026-10-30T23:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909285",
+        "playerId": "4066436",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "9",
+        "opponentId": "13",
+        "gameTime": "2026-10-31T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909283",
+        "playerId": "4432582",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "6",
+        "opponentId": "10",
+        "gameTime": "2026-10-31T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909283",
+        "playerId": "4278049",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "6",
+        "opponentId": "10",
+        "gameTime": "2026-10-31T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909277",
+        "playerId": "4433287",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "30",
+        "opponentId": "27",
+        "gameTime": "2026-10-30T23:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909282",
+        "playerId": "4278053",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "14",
+        "opponentId": "11",
+        "gameTime": "2026-10-31T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909286",
+        "playerId": "3155526",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "21",
+        "opponentId": "7",
+        "gameTime": "2026-10-31T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909278",
+        "playerId": "5044385",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "4",
+        "opponentId": "2",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909277",
+        "playerId": "4433249",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "30",
+        "opponentId": "27",
+        "gameTime": "2026-10-30T23:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909286",
+        "playerId": "3136193",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "21",
+        "opponentId": "7",
+        "gameTime": "2026-10-31T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909281",
+        "playerId": "4433134",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "28",
+        "opponentId": "19",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909282",
+        "playerId": "4066261",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "14",
+        "opponentId": "11",
+        "gameTime": "2026-10-31T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909281",
+        "playerId": "4395625",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "28",
+        "opponentId": "19",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909281",
+        "playerId": "4702382",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "19",
+        "opponentId": "28",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909282",
+        "playerId": "3059319",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "14",
+        "opponentId": "11",
+        "gameTime": "2026-10-31T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909281",
+        "playerId": "4277847",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "19",
+        "opponentId": "28",
+        "gameTime": "2026-10-30T23:30Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    }
+  ],
+  "decisions": [],
+  "requests": [],
+  "validatedForBetting": false,
+  "livePromotion": false,
+  "officialResultsSha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+}

@@ -1,0 +1,4057 @@
+{
+  "cohortSha256": "01d87f52100ca0227f4724103cb8cbc1864bf3a5bd2a2703f9a87eecf79605a4",
+  "scoredAt": "2026-10-30T17:12:38.083Z",
+  "selected": 165,
+  "resolved": 0,
+  "pending": 165,
+  "voids": 0,
+  "unresolved": 0,
+  "complete": false,
+  "reports": [
+    {
+      "market": "passing_yards",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "pairedBrierSamples": 0,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "rushing_yards",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "pairedBrierSamples": 0,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "receiving_yards",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "pairedBrierSamples": 0,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    },
+    {
+      "market": "receptions",
+      "settled": 0,
+      "pushes": 0,
+      "independentGames": 0,
+      "pairedBrierSamples": 0,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": null,
+      "candidateBrier": null,
+      "bookBrier": null,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 0,
+            "meanConfidence": null,
+            "hits": 0,
+            "hitRate": null,
+            "overconfidenceGap": null,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 0,
+          "settled": 0,
+          "pushes": 0,
+          "hits": 0,
+          "unitRoi": null,
+          "roiInterval": null
+        }
+      ]
+    }
+  ],
+  "excludedOrPending": [
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873025",
+        "playerId": "3052587",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "27",
+        "opponentId": "1",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873029",
+        "playerId": "14880",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873031",
+        "playerId": "4688380",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873030",
+        "playerId": "3046779",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "8",
+        "opponentId": "16",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873030",
+        "playerId": "3917315",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "16",
+        "opponentId": "8",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873027",
+        "playerId": "8439",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "23",
+        "opponentId": "5",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873028",
+        "playerId": "4360310",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873028",
+        "playerId": "3917792",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "11",
+        "opponentId": "30",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873024",
+        "playerId": "2578570",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "22",
+        "opponentId": "6",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873024",
+        "playerId": "2577417",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "6",
+        "opponentId": "22",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873027",
+        "playerId": "3122840",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "5",
+        "opponentId": "23",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873031",
+        "playerId": "3915511",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873026",
+        "playerId": "3916387",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "33",
+        "opponentId": "2",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873029",
+        "playerId": "15864",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "20",
+        "opponentId": "13",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873026",
+        "playerId": "3918298",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873025",
+        "playerId": "4360423",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "1",
+        "opponentId": "27",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873033",
+        "playerId": "4426338",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "7",
+        "opponentId": "12",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873034",
+        "playerId": "4431452",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873032",
+        "playerId": "4038941",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873032",
+        "playerId": "12483",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873034",
+        "playerId": "4242512",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873033",
+        "playerId": "3139477",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "passing_yards",
+        "gameId": "401873035",
+        "playerId": "4426348",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873028",
+        "playerId": "4242335",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "11",
+        "opponentId": "30",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873029",
+        "playerId": "4890973",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873027",
+        "playerId": "4569987",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "23",
+        "opponentId": "5",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873030",
+        "playerId": "4429795",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "8",
+        "opponentId": "16",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873025",
+        "playerId": "4596448",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "27",
+        "opponentId": "1",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873031",
+        "playerId": "3916148",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873027",
+        "playerId": "4685702",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "5",
+        "opponentId": "23",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873026",
+        "playerId": "4038441",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "33",
+        "opponentId": "2",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873026",
+        "playerId": "4379399",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873025",
+        "playerId": "4430807",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "1",
+        "opponentId": "27",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873031",
+        "playerId": "4362238",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873028",
+        "playerId": "4686468",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "11",
+        "opponentId": "30",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873029",
+        "playerId": "4427366",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "20",
+        "opponentId": "13",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873026",
+        "playerId": "4429501",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873031",
+        "playerId": "3116389",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873026",
+        "playerId": "3043078",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "33",
+        "opponentId": "2",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873024",
+        "playerId": "4429676",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "6",
+        "opponentId": "22",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873027",
+        "playerId": "4038815",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "23",
+        "opponentId": "5",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873029",
+        "playerId": "4686658",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873024",
+        "playerId": "4361579",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "6",
+        "opponentId": "22",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873028",
+        "playerId": "4362619",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873028",
+        "playerId": "4882093",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873033",
+        "playerId": "4241985",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "7",
+        "opponentId": "12",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873032",
+        "playerId": "4430737",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873034",
+        "playerId": "4569173",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873034",
+        "playerId": "4711533",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873033",
+        "playerId": "4567048",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873032",
+        "playerId": "4685382",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873032",
+        "playerId": "4429096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873034",
+        "playerId": "4431431",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873034",
+        "playerId": "4682745",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873034",
+        "playerId": "4569603",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873032",
+        "playerId": "4430968",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873033",
+        "playerId": "4832955",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873034",
+        "playerId": "4432710",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873035",
+        "playerId": "4697815",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "rushing_yards",
+        "gameId": "401873035",
+        "playerId": "3929630",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873029",
+        "playerId": "4723820",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "20",
+        "opponentId": "13",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873031",
+        "playerId": "4239993",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873029",
+        "playerId": "4428718",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873026",
+        "playerId": "3915411",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873029",
+        "playerId": "4429086",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873026",
+        "playerId": "4635008",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873031",
+        "playerId": "4569587",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873029",
+        "playerId": "4890973",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873027",
+        "playerId": "4569987",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "23",
+        "opponentId": "5",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873026",
+        "playerId": "4876132",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "33",
+        "opponentId": "2",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873030",
+        "playerId": "4426388",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "8",
+        "opponentId": "16",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873028",
+        "playerId": "4430539",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873029",
+        "playerId": "4432665",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873025",
+        "playerId": "4243331",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "27",
+        "opponentId": "1",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873030",
+        "playerId": "4374302",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "8",
+        "opponentId": "16",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873031",
+        "playerId": "4362628",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873025",
+        "playerId": "4361409",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "1",
+        "opponentId": "27",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873030",
+        "playerId": "5123663",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "8",
+        "opponentId": "16",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873028",
+        "playerId": "3916433",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873026",
+        "playerId": "4360939",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "33",
+        "opponentId": "2",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873031",
+        "playerId": "4686728",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873030",
+        "playerId": "4262921",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "16",
+        "opponentId": "8",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873026",
+        "playerId": "4385690",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873028",
+        "playerId": "4882093",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873024",
+        "playerId": "5083754",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "6",
+        "opponentId": "22",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873033",
+        "playerId": "4240472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4869645",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "4429096",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4367209",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873033",
+        "playerId": "4832955",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4569173",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873033",
+        "playerId": "4428331",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4831959",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4569603",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4711533",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873033",
+        "playerId": "4683062",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "4685382",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873033",
+        "playerId": "3051876",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "7",
+        "opponentId": "12",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "4241263",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "4427095",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "4430968",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873033",
+        "playerId": "15847",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873034",
+        "playerId": "3046439",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "4426515",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "2573401",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873032",
+        "playerId": "4710855",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "4567156",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "4360635",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "4870795",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "3929630",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "4361577",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "2976212",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "5081432",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "3121023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receiving_yards",
+        "gameId": "401873035",
+        "playerId": "4715355",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873029",
+        "playerId": "4429086",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873029",
+        "playerId": "4890973",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873028",
+        "playerId": "4430539",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "30",
+        "opponentId": "11",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873025",
+        "playerId": "4596448",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "27",
+        "opponentId": "1",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873025",
+        "playerId": "4243331",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "27",
+        "opponentId": "1",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873031",
+        "playerId": "4362238",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873027",
+        "playerId": "4038815",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "23",
+        "opponentId": "5",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873028",
+        "playerId": "4431459",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "11",
+        "opponentId": "30",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873031",
+        "playerId": "4686728",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873029",
+        "playerId": "4428718",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "13",
+        "opponentId": "20",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873029",
+        "playerId": "4808766",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "20",
+        "opponentId": "13",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873029",
+        "playerId": "4723820",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "20",
+        "opponentId": "13",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873025",
+        "playerId": "4608810",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "27",
+        "opponentId": "1",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873031",
+        "playerId": "4384852",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873031",
+        "playerId": "4361516",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873026",
+        "playerId": "4038441",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "33",
+        "opponentId": "2",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873026",
+        "playerId": "4242433",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "2",
+        "opponentId": "33",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873029",
+        "playerId": "4597500",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "20",
+        "opponentId": "13",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873031",
+        "playerId": "3116389",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "4",
+        "opponentId": "10",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873031",
+        "playerId": "3916148",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "10",
+        "opponentId": "4",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873024",
+        "playerId": "4361579",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "6",
+        "opponentId": "22",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873025",
+        "playerId": "4361409",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "1",
+        "opponentId": "27",
+        "gameTime": "2026-11-01T18:00:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873033",
+        "playerId": "4240472",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873032",
+        "playerId": "4426515",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873033",
+        "playerId": "3051876",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "7",
+        "opponentId": "12",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873033",
+        "playerId": "4428331",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "4869645",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873033",
+        "playerId": "4567048",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873033",
+        "playerId": "4683062",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "4613202",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873033",
+        "playerId": "15847",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "12",
+        "opponentId": "7",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "4711533",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "15",
+        "opponentId": "17",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "4569173",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873032",
+        "playerId": "4595342",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873032",
+        "playerId": "2573401",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873032",
+        "playerId": "4685382",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873032",
+        "playerId": "4710855",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "14",
+        "opponentId": "24",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "3046439",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "4831959",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873034",
+        "playerId": "4427095",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "17",
+        "opponentId": "15",
+        "gameTime": "2026-11-01T21:25:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873032",
+        "playerId": "4430968",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "24",
+        "opponentId": "14",
+        "gameTime": "2026-11-01T21:05:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "3929630",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "5081432",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "4360635",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "4715355",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "4567156",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "2976212",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "3121023",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "4870795",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "21",
+        "opponentId": "28",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    },
+    {
+      "target": {
+        "market": "receptions",
+        "gameId": "401873035",
+        "playerId": "4361577",
+        "sport": "nfl",
+        "season": "2026",
+        "teamId": "28",
+        "opponentId": "21",
+        "gameTime": "2026-11-02T01:20:00Z"
+      },
+      "status": "pending",
+      "reason": "upcoming"
+    }
+  ],
+  "decisions": [],
+  "requests": [],
+  "validatedForBetting": false,
+  "livePromotion": false,
+  "officialResultsSha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+}

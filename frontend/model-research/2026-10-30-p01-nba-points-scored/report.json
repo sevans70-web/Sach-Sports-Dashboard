@@ -1,0 +1,1350 @@
+{
+  "cohortSha256": "54688fdd6117fcc9c99ca7becd03c273a141c06f49271a429e698b1fdfdd58a4",
+  "scoredAt": "2026-10-30T17:13:39.626Z",
+  "selected": 17,
+  "resolved": 16,
+  "pending": 0,
+  "voids": 0,
+  "unresolved": 1,
+  "complete": false,
+  "reports": [
+    {
+      "market": "points",
+      "settled": 16,
+      "pushes": 0,
+      "independentGames": 3,
+      "pairedBrierSamples": 16,
+      "unscorableConditionalBrier": 0,
+      "baselineBrier": 0.21409432934828343,
+      "candidateBrier": 0.2112200193064528,
+      "bookBrier": 0.24745238840793546,
+      "pairedBrierImprovement": null,
+      "pairedBookImprovement": null,
+      "confidence": {
+        "baseline": [
+          {
+            "side": "ALL",
+            "count": 16,
+            "meanConfidence": 0.67568407960199,
+            "hits": 11,
+            "hitRate": 0.6875,
+            "overconfidenceGap": -0.011815920398010049,
+            "atLeast80": {
+              "count": 3,
+              "meanConfidence": 0.8955223880597014,
+              "hits": 2,
+              "hitRate": 0.6666666666666666,
+              "overconfidenceGap": 0.22885572139303478
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 7,
+                "meanConfidence": 0.5493958777540867,
+                "hits": 4,
+                "hitRate": 0.5714285714285714,
+                "overconfidenceGap": -0.022032693674484682
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 2,
+                "meanConfidence": 0.6616915422885572,
+                "hits": 2,
+                "hitRate": 1,
+                "overconfidenceGap": -0.3383084577114428
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 4,
+                "meanConfidence": 0.7388059701492536,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": -0.011194029850746356
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 1,
+                "meanConfidence": 0.8109452736318408,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.8109452736318408
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 2,
+                "meanConfidence": 0.9378109452736318,
+                "hits": 2,
+                "hitRate": 1,
+                "overconfidenceGap": -0.062189054726368154
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 7,
+            "meanConfidence": 0.6652452025586353,
+            "hits": 6,
+            "hitRate": 0.8571428571428571,
+            "overconfidenceGap": -0.1918976545842218,
+            "atLeast80": {
+              "count": 1,
+              "meanConfidence": 0.9502487562189055,
+              "hits": 1,
+              "hitRate": 1,
+              "overconfidenceGap": -0.04975124378109452
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 3,
+                "meanConfidence": 0.5323383084577115,
+                "hits": 3,
+                "hitRate": 1,
+                "overconfidenceGap": -0.46766169154228854
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6915422885572139,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.3084577114427861
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 2,
+                "meanConfidence": 0.708955223880597,
+                "hits": 1,
+                "hitRate": 0.5,
+                "overconfidenceGap": 0.20895522388059695
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 1,
+                "meanConfidence": 0.9502487562189055,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.04975124378109452
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 9,
+            "meanConfidence": 0.683803206191266,
+            "hits": 5,
+            "hitRate": 0.5555555555555556,
+            "overconfidenceGap": 0.12824765063571042,
+            "atLeast80": {
+              "count": 2,
+              "meanConfidence": 0.8681592039800995,
+              "hits": 1,
+              "hitRate": 0.5,
+              "overconfidenceGap": 0.3681592039800995
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 4,
+                "meanConfidence": 0.5621890547263682,
+                "hits": 1,
+                "hitRate": 0.25,
+                "overconfidenceGap": 0.31218905472636815
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6318407960199005,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.3681592039800995
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 2,
+                "meanConfidence": 0.7686567164179104,
+                "hits": 2,
+                "hitRate": 1,
+                "overconfidenceGap": -0.23134328358208955
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 1,
+                "meanConfidence": 0.8109452736318408,
+                "hits": 0,
+                "hitRate": 0,
+                "overconfidenceGap": 0.8109452736318408
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 1,
+                "meanConfidence": 0.9253731343283582,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.07462686567164178
+              }
+            ]
+          }
+        ],
+        "candidate": [
+          {
+            "side": "ALL",
+            "count": 16,
+            "meanConfidence": 0.7807835820895522,
+            "hits": 11,
+            "hitRate": 0.6875,
+            "overconfidenceGap": 0.09328358208955223,
+            "atLeast80": {
+              "count": 8,
+              "meanConfidence": 0.9104477611940299,
+              "hits": 6,
+              "hitRate": 0.75,
+              "overconfidenceGap": 0.16044776119402993
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 3,
+                "meanConfidence": 0.538971807628524,
+                "hits": 1,
+                "hitRate": 0.3333333333333333,
+                "overconfidenceGap": 0.20563847429519072
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6567164179104478,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.34328358208955223
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 4,
+                "meanConfidence": 0.7338308457711443,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": -0.016169154228855676
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 4,
+                "meanConfidence": 0.8532338308457711,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": 0.10323383084577109
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 4,
+                "meanConfidence": 0.9676616915422885,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": 0.21766169154228854
+              }
+            ]
+          },
+          {
+            "side": "OVER",
+            "count": 15,
+            "meanConfidence": 0.7890547263681592,
+            "hits": 10,
+            "hitRate": 0.6666666666666666,
+            "overconfidenceGap": 0.12238805970149258,
+            "atLeast80": {
+              "count": 8,
+              "meanConfidence": 0.9104477611940299,
+              "hits": 6,
+              "hitRate": 0.75,
+              "overconfidenceGap": 0.16044776119402993
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 3,
+                "meanConfidence": 0.538971807628524,
+                "hits": 1,
+                "hitRate": 0.3333333333333333,
+                "overconfidenceGap": 0.20563847429519072
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 4,
+                "meanConfidence": 0.7338308457711443,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": -0.016169154228855676
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 4,
+                "meanConfidence": 0.8532338308457711,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": 0.10323383084577109
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 4,
+                "meanConfidence": 0.9676616915422885,
+                "hits": 3,
+                "hitRate": 0.75,
+                "overconfidenceGap": 0.21766169154228854
+              }
+            ]
+          },
+          {
+            "side": "UNDER",
+            "count": 1,
+            "meanConfidence": 0.6567164179104478,
+            "hits": 1,
+            "hitRate": 1,
+            "overconfidenceGap": -0.34328358208955223,
+            "atLeast80": {
+              "count": 0,
+              "meanConfidence": null,
+              "hits": 0,
+              "hitRate": null,
+              "overconfidenceGap": null
+            },
+            "bins": [
+              {
+                "from": 0.5,
+                "to": 0.6,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.6,
+                "to": 0.7,
+                "count": 1,
+                "meanConfidence": 0.6567164179104478,
+                "hits": 1,
+                "hitRate": 1,
+                "overconfidenceGap": -0.34328358208955223
+              },
+              {
+                "from": 0.7,
+                "to": 0.8,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.8,
+                "to": 0.9,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              },
+              {
+                "from": 0.9,
+                "to": 1,
+                "count": 0,
+                "meanConfidence": null,
+                "hits": 0,
+                "hitRate": null,
+                "overconfidenceGap": null
+              }
+            ]
+          }
+        ]
+      },
+      "pairedDirectionImprovement": null,
+      "baselineSides": [
+        {
+          "side": "OVER",
+          "selected": 4,
+          "settled": 4,
+          "pushes": 0,
+          "hits": 3,
+          "unitRoi": 0.49477272727272725,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 6,
+          "settled": 6,
+          "pushes": 0,
+          "hits": 4,
+          "unitRoi": 0.2114211821295495,
+          "roiInterval": null
+        }
+      ],
+      "candidateSides": [
+        {
+          "side": "OVER",
+          "selected": 13,
+          "settled": 13,
+          "pushes": 0,
+          "hits": 9,
+          "unitRoi": 0.2896050612283644,
+          "roiInterval": null
+        },
+        {
+          "side": "UNDER",
+          "selected": 1,
+          "settled": 1,
+          "pushes": 0,
+          "hits": 1,
+          "unitRoi": 0.8264462809917356,
+          "roiInterval": null
+        }
+      ],
+      "allDirections": {
+        "baseline": [
+          {
+            "side": "OVER",
+            "calls": 7,
+            "hits": 6,
+            "meanConfidence": 0.6652452025586353
+          },
+          {
+            "side": "UNDER",
+            "calls": 9,
+            "hits": 5,
+            "meanConfidence": 0.683803206191266
+          }
+        ],
+        "candidate": [
+          {
+            "side": "OVER",
+            "calls": 15,
+            "hits": 10,
+            "meanConfidence": 0.7890547263681592
+          },
+          {
+            "side": "UNDER",
+            "calls": 1,
+            "hits": 1,
+            "meanConfidence": 0.6567164179104478
+          }
+        ]
+      }
+    }
+  ],
+  "excludedOrPending": [
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4066211",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "status": "unresolved",
+      "reason": "final_missing_explicit_player_stat"
+    }
+  ],
+  "decisions": [
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "3995",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "3995",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533376",
+        "line": 12.5,
+        "overPrice": -104,
+        "underPrice": -128,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 6,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.7164179104477612,
+        "brier": 0.5132546224103364,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.945273631840796,
+        "brier": 0.8935422390534888,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.22649529813150382
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "5105565",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "5105565",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533346",
+        "line": 9.5,
+        "overPrice": -128,
+        "underPrice": -104,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 11,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.5024875621890548,
+        "brier": 0.24751862577658965,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7512437810945274,
+        "brier": 0.06187965644414741,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.78125
+      },
+      "bookBrier": 0.22649529813150382
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "5144091",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "3",
+        "opponentId": "23",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "5144091",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533514",
+        "line": 11.5,
+        "overPrice": 101,
+        "underPrice": -134,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 22,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.9502487562189055,
+        "brier": 0.0024751862577658966,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.01
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.9950248756218906,
+        "brier": 0.000024751862577658742,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.01
+      },
+      "bookBrier": 0.28633789109111135
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4431736",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4431736",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506066",
+        "line": 11.5,
+        "overPrice": 106,
+        "underPrice": -140,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 13,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.6915422885572139,
+        "brier": 0.0951461597485211,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.06
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.9800995024875622,
+        "brier": 0.0003960298012425443,
+        "side": "OVER",
+        "won": true,
+        "profit": 1.06
+      },
+      "bookBrier": 0.29789615258323443
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "4431679",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "23",
+        "opponentId": "3",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "4431679",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533517",
+        "line": 10.5,
+        "overPrice": -110,
+        "underPrice": -120,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 24,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7014925373134329,
+        "brier": 0.08910670527957228,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9090909090909091
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.9502487562189055,
+        "brier": 0.0024751862577658966,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9090909090909091
+      },
+      "bookBrier": 0.2602239013915979
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "3992",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "3992",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506129",
+        "line": 16.5,
+        "overPrice": -130,
+        "underPrice": -102,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 24,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.46766169154228854,
+        "brier": 0.2833840746516176,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.8308457711442786,
+        "brier": 0.02861315313977377,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7692307692307693
+      },
+      "bookBrier": 0.22263517208839328
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4431680",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "1",
+        "opponentId": "5",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4431680",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533448",
+        "line": 11.5,
+        "overPrice": -110,
+        "underPrice": -120,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 29,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.42786069651741293,
+        "brier": 0.3273433825895398,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.835820895522388,
+        "brier": 0.026954778347070628,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.9090909090909091
+      },
+      "bookBrier": 0.2602239013915979
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "4397688",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "3",
+        "opponentId": "23",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "4397688",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533529",
+        "line": 17.5,
+        "overPrice": -120,
+        "underPrice": -110,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 19,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.4079601990049751,
+        "brier": 0.3505111259622288,
+        "side": "UNDER",
+        "won": false,
+        "profit": -1
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.8756218905472637,
+        "brier": 0.015469914111036853,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.8333333333333334
+      },
+      "bookBrier": 0.23998098641184085
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4066328",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4066328",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506135",
+        "line": 12.5,
+        "overPrice": -136,
+        "underPrice": 103,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 14,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.5621890547263682,
+        "brier": 0.19167842380139105,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7263681592039801,
+        "brier": 0.07487438429741837,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7352941176470589
+      },
+      "bookBrier": 0.21239699965838313
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "3908809",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "3908809",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506096",
+        "line": 24.5,
+        "overPrice": 101,
+        "underPrice": -133,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 22,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.3681592039800995,
+        "brier": 0.1355411994752605,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.7518796992481203
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.5771144278606966,
+        "brier": 0.3330610628449791,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2168696376099407
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "2490149",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "1",
+        "opponentId": "5",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "2490149",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533403",
+        "line": 16.5,
+        "overPrice": -102,
+        "underPrice": -130,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 5,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.44776119402985076,
+        "brier": 0.20049008687903766,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.8706467661691543,
+        "brier": 0.758025791440806,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.22263517208839328
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4066757",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4066757",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "kalshi",
+        "quoteId": "kalshi-KXNBAPTS-26OCT29CLEATL-CLESMERRILL5-15",
+        "line": 14.5,
+        "overPrice": -223,
+        "underPrice": -4900,
+        "updatedAt": "2026-10-29T14:09:06.371Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 16,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": false,
+        "over": 0.1890547263681592,
+        "brier": 0.6576322368258211,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.5373134328358209,
+        "brier": 0.21407885943417243,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.34419923507347855
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "3064440",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "23",
+        "opponentId": "3",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909894",
+        "playerId": "3064440",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639533538",
+        "line": 21.5,
+        "overPrice": -109,
+        "underPrice": -121,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 21,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.07462686567164178,
+        "brier": 0.005569169079973267,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8264462809917356
+      },
+      "candidate": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.34328358208955223,
+        "brier": 0.11784361773223434,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8264462809917356
+      },
+      "bookBrier": 0.23799649026411543
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4683021",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "22",
+        "opponentId": "29",
+        "gameTime": "2026-10-30T02:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909895",
+        "playerId": "4683021",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506048",
+        "line": 22.5,
+        "overPrice": -132,
+        "underPrice": 100,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 24,
+      "push": false,
+      "baseline": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.5323383084577115,
+        "brier": 0.21870745773619463,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": true,
+        "over": 0.7313432835820896,
+        "brier": 0.07217643127645355,
+        "side": "OVER",
+        "won": true,
+        "profit": 0.7575757575757576
+      },
+      "bookBrier": 0.21878251821019773
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4701230",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "1",
+        "opponentId": "5",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": true
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4701230",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506117",
+        "line": 21.5,
+        "overPrice": -116,
+        "underPrice": -114,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 17,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.23880597014925373,
+        "brier": 0.05702829137892626,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8771929824561403
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.7263681592039801,
+        "brier": 0.5276107027053786,
+        "side": "OVER",
+        "won": false,
+        "profit": -1
+      },
+      "bookBrier": 0.2520264162887972
+    },
+    {
+      "target": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4432158",
+        "sport": "nba",
+        "season": "2027",
+        "teamId": "5",
+        "opponentId": "1",
+        "gameTime": "2026-10-30T00:00Z",
+        "basketballContext": {
+          "home": false
+        }
+      },
+      "quote": {
+        "market": "points",
+        "gameId": "401909893",
+        "playerId": "4432158",
+        "sport": "nba",
+        "period": "game",
+        "bookmaker": "pinnacle",
+        "quoteId": "pinnacle-1639506105",
+        "line": 17.5,
+        "overPrice": -107,
+        "underPrice": -123,
+        "updatedAt": "2026-10-29T14:09:03.180Z",
+        "capturedAt": "2026-10-29T14:09:54.763Z",
+        "decisionAt": "2026-10-29T14:09:54.763Z",
+        "mainLine": true
+      },
+      "actual": 11,
+      "push": false,
+      "baseline": {
+        "direction": "UNDER",
+        "directionWon": true,
+        "over": 0.22388059701492538,
+        "brier": 0.050122521719759415,
+        "side": "UNDER",
+        "won": true,
+        "profit": 0.8130081300813008
+      },
+      "candidate": {
+        "direction": "OVER",
+        "directionWon": false,
+        "over": 0.5024875621890548,
+        "brier": 0.25249375015469916,
+        "side": null,
+        "won": null,
+        "profit": null
+      },
+      "bookBrier": 0.23404314411287783
+    }
+  ],
+  "requests": [
+    {
+      "id": "401909895",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909895",
+      "retrievedAt": "2026-10-30T17:07:02.324Z",
+      "sha256": "e67033c0473a62bc4fbee11e0067bdd2d4e257ca93132fca1d25f4184af0266c"
+    },
+    {
+      "id": "401909894",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909894",
+      "retrievedAt": "2026-10-30T17:07:02.582Z",
+      "sha256": "68cb3affcb9763a957f2a2f01e4ff9450db15f1c109fb48fc9b5aefbd7b96626"
+    },
+    {
+      "id": "401909893",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909893",
+      "retrievedAt": "2026-10-30T17:07:02.759Z",
+      "sha256": "95f3802e48b75553afb3d9e5e1c62f312e1f659eacca83d11f595e3650e17b20"
+    }
+  ],
+  "validatedForBetting": false,
+  "livePromotion": false,
+  "officialResultsSha256": "7874b136eb1494bdda9f2131651bdeda7b72d7fa3607749deb1e0c9a76556879"
+}
