@@ -10,3 +10,8 @@ for(const sport of ['nba','nfl','cfb','nhl','cbb','soccer','wnba','mlb'])test(sp
 test('late, conflicting, missing and future timestamps never manufacture a full-card projection',()=>{
  for(const r of [{...row,boardCapturedAt:'2026-10-30T21:00Z'},{...row,researchForecast:{...row.researchForecast,calculatedAt:'2026-10-30T13:59Z'}},{...row,researchForecast:{...row.researchForecast,modelSelection:null}},{...row,boardCapturedAt:'2026-10-30T16:00Z'},{...row,recoveredAfterStart:true},{...row,researchForecast:{...row.researchForecast,status:'unavailable'}},{...row,researchForecast:{...row.researchForecast,projection:null}}])assert.equal(recordedCardForecast(r,now),null);
 });
+test('request-start timestamp cannot hide a forecast calculated later in the same pregame capture',()=>{
+ const r={...row,boardCapturedAt:undefined,capturedAt:'2026-10-30T13:59:59.172Z',researchForecast:{...row.researchForecast,calculatedAt:'2026-10-30T14:00Z'}};
+ assert.equal(recordedCardForecast(r,now).projection,12.3);
+ assert.equal(recordedCardForecast({...r,boardCapturedAt:r.capturedAt},now),null,'an explicit incompatible capture is still rejected');
+});
