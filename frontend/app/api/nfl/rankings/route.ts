@@ -1,3 +1,4 @@
+import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
 import {readDurableHistory} from '@/lib/durable-history';
@@ -356,7 +357,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
     const prior=unique.get(key);
     if(!prior||(row.marketBacked===false&&Number(row.modelProjection)>Number(prior.modelProjection))||Number(row.bookmakerCount||0)>Number(prior.bookmakerCount||0)||(Number(row.bookmakerCount||0)===Number(prior.bookmakerCount||0)&&Number(row.giScore||0)>Number(prior.giScore||0))) unique.set(key,row);
   }
-  const rows=[...unique.values()];
+  const rows=await eligibleFootballPregameRows([...unique.values()],'nfl');
   // Rolling slate priority: today's playable slate gets a meaningful boost without excluding
   // elite future-week plays. After today's games are final, the next available game day becomes primary.
   const playableDays=[...new Set(schedule.filter((g:any)=>!g.completed&&g.state!=="post").map((g:any)=>easternDayKey(g.date)).filter(Boolean))].sort();
