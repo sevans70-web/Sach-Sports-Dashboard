@@ -13,9 +13,9 @@ export function updateTopPlayMarket(sport:string,board:any,now=Date.now()){
  const key=sport+'|'+board.market+'|'+day;if((markets.get(key)?.at||0)>now)return;
  markets.set(key,{at:now,rows:board.rows.map((row:any)=>({...row,market:row.market||board.market}))});
 }
-export function topPlayMarketState(sport:string,now=Date.now()){
+export function topPlayMarketState(sport:string,now=Date.now(),locked:any[]=[]){
  const sources=[...markets].filter(([key,v])=>key.startsWith(sport+'|')&&now-v.at<15*60_000);
  const rows=sources.flatMap(([,v])=>v.rows);
- return {slateDay:topPlayDay(rows,now),plays:todayTopPlays(rows,sport,now),marketsChecked:[...new Set(sources.map(([key])=>key.split('|')[1]))],verifiedQuoteCount:rows.filter(r=>verifiedPropQuote(r,now)).length,
+ return {slateDay:topPlayDay(rows,now),plays:todayTopPlays(rows,sport,now,locked),marketsChecked:[...new Set(sources.map(([key])=>key.split('|')[1]))],verifiedQuoteCount:rows.filter(r=>verifiedPropQuote(r,now)).length,
   state:sources.length?'ready':'awaiting_market_capture',updatedAt:sources.length?new Date(Math.max(...sources.map(([,v])=>v.at))).toISOString():null};
 }
