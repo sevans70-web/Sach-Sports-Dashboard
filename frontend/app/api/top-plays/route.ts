@@ -17,7 +17,7 @@ import {DASHBOARD_SPORTS,type DashboardSport} from '@/lib/dashboard-contract';
 import {readDurableHistoryBatch,readDurableHistory} from '@/lib/durable-history';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {updateTopPlayMarket} from '@/lib/top-plays-store';
-import {topPlayMarketState} from '@/lib/top-plays-store';
+import {topPlayMarketState,topPlayMarketRows} from '@/lib/top-plays-store';
 export const dynamic='force-dynamic';
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'';
@@ -54,7 +54,7 @@ export async function GET(req:NextRequest){
  state.plays=distinctFeaturedPlayers(state.plays);
  // Retained originals were already merged. Empty categories have nothing
  // to persist: avoid an optional cloud retry causing a 500 or any empty write.
- if(state.plays.some(card=>card.pick))state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay,Date.now(),work=>after(work));
+ if(state.plays.some(card=>card.pick))state.plays=await saveFeaturedSelections(sport,state.plays,selectionDay,Date.now(),work=>after(work),topPlayMarketRows(sport));
  const presented={...state,plays:state.plays.map(card=>{const reportedOriginal=reportedFeaturedOriginal(sport,selectionDay,card.key);return reportedOriginal?{...card,pick:null,reportedOriginal}:card.pick?{...card,pick:{...card.pick,row:{...card.pick.row,estimatedEv:estimatedEv(card.pick.row)}}}:card;})};
  return NextResponse.json(presented,{headers:{'Cache-Control':'no-store'}});
 }
