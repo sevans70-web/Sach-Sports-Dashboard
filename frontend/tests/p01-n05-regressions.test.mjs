@@ -14,7 +14,7 @@ test('P01 retains strongest five UNDERs without relabeling or mutating rows',asy
 
 test('N05 quarter point expectation never yields impossible negative yards',async()=>{
  const {quarterPoint}=await loadTs(new URL('../lib/quarter-forecast.ts',import.meta.url));
- const model={group:'nfl|q1_receiving_yards',model:{coefficients:[-5],intercept:0}};
+ const model={group:'nfl|q1_receiving_yards',model:{coefficients:[-5,0],means:[0],scales:[1]}};
  const value=quarterPoint(model,[1]);
  assert.ok(Number.isFinite(value)&&value>=0);
 });
