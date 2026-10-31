@@ -12,5 +12,5 @@ export function quarterTargetDisplay(row:any,now=Date.now()){
  if(!binding||binding.market!==row.market||binding.gameId!==String(row.gameId)||binding.playerId!==String(row.playerId)||binding.quoteId!==row.quoteId||binding.sportsbookKey!==row.sportsbookKey||binding.line!==line||binding.overPrice!==row.overPrice||binding.underPrice!==row.underPrice||Date.parse(binding.calculatedAt)!==decision)return null;
  if(!verifiedPropQuote(row,row.boardFrozen?capture:now,row.boardFrozen===true))return null;
  const direction=projection>=line?'REACHES':'BELOW';if(target.direction!==direction)return null;
- return {direction,label:direction==='REACHES'?`${line}+`:`BELOW ${line}`,projection,target:line};
+ return {direction,label:direction==='REACHES'?`OVER ${line-0.5}`:`BELOW ${line-0.5}`,projection,target:line};
 }
