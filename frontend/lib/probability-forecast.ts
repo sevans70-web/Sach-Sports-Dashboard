@@ -239,7 +239,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
     brier:probability!=null&&decided?(probability-Number(r.game.actual>q!.line))**2:null,
     marketBrier:price&&decided?(price.marketOver-Number(r.game.actual>q!.line))**2:null,
     probability,outcome:q&&decided?Number(r.game.actual>q.line):null,profit,candidateSide:price?.candidateSide||null,
-    marketFavoredSide:price?(price.marketOver>=.5?'OVER':'UNDER'):null,
+    marketFavoredSide:price?(Math.abs(price.marketOver-.5)<1e-9?null:price.marketOver>.5?'OVER':'UNDER'):null,
     candidateConfidence:price?.candidateSide?(price.candidateSide==='OVER'?price.over:price.under)/(1-price.push):null,
     push:price!=null&&q?.line===r.game.actual,candidate:price?.candidateSide!=null};
   });
@@ -262,9 +262,10 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   // Market-favored direction is a diagnostic, not an actionable betting strategy.
   const marketDirectionComparison=(()=>{
    const paired=candidates.filter(r=>r.profit!==0&&r.marketFavoredSide!=null);
+   const disagreements=paired.filter(r=>r.marketFavoredSide!==r.candidateSide);
    const candidateHits=paired.filter(r=>r.profit!>0).length;
    const marketHits=paired.filter(r=>r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER')).length;
-   return {paired:paired.length,candidateHits,marketFavoredHits:marketHits,
+   return {paired:paired.length,disagreements:disagreements.length,disagreementCandidateHits:disagreements.filter(r=>r.profit!>0).length,disagreementMarketHits:disagreements.filter(r=>r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER')).length,candidateHits,marketFavoredHits:marketHits,
     candidateHitRate:paired.length?candidateHits/paired.length:null,
     marketFavoredHitRate:paired.length?marketHits/paired.length:null,
     pairedFixtureInterval:clusteredMeanInterval(paired.map(r=>({gameId:r.gameId,value:Number(r.profit!>0)-Number(r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER'))}))),
