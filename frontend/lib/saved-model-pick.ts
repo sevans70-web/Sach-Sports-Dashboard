@@ -15,7 +15,7 @@ export function savedModelPick(row:any,capturedAt=row?.boardCapturedAt){
 
 /** Show the exact saved selection; a pregame card must still have a fresh quote. */
 export function cardModelPick(row:any,now=Date.now()){
- const pick=savedModelPick(row,row?.boardCapturedAt||row?.researchForecast?.modelSelection?.calculatedAt);
+ const pick=savedModelPick(row,String(row?.market||'').startsWith('q1_')&&row?.forecastCapturedAt?row.forecastCapturedAt:row?.boardCapturedAt||row?.researchForecast?.modelSelection?.calculatedAt);
  if(!pick)return null;
  if(row.boardFrozen===true)return pick;
  if(row.frozen||row.lockedAtKickoff||['in','post'].includes(row.gameState)||Date.parse(row.gameTime)<=now||!verifiedPropQuote(row,now))return null;
