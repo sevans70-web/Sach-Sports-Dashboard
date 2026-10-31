@@ -1070,7 +1070,7 @@ function PlayerCard({
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
-          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`O/U ${propLineText(Math.max(0,card.sportsbookLine-0.5))}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
+          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`O/U ${propLineText(Math.max(0,(card.sportsbookLine??0)-0.5))}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
           <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetForecast?(targetForecast.direction==='REACHES'?'OVER':'UNDER'):'—'):['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>{targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
