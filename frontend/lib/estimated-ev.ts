@@ -1,5 +1,6 @@
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {savedModelPick} from '@/lib/saved-model-pick';
+import {quarterTargetDisplay} from '@/lib/quarter-target-display';
 const unavailable=(reason:string)=>({version:1 as const,status:'unavailable' as const,percent:null,reason});
 /** Expected net return per unit stake, including zero-profit pushes. Never use
  * bookmaker-implied chance as an independent forecast or GI as a probability. */
@@ -9,10 +10,12 @@ export function estimatedEv(row:any,now=Date.now()){
  if(f?.status!=='available'||!f.priceComparison)return unavailable('Independent model probability needed');
  const start=Date.parse(row.gameTime||'');
  const capture=String(row?.market||'').startsWith('q1_')&&row.forecastCapturedAt?row.forecastCapturedAt:row.boardCapturedAt||row.featuredSavedAt||f.modelSelection?.calculatedAt;
- const saved=Date.parse(capture||''),decision=Date.parse(f.modelSelection?.calculatedAt||'');
+ const saved=Date.parse(capture||''),decision=Date.parse(f.modelSelection?.calculatedAt||f.modelTargetForecast?.calculatedAt||'');
  if(!Number.isFinite(start)||!Number.isFinite(saved)||!Number.isFinite(decision)||saved>=start||decision>saved||decision>=start||decision>now)return unavailable('Original pregame forecast needed');
  if(!verifiedPropQuote(row,saved,true))return unavailable('Verified pregame sportsbook quote needed');
- const pick=savedModelPick(row,capture);if(!pick)return unavailable('Supported OVER/UNDER selection needed');
+ const milestone=String(row?.market||'').startsWith('q1_')&&row?.lineType==='milestone'&&quarterTargetDisplay(row,now);
+ const pick=milestone?{side:'OVER',line:row.sportsbookLine,price:row.overPrice,calculatedAt:f.modelTargetForecast.calculatedAt}:savedModelPick(row,capture);
+ if(!pick)return unavailable('Supported OVER/UNDER selection needed');
  const comparison=f.priceComparison,over=comparison.overProbability,under=comparison.underProbability,push=comparison.pushProbability;
  if(![over,under,push].every(p=>typeof p==='number'&&Number.isFinite(p)&&p>=0&&p<=1)||Math.abs(over+under+push-1)>1e-6)return unavailable('Complete model probabilities needed');
  const odds=pick.price;if(typeof odds!=='number'||!Number.isFinite(odds)||Math.abs(odds)<100)return unavailable('Verified selection odds needed');
