@@ -1061,10 +1061,10 @@ function PlayerCard({
           {voidNote ? <span className={styles.playerStatusNotice}>Void: {voidNote.text}</span> : null}
         </div>
 
-        {!firstBasket?<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
+        <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>EV</span>
           <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
-        </div>:null}
+        </div>
       </div>
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
