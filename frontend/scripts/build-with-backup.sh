@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-node --test tests/first-td-scoring-order.test.mjs tests/featured-official-result.test.mjs tests/featured-performance-match.test.mjs tests/football-book-quotes.test.mjs tests/football-slate-rankings.test.mjs
+node --test tests/first-td-scoring-order.test.mjs tests/featured-official-result.test.mjs tests/featured-performance-match.test.mjs tests/football-book-quotes.test.mjs tests/football-slate-rankings.test.mjs tests/p01-n05-regressions.test.mjs
 npm run build
 cp -r public .next/standalone/
 cp -r model-runtime .next/standalone/
