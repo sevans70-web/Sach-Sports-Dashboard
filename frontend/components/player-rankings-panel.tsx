@@ -2395,14 +2395,17 @@ export function PlayerRankingsPanel({
   const displayCards = useMemo(() => {
     const ordered=completedRankingsLast(scopedDisplayCards);
     if(!['nba','nhl','nfl','cbb','cfb'].includes(sport))return ordered;
-    // Original frozen boards stay unchanged for grading and S02 retention.
-    if(ordered.some(card=>card.raw?.boardFrozen===true||card.raw?.frozen||card.raw?.lockedAtKickoff))return ordered;
-    return capRankingUnders(ordered,card=>{
+    // Keep historic frozen rows verbatim. Apply the cap to new pregame
+    // candidates even when the board also contains completed games.
+    const frozen=ordered.filter(card=>card.raw?.boardFrozen===true||card.raw?.frozen||card.raw?.lockedAtKickoff);
+    const active=ordered.filter(card=>!frozen.includes(card));
+    const capped=capRankingUnders(active,card=>{
       const selected=cardModelPick(card.raw)?.side;
       if(selected)return selected;
       if(sport==='nfl'||sport==='cfb')return footballForecastDisplay(card.raw).side;
       return card.raw?.researchForecast?.status==='available'?null:card.prediction;
     });
+    return ordered.filter(card=>frozen.includes(card)||capped.includes(card));
   },[scopedDisplayCards,sport]);
 
   const visible = full
