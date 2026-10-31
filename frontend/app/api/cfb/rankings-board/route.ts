@@ -1219,6 +1219,12 @@ async function lockBoard(
         resultStatus:result.recoveredAfterStart&&!row.recoveredAfterStart?row.resultStatus:(result.resultStatus||row.resultStatus)} : row;
     });
 
+  // A provider outage can leave only kickoff-locked cards. Preserve the
+  // complete same-day saved board rather than shrinking it on refresh.
+  if (!fresh.length && previous.length) {
+    return {rows:previous.map(row=>decorateGameState(row,schedule)),lockSource:'Retained CFB saved board'};
+  }
+
   const lockedMap =
     new Map<string, any>();
 
