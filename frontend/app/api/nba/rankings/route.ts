@@ -21,7 +21,7 @@ export async function GET(req:NextRequest){
  if(day&&!Object.values(dates).includes(day))return NextResponse.json({success:false,rows:[],error:'Choose the previous slate, today or tomorrow.'},{status:400});
  const cachedDay=day||dates.today;
  const recent=currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
- if(recent&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
+ if(recent&&!market.startsWith('q1_')&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
   const visible=await attachBasketballAvailability(recent,'nba');
   if(visible.rows.length){after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});return NextResponse.json(scopedNbaBoard(visible,market,cachedDay),{headers:{'Cache-Control':'no-store'}});}
  }
