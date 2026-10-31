@@ -1471,13 +1471,14 @@ async function lockBoard(
 
 async function build(
   market: CfbMarketKey,
-  slate: SlateKey
+  slate: SlateKey,
+  scopedDay?: string
 ): Promise<BoardPayload> {
   const schedule = await getEspnCfbSchedule(true);
   if(!schedule.length)throw new Error('College football schedule is temporarily unavailable');
 
-  const gameDay =
-    targetGameDay(schedule);
+  // Keep the saved board, cache key and response scoped to the same slate day.
+  const gameDay = scopedDay || targetGameDay(schedule);
 
   const blockGames = schedule.filter(game => day(game.date || "") === gameDay && inSlate(game.date,slate));
   const completed = blockGames.length > 0 && blockGames.every(game => game.completed || game.state === "post");
@@ -1599,10 +1600,7 @@ async function getPayload(
   ) {
     if (!running) {
       const work =
-        build(
-          market,
-          slate
-        )
+        build(market, slate, boardDay)
           .then(
             (payload) => {
               cache.set(
@@ -1643,10 +1641,7 @@ async function getPayload(
   }
 
   const work =
-    build(
-      market,
-      slate
-    )
+    build(market, slate, boardDay)
       .then(
         (payload) => {
           cache.set(
