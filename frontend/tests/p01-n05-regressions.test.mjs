@@ -29,3 +29,13 @@ test('N05 NBA Q1 residual probabilities are normalized and never fabricated from
  assert.equal(p.pushProbability,0);
  assert.equal(p.validatedForBetting,false);
 });
+
+test('N05 NBA Q1 integer-result milestone 1+ is equivalent to OVER 0.5, with no fabricated UNDER quote',async()=>{
+ const {quarterResidualProbabilities}=await loadTs(new URL('../lib/quarter-forecast.ts',import.meta.url));
+ const residuals=[...Array(70).fill(-1),...Array(30).fill(0)];
+ const p=quarterResidualProbabilities(residuals,1,0.5);
+ assert.equal(p.overProbability,0.3);
+ assert.equal(p.underProbability,0.7);
+ assert.equal(p.pushProbability,0);
+ assert.equal(quarterResidualProbabilities(residuals,1,1).pushProbability,0.3);
+});
