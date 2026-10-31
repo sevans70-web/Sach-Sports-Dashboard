@@ -1,4 +1,5 @@
-import {cardModelPick} from '@/lib/saved-model-pick';
+import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
+import {estimatedEv} from '@/lib/estimated-ev';
 /** NBA display scope only. Original saved boards are never rewritten. */
 const formatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'});
 export function nbaFixtureDay(value:any){
@@ -20,5 +21,6 @@ export function scopedNbaBoard(payload:any,market:string,day:string){
  const rows=mismatch?[]:nbaSlateRows(payload?.rows||[],market,day);
  return {...payload,market,boardDay:day,rows,dropped:mismatch?[]:nbaSlateRows(payload?.dropped||[],market,day),publicRankingCount:rows.length,
   verifiedQuoteCount:rows.filter((r:any)=>r.quoteVerified===true).length,
-  modelSelectionCount:rows.filter((r:any)=>cardModelPick(r)).length};
+  modelSelectionCount:rows.filter((r:any)=>cardModelPick(r)).length,
+  ...(market.startsWith('q1_')?{q1Diagnostics:{cards:rows.length,quoted:rows.filter((r:any)=>r.quoteVerified===true).length,predictions:rows.filter((r:any)=>cardModelPick(r)||r.researchForecast?.modelTargetForecast).length,projections:rows.filter((r:any)=>cardModelProjection(r)!=null).length,ev:rows.filter((r:any)=>estimatedEv(r).status==='available').length}}:{})};
 }
