@@ -357,7 +357,7 @@ async function writeBoardState(
       state.day
     );
 
-    const temp = `${target}.tmp`;
+    const temp = `${target}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
 
     await fs.writeFile(
       temp,
