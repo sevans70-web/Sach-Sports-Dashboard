@@ -33,7 +33,7 @@ export function fittedQuarterForecast(row:any,sport:string,market:string,data:Bu
  const projection=Math.round(quarterPoint(model,inputs.features)*10)/10;if(!Number.isFinite(projection))return unavailable('invalid_quarter_output');
  const quote=verifiedPropQuote(row,now),line=typeof row.sportsbookLine==='number'&&Number.isFinite(row.sportsbookLine)?row.sportsbookLine:null;
  const side=quote&&row.lineType==='main'&&line!=null?(projection>line?'OVER':projection<line?'UNDER':null):null;
- const probability=quote&&row.lineType==='main'&&line!=null?quarterResidualProbabilities(model.residuals||[],projection,line):null;
+ const probability=quote&&row.lineType==='main'&&line!=null?quarterResidualProbabilities(model.residuals||[],projection,row.lineType==='milestone'?line-0.5:line):null;
  const selection=side?{side,line,price:side==='OVER'?row.overPrice:row.underPrice,sportsbook:row.sportsbook,sportsbookKey:row.sportsbookKey,quoteId:row.quoteId,quoteUpdatedAt:row.quoteUpdatedAt,calculatedAt:at,basis:'fitted_quarter_point_expectation',validatedForBetting:false}:null;
  return {status:'available',projection:Math.round(projection*10)/10,modelId:'direct-quarter-history-ridge-v1',modelGroup:group,calculatedAt:at,trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,
   latestHistoryAt:inputs.latestHistoryAt,historyGames:inputs.historyGames,historyEvidence:inputs.historyEvidence,snapshotAsOf:data.asOf,snapshotSha256:data.digest,inputReceipt:forecastInputReceipt(group,data.digest,at,inputs.features),
