@@ -1,5 +1,5 @@
 import {readFileSync} from 'node:fs';import {join} from 'node:path';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';
-import {quarterFeatureIndex,quarterPoint,type QuarterModel,type QuarterObservation} from '@/lib/quarter-forecast';
+import {quarterFeatureIndex,quarterPoint,quarterResidualProbabilities,type QuarterModel,type QuarterObservation} from '@/lib/quarter-forecast';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {refreshQuarterObservations} from '@/lib/live-quarter-observations';
@@ -33,8 +33,7 @@ export function fittedQuarterForecast(row:any,sport:string,market:string,data:Bu
  const projection=Math.round(quarterPoint(model,inputs.features)*10)/10;if(!Number.isFinite(projection))return unavailable('invalid_quarter_output');
  const quote=verifiedPropQuote(row,now),line=typeof row.sportsbookLine==='number'&&Number.isFinite(row.sportsbookLine)?row.sportsbookLine:null;
  const side=quote&&row.lineType==='main'&&line!=null?(projection>line?'OVER':projection<line?'UNDER':null):null;
- const residuals=Array.isArray(model.residuals)?model.residuals.filter((r:number)=>typeof r==='number'&&Number.isFinite(r)):[];
- const probability=quote&&row.lineType==='main'&&line!=null&&residuals.length>=100?(()=>{const outcomes=residuals.map((r:number)=>projection+r),over=outcomes.filter((x:number)=>x>line).length,under=outcomes.filter((x:number)=>x<line).length,push=outcomes.length-over-under;return {overProbability:over/outcomes.length,underProbability:under/outcomes.length,pushProbability:push/outcomes.length,probabilityBasis:'held_out_quarter_residuals',probabilitySamples:outcomes.length,validatedForBetting:false}})():null;
+ const probability=quote&&row.lineType==='main'&&line!=null?quarterResidualProbabilities(model.residuals||[],projection,line):null;
  const selection=side?{side,line,price:side==='OVER'?row.overPrice:row.underPrice,sportsbook:row.sportsbook,sportsbookKey:row.sportsbookKey,quoteId:row.quoteId,quoteUpdatedAt:row.quoteUpdatedAt,calculatedAt:at,basis:'fitted_quarter_point_expectation',validatedForBetting:false}:null;
  return {status:'available',projection:Math.round(projection*10)/10,modelId:'direct-quarter-history-ridge-v1',modelGroup:group,calculatedAt:at,trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,
   latestHistoryAt:inputs.latestHistoryAt,historyGames:inputs.historyGames,historyEvidence:inputs.historyEvidence,snapshotAsOf:data.asOf,snapshotSha256:data.digest,inputReceipt:forecastInputReceipt(group,data.digest,at,inputs.features),
