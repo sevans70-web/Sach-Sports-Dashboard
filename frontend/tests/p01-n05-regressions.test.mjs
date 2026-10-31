@@ -18,3 +18,14 @@ test('N05 quarter point expectation never yields impossible negative yards',asyn
  const value=quarterPoint(model,[1]);
  assert.ok(Number.isFinite(value)&&value>=0);
 });
+
+test('N05 NBA Q1 residual probabilities are normalized and never fabricated from insufficient data',async()=>{
+ const {quarterResidualProbabilities}=await loadTs(new URL('../lib/quarter-forecast.ts',import.meta.url));
+ assert.equal(quarterResidualProbabilities([1,2],2,2),null);
+ const residuals=[...Array(40).fill(-1),...Array(60).fill(1)];
+ const p=quarterResidualProbabilities(residuals,2,2.5);
+ assert.equal(p.overProbability,0.6);
+ assert.equal(p.underProbability,0.4);
+ assert.equal(p.pushProbability,0);
+ assert.equal(p.validatedForBetting,false);
+});
