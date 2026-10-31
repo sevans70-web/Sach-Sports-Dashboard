@@ -59,7 +59,7 @@ export function modelPickNotice(row:any){
 export function capRankingUnders<T>(rows:T[],side:(row:T)=>string|null|undefined,maximum=5):T[]{
  let under=0;
  return rows.filter(row=>{
-  if(String(side(row)||'').toUpperCase()!=='UNDER')return true;
+  if(!/^UNDER(?:\b|\s|$)/i.test(String(side(row)||'').trim()))return true;
   if(under>=maximum)return false;
   under++;
   return true;
