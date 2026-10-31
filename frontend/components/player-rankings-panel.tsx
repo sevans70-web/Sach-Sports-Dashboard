@@ -1063,7 +1063,7 @@ function PlayerCard({
 
         <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>EV</span>
-          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
+          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"&&quarterCard?<small title={evNotice}>EV unavailable · {evNotice}</small>:null}
         </div>
       </div>
 
