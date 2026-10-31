@@ -1614,6 +1614,11 @@ async function getPayload(
               return payload;
             }
           )
+          .catch((error) => {
+            console.error('[CFB stale board refresh failed]',market,slate,boardDay,error);
+            // A failed background refresh must not invalidate the saved board.
+            return cached.payload;
+          })
           .finally(
             () =>
               inflight.delete(key)
