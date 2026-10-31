@@ -1070,8 +1070,8 @@ function PlayerCard({
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
-          <div><span>{quarterTarget?`${card.marketLabel} · Milestone` : card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`OVER ${propLineText(Math.max(0,card.sportsbookLine-0.5))} · milestone only`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
-          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?targetForecast?.label||'—':['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>{targetForecast?'Model target forecast':'Milestone quote · forecast unavailable'}</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
+          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`O/U ${propLineText(Math.max(0,card.sportsbookLine-0.5))}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
+          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetForecast?(targetForecast.direction==='REACHES'?'OVER':'UNDER'):'—'):['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>{targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
@@ -1140,7 +1140,7 @@ function PlayerCard({
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
-            ? `${card.raw.sportsbook} · ${quarterTarget?`Q1 OVER ${propLineText(Math.max(0,card.sportsbookLine-0.5))} · milestone · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice}`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
+            ? `${card.raw.sportsbook} · ${quarterTarget?`Q1 OVER ${propLineText(Math.max(0,card.sportsbookLine-0.5))} · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice} · Under odds unavailable`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
             : "Original sportsbook details could not be confirmed. Saved for history, not a verified pick."}</p>
           {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
@@ -1205,7 +1205,7 @@ function PlayerCard({
 
       {open ? (
         <div className={styles.intelligence}>
-          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):predictionProbabilityText(card.raw)}</strong><small>{quarterTarget?'Milestone · not a two-way O/U':'Saved pregame estimate'}</small></div>:null}
+          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied OVER chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):predictionProbabilityText(card.raw)}</strong><small>{quarterTarget?'Only OVER odds supplied':'Saved pregame estimate'}</small></div>:null}
           <div className={`${styles.expandedHeader} ${firstBasket?styles.firstBasketExpanded:''}`}>
             {firstBasket?<>
               <div><b>First basket chance</b><span>Book-implied likelihood</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>
