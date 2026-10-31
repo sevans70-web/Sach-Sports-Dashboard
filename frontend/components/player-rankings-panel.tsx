@@ -130,12 +130,6 @@ const NFL_OFFENSE: Market[] = [
   { key: "rushing_receiving_yards", label: "Rush + Receiving", icon: "🔀" },
 ];
 
-const NFL_Q1: Market[] = [
-  { key: "q1_passing_yards", label: "Q1 Passing Yards", icon: "⏱️" },
-  { key: "q1_receiving_yards", label: "Q1 Receiving Yards", icon: "⏱️" },
-  { key: "q1_rushing_yards", label: "Q1 Rushing Yards", icon: "⏱️" },
-];
-
 const CFB_QB: Market[] = [
   { key: "passing_yards", label: "Passing Yards", icon: "🏈" },
   { key: "pass_completions", label: "Pass Completions", icon: "✅" },
@@ -193,7 +187,6 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
       { key: "QB", label: "QB", icon: "🏈", markets: NFL_QB },
       { key: "Offense", label: "Offense", icon: "🏃", markets: NFL_OFFENSE },
       { key: "Defense", label: "Defense", icon: "🛡️", markets: [{key:"sacks",label:"Sacks",icon:"🛡️"},{key:"tackles",label:"Solo Tackles",icon:"🛡️"},{key:"tackles_assists",label:"Tackles + Assists",icon:"🛡️"}] },
-      { key: "Q1", label: "Q1", icon: "⏱️", markets: NFL_Q1 },
     ],
   },
   cfb: {
