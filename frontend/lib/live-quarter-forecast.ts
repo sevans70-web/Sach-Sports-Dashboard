@@ -43,7 +43,7 @@ export function fittedQuarterForecast(row:any,sport:string,market:string,data:Bu
 export async function attachQuarterForecasts(payload:any,sport:'nba'|'nfl',now=Date.now()){
  let data:Bundle;try{data=quarterRuntimeBundle()}catch{return {...payload,rows:payload.rows.map((r:any)=>(r.frozen||r.boardFrozen||r.lockedAtKickoff||['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=now)?r:({...r,researchForecast:unavailable('quarter_snapshot_unavailable')}))}}
  data={...data,observations:data.observations.filter(g=>g.sport===sport&&g.market===(payload.market||payload.rows[0]?.market))};
- const refresh=await refreshQuarterObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),sport,now),blocked=new Set(refresh.unavailablePlayers);
+ const refresh=await refreshQuarterObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),sport,now);
  const key=(g:QuarterObservation)=>[g.sport,g.market,g.gameId,g.playerId].join('|'),merged=new Map(data.observations.map(g=>[key(g),g]));for(const g of refresh.observations)if(g.market===(payload.market||payload.rows[0]?.market))merged.set(key(g),g);
  data={...data,observations:[...merged.values()]};const index=quarterFeatureIndex(data.observations),rows=payload.rows.map((r:any)=>(r.frozen||r.boardFrozen||r.lockedAtKickoff||['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=now)?r:({...r,researchForecast:fittedQuarterForecast(r,sport,payload.market||r.market,data,now,index),forecastCapturedAt:new Date(now).toISOString()}));
  return {...payload,rows,fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast.status==='available').length,modelSelectionCount:rows.filter((r:any)=>r.researchForecast.modelSelection).length};
