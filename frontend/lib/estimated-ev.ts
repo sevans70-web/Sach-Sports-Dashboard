@@ -8,7 +8,7 @@ export function estimatedEv(row:any,now=Date.now()){
  if(f?.giReason==='price_validation_failed'||f?.selectionReason==='price_validation_failed')return unavailable('Probability accuracy checks not met');
  if(f?.status!=='available'||!f.priceComparison)return unavailable('Independent model probability needed');
  const start=Date.parse(row.gameTime||'');
- const capture=row.boardCapturedAt||row.featuredSavedAt||f.modelSelection?.calculatedAt;
+ const capture=String(row?.market||'').startsWith('q1_')&&row.forecastCapturedAt?row.forecastCapturedAt:row.boardCapturedAt||row.featuredSavedAt||f.modelSelection?.calculatedAt;
  const saved=Date.parse(capture||''),decision=Date.parse(f.modelSelection?.calculatedAt||'');
  if(!Number.isFinite(start)||!Number.isFinite(saved)||!Number.isFinite(decision)||saved>=start||decision>saved||decision>=start||decision>now)return unavailable('Original pregame forecast needed');
  if(!verifiedPropQuote(row,saved,true))return unavailable('Verified pregame sportsbook quote needed');
