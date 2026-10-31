@@ -292,7 +292,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    meanIntervalWidth:results.length?mean(results.map(r=>r.width)):null,exactQuoteSamples:results.filter(r=>!r.quoteIssue).length,
    brier:metric('brier'),marketBrier:metric('marketBrier'),candidateBets:results.filter(r=>r.candidate).length,
    pairedBrierImprovement:clusteredMeanInterval(results.filter(r=>r.brier!=null&&r.marketBrier!=null).map(r=>({gameId:r.gameId,value:r.marketBrier!-r.brier!}))),
-   candidateDirections,directionalCalibration,marketDirectionComparison,candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
+   candidateDirections,directionalCalibration,marketDirectionComparison,confidence80Policy:{eligible:candidates.length,selected:confidence80.length,distinctFixtures:new Set(confidence80.map(r=>r.gameId)).size,wins:confidence80.filter(r=>r.profit!>0).length,losses:confidence80.filter(r=>r.profit!<0).length,pushes:confidence80.filter(r=>r.profit===0).length,roi:confidence80.length?mean(confidence80.map(r=>r.profit!)):null},candidateSettled:results.filter(r=>r.profit!=null).length,candidatePushes:results.filter(r=>r.candidate&&r.push).length,
    candidateRoi:metric('profit'),candidateRoiInterval:clusteredMeanInterval(results.filter(r=>r.profit!=null).map(r=>({gameId:r.gameId,value:r.profit!}))),quoteRejections,calibrationBins:bins});
  }
  const quarter=groups.some(g=>g.split('|')[1].startsWith('q1_'));
