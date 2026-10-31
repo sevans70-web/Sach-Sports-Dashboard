@@ -343,8 +343,6 @@ async function writeBoardState(
     state.day
   );
 
-  runtimeState.set(key, state);
-
   try {
     await fs.mkdir(
       BOARD_DIR,
@@ -366,6 +364,7 @@ async function writeBoardState(
     );
 
     await fs.rename(temp, target);
+    runtimeState.set(key, state);
 
     return true;
   } catch {
