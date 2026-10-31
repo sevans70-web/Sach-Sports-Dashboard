@@ -213,7 +213,7 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         icon: "🏀",
         markets: [...BASKETBALL,{key:"first_basket",label:"First Basket",icon:"1️⃣"}],
       },
-      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists","threes_made","pts_rebs_asts"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
+      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists","threes_made"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
     ],
   },
   wnba: {
