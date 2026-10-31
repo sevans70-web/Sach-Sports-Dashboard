@@ -273,6 +273,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
     disagreementFixtures:new Set(disagreements.map(r=>r.gameId)).size,
     disagreementPairedInterval:clusteredMeanInterval(disagreements.map(r=>({gameId:r.gameId,value:Number(r.profit!>0)-Number(r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER'))})))};
   })();
+  const confidence80=candidates.filter(r=>r.candidateConfidence!=null&&r.candidateConfidence>=.8);
   const quoteRejections:Record<string,number>={};for(const r of results)if(r.quoteIssue)quoteRejections[r.quoteIssue]=(quoteRejections[r.quoteIssue]||0)+1;
   const bins=Array.from({length:10},(_,i)=>{
    const items=results.filter(r=>r.probability!=null&&r.outcome!=null&&Math.min(9,Math.floor(r.probability*10))===i);
