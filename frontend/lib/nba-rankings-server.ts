@@ -441,7 +441,7 @@ async function buildNbaMarketRankingsRaw(
    const currentRosters=await Promise.all(futureGames.map((game:any)=>loadNbaGameRosters(String(game.gameId)).catch(()=>[])));
    const players=currentRosters.flatMap(rosters=>rosters.flatMap((roster:any)=>roster.players.filter((p:any)=>p.active!==false).map((player:any)=>({...player,team:roster.teamAbbr,teamId:roster.teamId,teamLogo:roster.teamLogo}))));
    const rows=market==='first_basket'?nativeFirstBasketRows(native.payload,native.readAt,{...overview,players}):nativeNbaQuarterRows(native.payload,native.readAt,{...overview,players},market);
-   if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:market==='first_basket'?'Current FanDuel first-basket prices':'Current FanDuel first-quarter prices',warning:market==='first_basket'?'Probabilities are sportsbook-implied, not an independent first-basket model.':'Authentic first-quarter quotes; quarter forecast unavailable.'};
+   if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:market==='first_basket'?'Current FanDuel first-basket prices':'Current FanDuel first-quarter prices',warning:market==='first_basket'?'Probabilities are sportsbook-implied, not an independent first-basket model.':'Authentic first-quarter quotes; quarter model will evaluate eligible players.'};
   }catch{}
 
   let payload:any=shared?.payload??{data:[]};
