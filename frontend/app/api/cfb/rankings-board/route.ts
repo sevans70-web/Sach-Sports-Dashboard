@@ -1440,6 +1440,8 @@ async function lockBoard(
         }
       );
 
+  if (!rows.length && previous.length) return {rows:previous,lockSource:'Retained CFB saved board'};
+
   const lockedRecord =
     Object.fromEntries(
       [...lockedMap.entries()]
