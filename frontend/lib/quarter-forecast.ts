@@ -27,4 +27,4 @@ export function fitQuarterModel(group:string,rows:{features:number[];actual:numb
  const point=(x:number[])=>{const n=predictLinear(model,x);return minimum==null?n:Math.max(minimum,n)};
  return {version:1,group,model,trainingRows:rows.length,calibrationRows:calibration.length,trainedThrough:rows.at(-1)!.gameTime,calibratedThrough:calibration.at(-1)!.gameTime,residuals:calibration.map(r=>r.actual-point(r.features)),validatedForBetting:false};
 }
-export function quarterPoint(model:QuarterModel,features:number[]){const value=predictLinear(model.model,features);return model.group.startsWith('nba|')?Math.max(0,value):value}
+export function quarterPoint(model:QuarterModel,features:number[]){const value=predictLinear(model.model,features);return Math.max(0,value)}
