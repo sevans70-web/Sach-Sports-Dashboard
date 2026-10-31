@@ -51,3 +51,17 @@ export function modelPickNotice(row:any){
  if(reason==='market_model_not_fitted')return ['anytime_td','first_td','q1_anytime_td'].includes(row?.market)?'Scorer forecast not available yet':'Forecast not available yet';
  return 'Not enough evidence for a pick';
 }
+
+/** Presentation-only direction cap for new rankings. Never rewrite saved picks.
+ * Inputs are already ordered by their supported ranking score; the first five
+ * UNDER selections are therefore the strongest eligible UNDERs in that board.
+ * Extra OVER rows must come from actual upstream candidates, never relabelling. */
+export function capRankingUnders<T>(rows:T[],side:(row:T)=>string|null|undefined,maximum=5):T[]{
+ let under=0;
+ return rows.filter(row=>{
+  if(String(side(row)||'').toUpperCase()!=='UNDER')return true;
+  if(under>=maximum)return false;
+  under++;
+  return true;
+ });
+}
