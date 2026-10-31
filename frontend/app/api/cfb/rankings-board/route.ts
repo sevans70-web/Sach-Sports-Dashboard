@@ -1603,6 +1603,8 @@ async function getPayload(
         build(market, slate, boardDay)
           .then(
             (payload) => {
+              // An empty provider refresh must not erase a populated saved slate.
+              if (!payload.rows.length && cached.payload.rows.length) return {...cached.payload,cached:true,stale:true};
               cache.set(
                 key,
                 {
