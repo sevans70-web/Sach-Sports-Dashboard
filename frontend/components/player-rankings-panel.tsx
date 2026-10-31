@@ -1183,7 +1183,7 @@ function PlayerCard({
 
       {state === "final" ? (
         <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.market==='first_td'?'First TD scoring order unverified':card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
+          <strong>{q1MilestoneFinal ? statusSymbol(result) : researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.market==='first_td'?'First TD scoring order unverified':card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
           <span>
             {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
             {!footballScorer && !unverifiedFootballResult && card.sportsbookLine != null && current != null
