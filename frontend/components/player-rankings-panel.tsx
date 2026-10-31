@@ -951,8 +951,9 @@ function PlayerCard({
   const researchOnly = card.raw?.researchOnly === true;
   const unverifiedFootballResult = researchOnly || card.market==="first_td"&&card.raw?.firstTouchdownVerified!==true || (sport === "cfb" || sport === "nfl") && (card.raw?.quoteVersion !== 1 || card.raw?.recoveredAfterStart === true);
 
+  const q1MilestoneFinal=state==='final'&&sport==='nba'&&card.market.startsWith('q1_')&&card.raw?.lineType==='milestone'&&card.raw?.quarterObservationChecked===true&&current!=null&&Number.isFinite(card.sportsbookLine)&&card.sportsbookLine!>0;
   const result =
-    card.resultStatus ||
+    q1MilestoneFinal ? (current!>=card.sportsbookLine!?'hit':'miss') : card.resultStatus ||
     (
       state === "final" &&
       current != null &&
@@ -1139,7 +1140,7 @@ function PlayerCard({
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
-            ? `${card.raw.sportsbook} · ${quarterTarget?`Q1 milestone · ${propLineText(card.sportsbookLine)}+ · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice}`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
+            ? `${card.raw.sportsbook} · ${quarterTarget?`Q1 OVER ${propLineText(Math.max(0,card.sportsbookLine-0.5))} · milestone · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice}`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
             : "Original sportsbook details could not be confirmed. Saved for history, not a verified pick."}</p>
           {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
@@ -1186,7 +1187,7 @@ function PlayerCard({
           <span>
             {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
             {!footballScorer && !unverifiedFootballResult && card.sportsbookLine != null && current != null
-              ? ` · ${current - card.sportsbookLine >= 0 ? "+" : ""}${shortNumber(current - card.sportsbookLine)} vs line`
+              ? ` · ${current - (quarterTarget?card.sportsbookLine-0.5:card.sportsbookLine) >= 0 ? "+" : ""}${shortNumber(current - (quarterTarget?card.sportsbookLine-0.5:card.sportsbookLine))} vs line`
               : ""}
           </span>
         </div>
