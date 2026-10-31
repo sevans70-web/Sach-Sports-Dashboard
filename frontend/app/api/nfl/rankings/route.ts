@@ -94,7 +94,7 @@ async function fetchOwlsRows(market:NflMarketKey){
  if(!primary&&!extra?.data?.length)throw Error('NFL book feeds are unavailable');
  const quotes=footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now(),market.startsWith('q1_'));
   if(market==='anytime_td'||market==='first_td')console.info('[N04 quote audit]',JSON.stringify({market,quotes:quotes.length,events:new Set(quotes.map(r=>r.eventId)).size,verifiedSourceFields:quotes.filter(r=>r.quoteVersion===1&&r.lineType==='scorer'&&r.sportsbookKey&&r.quoteUpdatedAt).length}));
-  if(market.startsWith('q1_'))console.info('[N05 quarter quote audit]',JSON.stringify({sport:'nfl',market,quotes:quotes.length,events:new Set(quotes.map(q=>q.eventId)).size,validPeriod:quotes.filter(q=>q.quoteVersion===1&&q.quoteUpdatedAt&&q.sportsbookKey).length}));
+  if(market.startsWith('q1_'))console.info('[N05 quarter quote audit]',JSON.stringify({sport:'nfl',market,quotes:quotes.length,events:new Set(quotes.map(q=>q.eventId)).size,validPeriod:quotes.filter(q=>q.quoteVersion===1&&q.quoteUpdatedAt&&q.sportsbookKey).length,owlStatus:owls.status,sgoStatus:sgo.status,owlEvents:primary?.data?.length||0,sgoEvents:extra?.data?.length||0,sgoWarning:extra?.warning||null,rawQ1Props:[...(primary?.data||[]),...sgoBookGames(extra)].flatMap((g:any)=>g.books||[]).flatMap((b:any)=>b.props||[]).filter((p:any)=>/^(1q|q1|1stquarter|firstquarter|1)$/i.test(String(p.periodID||p.periodId||p.period||''))).length}));
   return quotes;
 }
 
