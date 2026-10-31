@@ -266,7 +266,9 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
    const marketHits=paired.filter(r=>r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER')).length;
    return {paired:paired.length,candidateHits,marketFavoredHits:marketHits,
     candidateHitRate:paired.length?candidateHits/paired.length:null,
-    marketFavoredHitRate:paired.length?marketHits/paired.length:null};
+    marketFavoredHitRate:paired.length?marketHits/paired.length:null,
+    pairedFixtureInterval:clusteredMeanInterval(paired.map(r=>({gameId:r.gameId,value:Number(r.profit!>0)-Number(r.marketFavoredSide===(r.outcome===1?'OVER':'UNDER'))}))),
+    distinctFixtures:new Set(paired.map(r=>r.gameId)).size};
   })();
   const quoteRejections:Record<string,number>={};for(const r of results)if(r.quoteIssue)quoteRejections[r.quoteIssue]=(quoteRejections[r.quoteIssue]||0)+1;
   const bins=Array.from({length:10},(_,i)=>{
