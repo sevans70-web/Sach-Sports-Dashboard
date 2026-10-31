@@ -28,3 +28,13 @@ export function fitQuarterModel(group:string,rows:{features:number[];actual:numb
  return {version:1,group,model,trainingRows:rows.length,calibrationRows:calibration.length,trainedThrough:rows.at(-1)!.gameTime,calibratedThrough:calibration.at(-1)!.gameTime,residuals:calibration.map(r=>r.actual-point(r.features)),validatedForBetting:false};
 }
 export function quarterPoint(model:QuarterModel,features:number[]){const value=predictLinear(model.model,features);return Math.max(0,value)}
+
+/** Research-only probability distribution from held-out first-quarter residuals. */
+export function quarterResidualProbabilities(residuals:number[],projection:number,line:number){
+ const valid=residuals.filter(x=>Number.isFinite(x));
+ if(valid.length<100||!Number.isFinite(projection)||!Number.isFinite(line))return null;
+ const over=valid.filter(r=>projection+r>line).length;
+ const under=valid.filter(r=>projection+r<line).length;
+ const push=valid.length-over-under;
+ return {overProbability:over/valid.length,underProbability:under/valid.length,pushProbability:push/valid.length,probabilityBasis:'held_out_quarter_residuals',probabilitySamples:valid.length,validatedForBetting:false};
+}
