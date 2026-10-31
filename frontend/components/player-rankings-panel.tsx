@@ -20,7 +20,7 @@ import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingStatusText,completedRankingsLast,rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
-import {cardModelPick,cardModelProjection,modelPickNotice} from '@/lib/saved-model-pick';
+import {cardModelPick,cardModelProjection,modelPickNotice,capRankingUnders} from '@/lib/saved-model-pick';
 import {cardProjectionLabel,cardQuotePrices,firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
@@ -2392,7 +2392,18 @@ export function PlayerRankingsPanel({
       });
   }, [sport, market.key, cfbSlate, nflSlate, cards, cfbLiveGames, sharedStatusGames]);
 
-  const displayCards = useMemo(()=>completedRankingsLast(scopedDisplayCards),[scopedDisplayCards]);
+  const displayCards = useMemo(() => {
+    const ordered=completedRankingsLast(scopedDisplayCards);
+    if(!['nba','nhl','nfl','cbb','cfb'].includes(sport))return ordered;
+    // Original frozen boards stay unchanged for grading and S02 retention.
+    if(ordered.some(card=>card.raw?.boardFrozen===true||card.raw?.frozen||card.raw?.lockedAtKickoff))return ordered;
+    return capRankingUnders(ordered,card=>{
+      const selected=cardModelPick(card.raw)?.side;
+      if(selected)return selected;
+      if(sport==='nfl'||sport==='cfb')return footballForecastDisplay(card.raw).side;
+      return card.raw?.researchForecast?.status==='available'?null:card.prediction;
+    });
+  },[scopedDisplayCards,sport]);
 
   const visible = full
     ? displayCards
