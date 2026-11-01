@@ -13,7 +13,7 @@ export function selectNbaCandidates(rows:any[],market:string,now=Date.now()){
  });
  // Apply the UNDER cap before Top 25 truncation, separately for each market.
  // Do not rewrite, relabel, or delete original saved predictions.
- const selected=(eligible.some((row:any)=>row.boardFrozen===true||row.frozen===true||row.lockedAtKickoff===true)?eligible:capRankingUnders(eligible,(row:any)=>{
+ const selected=(eligible.some((row:any)=>row.boardFrozen===true||row.frozen===true||row.lockedAtKickoff===true||Boolean(row.boardCapturedAt))?eligible:capRankingUnders(eligible,(row:any)=>{
   const pick=cardModelPick(row,now);
   if(pick)return pick.side;
   const target=quarterTargetDisplay(row,now);
