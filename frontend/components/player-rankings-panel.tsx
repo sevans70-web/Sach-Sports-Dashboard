@@ -937,7 +937,7 @@ function PlayerCard({
     state === "live"
       ? card.liveCurrent
       : state === "final"
-        ? card.actual
+        ? (sport==='nba'&&card.market.startsWith('q1_')&&card.raw?.quarterObservationChecked===true&&Number.isFinite(Number(card.raw?.observedQuarterValue))&&card.raw?.observedQuarterValue!=null?Number(card.raw.observedQuarterValue):card.actual)
         : null;
 
   const progressLine=cardProgressLine(card.raw,card.sportsbookLine,card.market);
