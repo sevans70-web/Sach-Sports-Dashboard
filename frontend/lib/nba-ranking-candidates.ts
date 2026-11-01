@@ -1,14 +1,25 @@
+import {cardModelPick,capRankingUnders} from '@/lib/saved-model-pick';
+import {quarterTargetDisplay} from '@/lib/quarter-target-display';
 import {publicNbaRanking} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 
 /** Apply eligibility to the entire slate before imposing the public limit. */
 export function selectNbaCandidates(rows:any[],market:string,now=Date.now()){
  const seen=new Set<string>();
- const selected=rows.filter(row=>{
+ const eligible=rows.filter(row=>{
   const key=String(row.gameId)+'|'+String(row.playerId);
   if(seen.has(key)||excludeUnavailableRanking(row)||!publicNbaRanking({...row,market:row.market||market},now))return false;
   seen.add(key);return true;
- }).slice(0,25);
+ });
+ // Apply the UNDER cap before Top 25 truncation, separately for each market.
+ // Do not rewrite, relabel, or delete original saved predictions.
+ const selected=capRankingUnders(eligible,(row:any)=>{
+  const pick=cardModelPick(row,now);
+  if(pick)return pick.side;
+  const target=quarterTargetDisplay(row,now);
+  if(target)return target.direction==='BELOW'?'UNDER':'OVER';
+  return row?.researchForecast?.modelSelection?.side||row?.prediction||null;
+ },5).slice(0,25);
  const occupied=new Set(selected.filter(r=>!r.recoveredRecordedCandidate).map(r=>r.rank));
  const ranked=selected.map(row=>{
   if(!row.recoveredRecordedCandidate)return row;
