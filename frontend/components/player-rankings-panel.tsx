@@ -992,7 +992,7 @@ function PlayerCard({
   const footballForecast=footballForecastDisplay(card.raw);
   const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?'Direction unavailable':card.prediction)));
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
-  const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??footballForecast?.projection??(researchOnly?cardModelProjection(card.raw):card.modelProjection));
+  const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??(researchOnly?null:card.modelProjection));
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
