@@ -67,3 +67,12 @@ test('equivalent kickoff timestamp formats from two feeds select one exact quote
  const first=game([book('fanduel',[quote({line:250.5})])]);const second=game([book('pinnacle',[quote({line:249.5})])],{commenceTime:'2026-10-17T23:30:00.000Z'});
  const r=footballBookRows({data:[first,second]},'passing_yards',['passing_yards'],now);assert.equal(r.length,1);assert.equal(r[0].sportsbookKey,'pinnacle');assert.equal(r[0].line,249.5);
 });
+
+test('Q01 rejects two distinct official fixture IDs even when matchup and kickoff are identical',()=>{
+ const row={matchup:'Away @ Home',gameTime:'2026-11-03T20:00:00Z'};
+ const fixture={id:'fixture-A',awayTeam:'Away',homeTeam:'Home',date:row.gameTime};
+ assert.equal(footballQuoteGame(row,[fixture])?.id,'fixture-A');
+ assert.equal(footballQuoteGame(row,[fixture,{...fixture,id:'fixture-B'}]),undefined);
+ assert.equal(footballQuoteGame(row,[fixture,{...fixture}])?.id,'fixture-A');
+ assert.equal(footballQuoteGame(row,[{...fixture,id:undefined}]),undefined);
+});
