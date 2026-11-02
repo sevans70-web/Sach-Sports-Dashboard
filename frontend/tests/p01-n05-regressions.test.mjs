@@ -39,3 +39,13 @@ test('N05 NBA Q1 integer-result milestone 1+ is equivalent to OVER 0.5, with no 
  assert.equal(p.pushProbability,0);
  assert.equal(quarterResidualProbabilities(residuals,1,1).pushProbability,0.3);
 });
+
+test('N05 genuine model projections remain available for all five active sports without substituting averages',async()=>{
+ const {cardModelProjection}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
+ for(const sport of ['nba','nfl','nhl','cbb','cfb']){
+  const row={sport,boardFrozen:true,gameState:'post',historicalAverage:11.2,researchForecast:{status:'available',projection:7.4}};
+  assert.equal(cardModelProjection(row),7.4,sport);
+  assert.equal(cardModelProjection({...row,researchForecast:{status:'unavailable',projection:7.4}}),null,sport);
+  assert.equal(cardModelProjection({...row,researchForecast:{status:'available',projection:NaN}}),null,sport);
+ }
+});
