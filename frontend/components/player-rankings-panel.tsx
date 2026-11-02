@@ -1117,7 +1117,7 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : cardProjectionLabel(card.raw)}
+              : "Sach Projection"}
           </span>
           <strong>
             {binaryEvent
@@ -1224,7 +1224,7 @@ function PlayerCard({
                   ? "HR Probability"
                   : cardProjectionLabel(card.raw)}
               </b>
-              <span>{displayedAverage==null?'Unavailable':cardProjectionLabel(card.raw)==='Historical Baseline'?'Past-game baseline':'Model estimate'}</span>
+              <span>{displayedAverage==null?'Unavailable':'Model projection'}</span>
               <strong>
                 {binaryEvent
                   ? card.modelProbability == null
@@ -1234,7 +1234,7 @@ function PlayerCard({
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? cardProjectionLabel(card.raw)==='Historical Baseline'?"Baseline vs line":"Projection vs line" : "Actual"}</b>
+              <b>{state === "pregame" ? "Projection vs line" : "Actual"}</b>
               <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"
