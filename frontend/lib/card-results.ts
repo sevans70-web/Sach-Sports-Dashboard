@@ -26,7 +26,7 @@ export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
  const value=num(actual),threshold=num(line);
  // First TD requires the verified game's first touchdown scorer, not total player touchdowns.
  if(market==='first_td')return row?.firstTouchdownVerified===true&&[0,1].includes(num(actual) as number)?{label:num(actual)===1?'FIRST TD SCORED':'DID NOT SCORE FIRST',detail:'Official ordered touchdown scorer verified; this is an observed result, not a validated Sach wager.'}:{label:'FIRST TD RESULT UNVERIFIED',detail:'Official first-touchdown scoring order is not verified; touchdown totals cannot determine this result.'};
- if(value==null)return {label:'FINAL · STAT UNAVAILABLE',detail:'Official final statistic has not been reported.'};
+ if(value==null)return {label:'NOT GRADED · STAT UNAVAILABLE',detail:'Official final statistic has not been reported.'};
  if(row.lineType==='milestone'&&market.startsWith('q1_')&&threshold!=null)return {label:value>=threshold?'Q1 TARGET REACHED':'Q1 TARGET MISSED',detail:`Official Q1 ${value} ${cardStatUnit(market)} · target ${threshold}+ · bookmaker milestone`};
  if(market==='first_basket')return {label:value===1?'FIRST BASKET SCORED':'DID NOT SCORE FIRST',detail:'Official first-score result · displayed percentage was bookmaker-implied.'};
  const pick=row.boardFrozen===true?savedModelPick(row):null;
@@ -34,9 +34,9 @@ export function researchFinalOutcome(row:any,actual:any,line:any,market:string){
   const push=value===pick.line,hit=pick.side==='UNDER'?value<pick.line:value>pick.line;
   return {label:push?'PUSH':hit?'✅ SACH PICK WON':'❌ SACH PICK LOST',detail:`Final ${value} ${cardStatUnit(market)} · saved ${pick.side} ${pick.line} · ${pick.sportsbook}`};
  }
- if(row.boardFrozen===true){const forecast=footballForecastDisplay(row);const outcome=footballForecastOutcome(forecast.side,value,threshold);if(outcome)return {label:`FORECAST ${outcome}`,detail:`Final ${value} ${cardStatUnit(market)} · original ${forecast.basis?.toLowerCase()} ${forecast.side} ${threshold} · model validation pending`};}
- if(row.boardFrozen===true)return {label:'FINAL · ACTUAL RECORDED',detail:`Final ${value} ${cardStatUnit(market)} · no pregame Sach pick saved.`};
- if(row.quoteVerified!==true||threshold==null)return {label:'FINAL · ACTUAL RECORDED',detail:`Actual ${value} · verified line unavailable; no pick grade.`};
+ if(row.boardFrozen===true){const forecast=footballForecastDisplay(row);const outcome=footballForecastOutcome(forecast.side,value,threshold);if(outcome)return {label:`FORECAST ${outcome} · NOT A SAVED PICK`,detail:`Final ${value} ${cardStatUnit(market)} · original ${forecast.basis?.toLowerCase()} ${forecast.side} ${threshold} · model validation pending`};}
+ if(row.boardFrozen===true)return {label:'NOT GRADED · NO VERIFIED PICK',detail:`Final ${value} ${cardStatUnit(market)} · no pregame Sach pick saved.`};
+ if(row.quoteVerified!==true||threshold==null)return {label:'NOT GRADED · NO VERIFIED PICK',detail:`Actual ${value} · verified line unavailable; no pick grade.`};
  const scorer=market==='anytime_td',side=String(row.originalResearchPick||row.archivedOriginal?.prediction||'').toUpperCase();
  const saved=Date.parse(row.originalResearchSavedAt||row.savedAt||''),kickoff=Date.parse(row.gameTime||'');
  const frozen=row.frozen===true||row.lockedAtKickoff===true;
