@@ -118,6 +118,9 @@ function settle(p:SavedNbaPrediction,a:number){
 }
 
 export async function GET(req:NextRequest){
+ try{return await performanceResponse(req)}catch(error){console.error('[nba-performance] request failed',{period:req.nextUrl.searchParams.get('period')||'Today',market:req.nextUrl.searchParams.get('market'),reason:error instanceof Error?error.message:String(error)});return NextResponse.json({success:false,error:'Performance history temporarily unavailable'},{status:503,headers:{'Cache-Control':'no-store'}})}
+}
+async function performanceResponse(req:NextRequest){
   const marketParam=req.nextUrl.searchParams.get("market") as NbaMarketKey|null;
   const period=req.nextUrl.searchParams.get("period")||"Today";
   if(marketParam&&!allowed.has(marketParam))return performanceJson({connected:false,hits:0,settled:0,pending:0,total:0,hitRate:null,results:[]});
