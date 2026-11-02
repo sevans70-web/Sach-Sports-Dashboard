@@ -990,7 +990,7 @@ function PlayerCard({
   const milestoneChance=quarterTarget&&Number.isFinite(milestonePrice)&&milestonePrice!==0?(milestonePrice>0?10000/(milestonePrice+100):100*(-milestonePrice)/(-milestonePrice+100)):null;
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
-  const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?'Direction unavailable':card.prediction)));
+  const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction)));
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
