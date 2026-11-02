@@ -22,7 +22,7 @@ import {FEATURED_STREAMS,mergeFeaturedOriginals,readFeaturedOriginals} from '@/l
 export const dynamic='force-dynamic';
 export async function GET(req:NextRequest){
  try{return await featuredResponse(req);}
- catch{return NextResponse.json({success:false,error:'Saved featured selections temporarily unavailable'},{status:503,headers:{'Cache-Control':'no-store'}});}
+ catch(error){console.error('[top-plays] saved featured read failed',{error:error instanceof Error?error.message:String(error)});return NextResponse.json({success:false,error:'Saved featured selections temporarily unavailable'},{status:503,headers:{'Cache-Control':'no-store'}});}
 }
 async function featuredResponse(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'';
