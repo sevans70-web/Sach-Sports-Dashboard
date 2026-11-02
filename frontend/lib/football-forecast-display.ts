@@ -9,14 +9,13 @@ export function footballForecastDisplay(row:any,now=Date.now()){
  const start=Date.parse(row?.gameTime||'');
  const pregameEvidence=Number.isFinite(at)&&at<start&&at<=now;
  const fitted=cardModelProjection(row,now);
- const baseline=typeof row?.modelProjection==='number'&&Number.isFinite(row.modelProjection)&&row?.researchCohort?.games>=3&&!String(row?.market).startsWith('q1_')?row.modelProjection:null;
- const projection=fitted??(pregameEvidence?baseline:null);
+ const projection=fitted;
  const line=typeof row?.sportsbookLine==='number'&&Number.isFinite(row.sportsbookLine)?row.sportsbookLine:null;
  const quote=verifiedPropQuote(row,now,row?.boardFrozen===true);
  const side=saved?.side||(projection!=null&&line!=null&&quote&&pregameEvidence&&row.lineType==='main'?(projection>line?'OVER':projection<line?'UNDER':'AT LINE'):null);
  const evidence=predictionProbability(row,now);
  const probability=evidence&&evidence.side===side?evidence.win:null;
- return {projection,side,basis:fitted!=null?'Model forecast':baseline!=null?'History-based estimate':null,
+ return {projection,side,basis:fitted!=null?'Model forecast':null,
   probability:typeof probability==='number'&&Number.isFinite(probability)?probability*100:null,
   validated:row?.recommendationEligible===true};
 }
