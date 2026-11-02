@@ -21,7 +21,7 @@ import {rankingStatusText,completedRankingsLast,rankingCardState,rankingLineProg
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
 import {cardModelPick,cardModelProjection,modelPickNotice,capRankingUnders} from '@/lib/saved-model-pick';
-import {cardProjectionLabel,cardQuotePrices,firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
+import {cardQuotePrices,firstBasketQuote,publicNbaRanking,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
@@ -1222,7 +1222,7 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : cardProjectionLabel(card.raw)}
+                  : "Sach Projection"}
               </b>
               <span>{displayedAverage==null?'Unavailable':'Model projection'}</span>
               <strong>
