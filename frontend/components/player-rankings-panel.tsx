@@ -1280,12 +1280,9 @@ function PlayerCard({
           ) : (
             <div className={`${styles.predictionBanner} ${styles.finalBanner}`}>
               <div>
-                <span>RESULT:</span>
-                <strong>{statusSymbol(result)}</strong>
+                <span>FINAL:</span>
+                <strong>{q1MilestoneFinal ? (result === 'hit' ? '✅ SACH PICK WON' : '❌ SACH PICK LOST') : /^✅ SACH PICK WON|^❌ SACH PICK LOST/.test(researchOutcome.label) ? researchOutcome.label : '—'}</strong>
               </div>
-              <small>
-                Actual <b>{shortNumber(current)}</b>
-              </small>
             </div>
           )}
 
