@@ -117,7 +117,10 @@ export function footballQuoteGame(row: any, schedule: any[]) {
   const matchup = norm(row.matchup);
   const time = Date.parse(row.gameTime || "");
   if (!matchup || !Number.isFinite(time)) return undefined;
-  return schedule.find(game => norm(`${game.awayTeam} @ ${game.homeTeam}`) === matchup &&
+  const matches = schedule.filter(game => norm(`${game.awayTeam} @ ${game.homeTeam}`) === matchup &&
     Number.isFinite(Date.parse(game.date)) && Math.abs(Date.parse(game.date) - time) <= 5 * 60_000);
+  const ids = new Set(matches.map(game => String(game.id ?? game.gameId ?? game.eventId ?? '')).filter(Boolean));
+  if (matches.length === 0 || ids.size !== 1 || matches.some(game => !String(game.id ?? game.gameId ?? game.eventId ?? ''))) return undefined;
+  return matches[0];
 }
 
