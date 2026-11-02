@@ -1110,7 +1110,7 @@ function PlayerCard({
               : displayedPick||'—'}
           </strong>
           {footballForecast?.side?<small>{footballForecast.basis}</small>:state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
-          {footballForecast?.side&&state==='final'?<small>Forecast result: {footballForecastOutcome(footballForecast.side,current,card.sportsbookLine)||'Awaiting official result'}</small>:null}
+
         </div>
 
 {!binaryEvent?        <div>
@@ -1181,15 +1181,9 @@ function PlayerCard({
         </div>
       ) : null}
 
-      {state === "final" ? (
-        <div className={`${styles.resultStrip} ${unverifiedFootballResult ? styles.unverifiedStrip : result === "miss" ? styles.missStrip : ""}`}>
-          <strong>{q1MilestoneFinal ? statusSymbol(result) : researchOnly ? researchOutcome.label : unverifiedFootballResult ? card.market==='first_td'?'First TD scoring order unverified':card.raw?.recoveredAfterStart ? "Result recorded after game started" : "Sportsbook line not confirmed" : statusSymbol(result)}</strong>
-          <span>
-            {researchOnly?researchOutcome.detail:<>Actual {shortNumber(current)}</>}
-            {!footballScorer && !unverifiedFootballResult && card.sportsbookLine != null && current != null
-              ? ` · ${current - (quarterTarget?card.sportsbookLine-0.5:card.sportsbookLine) >= 0 ? "+" : ""}${shortNumber(current - (quarterTarget?card.sportsbookLine-0.5:card.sportsbookLine))} vs line`
-              : ""}
-          </span>
+      {state === "final" && (q1MilestoneFinal || /^✅ SACH PICK WON|^❌ SACH PICK LOST/.test(researchOutcome.label)) ? (
+        <div className={`${styles.resultStrip} ${(q1MilestoneFinal ? result === 'miss' : researchOutcome.label.startsWith('❌')) ? styles.missStrip : ''}`}>
+          <strong>{q1MilestoneFinal ? (result === 'hit' ? '✅ SACH PICK WON' : '❌ SACH PICK LOST') : researchOutcome.label}</strong>
         </div>
       ) : null}
 
