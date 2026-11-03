@@ -225,11 +225,10 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     if(row.quoteVersion===1&&!profile.id)return null;
     const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
     const probability=cfbPredictionProbability(market,m.projection,row.line,row.prob);
-    const earlyConfidence=row.earlyModel&&m.projection!=null
-      ?Math.round(Math.min(84,58+Math.min(26,m.games*2.6))*10)/10
-      :null;
+    // Without a verified line, the model has no calibrated win probability.
+    // GI can still differentiate sample depth; it must not pretend to be a hit rate.
     const verifiedMarket=Number(row.bookmakerCount||0)>0&&(row.line!=null||row.prob!=null);
-    const rankingProbability=probability??row.prob??earlyConfidence??50;
+    const rankingProbability=probability??(verifiedMarket?row.prob:null)??50;
     return {
       ...footballQuoteFields(row),
       gameId:String(footballQuoteGame(row,schedule)?.id||""),market,
@@ -238,12 +237,12 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
       headshot:profile.headshot,teamLogo:profile.teamLogo,matchup:row.matchup,
       gameTime:rowGameTime(row,schedule)||row.gameTime,
       giScore:cfbGiScore(rankingProbability,row.bookmakerCount||0,m.games),
-      modelProbability:market.startsWith("q1_")?null:probability??earlyConfidence??rankingProbability,sportsbookLine:row.line,
+      modelProbability:probability,sportsbookLine:row.line,
       sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount||0,
       perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,
       seasonTotal:null,gamesPlayed:m.games,season:2026,
       summary:!verifiedMarket
-        ?`Early Sach projection using ${m.games} verified historical game${m.games===1?"":"s"}. Sportsbook player props have not posted yet; no line or odds were invented.`
+        ?`Early Sach projection using ${m.games} verified historical game${m.games===1?"":"s"}. No verified sportsbook line or calibrated pick probability is available. GI reflects historical evidence depth, not betting hit probability.`
         :`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount||0} sportsbook${(row.bookmakerCount||0)===1?"":"s"}.`,
       marketBacked:verifiedMarket,
     };
