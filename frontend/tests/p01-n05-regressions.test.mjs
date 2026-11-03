@@ -49,3 +49,13 @@ test('N05 genuine model projections remain available for all five active sports 
   assert.equal(cardModelProjection({...row,researchForecast:{status:'available',projection:NaN}}),null,sport);
  }
 });
+
+test('L07 early CFB ranking uses evidence depth, not an invented 84% confidence',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const {cfbGiScore}=await loadTs(new URL('../lib/cfb-prediction.ts',import.meta.url));
+ const route=await readFile(new URL('../app/api/cfb/rankings/route.ts',import.meta.url),'utf8');
+ assert.ok(cfbGiScore(50,0,12)>cfbGiScore(50,0,3),'historical sample depth differentiates GI');
+ assert.ok(!route.includes('earlyConfidence='),'no fabricated history-to-confidence mapping');
+ assert.match(route,/modelProbability:probability,sportsbookLine:/);
+ assert.match(route,/GI reflects historical evidence depth, not betting hit probability/);
+});
