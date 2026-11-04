@@ -399,9 +399,7 @@ function sameRosterPlayer(
   const rowId = String(row.playerId || "");
   const playerId = String(player.playerId || "");
 
-  if (rowId && playerId && rowId === playerId) {
-    return true;
-  }
+  if (rowId && playerId) return rowId === playerId;
 
   return clean(row.playerName) === clean(player.playerName);
 }
@@ -419,6 +417,8 @@ function rosterPlayerHref(
   const qs = new URLSearchParams({
     name: player.playerName,
     team: roster.teamName,
+    gameId: game.id,
+    gameTime: game.date,
     matchup: `${game.awayTeam} @ ${game.homeTeam}`,
     position: player.position || "",
     market: researchMarketForPlayer(

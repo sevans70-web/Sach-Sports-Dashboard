@@ -26,3 +26,16 @@ for(const sport of ['nba','nfl','cbb','cfb'])test(sport+' game detail uses offic
  const {response:wrong}=await request(sport,{wrongFixture:true});assert.equal(wrong.status,500);assert.equal(wrong.body.rosters.length,0);
  const {response:unrelated}=await request(sport,{wrongRoster:true});assert.equal(unrelated.body.rosters.length,0);
 });
+
+test('roster player navigation retains the selected fixture and rejects a same-name different player ID',async()=>{
+ const source=ts.createSourceFile('page.tsx',await readFile(new URL('../components/game-slate-page.tsx',import.meta.url),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+ const names=['rosterPlayerHref','researchMarketForPlayer','sameRosterPlayer'];
+ const functions=source.statements.filter(node=>ts.isFunctionDeclaration(node)&&names.includes(node.name?.text)).map(node=>node.getText(source)).join('\n');
+ const script=ts.transpileModule(functions+'\nexport {rosterPlayerHref,sameRosterPlayer};',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
+ const module={exports:{}};vm.runInNewContext(script,{module,exports:module.exports,URLSearchParams,encodeURIComponent,gradeableRankingRow:()=>false,clean:value=>String(value||'').toLowerCase()});
+ for(const sport of ['nba','nfl','nhl','cbb','cfb']){
+  const url=new URL(module.exports.rosterPlayerHref(sport,{playerId:'p',playerName:'Player',position:'QB'},{teamName:'Away'},{id:'exact-game',date:'2026-11-05T01:00Z',awayTeam:'Away',homeTeam:'Home',state:'pre',status:'Scheduled'}),'https://test');
+  assert.equal(url.searchParams.get('gameId'),'exact-game');assert.equal(url.searchParams.get('gameTime'),'2026-11-05T01:00Z');assert.equal(url.searchParams.get('mode'),'profile');
+ }
+ assert.equal(module.exports.sameRosterPlayer({playerId:'other',playerName:'Same Name'},{playerId:'p',playerName:'Same Name'}),false);
+});
