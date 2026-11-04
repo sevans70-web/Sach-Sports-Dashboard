@@ -20,6 +20,12 @@ async function withCloudSaveSlot(work){
  try{return await work();}finally{const next=state.waiting.shift();if(next)next();else state.active--;}
 }
 const pendingCloudSaves=state.pending,documentWrites=state.documents,writeStats=state.stats;
+// A recently verified identical document does not need to be written and
+// read back again at every background refresh. Changed content is immediate.
+// This is a process-local optimization, never a replacement for durable storage.
+state.recentVerified??=new Map();
+const recentVerified=state.recentVerified;
+const UNCHANGED_VERIFY_INTERVAL_MS=15*60*1000;
 export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,activeSaves:state.active,queuedSaves:state.waiting.length,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt){
  let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0,retried:0};writeStats.set(sport,stats);}stats.attempted++;
@@ -29,6 +35,12 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
  const key=JSON.stringify([sport,stream,day,hash,bytes,sourceUpdatedAt??null]);
  const documentKey=JSON.stringify([sport,stream,day]);
  const existing=pendingCloudSaves.get(key);
+ // Only skip when this exact payload was verified successfully recently and
+ // there is no different write in flight for this document.
+ const verified=recentVerified.get(documentKey);
+ if(!sourceUpdatedAt&&verified?.hash===hash&&Date.now()-verified.at<UNCHANGED_VERIFY_INTERVAL_MS&&!documentWrites.has(documentKey)){
+  stats.coalesced++;return true;
+ }
  // A -> B -> A must write the last A, rather than join the first A.
  if(existing&&documentWrites.get(documentKey)===existing){stats.coalesced++;return existing;}
  const previous=documentWrites.get(documentKey)??Promise.resolve();
@@ -46,7 +58,11 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
   }}
  }));
  pendingCloudSaves.set(key,work);documentWrites.set(documentKey,work);
- try{const result=await work;stats.verified++;return result;}catch(e){stats.failed++;throw e;}finally{
+ try{const result=await work;stats.verified++;
+  recentVerified.set(documentKey,{hash,at:Date.now()});
+  if(recentVerified.size>10000)recentVerified.delete(recentVerified.keys().next().value);
+  return result;
+ }catch(e){recentVerified.delete(documentKey);stats.failed++;throw e;}finally{
   if(pendingCloudSaves.get(key)===work)pendingCloudSaves.delete(key);
   if(documentWrites.get(documentKey)===work)documentWrites.delete(documentKey);
  }
