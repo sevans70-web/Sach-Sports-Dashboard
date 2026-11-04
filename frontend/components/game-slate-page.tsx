@@ -4,6 +4,7 @@ import {estimatedEv,estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev'
 import Link from "next/link";
 import {gameIntelligence,propIntelligence,gameRankingEvidence,gameRankingMatches,gameRankingTeam} from "@/lib/card-intelligence";
 import {playableSlateOrder} from "@/lib/ranking-card-state";
+import {gameRosterForSide} from "@/lib/game-roster";
 import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SportsNav } from "@/components/dashboard-chrome";
@@ -21,6 +22,8 @@ export type GameSlateSport =
 
 type Game = {
   id: string;
+  awayTeamId?: string;
+  homeTeamId?: string;
   date: string;
   awayTeam: string;
   awayAbbr: string;
@@ -1015,19 +1018,8 @@ function ExpandedGame({
   const injuries = detail.injuries || [];
   const recent = detail.recentMatchups || [];
 
-  const awayRoster =
-    rosters.find((roster) => roster.side === "away") ||
-    rosters.find((roster) =>
-      clean(roster.teamName).includes(clean(game.awayTeam))
-    ) ||
-    rosters[0];
-
-  const homeRoster =
-    rosters.find((roster) => roster.side === "home") ||
-    rosters.find((roster) =>
-      clean(roster.teamName).includes(clean(game.homeTeam))
-    ) ||
-    rosters[1];
+  const awayRoster = gameRosterForSide(rosters,"away",game);
+  const homeRoster = gameRosterForSide(rosters,"home",game);
 
   const activeRoster =
     rosterSide === "away"
@@ -1439,7 +1431,7 @@ function ExpandedGame({
             ) : null}
 
             <div className={styles.rosterList}>
-              {visibleRoster.map((player) => (
+              {activeRoster && visibleRoster.map((player) => (
                 <Link
                   href={rosterPlayerHref(
                     sport,

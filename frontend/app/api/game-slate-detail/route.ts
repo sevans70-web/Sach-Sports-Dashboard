@@ -1,9 +1,8 @@
 import {espnParticipation} from '@/lib/player-participation';
+import {gameRosterStarter} from '@/lib/game-roster';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { getGameFeed } from "@/lib/mlb-server";
-import { loadNbaGameRosters } from "@/lib/nba";
-import { loadCbbGameRosters } from "@/lib/cbb";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -98,7 +97,8 @@ function espnPath(
 }
 
 function normalizeRosterPlayer(
-  raw: any
+  raw: any,
+  currentGame = false
 ): RosterPlayer | null {
   const athlete =
     raw?.athlete &&
@@ -122,11 +122,7 @@ function normalizeRosterPlayer(
         athlete?.position?.name ||
         ""
     ),
-    starter: Boolean(
-      raw?.starter ||
-        raw?.battingOrder ||
-        raw?.gamesStarted
-    ),
+    starter: gameRosterStarter(raw,currentGame),
     active:
       raw?.didNotPlay !== true &&
       text(
@@ -434,6 +430,7 @@ async function espnGameDetail(
 
   for (const group of boxGroups) {
     const team = group?.team || {};
+    if(!sideByTeam.has(text(team?.id)))continue;
     const players: RosterPlayer[] = [];
 
     for (
@@ -445,7 +442,7 @@ async function espnGameDetail(
           statistic?.athletes || []
       ) {
         const player =
-          normalizeRosterPlayer(row);
+          normalizeRosterPlayer(row,true);
 
         if (player) {
           players.push(player);
@@ -517,12 +514,13 @@ async function espnGameDetail(
                   )}/roster`
                 );
 
+              if(payload?.team?.id&&text(payload.team.id)!==text(team.id))return null;
               const players =
                 flattenRosterAthletes(
                   payload
                 )
                   .map(
-                    normalizeRosterPlayer
+                    (raw:any)=>normalizeRosterPlayer(raw)
                   )
                   .filter(
                     (
@@ -1078,78 +1076,6 @@ export async function GET(
         await nhlGameDetail(
           gameId
         );
-    } else if (
-      sport === "nba"
-    ) {
-      const generic =
-        await espnGameDetail(
-          "nba",
-          gameId,
-          league
-        );
-
-      try {
-        const rosters =
-          await loadNbaGameRosters(
-            gameId
-          );
-
-        if (rosters.length) {
-          generic.rosters =
-            rosters.map(
-              (
-                roster: any,
-                index: number
-              ) => ({
-                ...roster,
-                side:
-                  index === 0
-                    ? "away"
-                    : index === 1
-                      ? "home"
-                      : "",
-              })
-            );
-        }
-      } catch {}
-
-      payload = generic;
-    } else if (
-      sport === "cbb"
-    ) {
-      const generic =
-        await espnGameDetail(
-          "cbb",
-          gameId,
-          league
-        );
-
-      try {
-        const rosters =
-          await loadCbbGameRosters(
-            gameId
-          );
-
-        if (rosters.length) {
-          generic.rosters =
-            rosters.map(
-              (
-                roster: any,
-                index: number
-              ) => ({
-                ...roster,
-                side:
-                  index === 0
-                    ? "away"
-                    : index === 1
-                      ? "home"
-                      : "",
-              })
-            );
-        }
-      } catch {}
-
-      payload = generic;
     } else {
       payload =
         await espnGameDetail(

@@ -24,10 +24,10 @@ test('Hutchinson original saved research OVER gets a research X, without inventi
  assert.match(researchFinalOutcome({...row,originalResearchPick:'UNDER'},10,14.5,'receiving_yards').label,/✅ RESEARCH UNDER MET/);
  assert.equal(researchFinalOutcome({...row,originalResearchPick:null},10,14.5,'receiving_yards').label,'FINISHED BELOW LINE');
  assert.equal(researchFinalOutcome({...row,originalResearchSavedAt:'2026-10-18T14:00Z'},10,14.5,'receiving_yards').label,'FINISHED BELOW LINE');
- assert.equal(researchFinalOutcome({...row,quoteVerified:false},10,null,'receiving_yards').label,'FINAL · ACTUAL RECORDED');
+ assert.equal(researchFinalOutcome({...row,quoteVerified:false},10,null,'receiving_yards').label,'NOT GRADED · NO VERIFIED PICK');
 });
-test('anytime TD means target 1+, with a count-based progress bar instead of YES or a probability',()=>{
- assert.equal(scorerTarget('anytime_td'),'1+ TD');assert.equal(scorerTarget('first_td'),'First TD scorer');
+test('anytime TD displays a decimal threshold and preserves count-based progress',()=>{
+ assert.equal(scorerTarget('anytime_td'),'0.5 TD target');assert.equal(scorerTarget('first_td'),'First touchdown');
  assert.equal(cardObservedProgress(0,.5,'anytime_td').percent,0);assert.equal(cardObservedProgress(1,.5,'anytime_td').percent,100);assert.equal(cardObservedProgress(2,.5,'anytime_td').actual,2);
  assert.equal(cardObservedProgress(null,.5,'anytime_td'),null);assert.equal(cardObservedProgress(7,null,'receiving_yards'),null);
 });

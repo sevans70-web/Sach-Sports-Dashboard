@@ -29,7 +29,7 @@ test('wrong fixture context, unavailability, future artifact and started row fai
  for(const patch of [{pregameContext:{...row.pregameContext,gameId:'other'}},{pregameContext:{...row.pregameContext,availability:[{status:'Out'}]}},{pregameContext:null},{frozen:true},{boardFrozen:true},{gameState:'post'},{gameTime:'2026-10-29T18:00Z'}])assert.equal(fittedQuarterForecast({...row,...patch},'nba','q1_points',bundle,now).status,'unavailable');
  assert.equal(fittedQuarterForecast(row,'nba','q1_points',{...bundle,asOf:'2026-10-30T00:00Z'},now).status,'unavailable');
 });
-test('frozen forecasts are preserved by refresh; NFL negative-yard expectation remains possible',async()=>{
+test('frozen forecasts are preserved by refresh; new Q1 expectations remain nonnegative',async()=>{
  const saved={...row,boardFrozen:true,researchForecast:{status:'available',projection:3.7,original:true}},p=await attachQuarterForecasts({market:row.market,rows:[saved]},'nba',now);assert.deepEqual(p.rows[0],saved);
- assert.equal(quarterPoint({...model,group:'nfl|q1_rushing_yards',model:{...model.model,coefficients:[-2,...Array(14).fill(0)]}},Array(14).fill(0)),-2);
+ assert.equal(quarterPoint({...model,group:'nfl|q1_rushing_yards',model:{...model.model,coefficients:[-2,...Array(14).fill(0)]}},Array(14).fill(0)),0);
 });
