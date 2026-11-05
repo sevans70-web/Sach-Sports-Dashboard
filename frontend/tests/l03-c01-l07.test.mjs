@@ -19,7 +19,7 @@ test('L07 both CFB routes omit invented confidence and explain early historical 
 test('L03 recovers persisted board originals without grading calls and preserves zeroes',async()=>{
  const {mkdtemp,mkdir,writeFile,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),{join}=await import('node:path');
  const {readCfbSavedBoards}=await loadTs(new URL('../lib/cfb-saved-boards.ts',import.meta.url));
- const root=await mkdtemp(join(tmpdir(),'cfb-board-read-'));const row={playerId:'p',gameId:'g',market:'passing_yards',gameTime:'2026-11-04T23:00Z',rank:3,modelProjection:125,sportsbookLine:130.5,actualResult:0,gameState:'post',resultStatus:'miss',lockedAtKickoff:true};
+ const root=await mkdtemp(join(tmpdir(),'cfb-board-read-'));const row={playerId:'p',gameId:'g',gameTime:'2026-11-04T23:00Z',rank:3,modelProjection:125,sportsbookLine:130.5,actualResult:0,gameState:'post',resultStatus:'miss',lockedAtKickoff:true};
  const state={day:'2026-11-04',market:'passing_yards',slate:'evening',rows:[row,{...row,playerId:'late',recoveredAfterStart:true}],locked:{original:row}};
  try{await mkdir(join(root,'cfb-ranking-boards'));const file=join(root,'cfb-ranking-boards','2026-11-04_passing_yards_evening.json');const original=JSON.stringify(state);await writeFile(file,original);
  const rows=await readCfbSavedBoards('Today',new Date('2026-11-05T03:00Z'),root);assert.equal(rows.length,1);assert.equal(rows[0].projection,125);assert.equal(rows[0].projectionBasis,'historical_baseline');assert.equal(rows[0].actual,0);assert.equal(rows[0].rank,3);assert.equal(rows[0].status,'miss');assert.equal((await readCfbSavedBoards('Yesterday',new Date('2026-11-05T03:00Z'),root)).length,0);assert.equal(await readFile(file,'utf8'),original);
