@@ -11,7 +11,7 @@ export function excludeUnavailablePregame(row:any,now=Date.now()){
  if(String(evidence?.gameId||'')===String(row?.gameId)&&['official_injury_status','official_dnp'].includes(evidence?.code))statuses.push(String(evidence.text||'').replace(/^Reported\s+/i,'').split(/\s*[·:]\s*/)[0]);
  return row?.inactive===true||row?.isOut===true||row?.didNotPlay===true||statuses.some(s=>{
   const status=String(s||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');
-  return /^(out|inactive|suspended|injured reserve|ir|dnp|did not play|scratched|healthy scratch|injured list|il|disabled list|dl|minor leagues|minors|assigned to minors|optioned to minors)$/.test(status)||/^(?:7|10|15|60) day (?:il|injured list|dl|disabled list)$/.test(status);
+  return /^(out|ruled out|inactive|suspended|injured reserve|long term injured reserve|ltir|ir lt|ir|dnp|did not play|scratched|healthy scratch|injured list|il|disabled list|dl|minor leagues|minors|assigned to minors|optioned to minors|non roster|not on roster)$/.test(status)||/^(?:7|10|15|60) day (?:il|injured list|dl|disabled list)$/.test(status);
  });
 }
 

@@ -1,3 +1,5 @@
+import {mapCandidatePool} from '@/lib/candidate-pool';
+import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {footballRowsForMarket} from "@/lib/football-quarter-stats";
 import {publishFeaturedBoards} from '@/lib/research-capture';
 import {footballResearchSample} from "@/lib/football-history";
@@ -149,11 +151,11 @@ async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:an
   // roster fetches so the ranking request stays responsive while still
   // providing enough candidates to build a real Top 25.
   const teamJobs:any[]=[];
-  for(const game of upcoming.slice(0,24)){
+  for(const game of upcoming){
     if(game.awayTeamId)teamJobs.push({game,teamId:String(game.awayTeamId),teamName:game.awayTeam});
     if(game.homeTeamId)teamJobs.push({game,teamId:String(game.homeTeamId),teamName:game.homeTeam});
   }
-  await Promise.all(teamJobs.map(j=>roster(j.teamId)));
+  await mapCandidatePool(teamJobs,j=>roster(j.teamId));
 
   for(const {game,teamId,teamName} of teamJobs){
     const rr=rosterCache.get(teamId)?.value;
@@ -203,7 +205,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   const today=day(new Date());
   let raw=initialRaw;
   const earlyMode=!market.startsWith("q1_")&&(raw.length===0||raw.every((r:any)=>r.earlyModel));
-  if(earlyMode){
+  if(!market.startsWith("q1_")&&(earlyMode||raw.length<25)){
     const supplement=await timeout(rosterFallbackRows(market,schedule,raw),6500,[]);
     raw=[...raw,...supplement];
   }
@@ -212,15 +214,14 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   // Enrich a pool larger than 25. Some roster players will not have enough
   // verified history for this market, so slicing to 25 before modeling caused
   // the visible ranking to collapse to 3-4 players.
-  const candidateLimit=earlyMode?45:35;
   const candidates=active
     .map((row:any)=>({...row,_seed:cfbGiScore(row.prob??50,row.bookmakerCount||0,0)}))
     .sort((a:any,b:any)=>b._seed-a._seed)
-    .slice(0,candidateLimit);
+    ;
 
   await prefetchRosters(candidates,schedule);
 
-  const enriched=await Promise.all(candidates.map(async(row:any)=>{
+  const enriched=await mapCandidatePool(candidates,async(row:any)=>{
     const profile=playerFromRosters(row,schedule);
     if(row.quoteVersion===1&&!profile.id)return null;
     const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
@@ -246,7 +247,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
         :`Sportsbook-backed ${CFB_MARKETS.find(x=>x[0]===market)?.[2]||market} prediction using ${m.games} verified historical game${m.games===1?"":"s"} and ${row.bookmakerCount||0} sportsbook${(row.bookmakerCount||0)===1?"":"s"}.`,
       marketBacked:verifiedMarket,
     };
-  }));
+  });
 
   const validEnriched=enriched.filter((row): row is NonNullable<typeof row>=>{
     if(!row)return false;
@@ -255,7 +256,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
     return row.modelProjection!=null&&Number.isFinite(value)&&value>=0;
   });
   validEnriched.sort((a,b)=>b.giScore-a.giScore);
-  let ranked:any[]=uniqueRankingRows(validEnriched).slice(0,25).map((r,i)=>({...r,rank:i+1}));
+  let ranked:any[]=uniqueRankingRows(await eligibleFootballPregameRows(validEnriched,'cfb')).slice(0,25).map((r,i)=>({...r,rank:i+1}));
 
   // Capture the previous visible Top 25 BEFORE kickoff-lock logic uses it.
   const previous=rankingCache.get(market)?.payload?.rows||[];

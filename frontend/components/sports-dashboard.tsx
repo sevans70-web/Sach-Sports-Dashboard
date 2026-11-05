@@ -34,6 +34,7 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   ]}/>:null}
   {error ? <p className="ssDashboardWarning" role="status">{error}</p> : null}
   {sport==="soccer"?<section className="performance"><PredictionPerformancePanel key={`${sport}|${league}`} sport={sport}/></section>:null}
+  {sport==="cfb"?<Link className="ssPerformanceLink" href="/cfb/results">Saved Predictions / Results ›</Link>:null}
   <section className="rankings"><PlayerRankingsPanel key={`${sport}|${league}`} sport={sport} onPickCount={onPickCount}/></section>
 
  </main>;

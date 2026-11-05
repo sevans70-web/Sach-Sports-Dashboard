@@ -1,3 +1,4 @@
+import {mapCandidatePool,rollingFootballRows} from '@/lib/candidate-pool';
 import {loadIndependentFootballBlocks} from '@/lib/independent-football-blocks';
 import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {activeFootballBoardDay} from '@/lib/football-slate-rankings';
@@ -567,12 +568,7 @@ async function prefetchRosters(
     }
   }
 
-  await Promise.all(
-    [...teamIds].map(
-      (teamId) =>
-        roster(teamId)
-    )
-  );
+  await mapCandidatePool([...teamIds],teamId=>roster(teamId));
 }
 
 function playerFromRosters(
@@ -818,7 +814,7 @@ async function rosterFallbackRows(
 
   for (
     const game of
-      games.slice(0, 40)
+      games
   ) {
     if (game.awayTeamId) {
       teamJobs.push({
@@ -841,12 +837,7 @@ async function rosterFallbackRows(
     }
   }
 
-  await Promise.all(
-    teamJobs.map(
-      (job) =>
-        roster(job.teamId)
-    )
-  );
+  await mapCandidatePool(teamJobs,job=>roster(job.teamId));
 
   const out: any[] = [];
 
@@ -991,16 +982,11 @@ async function buildFreshBoard(
   // slate populated with a clearly marked model-watch board. These rows
   // never receive a fake sportsbook line and are not graded as bets.
   const fallbackRaw =
-    scopedRaw.length || market.startsWith("q1_")
+    scopedRaw.length >= 25 || market.startsWith("q1_")
       ? []
       : await rosterFallbackRows(market,schedule,[],gameDay,slate);
 
   const raw = [...scopedRaw, ...fallbackRaw];
-
-  const candidateLimit =
-    slate === "all"
-      ? 90
-      : 70;
 
   const candidates =
     raw
@@ -1018,10 +1004,7 @@ async function buildFreshBoard(
         (a: any, b: any) =>
           b._seed - a._seed
       )
-      .slice(
-        0,
-        candidateLimit
-      );
+;
 
   await prefetchRosters(
     candidates,
@@ -1029,8 +1012,7 @@ async function buildFreshBoard(
   );
 
   const enriched =
-    await Promise.all(
-      candidates.map(
+    await mapCandidatePool(candidates,
         async (row: any) => {
           const profile =
             playerFromRosters(
@@ -1150,7 +1132,6 @@ async function buildFreshBoard(
             schedule
           );
         }
-      )
     );
 
   const valid =
@@ -1338,64 +1319,21 @@ async function lockBoard(
     [...lockedMap.values()]
       .filter(
         (row: any) =>
-          Number(row.rank) >= 1 &&
-          Number(row.rank) <= 25
+          Number(row.rank) >= 1
       )
       .sort(
         (a: any, b: any) =>
           Number(a.rank) -
           Number(b.rank)
       )
-      .slice(0, 25);
+;
 
   const lockedKeys =
     new Set(
       locked.map(rowKey)
     );
 
-  const lockedRanks =
-    new Set(
-      locked.map(
-        (row: any) =>
-          Number(row.rank)
-      )
-    );
-
-  const freshRemaining =
-    fresh.filter(
-      (row: any) =>
-        !lockedKeys.has(
-          rowKey(row)
-        )
-    );
-
-  const merged: any[] =
-    [...locked];
-
-  let freshIndex = 0;
-
-  for (
-    let slot = 1;
-    slot <= 25 &&
-    freshIndex <
-      freshRemaining.length;
-    slot += 1
-  ) {
-    if (
-      lockedRanks.has(slot)
-    ) {
-      continue;
-    }
-
-    merged.push({
-      ...freshRemaining[
-        freshIndex
-      ],
-      rank: slot,
-    });
-
-    freshIndex += 1;
-  }
+  const merged = rollingFootballRows(locked,fresh,rowKey);
 
   const previousRanks =
     new Map(
@@ -1414,7 +1352,6 @@ async function lockBoard(
           Number(a.rank) -
           Number(b.rank)
       )
-      .slice(0, 25)
       .map(
         (row: any) => {
           const oldRank =
