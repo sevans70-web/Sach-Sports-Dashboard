@@ -1,9 +1,10 @@
+import {cardModelProjection} from '@/lib/saved-model-pick';
 import {rankingGameForRow} from "@/lib/ranking-card-state";
 const number=(v:any)=>v==null||(typeof v==='string'&&!v.trim())||typeof v==='boolean'?null:Number.isFinite(Number(v))?Number(v):null;
 const fmt=(v:number)=>Number(v.toFixed(1)).toString();
 export function propIntelligence(row:any,sport:string,market:string){
  const label=String(row.marketLabel||market.replaceAll('_',' '));
- const line=row.quoteVerified===true?number(row.sportsbookLine):null,baseline=number(row.modelProjection);
+ const line=row.quoteVerified===true?number(row.sportsbookLine):null,baseline=number(row.historicalBaseline??row.modelProjection);
  const sample=(row.researchCohort?.observations||[]).filter((g:any)=>g.included===true&&number(g.value)!=null&&Date.parse(g.date)<Date.parse(row.gameTime)).slice(-10);
  const facts:string[]=[];
  if(sample.length){
@@ -37,7 +38,7 @@ export function gameIntelligence(game:any,context:any={},injuries:any[]=[]){
 }
 /** Guarded nulls are intentional: legacy aliases must not restore suppressed values. */
 export function gameRankingEvidence(row:any,market:string){
- if(row.integrityVersion===1)return {sportsbookLine:row.quoteVerified===true?number(row.sportsbookLine):null,modelProjection:row.researchOnly&&market.startsWith('q1_')?null:number(row.modelProjection),giScore:row.recommendationEligible===true?number(row.giScore):null,modelProbability:row.recommendationEligible===true?number(row.modelProbability):null};
+ if(row.integrityVersion===1)return {sportsbookLine:row.quoteVerified===true?number(row.sportsbookLine):null,modelProjection:cardModelProjection(row),giScore:row.recommendationEligible===true?number(row.giScore):null,modelProbability:row.recommendationEligible===true?number(row.modelProbability):null};
  return {sportsbookLine:number(row.sportsbookLine??row.sportsbook_line??row.marketLine??row.market_line??row.line),modelProjection:number(row.modelProjection??row.model_projection??row.projection??row.perGame??row.modelTarget),giScore:number(row.giScore??row.gi_score??row.score),modelProbability:number(row.modelProbability??row.model_probability??row.probability??row.home_run_probability??row.hr_probability)};
 }
 

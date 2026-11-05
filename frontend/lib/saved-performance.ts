@@ -1,3 +1,4 @@
+import {historyDays} from '@/lib/history-days';
 import {rawFinalPerformance} from '@/lib/raw-final-performance';
 import {isOfficialFinal} from '@/lib/history-save-policy';
 import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
@@ -15,12 +16,7 @@ import {mlbAdminSnapshot,readBundledMlbHistory} from '@/lib/hidden-admin-history
 
 export const HISTORY_SPORTS=['nfl','cfb','nba','wnba','nhl','cbb','mlb','soccer'] as const;
 export const HISTORY_PERIODS=['Today','Yesterday','Week','Month','Season'] as const;
-export function historyDays(period:string,now=new Date()){
- const count=period==='Week'?7:period==='Month'?31:period==='Season'?370:1,offset=period==='Yesterday'?1:0;
- // Subtract calendar days, not 24-hour durations across Toronto DST changes.
- const anchor=Date.parse(dashboardDay(now)+'T12:00:00Z');
- return new Set(Array.from({length:count},(_,i)=>new Date(anchor-(i+offset)*86400000).toISOString().slice(0,10)));
-}
+export {historyDays} from '@/lib/history-days';
 export function savedHistorySummary(rows:any[]){
  const active=rows.filter(r=>r.status!=='void'&&!r.withdrawnFromBoard);
  const hits=active.filter(r=>r.status==='hit').length,misses=active.filter(r=>r.status==='miss').length,pushes=active.filter(r=>r.status==='push').length;

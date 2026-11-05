@@ -1037,26 +1037,8 @@ async function buildFreshBoard(
               row.prob
             );
 
-          const earlyConfidence =
-            row.earlyModel &&
-            recent.projection != null
-              ? Math.round(
-                  Math.min(
-                    84,
-                    58 +
-                      Math.min(
-                        26,
-                        recent.games * 2.6
-                      )
-                  ) * 10
-                ) / 10
-              : null;
-
-          const rankingProbability =
-            probability ??
-            row.prob ??
-            earlyConfidence ??
-            50;
+          const verifiedMarket=row.quoteVersion===1;
+          const rankingProbability=probability??(verifiedMarket?row.prob:null)??50;
 
           return decorateGameState(
             {
@@ -1096,9 +1078,7 @@ async function buildFreshBoard(
                   recent.games
                 ),
               modelProbability:
-                market.startsWith("q1_")?null:probability ??
-                earlyConfidence ??
-                rankingProbability,
+                market.startsWith("q1_")?null:probability,
               sportsbookLine:
                 row.line,
               sportsbookProbability:
@@ -1117,7 +1097,7 @@ async function buildFreshBoard(
                 recent.games,
               season: 2026,
               summary:
-                `Sportsbook-backed ${
+                !verifiedMarket?`Historical evidence from ${recent.games} qualifying appearances. Sportsbook line unavailable; betting probability unavailable. GI reflects historical evidence depth, not betting hit probability.`:`Sportsbook-backed ${
                   CFB_MARKETS.find(
                     (item) =>
                       item[0] === market

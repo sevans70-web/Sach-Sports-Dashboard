@@ -509,6 +509,7 @@ function normalizeRankingRow(
       raw?.pos ??
       ""
     ),
+    historicalBaseline: raw.modelProjection,
     ...gameRankingEvidence(raw,market),
     headshot: String(
       raw?.headshot ??
@@ -822,8 +823,8 @@ function PlayerWatchCard({
             </li>
             <li>
               {row.modelProjection == null
-                ? "Historical baseline unavailable"
-                : `${row.researchOnly?"Historical baseline":"Forecast"} ${Number(
+                ? "Sach Projection unavailable"
+                : `Sach Projection ${Number(
                     row.modelProjection
                   ).toFixed(1)}`}
             </li>
@@ -886,7 +887,7 @@ function TeamRankingTable({
         <span>Player</span>
         <span>Pos</span>
         <span>Line</span>
-        <span>Baseline / forecast</span>
+        <span>Sach Projection</span>
         <span>EV</span>
       </div>
 
@@ -1526,7 +1527,7 @@ function ExpandedGame({
                     </span>
 
                     <span>
-                      {row.researchOnly?"Baseline":"Forecast"}{" "}
+                      Sach Projection{" "}
                       <strong>
                         {row.modelProjection == null
                           ? "—"
@@ -1541,7 +1542,7 @@ function ExpandedGame({
                       {estimatedEvText(row)}
                     </em>
                     <small>{propIntelligence(row,sport,String(row.market||"")).face}</small>
-                    <small>{row.researchOnly?"No pick available":row.prediction}</small>
+                    <small>{cardModelPick(row)?.side || "Forecast unavailable"}</small>
                   </Link>
                 ))}
               </div>

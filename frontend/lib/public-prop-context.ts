@@ -31,6 +31,7 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
   const workload=cohort.slice(-5).map((p:any)=>num(p.workload));
   if(/passing/.test(market)&&workload.length&&workload.every((v:any)=>v!=null))facts.push(`Passing workload: ${fmt(workload.reduce((a:number,b:number)=>a+b!,0)/workload.length)} attempts per game in this sample.`);
  }
+ if(row.earlyModel===true&&row.researchForecast?.status!=='available')facts.push(`Early view: ${row.projectionGames??count} prior appearances. A fitted forecast is not available yet; recent results are historical context.`);
  if(row.availabilityEvidence?.text&&String(row.availabilityEvidence.gameId)===String(row.gameId))facts.push(row.availabilityEvidence.text);
  const actual=num(row.gameState==='post'?row.actualResult:row.liveCurrent);
  if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line==null?'':actual===line?`; on the ${propLineText(line)} line`:`; ${propLineText(Math.abs(actual-line))} ${actual>line?'above':'below'} the ${propLineText(line)} line`}.`);
