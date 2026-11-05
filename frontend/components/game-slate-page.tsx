@@ -327,11 +327,12 @@ function playerHref(
     name: row.playerName || "Player",
     team: row.teamName || "",
     matchup: `${game.awayTeam} @ ${game.homeTeam}`,
-    market: row.market || "",
+    market: row.market || researchMarketForPlayer(sport,row.position||""),
     line: String(row.sportsbookLine ?? ""),
     projection: String(supportedProjection ?? ""),
     projectionSource: supportedProjection==null?'':'fitted_model',
-    gameId: String(row.gameId ?? ""),
+    gameId: String(row.gameId || game.id),
+    gameTime: String((row as any).gameTime || game.date),
     quoteId: String((row as any).quoteId ?? ""),
     prob: String(row.modelProbability ?? ""),
     pick: supportedPick?.side || (row.recommendationEligible?row.prediction:'') || "",
@@ -340,7 +341,7 @@ function playerHref(
     status: row.gameStatus || game.status || "",
     actual: String(row.actual ?? ""),
     img: row.headshot || "",
-    mode: "prediction",
+    mode: row.market?"prediction":"profile",
   });
 
   return `/${sport}/player/${id}?${qs.toString()}`;

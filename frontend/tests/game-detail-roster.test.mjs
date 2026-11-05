@@ -39,3 +39,11 @@ test('roster player navigation retains the selected fixture and rejects a same-n
  }
  assert.equal(module.exports.sameRosterPlayer({playerId:'other',playerName:'Same Name'},{playerId:'p',playerName:'Same Name'}),false);
 });
+test('game watch fallback retains fixture identity and opens a profile without inventing a forecast',async()=>{
+ const source=ts.createSourceFile('page.tsx',await readFile(new URL('../components/game-slate-page.tsx',import.meta.url),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+ const functions=source.statements.filter(n=>ts.isFunctionDeclaration(n)&&['playerHref','researchMarketForPlayer'].includes(n.name?.text)).map(n=>n.getText(source)).join('\n');
+ const script=ts.transpileModule(functions+'\nexport {playerHref};',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
+ const module={exports:{}};vm.runInNewContext(script,{module,exports:module.exports,URLSearchParams,encodeURIComponent,cardModelPick:()=>null,cardModelProjection:()=>null,clean:v=>v});
+ const u=new URL(module.exports.playerHref('nfl',{playerId:'p',playerName:'Player',position:'QB',modelProjection:300},{id:'g',date:'2026-11-06T01:15Z',awayTeam:'A',homeTeam:'B'}),'https://test');
+ assert.equal(u.searchParams.get('gameId'),'g');assert.equal(u.searchParams.get('gameTime'),'2026-11-06T01:15Z');assert.equal(u.searchParams.get('market'),'passing_yards');assert.equal(u.searchParams.get('mode'),'profile');assert.equal(u.searchParams.get('projection'),'');
+});

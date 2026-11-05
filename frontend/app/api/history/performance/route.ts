@@ -15,7 +15,17 @@ export async function GET(req:NextRequest){
  try{
   const data=await performanceView(sport,period,schedulePerformanceRecovery),market=req.nextUrl.searchParams.get('market'),group=req.nextUrl.searchParams.get('group'),league=sport==='soccer'?req.nextUrl.searchParams.get('league'):null;
   const scopedRecords=performanceResponseScope(data.records,period,new Date(),league);
-  if(sport==='cfb'&&req.nextUrl.searchParams.get('includeBoards')==='true'){const local=await readCfbSavedBoards(period);const keys=new Set(scopedRecords.map(r=>[r.playerId,r.gameId,r.market].join('|')));for(const row of local)if(!keys.has([row.playerId,row.gameId,row.market].join('|')))scopedRecords.push(row);}
+  if(sport==='cfb'&&req.nextUrl.searchParams.get('includeBoards')==='true'){
+   const local=await readCfbSavedBoards(period),key=(r:any)=>[r.playerId,r.gameId,r.market].join('|');
+   const indexes=new Map(scopedRecords.map((r,i)=>[key(r),i]));
+   for(const row of local){const index=indexes.get(key(row));if(index==null){scopedRecords.push(row);continue;}
+    const original=scopedRecords[index];
+    if(original.sportsbookLine==null&&original.line==null&&row.quoteEvidence===true){
+     const settled=['hit','miss','push','void'].includes(original.status);
+     scopedRecords[index]={...row,...(settled?{status:original.status,actual:original.actual}:{}),savedAt:row.savedAt||original.savedAt};
+    }
+   }
+  }
   const selected=scopedRecords.filter(r=>(!market||r.market===market)&&(!group||historyGroup(r,sport)===group));
   const categories=Object.fromEntries([...new Set(scopedRecords.map(r=>String(r.market)))].map(key=>[key,savedHistorySummary(scopedRecords.filter(r=>r.market===key))]));
   return NextResponse.json({success:data.records.length>0||data.coverage.complete,connected:data.records.length>0||data.coverage.complete,partial:!data.coverage.complete,sport,period,league,readOnly:true,researchSummary:savedHistorySummary(selected),probabilityAccuracy:predictionAccuracy(selected.map(r=>({...r,sport}))),overallSummary:savedHistorySummary(scopedRecords),categories,coverage:data.coverage,

@@ -15,11 +15,13 @@ export async function readCfbSavedBoards(period:string,now=new Date(),root=histo
   const originals=[...Object.values(state.locked||{}),...state.rows] as any[];
   for(const row of originals){
    if(!row.playerId||!row.gameId||(row.market!=null&&row.market!==state.market)||row.recoveredAfterStart===true)continue;
-   const key=[row.playerId,row.gameId,state.market].join('|');if(records.has(key))continue;
+   const key=[row.playerId,row.gameId,state.market].join('|');
+   const quoted=row.quoteVersion===1&&Boolean(row.quoteId)&&typeof row.sportsbookLine==='number'&&Date.parse(row.quoteUpdatedAt)<Date.parse(row.gameTime)&&Date.parse(row.capturedAt||row.quoteUpdatedAt)<Date.parse(row.gameTime);
+   const existing=records.get(key);if(existing&&(existing.quoteEvidence===true||!quoted))continue;
    const final=['post','final'].includes(row.gameState),status=row.resultStatus;
-   records.set(key,{key,playerId:row.playerId,gameId:row.gameId,playerName:row.playerName,teamName:row.teamName,matchup:row.matchup,rank:row.rank,market:state.market,gameTime:row.gameTime,gameDate:state.day,
+   records.set(key,{key,playerId:row.playerId,gameId:row.gameId,playerName:row.playerName,teamName:row.teamName,matchup:row.matchup,rank:row.rank,market:state.market,gameTime:row.gameTime,gameDate:state.day,savedAt:row.boardCapturedAt||row.savedAt||row.capturedAt||null,
     projection:recordedProjectionValue(row),projectionBasis:row.researchForecast?.status==='available'?'fitted':'historical_baseline',line:row.sportsbookLine??null,
-    actual:row.actualResult??row.liveCurrent??null,status:final&&['hit','miss','push','void'].includes(status)?status:'pending',source:'saved_time_block_board'});
+    actual:row.actualResult??row.liveCurrent??null,status:final&&['hit','miss','push','void'].includes(status)?status:'pending',source:'saved_time_block_board',quoteEvidence:quoted});
   }
  }
  return [...records.values()];
