@@ -8,6 +8,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {createElement} from 'react';
 import {loadTs} from './load-ts.mjs';
 const nodeRequire=createRequire(import.meta.url);
+const visibility=await loadTs(new URL('../lib/visible-polling.ts',import.meta.url));
 const topPlays=await loadTs(new URL('../lib/top-plays.ts',import.meta.url));
 const source=await readFile(new URL('../components/today-top-plays.tsx',import.meta.url),'utf8');
 const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
@@ -17,6 +18,7 @@ function render(sport,{live=null,failed=false,rows=[]}={}){
   react:{useEffect(){},useState:()=>[calls++===0?failed:live,()=>{}]},
   'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},
   '@/lib/top-plays':topPlays,
+  '@/lib/visible-polling':visibility,
   '@/lib/dashboard-contract':{dashboardDay:()=> '2026-10-29'},
   '@/lib/featured-history-corrections':{reportedFeaturedOriginal:()=>null},
   '@/lib/saved-quote-evidence':{savedQuoteQuery:()=>''},

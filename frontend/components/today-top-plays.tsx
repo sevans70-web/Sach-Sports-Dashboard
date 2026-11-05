@@ -1,4 +1,5 @@
 "use client";
+import {visiblePolling} from '@/lib/visible-polling';
 import {savedQuoteQuery} from '@/lib/saved-quote-evidence';
 import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
@@ -12,7 +13,7 @@ import styles from './today-top-plays.module.css';
 export function TodayTopPlays({sport}:{sport:DashboardSport;rows?:any[];loading?:boolean}){
  const [failed,setFailed]=useState(false);
  const [live,setLive]=useState<{sport:string;plays:ReturnType<typeof todayTopPlays>;slateDay?:string}|null>(null);
- useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store',signal:AbortSignal.timeout(45000)});if(!r.ok)throw Error('Saved picks unavailable');const p=await r.json();if(!Array.isArray(p.plays))throw Error('Saved picks unavailable');if(active){setLive({sport,plays:p.plays,slateDay:p.slateDay});setFailed(false);}}catch{if(active)setFailed(true);/* Retain the last successful choices during a failed refresh. */}finally{running=false}};refresh();const id=setInterval(refresh,30000);return()=>{active=false;clearInterval(id)}},[sport]);
+ useEffect(()=>{let active=true,running=false;const refresh=async()=>{if(running)return;running=true;try{const r=await fetch(`/api/top-plays?sport=${sport}`,{cache:'no-store',signal:AbortSignal.timeout(45000)});if(!r.ok)throw Error('Saved picks unavailable');const p=await r.json();if(!Array.isArray(p.plays))throw Error('Saved picks unavailable');if(active){setLive({sport,plays:p.plays,slateDay:p.slateDay});setFailed(false);}}catch{if(active)setFailed(true);/* Retain the last successful choices during a failed refresh. */}finally{running=false}};refresh();const stopPolling=visiblePolling(refresh,30000);return()=>{active=false;stopPolling()}},[sport]);
  // Ranking summaries can arrive before protected originals and contain
  // different players or newer prices. Wait for the saved slate choices.
  const confirmed=live?.sport===sport;

@@ -1,4 +1,5 @@
 "use client";
+import {visiblePolling} from '@/lib/visible-polling';
 import {useEffect,useState} from "react";
 import type {DashboardSport} from "@/lib/dashboard-contract";
 const cached=new Map<string,{at:number,data:any}>(),pending=new Map<string,Promise<any>>();
@@ -10,11 +11,11 @@ export function fetchDashboardSummary(sport:DashboardSport,league="eng.1"){
 export function useDashboardSummary(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`;
  const [state,setState]=useState<{key:string,data:any,error:string}>({key,data:cached.get(key)?.data||null,error:""});
- useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const data=await fetchDashboardSummary(sport,league);if(live)setState({key,data,error:""})}catch(e){if(live)setState(s=>({...s,error:"Live updates are temporarily unavailable. Retrying shortly…"}))}finally{running=false}};run();const id=setInterval(run,30_000);return()=>{live=false;clearInterval(id)}},[sport,league,key]);
+ useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const data=await fetchDashboardSummary(sport,league);if(live)setState({key,data,error:""})}catch(e){if(live)setState(s=>({...s,error:"Live updates are temporarily unavailable. Retrying shortly…"}))}finally{running=false}};run();const stopPolling=visiblePolling(run,30_000);return()=>{live=false;stopPolling()}},[sport,league,key]);
  return state.key===key?state:{key,data:cached.get(key)?.data||null,error:""};
 }
 export function useDashboardSchedule(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`,[state,setState]=useState<{key:string,data:any}>({key,data:null});
- useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const response=await fetch(`/api/game-slate?sport=${sport}&league=${encodeURIComponent(league)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)});const data=await response.json();if(live)setState({key,data})}catch{}finally{running=false}};run();const id=setInterval(run,30_000);return()=>{live=false;clearInterval(id)}},[sport,league,key]);
+ useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const response=await fetch(`/api/game-slate?sport=${sport}&league=${encodeURIComponent(league)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)});const data=await response.json();if(live)setState({key,data})}catch{}finally{running=false}};run();const stopPolling=visiblePolling(run,30_000);return()=>{live=false;stopPolling()}},[sport,league,key]);
  return state.key===key?state.data:null;
 }

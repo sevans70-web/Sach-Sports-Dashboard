@@ -1,4 +1,5 @@
 "use client";
+import {visiblePolling} from '@/lib/visible-polling';
 
 import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {quarterTargetDisplay} from '@/lib/quarter-target-display';
@@ -1898,10 +1899,10 @@ export function PlayerRankingsPanel({
       } catch {}
     };
     run();
-    const interval = window.setInterval(run, 15_000);
+    const interval = visiblePolling(run,15_000);
     return () => {
       stopped = true;
-      window.clearInterval(interval);
+      interval();
     };
   }, [sport, league]);
 
@@ -1935,11 +1936,11 @@ export function PlayerRankingsPanel({
     };
 
     run();
-    const interval = window.setInterval(run, 15_000);
+    const interval = visiblePolling(run,15_000);
 
     return () => {
       stopped = true;
-      window.clearInterval(interval);
+      interval();
     };
   }, [sport, market.key]);
 
@@ -2220,12 +2221,12 @@ export function PlayerRankingsPanel({
     };
 
     run();
-    const interval = window.setInterval(run, 60_000);
+    const interval = visiblePolling(run,60_000);
 
     return () => {
       alive = false;
       controller.abort();
-      window.clearInterval(interval);
+      interval();
       if(retryTimer)clearTimeout(retryTimer);
     };
   }, [sport, groupKey, marketKey, league, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -2314,11 +2315,11 @@ export function PlayerRankingsPanel({
     };
 
     run();
-    const timer = window.setInterval(run, 15_000);
+    const timer = visiblePolling(run,15_000);
 
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
+      timer();
     };
   }, [sport, market.key, cards.length, sharedStatusGames]); // eslint-disable-line react-hooks/exhaustive-deps
 
