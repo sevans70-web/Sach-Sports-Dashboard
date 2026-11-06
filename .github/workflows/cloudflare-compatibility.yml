@@ -60,6 +60,33 @@ jobs:
         run: |
           set -o pipefail
           npm run build:vinext 2>&1 | tee vinext-build-output.log
+      - name: Local Worker smoke test (no external account)
+        run: |
+          set -u
+          npm run start:vinext > vinext-preview-output.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          reachable=""
+          for attempt in $(seq 1 30); do
+            for port in 8787 3001 3000; do
+              status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "http://127.0.0.1:$port/api/health" || true)
+              if [ "$status" != "000" ]; then reachable="$port"; break 2; fi
+            done
+            sleep 1
+          done
+          if [ -z "$reachable" ]; then
+            echo "WORKER_PREVIEW_FAILED: no listening HTTP port"
+            tail -100 vinext-preview-output.log
+            exit 1
+          fi
+          echo "LOCAL_PREVIEW_PORT=$reachable"
+          fail=0
+          for path in /api/health / /nba /nfl /nhl /cfb /cbb; do
+            status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1:$reachable$path" || true)
+            echo "SMOKE_TEST path=$path status=$status"
+            if [ "$path" = "/api/health" ] && [ "$status" != 200 ]; then fail=1; fi
+          done
+          if [ "$fail" -ne 0 ]; then tail -100 vinext-preview-output.log; exit 1; fi
       - name: Upload dry-build reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,4 +95,5 @@ jobs:
           path: |
             frontend/vinext-init-output.log
             frontend/vinext-build-output.log
+            frontend/vinext-preview-output.log
           if-no-files-found: warn
