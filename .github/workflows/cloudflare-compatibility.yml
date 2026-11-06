@@ -78,9 +78,11 @@ jobs:
               if [ "$status" != "000" ]; then break; fi
               sleep 1
             done
+            failed=0
             for path in /api/health / /nba /nfl /nhl /cfb /cbb; do
               status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:$port$path" || true)
               echo "RUNTIME_CHECK mode=$mode path=$path status=$status"
+              if [ "$status" != "200" ]; then failed=1; fi
             done
             echo "RUNTIME_BODY mode=$mode:"
             curl -sS -i --max-time 10 "http://127.0.0.1:$port/api/health" | head -c 1600 || true
@@ -88,6 +90,7 @@ jobs:
             echo "RUNTIME_LOG mode=$mode:"
             tail -40 "vinext-$mode-output.log"
             kill "$pid" 2>/dev/null || true
+            if [ "$failed" -ne 0 ]; then echo "SMOKE_FAIL mode=$mode"; exit 1; fi
             sleep 2
           done
       - name: Upload dry-build reports
