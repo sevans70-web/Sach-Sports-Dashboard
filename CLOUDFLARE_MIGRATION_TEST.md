@@ -43,3 +43,11 @@ This is an isolated migration experiment. Production remains on `nextjs-migratio
 - Response body: `Error: The Session method is not implemented` in Miniflare `core/entry.worker.js`. This is an unresolved local Worker runtime blocker, not evidence of successful page serving or necessarily an application-level bug.
 - Diagnostic run: https://github.com/sevans70-web/Sach-Sports-Dashboard/actions/runs/42148934322 .
 - Do not deploy or migrate until a real Worker preview returns 200 on health and sports routes. Investigate local Miniflare/cf compatibility and generate persistent safe Cloudflare config.
+
+## Local runtime blocker resolved — 2026-11-05
+- Root cause isolated by preview-vs-dev matrix: `node:inspector` `StubSession` from `frontend/lib/runtime-cpu.ts` called through `startRuntimeMonitor()` in `frontend/instrumentation.ts`.
+- Cloudflare test branch now detects workerd's `WebSocketPair` global in `register()` and skips Node-only inspector monitoring and persistent interval scheduling. No change to Railway production.
+- Verified in both Vite Cloudflare preview and dev: HTTP 200 for `/api/health`, `/`, `/nba`, `/nfl`, `/nhl`, `/cfb`, `/cbb`.
+- Confirmation run: https://github.com/sevans70-web/Sach-Sports-Dashboard/actions/runs/42149693953
+- Added fail-closed HTTP 200 assertions to the workflow to avoid false positive future scans.
+- Remaining: replace background scheduler with Cloudflare Cron/queues or separate processing; remove /data dependency via verified archive migration; verify real API data, grades, odds, history, usage and latency. These local route 200s do not verify live prediction functionality.
