@@ -33,3 +33,13 @@ This is an isolated migration experiment. Production remains on `nextjs-migratio
 - 4/4 supported import groups and 2/2 supported config fields.
 - **This is an API/syntax compatibility scan, not a successful Workers build or runtime smoke test.** The persistent Node scheduler, child processes, filesystem storage, 128MB isolate limit and archive backup migration still need separate testing and redesign.
 - No Cloudflare deployment, production change, or paid subscription was performed by this check.
+
+## Cloudflare build and local runtime check — 2026-11-05 evening
+- Build workflow: https://github.com/sevans70-web/Sach-Sports-Dashboard/actions/runs/42147810782 — passed after removing Railway `output: "standalone"` from **test branch only**.
+- `vinext init --platform=cloudflare --cdn-cache=none --data-cache=none --image-optimization=none --no-prerender` succeeded in isolated CI runner.
+- `npm run build:vinext` completed successfully; no Cloudflare account or billing was used.
+- First local preview attempts missed the port/IPv4 binding; corrected those in the test harness.
+- Actual local workerd preview launched and served routes, but `/api/health`, `/`, `/nba`, `/nfl`, `/nhl`, `/cfb`, `/cbb` all returned HTTP 500.
+- Response body: `Error: The Session method is not implemented` in Miniflare `core/entry.worker.js`. This is an unresolved local Worker runtime blocker, not evidence of successful page serving or necessarily an application-level bug.
+- Diagnostic run: https://github.com/sevans70-web/Sach-Sports-Dashboard/actions/runs/42148934322 .
+- Do not deploy or migrate until a real Worker preview returns 200 on health and sports routes. Investigate local Miniflare/cf compatibility and generate persistent safe Cloudflare config.
