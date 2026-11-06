@@ -131,6 +131,13 @@ async function runCycle(base: string, deep = false) {
 }
 
 export async function register() {
+  // Cloudflare Workers use request-scoped execution: Node inspector.Session and
+  // persistent interval-based capture jobs are not available. Scheduled capture
+  // must be migrated separately before production cutover.
+  if (typeof (globalThis as { WebSocketPair?: unknown }).WebSocketPair === "function") {
+    console.info("[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled");
+    return;
+  }
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
   if (globalThis.__sachHistoryScheduler?.started) return;
