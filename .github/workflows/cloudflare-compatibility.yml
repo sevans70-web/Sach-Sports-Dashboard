@@ -68,7 +68,7 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           reachable=""
           for attempt in $(seq 1 30); do
-            for port in 8787 3001 3000; do
+            for port in 4173 8787 3001 3000; do
               status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "http://127.0.0.1:$port/api/health" || true)
               if [ "$status" != "000" ]; then reachable="$port"; break 2; fi
             done
