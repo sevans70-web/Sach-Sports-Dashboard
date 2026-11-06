@@ -63,7 +63,7 @@ jobs:
       - name: Local Worker smoke test (no external account)
         run: |
           set -u
-          npm run start:vinext > vinext-preview-output.log 2>&1 &
+          npm run start:vinext -- --host 127.0.0.1 --port 4173 > vinext-preview-output.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           reachable=""
