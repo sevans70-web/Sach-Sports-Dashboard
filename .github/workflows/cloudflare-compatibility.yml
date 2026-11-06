@@ -36,3 +36,36 @@ jobs:
           name: vinext-check-report
           path: frontend/vinext-check-output.log
           if-no-files-found: warn
+
+  workers-dry-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install existing dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Generate Cloudflare test configuration (runner only)
+        run: |
+          set -o pipefail
+          npx --yes vinext@latest init --platform=cloudflare --cdn-cache=none --data-cache=none --image-optimization=none --no-prerender --name=sach-sports-cloudflare-test 2>&1 | tee vinext-init-output.log
+      - name: Dry-build Cloudflare Worker (no deploy, no secrets)
+        run: |
+          set -o pipefail
+          npm run build:vinext 2>&1 | tee vinext-build-output.log
+      - name: Upload dry-build reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vinext-build-reports
+          path: |
+            frontend/vinext-init-output.log
+            frontend/vinext-build-output.log
+          if-no-files-found: warn
