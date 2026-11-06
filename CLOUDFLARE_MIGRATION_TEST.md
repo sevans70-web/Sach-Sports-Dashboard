@@ -25,3 +25,11 @@ This is an isolated migration experiment. Production remains on `nextjs-migratio
 - No automatic deployment of this branch to Railway production.
 - No changes to My Money HQ Worker or its D1 database.
 - No paid plan changes, data deletion or infrastructure shutdown until the independent deployment passes functional and archive verification.
+
+## Automated compatibility scan — passed (2026-11-06)
+- GitHub Actions: https://github.com/sevans70-web/Sach-Sports-Dashboard/actions/runs/42147330846
+- `npx --yes vinext@latest check` result: **100% compatible** (12 supported, 0 partial, 0 issues).
+- Detected 42 pages, 5 layouts, 70 route handlers, 1 loading boundary, Next.js 16 proxy.
+- 4/4 supported import groups and 2/2 supported config fields.
+- **This is an API/syntax compatibility scan, not a successful Workers build or runtime smoke test.** The persistent Node scheduler, child processes, filesystem storage, 128MB isolate limit and archive backup migration still need separate testing and redesign.
+- No Cloudflare deployment, production change, or paid subscription was performed by this check.
