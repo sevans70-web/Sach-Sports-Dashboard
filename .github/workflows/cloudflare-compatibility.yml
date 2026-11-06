@@ -86,7 +86,14 @@ jobs:
             echo "SMOKE_TEST path=$path status=$status"
             if [ "$path" = "/api/health" ] && [ "$status" != 200 ]; then fail=1; fi
           done
-          if [ "$fail" -ne 0 ]; then tail -100 vinext-preview-output.log; exit 1; fi
+          if [ "$fail" -ne 0 ]; then
+            echo "HEALTH_RESPONSE_BODY:"
+            curl -sS -i --max-time 10 "http://127.0.0.1:$reachable/api/health" | head -c 4000 || true
+            echo
+            echo "PREVIEW_LOG:"
+            tail -120 vinext-preview-output.log
+            exit 1
+          fi
       - name: Upload dry-build reports
         if: always()
         uses: actions/upload-artifact@v4
