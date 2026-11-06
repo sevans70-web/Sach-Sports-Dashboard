@@ -8,8 +8,11 @@ declare global {
     | undefined;
 }
 
-const SPORTS = ["nfl", "nba", "cfb", "nhl", "cbb", "soccer", "wnba", "mlb"] as const;
+// Only actively maintained leagues run background capture. Retired leagues remain available for historical reads.
+const SPORTS = ["nfl", "nba", "cfb", "nhl", "cbb"] as const;
 const TEN_MINUTES = 10 * 60 * 1000;
+// Safeguards still run between ten-minute captures, but avoid reprocessing each sport every 30 seconds.
+const SAFEGUARD_INTERVAL_MS = 120_000;
 
 async function sleep(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
@@ -65,6 +68,8 @@ async function runCycle(base: string, deep = false) {
       const suffix = deep ? "&deep=1" : "";
       const path = `/api/history/capture?sport=${sport}${suffix}`;
 
+      const measuredAt = performance.now();
+      const cpuAt = process.cpuUsage();
       try {
         const result = await hit(base, path, 180_000);
         console.log(
@@ -91,6 +96,16 @@ async function runCycle(base: string, deep = false) {
         }
       }
 
+      // Process-wide CPU includes concurrently running safeguards and requests;
+      // this is a per-sport capture-window estimate, not isolated Worker CPU billing.
+      const cpuUsed = process.cpuUsage(cpuAt);
+      console.info("[sach-sport-capture-profile]", JSON.stringify({
+        sport,
+        wallMs: Math.round(performance.now() - measuredAt),
+        processCpuMs: Math.round((cpuUsed.user + cpuUsed.system) / 1000),
+        cpuScope: "shared-process-capture-window",
+        deep,
+      }));
       // Avoid hammering the odds/data providers between sports.
       await sleep(1_500);
     }
@@ -150,7 +165,7 @@ export async function register() {
   const guards=new Set<string>(),guardLast=new Map<string,number>();let guardIndex=0;
   const guardTimer=setInterval(()=>{
     for(let count=0;count<SPORTS.length&&guards.size<2;count++){
-      const sport=SPORTS[guardIndex++%SPORTS.length];if(guards.has(sport)||Date.now()-(guardLast.get(sport)||0)<30_000)continue;
+      const sport=SPORTS[guardIndex++%SPORTS.length];if(guards.has(sport)||Date.now()-(guardLast.get(sport)||0)<SAFEGUARD_INTERVAL_MS)continue;
       guards.add(sport);guardLast.set(sport,Date.now());
       hit(base,`/api/history/safeguards?sport=${sport}`,240_000,"POST")
        .then(()=>{})
