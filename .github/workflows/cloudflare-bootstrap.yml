@@ -1,0 +1,45 @@
+name: Prepare Cloudflare test branch
+
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - '.github/workflows/cloudflare-bootstrap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  persist-config:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install existing dependencies
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+      - name: Generate test-only Cloudflare configuration
+        working-directory: frontend
+        run: npx --yes vinext@latest init --platform=cloudflare --cdn-cache=none --data-cache=none --image-optimization=none --no-prerender --name=sach-sports-cloudflare-test
+      - name: Verify generated configuration
+        run: |
+          test -f frontend/vite.config.ts
+          test -f frontend/cloudflare.config.ts
+          test -f frontend/package-lock.json
+          git status --short
+      - name: Save configuration to test branch only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/vite.config.ts frontend/cloudflare.config.ts frontend/package.json frontend/package-lock.json frontend/.gitignore
+          if ! git diff --cached --quiet; then
+            git commit -m "Persist tested vinext Cloudflare configuration in isolated branch"
+            git push origin HEAD:cloudflare-compatibility-test
+          fi
