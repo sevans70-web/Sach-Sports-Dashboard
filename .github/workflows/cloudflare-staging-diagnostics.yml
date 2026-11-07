@@ -1,4 +1,5 @@
 name: Cloudflare staging live API diagnostics
+# Run after configuring OWLS and SportsGameOdds Worker runtime secrets.
 
 on:
   push:
