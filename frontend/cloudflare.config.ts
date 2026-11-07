@@ -14,6 +14,8 @@ export default defineConfig({
     env: {
       ASSETS: bindings.assets(),
       VINEXT_KV_CACHE: bindings.kv(),
+      OWLS_INSIGHT_API_KEY: bindings.secret(),
+      SPORTSGAMEODDS_API_KEY: bindings.secret(),
     },
   }),
 });
