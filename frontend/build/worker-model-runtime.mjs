@@ -12,7 +12,7 @@ export function partitionModelRuntime(root){
  const gi=JSON.parse(readFileSync(resolve(root,'gi-calibration.json'),'utf8'));
  const giStatus=JSON.parse(readFileSync(resolve(root,'gi-status.json'),'utf8'));
  const partitions={};
- for(const sport of ['nba','cbb']){
+ for(const sport of ['nba','cbb','nfl','nhl']){
   const markets=[...new Set(data.models.filter(m=>m.group.startsWith(sport+'|')).map(m=>m.group.split('|')[1]))];
   const combinations={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
   for(const market of markets){

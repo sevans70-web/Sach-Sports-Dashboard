@@ -31,6 +31,8 @@ test('embedded loader executes without disk reads and combines the original comp
  const reloaded=runtime.workerModelRuntime('nba','points');
  assert.notEqual(reloaded,points,'switching markets evicts the previous decoded partition');
  assert.deepEqual(reloaded,points,'eviction preserves the original model and observations');
- assert.equal(runtime.workerModelRuntime('nfl','passing_yards'),null);
+ assert.equal(runtime.workerModelRuntime('nfl','passing_yards').models[0].group,'nfl|passing_yards');
+ assert.equal(runtime.workerModelRuntime('nhl','shots_on_goal').models[0].group,'nhl|shots_on_goal');
+ assert.equal(runtime.workerModelRuntime('nfl','first_td'),null);
  assert.equal(runtime.workerModelRuntime('nba','first_basket'),null);
 });
