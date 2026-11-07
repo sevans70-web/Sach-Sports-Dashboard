@@ -53,7 +53,7 @@ jobs:
       - name: Install existing dependencies
         run: npm ci --no-audit --no-fund
       - name: Test NBA fixture-key regression before dry-build
-        run: node --test tests/nba-fixture-identity.test.mjs
+        run: node --test tests/nba-fixture-identity.test.mjs tests/sgo-supplement.test.mjs
       - name: Verify committed Cloudflare test configuration
         run: |
           test -f vite.config.ts
