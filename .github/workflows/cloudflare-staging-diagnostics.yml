@@ -45,6 +45,7 @@ jobs:
                   for field in ('warning','feedWarning'):
                       if data.get(field): result[field]=str(data[field])[:170].replace('\\n',' ')
                   if data.get('rankingAudit'): result['rankingAudit']={k:data['rankingAudit'].get(k) for k in ('cards','missingCardFields')}
+                  if isinstance(data.get('quoteMatchAudit'),dict): result['quoteMatchAudit']={k:data['quoteMatchAudit'].get(k) for k in ('quotes','fixtures','rosterPlayers','matchedQuotes','quotedRows')}
           except Exception: pass
           print('WORKER_API_STATUS '+json.dumps(result,ensure_ascii=True))
           PY
