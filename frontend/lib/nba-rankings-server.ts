@@ -672,6 +672,25 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
  const eligible=availablePregameRankings(await attachBasketballPregameContext(raw,'nba'));
  const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
+ // Aggregate-only evidence for staging diagnostics. Do not expose players,
+ // individual lines, sportsbook credentials or unvalidated selections.
+ if(payload.quoteMatchAudit&&Array.isArray(payload.rows)){
+  const reasons:Record<string,number>={};
+  for(const row of payload.rows){
+   const reason=String(row.researchForecast?.reason||row.researchForecast?.selectionReason||row.researchForecast?.status||'none');
+   reasons[reason]=(reasons[reason]||0)+1;
+  }
+  payload.quoteMatchAudit={
+   ...payload.quoteMatchAudit,
+   pregameRows:payload.rows.length,
+   integrityVerifiedQuotes:payload.rows.filter((row:any)=>row.quoteVerified===true).length,
+   rowsWithLine:payload.rows.filter((row:any)=>typeof row.sportsbookLine==='number'&&Number.isFinite(row.sportsbookLine)).length,
+   fittedForecasts:payload.rows.filter((row:any)=>row.researchForecast?.status==='available').length,
+   researchSelections:payload.rows.filter((row:any)=>Boolean(row.researchForecast?.modelSelection)).length,
+   forecastReasons:reasons
+  };
+ }
+
  // An unpriced quarter has no saved betting evidence. Do not let an empty
  // featured archive write delay navigation or replace a prior quoted board.
  if(unpricedNbaQuarter(payload))return publicNbaBoard({...payload,boardDay:day});
