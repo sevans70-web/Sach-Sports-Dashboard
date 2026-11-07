@@ -13,7 +13,8 @@ export default defineConfig({
     },
     env: {
       ASSETS: bindings.assets(),
-      VINEXT_KV_CACHE: bindings.kv(),
+      // Preserve the existing staging namespace confirmed in the deployment diff.
+      VINEXT_KV_CACHE: bindings.kv({ id: "644df6a469e84dba90c8f7dac410f895" }),
       OWLS_INSIGHT_API_KEY: bindings.secret(),
       SPORTSGAMEODDS_API_KEY: bindings.secret(),
     },
