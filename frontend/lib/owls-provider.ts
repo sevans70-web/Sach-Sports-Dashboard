@@ -8,6 +8,9 @@ export function owlsFailureCategory(error: unknown): string {
  if (/key is missing|not configured|missing from Railway/i.test(message)) return "worker_secret_missing";
  const status=/^Owls Insight returned (\d{3})$/.exec(message);
  if(status) return "provider_http_"+status[1];
+ if(/too many subrequests/i.test(message))return "worker_subrequest_limit";
+ if(/memory limit|cpu time/i.test(message))return "worker_resource_limit";
+ if(error instanceof SyntaxError)return "provider_invalid_json";
  if(/timeout|abort/i.test(message))return "request_timeout";
  return "provider_request_failed";
 }

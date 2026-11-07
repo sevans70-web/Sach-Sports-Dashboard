@@ -178,6 +178,7 @@ async function rowsForMarket(
 ){
  const board=boardForMarket(payload,market);
  const context=await loadSlateContext(overview);
+ payload.quoteMatchAudit={quotes:board.length,fixtures:context.games.length,rosterPlayers:context.entries.length,matchedQuotes:board.filter((b:any)=>chooseRosterEntry(context.byName.get(cleanNbaName(b.playerName))||[],b)).length};
 
  if(!context.games.length)return [];
 
@@ -476,6 +477,7 @@ async function buildNbaMarketRankingsRaw(
     rows:ranked,
     saved,
     feedWarning:payload?.feedWarning||null,
+    quoteMatchAudit:payload?.quoteMatchAudit||null,
     verifiedPredictions:marketBacked.length,
     warning:market.startsWith("q1_")?"No quarter-trained projection is available. Q1 bookmaker quotes are shown as market evidence, not Sasha picks.":market==="first_basket"?"Probabilities are sportsbook-implied, not an independent first-basket model.":undefined,
     updatedAt:new Date().toISOString(),
