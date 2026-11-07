@@ -27,3 +27,7 @@ Cloudflare docs: build variables are not runtime secrets; use Worker Settings ->
 - Public API probes diagnosed `worker_secret_missing` for OWLS-based NFL/CBB feeds despite keys being entered in Cloudflare UI.
 - Cloudflare's official docs permit `cloudflare:workers` env bindings and `process.env` under nodejs compatibility. Test branch now directly reads `cloudflare:workers` binding values for OWLS and SportsGameOdds, falling back to process.env. Never prints secret values.
 - Verify real staging HTTP responses after Worker deployment; do not confuse 200 with meaningful predicted rows.
+
+## November 7 binding verification
+- Read-only staging API tests continued to classify OWLS as `worker_secret_missing` even after direct `cloudflare:workers` import.
+- Typed config now explicitly declares `OWLS_INSIGHT_API_KEY: bindings.secret()` and `SPORTSGAMEODDS_API_KEY: bindings.secret()`; the build + local smoke checks passed. Live Worker must be deployed and probed again before success can be asserted.
