@@ -38,7 +38,13 @@ jobs:
                   result['success']=data.get('success')
                   result['rows']=len(data['rows']) if isinstance(data.get('rows'),list) else None
                   result['fields']=sorted(k for k in ('error','warning','market','source','boardDay','rows') if k in data)
-                  if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')\n              if label.startswith('nba'):\n                  for field in ('boardDay','noQualifyingRows','verifiedPredictions','verifiedQuoteCount','modelSelectionCount','publicRankingCount','boardFrozen','boardUnavailable','excludedUnavailable','researchCount','source'):\n                      if field in data: result[field]=data[field]\n                  for field in ('warning','feedWarning'):\n                      if data.get(field): result[field]=str(data[field])[:170].replace('\\n',' ')\n                  if data.get('rankingAudit'): result['rankingAudit']={k:data['rankingAudit'].get(k) for k in ('cards','missingCardFields')}
+                  if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')
+              if label.startswith('nba'):
+                  for field in ('boardDay','noQualifyingRows','verifiedPredictions','verifiedQuoteCount','modelSelectionCount','publicRankingCount','boardFrozen','boardUnavailable','excludedUnavailable','researchCount','source'):
+                      if field in data: result[field]=data[field]
+                  for field in ('warning','feedWarning'):
+                      if data.get(field): result[field]=str(data[field])[:170].replace('\\n',' ')
+                  if data.get('rankingAudit'): result['rankingAudit']={k:data['rankingAudit'].get(k) for k in ('cards','missingCardFields')}
           except Exception: pass
           print('WORKER_API_STATUS '+json.dumps(result,ensure_ascii=True))
           PY
