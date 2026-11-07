@@ -62,18 +62,25 @@ async function currentSlatePlayers(players:CbbPlayer[],games:CbbGame[]){
  const active=activeRankingSlate(games,dashboardDay),teams=new Map<string,string>();
  for(const g of active){if(g.awayTeamId)teams.set(g.awayTeamId,g.awayAbbr);if(g.homeTeamId)teams.set(g.homeTeamId,g.homeAbbr);}
  if(!teams.size)return [];
- const rosters=new Map<string,string>();let successful=0;
+ const rosters=new Map<string,{playerId:number;playerName:string;team:string}>();let successful=0;
  const entries=[...teams];
  for(let i=0;i<entries.length;i+=6)await Promise.all(entries.slice(i,i+6).map(async([id,abbr])=>{
   try{
    const p=await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/${id}/roster`,900);
-   const walk=(items:any[])=>{for(const item of items){if(Array.isArray(item?.items))walk(item.items);const athlete=item.athlete||item;if(athlete?.id)rosters.set(String(athlete.id),abbr)}};
+   const walk=(items:any[])=>{for(const item of items){if(Array.isArray(item?.items))walk(item.items);const athlete=item.athlete||item;if(athlete?.id)rosters.set(String(athlete.id),{playerId:Number(athlete.id),playerName:String(athlete.displayName||athlete.fullName||""),team:abbr})}};
    walk(Array.isArray(p.athletes)?p.athletes:[]);successful++;
   }catch{}
  }));
  // Historical leaders who were drafted or transferred must not be attached to
  // their old college. Only current provider roster membership verifies a team.
- return successful?players.filter(p=>rosters.has(String(p.playerId))).map(p=>({...p,team:rosters.get(String(p.playerId))!})):[];
+ return successful?cbbCurrentRosterPlayers(players,[...rosters.values()]):[];
+}
+export function cbbCurrentRosterPlayers(baseline:CbbPlayer[],roster:{playerId:number;playerName:string;team:string}[]):CbbPlayer[]{
+ const previous=new Map(baseline.map(p=>[p.playerId,p]));
+ return roster.filter(p=>Number.isFinite(p.playerId)&&p.playerId>0&&p.playerName&&p.team).map(p=>({
+  gamesPlayed:null,minutesPerGame:null,pointsPerGame:null,reboundsPerGame:null,assistsPerGame:null,threesPerGame:null,stealsPerGame:null,blocksPerGame:null,
+  ...previous.get(p.playerId),...p,
+ }));
 }
 export function cbbQuotedFixtures(games:CbbGame[],payload:any){
  const quotes=Array.isArray(payload?.data)?payload.data:[];

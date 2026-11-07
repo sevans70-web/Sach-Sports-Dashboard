@@ -8,3 +8,8 @@ test('roster loading is restricted to exact provider fixtures while rejecting ot
  assert.deepEqual(cbbQuotedFixtures([game],{data:[{...payload.data[0],commenceTime:'2026-11-09T00:30Z'}]}),[]);
  assert.deepEqual(cbbQuotedFixtures([game],{data:[]}),[]);
 });
+const {cbbCurrentRosterPlayers}=await loadTs(new URL('../lib/cbb.ts',import.meta.url));
+test('current roster identity includes newcomers without inventing baseline statistics or retaining alumni',()=>{
+ const rows=cbbCurrentRosterPlayers([{playerId:1,playerName:'Returning',team:'OLD',pointsPerGame:12},{playerId:2,playerName:'Departed',team:'OLD',pointsPerGame:20}],[{playerId:1,playerName:'Returning',team:'NEW'},{playerId:3,playerName:'Newcomer',team:'NEW'}]);
+ assert.equal(rows.length,2);assert.equal(rows[0].pointsPerGame,12);assert.equal(rows[0].team,'NEW');assert.equal(rows[1].pointsPerGame,null);assert.equal(rows[1].gamesPlayed,null);assert.ok(!rows.some(r=>r.playerId===2));
+});
