@@ -21,7 +21,7 @@ jobs:
         run: |
           set -u
           base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
-          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'cfb|/api/cfb/rankings-board' 'cbb|/api/cbb/rankings'; do
+          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'cfb|/api/cfb/rankings-board' 'cbb|/api/cbb/rankings' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket'; do
             label="${entry%%|*}"
             route="${entry#*|}"
             response="$(mktemp)"
@@ -38,7 +38,7 @@ jobs:
                   result['success']=data.get('success')
                   result['rows']=len(data['rows']) if isinstance(data.get('rows'),list) else None
                   result['fields']=sorted(k for k in ('error','warning','market','source','boardDay','rows') if k in data)
-                  if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')
+                  if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')\n              if label.startswith('nba'):\n                  for field in ('boardDay','noQualifyingRows','verifiedPredictions','verifiedQuoteCount','modelSelectionCount','publicRankingCount','boardFrozen','boardUnavailable','excludedUnavailable','researchCount','source'):\n                      if field in data: result[field]=data[field]\n                  for field in ('warning','feedWarning'):\n                      if data.get(field): result[field]=str(data[field])[:170].replace('\\n',' ')\n                  if data.get('rankingAudit'): result['rankingAudit']={k:data['rankingAudit'].get(k) for k in ('cards','missingCardFields')}
           except Exception: pass
           print('WORKER_API_STATUS '+json.dumps(result,ensure_ascii=True))
           PY
