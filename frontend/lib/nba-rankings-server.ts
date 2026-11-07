@@ -331,6 +331,7 @@ async function rowsForMarket(
    .map((x:any,i:number)=>({...x,rank:i+1}));
  }
 
+ if(payload.quoteMatchAudit)payload.quoteMatchAudit.quotedRows=rows.length;
  const used=new Set(
   rows.map((x:any)=>String(x.playerId||cleanNbaName(x.playerName)))
  );
