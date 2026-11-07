@@ -1,3 +1,4 @@
+import {workerModelRuntimePlugin} from "./build/worker-model-runtime.mjs";
 import { defineConfig } from "vite";
 import vinext from "vinext";
 import { kvDataAdapter } from "@vinext/cloudflare/cache/kv-data-adapter";
@@ -8,6 +9,7 @@ import path from "node:path";
 
 export default defineConfig({
   plugins: [
+    workerModelRuntimePlugin(),
     patchCssModules({ exportMode: "default" }),
     vinext({
       cache: {

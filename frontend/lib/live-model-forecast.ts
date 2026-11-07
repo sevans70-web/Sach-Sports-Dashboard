@@ -1,3 +1,4 @@
+import {workerModelRuntime} from "@/lib/worker-model-runtime";
 import {attachQuarterForecasts} from '@/lib/live-quarter-forecast';
 import {setImmediate as yieldToRequests} from 'node:timers/promises';
 import {basketballFeatureIndex} from '@/lib/basketball-model-inputs';
@@ -27,7 +28,9 @@ export function createRuntimeForecastIndex(observations:OpportunityGame[]){
  return {histories,basketball};
 }
 let cached:RuntimeBundle|null=null;
-function bundle():RuntimeBundle{
+function bundle(sport:string,market:string):RuntimeBundle{
+ const worker=workerModelRuntime(sport,market);
+ if(worker)return worker;
  if(cached)return cached;
  const root=join(process.cwd(),'model-runtime'),manifest=JSON.parse(readFileSync(join(root,'manifest.json'),'utf8'));
  const bytes=readFileSync(join(root,'snapshot.json.gz'));
@@ -109,7 +112,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  if(!Array.isArray(payload?.rows)||!payload.rows.length)return payload;
  payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
- let data:RuntimeBundle;try{data=bundle()}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
+ let data:RuntimeBundle;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
  if(sport==='nfl'||sport==='nhl'){
