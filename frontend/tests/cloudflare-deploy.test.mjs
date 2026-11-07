@@ -3,8 +3,8 @@ import {readFileSync,readdirSync} from 'node:fs';import {dirname,join} from 'nod
 import {allowApiSettingsUpdate} from '../scripts/deploy-cloudflare.mjs';
 test('deployment compatibility skips only API provenance while retaining strict config checks',()=>{
  const require=createRequire(import.meta.url),root=dirname(require.resolve('cf/package.json'));
- const file=readdirSync(join(root,'dist')).find(f=>/^deploy-input-.*\.mjs$/.test(f));const source=readFileSync(join(root,'dist',file),'utf8');
+ const file=readdirSync(join(root,'dist')).find(f=>/^containers-.*\.mjs$/.test(f)&&readFileSync(join(root,'dist',f),'utf8').includes('else if(l.last_deployed_from===`api`'));const source=readFileSync(join(root,'dist',file),'utf8');
  const result=allowApiSettingsUpdate(source);
- assert.equal(result.replace('skipLastDeployedFromApiCheck:!0','skipLastDeployedFromApiCheck:!1'),source);
- assert.ok(result.includes('strict:!0'));assert.throws(()=>allowApiSettingsUpdate('unknown cli version'),/review deployment/i);
+ assert.equal(result.replace('else if(false&&l.last_deployed_from===`api`','else if(l.last_deployed_from===`api`'),source);
+ assert.ok(result.includes('Aborting the upload operation because of conflicts'));assert.throws(()=>allowApiSettingsUpdate('unknown cli version'),/review deployment/i);
 });

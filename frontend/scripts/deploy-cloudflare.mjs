@@ -8,16 +8,16 @@ import {fileURLToPath} from 'node:url';
 // conflict, even after that configuration has been committed. Skip only this
 // provenance check; retain strict configuration-difference checks and secrets.
 export function allowApiSettingsUpdate(source){
- const marker='skipLastDeployedFromApiCheck:!1';
- if(source.split(marker).length!==2||!source.includes('strict:!0'))throw Error('Cloudflare CLI changed; review deployment compatibility before uploading');
- return source.replace(marker,'skipLastDeployedFromApiCheck:!0');
+ const marker='else if(l.last_deployed_from===`api`';
+ if(source.split(marker).length!==2||!source.includes('strictMode'))throw Error('Cloudflare CLI changed; review deployment compatibility before uploading');
+ return source.replace(marker,'else if(false&&l.last_deployed_from===`api`');
 }
 export function deploy(){
  const require=createRequire(import.meta.url),root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
  const cfRoot=dirname(require.resolve('cf/package.json'));
  const version=JSON.parse(readFileSync(join(cfRoot,'package.json'),'utf8')).version;
  if(version!=='1.0.0-beta.28')throw Error('Review Cloudflare CLI compatibility for '+version);
- const candidates=readdirSync(join(cfRoot,'dist')).filter(name=>/^deploy-input-.*\.mjs$/.test(name));
+ const candidates=readdirSync(join(cfRoot,'dist')).filter(name=>/^containers-.*\.mjs$/.test(name)&&readFileSync(join(cfRoot,'dist',name),'utf8').includes('else if(l.last_deployed_from===`api`'));
  if(candidates.length!==1)throw Error('Cloudflare deploy input module is ambiguous');
  const target=join(cfRoot,'dist',candidates[0]),original=readFileSync(target,'utf8');
  if(!existsSync(join(root,'.cloudflare/output/v0/workers/default/worker.config.json')))throw Error('Build the Worker with npm run build:vinext first');
