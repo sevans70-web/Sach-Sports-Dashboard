@@ -8,3 +8,19 @@ export function nbaQuotePlayerFixtureKey(quote:{playerName?:unknown;gameTime?:un
 export function nbaOfficialPlayerFixtureKey(row:{gameId?:unknown;playerId?:unknown;playerName?:unknown}){
  return fixture(row.gameId)+'|'+(fixture(row.playerId)||player(row.playerName));
 }
+
+/** Deduplicate by the *official* game ID after fixture matching, not by the
+ * sportsbook's kickoff timestamp (books can differ by several minutes).
+ * Quotes for another fixture of the same player must remain distinct. */
+export function dedupeNbaFixtureQuotes<T extends {bookmakerCount?:number}>(
+  matched:{quote:T;gameId:unknown;playerId:unknown;playerName:unknown}[]
+):T[]{
+ const selected=new Map<string,T>();
+ for(const {quote,gameId,playerId,playerName} of matched){
+  const key=nbaOfficialPlayerFixtureKey({gameId,playerId,playerName});
+  if(!gameId||!key||key.endsWith('|'))continue;
+  const current=selected.get(key);
+  if(!current||Number(quote.bookmakerCount||0)>Number(current.bookmakerCount||0))selected.set(key,quote);
+ }
+ return [...selected.values()];
+}
