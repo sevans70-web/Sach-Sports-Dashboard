@@ -8,7 +8,7 @@ import {footballQuoteFields} from "@/lib/football-book-quotes";
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {cleanCbbName,loadCbbOverview,playerBaseline,type CbbMarketKey,CBB_MARKETS,cbbHeadshot} from "@/lib/cbb";
 import {getCbbPredictions,saveCbbPredictions} from "@/lib/cbb-history";
-import {getOwlsPayload} from "@/lib/owls-provider";
+import {getOwlsPayload,owlsFailureCategory} from "@/lib/owls-provider";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 
@@ -86,12 +86,12 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
 async function buildCbbMarketRankingsRaw(market:CbbMarketKey,shared?:{payload:any;overview:any}){
  try{
   const overview=shared?.overview??await loadCbbOverview();
-  let payload:any=shared?.payload??{data:[]};let owlsOk=Boolean(shared?.payload);
-  if(!shared){try{payload=await fetchOwlsPayload();owlsOk=true}catch{owlsOk=false}}
+  let payload:any=shared?.payload??{data:[]};let owlsOk=Boolean(shared?.payload);let owlsError="";
+  if(!shared){try{payload=await fetchOwlsPayload();owlsOk=true}catch(error){owlsOk=false;owlsError=owlsFailureCategory(error)}}
   const ranked=rowsForMarket(payload,overview,market);
   if(ranked.length){const marketBacked=ranked.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.modelProjection!=null&&x.prediction);const saved=marketBacked.length?await saveCbbPredictions(market,marketBacked).catch(()=>false):false;return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:owlsOk?"Owls Insight CBB props + ESPN CBB data":"ESPN 2025–26 baseline fallback"};}
   const baseline=baselineRows(overview,market);if(baseline.length)return {success:true,market,rows:baseline,saved:false,updatedAt:new Date().toISOString(),source:"ESPN 2025–26 baseline fallback"};
-  throw new Error(owlsOk?`No current ${market} market rows are available.`:"Owls Insight CBB props are not currently available.");
+  throw new Error(owlsOk?`No current ${market} market rows are available.`:"Owls Insight CBB props are not currently available: "+(owlsError||"provider_empty_feed"));
  }catch(e:any){
   const today=torontoCbbDay(new Date());
   const saved=await getCbbPredictions(market,today).catch(()=>({connected:false,predictions:[]} as any));
