@@ -59,7 +59,7 @@ jobs:
           output="$(mktemp)"
           status="$(curl -sS --max-time 40 -o "$output" -w '%{http_code}' "$url" || true)"
           python3 - "$output" "$status" <<'PY'
-          import json,sys,collections
+          import json,sys,collections,datetime
           path,status=sys.argv[1:]
           try:
               data=json.load(open(path))
@@ -73,10 +73,24 @@ jobs:
                       stats['books']+=1
                       for prop in book.get('props',[]):
                           stats['pointsProps']+=1
+                          stamp=prop.get('lastUpdate')
+                          try:
+                              dt=datetime.datetime.fromisoformat(stamp.replace('Z','+00:00'))
+                              age=(datetime.datetime.now(datetime.timezone.utc)-dt).total_seconds()/60
+                              stats['fresh15m' if -1<=age<=15 else 'stale']+=1
+                          except Exception: stats['invalidTimestamp']+=1
+                          try:
+                              line=float(prop.get('line'))
+                              stats['validHalfLine' if line>=0 and line*2==int(line*2) else 'invalidLine']+=1
+                          except Exception: stats['invalidLine']+=1
+                          try:
+                              a=float(prop.get('overPrice'));b=float(prop.get('underPrice'))
+                              stats['twoSidedPrices' if abs(a)>=100 and abs(b)>=100 else 'invalidPrices']+=1
+                          except Exception: stats['invalidPrices']+=1
                           categories[str(prop.get('category'))]+=1
                           if len(samples)<4:
                               samples.append({'fields':sorted(prop.keys()),'category':prop.get('category'),'hasLine':prop.get('line') is not None,'hasPrices':prop.get('overPrice') is not None and prop.get('underPrice') is not None,'hasQuoteTime':bool(prop.get('lastUpdate')),'main':prop.get('isMainLine'),'alternate':prop.get('isAlternate'),'marketStructure':prop.get('marketStructure')})
-              report={'http':status,'fixtures':stats['fixtures'],'books':stats['books'],'pointsProps':stats['pointsProps'],'categories':dict(categories),'samples':samples,'error':str(data.get('error',''))[:90]}
+              report={'http':status,'fixtures':stats['fixtures'],'books':stats['books'],'pointsProps':stats['pointsProps'],'fresh15m':stats['fresh15m'],'stale':stats['stale'],'twoSidedPrices':stats['twoSidedPrices'],'validHalfLine':stats['validHalfLine'],'invalidLine':stats['invalidLine'],'categories':dict(categories),'samples':samples,'error':str(data.get('error',''))[:90]}
               print('NBA_PRIMARY_FEED_STATUS '+json.dumps(report))
           except Exception as e: print('NBA_PRIMARY_FEED_STATUS '+json.dumps({'http':status,'parseError':type(e).__name__}))
           PY
