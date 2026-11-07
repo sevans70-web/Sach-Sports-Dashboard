@@ -1,5 +1,5 @@
 name: Cloudflare staging live API diagnostics
-# Re-run after direct Cloudflare Workers bindings for sportsbook secrets deployed.
+# Verify live API after explicit secret binding declarations; probe is read only.
 
 on:
   push:
