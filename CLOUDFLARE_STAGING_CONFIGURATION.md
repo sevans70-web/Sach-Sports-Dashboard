@@ -22,3 +22,8 @@ Read Railway production service `marvelous-wholeness` variable NAMES ONLY (no va
 5. Performance and billing tests and 7-day history restoration gates before traffic cutover / Railway shutdown.
 
 Cloudflare docs: build variables are not runtime secrets; use Worker Settings -> Variables and Secrets (Secret type). The Worker's `nodejs_compat` and 2026-11-06 compatibility date allow access to runtime secrets through `process.env`.
+
+## Runtime secrets diagnostic update — November 7, 2026
+- Public API probes diagnosed `worker_secret_missing` for OWLS-based NFL/CBB feeds despite keys being entered in Cloudflare UI.
+- Cloudflare's official docs permit `cloudflare:workers` env bindings and `process.env` under nodejs compatibility. Test branch now directly reads `cloudflare:workers` binding values for OWLS and SportsGameOdds, falling back to process.env. Never prints secret values.
+- Verify real staging HTTP responses after Worker deployment; do not confuse 200 with meaningful predicted rows.
