@@ -5,6 +5,9 @@ async function moduleUrl(file){
  if(urls.has(file.href))return urls.get(file.href);
  const source=await readFile(file,'utf8');
  let code=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
+ // Node has no Workers binding module. Provider unit tests exercise their
+ // existing process.env fallback; real binding access is checked in Workers.
+ code=code.replace(/from ["']cloudflare:workers["']/g,'from "data:text/javascript,export const env = {}"');
  for(const match of [...code.matchAll(/from ["'](\.{1,2}\/[^"']+\.mjs)["']/g)])code=code.replace(match[1],await moduleUrl(new URL(match[1],file)));
  for(const match of [...code.matchAll(/from ["'](@\/[^"']+)["']/g)]){
   const dependency=new URL('../'+match[1].slice(2)+'.ts',import.meta.url);

@@ -41,13 +41,13 @@ async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{const
 async function loadPlayers():Promise<CbbPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:CBB_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
-export async function loadCbbGames():Promise<CbbGame[]>{
+export async function loadCbbGames(fullCalendar=true):Promise<CbbGame[]>{
  // ESPN's scoreboard endpoint is reliable for a single YYYYMMDD date. Large
  // date ranges can return an empty events array during the preseason/offseason,
  // so query individual days instead. This window includes recent games for live/
  // final state plus the next 45 days, which comfortably reaches the next slate.
  const now=new Date();
- const dates=Array.from({length:48},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
+ const dates=Array.from({length:fullCalendar?48:8},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
  const payloads=await successfulPayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&groups=50&limit=1000`,60)),"CBB");
  const seen=new Set<string>();const games:CbbGame[]=[];
  for(const payload of payloads)for(const v of list(payload.events)){
@@ -56,6 +56,7 @@ export async function loadCbbGames():Promise<CbbGame[]>{
   const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);
   seen.add(id);games.push({gameId:id,season:text(record(e.season).year??record(payload.season).year)||null,awayTeamId:text(at.id),homeTeamId:text(ht.id),tipoff:text(e.date)||null,neutralSite:c.neutralSite===true,awayTeamAliases:[at.displayName,at.shortDisplayName,at.abbreviation].map(text).filter(Boolean),homeTeamAliases:[ht.displayName,ht.shortDisplayName,ht.abbreviation].map(text).filter(Boolean),awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
  }
+ if(!fullCalendar&&!games.some(g=>g.state!=='post'&&Date.parse(g.tipoff||'')>Date.now()))return loadCbbGames(true);
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
 async function currentSlatePlayers(players:CbbPlayer[],games:CbbGame[]){
@@ -87,7 +88,7 @@ export function cbbQuotedFixtures(games:CbbGame[],payload:any){
  return games.filter(game=>quotes.some((q:any)=>quoteMatchesFixture({matchup:`${q.awayTeam||q.away_team||""} @ ${q.homeTeam||q.home_team||""}`,gameTime:q.commenceTime||q.commence_time||q.startTime||q.date},game)));
 }
 export async function loadCbbOverview(quotePayload?:any):Promise<CbbOverview>{
- const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadCbbGames()]);
+ const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadCbbGames(false)]);
  const baseline=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];
  if(pr.status==="rejected")warnings.push("College basketball player statistics are temporarily unavailable.");
  if(gr.status==="rejected")warnings.push("The college basketball schedule is temporarily unavailable.");

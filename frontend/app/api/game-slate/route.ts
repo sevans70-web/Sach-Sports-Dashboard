@@ -202,7 +202,7 @@ async function enrichBasketballLiveStatus(
 
   return Promise.all(
     games.map(async game => {
-      if (game.state === "pre" || !game.id) return game;
+      if (game.state !== "in" || !game.id) return game;
 
       try {
         const payload = await fetchJson(
@@ -488,7 +488,7 @@ export async function GET(req:NextRequest) {
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "nba",
-          (await loadNbaGames(calendar)).map(game => fromOverview("nba", game))
+          dailyWindow((await loadNbaGames(calendar)).map(game => fromOverview("nba", game)))
         )
       );
     } else if(sport === "wnba") {
@@ -506,7 +506,7 @@ export async function GET(req:NextRequest) {
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "cbb",
-          (await loadCbbGames()).map(game => fromOverview("cbb", game))
+          dailyWindow((await loadCbbGames(calendar)).map(game => fromOverview("cbb", game)))
         )
       );
     }
