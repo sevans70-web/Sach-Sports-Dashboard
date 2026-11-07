@@ -51,4 +51,35 @@ jobs:
             rm -f "$response"
           done
 
+      - name: Analyze bounded NBA OWLS points feed without exposing player data
+        shell: bash
+        run: |
+          set -u
+          url='https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample'
+          output="$(mktemp)"
+          status="$(curl -sS --max-time 40 -o "$output" -w '%{http_code}' "$url" || true)"
+          python3 - "$output" "$status" <<'PY'
+          import json,sys,collections
+          path,status=sys.argv[1:]
+          try:
+              data=json.load(open(path))
+              games=data.get('games',[])
+              stats=collections.Counter()
+              categories=collections.Counter()
+              samples=[]
+              for game in games:
+                  stats['fixtures']+=1
+                  for book in game.get('books',[]):
+                      stats['books']+=1
+                      for prop in book.get('props',[]):
+                          stats['pointsProps']+=1
+                          categories[str(prop.get('category'))]+=1
+                          if len(samples)<4:
+                              samples.append({'fields':sorted(prop.keys()),'category':prop.get('category'),'hasLine':prop.get('line') is not None,'hasPrices':prop.get('overPrice') is not None and prop.get('underPrice') is not None,'hasQuoteTime':bool(prop.get('lastUpdate')),'main':prop.get('isMainLine'),'alternate':prop.get('isAlternate'),'marketStructure':prop.get('marketStructure')})
+              report={'http':status,'fixtures':stats['fixtures'],'books':stats['books'],'pointsProps':stats['pointsProps'],'categories':dict(categories),'samples':samples,'error':str(data.get('error',''))[:90]}
+              print('NBA_PRIMARY_FEED_STATUS '+json.dumps(report))
+          except Exception as e: print('NBA_PRIMARY_FEED_STATUS '+json.dumps({'http':status,'parseError':type(e).__name__}))
+          PY
+          rm -f "$output"
+
 # Re-run read-only smoke checks after Cloudflare API confirms new active deployments\n# 2026-11-07: confirm NBA, CFB and CBB actual row availability after deploy repair.
