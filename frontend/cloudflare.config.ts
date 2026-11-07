@@ -6,6 +6,7 @@ export default defineConfig({
     entrypoint: "vinext/server/fetch-handler",
     compatibilityDate: "2026-11-06",
     compatibilityFlags: ["nodejs_compat"],
+    limits: { subrequests: 200 },
     observability: {
       enabled: true,
       headSamplingRate: 1,
@@ -24,6 +25,7 @@ export default defineConfig({
       VINEXT_KV_CACHE: bindings.kv({ id: "644df6a469e84dba90c8f7dac410f895" }),
       OWLS_INSIGHT_API_KEY: bindings.secret(),
       SPORTSGAMEODDS_API_KEY: bindings.secret(),
+      SUPABASE_URL: bindings.secret(),
     },
   }),
 });

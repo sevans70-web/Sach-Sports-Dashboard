@@ -24,6 +24,7 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
  if(get===officialJson){const hit=cache.get(key);if(hit&&hit.expires>now)return hit.value;if(pending.has(key))return pending.get(key)!}
  const task=(async()=>{
   const unavailable=new Set<string>(),fixtures=new Map<string,{season:string;players:Set<string>}>();
+  let gamelogFailures=0,fixtureFailures=0;
   const recent=now-21*86400000,cutoff=now-48*3600000;
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
    const playerId=String(row.playerId),season=seasonFor(row);
@@ -38,7 +39,7 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
      if(fixture.season!==season)throw Error('Conflicting fixture seasons');
      fixture.players.add(playerId);fixtures.set(id,fixture);
     }
-   }catch{unavailable.add(playerId)}
+   }catch{gamelogFailures++;unavailable.add(playerId)}
   }));
   const observations:OpportunityGame[]=[];
   const jobs=[...fixtures];
@@ -50,8 +51,9 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
     const p=await get(source),parsed=basketballModelObservations(p,{sport,season:fixture.season,gameId,source,retrievedAt:new Date(now).toISOString()});
     if(!parsed.length||[...fixture.players].some(id=>!parsed.some(r=>r.playerId===id)))throw Error('Incomplete official fixture census');
     observations.push(...parsed);
-   }catch{for(const id of fixture.players)unavailable.add(id)}
+   }catch{fixtureFailures++;for(const id of fixture.players)unavailable.add(id)}
   }));
+  console.info('[basketball refresh audit]',JSON.stringify({sport,players:players.length,discoveredFixtures:jobs.length,omittedFixtures:Math.max(0,jobs.length-64),gamelogFailures,fixtureFailures,unavailablePlayers:unavailable.size,observations:observations.length}));
   const value={observations,unavailablePlayers:[...unavailable].sort(),checkedAt:new Date(now).toISOString()};
   if(get===officialJson){if(cache.size>=32)cache.delete(cache.keys().next().value!);cache.set(key,{expires:now+(unavailable.size?30_000:15*60_000),value})}
   return value;
