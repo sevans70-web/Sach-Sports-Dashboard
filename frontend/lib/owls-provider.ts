@@ -1,6 +1,15 @@
 import {providerFetch} from "@/lib/provider-fetch";
 import {nativeBasketballCoverage} from '@/lib/native-basketball-coverage';
 type Sport="nfl"|"ncaaf"|"nba"|"wnba"|"nhl"|"soccer"|"cbb";
+/** Safe failure category; never return provider credentials or response bodies. */
+export function owlsFailureCategory(error: unknown): string {
+ const message=error instanceof Error?error.message:String(error);
+ if (/key is missing|not configured|missing from Railway/i.test(message)) return "worker_secret_missing";
+ const status=/^Owls Insight returned (\d{3})$/.exec(message);
+ if(status) return "provider_http_"+status[1];
+ if(/timeout|abort/i.test(message))return "request_timeout";
+ return "provider_request_failed";
+}
 const cache=new Map<Sport,{expires:number;payload?:any;error?:string}>();
 const pending=new Map<Sport,Promise<any>>();
 const sourceCache=new Map<string,{expires:number;payload?:any;error?:string}>();
@@ -101,7 +110,7 @@ export async function getOwlsPayload(sport:Sport){
  const running=pending.get(sport);if(running)return running;
  const work=(async()=>{
   const key=process.env.OWLS_INSIGHT_API_KEY?.trim();
-  if(!key)throw new Error("OWLS_INSIGHT_API_KEY is missing from Railway.");
+  if(!key)throw new Error("OWLS_INSIGHT_API_KEY is not configured in this runtime.");
   const providerSport=sport==="cbb"?"ncaab":sport;
   const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${providerSport}/props`,{headers:{Authorization:`Bearer ${key}`,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
   if(!response.ok){
