@@ -45,4 +45,4 @@ jobs:
             rm -f "$response"
           done
 
-# Read-only smoke test after production runtime secrets were added November 7.
+# Re-run read-only smoke checks after Cloudflare API confirms new active deployments\n# 2026-11-07: confirm NBA, CFB and CBB actual row availability after deploy repair.
