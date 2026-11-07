@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vinext from "vinext";
+import { kvDataAdapter } from "@vinext/cloudflare/cache/kv-data-adapter";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { createHash } from "node:crypto";
 import { patchCssModules } from "vite-css-modules";
@@ -8,7 +9,11 @@ import path from "node:path";
 export default defineConfig({
   plugins: [
     patchCssModules({ exportMode: "default" }),
-    vinext(),
+    vinext({
+      cache: {
+        data: kvDataAdapter(),
+      },
+    }),
     cloudflare({
       viteEnvironment: {
         name: "rsc",
