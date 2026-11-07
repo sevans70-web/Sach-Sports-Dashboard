@@ -1,5 +1,5 @@
 name: Cloudflare staging live API diagnostics
-# Re-run after sanitized NFL/CBB provider failure diagnostics deployed to staging.
+# Re-run after direct Cloudflare Workers bindings for sportsbook secrets deployed.
 
 on:
   push:
