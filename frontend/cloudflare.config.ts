@@ -26,6 +26,9 @@ export default defineConfig({
       OWLS_INSIGHT_API_KEY: bindings.secret(),
       SPORTSGAMEODDS_API_KEY: bindings.secret(),
       SUPABASE_URL: bindings.secret(),
+      // Required for verified, persistent history writes on Workers. Store only
+      // in the Cloudflare runtime-secret vault; never inline the credential.
+      SUPABASE_SECRET_KEY: bindings.secret(),
     },
   }),
 });
