@@ -22,6 +22,7 @@ import {nativeFirstBasketRows} from '@/lib/native-first-basket';
 import {getNbaFirstBasketSource} from '@/lib/owls-provider';
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {nbaQuoteMatchesGame,nbaQuoteMatchesRosterTeam} from "@/lib/nba-game-match";
+import {nbaQuotePlayerFixtureKey,nbaOfficialPlayerFixtureKey} from "@/lib/nba-fixture-identity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -194,7 +195,7 @@ async function rowsForMarket(
 
  const uniqueBoard=[
   ...board.filter((b:any)=>chooseRosterEntry(context.byName.get(cleanNbaName(b.playerName))||[],b)).reduce((acc:Map<string,any>,b:any)=>{
-   const key=cleanNbaName(b.playerName);
+   const key=nbaQuotePlayerFixtureKey(b);
    const existing=acc.get(key);
 
    if(
@@ -333,14 +334,14 @@ async function rowsForMarket(
 
  if(payload.quoteMatchAudit)payload.quoteMatchAudit.quotedRows=rows.length;
  const used=new Set(
-  rows.map((x:any)=>String(x.playerId||cleanNbaName(x.playerName)))
+  rows.map((x:any)=>nbaOfficialPlayerFixtureKey(x))
  );
 
  const fillers=context.entries.map((entry)=>{
   const {game,roster,player:rosterPlayer}=entry;
 
   const id=String(rosterPlayer.playerId||"");
-  const dedupe=id||cleanNbaName(rosterPlayer.playerName);
+  const dedupe=nbaOfficialPlayerFixtureKey({gameId:game.gameId,playerId:id,playerName:rosterPlayer.playerName});
 
   if(used.has(dedupe))return null;
 
@@ -407,7 +408,7 @@ async function rowsForMarket(
  const seen=new Set<string>();
 
  for(const row of [...rows,...fillers]){
-  const key=String(row.playerId||cleanNbaName(row.playerName));
+  const key=nbaOfficialPlayerFixtureKey(row);
   if(!key||seen.has(key))continue;
   seen.add(key);
   merged.push(row);
