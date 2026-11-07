@@ -15,3 +15,14 @@ export function nbaPropMatchesGame(prop:any,game:any){
  if(sides.length!==2)return false;
  return nickname(sides[0])===nickname(game.awayTeam)&&nickname(sides[1])===nickname(game.homeTeam);
 }
+
+/** Providers may identify a player's team by full name or league abbreviation.
+ * Compare against the official matched roster; never treat an unknown tag as a match. */
+export function nbaQuoteMatchesRosterTeam(prop:any,roster:any){
+ const norm=(v:unknown)=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const tag=norm(prop.playerTeam??prop.teamName);if(!tag)return true;
+ const abbr=norm(roster.teamAbbr);
+ const aliases:Record<string,string[]>={ny:['nyk'],gs:['gsw'],sa:['sas'],no:['nop'],uta:['utah'],phx:['pho'],bkn:['brk']};
+ const candidates=[abbr,norm(roster.teamName),...(aliases[abbr]||[])];
+ return candidates.includes(tag);
+}

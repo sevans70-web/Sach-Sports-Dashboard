@@ -21,7 +21,7 @@ import {guardRankingPayload} from "@/lib/prop-integrity";
 import {nativeFirstBasketRows} from '@/lib/native-first-basket';
 import {getNbaFirstBasketSource} from '@/lib/owls-provider';
 import {getOwlsPayload} from "@/lib/owls-provider";
-import {nbaQuoteMatchesGame} from "@/lib/nba-game-match";
+import {nbaQuoteMatchesGame,nbaQuoteMatchesRosterTeam} from "@/lib/nba-game-match";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -227,7 +227,7 @@ async function rowsForMarket(
 
   const propTeam=String(b.playerTeam||"").toUpperCase();
 
-  if(propTeam&&rosterTeam&&propTeam!==rosterTeam)return null;
+  if(!nbaQuoteMatchesRosterTeam(b,roster))return null;
 
   const baseline:any=
    baselineById.get(String(rosterPlayer.playerId))||
