@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {getSgoSupplement,sgoNbaGames,sgoBookGames}=await loadTs(new URL('../lib/sgo-supplement.ts',import.meta.url));
+const {getSgoSupplement,sgoNbaGames,sgoBookGames,sgoCooldownMilliseconds}=await loadTs(new URL('../lib/sgo-supplement.ts',import.meta.url));
 const {footballBookRows}=await loadTs(new URL('../lib/football-book-quotes.ts',import.meta.url));
 const {nbaPropMatchesGame}=await loadTs(new URL('../lib/nba-game-match.ts',import.meta.url));
 test('all football markets share one authenticated league request and honor rate-limit cooldown',async()=>{
@@ -27,4 +27,15 @@ test('first basket retains the actual named-book scorer price without manufactur
 test('NBA props require the correct opponent and day, never the nearest scheduled game',()=>{
  const game={awayTeam:'LA Clippers',homeTeam:'Phoenix Suns',tipoff:'2026-10-17T23:00:00Z'},prop={matchup:'Los Angeles Clippers @ Phoenix Suns',gameTime:'2026-10-17T23:00:00Z'};
  assert.equal(nbaPropMatchesGame(prop,game),true);assert.equal(nbaPropMatchesGame({...prop,gameTime:'2026-10-19T23:00:00Z'},game),false);assert.equal(nbaPropMatchesGame({...prop,matchup:'LA Clippers @ Los Angeles Lakers'},game),false);
+});
+
+test('unauthorized SGO keys get a bounded cooldown without blocking valid retries forever',()=>{
+ const now=Date.parse('2026-11-07T18:00:00Z');
+ assert.equal(sgoCooldownMilliseconds(401,null,now),30*60_000);
+ assert.equal(sgoCooldownMilliseconds(403,null,now),30*60_000);
+ assert.equal(sgoCooldownMilliseconds(429,'120',now),120*1000);
+ assert.equal(sgoCooldownMilliseconds(429,'bad',now),60*1000);
+ assert.equal(sgoCooldownMilliseconds(429,'90000',now),60*60_000);
+ assert.equal(sgoCooldownMilliseconds(500,null,now),0);
+ assert.equal(sgoCooldownMilliseconds(200,null,now),0);
 });
