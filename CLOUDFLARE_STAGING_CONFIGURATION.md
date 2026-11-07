@@ -31,3 +31,7 @@ Cloudflare docs: build variables are not runtime secrets; use Worker Settings ->
 ## November 7 binding verification
 - Read-only staging API tests continued to classify OWLS as `worker_secret_missing` even after direct `cloudflare:workers` import.
 - Typed config now explicitly declares `OWLS_INSIGHT_API_KEY: bindings.secret()` and `SPORTSGAMEODDS_API_KEY: bindings.secret()`; the build + local smoke checks passed. Live Worker must be deployed and probed again before success can be asserted.
+
+## Retest after Cloudflare build variable type correction
+- On November 7 user changed the two entries in Cloudflare settings from Variable to Secret.
+- Retest deployment after that edit. A Worker deploy requires runtime secrets, which may not be the same as build-time settings. Confirm actual Worker binding before calling it fixed.
