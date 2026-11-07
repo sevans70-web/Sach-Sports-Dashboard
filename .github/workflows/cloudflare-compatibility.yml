@@ -1,12 +1,9 @@
 name: Cloudflare compatibility check
 
+# Run the costly two-job validation explicitly when fixes are ready.
+# Cloudflare's Git push integration remains separate and unchanged.
 on:
   workflow_dispatch:
-  push:
-    branches: [cloudflare-compatibility-test]
-    paths:
-      - '.github/workflows/cloudflare-compatibility.yml'
-      - 'frontend/**'
 
 permissions:
   contents: read
