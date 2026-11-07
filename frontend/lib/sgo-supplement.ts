@@ -1,10 +1,11 @@
+import { workerRuntimeSecret } from "@/lib/worker-runtime-secret";
 import {providerFetch} from "@/lib/provider-fetch";
 const global=globalThis as typeof globalThis&{__sachSgoOdds?:{cache:Map<string,{at:number;data:any}>;pending:Map<string,Promise<any>>;cooldownUntil:number}};
 const state=global.__sachSgoOdds??(global.__sachSgoOdds={cache:new Map(),pending:new Map(),cooldownUntil:0});
 const {cache,pending}=state;
 /** Uses the same configured credentials as NFL/CFB, without extra setup. */
 export async function getSgoSupplement(leagueID:string){
- const key=process.env.SPORTSGAMEODDS_API_KEY||process.env.SPORTS_GAME_ODDS_API_KEY||process.env.SPORTSGAMEODDS_KEY;
+ const key=workerRuntimeSecret("SPORTSGAMEODDS_API_KEY")||workerRuntimeSecret("SPORTS_GAME_ODDS_API_KEY")||workerRuntimeSecret("SPORTSGAMEODDS_KEY");
  if(!key)return {data:[],warning:"Supplemental odds provider is not configured."};
  const hit=cache.get(leagueID);if(hit&&Date.now()-hit.at<300_000)return hit.data;
  if(Date.now()<state.cooldownUntil)return {data:[],warning:"Supplemental odds rate limit: waiting for provider retry window."};
