@@ -22,7 +22,7 @@ import {nativeFirstBasketRows} from '@/lib/native-first-basket';
 import {getNbaFirstBasketSource} from '@/lib/owls-provider';
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {nbaQuoteMatchesGame,nbaQuoteMatchesRosterTeam} from "@/lib/nba-game-match";
-import {nbaQuotePlayerFixtureKey,nbaOfficialPlayerFixtureKey} from "@/lib/nba-fixture-identity";
+import {dedupeNbaFixtureQuotes,nbaOfficialPlayerFixtureKey} from "@/lib/nba-fixture-identity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -193,21 +193,10 @@ async function rowsForMarket(
   )
  );
 
- const uniqueBoard=[
-  ...board.filter((b:any)=>chooseRosterEntry(context.byName.get(cleanNbaName(b.playerName))||[],b)).reduce((acc:Map<string,any>,b:any)=>{
-   const key=nbaQuotePlayerFixtureKey(b);
-   const existing=acc.get(key);
-
-   if(
-    !existing||
-    Number(b.bookmakerCount||0)>Number(existing.bookmakerCount||0)
-   ){
-    acc.set(key,b);
-   }
-
-   return acc;
-  },new Map<string,any>()).values()
- ] as any[];
+ const uniqueBoard=dedupeNbaFixtureQuotes(board.flatMap((b:any)=>{
+  const entry=chooseRosterEntry(context.byName.get(cleanNbaName(b.playerName))||[],b);
+  return entry?[{quote:b,gameId:entry.game.gameId,playerId:entry.player.playerId,playerName:entry.player.playerName}]:[];
+ }));
 
  const rows=uniqueBoard.map((b:any)=>{
   const rosterEntries=context.byName.get(
