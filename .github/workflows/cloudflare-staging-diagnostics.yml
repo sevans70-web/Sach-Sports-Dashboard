@@ -44,3 +44,5 @@ jobs:
           PY
             rm -f "$response"
           done
+
+# Read-only smoke test after production runtime secrets were added November 7.
