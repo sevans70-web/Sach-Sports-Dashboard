@@ -1,3 +1,4 @@
+import {quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {successfulPayloads} from "@/lib/provider-batch";
 import {statNumber} from "@/lib/provider-fetch";
@@ -74,12 +75,16 @@ async function currentSlatePlayers(players:CbbPlayer[],games:CbbGame[]){
  // their old college. Only current provider roster membership verifies a team.
  return successful?players.filter(p=>rosters.has(String(p.playerId))).map(p=>({...p,team:rosters.get(String(p.playerId))!})):[];
 }
-export async function loadCbbOverview():Promise<CbbOverview>{
+export function cbbQuotedFixtures(games:CbbGame[],payload:any){
+ const quotes=Array.isArray(payload?.data)?payload.data:[];
+ return games.filter(game=>quotes.some((q:any)=>quoteMatchesFixture({matchup:`${q.awayTeam||q.away_team||""} @ ${q.homeTeam||q.home_team||""}`,gameTime:q.commenceTime||q.commence_time||q.startTime||q.date},game)));
+}
+export async function loadCbbOverview(quotePayload?:any):Promise<CbbOverview>{
  const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadCbbGames()]);
  const baseline=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];
  if(pr.status==="rejected")warnings.push("College basketball player statistics are temporarily unavailable.");
  if(gr.status==="rejected")warnings.push("The college basketball schedule is temporarily unavailable.");
- const players=await currentSlatePlayers(baseline,games);
+ const players=await currentSlatePlayers(baseline,quotePayload===undefined?games:cbbQuotedFixtures(games,quotePayload));
  if(baseline.length&&!players.length)warnings.push("No current-roster player baseline is available for the next slate. Historical players are excluded.");
  return {season:CBB_SEASON,updatedAt:new Date().toISOString(),players,games,warnings};
 }

@@ -86,10 +86,10 @@ function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
 async function buildCbbMarketRankingsRaw(market:CbbMarketKey,shared?:{payload:any;overview:any}){
  try{
   // Start the primary quote read before the larger official-context request set.
-  const primary=shared?null:fetchOwlsPayload().then(payload=>({payload,error:""}),error=>({payload:null,error:owlsFailureCategory(error)}));
-  const overview=shared?.overview??await loadCbbOverview();
+  const primary=shared?null:await fetchOwlsPayload().then(payload=>({payload,error:""}),error=>({payload:null,error:owlsFailureCategory(error)}));
+  const overview=shared?.overview??await loadCbbOverview(primary?.payload??{data:[]});
   let payload:any=shared?.payload??{data:[]};let owlsOk=Boolean(shared?.payload);let owlsError="";
-  if(primary){const result=await primary;payload=result.payload??{data:[]};owlsOk=result.payload!=null;owlsError=result.error;}
+  if(primary){const result=primary;payload=result.payload??{data:[]};owlsOk=result.payload!=null;owlsError=result.error;}
   const ranked=rowsForMarket(payload,overview,market);
   if(ranked.length){const marketBacked=ranked.filter((x:any)=>x.marketBacked&&x.sportsbookLine!=null&&x.modelProjection!=null&&x.prediction);const saved=marketBacked.length?await saveCbbPredictions(market,marketBacked).catch(()=>false):false;return {success:true,market,rows:ranked,saved,updatedAt:new Date().toISOString(),source:owlsOk?"Owls Insight CBB props + ESPN CBB data":"ESPN 2025–26 baseline fallback"};}
   const baseline=baselineRows(overview,market);if(baseline.length)return {success:true,market,rows:baseline,saved:false,updatedAt:new Date().toISOString(),source:"ESPN 2025–26 baseline fallback"};
