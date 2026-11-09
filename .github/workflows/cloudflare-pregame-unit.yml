@@ -23,5 +23,6 @@ jobs:
           node --check frontend/worker-entry.mjs
           node --check frontend/scripts/worker-pregame-capture.mjs
           node --check frontend/scripts/worker-pregame-grade.mjs
+          node --check frontend/scripts/worker-pregame-backup.mjs
       - name: Run immutable original-pregame capture tests
-        run: node --test frontend/tests/worker-pregame-capture.test.mjs frontend/tests/worker-pregame-grade.test.mjs
+        run: node --test frontend/tests/worker-pregame-capture.test.mjs frontend/tests/worker-pregame-grade.test.mjs frontend/tests/worker-pregame-backup.test.mjs
