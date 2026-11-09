@@ -1051,11 +1051,11 @@ function PlayerCard({
         </div>
 
         <div className={styles.photoWrap}>
+          <div className={styles.photoFallback} aria-hidden="true">{initials(card.playerName)}</div>
           {card.headshot ? (
-            <img src={card.headshot} alt="" className={styles.photo} />
-          ) : (
-            <div className={styles.photoFallback}>{initials(card.playerName)}</div>
-          )}
+            <img src={card.headshot} alt="" className={styles.photo}
+              onError={event=>{event.currentTarget.style.display='none';}} />
+          ) : null}
 
           {card.teamLogo ? (
             <img src={card.teamLogo} alt="" className={styles.teamLogo} />
