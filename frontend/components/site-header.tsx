@@ -16,7 +16,7 @@ export function SiteHeader(){
   const timer=setTimeout(async()=>{try{
    const response=await fetch(`/api/player-search?q=${encodeURIComponent(q)}`,{signal:controller.signal});const data=await response.json();
    if(!response.ok||!data.success)throw Error(data.error||"Player search is temporarily unavailable. Please try again.");
-   if(!controller.signal.aborted){setResults(data.players||[]);setPartial(!!data.partial);setLimited(!!data.limited);}
+   if(!controller.signal.aborted){setResults((data.players||[]).filter((player:SearchPlayer)=>VISIBLE_SPORTS.includes(player.sport as DashboardSport)));setPartial(!!data.partial);setLimited(!!data.limited);}
   }catch(e){if(!controller.signal.aborted)setError(e instanceof Error?e.message:"Player search is temporarily unavailable. Please try again.");}
   finally{if(!controller.signal.aborted)setBusy(false);}},300);
   return()=>{controller.abort();clearTimeout(timer)};
