@@ -13,6 +13,7 @@ test('capture rotation covers all five active sports and every configured market
  assert.deepEqual(selected,new Set(CAPTURE_MARKETS.map(x=>x.sport+'|'+x.market)));
  assert.deepEqual(new Set(CAPTURE_MARKETS.map(x=>x.sport)),new Set(['nba','nfl','nhl','cfb','cbb']));
  assert.equal(marketsForCaptureTick(time).length,6);
+ assert.ok(CAPTURE_MARKETS.some(row=>row.sport==='nfl'&&row.market==='qb_rushing_yards'));
 });
 
 test('capture requires a fresh, verified official pregame quote and never invents a model selection',()=>{
@@ -36,6 +37,7 @@ test('capture requires a fresh, verified official pregame quote and never invent
 test('saved model pick must bind to exact quote and pricing; research baseline alone is not a model pick',()=>{
  const source=quote({researchForecast:{modelSelection:{side:'UNDER',line:22.5,quoteId:'exact-quote',sportsbookKey:'fanduel',price:-110,calculatedAt:'2026-11-09T18:59:30Z'},projection:21.3,validatedForBetting:false}});
  assert.equal(originalPregameQuote(source,'nba','points',time).prediction_side,'UNDER');
+ assert.deepEqual(originalPregameQuote(source,'nba','points',time).payload.modelSelection,{side:'UNDER',line:22.5,price:-110,quoteId:'exact-quote',sportsbookKey:'fanduel',calculatedAt:'2026-11-09T18:59:30.000Z'});
  assert.equal(originalPregameQuote(quote({researchForecast:{...source.researchForecast,modelSelection:{...source.researchForecast.modelSelection,quoteId:'wrong'}}}),'nba','points',time).prediction_side,null);
  assert.equal(originalPregameQuote(quote({researchForecast:{...source.researchForecast,modelSelection:{...source.researchForecast.modelSelection,calculatedAt:'2026-11-09T22:01:00Z'}}}),'nba','points',time).prediction_side,null);
 });
