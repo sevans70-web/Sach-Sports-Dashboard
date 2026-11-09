@@ -63,7 +63,11 @@ function baselineRows(overview:any,market:CbbMarketKey){
 
 function rowsForMarket(payload:any,overview:any,market:CbbMarketKey){
  const board=boardForMarket(payload,market);const byName=new Map(overview.players.map((p:any)=>[cleanCbbName(p.playerName),p]));const today=torontoCbbDay(new Date());
- const matched=fixtureQuoteRows(board,activeRankingSlate(overview.games,torontoCbbDay),(b:any)=>{const p:any=byName.get(cleanCbbName(b.playerName));return cbbQuoteTeam(b,p);},cleanCbbName);
+ const slate=activeRankingSlate(overview.games,torontoCbbDay);
+ const matched=fixtureQuoteRows(board,slate,(b:any)=>{const p:any=byName.get(cleanCbbName(b.playerName));return cbbQuoteTeam(b,p);},cleanCbbName);
+ if(market==='points'&&globalThis.navigator?.userAgent==='Cloudflare-Workers'){
+  logCbbQuoteCoverage(payload,board,slate,matched.length);
+ }
  const rows=matched.map(({quote:b,game}:any)=>{
   const p:any=byName.get(cleanCbbName(b.playerName));const team=cbbQuoteTeam(b,p);
   const gameDay=torontoCbbDay(game.tipoff||"");if(b.gameTime&&torontoCbbDay(b.gameTime)!==gameDay)return null;
@@ -115,4 +119,30 @@ export async function captureAllCbbMarkets(){
 export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbMarketRankingsRaw>){
  const contextual=await attachBasketballPregameContext(await buildCbbMarketRankingsRaw(...args),"cbb");
  return attachFittedResearchForecasts(guardRankingPayload(limitAvailablePregameRankings(contextual),"cbb"),"cbb");
+}
+
+/** Trace quote availability without logging sportsbook payloads or player identities. */
+function logCbbQuoteCoverage(payload:any,board:any[],slate:any[],playerMatches:number){
+ const points=(p:any)=>marketMatches(p.category??p.market??p.type,'points');
+ const now=Date.now();
+ let entries=0,futureEntries=0,freshEntries=0,twoSidedEntries=0;
+ for(const game of Array.isArray(payload?.data)?payload.data:[]){
+  const start=Date.parse(game.commenceTime||game.commence_time||game.startTime||game.date||'');
+  for(const book of Array.isArray(game.books)?game.books:[])for(const prop of Array.isArray(book.props)?book.props:[]){
+   if(!points(prop))continue;
+   entries++;
+   if(!(start>now))continue;
+   futureEntries++;
+   const stamp=Date.parse(prop.lastUpdate||book.lastUpdate||'');
+   if(!Number.isFinite(stamp)||now-stamp>900000||stamp>now+60000)continue;
+   freshEntries++;
+   const over=Number(prop.overPrice??prop.over_price),under=Number(prop.underPrice??prop.under_price);
+   if(Number.isFinite(over)&&Number.isFinite(under)&&Math.abs(over)>=100&&Math.abs(under)>=100)twoSidedEntries++;
+  }
+ }
+ const future=board.filter(quote=>Date.parse(quote.gameTime)>now);
+ const fixtures=slate.filter(game=>Date.parse(game.tipoff||'')>now);
+ const fixtureMatches=future.filter(quote=>fixtures.some(game=>quoteMatchesFixture(quote,game))).length;
+ console.info('[sach-cbb-quote-coverage]',JSON.stringify({entries,futureEntries,freshEntries,twoSidedEntries,
+  normalizedQuotes:future.length,officialFixtures:fixtures.length,fixtureMatches,playerMatches}));
 }
