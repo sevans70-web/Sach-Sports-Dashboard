@@ -104,7 +104,7 @@ async function roster(teamId:string){
   rosterCache.set(teamId,{at:Date.now(),value});
   return value;
 }
-async function prefetchRosters(rows:any[],schedule:any[]){
+async function prefetchRosters(rows:any[],schedule:any[],loadRoster:(teamId:string)=>Promise<unknown>=roster){
   const ids=new Set<string>();
   for(const row of rows){
     const target=cleanName(String(row.matchup||""));
@@ -112,7 +112,7 @@ async function prefetchRosters(rows:any[],schedule:any[]){
     if(game?.awayTeamId)ids.add(String(game.awayTeamId));
     if(game?.homeTeamId)ids.add(String(game.homeTeamId));
   }
-  await Promise.all([...ids].map(id=>roster(id)));
+  await mapCandidatePool([...ids],loadRoster);
 }
 function playerFromRosters(row:any,schedule:any[]){
   const wanted=cleanName(row.playerName),target=cleanName(String(row.matchup||""));
@@ -138,7 +138,7 @@ function allowedPositions(market:CfbMarketKey){
   return new Set(["QB","RB","FB","WR","TE"]);
 }
 
-async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:any[]){
+async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:any[],loadRoster:(teamId:string)=>Promise<unknown>=roster){
   const today=day(new Date());
   const upcoming=schedule
     .filter((g:any)=>(g.state==="pre"||g.state==="in")&&day(g.date)>=today)
@@ -155,7 +155,7 @@ async function rosterFallbackRows(market:CfbMarketKey,schedule:any[],existing:an
     if(game.awayTeamId)teamJobs.push({game,teamId:String(game.awayTeamId),teamName:game.awayTeam});
     if(game.homeTeamId)teamJobs.push({game,teamId:String(game.homeTeamId),teamName:game.homeTeam});
   }
-  await mapCandidatePool(teamJobs,j=>roster(j.teamId));
+  await mapCandidatePool(teamJobs,j=>loadRoster(j.teamId));
 
   for(const {game,teamId,teamName} of teamJobs){
     const rr=rosterCache.get(teamId)?.value;
@@ -184,7 +184,7 @@ async function marketRows(market:CfbMarketKey){
     const rows=await timeout(getOwlsCfbRows(market),8000,[]);
     if(rows.length)return rows;
   }catch{}
-  const earlyPromise=timeout(getCfbRankings(market,[]),6000,[]);
+  const earlyPromise=timeout(getCfbRankings(market,[]),6000,[]).catch(()=>[]);
   const sportsbook=await timeout(getCfbMarketRows(market),4000,[]);
   if(sportsbook.some((row:any)=>row.quoteVersion===1))return sportsbook.filter((row:any)=>row.quoteVersion===1);
 
@@ -203,10 +203,25 @@ async function marketRows(market:CfbMarketKey){
 async function build(market:CfbMarketKey):Promise<RankingPayload>{
   const [initialRaw,schedule]=await Promise.all([marketRows(market),timeout(getEspnCfbSchedule(),5000,[])]);
   const today=day(new Date());
+  const onWorker=globalThis.navigator?.userAgent==='Cloudflare-Workers';
+  // One build shares its roster budget across the fallback and enrichment.
+  // Reserve most of the Worker's 200 subrequests for schedule, model and
+  // availability reads, including ESPN host retries.
+  const rosterReads=new Set<string>();
+  const loadRoster=async(teamId:string)=>{
+    const cached=rosterCache.get(teamId);
+    if(!onWorker||cached&&Date.now()-cached.at<ROSTER_MS)return roster(teamId);
+    if(rosterReads.has(teamId)||rosterReads.size>=24)return;
+    rosterReads.add(teamId);
+    return roster(teamId);
+  };
   let raw=initialRaw;
   const earlyMode=!market.startsWith("q1_")&&(raw.length===0||raw.every((r:any)=>r.earlyModel));
   if(!market.startsWith("q1_")&&(earlyMode||raw.length<25)){
-    const supplement=await timeout(rosterFallbackRows(market,schedule,raw),6500,[]);
+    // Resolve quoted teams first so the model-only fallback cannot exhaust
+    // the roster budget before a real sportsbook row is checked.
+    if(onWorker)await prefetchRosters(raw.filter(row=>row.quoteVersion===1),schedule,loadRoster);
+    const supplement=await timeout(rosterFallbackRows(market,schedule,raw,loadRoster),6500,[]);
     raw=[...raw,...supplement];
   }
   const active=raw.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);const k=t?day(t):"";return !k||k>=today});
@@ -214,12 +229,12 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   // Enrich a pool larger than 25. Some roster players will not have enough
   // verified history for this market, so slicing to 25 before modeling caused
   // the visible ranking to collapse to 3-4 players.
-  const candidates=active
+  const rankedCandidates=active
     .map((row:any)=>({...row,_seed:cfbGiScore(row.prob??50,row.bookmakerCount||0,0)}))
-    .sort((a:any,b:any)=>b._seed-a._seed)
-    ;
+    .sort((a:any,b:any)=>b._seed-a._seed);
+  const candidates=onWorker?rankedCandidates.slice(0,48):rankedCandidates;
 
-  await prefetchRosters(candidates,schedule);
+  await prefetchRosters(candidates,schedule,loadRoster);
 
   const enriched=await mapCandidatePool(candidates,async(row:any)=>{
     const profile=playerFromRosters(row,schedule);
