@@ -21,6 +21,12 @@ jobs:
         run: |
           npm ci --prefix frontend --ignore-scripts --no-audit --no-fund --silent
           node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const panel=fs.readFileSync('frontend/components/player-rankings-panel.tsx','utf8');
+          assert.ok(panel.includes("if(card.raw?.sport==='nba'&&nbaCardEv(card)!=null)return true;"),'NBA valid EV must bypass old generic projection gate');
+          assert.ok(panel.includes("nflSunday?CFB_SLATES"),'Sunday-only NFL time buckets missing');
+          assert.ok(panel.includes("label:'Today'"),'Non-Sunday NFL Today slate missing');
           import {loadTs} from './frontend/tests/load-ts.mjs';
           const {rankNbaCardsByEv}=await loadTs(new URL('./frontend/lib/nba-ev-ranking.ts',import.meta.url));
           const {integrityRow}=await loadTs(new URL('./frontend/lib/prop-integrity.ts',import.meta.url));
