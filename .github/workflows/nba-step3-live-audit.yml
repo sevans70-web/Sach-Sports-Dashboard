@@ -60,7 +60,7 @@ jobs:
           import concurrent.futures,json,urllib.request,urllib.error,collections
           base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
           markets=['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket','q1_points','q1_rebounds','q1_assists']
-          checks=[('rankings:'+m,f'/api/nba/rankings?market={m}') for m in markets]+[('featured','/api/top-plays?sport=nba')]
+          checks=[('rankings:'+m,f'/api/nba/rankings?market={m}') for m in markets]+[('nba-previous-points','/api/nba/rankings?market=points&day=2026-11-08'),('nba-previous-first-basket','/api/nba/rankings?market=first_basket&day=2026-11-08'),('featured','/api/top-plays?sport=nba')]
           def run(item):
             title,path=item
             try:
