@@ -43,6 +43,16 @@ jobs:
           assert "row.boardCapturedAt" in quotes, 'Saved Q1 receipt missing'
           print('NBA_STEP3_TABS Verified 10 Props + First Basket + 3 Q1; one EV; original receipts retained')
           PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Verify actual NBA EV sorting with independent price receipts
+        shell: bash
+        run: |
+          npm ci --prefix frontend --ignore-scripts --no-audit --no-fund --silent
+          node --test frontend/tests/nba-ev-ranking.test.mjs frontend/tests/estimated-ev.test.mjs
       - name: Verify live NBA market and featured-card coverage
         shell: bash
         run: |
