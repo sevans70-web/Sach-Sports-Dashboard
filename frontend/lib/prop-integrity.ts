@@ -33,7 +33,13 @@ export function eligiblePropPrediction(row:any,now=Date.now(),historical=false){
 
 export function integrityRow(row:any,sport:string,market=String(row?.market||""),now=Date.now()){
   if(row?.integrityVersion===PROP_INTEGRITY_VERSION){
-    if(row.quoteVerified&&!verifiedPropQuote(row,now,row.boardFrozen===true))return {...row,quoteVerified:false,sportsbookLine:null,reviewReason:"Quote is no longer fresh or pregame capture cannot be established"};
+    // NBA Q1 and First Basket pregame cards can have a verified saved receipt
+    // without being marked boardFrozen. Their original captured odds remain
+    // viewable, labelled saved pregame, after provider freshness expires.
+    // This never upgrades research to a betting-validated recommendation.
+    const savedNbaQuarterOrScorer=sport==='nba'&&(market.startsWith('q1_')||market==='first_basket')&&
+      Number.isFinite(Date.parse(row.boardCapturedAt||''))&&Date.parse(row.boardCapturedAt)<Date.parse(row.gameTime||'');
+    if(row.quoteVerified&&!verifiedPropQuote(row,now,row.boardFrozen===true||savedNbaQuarterOrScorer))return {...row,quoteVerified:false,sportsbookLine:null,reviewReason:"Quote is no longer fresh or pregame capture cannot be established"};
     return row;
   }
   const verified=verifiedPropQuote(row,now);
