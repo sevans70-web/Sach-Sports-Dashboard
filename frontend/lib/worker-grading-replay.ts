@@ -33,7 +33,7 @@ export function createWorkerGradingReplay(sport:string){
     }
    }
   },
-  async verify(fetchRoute:(path:string)=>Promise<Response>){
+  async verify(fetchRoute:(path:string)=>Promise<Response>,saveCorrections?:(finals:any[])=>Promise<void>){
    const games = new Map<string,any[]>();
    for(const row of originals.values()){
     const game=String(row.gameId);
@@ -44,19 +44,23 @@ export function createWorkerGradingReplay(sport:string){
    }
    const candidates=[...games].sort((a,b)=>b[1].length-a[1].length).slice(0,2);
    let checked=0,matched=0,differences=0,unavailable=0;
+   const corrections=[];
    for(const [game,rows] of candidates){
     const path=paths[sport];
     const response=await fetchRoute(path+(path.endsWith('?')?'':'&')+'gameId='+game);
     const final=response.ok?await response.json():null;
     if(!isOfficialFinal(final,game)){unavailable++;continue;}
     checked++;
+    const before=differences;
     for(const row of rows){
      const expected=officialFeaturedResult(row,finals.get(game)),actual=officialFeaturedResult(row,final);
      if(!expected&&!actual)continue;
      if(expected?.status===actual?.status&&expected?.actual===actual?.actual)matched++;
      else differences++;
     }
+    if(differences>before)corrections.push(final);
    }
+   if(corrections.length&&saveCorrections)await saveCorrections(corrections);
    return {games:checked,matched,differences,unavailable};
   },
  };

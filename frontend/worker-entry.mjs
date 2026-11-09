@@ -1,5 +1,6 @@
 import dashboard from 'vinext/server/fetch-handler';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
+import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
 import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker-history-backup.mjs';
 
 export * from 'vinext/server/fetch-handler';
@@ -15,7 +16,10 @@ export default {
   const result = await archiveWorkerHistoryDay(env,scope,undefined,undefined,replay?.consume);
   console.info('[sach-staging-history-archive]',JSON.stringify(result));
   if(replay){
-   const comparison = await replay.verify(path=>dashboard.fetch(new Request('https://sach-staging.internal'+path),env,ctx));
+   const comparison = await replay.verify(
+    path=>dashboard.fetch(new Request('https://sach-staging.internal'+path),env,ctx),
+    finals=>saveWorkerFinalCorrections(env.VINEXT_KV_CACHE,scope.sport,scope.day,finals),
+   );
    console.info('[sach-staging-grading-replay]',JSON.stringify({...scope,...comparison}));
   }
  },

@@ -1,4 +1,5 @@
 import {historyDays} from '@/lib/history-days';
+import {readWorkerFinals} from '@/lib/worker-final-observations';
 import {rawFinalPerformance} from '@/lib/raw-final-performance';
 import {isOfficialFinal} from '@/lib/history-save-policy';
 import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
@@ -102,6 +103,13 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  errors.push(...(cloud?.errors??remote.errors).map((x:string)=>(drive?'drive:':'cloud:')+x));
  for(const date of cloud?.dates??[])availableDates.add(date);
  for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push((drive?'drive:':'cloud:')+doc.stream+'|'+doc.game_date);}
+ if(cloudOnly&&recent){
+  try{
+   const {env}=await import('cloudflare:workers');
+   const corrections=await Promise.all([...days].map(day=>readWorkerFinals((env as any).VINEXT_KV_CACHE,sport,day).catch(()=>[])));
+   for(const observation of corrections.flat())remember(observation.payload);
+  }catch{}
+ }
  const reconciled=reconcilePerformanceRecords(rows);
  const records=await observeSavedResearch(reconciled.records.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
  if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));

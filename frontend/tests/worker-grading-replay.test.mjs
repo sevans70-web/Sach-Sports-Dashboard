@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {loadTs} from './load-ts.mjs';
 
 const {createWorkerGradingReplay}=await loadTs(new URL('../lib/worker-grading-replay.ts',import.meta.url));
+const {readWorkerFinals,saveWorkerFinalCorrections}=await loadTs(new URL('../lib/worker-final-observations.ts',import.meta.url));
 const kickoff='2026-11-08T23:00:00Z';
 const checkpoint='2026-11-08T22:58:00Z';
 const pregame={
@@ -22,5 +23,26 @@ test('replays only protected pregame decisions against the same official final f
  }),{games:1,matched:1,differences:0,unavailable:0});
  assert.deepEqual(await replay.verify(async()=>Response.json({...final,gameId:'987'})),{games:0,matched:0,differences:0,unavailable:1});
  const corrected={...final,rows:[{playerId:'456',stats:{points:13}}]};
- assert.deepEqual(await replay.verify(async()=>Response.json(corrected)),{games:1,matched:0,differences:1,unavailable:0});
+ const corrections=[];
+ assert.deepEqual(await replay.verify(async()=>Response.json(corrected),async values=>corrections.push(...values)),{games:1,matched:0,differences:1,unavailable:0});
+ assert.deepEqual(corrections,[corrected]);
+});
+
+test('staging stores verified corrections separately and keeps the newer official observation',async()=>{
+ const memory=new Map();
+ const cache={
+  get:async key=>JSON.parse(memory.get(key)||'null'),
+  put:async (key,value,options)=>{
+   assert.match(key,/^sach:staging:official-finals:v1:/);
+   assert.equal(options.expirationTtl,604800);
+   memory.set(key,value);
+  },
+ };
+ const newest={...final,updatedAt:'2026-11-09T01:05:00Z',rows:[{playerId:'456',stats:{points:13}}]};
+ const older={...final,updatedAt:'2026-11-09T01:00:00Z'};
+ await saveWorkerFinalCorrections(cache,'nba','2026-11-08',[newest]);
+ await saveWorkerFinalCorrections(cache,'nba','2026-11-08',[older]);
+ assert.deepEqual((await readWorkerFinals(cache,'nba','2026-11-08')).map(row=>row.payload),[newest]);
+ assert.deepEqual(await readWorkerFinals(cache,'nhl','2026-11-08'),[]);
+ await assert.rejects(saveWorkerFinalCorrections(cache,'nba','2026-11-08',[{...newest,state:'in'}]),/Invalid staging final/);
 });
