@@ -72,6 +72,17 @@ jobs:
             rows=data['rows'];out['rows']=len(rows);out['rowsByUtcDay']=dict(collections.Counter(str(r.get('gameTime') or '')[:10] for r in rows))
             out['verified']=sum(r.get('quoteVerified') is True for r in rows)
             out['modelSelection']=sum(isinstance((r.get('researchForecast') or {}).get('modelSelection'),dict) for r in rows)
+            out['cardFields']={
+              'researchOnly':sum(r.get('researchOnly') is True for r in rows),
+              'marketBackedFalse':sum(r.get('marketBacked') is False for r in rows),
+              'projection':sum(isinstance(r.get('modelProjection'),(float,int)) for r in rows),
+              'fallbackModelTarget':sum(isinstance(r.get('modelTarget'),(float,int)) for r in rows),
+              'modelProbability':sum(isinstance(r.get('modelProbability'),(float,int)) for r in rows),
+              'rawPickPresent':sum(bool(r.get('prediction')) and r.get('prediction')!='—' for r in rows),
+              'fittedProjection':sum(isinstance((r.get('researchForecast') or {}).get('projection'),(float,int)) for r in rows),
+              'rowHasFixture':sum(bool(r.get('gameId')) and bool(r.get('gameTime')) for r in rows),
+              'boardFrozen':sum(r.get('boardFrozen') is True for r in rows),
+            }
             eligible=0;values=[]
             for r in rows:
              f=r.get('researchForecast') or {};c=f.get('priceComparison') or {};p=f.get('modelSelection') or f.get('modelTargetForecast') or {}
