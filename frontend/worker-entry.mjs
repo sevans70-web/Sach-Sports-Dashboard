@@ -1,4 +1,5 @@
 import dashboard from 'vinext/server/fetch-handler';
+import {scheduledPregameCapture} from './scripts/worker-pregame-capture.mjs';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
 import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
 import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker-history-backup.mjs';
@@ -8,6 +9,11 @@ export * from 'vinext/server/fetch-handler';
 export default {
  ...dashboard,
  async scheduled(controller,env,ctx){
+  if(controller.cron==='*/5 * * * *'){
+   const report=await scheduledPregameCapture(env,dashboard,ctx,controller.scheduledTime);
+   console.info('[sach-staging-pregame-capture]',JSON.stringify(report));
+   return;
+  }
   // Temporary date-bound staging triggers check a recent completed day.
   // The daily schedule archives the oldest retained day before it ages out.
   const recent = controller.cron !== '10-17 9 * * *';
