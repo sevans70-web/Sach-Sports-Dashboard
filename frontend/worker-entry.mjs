@@ -1,5 +1,5 @@
 import dashboard from 'vinext/server/fetch-handler';
-import {PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON,scheduledPregameCapture} from './scripts/worker-pregame-capture.mjs';
+import {PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON,scheduledPregameCapture,torontoCaptureDay} from './scripts/worker-pregame-capture.mjs';
 import {gradeSavedWorkerPicks} from './scripts/worker-pregame-grade.mjs';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
 import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
@@ -7,6 +7,8 @@ import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker
 import {archiveWorkerPregameDay} from './scripts/worker-pregame-backup.mjs';
 
 export * from 'vinext/server/fetch-handler';
+
+const PREGAME_RECOVERY_TRIAL='49-59 10 9 11 *';
 
 export default {
  ...dashboard,
@@ -23,6 +25,13 @@ export default {
    }catch(error){
     console.error('[sach-staging-original-grades-failed]',error instanceof Error?error.message:'grading failed');
    }
+   return;
+  }
+  if(controller.cron===PREGAME_RECOVERY_TRIAL){
+   const {sport}=workerHistoryBackupScope(controller.scheduledTime);
+   const day=torontoCaptureDay(controller.scheduledTime);
+   const archive=await archiveWorkerPregameDay(env,{sport,day},undefined,undefined,()=>{});
+   console.info('[sach-staging-pregame-recovery]',JSON.stringify(archive));
    return;
   }
   // Temporary date-bound staging triggers check a recent completed day.
