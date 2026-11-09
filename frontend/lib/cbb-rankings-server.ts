@@ -121,6 +121,17 @@ export async function buildCbbMarketRankings(...args:Parameters<typeof buildCbbM
  return attachFittedResearchForecasts(guardRankingPayload(limitAvailablePregameRankings(contextual),"cbb"),"cbb");
 }
 
+export async function buildCbbPregameCapture(market:CbbMarketKey){
+ const payload=await fetchOwlsPayload();
+ const now=Date.now();
+ // The capture job needs fresh executable quotes, so an empty healthy feed
+ // requires no roster, baseline or fallback snapshot reads.
+ if(!boardForMarket(payload,market).some(quote=>Date.parse(quote.gameTime)>now)){
+  return {success:true,market,rows:[]};
+ }
+ return buildCbbMarketRankings(market,{payload,overview:await loadCbbOverview(payload)});
+}
+
 /** Trace quote availability without logging sportsbook payloads or player identities. */
 function logCbbQuoteCoverage(payload:any,board:any[],slate:any[],playerMatches:number){
  const points=(p:any)=>marketMatches(p.category??p.market??p.type,'points');

@@ -19,18 +19,19 @@ test('both quoted and unpriced CBB ranking paths pass fixture identity into the 
  const {readFile}=await import('node:fs/promises'),{default:ts}=await import('typescript'),{default:vm}=await import('node:vm');
  const fixture={...game,gameId:'g',tipoff:new Date(Date.now()+86400000).toISOString(),state:'pre',awayTeam:'Cornell',homeTeam:'Michigan State'};
  const overview={season:'2026',players:[{playerId:123,playerName:'Current player',team:'CORN',gamesPlayed:30}],games:[fixture]};
+ let feed={rows:[]},overviewReads=0;
  const mocks={
   '@/lib/basketball-pregame-context':{attachBasketballPregameContext:async p=>({...p,rows:p.rows.map(r=>({...r,availabilityEvidence:String(r.playerId).startsWith("blocked")?{gameId:r.gameId,code:"official_injury_status",text:"Reported Out"}:undefined}))})},
   '@/lib/ranking-availability':await loadTs(new URL('../lib/ranking-availability.ts',import.meta.url)),
   '@/lib/cbb-fixture-identity':identityHelpers,
-  '@/lib/cbb':{cleanCbbName:s=>s.toLowerCase().replaceAll(' ',''),playerBaseline:()=>12,cbbHeadshot:()=>'',CBB_MARKETS:[['points']]},
+  '@/lib/cbb':{cleanCbbName:s=>s.toLowerCase().replaceAll(' ',''),playerBaseline:()=>12,cbbHeadshot:()=>'',CBB_MARKETS:[['points']],loadCbbOverview:async()=>{overviewReads++;return overview;}},
   '@/lib/main-market-quotes':{...await loadTs(new URL('../lib/main-market-quotes.ts',import.meta.url)),mainMarketQuotes:p=>p.rows||[],quoteMatchesFixture:()=>true},
   '@/lib/football-book-quotes':{footballQuoteFields:()=>({})},
   '@/lib/prop-integrity':{guardRankingPayload:p=>p},
   '@/lib/live-model-forecast':{attachFittedResearchForecasts:p=>p},
   '@/lib/active-ranking-slate':{activeRankingSlate:g=>g},
   '@/lib/cbb-history':{saveCbbPredictions:async()=>true},
-  '@/lib/owls-provider':{},'@/lib/provider-fetch':{},'@/lib/research-capture':{}
+  '@/lib/owls-provider':{getOwlsPayload:async()=>{if(feed instanceof Error)throw feed;return feed;}},'@/lib/provider-fetch':{},'@/lib/research-capture':{}
  };
  const code=ts.transpileModule(await readFile(new URL('../lib/cbb-rankings-server.ts',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
  const module={exports:{}};vm.runInNewContext(code,{module,exports:module.exports,require:name=>mocks[name],Date,Intl,console});
@@ -44,5 +45,15 @@ test('both quoted and unpriced CBB ranking paths pass fixture identity into the 
   const board=await module.exports.buildCbbMarketRankings('points',{overview:{...overview,players},payload:{rows}});
   assert.equal(board.rows.length,25);assert.equal(board.rows[0].playerId,'eligible5');assert.equal(board.rows[24].playerId,'eligible29');assert.equal(board.rows[24].rank,25);
  }
-
+ const emptyCapture=await module.exports.buildCbbPregameCapture('points');
+ assert.equal(emptyCapture.success,true);
+ assert.equal(emptyCapture.rows.length,0);
+ assert.equal(overviewReads,0);
+ feed={rows:[{playerName:'Current player',playerTeam:'CORN',matchup:'Cornell @ Michigan State',gameTime:fixture.tipoff,line:10.5}]};
+ const pricedCapture=await module.exports.buildCbbPregameCapture('points');
+ assert.equal(overviewReads,1);
+ assert.equal(pricedCapture.rows[0].playerId,123);
+ feed=Error('Provider unavailable');
+ await assert.rejects(module.exports.buildCbbPregameCapture('points'),/Provider unavailable/);
+ assert.equal(overviewReads,1);
 });

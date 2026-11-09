@@ -2,7 +2,7 @@ import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {guardRankingPayload} from "@/lib/prop-integrity";
 import {NextRequest,NextResponse} from "next/server";
 import {type CbbMarketKey,CBB_MARKETS} from "@/lib/cbb";
-import {buildCbbMarketRankings} from "@/lib/cbb-rankings-server";
+import {buildCbbMarketRankings,buildCbbPregameCapture} from "@/lib/cbb-rankings-server";
 
 export const dynamic="force-dynamic";
 
@@ -25,6 +25,11 @@ async function build(market:CbbMarketKey){
 export async function GET(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"points") as CbbMarketKey;
  if(!allowed.has(market))return rankingJson({success:false,rows:[],error:"Unsupported CBB market"},{status:400});
+
+ if(req.nextUrl.hostname==='sach-capture.internal'){
+  try{return NextResponse.json(await buildCbbPregameCapture(market),{headers:{'Cache-Control':'no-store'}});}
+  catch{return NextResponse.json({success:false,rows:[]},{status:503});}
+ }
 
  const hit=cache.get(market);
  const age=hit?Date.now()-hit.at:Infinity;
