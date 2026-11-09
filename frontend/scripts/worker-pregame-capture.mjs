@@ -69,7 +69,7 @@ export function originalPregameQuote(row,sport,market,now=Date.now()){
  };
  const checksum=createHash('sha256').update(JSON.stringify(payload)).digest('hex');
  return {sport,market,game_id:gameId,player_id:playerId,game_date:torontoCaptureDay(gameTime),
-  game_time:gameTime,quote_updated_at:new Date(updated).toISOString(),captured_at:capturedAt,
+  game_time:gameTime,quote_updated_at:new Date(updated).toISOString(),
   prediction_side:side,source_prediction:payload.sourcePrediction,sportsbook_line:scorer?null:line,
   checksum,payload};
 }
