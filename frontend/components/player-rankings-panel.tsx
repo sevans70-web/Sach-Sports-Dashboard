@@ -2524,7 +2524,7 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      {sport==='nba'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NBA ranking slate">{[['active','Live / current slate'],['previous','Previous slate'],['today','Today'],['tomorrow','Tomorrow']].map(([key,label])=><button type="button" key={key} className={nbaSlate===key?styles.activeTab:''} onClick={()=>selectNbaSlate(key)}>{label}</button>)}</div></div>:null}
+      {sport==='nba'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NBA ranking slate">{[['active','Today'],['previous','Previous Slate'],['tomorrow','Tomorrow']].map(([key,label])=><button type="button" key={key} className={nbaSlate===key?styles.activeTab:''} onClick={()=>selectNbaSlate(key)}>{label}</button>)}</div></div>:null}
 
       {config.groups.length > 1 ? (
         <div className={styles.tabsFrame}>
