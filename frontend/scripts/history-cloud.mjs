@@ -162,7 +162,13 @@ export async function listCloudPerformanceDocuments(sport,firstDay){
 /** Workers read bounded batches and release each payload after it is consumed. */
 export async function visitCloudPerformanceDocuments(sport,firstDay,visit){
  if(!/^[a-z0-9_-]+$/i.test(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid performance scope');
- const scope=performanceDocumentScope(sport,firstDay),metadata=[],errors=[],dates=new Set();
+ // A board saved the previous evening can contain fixtures on the first day
+ // of the displayed period. Pull those pregame streams without reading a
+ // second day's worth of unrelated finals and performance documents.
+ const previousDay=new Date(Date.parse(firstDay+'T00:00:00Z')-86400000).toISOString().slice(0,10);
+ const pregame=['featured_','slate_board_','slate_locked_','restored_slate_board_','locked_research_','protected_pregame_'].map(prefix=>'stream.like.'+prefix+'*').join(',');
+ const scope=performanceDocumentScope(sport)+`&and=(or(game_date.gte.${firstDay},and(game_date.eq.${previousDay},or(${pregame}))))`;
+ const metadata=[],errors=[],dates=new Set();
  const deadline=Date.now()+55000;
  let requests=0,documents=0;
  const read=route=>{

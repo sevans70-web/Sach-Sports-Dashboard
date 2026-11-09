@@ -38,6 +38,10 @@ test('Workers read many saved documents in bounded day batches and isolate a cor
   requests++;
   const query = new URL(input).searchParams;
   if(query.get('select') === 'stream,game_date,source_bytes'){
+   const scope=query.get('and');
+   assert.match(scope,/game_date\.gte\.2026-10-24,\s*and\(game_date\.eq\.2026-10-23,or\(stream\.like\.featured_\*/);
+   assert.match(scope,/stream\.like\.protected_pregame_\*/);
+   assert.doesNotMatch(scope,/protected_final/);
    const offset = Number(query.get('offset'));
    return Response.json(docs.slice(offset, offset + 200).map(({payload, checksum, ...meta}) => meta));
   }
