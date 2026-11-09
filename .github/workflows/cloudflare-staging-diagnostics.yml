@@ -22,7 +22,7 @@ jobs:
         run: |
           set -u
           base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
-          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'nba-summary|/api/dashboard-summary?sport=nba' 'nfl-summary|/api/dashboard-summary?sport=nfl' 'nhl-summary|/api/dashboard-summary?sport=nhl' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket' 'nba-rebounds|/api/nba/rankings?market=rebounds' 'nba-threes|/api/nba/rankings?market=threes_made' 'nfl-receiving|/api/nfl/rankings?market=receiving_yards' 'nfl-rushing|/api/nfl/rankings?market=rushing_yards' 'nhl-goals|/api/nhl/rankings?market=goals' 'nhl-saves|/api/nhl/rankings?market=goalie_saves'; do
+          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'nba-summary|/api/dashboard-summary?sport=nba' 'nfl-summary|/api/dashboard-summary?sport=nfl' 'nhl-summary|/api/dashboard-summary?sport=nhl' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket' 'nba-rebounds|/api/nba/rankings?market=rebounds' 'nba-threes|/api/nba/rankings?market=threes_made' 'nfl-receiving|/api/nfl/rankings?market=receiving_yards' 'nfl-rushing|/api/nfl/rankings?market=rushing_yards' 'nba-q1-points|/api/nba/rankings?market=q1_points' 'nba-q1-rebounds|/api/nba/rankings?market=q1_rebounds' 'nba-q1-assists|/api/nba/rankings?market=q1_assists' 'nba-schedule|/api/game-slate?sport=nba&scope=calendar' 'nfl-schedule|/api/game-slate?sport=nfl&scope=calendar' 'nfl-week|/api/nfl/schedule' 'nhl-schedule|/api/game-slate?sport=nhl&scope=calendar' 'nfl-featured|/api/top-plays?sport=nfl' 'nhl-featured|/api/top-plays?sport=nhl' 'nhl-goals|/api/nhl/rankings?market=goals' 'nhl-saves|/api/nhl/rankings?market=goalie_saves'; do
             label="${entry%%|*}"
             route="${entry#*|}"
             response="$(mktemp)"
@@ -40,6 +40,11 @@ jobs:
                   if label.endswith('-summary'):
                       result['dashboard']={k:data.get(k) for k in ('games','live','finals','rankedPlayers','playerProps','predictions','estimatedPicks','scheduleAvailable','rankingsAvailable','warning')}
                   result['rows']=len(data['rows']) if isinstance(data.get('rows'),list) else None
+                  if isinstance(data.get('games'),list):
+                      result['gamesCount']=len(data['games'])
+                      result['gameDays']=sorted(set(str(g.get('date') or '')[:10] for g in data['games'] if g.get('date')))[:8]
+                  if isinstance(data.get('plays'),list):
+                      result['featuredCategories']=[{'key':p.get('key'),'qualified':bool(p.get('pick'))} for p in data['plays']]
                   if isinstance(data.get('rows'),list):
                       import collections
                       rows=data['rows']
