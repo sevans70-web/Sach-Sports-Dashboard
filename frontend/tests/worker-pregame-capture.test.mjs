@@ -51,7 +51,8 @@ test('server-backed storage uses insert-only dedup; later quote refresh never re
   if(init.method==='POST'){
    assert.match(init.headers.Prefer,/ignore-duplicates/);
    for(const row of JSON.parse(init.body))if(!data.has(row.sport+'|'+row.market+'|'+row.game_id+'|'+row.player_id))data.set(row.sport+'|'+row.market+'|'+row.game_id+'|'+row.player_id,row);
-   return new Response(null,{status:204});
+   // PostgREST may return 201 without a body for Prefer: return=minimal.
+   return new Response(null,{status:201});
   }
   return new Response(JSON.stringify([...data.values()].map(x=>({game_id:x.game_id,player_id:x.player_id,checksum:x.checksum}))),{status:200,headers:{'Content-Type':'application/json'}});
  };
