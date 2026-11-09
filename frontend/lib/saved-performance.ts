@@ -6,6 +6,7 @@ import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
 import {cachedOfficialResult} from '@/lib/official-result-cache';
 import {savedResearchDecisions,observeSavedResearch} from '@/lib/saved-research-performance';
 import {cloudConfigured,listCloudPerformanceDocuments,visitCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
+import {appendMissingImmutableModelPicks,readImmutableModelHistory} from '../scripts/worker-pregame-history.mjs';
 import {drivePerformanceConfigured,listDrivePerformanceDocuments} from '../scripts/drive-performance.mjs';
 
 import {promises as fs} from 'node:fs';
@@ -111,7 +112,22 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   }catch{}
  }
  const reconciled=reconcilePerformanceRecords(rows);
- const records=await observeSavedResearch(reconciled.records.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
+ // Cloudflare supplemental reads only: the original model-pick and grade
+ // tables are immutable and independent from Railway's /data filesystem.
+ // Never overwrite an older protected board or an existing graded record.
+ let restored=reconciled.records,protectedEvidence={added:0,alreadyPresent:0,invalid:0};
+ if(cloudOnly&&recent&&['nba','nfl','nhl','cfb','cbb'].includes(sport)){
+  try{
+   const protectedRows=await readImmutableModelHistory(sport,firstDay);
+   const merged=appendMissingImmutableModelPicks(restored,protectedRows.rows);
+   restored=merged.records;
+   protectedEvidence={added:merged.added,alreadyPresent:merged.alreadyPresent,invalid:protectedRows.invalid};
+   if(protectedRows.invalid)errors.push('cloud:protected_original_receipt_invalid:'+protectedRows.invalid);
+  }catch{
+   errors.push('cloud:protected_original_history_unavailable');
+  }
+ }
+ const records=await observeSavedResearch(restored.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
  if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
- return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date),...records.map(r=>Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate).filter(Boolean)])].sort(),cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
+ return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date),...records.map(r=>Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate).filter(Boolean)])].sort(),cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',protectedOriginals:protectedEvidence,errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
 }
