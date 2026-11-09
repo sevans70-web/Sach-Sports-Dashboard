@@ -8,6 +8,7 @@ import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
 import {estimatedEv,estimatedEvText,estimatedEvNotice,formatEvPercent,nbaDisplayedResearchEv} from '@/lib/estimated-ev';
+import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
@@ -2429,8 +2430,16 @@ export function PlayerRankingsPanel({
   }, [sport, market.key, cfbSlate, nflSlate, cards, cfbLiveGames, sharedStatusGames]);
 
   const displayCards = useMemo(() => {
+    // NBA is an EV-ranked board, not a general slate catalogue. No missing,
+    // zero, or negative EV can enter it. Sort the qualified original quotes
+    // before assigning display-only rank numbers; saved history is untouched.
+    if(sport==='nba'){
+      const evRanked=rankNbaCardsByEv(scopedDisplayCards);
+      const capped=capRankingUnders(evRanked,card=>nbaCardEv(card)?.side||null);
+      return capped.map((card,index)=>({...card,rank:index+1}));
+    }
     const ordered=completedRankingsLast(scopedDisplayCards);
-    if(!['nba','nhl','nfl','cbb','cfb'].includes(sport))return ordered;
+    if(!['nhl','nfl','cbb','cfb'].includes(sport))return ordered;
     // Keep historic frozen rows verbatim. Apply the cap to new pregame
     // candidates even when the board also contains completed games.
     const frozen=ordered.filter(card=>card.raw?.boardFrozen===true||card.raw?.frozen||card.raw?.lockedAtKickoff);
@@ -2611,7 +2620,7 @@ export function PlayerRankingsPanel({
 
       {!loading && !error && !displayCards.length ? (
         <div className={styles.state}>
-          {sport === 'nba' && (market.key.startsWith('q1_') || market.key === 'first_basket') ? `No verified ${market.label} data is available for this slate.` : <>No eligible {market.label} rankings are available for the current slate.</>}
+          {sport==='nba' ? `No positive, verified EV is available for ${market.label} on this slate. Research records remain preserved.` : <>No eligible {market.label} rankings are available for the current slate.</>}
         </div>
       ) : null}
 
