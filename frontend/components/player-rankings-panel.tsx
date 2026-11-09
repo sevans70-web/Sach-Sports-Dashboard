@@ -2124,6 +2124,12 @@ export function PlayerRankingsPanel({
             rankingUrl,
             controller.signal
           );
+          // A provider/API failure is not a verified zero-pick slate. Route
+          // unsuccessful responses through retry handling, preserving the
+          // current verified market board rather than replacing it with [].
+          if (!rankingPayload || rankingPayload.success === false) {
+            throw new Error("Rankings provider returned an unsuccessful response");
+          }
 
           if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
           const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
