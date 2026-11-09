@@ -16,6 +16,9 @@ export function useDashboardSummary(sport:DashboardSport,league="eng.1"){
 }
 export function useDashboardSchedule(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`,[state,setState]=useState<{key:string,data:any}>({key,data:null});
- useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const response=await fetch(`/api/game-slate?sport=${sport}&league=${encodeURIComponent(league)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)});const data=await response.json();if(live)setState({key,data})}catch{}finally{running=false}};run();const stopPolling=visiblePolling(run,30_000);return()=>{live=false;stopPolling()}},[sport,league,key]);
+ useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const response=await fetch(`/api/game-slate?sport=${sport}&league=${encodeURIComponent(league)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)});const data=await response.json();if(live)setState(previous=>
+   response.ok&&data?.success!==false&&Array.isArray(data?.games)&&data.games.length
+    ?{key,data}:{key,data:previous.key===key&&previous.data?.games?.length?previous.data:data}
+  )}catch{}finally{running=false}};run();const stopPolling=visiblePolling(run,30_000);return()=>{live=false;stopPolling()}},[sport,league,key]);
  return state.key===key?state.data:null;
 }
