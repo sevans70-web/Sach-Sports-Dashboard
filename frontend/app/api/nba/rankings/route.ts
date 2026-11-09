@@ -25,7 +25,11 @@ export async function GET(req:NextRequest){
  // recalculated: the synchronous build can time out and return a 503 despite
  // a verifiably captured slate. The normal after() refresh below can update
  // the research forecast without rewriting any previously saved originals.
- const needsForecastRefresh=Boolean(recent&&market.startsWith('q1_')&&!recent.rows.some(row=>row.researchForecast?.status==='available'));
+ const needsForecastRefresh=Boolean(recent&&market.startsWith('q1_')&&!recent.rows.some(row=>{
+  const forecast=row.researchForecast,prices=forecast?.priceComparison;
+  return forecast?.status==='available'&&
+   ['overProbability','underProbability','pushProbability'].every(key=>typeof prices?.[key]==='number'&&Number.isFinite(prices[key]));
+ }));
  if(recent&&!needsForecastRefresh&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
   const visible=await attachBasketballAvailability(recent,'nba');
   if(visible.rows.length){
