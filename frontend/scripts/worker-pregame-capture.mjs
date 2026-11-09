@@ -23,14 +23,15 @@ export const torontoCaptureDay=value=>{
  return [get('year'),get('month'),get('day')].join('-');
 };
 
-/** Each 5-minute tick checks six different markets. No network calls for
- * inactive/paused sports; every configured market is revisited cyclically.
- * The 58-market cycle has a bounded gap of up to 50 minutes, NOT a guarantee
- * that a quote arriving in the last minute will be captured.
- */
-export function marketsForCaptureTick(when=Date.now(),batchSize=6){
- if(!Number.isFinite(when)||!Number.isInteger(batchSize)||batchSize<1||batchSize>CAPTURE_MARKETS.length)throw Error('Invalid capture schedule');
- const tick=Math.floor(when/300_000),start=(tick*batchSize)%CAPTURE_MARKETS.length;
+export const PREGAME_CAPTURE_CRON='*/2 * * * *';
+export const PREGAME_GRADE_CRON='0,30 * * * *';
+/** Two markets per invocation keep ranked data and storage reads within the
+ * Worker request budget. All configured markets rotate through the schedule. */
+export function marketsForCaptureTick(when=Date.now(),legacy=false){
+ const batchSize=legacy?6:2;
+ const interval=legacy?300_000:120_000;
+ if(!Number.isFinite(when))throw Error('Invalid capture schedule');
+ const tick=Math.floor(when/interval),start=(tick*batchSize)%CAPTURE_MARKETS.length;
  return Array.from({length:batchSize},(_,i)=>CAPTURE_MARKETS[(start+i)%CAPTURE_MARKETS.length]);
 }
 export function originalPregameQuote(row,sport,market,now=Date.now()){
@@ -117,14 +118,15 @@ export async function saveImmutablePregameRows(env,table,quotes,reader=globalThi
  }
  return stored;
 }
-export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,now=Date.now(),reader=globalThis.fetch){
+export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,now,reader=globalThis.fetch){
  const path=API_ROUTES[sport]+'?market='+encodeURIComponent(market);
  const response=await dashboard.fetch(new Request('https://sach-capture.internal'+path,{headers:{Accept:'application/json'}}),env,ctx);
  if(!response.ok)return {sport,market,ok:false,reason:'rankings_http_'+response.status};
  const body=await response.json();
  if(body?.success===false)return {sport,market,ok:false,reason:'rankings_unavailable'};
+ const capturedAt=now??Date.now();
  const quotes=(Array.isArray(body?.rows)?body.rows:[]).slice(0,75)
-  .map(row=>originalPregameQuote(row,sport,market,now)).filter(Boolean);
+  .map(row=>originalPregameQuote(row,sport,market,capturedAt)).filter(Boolean);
  if(!quotes.length)return {sport,market,ok:true,eligible:0,stored:0,reason:'no_verified_pregame_quotes'};
  const stored=await saveImmutablePregameRows(env,'worker_pregame_originals',quotes,reader);
  // A quote without a fitted pick is preserved in originals, but MUST NOT
@@ -133,12 +135,13 @@ export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,
  const picksStored=await saveImmutablePregameRows(env,'worker_pregame_picks',picked,reader);
  return {sport,market,ok:true,eligible:quotes.length,stored,selections:picked.length,picksStored};
 }
-export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now()){
- const selected=marketsForCaptureTick(time),results=[];
+export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now(),legacy=false){
+ const selected=marketsForCaptureTick(time,legacy),results=[];
  // Bounded serial processing prevents a large simultaneous ESPN/OWLS burst.
  for(const {sport,market} of selected)try{
-  results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market,Date.now()));
+  results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market));
  }catch(error){results.push({sport,market,ok:false,reason:error instanceof Error?error.message.slice(0,110):'capture_failed'});}
  return {time:new Date(time).toISOString(),markets:selected.length,eligible:results.reduce((n,r)=>n+(r.eligible||0),0),
+  checked:results.filter(r=>r.ok).map(({sport,market,eligible})=>({sport,market,eligible})),
   stored:results.reduce((n,r)=>n+(r.stored||0),0),picksStored:results.reduce((n,r)=>n+(r.picksStored||0),0),failed:results.filter(r=>!r.ok).map(r=>({sport:r.sport,market:r.market,reason:r.reason}))};
 }

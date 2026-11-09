@@ -9,10 +9,11 @@ function quote(patch={}){return {sport:'nba',market:'points',gameId:'12345',play
 
 test('capture rotation covers all five active sports and every configured market, never paused sports',()=>{
  const selected=new Set();
- for(let i=0;i<20;i++)for(const x of marketsForCaptureTick(time+i*300_000))selected.add(x.sport+'|'+x.market);
+ for(let i=0;i<Math.ceil(CAPTURE_MARKETS.length/2);i++)for(const x of marketsForCaptureTick(time+i*120_000))selected.add(x.sport+'|'+x.market);
  assert.deepEqual(selected,new Set(CAPTURE_MARKETS.map(x=>x.sport+'|'+x.market)));
  assert.deepEqual(new Set(CAPTURE_MARKETS.map(x=>x.sport)),new Set(['nba','nfl','nhl','cfb','cbb']));
- assert.equal(marketsForCaptureTick(time).length,6);
+ assert.equal(marketsForCaptureTick(time).length,2);
+ assert.equal(marketsForCaptureTick(time,true).length,6);
  assert.ok(CAPTURE_MARKETS.some(row=>row.sport==='nfl'&&row.market==='qb_rushing_yards'));
 });
 

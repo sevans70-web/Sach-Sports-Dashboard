@@ -1,5 +1,5 @@
 import dashboard from 'vinext/server/fetch-handler';
-import {scheduledPregameCapture} from './scripts/worker-pregame-capture.mjs';
+import {PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON,scheduledPregameCapture} from './scripts/worker-pregame-capture.mjs';
 import {gradeSavedWorkerPicks} from './scripts/worker-pregame-grade.mjs';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
 import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
@@ -11,18 +11,17 @@ export * from 'vinext/server/fetch-handler';
 export default {
  ...dashboard,
  async scheduled(controller,env,ctx){
-  if(controller.cron==='*/5 * * * *'){
-   const report=await scheduledPregameCapture(env,dashboard,ctx,controller.scheduledTime);
+  if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *'){
+   const report=await scheduledPregameCapture(env,dashboard,ctx,controller.scheduledTime,controller.cron!==PREGAME_CAPTURE_CRON);
    console.info('[sach-staging-pregame-capture]',JSON.stringify(report));
-   // Only one sport every 30 minutes; capped to two official finals.
-   // Grades never mutate the original pregame quote or model-pick tables.
-   if(new Date(controller.scheduledTime).getUTCMinutes()%30===0){
-    try{
-     const settled=await gradeSavedWorkerPicks(env,dashboard,ctx,controller.scheduledTime);
-     console.info('[sach-staging-original-grades]',JSON.stringify(settled));
-    }catch(error){
-     console.error('[sach-staging-original-grades-failed]',error instanceof Error?error.message:'grading failed');
-    }
+   return;
+  }
+  if(controller.cron===PREGAME_GRADE_CRON){
+   try{
+    const settled=await gradeSavedWorkerPicks(env,dashboard,ctx,controller.scheduledTime);
+    console.info('[sach-staging-original-grades]',JSON.stringify(settled));
+   }catch(error){
+    console.error('[sach-staging-original-grades-failed]',error instanceof Error?error.message:'grading failed');
    }
    return;
   }
