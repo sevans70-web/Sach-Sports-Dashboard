@@ -285,7 +285,14 @@ function GamesPreview({ sport }: { sport: SportKey }) {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (live) setPayload(data);
+          if(!live)return;
+          // Do not replace a working current/next-games panel with a
+          // transient provider error or a partial empty refresh.
+          if(data?.success!==false&&Array.isArray(data?.games)&&data.games.length){
+            setPayload(data);
+          }else{
+            setPayload(previous=>previous?.games?.length?previous:data);
+          }
         })
         .catch(() => {});
     };
