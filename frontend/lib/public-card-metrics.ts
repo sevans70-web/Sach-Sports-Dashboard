@@ -16,7 +16,7 @@ export function cardQuotePrices(row:any){
 /** A scorer has a price and a chance, never an O/U threshold. The percentage
  * is explicitly bookmaker-implied; it is not an independently fitted forecast. */
 export function firstBasketQuote(row:any,now=Date.now()){
- if(row?.market!=='first_basket'||row.lineType!=='scorer'||!verifiedPropQuote(row,now,(row.boardFrozen===true||row.quoteRetained===true)))return null;
+ if(row?.market!=='first_basket'||row.lineType!=='scorer'||!verifiedPropQuote(row,now,(row.boardFrozen===true||row.quoteRetained===true||Boolean(row.boardCapturedAt&&Date.parse(row.boardCapturedAt)<Date.parse(row.gameTime)))))return null;
  const price=Number(row.overPrice);
  const probability=price>0?100/(price+100):-price/(-price+100);
  return {probability:Math.round(probability*1000)/10,price,sportsbook:String(row.sportsbook),basis:'bookmaker_implied' as const};
@@ -26,7 +26,7 @@ export function firstBasketQuote(row:any,now=Date.now()){
  * original full board in durable history for audit, including abstentions. */
 export function publicNbaRanking(row:any,now=Date.now()){
  if(row?.market==='first_basket')return firstBasketQuote(row,now)!=null;
- if(String(row?.market||'').startsWith('q1_'))return verifiedPropQuote(row,now,row.boardFrozen===true)&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
+ if(String(row?.market||'').startsWith('q1_'))return verifiedPropQuote(row,now,row.boardFrozen===true||Boolean(row.boardCapturedAt&&Date.parse(row.boardCapturedAt)<Date.parse(row.gameTime)))&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
  return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
 }
 
