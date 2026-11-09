@@ -2,6 +2,8 @@ import { workerRuntimeSecret } from "@/lib/worker-runtime-secret";
 import {providerFetch} from "@/lib/provider-fetch";
 import {nativeBasketballCoverage} from '@/lib/native-basketball-coverage';
 type Sport="nfl"|"ncaaf"|"nba"|"wnba"|"nhl"|"soccer"|"cbb";
+export const COLLEGE_AUDIT_BOOKS=['draftkings','fanduel','pinnacle'] as const;
+type CollegeAuditBook=(typeof COLLEGE_AUDIT_BOOKS)[number];
 /** Safe failure category; never return provider credentials or response bodies. */
 export function owlsFailureCategory(error: unknown): string {
  const message=error instanceof Error?error.message:String(error);
@@ -14,8 +16,8 @@ export function owlsFailureCategory(error: unknown): string {
  if(/timeout|abort/i.test(message))return "request_timeout";
  return "provider_request_failed";
 }
-const cache=new Map<Sport,{expires:number;payload?:any;error?:string}>();
-const pending=new Map<Sport,Promise<any>>();
+const cache=new Map<string,{expires:number;payload?:any;error?:string}>();
+const pending=new Map<string,Promise<any>>();
 const sourceCache=new Map<string,{expires:number;payload?:any;error?:string}>();
 const sourcePending=new Map<string,Promise<any>>();
 /** One fixed Source API read per hour, included on all paying tiers in the
@@ -108,26 +110,28 @@ export async function getOwlsBet365Payload(sport:'nfl'|'nba'){
  })();sourcePending.set(sport,work);try{return await work}finally{sourcePending.delete(sport)}
 }
 /** One short-lived feed snapshot per sport, shared across markets and leagues. */
-export async function getOwlsPayload(sport:Sport){
- const hit=cache.get(sport);
+export async function getOwlsPayload(sport:Sport,book?:CollegeAuditBook){
+ const cacheKey=book?sport+'/'+book:sport;
+ const hit=cache.get(cacheKey);
  if(hit&&hit.expires>Date.now()){if(hit.error)throw new Error(hit.error);return hit.payload}
- const running=pending.get(sport);if(running)return running;
+ const running=pending.get(cacheKey);if(running)return running;
  const work=(async()=>{
   const key=workerRuntimeSecret("OWLS_INSIGHT_API_KEY");
   if(!key)throw new Error("OWLS_INSIGHT_API_KEY is not configured in this runtime.");
   const providerSport=sport==="cbb"?"ncaab":sport;
-  const response=await providerFetch(`https://api.owlsinsight.com/api/v1/${providerSport}/props`,{headers:{Authorization:`Bearer ${key}`,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
+  const endpoint=`https://api.owlsinsight.com/api/v1/${providerSport}/props`+(book?'/'+book:'');
+  const response=await providerFetch(endpoint,{headers:{Authorization:`Bearer ${key}`,"x-api-key":key,Accept:"application/json"},cache:"no-store"});
   if(!response.ok){
    const error=`Owls Insight returned ${response.status}`;
    const retry=Number(response.headers.get("retry-after"));
    const delay=response.status===429&&Number.isFinite(retry)&&retry>0?Math.min(retry*1000,3600000):30_000;
    // Never reuse stale book lines after an authorization or billing failure.
-   cache.set(sport,{expires:Date.now()+delay,error});throw new Error(error);
+   cache.set(cacheKey,{expires:Date.now()+delay,error});throw new Error(error);
   }
-  const payload=await response.json();cache.set(sport,{expires:Date.now()+60_000,payload});return payload;
+  const payload=await response.json();cache.set(cacheKey,{expires:Date.now()+60_000,payload});return payload;
  })();
- pending.set(sport,work);
- try{return await work}finally{pending.delete(sport)}
+ pending.set(cacheKey,work);
+ try{return await work}finally{pending.delete(cacheKey)}
 }
 
 let firstBasketSource:any=null,firstBasketReadAt=0,firstBasketPending:Promise<any>|null=null;
