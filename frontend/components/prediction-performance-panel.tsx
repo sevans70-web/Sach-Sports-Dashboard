@@ -380,6 +380,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     let alive = true;
 
     const fullArchive=period==='Season'&&(sport==='mlb'||sport==='wnba');
+    const historyTimeout=fullArchive?115000:period==='Week'?45000:undefined;
     let running=false;let hasLoaded=false;let archiveLoaded=false;let refresh:number|undefined;let retryDelay=60000;
     const run = async () => {
       if(running)return;
@@ -389,7 +390,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
       try {
         const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
         const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
-        const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal,fullArchive?115000:undefined);
+        const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal,historyTimeout);
         if(!alive)return;
         const cloudUnavailable=payload.coverage?.errors?.some((error:string)=>/^(cloud|drive):unavailable/.test(error));
         retryDelay=payload.refreshing&&!cloudUnavailable?5000:60000;
