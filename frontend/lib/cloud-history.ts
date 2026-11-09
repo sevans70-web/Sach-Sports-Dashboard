@@ -17,7 +17,7 @@ export async function cloudHistoryRead(sport:string,stream:string,day:string){
 }
 export async function cloudHistoryWrite(sport:string,stream:string,day:string,rows:any[]){
  if(!cloudConfigured())return false;
- await saveCloudDocument(sport,stream,day,rows,Buffer.byteLength(JSON.stringify(rows)));
+ if(!await saveCloudDocument(sport,stream,day,rows,Buffer.byteLength(JSON.stringify(rows))))return false;
  records.set(recordKey(sport,stream,day),{at:Date.now(),rows});
  const hit=cache.get(sport);if(hit){const updated={stream,game_date:day,payload:rows,checksum:checksum(rows)},index=hit.rows.findIndex(r=>r.stream===stream&&r.game_date===day);if(index>=0)hit.rows[index]=updated;else hit.rows.push(updated);}
  return true;

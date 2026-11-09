@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {checksum,listCloudPerformanceDocuments,visitCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {checksum,cloudRequest,listCloudPerformanceDocuments,saveCloudDocument,visitCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
 test('all sports enumerate metadata, coalesce reads and isolate corrupt source documents',async()=>{
  const original=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;let metadataCalls=0,payloadCalls=0,active=0,maxActive=0;
  process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';
@@ -60,5 +60,20 @@ test('Workers read many saved documents in bounded day batches and isolate a cor
   else process.env.SUPABASE_URL = oldUrl;
   if(oldKey === undefined) delete process.env.SUPABASE_SECRET_KEY;
   else process.env.SUPABASE_SECRET_KEY = oldKey;
+ }
+});
+
+test('staging Workers reject shared history writes before making a network request', async () => {
+ const navigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+ const allowWrites = process.env.SACH_ENABLE_WORKER_HISTORY_WRITES;
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{userAgent:'Cloudflare-Workers'}});
+ delete process.env.SACH_ENABLE_WORKER_HISTORY_WRITES;
+ try {
+  assert.equal(await saveCloudDocument('nba','points','2026-11-09',[]),false);
+  await assert.rejects(cloudRequest('history_archive_files',{method:'POST'}),/read-only/);
+ } finally {
+  if(navigator)Object.defineProperty(globalThis,'navigator',navigator);
+  else delete globalThis.navigator;
+  if(allowWrites!==undefined)process.env.SACH_ENABLE_WORKER_HISTORY_WRITES=allowWrites;
  }
 });

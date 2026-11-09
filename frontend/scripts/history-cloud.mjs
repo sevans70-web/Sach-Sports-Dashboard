@@ -2,7 +2,12 @@ import {createHash} from 'node:crypto';
 export function canonical(value){if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';if(value&&typeof value==='object')return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+canonical(value[k])).join(',')+'}';return JSON.stringify(value);}
 export const checksum=value=>createHash('sha256').update(canonical(JSON.parse(JSON.stringify(value)))).digest('hex');
 export function cloudConfigured(){return Boolean((process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL)&&(process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||process.env.SUPABASE_KEY));}
+// Until capture and grading are verified on Workers, Railway owns shared writes.
+export function cloudHistoryReadOnly(){
+ return globalThis.navigator?.userAgent==='Cloudflare-Workers'&&process.env.SACH_ENABLE_WORKER_HISTORY_WRITES!=='1';
+}
 export async function cloudRequest(route,options={}){
+ if(cloudHistoryReadOnly()&&!['GET','HEAD'].includes((options.method??'GET').toUpperCase()))throw Error('Worker history storage is read-only');
  const base=(process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||'').replace(/\/$/,''),key=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||process.env.SUPABASE_KEY;
  if(!base||!key)throw Error('Cloud history is not configured');
  const headers={apikey:key,'Content-Type':'application/json',...options.headers};if(!key.startsWith('sb_secret_'))headers.Authorization='Bearer '+key;
@@ -26,8 +31,9 @@ const pendingCloudSaves=state.pending,documentWrites=state.documents,writeStats=
 state.recentVerified??=new Map();
 const recentVerified=state.recentVerified;
 const UNCHANGED_VERIFY_INTERVAL_MS=15*60*1000;
-export function cloudWriteStatus(){return {configured:cloudConfigured(),pendingDocuments:documentWrites.size,activeSaves:state.active,queuedSaves:state.waiting.length,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
+export function cloudWriteStatus(){return {configured:cloudConfigured(),readOnly:cloudHistoryReadOnly(),pendingDocuments:documentWrites.size,activeSaves:state.active,queuedSaves:state.waiting.length,sports:Object.fromEntries([...writeStats].map(([sport,value])=>[sport,{...value}]))};}
 export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceUpdatedAt){
+ if(cloudHistoryReadOnly())return false;
  let stats=writeStats.get(sport);if(!stats){stats={attempted:0,verified:0,failed:0,coalesced:0,retried:0};writeStats.set(sport,stats);}stats.attempted++;
  const snapshot=JSON.parse(JSON.stringify(payload)),hash=checksum(snapshot);
  const sourceTime=sourceUpdatedAt??new Date().toISOString();

@@ -1,4 +1,4 @@
-import {readCloudDocumentsForDay} from '../scripts/history-cloud.mjs';
+import {cloudHistoryReadOnly,readCloudDocumentsForDay} from '../scripts/history-cloud.mjs';
 import {cloudHistoryRead,cloudHistoryWrite} from '@/lib/cloud-history';
 import {promises as fs} from "node:fs";
 import path from "node:path";
@@ -12,6 +12,7 @@ export async function readDurableHistory<T>(sport:string,market:string,day:strin
  try{const raw=await fs.readFile(file(sport,market,day),"utf8");const parsed=JSON.parse(raw);return Array.isArray(parsed)?parsed as T[]:[]}catch{if(localOnly)return [];const cloud=await cloudHistoryRead(sport,market,day);return Array.isArray(cloud)?cloud:[]}
 }
 export async function writeDurableHistory<T>(sport:string,market:string,day:string,rows:T[],deferCloud?:(work:()=>Promise<any>)=>void):Promise<boolean>{
+ if(cloudHistoryReadOnly())return false;
  // Publish the local record before a slow cloud round trip. Each writer owns
  // its temporary file, including concurrent writes from the same process.
  let localOk=false;
