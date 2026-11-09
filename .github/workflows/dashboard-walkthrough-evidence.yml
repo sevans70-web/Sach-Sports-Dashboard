@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [cloudflare-compatibility-test]
-    paths: ['.github/workflows/dashboard-walkthrough-evidence.yml']
+    paths: ['.github/workflows/dashboard-walkthrough-evidence.yml', 'frontend/components/player-rankings-panel.tsx']
 permissions:
   contents: read
 jobs:
@@ -27,6 +27,9 @@ jobs:
           assert.ok(panel.includes("if(card.raw?.sport==='nba'&&nbaCardEv(card)!=null)return true;"),'NBA valid EV must bypass old generic projection gate');
           assert.ok(panel.includes("nflSunday?CFB_SLATES"),'Sunday-only NFL time buckets missing');
           assert.ok(panel.includes("label:'Today'"),'Non-Sunday NFL Today slate missing');
+          assert.ok(panel.includes('rankingPayload.success === false'),'CW01: failed rankings refresh must preserve last verified cards');
+          assert.ok(panel.includes('verifiedPropQuote(card.raw,now,true)'),'CW01: Q1 retention must re-verify original quote');
+          assert.ok(panel.includes('Date.parse(card.gameTime)>now'),'CW01: expired pregame Q1 card cannot be revived');
           import {loadTs} from './frontend/tests/load-ts.mjs';
           const {rankNbaCardsByEv}=await loadTs(new URL('./frontend/lib/nba-ev-ranking.ts',import.meta.url));
           const {integrityRow}=await loadTs(new URL('./frontend/lib/prop-integrity.ts',import.meta.url));
