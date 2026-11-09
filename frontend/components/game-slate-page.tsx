@@ -1648,22 +1648,18 @@ export function GameSlatePage({
         .then((payload) => {
           if (!alive) return;
 
-          setGames(
-            Array.isArray(payload?.games)
-              ? payload.games
-              : []
-          );
-
-          setWeekNumber(
-            Number(payload?.weekNumber || 0) || null
-          );
-
-          setError(
-            payload?.success === false
-              ? payload?.error ||
-                  "Game slate unavailable."
-              : ""
-          );
+          // A provider error or partial empty refresh must not erase the
+          // last successful current/next-game schedule from the screen.
+          // Preserve the verified calendar while indicating stale status.
+          const incoming=Array.isArray(payload?.games)?payload.games:[];
+          const valid=payload?.success!==false&&incoming.length>0;
+          if(valid){
+            setGames(incoming);
+            setWeekNumber(Number(payload?.weekNumber||0)||null);
+          }
+          setError(valid?"":payload?.success===false
+             ?payload?.error||"Schedule temporarily unavailable; showing last saved games."
+             : "Schedule temporarily unavailable; showing last saved games.");
 
           setLoading(false);
         })
