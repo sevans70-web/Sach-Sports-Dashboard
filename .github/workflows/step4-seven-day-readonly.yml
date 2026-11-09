@@ -1,0 +1,41 @@
+name: Step 4 read-only seven-day history audit
+# Single small test job. No changes to records, no deployments.
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - '.github/workflows/step4-seven-day-readonly.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify Cloudflare seven-day history for all active sports
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import concurrent.futures,json,urllib.request,collections,datetime
+          sports=['nba','nfl','nhl','cfb','cbb']
+          url='https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport={sport}&period=Week'
+          def check(sport):
+            try:
+              req=urllib.request.Request(url.format(sport=sport),headers={'Accept':'application/json','User-Agent':'Sach-ReadOnly-7Day/1.0'})
+              with urllib.request.urlopen(req,timeout=80) as res:
+                code=res.status;body=json.load(res)
+              coverage=body.get('coverage') or {}
+              rows=body.get('records') or []
+              days=sorted({str(x.get('gameDate') or '')[:10] for x in rows if x.get('gameDate')})
+              states=collections.Counter(str(x.get('status')) for x in rows)
+              originals=coverage.get('protectedOriginals')
+              problems=(coverage.get('errors') or [])
+              return {'sport':sport,'http':code,'success':body.get('success'),'partial':body.get('partial'),
+               'records':len(rows),'datesWithRows':days,'statuses':dict(states),'source':coverage.get('historySource'),
+               'cloudDocuments':coverage.get('cloudDocuments'),'coverageErrors':len(problems),'protectedOriginals':originals,
+               'sourceDays':len(coverage.get('availableDates') or []),'hasInvalidOriginals':bool((originals or {}).get('invalid'))}
+            except Exception as e:return {'sport':sport,'error':type(e).__name__,'success':False}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+            for result in pool.map(check,sports):print('STEP4_SEVEN_DAY_STATUS '+json.dumps(result,sort_keys=True))
+          PY
