@@ -1796,6 +1796,8 @@ export function PlayerRankingsPanel({
   const [nbaSlate,setNbaSlate]=useState("active");
   const [nbaBoardLabel,setNbaBoardLabel]=useState("");
   const [nflSlate, setNflSlate] = useState<CfbSlateKey>("all");
+  const nflSunday=new Intl.DateTimeFormat('en-US',{timeZone:'America/Toronto',weekday:'short'}).format(new Date())==='Sun';
+  const nflToday=torontoDay(new Date().toISOString());
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
   const [sharedStatusGames, setSharedStatusGames] = useState<SharedStatusGame[]>([]);
   const [blockExpanded,setBlockExpanded] = useState<Record<string,boolean>>({});
@@ -2415,12 +2417,14 @@ export function PlayerRankingsPanel({
 
     if (sport === "nfl") {
       return withStatus
-        .filter((card) => {
-          if (nflSlate === "all") return true;
-          if (!card.gameTime) return false;
-          return rankingSlateForTime(card.gameTime) === nflSlate;
+        .filter(card=>{
+          // On Thursday/Monday or any non-Sunday schedule, show TODAY,
+          // not unused Sunday time-of-day buckets.
+          if(!nflSunday)return Boolean(card.gameTime&&torontoDay(card.gameTime)===nflToday);
+          if(nflSlate==="all")return true;
+          return Boolean(card.gameTime&&rankingSlateForTime(card.gameTime)===nflSlate);
         })
-        .sort((a, b) => a.rank - b.rank);
+        .sort((a,b)=>a.rank-b.rank);
     }
 
     if (sport !== "cfb") return withStatus;
@@ -2436,7 +2440,7 @@ export function PlayerRankingsPanel({
         }
         return a.rank - b.rank;
       });
-  }, [sport, market.key, cfbSlate, nflSlate, nbaSlate, cards, cfbLiveGames, sharedStatusGames]);
+  }, [sport, market.key, cfbSlate, nflSlate, nflSunday, nflToday, nbaSlate, cards, cfbLiveGames, sharedStatusGames]);
 
   const displayCards = useMemo(() => {
     // NBA is an EV-ranked board, not a general slate catalogue. No missing,
@@ -2514,7 +2518,7 @@ export function PlayerRankingsPanel({
       {sport === "nfl" ? (
         <div className={styles.tabsFrame}>
           <div className={styles.tabs}>
-            {CFB_SLATES.map((item) => (
+            {(nflSunday?CFB_SLATES:[{key:'all' as CfbSlateKey,label:'Today'}]).map((item) => (
               <button
                 type="button"
                 key={item.key}
