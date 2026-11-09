@@ -25,5 +25,23 @@ jobs:
           node --check frontend/scripts/worker-pregame-grade.mjs
           node --check frontend/scripts/worker-pregame-backup.mjs
           node --check frontend/scripts/worker-pregame-history.mjs
+      - name: Verify professional navigation and archived sport preservation
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const contract=fs.readFileSync('frontend/lib/dashboard-contract.ts','utf8');
+          const home=fs.readFileSync('frontend/app/home-showcase.tsx','utf8');
+          const capture=fs.readFileSync('frontend/scripts/worker-pregame-capture.mjs','utf8');
+          const grader=fs.readFileSync('frontend/scripts/worker-pregame-grade.mjs','utf8');
+          assert.match(contract,/VISIBLE_SPORTS:\s*readonly DashboardSport\[\]\s*=\s*\["nba","nfl","nhl"\]/);
+          assert.match(home,/CENTERS:DashboardSport\[\]=\["nba","nfl","nhl"\]/);
+          for(const sport of ['cfb','cbb','wnba','mlb']){
+            assert.ok(fs.existsSync('frontend/app/'+sport+'/page.tsx'),'preserve '+sport+' route');
+          }
+          for(const sport of ['cfb','cbb'])assert.doesNotMatch(capture,new RegExp('^ '+sport+':\\\\[','m'));
+          assert.match(grader,/const SPORTS=\['nba','nhl','nfl'\]/);
+          console.log('NBA/NFL/NHL are active; paused routes preserved.');
+          NODE
       - name: Run immutable original-pregame capture tests
         run: node --test frontend/tests/worker-pregame-capture.test.mjs frontend/tests/worker-pregame-grade.test.mjs frontend/tests/worker-pregame-backup.test.mjs frontend/tests/worker-pregame-history.test.mjs
