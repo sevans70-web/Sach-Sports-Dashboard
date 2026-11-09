@@ -6,12 +6,23 @@ import {performanceView} from '@/lib/performance-view';
 import {schedulePerformanceRecovery} from '@/lib/performance-recovery-scheduler';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {NextRequest,NextResponse} from 'next/server';
-import {HISTORY_SPORTS,HISTORY_PERIODS,savedHistorySummary,historyGroup} from '@/lib/saved-performance';
+import {HISTORY_SPORTS,HISTORY_PERIODS,historyDays,readSavedPerformance,savedHistorySummary,historyGroup} from '@/lib/saved-performance';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'nba',period=req.nextUrl.searchParams.get('period')||'Today';
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport)||!(HISTORY_PERIODS as readonly string[]).includes(period))return NextResponse.json({success:false,error:'Unsupported history scope'},{status:400});
+ const from=req.nextUrl.searchParams.get('archive_from'),to=req.nextUrl.searchParams.get('archive_to');
+ if(from!==null||to!==null){
+  const now=new Date(),days=historyDays('Season',now);
+  if(period!=='Season'||!['mlb','wnba'].includes(sport)||!from||!to||!days.has(from)||!days.has(to)||from>to||Date.parse(to)-Date.parse(from)>6*86400000){
+   return NextResponse.json({success:false,error:'Choose an MLB or WNBA archive source range of up to seven days within the season.'},{status:400});
+  }
+  try{
+   const {records,coverage}=await readSavedPerformance(sport,period,now,undefined,{observe:false,storage:'cloud',archiveRange:{from,to}});
+   return NextResponse.json({success:coverage.complete,sport,archiveRange:{from,to},archiveDocuments:coverage.driveDocuments,records:records.length,errors:coverage.errors},{headers:{'Cache-Control':'no-store'}});
+  }catch{return NextResponse.json({success:false,error:'Drive archive is unavailable.'},{status:503});}
+ }
  try{
   const data=await performanceView(sport,period,schedulePerformanceRecovery),market=req.nextUrl.searchParams.get('market'),group=req.nextUrl.searchParams.get('group'),league=sport==='soccer'?req.nextUrl.searchParams.get('league'):null;
   const scopedRecords=performanceResponseScope(data.records,period,new Date(),league);

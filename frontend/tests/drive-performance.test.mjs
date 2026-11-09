@@ -18,6 +18,9 @@ test('all eight sports recover older exact daily copies without Supabase, choose
  for(const sport of sports){const result=await read(sport,'2025-10-23');assert.equal(result.rows.length,1);assert.equal(result.rows[0].payload[0].key,sport+'-original');assert.equal(result.rows[0].payload[0].actual,0);assert.equal(result.rows[0].payload[0].modelProjection,1.2);assert.deepEqual(result.errors,['rebounds|2026-10-17:unavailable']);}
  assert.equal(reads,16);await read('nfl','2025-10-23');assert.equal(reads,16);
  const today=await read('nfl','2026-10-27');assert.deepEqual(today,{rows:[],errors:[]});assert.equal(reads,16);
+ const bounded=await read('nfl','2026-10-16','2026-10-16');assert.equal(bounded.rows.length,1);assert.deepEqual(bounded.errors,[]);
+ const next=await read('nfl','2026-10-16','2026-10-17');assert.deepEqual(next.errors,['rebounds|2026-10-17:unavailable']);
+ await assert.rejects(read('nfl','2026-10-17','2026-10-16'),/Invalid backup history scope/);
 });
 test('bounded jobs resume from verified copies and inventory failures retain earlier records',async()=>{
  let clock=1000,reads=0,fail=false;

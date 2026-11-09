@@ -46,10 +46,10 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
   }
   const value=[...latest.values()].sort((a,b)=>a.game_date.localeCompare(b.game_date)||a.stream.localeCompare(b.stream));inventories.set(sport,{at:now(),files:value});return value;
  }
- async function load(sport,firstDay){
+ async function load(sport,firstDay,lastDay,key){
   const started=now();let files;
   const send=shared??transport(makeRequest());
-  try{files=(await inventory(sport,send)).filter(f=>!firstDay||f.game_date>=firstDay);}catch{return {rows:results.get(sport+'|'+(firstDay||'all'))?.value.rows||[],errors:['unavailable']};}
+  try{files=(await inventory(sport,send)).filter(f=>(!firstDay||f.game_date>=firstDay)&&(!lastDay||f.game_date<=lastDay));}catch{return {rows:results.get(key)?.value.rows||[],errors:['unavailable']};}
   const outcomes=new Array(files.length);
   let next=0;
   const collect=async()=>{while(next<files.length){
@@ -86,16 +86,20 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
   await Promise.all(parallelReads?[collect(),collect()]:[collect()]);
   return {rows:outcomes.flatMap(x=>x.row?[x.row]:[]),errors:outcomes.flatMap(x=>x.error?[x.error]:[])};
  }
- const read=async(sport,firstDay)=>{
-  if(!['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'].includes(sport)||firstDay&&!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid backup history scope');
-  const key=sport+'|'+(firstDay||'all'),cached=results.get(key);if(cached&&now()-cached.at<(cached.value.errors.some(e=>e.endsWith(':checking'))?5000:60000))return unpack(cached.value);
-  if(makeRequest){const value=await load(sport,firstDay);results.set(key,{at:now(),value});return unpack(value);}
-  let work=pending.get(key);if(!work){work=load(sport,firstDay).then(value=>{
+ const read=async(sport,firstDay,lastDay)=>{
+  if(!['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'].includes(sport)||[firstDay,lastDay].some(day=>day&&!/^\d{4}-\d{2}-\d{2}$/.test(day))||lastDay&&(!firstDay||lastDay<firstDay))throw Error('Invalid backup history scope');
+  const key=[sport,firstDay||'all',lastDay||'all'].join('|'),cached=results.get(key);if(cached&&now()-cached.at<(cached.value.errors.some(e=>e.endsWith(':checking'))?5000:60000))return unpack(cached.value);
+  if(makeRequest){
+   const value=await load(sport,firstDay,lastDay,key);
+   if(!results.has(key)&&results.size>=64)results.delete(results.keys().next().value);
+   results.set(key,{at:now(),value});return unpack(value);
+  }
+  let work=pending.get(key);if(!work){work=load(sport,firstDay,lastDay,key).then(value=>{
    results.set(key,{at:now(),value});
    // Continue bounded work on the persistent server without requiring a browser
    // poll. Transport/integrity failures alone never enter this fast retry loop.
    if(schedule&&value.errors.some(error=>error.endsWith(':checking'))&&!scheduled.has(key)){
-    scheduled.add(key);schedule(()=>{scheduled.delete(key);return read(sport,firstDay).catch(()=>{});});
+    scheduled.add(key);schedule(()=>{scheduled.delete(key);return read(sport,firstDay,lastDay).catch(()=>{});});
    }
    return value;
   }).finally(()=>pending.delete(key));pending.set(key,work);}return unpack(await work);
@@ -103,7 +107,7 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
  return read;
 }
 let reader;
-export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot){
+export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot,lastDay){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
  if(!reader){
   const makeRequest=()=>driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})}).request;
@@ -112,5 +116,5 @@ export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapsh
   // the request that created them, including the OAuth refresh promise.
   reader=createDrivePerformanceReader({folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,...(worker?{makeRequest}:{request:makeRequest(),schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}})});
  }
- return reader(sport,firstDay);
+ return reader(sport,firstDay,lastDay);
 }
