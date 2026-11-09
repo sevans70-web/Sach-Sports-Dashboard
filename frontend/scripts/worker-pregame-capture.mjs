@@ -89,7 +89,8 @@ async function db(env,path,init={},read=globalThis.fetch){
  const base=str(env.SUPABASE_URL).replace(/\/$/,'');
  const response=await read(base+'/rest/v1/'+path,{...init,headers:{...dbHeaders(env,init.prefer),...(init.headers||{})},cache:'no-store'});
  if(!response.ok)throw Error('Cloudflare pregame storage HTTP '+response.status);
- return response.status===204?null:response.json();
+ const body=await response.text();
+ return body?JSON.parse(body):null; // Supabase can reply 201 with an empty body for return=minimal.
 }
 export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,now=Date.now(),reader=globalThis.fetch){
  const path=API_ROUTES[sport]+'?market='+encodeURIComponent(market);
