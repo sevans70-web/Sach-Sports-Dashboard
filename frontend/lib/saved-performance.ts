@@ -49,16 +49,20 @@ async function sourceDocument(file:string){
  return work;
 }
 /** Original saved calls only. Provider reconciliation may run after the response. */
-export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean;cloud?:boolean}={}){
+export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean;cloud?:boolean;storage?:'cloud'}={}){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const startedAt=Date.now();
  if(process.env.NODE_ENV==='production')console.info('[performance-start]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false}));
  // Capture dates can precede fixture dates. Read the saved season inventory
  // from Drive, then apply the requested period to each record's fixture time.
- const drive=drivePerformanceConfigured(),firstDay=[...historyDays(drive?'Season':period,now)].sort()[0];
+ const cloudOnly=options.storage==='cloud';
+ const recent=period==='Today'||period==='Yesterday'||period==='Week';
+ const drive=(!cloudOnly||!recent||!cloudConfigured())&&drivePerformanceConfigured();
+ if(cloudOnly&&!drive&&!cloudConfigured())throw Error('Cloud history storage is unavailable');
+ const firstDay=[...historyDays(drive?'Season':period,now)].sort()[0];
  const remoteWork=drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
- const names=await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
+ const names=cloudOnly?[]:await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
  const availableDates=new Set<string>(),observationTimes=new Map<string,number>();
  if(sport==='mlb'&&root===historyRoot()){const legacy=await readBundledMlbHistory(days);rows.push(...legacy.rows);legacy.dates.forEach(day=>availableDates.add(day));errors.push(...legacy.errors);}
@@ -76,7 +80,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  };
  // MLB performance snapshots live in a child directory; protected receipts and
  // newly captured boards use the shared sport root like every other sport.
- if(sport==='mlb'){
+ if(sport==='mlb'&&!cloudOnly){
   const shared=path.join(root,sport),sharedNames=await fs.readdir(shared).catch(()=>[]);
   for(const name of sharedNames.filter(n=>/^(protected_(?:pregame_|final_)|official_final_|featured_|slate_board_|slate_locked_)/.test(n)&&n.endsWith('.json'))){
    const date=name.match(/(\d{4}-\d{2}-\d{2})\.json$/)?.[1];if(!date||!fileDays.has(date))continue;

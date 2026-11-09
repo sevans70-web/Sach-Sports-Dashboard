@@ -11,3 +11,25 @@ test('a failed background refresh retains the verified saved view',async()=>{
  const root=await mkdtemp(path.join(tmpdir(),'sach-view-fail-')),deferred=[];const now=Date.parse('2026-10-25T20:00Z');
  try{await performanceView('nba','Today',()=>{},now,root,async()=>({records:[{actual:0}],coverage:{complete:true}}));const data=await performanceView('nba','Today',w=>deferred.push(w),now+61000,root,async()=>{throw Error('provider down')});assert.equal(data.records[0].actual,0);await deferred[0]();const next=await performanceView('nba','Today',()=>{},now+62000,root,async()=>{throw Error('provider down')});assert.equal(next.records[0].actual,0);}finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('Workers return the saved cloud view without writing a local snapshot', async () => {
+ const original = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+ Object.defineProperty(globalThis, 'navigator', {configurable:true, value:{userAgent:'Cloudflare-Workers'}});
+ try {
+  const now = Date.parse('2026-10-25T20:00Z');
+  const records = [{status:'hit', actual:0}];
+  const reader = async (sport, period, date, root, options) => {
+   assert.equal(sport, 'nba');
+   assert.equal(period, 'Week');
+   assert.equal(date.getTime(), now);
+   assert.deepEqual(options, {observe:false, storage:'cloud'});
+   return {records, coverage:{complete:false}};
+  };
+  const result = await performanceView('nba', 'Week', () => assert.fail('Unexpected deferred work'), now, '/not-writable', reader);
+  assert.deepEqual(result.records, records);
+  assert.equal(result.coverage.complete, false);
+ } finally {
+  if(original) Object.defineProperty(globalThis, 'navigator', original);
+  else delete globalThis.navigator;
+ }
+});

@@ -11,6 +11,12 @@ const pending=new Map<string,Promise<SavedView>>();
  * updated; original history and pregame evidence remain untouched. */
 export async function performanceView(sport:string,period:string,defer:(work:()=>Promise<any>)=>void,now=Date.now(),root=historyRoot(),read=readSavedPerformance):Promise<SavedView>{
  if(!/^[a-z0-9_-]+$/i.test(sport)||!['Today','Yesterday','Week','Month','Season'].includes(period))throw Error('Invalid performance scope');
+ // A Worker has no persistent local snapshot directory. Return the saved
+ // cloud view directly, using only recorded results to grade it.
+ if(globalThis.navigator?.userAgent==='Cloudflare-Workers'){
+  const data=await read(sport,period,new Date(now),root,{observe:false,storage:'cloud'});
+  return {...data,snapshotAt:new Date().toISOString()};
+ }
  const day=dashboardDay(new Date(now)),dir=path.join(root,sport),file=path.join(dir,'performance_view_'+period+'_'+day+'.json'),key=file;
  let previous:SavedView|null=null;
  const write=async(data:Awaited<ReturnType<typeof readSavedPerformance>>,refreshing=false)=>{
