@@ -6,7 +6,15 @@ test('Worker model partitions preserve digest and contain only required sport/ma
  for(const [key,part]of Object.entries(partitions)){
   const bytes=Buffer.from(part.bytes,'base64');assert.equal(createHash('sha256').update(bytes).digest('hex'),part.sha256);
   const data=JSON.parse(gunzipSync(bytes)),[sport,market]=key.split('|');
-  assert.ok(data.digest);assert.ok(data.models.length);assert.ok(data.observations.length);
+  assert.ok(data.digest);assert.ok(data.models.length);
+  if(market.startsWith('q1_')){
+   assert.equal(data.models[0].group,key);
+   assert.ok(data.rows.length>100);
+   assert.ok(data.rows.every(row=>data.markets[row[2]].join('|')===key));
+   if(sport==='nba'&&market!=='q1_threes_made')assert.ok(data.models[0].residuals.length>=100);
+   continue;
+  }
+  assert.ok(data.observations.length);
   assert.ok(data.observations.every(g=>g.sport===sport));
   if(!['pts_rebs_asts','pts_rebs','pts_asts','rebs_asts'].includes(market))assert.ok(data.observations.every(g=>g.market===market));
   assert.ok(gunzipSync(bytes).length<20*1024*1024);
@@ -24,7 +32,7 @@ test('embedded loader executes without disk reads and combines the original comp
  assert.equal(points.models[0].group,'nba|points');assert.ok(points.observations.length>1000);
  assert.equal(runtime.workerModelRuntime('nba','points'),points,'repeat requests reuse the checked partition');
  const combo=runtime.workerModelRuntime('nba','pts_rebs');
- assert.deepEqual(combo.models.map(m=>m.group),['nba|points','nba|rebounds']);
+ assert.deepEqual(combo.models.map(m=>m.group),['nba|points','nba|rebounds','nba|pts_rebs']);
  assert.equal(combo.digest,points.digest);
  assert.deepEqual(combo.observations.filter(g=>g.market==='points'),points.observations);
  assert.equal(runtime.workerModelRuntime('cbb','points').models[0].group,'cbb|points');

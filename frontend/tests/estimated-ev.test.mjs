@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {estimatedEv,estimatedEvText}=await loadTs(new URL('../lib/estimated-ev.ts',import.meta.url));
+const {estimatedEv,estimatedEvText,nbaComparisonEv}=await loadTs(new URL('../lib/estimated-ev.ts',import.meta.url));
 const now=Date.parse('2026-10-25T16:00Z');
 function row(side='OVER',price=100,probabilities=[.55,.45,0]){
  return {playerId:'p',gameId:'g',market:'passing_yards',gameTime:'2026-10-25T17:00Z',quoteVersion:1,quoteId:'q',sportsbook:'Book',sportsbookKey:'book',lineType:'main',sportsbookLine:200.5,overPrice:side==='OVER'?price:-110,underPrice:side==='UNDER'?price:-110,quoteUpdatedAt:'2026-10-25T15:59Z',capturedAt:'2026-10-25T16:00Z',boardCapturedAt:'2026-10-25T16:00Z',researchForecast:{status:'available',priceComparison:{overProbability:probabilities[0],underProbability:probabilities[1],pushProbability:probabilities[2]},modelSelection:{side,price,line:200.5,quoteId:'q',sportsbookKey:'book',calculatedAt:'2026-10-25T16:00Z'}}};
@@ -54,4 +54,16 @@ test('new quote-bound probability evidence remains usable and rejects every alte
   const bad={...bound,researchForecast:{...bound.researchForecast,priceComparison:{...bound.researchForecast.priceComparison,quoteEvidence:{...quoteEvidence,[key]:typeof value==='number'?value+1:'other'}}}};
   assert.equal(estimatedEv(bad,now).status,'unavailable',key);
  }
+});
+
+
+test('NBA comparison EV uses both exact prices without manufacturing a saved selection',()=>{
+ const r={...row(),sport:'nba',market:'points',underPrice:-110},f=r.researchForecast;
+ const calculatedAt=f.modelSelection.calculatedAt;
+ const quoteEvidence={sport:r.sport,market:r.market,gameId:r.gameId,playerId:r.playerId,quoteId:r.quoteId,sportsbookKey:r.sportsbookKey,line:r.sportsbookLine,overPrice:r.overPrice,underPrice:r.underPrice,calculatedAt};
+ const comparison={...r,researchForecast:{...f,calculatedAt,modelSelection:null,priceComparison:{...f.priceComparison,quoteEvidence}}};
+ assert.equal(estimatedEv(comparison,now).status,'unavailable');
+ assert.ok(Math.abs(nbaComparisonEv(comparison,now).over-10)<1e-8);
+ assert.ok(nbaComparisonEv(comparison,now).under<0);
+ assert.equal(nbaComparisonEv({...comparison,underPrice:-120},now),null);
 });

@@ -16,6 +16,7 @@ import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/l
 import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
+import {nbaCombinationHistory,NBA_COMBINATION_MARKETS} from '@/lib/nba-combination-history';
 import {firstBasketBookOnly} from '@/lib/nba-slate-scope';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
 const BASKETBALL_COMBINATIONS:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
@@ -41,7 +42,9 @@ function bundle(sport:string,market:string):RuntimeBundle|null{
  if(data.version!==1||!Array.isArray(data.models)||!Array.isArray(data.observations))throw Error('Invalid forecast snapshot');
  let gi={};try{gi=JSON.parse(readFileSync(join(root,'gi-calibration.json'),'utf8'))}catch{}
  let giStatus={};try{giStatus=JSON.parse(readFileSync(join(root,'gi-status.json'),'utf8'))}catch{}
- return cached={...data,digest:manifest.sha256,asOf:manifest.asOf,gi,giStatus};
+ const combinations=JSON.parse(readFileSync(join(root,'nba-combination-models.json'),'utf8'));
+ if(combinations.sourceSha256!==manifest.sha256)throw Error('NBA combination model source mismatch');
+ return cached={...data,models:[...data.models,...combinations.models],digest:manifest.sha256,asOf:manifest.asOf,gi,giStatus};
 }
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** Experimental outputs remain separate from the validated recommendation
@@ -53,7 +56,8 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  if(!row?.gameId||!row?.playerId||!row?.teamId||!(context?.season||row?.season))return unavailable('missing_fixture_or_team_identity');
  if(!Number.isFinite(Date.parse(data.asOf))||Date.parse(data.asOf)>now)return unavailable('snapshot_not_available');
  const combination=BASKETBALL_COMBINATIONS;
- if(['nba','wnba','cbb'].includes(sport)&&combination[market]){
+ const directCombination=sport==='nba'&&Boolean(combination[market])&&data.models.some(m=>m.group===sport+'|'+market);
+ if(['nba','wnba','cbb'].includes(sport)&&combination[market]&&!directCombination){
   const parts=combination[market].map(component=>fittedResearchForecast({...row,market:component,sportsbookLine:null},sport,component,data,now,index));
   if(parts.some(p=>p.status!=='available'||p.projection==null))return unavailable('component_forecast_unavailable');
   return {status:'available',projection:Math.round(parts.reduce((n,p)=>n+Number(p.projection),0)*10)/10,modelId:'sum_of_fitted_component_expectations',modelGroup:sport+'|'+market,calculatedAt:new Date(now).toISOString(),components:combination[market],componentInputReceipts:parts.map(p=>p.inputReceipt),giScore:null,giReason:'GI_exact_price_calibration_missing',priceComparison:null,modelSelection:null,validatedForBetting:false,reason:null};
@@ -87,7 +91,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  // A directional model selection does not require a GI return-ranking fit.
  // Keep it distinct from the approved recommendation registry and its grades.
  // A market that already failed exact-price evaluation remains withheld.
- const selectionSide=data.giStatus?.[key]?.reason==='price_validation_failed'?null:pricing?.candidateSide;
+ const selectionSide=directCombination||data.giStatus?.[key]?.reason==='price_validation_failed'?null:pricing?.candidateSide;
  const modelSelection=selectionSide?{
   side:selectionSide as 'OVER'|'UNDER',line:row.sportsbookLine,
   price:selectionSide==='OVER'?row.overPrice:row.underPrice,
@@ -104,7 +108,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,
-  selectionReason:modelSelection?null:data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
+  selectionReason:modelSelection?null:directCombination&&pricing?'research_ev_only':data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
   // Comparison and probabilities are research calculations, never a pick.
   priceComparison:pricing?{quoteEvidence:{sport,market,gameId:String(row.gameId),playerId:String(row.playerId),quoteId:row.quoteId,sportsbookKey:row.sportsbookKey,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,calculatedAt:new Date(now).toISOString()},overProbability:pricing.over,underProbability:pricing.under,pushProbability:pricing.push,overExpectedReturn:pricing.overEv,underExpectedReturn:pricing.underEv}:null,
   validatedForBetting:false,reason:null,
@@ -143,6 +147,10 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));
   for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);
   data={...data,observations:[...merged.values()]};
+ }
+ const market=String(payload.market||payload.rows[0]?.market||'');
+ if(sport==='nba'&&NBA_COMBINATION_MARKETS[market]&&data.models.some(model=>model.group===sport+'|'+market)){
+  data={...data,observations:nbaCombinationHistory(data.observations,market)};
  }
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){

@@ -16,7 +16,7 @@ export function cardQuotePrices(row:any){
 /** A scorer has a price and a chance, never an O/U threshold. The percentage
  * is explicitly bookmaker-implied; it is not an independently fitted forecast. */
 export function firstBasketQuote(row:any,now=Date.now()){
- if(row?.market!=='first_basket'||row.lineType!=='scorer'||!verifiedPropQuote(row,now,row.boardFrozen===true))return null;
+ if(row?.market!=='first_basket'||row.lineType!=='scorer'||!verifiedPropQuote(row,now,(row.boardFrozen===true||row.quoteRetained===true)))return null;
  const price=Number(row.overPrice);
  const probability=price>0?100/(price+100):-price/(-price+100);
  return {probability:Math.round(probability*1000)/10,price,sportsbook:String(row.sportsbook),basis:'bookmaker_implied' as const};

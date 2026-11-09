@@ -343,6 +343,12 @@
   font-weight: 900;
 }
 
+.gi small {
+  display: block;
+  white-space: nowrap;
+  font-size: 10px;
+}
+
 .gi strong {
   display: grid;
   place-items: center;

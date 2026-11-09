@@ -72,6 +72,10 @@ export async function savePregameNbaSlateBoard(payload:any,games:any[],now=Date.
  * date, a later snapshot or a post-tipoff reconstruction onto this board. */
 export function currentNbaPregameSnapshot(board:NbaSlateBoard|null,market:string,day:string,now=Date.now()){
  if(!board||board.market!==market||board.day!==day||!Number.isFinite(Date.parse(board.capturedAt))||Date.parse(board.capturedAt)>now||!Number.isFinite(Date.parse(board.lockAt))||Date.parse(board.capturedAt)>=Date.parse(board.lockAt)||now>=Date.parse(board.lockAt))return null;
- const rows=selectNbaCandidates(nbaSlateRows(board.rows,market,day),market,now);
+ const scoped=nbaSlateRows(board.rows,market,day);
+ const rows=selectNbaCandidates(scoped,market,now);
+ // Preserve the recorded scorer board during a provider gap. The saved price
+ // is labelled on the card and remains distinct from a fresh sportsbook quote.
+ if(!rows.length&&market==='first_basket')rows.push(...scoped.filter(row=>verifiedPropQuote({...row,boardCapturedAt:board.capturedAt},now,true)).map(row=>({...row,boardCapturedAt:board.capturedAt,quoteRetained:true,quoteVerified:true})));
  return rows.length?{success:true,market,boardDay:day,boardCapturedAt:board.capturedAt,boardFrozen:false,refreshing:true,source:'Recent saved pregame NBA board',rows,publicRankingCount:rows.length}:null;
 }

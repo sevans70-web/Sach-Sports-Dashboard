@@ -1,17 +1,26 @@
 import {readFileSync} from 'node:fs';import {join} from 'node:path';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';
 import {quarterFeatureIndex,quarterPoint,quarterResidualProbabilities,type QuarterModel,type QuarterObservation} from '@/lib/quarter-forecast';
+import {workerModelRuntime} from '@/lib/worker-model-runtime';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {refreshQuarterObservations} from '@/lib/live-quarter-observations';
 type Bundle={models:QuarterModel[];observations:QuarterObservation[];digest:string;asOf:string};
 let cached:Bundle|null=null;
-export function quarterRuntimeBundle():Bundle{
+export function quarterRuntimeBundle(sport?:string,market?:string):Bundle{
+ const worker=sport&&market?workerModelRuntime(sport,market):null;
+ if(worker?.rows)return unpackQuarterBundle(worker,worker.digest,worker.asOf);
  if(cached)return cached;
  const root=join(process.cwd(),'model-runtime'),manifest=JSON.parse(readFileSync(join(root,'quarter-manifest.json'),'utf8')),bytes=readFileSync(join(root,'quarter-snapshot.json.gz'));
  if(createHash('sha256').update(bytes).digest('hex')!==manifest.sha256)throw Error('Quarter snapshot checksum mismatch');
  const p=JSON.parse(gunzipSync(bytes).toString());if(p.version!==2||!Array.isArray(p.models)||!Array.isArray(p.rows))throw Error('Invalid quarter snapshot');
+ const calibration=JSON.parse(readFileSync(join(root,'nba-quarter-calibration.json'),'utf8'));
+ if(calibration.sourceSha256!==manifest.sha256)throw Error('NBA quarter calibration source mismatch');
+ p.models=p.models.map((model:QuarterModel)=>({...model,residuals:calibration.residuals[model.group]||model.residuals}));
+ return cached=unpackQuarterBundle(p,manifest.sha256,manifest.asOf);
+}
+function unpackQuarterBundle(p:any,digest:string,asOf:string):Bundle{
  const observations:QuarterObservation[]=p.rows.map((r:any[])=>{const f=p.fixtures[r[0]],a=p.players[r[1]],m=p.markets[r[2]];return {sport:m[0],market:m[1],gameId:f[0],gameTime:f[1],season:f[2],playerId:a[0],teamId:a[1],actual:r[3],role:r[4],starter:r[5]===1,playerName:'',source:`https://site.api.espn.com/apis/site/v2/sports/${m[0]==='nba'?'basketball/nba':'football/nfl'}/summary?event=${f[0]}`,retrievedAt:f[3]}});
- return cached={models:p.models,observations,digest:manifest.sha256,asOf:manifest.asOf};
+ return {models:p.models,observations,digest,asOf};
 }
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** A fitted point expectation and its direction are distinct from calibrated
@@ -42,7 +51,7 @@ export function fittedQuarterForecast(row:any,sport:string,market:string,data:Bu
   priceComparison:quote?{...(probability||{}),quoteEvidence:{sport,market,gameId:String(row.gameId),playerId:String(row.playerId),quoteId:row.quoteId,sportsbookKey:row.sportsbookKey,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,calculatedAt:at}}:null,giScore:null,giReason:'quarter_probability_not_validated',selectionReason:selection?null:row.lineType==='milestone'?'milestone_contract':!quote?'verified_quote_unavailable':'projection_at_line',validatedForBetting:false,reason:null};
 }
 export async function attachQuarterForecasts(payload:any,sport:'nba'|'nfl',now=Date.now()){
- let data:Bundle;try{data=quarterRuntimeBundle()}catch{return {...payload,rows:payload.rows.map((r:any)=>(r.frozen||r.boardFrozen||r.lockedAtKickoff||['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=now)?r:({...r,researchForecast:unavailable('quarter_snapshot_unavailable')}))}}
+ let data:Bundle;try{data=quarterRuntimeBundle(sport,payload.market||payload.rows[0]?.market)}catch{return {...payload,rows:payload.rows.map((r:any)=>(r.frozen||r.boardFrozen||r.lockedAtKickoff||['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=now)?r:({...r,researchForecast:unavailable('quarter_snapshot_unavailable')}))}}
  data={...data,observations:data.observations.filter(g=>g.sport===sport&&g.market===(payload.market||payload.rows[0]?.market))};
  const refresh=await Promise.race([refreshQuarterObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),sport,now).catch(()=>({observations:[],unavailablePlayers:[]})),new Promise<{observations:QuarterObservation[];unavailablePlayers:string[]}>(resolve=>setTimeout(()=>resolve({observations:[],unavailablePlayers:[]}),2500))]);
  const key=(g:QuarterObservation)=>[g.sport,g.market,g.gameId,g.playerId].join('|'),merged=new Map(data.observations.map(g=>[key(g),g]));for(const g of refresh.observations)if(g.market===(payload.market||payload.rows[0]?.market))merged.set(key(g),g);

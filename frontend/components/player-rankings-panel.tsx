@@ -7,7 +7,7 @@ import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scop
 import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
-import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
+import {estimatedEvText,estimatedEvNotice,formatEvPercent,nbaComparisonEv} from '@/lib/estimated-ev';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
@@ -206,7 +206,7 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         icon: "🏀",
         markets: [...BASKETBALL,{key:"first_basket",label:"First Basket",icon:"1️⃣"}],
       },
-      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists","threes_made"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
+      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
     ],
   },
   wnba: {
@@ -993,6 +993,7 @@ function PlayerCard({
   const footballForecast=footballForecastDisplay(card.raw);
   const projectionComparison=!modelSelection&&footballForecast.side!=null;
   const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction)));
+  const comparisonEv=sport==='nba'?nbaComparisonEv(card.raw):null;
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
@@ -1064,10 +1065,11 @@ function PlayerCard({
           {voidNote ? <span className={styles.playerStatusNotice}>Void: {voidNote.text}</span> : null}
         </div>
 
-        <div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
-          <span>EV</span>
-          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"?<small title={evNotice}>EV unavailable · {evNotice}</small>:null}
-        </div>
+        {!firstBasket&&<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
+          <span>{comparisonEv?'Research EV':'EV'}</span>
+          {comparisonEv?<><small>Over {formatEvPercent(comparisonEv.over)}</small><small>Under {formatEvPercent(comparisonEv.under)}</small></>:<>
+          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"?<small title={evNotice}>Unavailable</small>:null}</>}
+        </div>}
       </div>
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
@@ -1078,7 +1080,7 @@ function PlayerCard({
         </>:firstBasket?<>
 
           <div><span>Sportsbook odds</span><strong>{scorerQuote?`${scorerQuote.price>0?'+':''}${scorerQuote.price}`:'—'}</strong></div>
-          <div><span>Sportsbook</span><strong>{scorerQuote?.sportsbook||'—'}</strong></div>
+          <div><span>Book-implied chance</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>
         </>:<>
         <div>
           <span>
@@ -1142,7 +1144,7 @@ function PlayerCard({
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
           <p>{card.raw?.quoteVersion === 1
-            ? `${card.raw.sportsbook} · ${quarterTarget?`Q1 OVER ${propLineText(Math.max(0,(card.sportsbookLine??0)-0.5))} · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice} · Under odds unavailable`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
+            ? `${card.raw.boardFrozen||card.raw.quoteRetained?"Saved pregame · ":""}${card.raw.sportsbook} · ${quarterTarget?`Q1 OVER ${propLineText(Math.max(0,(card.sportsbookLine??0)-0.5))} · ${Number(card.raw.overPrice)>0?"+":""}${card.raw.overPrice} · Under odds unavailable`:card.raw.lineType === "scorer" ? `${scorerTarget(card.market)} · To score ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}` : `Main O/U · Over ${Number(card.raw.overPrice) > 0 ? "+" : ""}${card.raw.overPrice}${card.raw.underPrice == null ? "" : ` / Under ${Number(card.raw.underPrice) > 0 ? "+" : ""}${card.raw.underPrice}`}`} · Updated ${new Date(card.raw.quoteUpdatedAt).toLocaleTimeString("en-CA", {timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"})} ET`
             : "Original sportsbook details could not be confirmed. Saved for history, not a verified pick."}</p>
           {card.raw?.quoteVersion === 1 ? <p>{fittedForecast?"Projection uses estimated workload and production. Recent averages remain in the expanded history.":"The history estimate is a weighted past-game baseline. The pick applies only to the named book and displayed line."}</p> : null}
         </div>
@@ -1249,7 +1251,7 @@ function PlayerCard({
             <div>
               <b>EV</b>
               <span>Expected return</span>
-              <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>
+              {comparisonEv?<strong>Over {formatEvPercent(comparisonEv.over)} · Under {formatEvPercent(comparisonEv.under)}</strong>:<strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>}
             </div>
             </>}
           </div>
@@ -2183,6 +2185,10 @@ export function PlayerRankingsPanel({
         });
 
         // Cards render immediately; image decoding must not delay the board.
+        if(sport==='nba'&&(requestedMarket==='first_basket'||requestedMarket.startsWith('q1_'))&&!isolated.length){
+          setCards(previous=>previous.filter(card=>card.market===requestedMarket&&nbaFixtureDay(card.gameTime)===nbaFixtureDay(new Date())&&requestedNbaSlate==='active').map(card=>({...card,raw:{...card.raw,quoteRetained:true}})));
+          return;
+        }
         const staged = isolated;
         for(const card of staged.slice(0,5)){
           if(card.headshot)void prepareRankingImage(card.headshot);

@@ -22,9 +22,27 @@ export function estimatedEv(row:any,now=Date.now()){
  const win=pick.side==='OVER'?over:under,loss=pick.side==='OVER'?under:over,profit=odds>0?odds/100:100/-odds;
  return {version:1 as const,status:'available' as const,percent:100*(win*profit-loss),reason:null,side:pick.side,line:pick.line,odds,winProbability:win,pushProbability:push,lossProbability:loss,sportsbook:row.sportsbook,sportsbookKey:row.sportsbookKey,quoteId:row.quoteId,gameId:row.gameId,playerId:row.playerId,calculatedAt:pick.calculatedAt,basis:'model_probability_and_exact_quote',validatedForBetting:false};
 }
+export function nbaComparisonEv(row:any,now=Date.now()){
+ const forecast=row?.researchForecast,comparison=forecast?.priceComparison,binding=comparison?.quoteEvidence;
+ if(row?.sport!=='nba'||row.lineType!=='main'||forecast?.status!=='available'||forecast.modelSelection||
+  forecast.giReason==='price_validation_failed'||forecast.selectionReason==='price_validation_failed'||!binding)return null;
+ const decision=Date.parse(forecast.calculatedAt||''),start=Date.parse(row.gameTime||'');
+ const capture=Date.parse(row.forecastCapturedAt||row.boardCapturedAt||forecast.calculatedAt||'');
+ if(![decision,start,capture].every(Number.isFinite)||decision>now||capture>now||decision>capture||capture>=start||
+  decision<Date.parse(row.quoteUpdatedAt||'')||!verifiedPropQuote({...row,boardCapturedAt:new Date(capture).toISOString()},capture,true))return null;
+ if(binding.sport!=='nba'||binding.market!==row.market||binding.gameId!==String(row.gameId)||binding.playerId!==String(row.playerId)||
+  binding.quoteId!==row.quoteId||binding.sportsbookKey!==row.sportsbookKey||binding.line!==row.sportsbookLine||
+  binding.overPrice!==row.overPrice||binding.underPrice!==row.underPrice||Date.parse(binding.calculatedAt)!==decision)return null;
+ const {overProbability:over,underProbability:under,pushProbability:push}=comparison;
+ if(![over,under,push].every(p=>typeof p==='number'&&Number.isFinite(p)&&p>=0&&p<=1)||Math.abs(over+under+push-1)>1e-6)return null;
+ const payout=(odds:number)=>odds>0?odds/100:100/-odds;
+ return {over:100*(over*payout(row.overPrice)-under),under:100*(under*payout(row.underPrice)-over)};
+}
+export function formatEvPercent(value:number){
+ const percent=Math.round(value*10)/10;return `${percent>0?'+':''}${Object.is(percent,-0)?'0.0':percent.toFixed(1)}%`;
+}
 export function estimatedEvText(row:any,now=Date.now()){
- const ev=estimatedEv(row,now);if(ev.status!=='available')return '—';
- const percent=Math.round(ev.percent*10)/10;return `${percent>0?'+':''}${Object.is(percent,-0)?'0.0':percent.toFixed(1)}%`;
+ const ev=estimatedEv(row,now);return ev.status==='available'?formatEvPercent(ev.percent):'—';
 }
 export function estimatedEvNotice(row:any,now=Date.now()){
  const ev=estimatedEv(row,now);return ev.status==='available'?(String(row?.market||'').startsWith('q1_')?'Research EV from held-out quarter prediction residuals and verified sportsbook odds; not independently validated for betting.':'Expected net return per $100 at the saved pregame odds, based on model probabilities. Not a win probability or guaranteed profit.'):ev.reason;
