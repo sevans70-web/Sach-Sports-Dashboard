@@ -120,7 +120,7 @@ export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now())
  const selected=marketsForCaptureTick(time),results=[];
  // Bounded serial processing prevents a large simultaneous ESPN/OWLS burst.
  for(const {sport,market} of selected)try{
-  results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market,time));
+  results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market,Date.now()));
  }catch(error){results.push({sport,market,ok:false,reason:error instanceof Error?error.message.slice(0,110):'capture_failed'});}
  return {time:new Date(time).toISOString(),markets:selected.length,eligible:results.reduce((n,r)=>n+(r.eligible||0),0),
   stored:results.reduce((n,r)=>n+(r.stored||0),0),failed:results.filter(r=>!r.ok).map(r=>({sport:r.sport,market:r.market,reason:r.reason}))};
