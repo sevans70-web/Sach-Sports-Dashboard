@@ -29,9 +29,10 @@ export function createRuntimeForecastIndex(observations:OpportunityGame[]){
  return {histories,basketball};
 }
 let cached:RuntimeBundle|null=null;
-function bundle(sport:string,market:string):RuntimeBundle{
+function bundle(sport:string,market:string):RuntimeBundle|null{
  const worker=workerModelRuntime(sport,market);
  if(worker)return worker;
+ if(globalThis.navigator?.userAgent==='Cloudflare-Workers')return null;
  if(cached)return cached;
  const root=join(process.cwd(),'model-runtime'),manifest=JSON.parse(readFileSync(join(root,'manifest.json'),'utf8'));
  const bytes=readFileSync(join(root,'snapshot.json.gz'));
@@ -119,7 +120,9 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
- let data:RuntimeBundle;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
+ let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
+ if(!data)return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('market_model_not_fitted')})),
+  forecastBlockers:{market_model_not_fitted:payload.rows.length},fittedResearchForecastCount:0,modelSelectionCount:0};
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
  if(sport==='nfl'||sport==='nhl'){

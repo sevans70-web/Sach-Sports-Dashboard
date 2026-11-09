@@ -1,5 +1,16 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {fittedResearchForecast,runtimeSupportsMarket}=await loadTs(new URL('../lib/live-model-forecast.ts',import.meta.url));
+const {attachFittedResearchForecasts,fittedResearchForecast,runtimeSupportsMarket}=await loadTs(new URL('../lib/live-model-forecast.ts',import.meta.url));
+test('a Worker market without a fitted model retains the sportsbook quote and reports the missing model',async()=>{
+ const navigator=Object.getOwnPropertyDescriptor(globalThis,'navigator');
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{userAgent:'Cloudflare-Workers'}});
+ try{
+  const row={market:'goalie_saves',sportsbookLine:24.5,quoteVerified:true};
+  const board=await attachFittedResearchForecasts({market:'goalie_saves',rows:[row]},'nhl');
+  assert.equal(board.rows[0].researchForecast.reason,'market_model_not_fitted');
+  assert.equal(board.rows[0].sportsbookLine,24.5);
+  assert.equal(board.modelSelectionCount,0);
+ }finally{if(navigator)Object.defineProperty(globalThis,'navigator',navigator);else delete globalThis.navigator;}
+});
 test('unsupported markets cannot trigger unused observation refresh; combinations require every fitted component',()=>{
  const data={models:['points','rebounds','assists'].map(m=>({group:'nba|'+m}))};
  for(const m of ['points','rebounds','assists','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts'])assert.equal(runtimeSupportsMarket(data,'nba',m),true);

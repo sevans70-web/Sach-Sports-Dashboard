@@ -43,8 +43,8 @@ export function modelPickNotice(row:any){
  const reason=row?.researchForecast?.reason||row?.researchForecast?.selectionReason;
  if(reason==='price_threshold_not_met')return 'No qualifying price';
  if(reason==='verified_quote_unavailable')return 'Verified line and price needed';
- if(['prior_basketball_role_uncertain','basketball_role_uncertain'].includes(reason))return 'Role is uncertain';
- if(['player_team_history_unavailable','insufficient_basketball_role_history'].includes(reason))return 'More same-team history needed';
+ if(['prior_basketball_role_uncertain','basketball_role_uncertain','prior_workload_role_uncertain','latest_passing_role_uncertain'].includes(reason))return 'Role is uncertain';
+ if(['player_team_history_unavailable','insufficient_basketball_role_history','fewer_than_three_same_season_team_appearances'].includes(reason))return 'More same-team history needed';
  if(reason==='reported_unavailable')return 'Reported unavailable';
  if(reason==='price_validation_failed')return 'Accuracy checks not met';
  if(reason==='price_validation_missing')return 'Pick verification is incomplete';

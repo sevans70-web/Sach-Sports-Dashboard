@@ -26,6 +26,9 @@ test('locked rankings retain their recorded order, and saved selections survive 
 });
 test('unsupported cards explain why they have no pick without manufacturing a direction',()=>{
  assert.equal(modelPickNotice({researchForecast:{reason:'prior_basketball_role_uncertain'}}),'Role is uncertain');
+ assert.equal(modelPickNotice({researchForecast:{reason:'latest_passing_role_uncertain'}}),'Role is uncertain');
+ assert.equal(modelPickNotice({researchForecast:{reason:'prior_workload_role_uncertain'}}),'Role is uncertain');
+ assert.equal(modelPickNotice({researchForecast:{reason:'fewer_than_three_same_season_team_appearances'}}),'More same-team history needed');
  assert.equal(modelPickNotice({researchForecast:{selectionReason:'price_threshold_not_met'}}),'No qualifying price');
  assert.equal(cardModelPick({researchForecast:{projection:30},sportsbookLine:9.5},now),null);
 });
