@@ -26,11 +26,12 @@ export async function lockedNflBoard(market:string,games:any[],now=Date.now()){
  if(pending.has(key))return pending.get(key);
  const work=withHistoryLock('nfl-research-board|'+key,async()=>{
   const blocks:any[]=[],snapshots:any[]=[];let loaded=false;
-  const legacy=(await readDurableHistory<any>('nfl','locked_research_'+market,day,true))[0];
-  const recent=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
+  const localOnly=globalThis.navigator?.userAgent!=='Cloudflare-Workers';
+  const legacy=(await readDurableHistory<any>('nfl','locked_research_'+market,day,localOnly).catch(()=>[]))[0];
+  const recent=(await readDurableHistory<any>('nfl','featured_'+market,day,localOnly).catch(()=>[]))[0];
   for(const b of boundaries){
    const stream='slate_locked_v2_'+market+'_'+b.slate;
-   let saved=(await readDurableHistory<any>('nfl',stream,day,true).catch(()=>[]))[0];const existing=Boolean(saved);
+   let saved=(await readDurableHistory<any>('nfl',stream,day,localOnly).catch(()=>[]))[0];const existing=Boolean(saved);
    if(!saved){
     // Original locked rows take precedence. A recently published full board
     // also retains exact pregame evidence if scheduled archive work was delayed.

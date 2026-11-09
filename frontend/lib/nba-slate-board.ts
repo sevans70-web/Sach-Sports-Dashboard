@@ -28,7 +28,8 @@ export function selectPregameBoard(snapshots:any[],day:string,market:string,lock
  return best;
 }
 export async function readNbaSlateBoard(market:string,day:string,sport='nba'):Promise<NbaSlateBoard|null>{
- return (await readDurableHistory<NbaSlateBoard>(sport,stream(market),day,day>=retentionCutoff()))[0]||null;
+ const localOnly=globalThis.navigator?.userAgent!=='Cloudflare-Workers'&&day>=retentionCutoff();
+ return (await readDurableHistory<NbaSlateBoard>(sport,stream(market),day,localOnly))[0]||null;
 }
 export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now(),day?:string,sport='nba',deferCloud?:(work:()=>Promise<any>)=>void){
  const boundary=nbaSlateBoundary(games,now,day);
