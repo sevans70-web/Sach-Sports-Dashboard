@@ -1,0 +1,65 @@
+name: Dashboard walkthrough evidence audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths: ['.github/workflows/dashboard-walkthrough-evidence.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Compare actual upcoming fixture dates and EV eligibility across three sports
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,json,collections,concurrent.futures,datetime
+          root='https://sach-sports-cloudflare-test.sevans70.workers.dev'
+          routes={
+           'nba-q1-points':'/api/nba/rankings?market=q1_points',
+           'nba-q1-rebounds':'/api/nba/rankings?market=q1_rebounds',
+           'nba-q1-assists':'/api/nba/rankings?market=q1_assists',
+           'nfl-passing':'/api/nfl/rankings?market=passing_yards',
+           'nfl-receiving':'/api/nfl/rankings?market=receiving_yards',
+           'nfl-rushing':'/api/nfl/rankings?market=rushing_yards',
+           'nfl-schedule':'/api/game-slate?sport=nfl&scope=calendar',
+           'nfl-week':'/api/nfl/schedule',
+           'nba-schedule':'/api/game-slate?sport=nba&scope=calendar',
+           'nba-featured':'/api/top-plays?sport=nba',
+           'nfl-featured':'/api/top-plays?sport=nfl',
+           'nhl-featured':'/api/top-plays?sport=nhl'
+          }
+          def inspect(item):
+           title,path=item
+           try:
+            with urllib.request.urlopen(urllib.request.Request(root+path,headers={'User-Agent':'Sach-Walkthrough-Evidence'}),timeout=55) as f:
+             data=json.load(f);status=f.status
+           except Exception as e:return {'route':title,'error':type(e).__name__}
+           out={'route':title,'http':status,'success':data.get('success')}
+           if isinstance(data.get('games'),list):
+            games=data['games'];out['games']=len(games);out['gamesByUtcDay']=dict(collections.Counter(str(g.get('date') or '')[:10] for g in games))
+           if isinstance(data.get('rows'),list):
+            rows=data['rows'];out['rows']=len(rows);out['rowsByUtcDay']=dict(collections.Counter(str(r.get('gameTime') or '')[:10] for r in rows))
+            out['verified']=sum(r.get('quoteVerified') is True for r in rows)
+            out['modelSelection']=sum(isinstance((r.get('researchForecast') or {}).get('modelSelection'),dict) for r in rows)
+            eligible=0;values=[]
+            for r in rows:
+             f=r.get('researchForecast') or {};c=f.get('priceComparison') or {};p=f.get('modelSelection') or f.get('modelTargetForecast') or {}
+             side=p.get('side') or ('OVER' if p.get('direction')=='REACHES' else None)
+             win=c.get('overProbability') if side=='OVER' else c.get('underProbability') if side=='UNDER' else None
+             loss=c.get('underProbability') if side=='OVER' else c.get('overProbability') if side=='UNDER' else None
+             odds=p.get('price') or (r.get('overPrice') if side=='OVER' else r.get('underPrice'))
+             if not all(isinstance(n,(float,int)) for n in (win,loss,odds)):continue
+             profit=odds/100 if odds>0 else 100/abs(odds)
+             ev=100*(win*profit-loss)
+             if ev>0.05: eligible+=1;values.append(round(ev,1))
+            out['approxPositiveSelectedEV']=eligible
+            out['approxTopEV']=sorted(values,reverse=True)[:3]
+            out['modelReasons']=dict(collections.Counter(str((r.get('researchForecast') or {}).get('reason') or (r.get('researchForecast') or {}).get('selectionReason') or 'none') for r in rows).most_common(5))
+           if isinstance(data.get('plays'),list):
+            out['featured']=[{'key':p.get('key'),'hasPick':bool(p.get('pick')),'hasTeam':bool(((p.get('pick') or {}).get('row') or {}).get('teamName') or ((p.get('pick') or {}).get('row') or {}).get('team'))} for p in data['plays']]
+           return out
+          with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+           for d in pool.map(inspect,routes.items()):print('WALKTHROUGH_EVIDENCE '+json.dumps(d,sort_keys=True))
+          PY
