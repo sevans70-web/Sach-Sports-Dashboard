@@ -114,7 +114,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   validatedForBetting:false,reason:null,
  };
 }
-export async function attachFittedResearchForecasts(payload:any,sport:string,now=Date.now()){
+export async function attachFittedResearchForecasts(payload:any,sport:string,now=Date.now(),options:{offlineOnly?:boolean}={}){
  if(!Array.isArray(payload?.rows)||!payload.rows.length)return payload;
  // First Basket is a ONE-SIDED scorer-odds market, not a fitted OVER/UNDER
  // distribution. Preserve the verified book quote and book-implied chance,
@@ -122,7 +122,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  if(sport==='nba'&&String(payload.market||payload.rows[0]?.market||'')==='first_basket'){
   return {...payload,rows:payload.rows.map(firstBasketBookOnly)};
  }
- payload=await attachRecordedProgressLines(payload,sport,now);
+ if(!options.offlineOnly)payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
  let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
  if(!data)return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('market_model_not_fitted')})),
@@ -139,7 +139,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
  let basketballRefreshUnavailable=new Set<string>();
- if(['nba','cbb'].includes(sport)&&runtimeSupportsMarket(data,sport,String(payload.market||payload.rows[0]?.market||''))){
+ if(!options.offlineOnly&&['nba','cbb'].includes(sport)&&runtimeSupportsMarket(data,sport,String(payload.market||payload.rows[0]?.market||''))){
   const refresh=sport==='cbb'
    ?await refreshCbbObservations(payload.rows,now)
    :await refreshNbaObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),now);
