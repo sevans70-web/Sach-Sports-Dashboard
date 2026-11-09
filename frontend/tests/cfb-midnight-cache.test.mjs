@@ -10,3 +10,14 @@ for(const [at,prior] of [['2026-11-01T04:30Z','2026-10-31'],['2026-03-08T06:30Z'
  const result=await module.exports.testPayload('passing_yards','evening');
  assert.equal(result.boardDay,prior);assert.equal(result.cached,true);assert.equal(result.stale,true);assert.deepEqual(JSON.parse(JSON.stringify(result.rows)),[row]);assert.ok(paths[0].endsWith(prior+'_passing_yards_evening.json'));
 });
+test('scheduled CFB capture builds one current board without reading retained time-block boards',async()=>{
+ const now=Date.parse('2026-11-09T12:00Z'),schedule=[{id:'g',date:'2026-11-10T23:00Z',state:'pre'}],calls=[];
+ const mocks={'@/lib/football-slate-rankings':football,'@/lib/cfb':{CFB_MARKETS:[['passing_yards']]},'@/lib/cfb-server':{getEspnCfbSchedule:async()=>schedule},'@/lib/prop-integrity':{guardRankingPayload:p=>p},'@/lib/live-model-forecast':{attachFittedResearchForecasts:async p=>p},'next/server':{NextResponse:{json:Response.json}},'node:fs':{promises:{readFile:async()=>{throw Error('Unexpected saved board read')}}}};
+ class Clock extends Date{constructor(...args){super(...(args.length?args:[now]))}static now(){return now}}
+ const module={exports:{}};
+ vm.runInNewContext(code+'\nbuildFreshBoard=async (...args)=>{calls.push(args);return [];};',{module,exports:module.exports,require:n=>mocks[n]||(n.startsWith('@/')?{}:nodeRequire(n)),Date:Clock,Intl,process:{env:{}},console,setTimeout,clearTimeout,calls});
+ const response=await module.exports.GET({nextUrl:new URL('https://sach-capture.internal/api/cfb/rankings-board?market=passing_yards')});
+ assert.equal(response.status,200);
+ assert.deepEqual((await response.json()).rows,[]);
+ assert.deepEqual(JSON.parse(JSON.stringify(calls)),[['passing_yards','all',schedule,'2026-11-10',true]]);
+});

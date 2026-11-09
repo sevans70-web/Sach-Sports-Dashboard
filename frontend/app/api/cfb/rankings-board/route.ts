@@ -953,14 +953,18 @@ async function buildFreshBoard(
   market: CfbMarketKey,
   slate: SlateKey,
   schedule: any[],
-  gameDay: string
+  gameDay: string,
+  captureOnly = false
 ) {
   const initialRaw = await marketRows(market);
+  const now = Date.now();
 
   const scopedRaw =
     initialRaw.filter(
       (row: any) => {
-        if (row.quoteVersion === 1 && !footballQuoteGame(row, schedule)) return false;
+        const fixture = row.quoteVersion === 1 ? footballQuoteGame(row, schedule) : undefined;
+        if (row.quoteVersion === 1 && !fixture) return false;
+        if (captureOnly && (!fixture || fixture.state !== 'pre' || Date.parse(fixture.date) <= now)) return false;
         const gameTime =
           rowGameTime(
             row,
@@ -982,7 +986,7 @@ async function buildFreshBoard(
   // slate populated with a clearly marked model-watch board. These rows
   // never receive a fake sportsbook line and are not graded as bets.
   const fallbackRaw =
-    scopedRaw.length >= 25 || market.startsWith("q1_")
+    captureOnly || scopedRaw.length >= 25 || market.startsWith("q1_")
       ? []
       : await rosterFallbackRows(market,schedule,[],gameDay,slate);
 
@@ -1130,7 +1134,7 @@ async function buildFreshBoard(
   );
 
   return uniqueRankingRows(await eligibleFootballPregameRows(valid,'cfb'))
-    .slice(0, 25)
+    .slice(0, captureOnly ? 75 : 25)
     .map(
       (row: any, index: number) => ({
         ...row,
@@ -1645,6 +1649,21 @@ export async function GET(
       },
       { status: 400 }
     );
+  }
+
+  // The Worker freezes current quotes. It does not need saved display rows,
+  // model-only rosters, or three separate builds of the same scheduled slate.
+  if (req.nextUrl.hostname === 'sach-capture.internal') {
+    try {
+      const schedule = await getEspnCfbSchedule(true);
+      if (!schedule.length) throw Error('College football schedule is temporarily unavailable');
+      const boardDay = targetGameDay(schedule);
+      const rows = await buildFreshBoard(market, slate, schedule, boardDay, true);
+      return await rankingJson({success:true,market,boardDay,rows},{headers:{'Cache-Control':'no-store'}});
+    } catch (error) {
+      console.error('[CFB scheduled capture failed]',market,error instanceof Error?error.message:'capture failed');
+      return NextResponse.json({success:false,market,rows:[]},{status:503});
+    }
   }
 
   let boardDay=day(new Date());
