@@ -1291,7 +1291,7 @@ function PlayerCard({
             </>}
           </div>
 
-          {researchOnly ? null : state === "pregame" ? (
+          {researchOnly || sport==='nba'&&!nbaPositiveEv ? null : state === "pregame" ? (
             <div className={styles.predictionBanner}>
               <div>
                 <span>PREDICTION:</span>
@@ -1326,7 +1326,7 @@ function PlayerCard({
           )}
 
           {!firstBasket?<section className={styles.intelSection}>
-            <h4>{researchOnly ? "Player Analysis" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
+            <h4>{researchOnly || sport==='nba'&&!nbaPositiveEv ? "Player Analysis" : state === "final" ? "Final Insights" : state === "live" ? "Live Insights" : "Why Sach Likes This"}</h4>
             <div className={styles.reasonList}>
               {(reasons.length ? reasons : [card.summary]).map((reason, index) => (
                 <p key={`${reason}-${index}`}>
