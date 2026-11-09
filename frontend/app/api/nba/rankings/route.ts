@@ -23,7 +23,14 @@ export async function GET(req:NextRequest){
  const recent=currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
  if(recent&&!market.startsWith('q1_')&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
   const visible=await attachBasketballAvailability(recent,'nba');
-  if(visible.rows.length){after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});return NextResponse.json(scopedNbaBoard(visible,market,cachedDay),{headers:{'Cache-Control':'no-store'}});}
+  if(visible.rows.length){
+   // The capture Worker already rotates this market on its own schedule.
+   // A second refresh would consume the same scheduled invocation's budget.
+   if(req.nextUrl.hostname!=='sach-capture.internal'){
+    after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});
+   }
+   return NextResponse.json(scopedNbaBoard(visible,market,cachedDay),{headers:{'Cache-Control':'no-store'}});
+  }
  }
  let result,timer:ReturnType<typeof setTimeout>|undefined;
  try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})]);}
