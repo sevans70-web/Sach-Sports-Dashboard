@@ -21,10 +21,11 @@ export async function GET(req:NextRequest){
  if(day&&!Object.values(dates).includes(day))return NextResponse.json({success:false,rows:[],error:'Choose the previous slate, today or tomorrow.'},{status:400});
  const cachedDay=day||dates.today;
  const recent=currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
- const needsForecastRefresh=recent&&(
-  market.startsWith('q1_')&&!recent.rows.some(row=>row.researchForecast?.status==='available')||
-  ['pts_rebs_asts','pts_rebs','pts_asts'].includes(market)&&recent.rows.every(row=>row.researchForecast?.modelId==='sum_of_fitted_component_expectations')
- );
+ // Do not block a live combination board while a new fitted model is
+ // recalculated: the synchronous build can time out and return a 503 despite
+ // a verifiably captured slate. The normal after() refresh below can update
+ // the research forecast without rewriting any previously saved originals.
+ const needsForecastRefresh=Boolean(recent&&market.startsWith('q1_')&&!recent.rows.some(row=>row.researchForecast?.status==='available'));
  if(recent&&!needsForecastRefresh&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
   const visible=await attachBasketballAvailability(recent,'nba');
   if(visible.rows.length){
