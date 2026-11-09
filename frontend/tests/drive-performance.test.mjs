@@ -29,6 +29,25 @@ test('bounded jobs resume from verified copies and inventory failures retain ear
  fail=true;clock+=300001;const outage=await read('nfl');assert.equal(outage.rows.length,3);assert.deepEqual(outage.errors,['unavailable']);
 });
 
+test('parallel archive reads retain source order and the two-download limit',async()=>{
+ const docs=Array.from({length:4},(_,i)=>document('d'+i,'points_2026-10-'+(16+i)+'.json',[{actual:i}]));
+ docs.push({...document('d4','points_2026-10-20.json',[{actual:4}]),md5Checksum:undefined});
+ let active=0,maximum=0;
+ const request=async url=>{const u=new URL(url);
+  if(u.searchParams.get('alt')==='media'){
+   const index=Number(u.pathname.at(-1));active++;maximum=Math.max(maximum,active);
+   await new Promise(resolve=>setTimeout(resolve,index===0?12:2));active--;
+   return new Response(docs[index].bytes);
+  }
+  const parent=u.searchParams.get('q').match(/^'([^']+)' in parents/)[1];
+  return Response.json({files:parent==='root'?[folder('backup','railway-2026-10-24')]:parent==='backup'?[folder('history','sach-history')]:parent==='history'?[folder('mlb','mlb')]:docs});
+ };
+ const result=await createDrivePerformanceReader({folderId:'root',request,parallelReads:true})('mlb');
+ assert.deepEqual(result.errors,['points|2026-10-20:unavailable']);
+ assert.deepEqual(result.rows.map(row=>row.payload[0].actual),[0,1,2,3]);
+ assert.equal(maximum,2);
+});
+
 test('snapshot archives stream UTF-8 records, deduplicate repeated observations and discard all staged rows if the full checksum fails',async()=>{
  const snapshot={capturedAt:'2026-10-16T10:00Z',payload:[{key:'original',playerName:'José { \\" }',market:'points',status:'hit',actual:0}]};
  const file=document('archive','snapshots_points_2026-10-16.json',[snapshot,snapshot]);let altered=false;

@@ -11,7 +11,7 @@ export function drivePerformanceConfigured(){return ['BACKUP_DRIVE_FOLDER_ID','G
 
 /** Read backed-up daily documents, never restore files to the Railway volume.
  * Folder discovery is independent of the Supabase archive catalog. */
-export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule}){
+export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false}){
  const inventories=new Map(),pending=new Map(),results=new Map(),documents=new Map();
  const scheduled=new Set();
  let active=0,cacheBytes=0;const waiting=[];
@@ -42,12 +42,15 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
   const value=[...latest.values()].sort((a,b)=>a.game_date.localeCompare(b.game_date)||a.stream.localeCompare(b.stream));inventories.set(sport,{at:now(),files:value});return value;
  }
  async function load(sport,firstDay){
-  const rows=[],errors=[],started=now();let files;
+  const started=now();let files;
   try{files=(await inventory(sport)).filter(f=>!firstDay||f.game_date>=firstDay);}catch{return {rows:results.get(sport+'|'+(firstDay||'all'))?.value.rows||[],errors:['unavailable']};}
-  for(const file of files){
+  const outcomes=new Array(files.length);
+  let next=0;
+  const collect=async()=>{while(next<files.length){
+   const index=next++,file=files[index];
    const key=sport+'|'+file.stream+'|'+file.game_date,cached=documents.get(key);
-   if(cached?.md5===file.md5Checksum){rows.push(cached);continue;}
-   if(now()-started>=budgetMs){errors.push(file.stream+'|'+file.game_date+':checking');continue;}
+   if(cached&&cached.md5===file.md5Checksum){outcomes[index]={row:cached};continue;}
+   if(now()-started>=budgetMs){outcomes[index]={error:file.stream+'|'+file.game_date+':checking'};continue;}
    try{
     const streaming=file.stream.startsWith('snapshots_')||Number(file.size)>16*1024*1024;
     if(!/^[a-f0-9]{32}$/i.test(file.md5Checksum||'')||!Number.isFinite(Number(file.size))||Number(file.size)>4*1024*1024*1024)throw Error('Unverified or oversized backup document');
@@ -68,12 +71,14 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
     if(size!==Number(file.size)||hash.digest('hex')!==file.md5Checksum.toLowerCase())throw Error('Backup checksum mismatch');
     const zip=gzipSync(bytes);return {stream,game_date:file.game_date,md5:file.md5Checksum,checksum:checksum(payload),zip};
     });
-    if(cacheBytes-(cached?.zip.length||0)+row.zip.length>64*1024*1024)throw Error('Backup reader cache capacity exceeded');
-    cacheBytes+=row.zip.length-(cached?.zip.length||0);documents.set(key,row);rows.push(row);
-   }catch{errors.push(file.stream+'|'+file.game_date+':unavailable');}
+    const replacedBytes=documents.get(key)?.zip.length||0;
+    if(cacheBytes-replacedBytes+row.zip.length>64*1024*1024)throw Error('Backup reader cache capacity exceeded');
+    cacheBytes+=row.zip.length-replacedBytes;documents.set(key,row);outcomes[index]={row};
+   }catch{outcomes[index]={error:file.stream+'|'+file.game_date+':unavailable'};}
    await new Promise(resolve=>setImmediate(resolve));
-  }
-  return {rows,errors};
+  }};
+  await Promise.all(parallelReads?[collect(),collect()]:[collect()]);
+  return {rows:outcomes.flatMap(x=>x.row?[x.row]:[]),errors:outcomes.flatMap(x=>x.error?[x.error]:[])};
  }
  const read=async(sport,firstDay)=>{
   if(!['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'].includes(sport)||firstDay&&!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid backup history scope');
@@ -93,6 +98,6 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
 let reader;
 export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
- if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}});}
+ if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});const worker=globalThis.navigator?.userAgent==='Cloudflare-Workers';reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,schedule:worker?undefined:work=>{const timer=setTimeout(work,5000);timer.unref();}});}
  return reader(sport,firstDay);
 }
