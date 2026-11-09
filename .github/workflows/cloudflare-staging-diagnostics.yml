@@ -40,6 +40,14 @@ jobs:
                   if label.endswith('-summary'):
                       result['dashboard']={k:data.get(k) for k in ('games','live','finals','rankedPlayers','playerProps','predictions','estimatedPicks','scheduleAvailable','rankingsAvailable','warning')}
                   result['rows']=len(data['rows']) if isinstance(data.get('rows'),list) else None
+                  if isinstance(data.get('rows'),list):
+                      import collections
+                      rows=data['rows']
+                      result['researchModelSelections']=sum(isinstance(r.get('researchForecast'),dict) and isinstance(r['researchForecast'].get('modelSelection'),dict) for r in rows)
+                      result['researchAvailable']=sum(isinstance(r.get('researchForecast'),dict) and r['researchForecast'].get('status')=='available' for r in rows)
+                      result['researchBlockers']=dict(collections.Counter(str((r.get('researchForecast') or {}).get('reason') or (r.get('researchForecast') or {}).get('selectionReason') or 'no_selection_reason') for r in rows if not (r.get('researchForecast') or {}).get('modelSelection')).most_common(6))
+                      result['verifiedQuotes']=sum(r.get('quoteVerified') is True for r in rows)
+
                   result['fields']=sorted(k for k in ('error','warning','market','source','boardDay','rows') if k in data)
                   if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')
               if label.startswith('nba'):
