@@ -1,7 +1,9 @@
-import {cloudRequest,checksum} from './history-cloud.mjs';
+import {cloudRequest} from './history-cloud.mjs';
+import {createHash} from 'node:crypto';
 
 const SPORTS=new Set(['nba','nfl','nhl','cfb','cbb']);
-const dayOf=date=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(date));
+const dayOf=date=>{const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(date));const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
+const capturedChecksum=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const id=(row)=>[row?.market,row?.game_id,row?.player_id].join('|');
 const keyOf=(r)=>[r?.market,r?.gameId,r?.playerId].join('|');
 /** Select only verified original model selections. Original quote-only snapshots
@@ -18,7 +20,7 @@ export function immutableModelHistoryRow(pick,grade){
  receipt?.price!==(receipt.side==='OVER'?quote?.overPrice:quote?.underPrice)||
  dayOf(pick.game_time)!==pick.game_date||typeof pick?.payload!=='object')return null;
  // Database checksums are over the original payload and are never rewritten.
- if(checksum(pick.payload)!==pick.checksum)return null;
+ if(capturedChecksum(pick.payload)!==pick.checksum)return null;
  const validGrade=grade&&id(grade)===id(pick)&&grade.source_pick_checksum===pick.checksum&&
  ['hit','miss','push'].includes(grade.result_status)&&Number.isFinite(grade.actual)&&
  grade.prediction_side===pick.prediction_side&&grade.original_line===pick.sportsbook_line&&
