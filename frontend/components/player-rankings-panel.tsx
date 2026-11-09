@@ -693,6 +693,20 @@ const PRICE_ONLY_MARKETS = new Set([
  * its fixture. The retained price is clearly labelled SAVED PREGAME, never
  * offered as a fresh live quote. Do not retain a card past tipoff or with
  * an unverifiable original quote or reported unavailable player. */
+/** First-seen receipt: never backdate a quote or claim a stale quote was
+ * fresh. Only attach a capture time when the actual quote passes the live
+ * two-sided/scorer integrity check at the moment it is first displayed.
+ * Keep an earlier verified receipt when a later partial refresh omits it.
+ */
+export function captureVerifiedFirstBasketCard(card:RankingCard,now=Date.now()):RankingCard{
+ if(card.market!=='first_basket'||!Number.isFinite(Date.parse(card.gameTime))||Date.parse(card.gameTime)<=now||
+    !firstBasketQuote(card.raw,now))return card;
+ const original=Date.parse(card.raw?.boardCapturedAt||'');
+ if(Number.isFinite(original)&&original<=now&&firstBasketQuote({...card.raw,quoteRetained:true},now))return card;
+ return {...card,raw:{...card.raw,boardCapturedAt:new Date(now).toISOString(),quoteRetained:true}};
+}
+/** No stale/current-day crossover, changed fixture, unverified sportsbook
+ * receipt, or post-tipoff scorer cards may be revived by a failed poll. */
 export function retainUpcomingFirstBasketCards(previous:RankingCard[],now=Date.now()){
  const today=nbaFixtureDay(new Date(now));
  return previous.filter(card=>
@@ -2217,7 +2231,8 @@ export function PlayerRankingsPanel({
          const current=staged.map(card=>{
           const old=previous.find(p=>p.playerId===card.playerId&&p.market===card.market&&String(p.raw?.gameId||'')===String(card.raw?.gameId||''));
           const raw=retainParticipation(card.raw,old?.raw);
-          return retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
+          const merged=retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
+          return sport==='nba'&&requestedMarket==='first_basket'?captureVerifiedFirstBasketCard(merged):merged;
          });
          if(sport!=='nba'||requestedMarket!=='first_basket'||requestedNbaSlate!=='active')return current;
          const present=new Set(current.map(card=>String(card.raw?.gameId)+'|'+String(card.playerId)));
