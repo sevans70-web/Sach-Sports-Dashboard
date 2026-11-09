@@ -991,6 +991,7 @@ function PlayerCard({
   const milestoneChance=quarterTarget&&Number.isFinite(milestonePrice)&&milestonePrice!==0?(milestonePrice>0?10000/(milestonePrice+100):100*(-milestonePrice)/(-milestonePrice+100)):null;
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
+  const projectionComparison=!modelSelection&&footballForecast.side!=null;
   const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction)));
   const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
@@ -1095,7 +1096,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{"Sach Prediction"}</span>
+          <span>{projectionComparison?"Projection vs. line":"Sach Prediction"}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1110,7 +1111,7 @@ function PlayerCard({
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
               : displayedPick||'—'}
           </strong>
-          {footballForecast?.side?<small>{footballForecast.basis}</small>:state==='pregame'&&researchOnly&&!modelSelection?<small>{modelPickNotice(card.raw)}</small>:null}
+          {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?<small>{modelPickNotice(card.raw)}</small>:footballForecast.side?<small>{footballForecast.basis}</small>:null}
 
         </div>
 
