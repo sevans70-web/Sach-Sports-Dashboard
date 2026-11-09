@@ -47,7 +47,7 @@ jobs:
                   'gameDate':str(row.get('gameDate') or '')[:10],
                   'status':str(row.get('status') or '')
                 }
-              return host,sport,{'http':code,'usable':True,'count':len(rows),'identities':keys,'pending':sum(str(r.get('status')).lower()=='pending' for r in rows),'settled':sum(str(r.get('status')).lower() in ('hit','miss','push') for r in rows),'partial':bool(data.get('partial')),'source':(data.get('coverage') or {}).get('historySource') if isinstance(data.get('coverage'),dict) else None}
+              return host,sport,{'http':code,'usable':True,'count':len(rows),'identities':keys,'pending':sum(str(r.get('status')).lower()=='pending' for r in rows),'settled':sum(str(r.get('status')).lower() in ('hit','miss','push') for r in rows),'partial':bool(data.get('partial')),'source':(data.get('coverage') or {}).get('historySource') if isinstance(data.get('coverage'),dict) else None,'protectedOriginals':(data.get('coverage') or {}).get('protectedOriginals') if isinstance(data.get('coverage'),dict) else None,'coverageErrors':len((data.get('coverage') or {}).get('errors') or [])}
             except Exception as e:
               return host,sport,{'usable':False,'error':type(e).__name__}
           with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
