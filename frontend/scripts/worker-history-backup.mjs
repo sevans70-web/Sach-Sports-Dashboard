@@ -55,7 +55,7 @@ function driveArchive(env, authenticate){
  };
 }
 
-export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloudRequest,authenticate=driveAuth){
+export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloudRequest,authenticate=driveAuth,observe=()=>{}){
  if(!SPORTS.has(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error('Invalid backup scope');
  let requests = 0;
  const read = route=>{
@@ -109,6 +109,7 @@ export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloud
    const size = Buffer.byteLength(JSON.stringify(row))+1;
    if(size>partBytes)throw Error('History backup part exceeds size limit');
    if(bytes+size>partBytes)await flush();
+   observe(row);
    part.push(row);
    bytes+=size;
   }
