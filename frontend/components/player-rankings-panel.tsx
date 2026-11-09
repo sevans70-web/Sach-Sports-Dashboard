@@ -15,7 +15,7 @@ import {playerAvailability,applyParticipationEvidence,retainParticipation,cardSt
 import {propIntelligence} from "@/lib/card-intelligence";
 import {publicPropContext} from "@/lib/public-prop-context";
 import {currentDroppedRows,trackRankBoard,type RankBoard} from "@/lib/rank-movement";
-import {integrityRow} from "@/lib/prop-integrity";
+import {integrityRow,verifiedPropQuote} from "@/lib/prop-integrity";
 import {matchingPredictionResult} from "@/lib/prediction-results";
 import {prepareRankingImage} from "@/lib/ranking-images";
 import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
@@ -2254,10 +2254,27 @@ export function PlayerRankingsPanel({
           const merged=retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
           return sport==='nba'&&requestedMarket==='first_basket'?captureVerifiedFirstBasketCard(merged):merged;
          });
-         if(sport!=='nba'||requestedMarket!=='first_basket'||requestedNbaSlate!=='active')return current;
-         const present=new Set(current.map(card=>String(card.raw?.gameId)+'|'+String(card.playerId)));
-         const saved=retainUpcomingFirstBasketCards(previous).filter(card=>!present.has(String(card.raw?.gameId)+'|'+String(card.playerId)));
-         return [...current,...saved].sort((a,b)=>a.rank-b.rank).slice(0,25);
+         if(sport!=='nba'||requestedNbaSlate!=='active')return current;
+         if(requestedMarket==='first_basket'){
+          const present=new Set(current.map(card=>String(card.raw?.gameId)+'|'+String(card.playerId)));
+          const saved=retainUpcomingFirstBasketCards(previous).filter(card=>!present.has(String(card.raw?.gameId)+'|'+String(card.playerId)));
+          return [...current,...saved].sort((a,b)=>a.rank-b.rank).slice(0,25);
+         }
+         if(requestedMarket.startsWith('q1_')){
+          // A short partial provider refresh may lose Q1 candidates despite
+          // earlier verified sportsbook/model evidence. Retain only original
+          // still-upcoming pregame receipts, explicitly labelled saved.
+          const now=Date.now(),day=nbaFixtureDay(new Date(now));
+          const present=new Set(current.map(card=>String(card.raw?.gameId)+'|'+String(card.playerId)));
+          const saved=previous.filter(card=>card.market===requestedMarket&&
+           nbaFixtureDay(card.gameTime)===day&&Date.parse(card.gameTime)>now&&
+           nbaCardEv(card,now)!=null&&!excludeUnavailableRanking(card.raw)&&
+           verifiedPropQuote(card.raw,now,true)&&
+           !present.has(String(card.raw?.gameId)+'|'+String(card.playerId))
+          ).map(card=>({...card,raw:{...card.raw,quoteRetained:true}}));
+          return [...current,...saved].sort((a,b)=>a.rank-b.rank).slice(0,25);
+         }
+         return current;
         });
         setDropped(currentDroppedRows(rawDropped,rawRows,requestedMarket,rawRows[0]?.boardDay||torontoDay(new Date().toISOString())));
       } catch (cause) {
