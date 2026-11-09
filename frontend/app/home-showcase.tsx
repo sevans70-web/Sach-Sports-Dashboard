@@ -5,7 +5,7 @@ import {VISIBLE_SPORTS,dashboardDay,featuredDashboardGames,type DashboardSport} 
 import {cardModelPick} from '@/lib/saved-model-pick';
 import {fetchDashboardSummary} from "@/components/use-dashboard-summary";
 import "./home-showcase.css";
-const CENTERS:DashboardSport[]=["nfl","nhl","nba","cfb","wnba","cbb"];
+const CENTERS:DashboardSport[]=["nba","nfl","nhl"];
 function label(s:string){return s==="soccer"?"Soccer":s.toUpperCase()}
 function when(value:string){const d=new Date(value);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d)+" ET":"Time TBD"}
 export default function HomeShowcase(){
@@ -20,7 +20,7 @@ export default function HomeShowcase(){
  const ordered=featuredDashboardGames(games);
  return <main className="shRoot"><div className="shWrap">
   <section className="shHero"><div className="shHeroContent"><h1>YOUR <em>GAME.</em><br/>OUR INTELLIGENCE.</h1><p>Player data <i>•</i> Game context <i>•</i> Smarter predictions</p></div><div className="shHeroArtwork" aria-hidden="true"><span className="shHeroAthlete shHeroFootball"/><span className="shHeroAthlete shHeroBasketball"/><span className="shHeroAthlete shHeroHockey"/></div></section>
-  <section className="shCenters"><div className="shSectionTitle"><h2>ACTIVE INTELLIGENCE CENTERS</h2><button onClick={()=>setExpanded(v=>!v)} aria-expanded={expanded}>{expanded?"SHOW LESS":"VIEW ALL"} →</button></div><div className="shSportGrid">{CENTERS.slice(0,expanded?CENTERS.length:3).map(s=><Link className={"shSportCard shSport-"+s} href={"/"+s} key={s}><div className="shSportBottom"><strong>{label(s)}</strong></div><span className="shCircleArrow">›</span></Link>)}</div></section>
+  <section className="shCenters"><div className="shSectionTitle"><h2>ACTIVE INTELLIGENCE CENTERS</h2>{CENTERS.length>3?<button onClick={()=>setExpanded(v=>!v)} aria-expanded={expanded}>{expanded?"SHOW LESS":"VIEW ALL"} →</button>:null}</div><div className="shSportGrid">{CENTERS.slice(0,expanded?CENTERS.length:3).map(s=><Link className={"shSportCard shSport-"+s} href={"/"+s} key={s}><div className="shSportBottom"><strong>{label(s)}</strong></div><span className="shCircleArrow">›</span></Link>)}</div></section>
   <section className="shIntel"><div className="shIntelTitle"><h2>CURRENT SLATE INTELLIGENCE</h2><span>{today}</span></div><div className="shStats">
    <div><span className="shStatHead">GAMES</span><strong>{available.length?total("games"):"…"}</strong><small>{total("live")} live</small></div>
    <div><span className="shStatHead">PLAYER PROPS</span><strong>{available.length?total("playerProps"):"…"}</strong><small>Verified book lines · featured markets</small></div>
