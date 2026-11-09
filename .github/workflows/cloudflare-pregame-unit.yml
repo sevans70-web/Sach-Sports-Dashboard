@@ -1,0 +1,25 @@
+name: Cloudflare pregame capture unit checks
+# One small runner; no npm install, provider API calls or deployments.
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - '.github/workflows/cloudflare-pregame-unit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-picks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Worker entry and capture module parse
+        run: |
+          node --check frontend/worker-entry.mjs
+          node --check frontend/scripts/worker-pregame-capture.mjs
+      - name: Run immutable original-pregame capture tests
+        run: node --test frontend/tests/worker-pregame-capture.test.mjs
