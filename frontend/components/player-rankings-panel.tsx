@@ -2400,6 +2400,10 @@ export function PlayerRankingsPanel({
       })
       .filter((card) => {
         if(sport==='nba'&&(excludeUnavailableRanking(card.raw)||!publicNbaRanking(card.raw)))return false;
+        // Previous and Tomorrow were already date-scoped by scopedNbaBoard.
+        // Do not compare these slates with TODAY's shared game schedule:
+        // yesterday's games disappear from that feed after midnight.
+        if(sport==='nba'&&nbaSlate!=='active')return true;
         if (card.raw?.boardFrozen === true) return true;
         if (!sharedStatusGames.length) return true;
 
@@ -2432,7 +2436,7 @@ export function PlayerRankingsPanel({
         }
         return a.rank - b.rank;
       });
-  }, [sport, market.key, cfbSlate, nflSlate, cards, cfbLiveGames, sharedStatusGames]);
+  }, [sport, market.key, cfbSlate, nflSlate, nbaSlate, cards, cfbLiveGames, sharedStatusGames]);
 
   const displayCards = useMemo(() => {
     // NBA is an EV-ranked board, not a general slate catalogue. No missing,
