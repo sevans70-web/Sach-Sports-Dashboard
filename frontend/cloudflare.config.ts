@@ -29,6 +29,10 @@ export default defineConfig({
       // Required for verified, persistent history writes on Workers. Store only
       // in the Cloudflare runtime-secret vault; never inline the credential.
       SUPABASE_SECRET_KEY: bindings.secret(),
+      GOOGLE_OAUTH_CLIENT_ID: bindings.secret(),
+      GOOGLE_OAUTH_CLIENT_SECRET: bindings.secret(),
+      GOOGLE_OAUTH_REFRESH_TOKEN: bindings.secret(),
+      BACKUP_DRIVE_FOLDER_ID: bindings.secret(),
     },
   }),
 });
