@@ -2,12 +2,14 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {cloudHistoryWrite} from '@/lib/cloud-history';
+import {createProtectedCloudReceipt} from '../scripts/history-cloud.mjs';
 import {withHistoryLock} from '@/lib/history-lock';
 import {historyRoot} from '@/lib/durable-history';
 const safe=(v:string)=>v.replace(/[^a-z0-9_-]/gi,'_');
 /** An immutable local receipt plus a persistent replication queue. Cloud success
  * includes the existing checksum read-back; failure never discards the receipt. */
 export async function protectHistory(sport:string,stream:string,day:string,payload:any,root=historyRoot()){
+ if(globalThis.navigator?.userAgent==='Cloudflare-Workers')return createProtectedCloudReceipt(sport,'protected_'+safe(stream),day,payload);
  return withHistoryLock(`protected|${sport}|${stream}|${day}`,async()=>{
   const dir=path.join(root,safe(sport)),name=`protected_${safe(stream)}_${safe(day)}.json`,target=path.join(dir,name);
   await fs.mkdir(dir,{recursive:true});

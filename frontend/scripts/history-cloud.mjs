@@ -74,6 +74,19 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
  }
 }
 export async function readCloudDocument(sport,stream,day){const rows=await cloudRequest(`history_documents?select=payload,checksum&sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`,{signal:AbortSignal.timeout(2500)});const row=rows?.[0];if(!row)return null;if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');return row.payload;}
+/** Protected receipts use first-write-wins, even across Worker instances. */
+export async function createProtectedCloudReceipt(sport,stream,day,payload){
+ if(!/^[a-z0-9_-]+$/i.test(sport)||!/^protected_[a-z0-9_-]+$/i.test(stream)||!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error('Invalid protected history scope');
+ const receipt=[{savedAt:new Date().toISOString(),payload}];
+ await cloudRequest('history_documents?on_conflict=sport,stream,game_date',{
+  method:'POST',
+  headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},
+  body:JSON.stringify({sport,stream,game_date:day,checksum:checksum(receipt),payload:receipt,source_bytes:Buffer.byteLength(JSON.stringify(receipt))}),
+ });
+ const stored=await readCloudDocument(sport,stream,day);
+ if(!Array.isArray(stored)||stored.length!==1||!stored[0]?.savedAt||!Object.hasOwn(stored[0],'payload'))throw Error('Protected history receipt did not verify');
+ return stored;
+}
 export async function listCloudDocuments(sport){
  const rows=[];for(let offset=0;;offset+=100){const page=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${encodeURIComponent(sport)}&order=game_date.asc,stream.asc&limit=100&offset=${offset}`);for(const row of page){if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');rows.push(row);}if(page.length<100)break;}return rows;
 }
