@@ -110,6 +110,12 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
 }
 export async function attachFittedResearchForecasts(payload:any,sport:string,now=Date.now()){
  if(!Array.isArray(payload?.rows)||!payload.rows.length)return payload;
+ // First Basket is a ONE-SIDED scorer-odds market, not a fitted OVER/UNDER
+ // distribution. Preserve the verified book quote and book-implied chance,
+ // but do not run or claim the general player-stat forecast against it.
+ if(sport==='nba'&&String(payload.market||payload.rows[0]?.market||'')==='first_basket'){
+  return {...payload,rows:payload.rows.map((row:any)=>({...row,researchForecast:unavailable('market_model_not_fitted')}))};
+ }
  payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
  let data:RuntimeBundle;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
