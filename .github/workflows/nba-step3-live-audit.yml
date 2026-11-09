@@ -36,7 +36,13 @@ jobs:
                 'quarterTarget':sum(bool(f(r).get('modelTargetForecast')) for r in rows),
                 'headshot':sum(bool(r.get('headshot')) for r in rows),'retained':sum(bool(r.get('quoteRetained')) for r in rows),
                 'topMissingReasons':dict(reasons.most_common(3)),
-                'missingEv':(data.get('rankingAudit') or {}).get('missingCardFields',{}).get('ev')}
+                'missingEv':(data.get('rankingAudit') or {}).get('missingCardFields',{}).get('ev'),
+                'probabilityReady':sum(isinstance(f(r).get('priceComparison'),dict) and all(isinstance(f(r)['priceComparison'].get(k),(int,float)) for k in ('overProbability','underProbability','pushProbability')) for r in rows),
+                'quoteEvidenceBound':sum(bool((f(r).get('priceComparison') or {}).get('quoteEvidence')) for r in rows),
+                'hasDecisionTime':sum(bool((f(r).get('modelSelection') or f(r).get('modelTargetForecast') or {}).get('calculatedAt')) for r in rows),
+                'hasForecastCapture':sum(bool(r.get('forecastCapturedAt')) for r in rows),
+                'hasBoardCapture':sum(bool(r.get('boardCapturedAt')) for r in rows),
+                'priceValidationFailed':sum(f(r).get('giReason')=='price_validation_failed' for r in rows)}
             except urllib.error.HTTPError as e:return {'test':title,'http':e.code,'error':'HTTPError'}
             except Exception as e:return {'test':title,'error':type(e).__name__}
           with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
