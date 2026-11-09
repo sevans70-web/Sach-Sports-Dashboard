@@ -8,10 +8,10 @@ export function nbaCardEv(card:{raw:any},now=Date.now()){
  const raw=card?.raw;
  if(!raw||raw.sport!=='nba')return null;
  const selected=estimatedEv(raw,now);
- if(selected.status==='available'&&Number.isFinite(selected.percent)&&selected.percent>0)
+ if(selected.status==='available'&&Number.isFinite(selected.percent)&&Math.round(selected.percent*10)/10>0)
   return {percent:selected.percent,side:selected.side,kind:'model_selection' as const,validatedForBetting:selected.validatedForBetting===true};
  const research=nbaDisplayedResearchEv(raw,now);
- if(research&&Number.isFinite(research.percent)&&research.percent>0)
+ if(research&&Number.isFinite(research.percent)&&Math.round(research.percent*10)/10>0)
   return {percent:research.percent,side:research.side,kind:'research_comparison' as const,validatedForBetting:false};
  return null;
 }
