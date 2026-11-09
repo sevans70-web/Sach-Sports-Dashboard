@@ -82,8 +82,7 @@ test('one NBA research EV follows displayed projection direction, never the most
  assert.equal(Math.round(over.percent*10)/10,10);
  assert.equal(over.validatedForBetting,false);
  const under=nbaDisplayedResearchEv({...quoted,researchForecast:{...quoted.researchForecast,projection:180}},now);
- assert.equal(under?.side,'UNDER');
- assert.equal(Math.round(under.percent*10)/10,-14.1);
+ assert.equal(under,null,'negative EV must abstain and must never turn into an UNDER recommendation');
  assert.equal(nbaDisplayedResearchEv({...quoted,researchForecast:{...quoted.researchForecast,projection:200.5}},now),null);
  assert.equal(nbaDisplayedResearchEv({...quoted,quoteId:'changed'},now),null);
 });
