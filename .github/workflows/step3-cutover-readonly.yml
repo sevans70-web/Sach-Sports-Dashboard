@@ -1,5 +1,5 @@
 name: Step 3 read-only Cloudflare vs Railway cutover audit
-# One small manual comparison, no deployments, credentials, or database writes.
+# One small read-only comparison, no database writes or player-identifying logs.\n# Track mismatched categories and saved days for safe cutover reconciliation.
 on:
   push:
     branches: [cloudflare-compatibility-test]
@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           python3 - <<'PY'
-          import concurrent.futures,json,urllib.request,urllib.error,hashlib
+          import concurrent.futures,json,urllib.request,urllib.error,hashlib,collections
           hosts={
             'cloudflare':'https://sach-sports-cloudflare-test.sevans70.workers.dev',
             'railway':'https://marvelous-wholeness-production-c8d3.up.railway.app'
@@ -41,8 +41,12 @@ jobs:
                 if not game or not player or not market:continue
                 ident=(game,player,market)
                 # Only a digest, never player or line values in logs.
-                immutable=json.dumps([row.get('pick'),row.get('line'),row.get('projection')],separators=(',',':'),sort_keys=True)
-                keys[ident]=hashlib.sha256(immutable.encode()).hexdigest()
+                keys[ident]={
+                  'pick':row.get('pick'),'line':row.get('line'),'projection':row.get('projection'),
+                  'savedDate':str(row.get('storedGameDate') or '')[:10],
+                  'gameDate':str(row.get('gameDate') or '')[:10],
+                  'status':str(row.get('status') or '')
+                }
               return host,sport,{'http':code,'usable':True,'count':len(rows),'identities':keys,'pending':sum(str(r.get('status')).lower()=='pending' for r in rows),'settled':sum(str(r.get('status')).lower() in ('hit','miss','push') for r in rows),'partial':bool(data.get('partial')),'source':(data.get('coverage') or {}).get('historySource') if isinstance(data.get('coverage'),dict) else None}
             except Exception as e:
               return host,sport,{'usable':False,'error':type(e).__name__}
@@ -58,6 +62,11 @@ jobs:
               report['overlap']=len(overlap)
               report['cloudflareOnly']=len(a.keys()-b.keys())
               report['railwayOnly']=len(b.keys()-a.keys())
-              report['originalPickLineProjectionMismatches']=sum(a[k]!=b[k] for k in overlap)
+              report['differencesByField']={field:sum(a[k].get(field)!=b[k].get(field) for k in overlap) for field in ('pick','line','projection','savedDate','gameDate','status')}
+              report['railwayOnlyBySavedDate']=dict(sorted(collections.Counter(b[k].get('savedDate') for k in b.keys()-a.keys()).items()))
+              report['cloudflareOnlyBySavedDate']=dict(sorted(collections.Counter(a[k].get('savedDate') for k in a.keys()-b.keys()).items()))
+              report['railwayOnlyByMarket']=dict(sorted(collections.Counter(k[2] for k in b.keys()-a.keys()).items()))
+              report['cloudflareOnlyByMarket']=dict(sorted(collections.Counter(k[2] for k in a.keys()-b.keys()).items()))
+              report['differencesByMarket']=dict(sorted(collections.Counter(k[2] for k in overlap if any(a[k].get(field)!=b[k].get(field) for field in ('pick','line','projection'))).items()))
             print('STEP3_CUTOVER_AUDIT '+json.dumps(report,sort_keys=True))
           PY
