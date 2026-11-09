@@ -35,10 +35,15 @@ export function mlbAdminSnapshot(payload:any,day:string){
 }
 /** The original Streamlit history is bundled with the existing repository.
  * Read it in place; preserve legacy outcomes without inventing sportsbook calls. */
-export async function readBundledMlbHistory(days:Set<string>,directory=path.join(process.cwd(),'data')){
+export async function readBundledMlbHistory(days:Set<string>,directory?:string){
  const rows:any[]=[],dates=new Set<string>(),errors:string[]=[];
- for(const [section,name] of [['batter','mlb_performance_history.json'],['pitcher','mlb_pitcher_performance_history.json']]){
-  try{const history=JSON.parse(await fs.readFile(path.join(directory,name),'utf8'));if(!history.days||typeof history.days!=='object')throw Error('Invalid bundled history');
+ const worker=!directory&&globalThis.navigator?.userAgent==='Cloudflare-Workers';
+ const sources=[
+  {section:'batter',name:'mlb_performance_history.json',load:()=>import('../data/mlb_performance_history.json')},
+  {section:'pitcher',name:'mlb_pitcher_performance_history.json',load:()=>import('../data/mlb_pitcher_performance_history.json')},
+ ];
+ for(const {section,name,load} of sources){
+  try{const history=worker?(await load()).default:JSON.parse(await fs.readFile(path.join(directory??path.join(process.cwd(),'data'),name),'utf8'));if(!history.days||typeof history.days!=='object')throw Error('Invalid bundled history');
    for(const [day,value] of Object.entries(history.days))if(days.has(day)){rows.push(...mlbAdminSnapshot({[section]:value},day));dates.add(day);}
   }catch{errors.push('legacy:'+name);}
  }

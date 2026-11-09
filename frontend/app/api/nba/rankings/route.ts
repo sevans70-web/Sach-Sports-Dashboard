@@ -39,7 +39,7 @@ export async function GET(req:NextRequest){
   if(market==='first_basket'){
    const board=(await readDurableHistory<any>('nba','featured_first_basket',fallbackDay,true))[0];
    const rows=nbaSlateRows(board?.rows||[],market,fallbackDay).filter((row:any)=>row.market==='first_basket'&&row.lineType==='scorer'&&Date.parse(row.gameTime)>Date.now()&&verifiedPropQuote(row));
-   if(rows.length)return NextResponse.json({success:true,market,boardDay:fallbackDay,rows,boardFrozen:false,source:'Recent verified first-basket prices',warning:'Refreshing scorer prices; showing recent verified quotes.'},{headers:{'Cache-Control':'no-store'}});
+   if(rows.length)return NextResponse.json(scopedNbaBoard({success:true,market,boardDay:fallbackDay,rows,boardFrozen:false,source:'Recent verified first-basket prices',warning:'Refreshing scorer prices; showing recent verified quotes.'},market,fallbackDay),{headers:{'Cache-Control':'no-store'}});
   }
   const saved=(await readDurableHistory<any>('nba','slate_board_'+market,fallbackDay,true))[0];
   const captured=Date.parse(saved?.capturedAt||''),lock=Date.parse(saved?.lockAt||'');

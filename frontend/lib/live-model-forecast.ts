@@ -16,6 +16,7 @@ import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/l
 import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
+import {firstBasketBookOnly} from '@/lib/nba-slate-scope';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
 const BASKETBALL_COMBINATIONS:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
 export function runtimeSupportsMarket(data:Pick<RuntimeBundle,'models'>,sport:string,market:string){
@@ -114,7 +115,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  // distribution. Preserve the verified book quote and book-implied chance,
  // but do not run or claim the general player-stat forecast against it.
  if(sport==='nba'&&String(payload.market||payload.rows[0]?.market||'')==='first_basket'){
-  return {...payload,rows:payload.rows.map((row:any)=>({...row,researchForecast:unavailable('market_model_not_fitted')}))};
+  return {...payload,rows:payload.rows.map(firstBasketBookOnly)};
  }
  payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);

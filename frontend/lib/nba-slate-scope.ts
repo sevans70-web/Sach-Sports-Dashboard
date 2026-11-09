@@ -16,9 +16,13 @@ export function nbaSlateRequest(market:string,slate:string,now=new Date()){
 export function nbaSlateRows(rows:any[],market:string,day:string){
  return (rows||[]).filter(row=>row.market===market&&nbaFixtureDay(row.gameTime)===day);
 }
+export function firstBasketBookOnly(row:any){
+ return {...row,researchForecast:{status:'unavailable',projection:null,giScore:null,reason:'market_model_not_fitted',validatedForBetting:false},pregameProbability:null};
+}
 export function scopedNbaBoard(payload:any,market:string,day:string){
  const mismatch=Boolean(payload?.market&&payload.market!==market||payload?.boardDay&&payload.boardDay!==day);
- const rows=mismatch?[]:nbaSlateRows(payload?.rows||[],market,day);
+ const scopedRows=mismatch?[]:nbaSlateRows(payload?.rows||[],market,day);
+ const rows=market==='first_basket'?scopedRows.map(firstBasketBookOnly):scopedRows;
  const pickForAudit=(r:any)=>savedModelPick(r,String(r.market||'').startsWith('q1_')&&r.forecastCapturedAt?r.forecastCapturedAt:r.boardCapturedAt)||cardModelPick(r);
  const underCount=rows.filter((r:any)=>pickForAudit(r)?.side==='UNDER'||r.lineType==='milestone'&&r.researchForecast?.modelTargetForecast?.direction==='BELOW').length;
  const missingCardFields={line:rows.filter((r:any)=>r.quoteVerified!==true||!Number.isFinite(r.sportsbookLine)).length,prediction:rows.filter((r:any)=>!pickForAudit(r)&&!r.researchForecast?.modelTargetForecast).length,projection:rows.filter((r:any)=>cardModelProjection(r)==null).length,ev:rows.filter((r:any)=>estimatedEv(r).status!=='available').length};
@@ -27,5 +31,6 @@ export function scopedNbaBoard(payload:any,market:string,day:string){
   rankingAudit:{market,day,cards:rows.length,underCount,underCapExceeded:underCount>5,previouslyCaptured:rows.some((r:any)=>r.boardFrozen||r.boardCapturedAt),missingCardFields},
   verifiedQuoteCount:rows.filter((r:any)=>r.quoteVerified===true).length,
   modelSelectionCount:rows.filter((r:any)=>pickForAudit(r)||r.researchForecast?.modelTargetForecast).length,
+  ...(market==='first_basket'?{forecastBlockers:{market_model_not_fitted:rows.length},fittedResearchForecastCount:0}:{}),
   ...(market.startsWith('q1_')?{q1Diagnostics:{cards:rows.length,quoted:rows.filter((r:any)=>r.quoteVerified===true).length,predictions:rows.filter((r:any)=>pickForAudit(r)||r.researchForecast?.modelTargetForecast).length,projections:rows.filter((r:any)=>cardModelProjection(r)!=null).length,ev:rows.filter((r:any)=>estimatedEv(r).status==='available').length}}:{})};
 }

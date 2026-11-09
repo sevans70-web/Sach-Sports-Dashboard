@@ -28,7 +28,17 @@ test('scope handles UTC rollover and filters wrong date, market, missing and inv
 test('every NBA market and combination is independently scoped',()=>{
  for(const market of ['points','rebounds','assists','threes_made','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','steals','blocks','first_basket','q1_points','q1_rebounds','q1_assists','q1_threes_made','q1_pts_rebs_asts']){
   const rows=[{market,gameTime:'2026-10-29T01:00Z'},{market,gameTime:'2026-10-30T01:00Z'}];
-  assert.deepEqual(scopedNbaBoard({rows},market,'2026-10-28').rows,[rows[0]]);
+  assert.deepEqual(scopedNbaBoard({rows},market,'2026-10-28').rows.map(row=>row.gameTime),[rows[0].gameTime]);
   assert.notEqual(nbaSlateRequest(market,'today'),nbaSlateRequest(market,'tomorrow'));
  }
+});
+test('cached First Basket boards retain sportsbook prices and suppress old stat-model fields',()=>{
+ const row={market:'first_basket',gameTime:'2026-10-29T01:00Z',quoteVerified:true,overPrice:650,lineType:'scorer',researchForecast:{status:'available',projection:10,modelSelection:{side:'OVER'}},pregameProbability:{win:.9}};
+ const result=scopedNbaBoard({rows:[row]},'first_basket','2026-10-28');
+ assert.equal(result.rows[0].researchForecast.reason,'market_model_not_fitted');
+ assert.equal(result.rows[0].pregameProbability,null);
+ assert.equal(result.rows[0].overPrice,650);
+ assert.equal(result.verifiedQuoteCount,1);
+ assert.equal(result.modelSelectionCount,0);
+ assert.equal(row.researchForecast.projection,10);
 });
