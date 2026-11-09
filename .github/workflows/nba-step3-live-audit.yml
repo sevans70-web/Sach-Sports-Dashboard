@@ -1,0 +1,44 @@
+name: NBA Step 3 live markets and featured cards audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - '.github/workflows/nba-step3-live-audit.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Verify live NBA market and featured-card coverage
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import concurrent.futures,json,urllib.request,urllib.error,collections
+          base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
+          markets=['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket','q1_points','q1_rebounds','q1_assists']
+          checks=[('rankings:'+m,f'/api/nba/rankings?market={m}') for m in markets]+[('featured','/api/top-plays?sport=nba')]
+          def run(item):
+            title,path=item
+            try:
+              with urllib.request.urlopen(urllib.request.Request(base+path,headers={'Accept':'application/json','User-Agent':'Sach-Step3-Audit'}),timeout=50) as resp:
+                data=json.load(resp);http=resp.status
+              if title=='featured':
+                cards=data.get('plays') or []
+                return {'test':title,'http':http,'success':data.get('success'),'categories':[{'key':x.get('key'),'hasPick':bool(x.get('pick')),'title':x.get('title')} for x in cards],'day':data.get('slateDay')}
+              rows=data.get('rows') or []
+              f=lambda r:r.get('researchForecast') or {}
+              reasons=collections.Counter(str(f(r).get('reason') or f(r).get('selectionReason') or 'none') for r in rows if not f(r).get('modelSelection') and not f(r).get('modelTargetForecast'))
+              return {'test':title,'http':http,'success':data.get('success'),'rows':len(rows),'quoteVerified':sum(r.get('quoteVerified') is True for r in rows),
+                'researchAvailable':sum(f(r).get('status')=='available' for r in rows),'modelSelection':sum(bool(f(r).get('modelSelection')) for r in rows),
+                'quarterTarget':sum(bool(f(r).get('modelTargetForecast')) for r in rows),
+                'headshot':sum(bool(r.get('headshot')) for r in rows),'retained':sum(bool(r.get('quoteRetained')) for r in rows),
+                'topMissingReasons':dict(reasons.most_common(3)),
+                'missingEv':(data.get('rankingAudit') or {}).get('missingCardFields',{}).get('ev')}
+            except urllib.error.HTTPError as e:return {'test':title,'http':e.code,'error':'HTTPError'}
+            except Exception as e:return {'test':title,'error':type(e).__name__}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            for answer in pool.map(run,checks):print('NBA_STEP3_LIVE '+json.dumps(answer,sort_keys=True))
+          PY
