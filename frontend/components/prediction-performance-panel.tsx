@@ -379,7 +379,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
     const controller = new AbortController();
     let alive = true;
 
-    let running=false;let hasLoaded=false;let refresh:number|undefined;let retryDelay=60000;
+    const fullArchive=period==='Season'&&(sport==='mlb'||sport==='wnba');
+    let running=false;let hasLoaded=false;let archiveLoaded=false;let refresh:number|undefined;let retryDelay=60000;
     const run = async () => {
       if(running)return;
       running=true;
@@ -388,7 +389,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
       try {
         const scope=activeCategory.market?`&market=${encodeURIComponent(activeCategory.market)}`:`&group=${encodeURIComponent(activeCategory.group||activeCategory.key)}`;
         const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
-        const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal);
+        const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal,fullArchive?115000:undefined);
         if(!alive)return;
         const cloudUnavailable=payload.coverage?.errors?.some((error:string)=>/^(cloud|drive):unavailable/.test(error));
         retryDelay=payload.refreshing&&!cloudUnavailable?5000:60000;
@@ -397,6 +398,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         if(!alive)return;
         setPartialHistory(payload.partial===true);
         hasLoaded=true;
+        archiveLoaded=fullArchive&&payload.coverage?.complete===true;
         setOverall(normalizeStat({...payload,researchSummary:payload.overallSummary}));
         setCategoryStat(normalizeStat(payload));
         setSavedRecords(payload.records||[]);
@@ -406,7 +408,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         setHistoryRefreshing(false);
       } finally {
         running=false;
-        if (alive) {setLoading(false);refresh=window.setTimeout(run,retryDelay);}
+        if (alive) {setLoading(false);if(!archiveLoaded)refresh=window.setTimeout(run,retryDelay);}
       }
     };
 

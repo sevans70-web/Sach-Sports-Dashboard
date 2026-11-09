@@ -6,7 +6,7 @@ export default defineConfig({
     entrypoint: "./worker-entry.mjs",
     compatibilityDate: "2026-11-06",
     compatibilityFlags: ["nodejs_compat"],
-    limits: { subrequests: 200 },
+    limits: { subrequests: 350 },
     observability: {
       enabled: true,
       headSamplingRate: 1,

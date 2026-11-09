@@ -16,9 +16,9 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
  const scheduled=new Set();
  let cacheBytes=0;
  const unpack=value=>({errors:value.errors,rows:value.rows.map(row=>({stream:row.stream,game_date:row.game_date,checksum:row.checksum,payload:JSON.parse(gunzipSync(row.zip).toString('utf8'))}))});
- function transport(request){
+ function transport(request,concurrency=2){
   let active=0;const waiting=[];
-  async function slot(work){if(active>=2)await new Promise(resolve=>waiting.push(resolve));else active++;try{return await work();}finally{const next=waiting.shift();if(next)next();else active--;}}
+  async function slot(work){if(active>=concurrency)await new Promise(resolve=>waiting.push(resolve));else active++;try{return await work();}finally{const next=waiting.shift();if(next)next();else active--;}}
   return {request,slot};
  }
  const shared=makeRequest?null:transport(request);
@@ -46,9 +46,13 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
   }
   const value=[...latest.values()].sort((a,b)=>a.game_date.localeCompare(b.game_date)||a.stream.localeCompare(b.stream));inventories.set(sport,{at:now(),files:value});return value;
  }
- async function load(sport,firstDay,lastDay,key){
+ async function load(sport,firstDay,lastDay,key,fullSeason=false){
   const started=now();let files;
-  const send=shared??transport(makeRequest());
+  // Full archived seasons have hundreds of verified documents. Keep the
+  // wider fetch pool and time budget specific to these infrequent reads.
+  const concurrency=fullSeason?4:parallelReads?2:1;
+  const readBudget=fullSeason?95000:budgetMs;
+  const send=shared??transport(makeRequest(),concurrency);
   try{files=(await inventory(sport,send)).filter(f=>(!firstDay||f.game_date>=firstDay)&&(!lastDay||f.game_date<=lastDay));}catch{return {rows:results.get(key)?.value.rows||[],errors:['unavailable']};}
   const outcomes=new Array(files.length);
   let next=0;
@@ -56,7 +60,7 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
    const index=next++,file=files[index];
    const key=sport+'|'+file.stream+'|'+file.game_date,cached=documents.get(key);
    if(cached&&cached.md5===file.md5Checksum){outcomes[index]={row:cached};continue;}
-   if(now()-started>=budgetMs){outcomes[index]={error:file.stream+'|'+file.game_date+':checking'};continue;}
+   if(now()-started>=readBudget){outcomes[index]={error:file.stream+'|'+file.game_date+':checking'};continue;}
    try{
     const streaming=file.stream.startsWith('snapshots_')||Number(file.size)>16*1024*1024;
     if(!/^[a-f0-9]{32}$/i.test(file.md5Checksum||'')||!Number.isFinite(Number(file.size))||Number(file.size)>4*1024*1024*1024)throw Error('Unverified or oversized backup document');
@@ -83,14 +87,14 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
    }catch{outcomes[index]={error:file.stream+'|'+file.game_date+':unavailable'};}
    await new Promise(resolve=>setImmediate(resolve));
   }};
-  await Promise.all(parallelReads?[collect(),collect()]:[collect()]);
+  await Promise.all(Array.from({length:concurrency},collect));
   return {rows:outcomes.flatMap(x=>x.row?[x.row]:[]),errors:outcomes.flatMap(x=>x.error?[x.error]:[])};
  }
- const read=async(sport,firstDay,lastDay)=>{
+ const read=async(sport,firstDay,lastDay,fullSeason=false)=>{
   if(!['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'].includes(sport)||[firstDay,lastDay].some(day=>day&&!/^\d{4}-\d{2}-\d{2}$/.test(day))||lastDay&&(!firstDay||lastDay<firstDay))throw Error('Invalid backup history scope');
-  const key=[sport,firstDay||'all',lastDay||'all'].join('|'),cached=results.get(key);if(cached&&now()-cached.at<(cached.value.errors.some(e=>e.endsWith(':checking'))?5000:60000))return unpack(cached.value);
+  const key=[sport,firstDay||'all',lastDay||'all',fullSeason?'season':'standard'].join('|'),cached=results.get(key);if(cached&&now()-cached.at<(cached.value.errors.some(e=>e.endsWith(':checking'))?5000:60000))return unpack(cached.value);
   if(makeRequest){
-   const value=await load(sport,firstDay,lastDay,key);
+   const value=await load(sport,firstDay,lastDay,key,fullSeason);
    if(!results.has(key)&&results.size>=64)results.delete(results.keys().next().value);
    results.set(key,{at:now(),value});return unpack(value);
   }
@@ -107,7 +111,7 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
  return read;
 }
 let reader;
-export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot,lastDay){
+export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot,lastDay,fullSeason=false){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
  if(!reader){
   const makeRequest=()=>driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})}).request;
@@ -116,5 +120,5 @@ export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapsh
   // the request that created them, including the OAuth refresh promise.
   reader=createDrivePerformanceReader({folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,...(worker?{makeRequest}:{request:makeRequest(),schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}})});
  }
- return reader(sport,firstDay,lastDay);
+ return reader(sport,firstDay,lastDay,fullSeason);
 }

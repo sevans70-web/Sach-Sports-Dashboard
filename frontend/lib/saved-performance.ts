@@ -62,6 +62,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const drive=(!cloudOnly||!recent||!cloudConfigured())&&drivePerformanceConfigured();
  if(options.archiveRange&&!drive)throw Error('Drive archive storage is unavailable');
  if(cloudOnly&&!drive&&!cloudConfigured())throw Error('Cloud history storage is unavailable');
+ const fullSeason=cloudOnly&&period==='Season'&&!options.archiveRange&&(sport==='mlb'||sport==='wnba');
  const firstDay=options.archiveRange?.from??[...historyDays(drive?'Season':period,now)].sort()[0];
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=cloudOnly?[]:await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
@@ -81,7 +82,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   else {if(!Array.isArray(payload))throw Error('Invalid history array');rows.push(...payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
  };
  const cloudBatch=cloudOnly&&!drive&&options.cloud!==false;
- const remoteWork=cloudBatch?Promise.resolve({rows:[] as any[],errors:[] as string[]}):drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows,options.archiveRange?.to):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
+ const remoteWork=cloudBatch?Promise.resolve({rows:[] as any[],errors:[] as string[]}):drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows,options.archiveRange?.to,fullSeason):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  // MLB performance snapshots live in a child directory; protected receipts and
  // newly captured boards use the shared sport root like every other sport.
  if(sport==='mlb'&&!cloudOnly){

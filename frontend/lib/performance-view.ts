@@ -15,7 +15,7 @@ export async function performanceView(sport:string,period:string,defer:(work:()=
  // cloud view directly, using only recorded results to grade it.
  if(globalThis.navigator?.userAgent==='Cloudflare-Workers'){
   const data=await read(sport,period,new Date(now),root,{observe:false,storage:'cloud'});
-  return {...data,snapshotAt:new Date().toISOString(),refreshing:data.coverage.errors.some(error=>error.startsWith('drive:')&&error.endsWith(':checking'))};
+  return {...data,snapshotAt:new Date().toISOString(),refreshing:data.coverage.errors?.some(error=>error.startsWith('drive:')&&error.endsWith(':checking'))??false};
  }
  const day=dashboardDay(new Date(now)),dir=path.join(root,sport),file=path.join(dir,'performance_view_'+period+'_'+day+'.json'),key=file;
  let previous:SavedView|null=null;
