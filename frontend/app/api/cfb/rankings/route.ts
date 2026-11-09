@@ -1,3 +1,4 @@
+import {readDurableHistory} from '@/lib/durable-history';
 import {mapCandidatePool} from '@/lib/candidate-pool';
 import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {footballRowsForMarket} from "@/lib/football-quarter-stats";
@@ -395,6 +396,20 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   return {success:true,source:hasEarlyModel?"Sach Model + ESPN":"Owls Insight",market,rows:withResults,dropped,sportsbookOnly:!hasEarlyModel,validRankingCount:withResults.length,updatedAt:new Date().toISOString()};
 }
 async function getPayload(market:CfbMarketKey){
+  // During the staged migration the capture service can publish a complete
+  // model board in Supabase. Reuse it while every game is still pregame.
+  if(globalThis.navigator?.userAgent==='Cloudflare-Workers'){
+    const now=Date.now();
+    const [saved]=await readDurableHistory<RankingPayload&{featuredCapturedAt:string}>(
+      'cfb','featured_'+market,day(new Date(now)),
+    ).catch(()=>[]);
+    const age=now-Date.parse(saved?.featuredCapturedAt||'');
+    if(saved?.success&&saved.market===market&&age>=0&&age<30*60_000&&Array.isArray(saved.rows)&&saved.rows.length===25&&saved.rows.every(row=>
+      row.market===market&&row.marketBacked===false&&row.modelProjection!=null&&Number.isFinite(Number(row.modelProjection))&&Date.parse(row.gameTime)>now
+    )){
+      return {...saved,source:'Saved CFB model rankings',cached:true};
+    }
+  }
   const cached=rankingCache.get(market),age=cached?Date.now()-cached.at:Infinity;
   if(cached&&age<FRESH_MS)return {...cached.payload,cached:true};
 
