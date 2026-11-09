@@ -2486,7 +2486,7 @@ export function PlayerRankingsPanel({
     <div className={`ssPlayerRankingsRoot ${styles.root}`}>
       <div className={styles.header}>
         <div>
-          <h2>{["nfl","cfb"].includes(sport)?"Top Plays":"Top 25 Rankings"}</h2>
+          <h2>Player Rankings</h2>
           <p>
             Market-specific intelligence · live matchup context
           </p>
@@ -2570,7 +2570,7 @@ export function PlayerRankingsPanel({
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label} Rankings</h3>
         <p>
-          {["nfl","cfb"].includes(sport)?"Top Plays":"Top 25"} · {sourceText}
+          Player Rankings · {sourceText}
           {sport==='nba'&&nbaBoardLabel?` · ${nbaBoardLabel}`:''}
           {sport==='nba'&&displayCards.some(c=>c.raw?.boardFrozen)?' · Locked at first tipoff':''}
         </p>
@@ -2582,7 +2582,7 @@ export function PlayerRankingsPanel({
             type="button"
             onClick={() => setShowDropped((value) => !value)}
           >
-            DROPPED from {["nfl","cfb"].includes(sport)?"Top Plays":"Top 25"} ({dropped.length}) {showDropped ? "⌃" : "⌄"}
+            DROPPED from Player Rankings ({dropped.length}) {showDropped ? "⌃" : "⌄"}
           </button>
 
           {showDropped ? (
@@ -2645,7 +2645,7 @@ export function PlayerRankingsPanel({
               : `View Full All Day Rankings · ${displayCards.length}`
             : full
               ? "Show Top 5 Only"
-              : (["nfl","cfb"].includes(sport)?"View All Top Plays":"View Full Top 25")}
+              : "View All Rankings"}
         </button>
       ) : null}
     </div>
