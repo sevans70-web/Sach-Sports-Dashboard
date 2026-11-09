@@ -7,11 +7,11 @@ const start='2026-11-09T22:00:00Z';
 const updated='2026-11-09T18:59:00Z';
 function quote(patch={}){return {sport:'nba',market:'points',gameId:'12345',playerId:'67890',playerName:'Example Player',teamName:'Example Team',gameTime:start,gameState:'pre',marketBacked:true,quoteVerified:true,quoteVersion:1,quoteId:'exact-quote',sportsbookKey:'fanduel',sportsbook:'FanDuel',quoteMarket:'points',quotePeriod:'game',lineType:'main',sportsbookLine:22.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:updated,prediction:'OVER',modelProjection:24.1,...patch};}
 
-test('capture rotation covers all five active sports and every configured market, never paused sports',()=>{
+test('capture rotation covers NBA, NFL and NHL, never paused or archived sports',()=>{
  const selected=new Set();
  for(let i=0;i<Math.ceil(CAPTURE_MARKETS.length/2);i++)for(const x of marketsForCaptureTick(time+i*120_000))selected.add(x.sport+'|'+x.market);
  assert.deepEqual(selected,new Set(CAPTURE_MARKETS.map(x=>x.sport+'|'+x.market)));
- assert.deepEqual(new Set(CAPTURE_MARKETS.map(x=>x.sport)),new Set(['nba','nfl','nhl','cfb','cbb']));
+ assert.deepEqual(new Set(CAPTURE_MARKETS.map(x=>x.sport)),new Set(['nba','nfl','nhl']));
  assert.equal(marketsForCaptureTick(time).length,2);
  assert.equal(marketsForCaptureTick(time,true).length,6);
  assert.ok(CAPTURE_MARKETS.some(row=>row.sport==='nfl'&&row.market==='qb_rushing_yards'));
@@ -32,7 +32,7 @@ test('capture requires a fresh, verified official pregame quote and never invent
   {sportsbookLine:null},{underPrice:null},{quoteId:''},{gameState:'in'}, {boardFrozen:true},
   {gameTime:'2026-11-09T19:01:00Z'},{gameTime:'2026-11-11T23:00:00Z'},
  ])assert.equal(originalPregameQuote(quote(patch),'nba','points',time),null,JSON.stringify(patch));
- assert.equal(originalPregameQuote(quote(),'wnba','points',time),null);
+ for(const sport of ['wnba','mlb','cfb','cbb'])assert.equal(originalPregameQuote(quote(),sport,'points',time),null);
 });
 
 test('saved model pick must bind to exact quote and pricing; research baseline alone is not a model pick',()=>{
