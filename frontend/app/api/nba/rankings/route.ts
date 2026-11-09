@@ -3,6 +3,8 @@ import {currentNbaPregameSnapshot,readNbaSlateBoard} from '@/lib/nba-slate-board
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
 import {attachBasketballAvailability} from '@/lib/basketball-pregame-context';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
+import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
+import {cloudHistoryReadOnly} from '../../../../scripts/history-cloud.mjs';
 import {after,NextRequest,NextResponse} from "next/server";
 import {type NbaMarketKey,NBA_MARKETS,loadNbaGames} from "@/lib/nba";
 import {buildNbaMarketRankings} from "@/lib/nba-rankings-server";
@@ -31,11 +33,42 @@ export async function GET(req:NextRequest){
    ['overProbability','underProbability','pushProbability'].every(key=>typeof prices?.[key]==='number'&&Number.isFinite(prices[key]));
  }));
  if(recent&&!needsForecastRefresh&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
-  const visible=await attachBasketballAvailability(recent,'nba');
+  let visible=await attachBasketballAvailability(recent,'nba');
   if(visible.rows.length){
+   // On Cloudflare staging, legacy history documents are deliberately
+   // read-only. Re-running the saved-board writer in after() cannot update
+   // these stale sum-of-components forecasts, so derive a separate
+   // lightweight research comparison from the immutable pregame quote.
+   // Never alter the saved board, historical pick/line, or grade.
+   const combination=['pts_rebs_asts','pts_rebs','pts_asts','rebs_asts'].includes(market);
+   if(combination&&cloudHistoryReadOnly()){
+    const at=Date.now();
+    const eligible=visible.rows.filter((row:any)=>
+     !row.boardFrozen&&!row.frozen&&!row.lockedAtKickoff&&
+     !row.researchForecast?.modelSelection&&
+     !row.researchForecast?.priceComparison?.quoteEvidence&&
+     Date.parse(row.gameTime)>at&&verifiedPropQuote(row,at));
+    if(eligible.length){
+     try{
+      const recalculated=await attachFittedResearchForecasts({...visible,rows:eligible},'nba',at,{offlineOnly:true});
+      const byId=new Map((recalculated.rows||[]).map((row:any)=>[String(row.gameId)+'|'+String(row.playerId),row]));
+      visible={...visible,rows:visible.rows.map((row:any)=>{
+       const newer:any=byId.get(String(row.gameId)+'|'+String(row.playerId));
+       const forecast=newer?.researchForecast,quote=forecast?.priceComparison?.quoteEvidence;
+       // A recalculated research EV is display-only and requires the same
+       // original full-price sportsbook receipt and a pregame decision time.
+       if(forecast?.status!=='available'||!quote||quote.quoteId!==row.quoteId||
+          quote.line!==row.sportsbookLine||quote.sportsbookKey!==row.sportsbookKey||
+          quote.overPrice!==row.overPrice||quote.underPrice!==row.underPrice||
+          Date.parse(forecast.calculatedAt)>=Date.parse(row.gameTime))return row;
+       return {...row,researchForecast:forecast,forecastCapturedAt:forecast.calculatedAt,comparisonResearchOnly:true};
+      })};
+     }catch(error){console.error('[nba combo readonly forecast]',error instanceof Error?error.message:'unavailable');}
+    }
+   }
    // The capture Worker already rotates this market on its own schedule.
    // A second refresh would consume the same scheduled invocation's budget.
-   if(req.nextUrl.hostname!=='sach-capture.internal'){
+   if(req.nextUrl.hostname!=='sach-capture.internal'&&!(combination&&cloudHistoryReadOnly())){
     after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});
    }
    return NextResponse.json(scopedNbaBoard(visible,market,cachedDay),{headers:{'Cache-Control':'no-store'}});
