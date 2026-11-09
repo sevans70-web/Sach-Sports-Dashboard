@@ -38,6 +38,19 @@ export function nbaComparisonEv(row:any,now=Date.now()){
  const payout=(odds:number)=>odds>0?odds/100:100/-odds;
  return {over:100*(over*payout(row.overPrice)-under),under:100*(under*payout(row.underPrice)-over)};
 }
+/** One research EV for the direction ALREADY displayed on an NBA card.
+ * This is not a qualifying pick: a negative return stays negative, and no
+ * side is chosen merely because it has the higher EV.
+ */
+export function nbaDisplayedResearchEv(row:any,now=Date.now()){
+ const comparison=nbaComparisonEv(row,now);
+ const projection=row?.researchForecast?.projection, line=row?.sportsbookLine;
+ if(!comparison||typeof projection!=='number'||!Number.isFinite(projection)||
+    typeof line!=='number'||!Number.isFinite(line)||projection===line)return null;
+ const side=projection>line?'OVER':'UNDER';
+ return {side,percent:side==='OVER'?comparison.over:comparison.under,
+  basis:'projection_direction_and_original_quote',validatedForBetting:false};
+}
 export function formatEvPercent(value:number){
  const percent=Math.round(value*10)/10;return `${percent>0?'+':''}${Object.is(percent,-0)?'0.0':percent.toFixed(1)}%`;
 }
