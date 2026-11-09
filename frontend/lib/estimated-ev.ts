@@ -48,8 +48,12 @@ export function nbaDisplayedResearchEv(row:any,now=Date.now()){
  if(!comparison||typeof projection!=='number'||!Number.isFinite(projection)||
     typeof line!=='number'||!Number.isFinite(line)||projection===line)return null;
  const side=projection>line?'OVER':'UNDER';
- return {side,percent:side==='OVER'?comparison.over:comparison.under,
-  basis:'projection_direction_and_original_quote',validatedForBetting:false};
+ const percent=side==='OVER'?comparison.over:comparison.under;
+ // A negative or zero research return is an abstention, never a ranked EV.
+ // Do NOT silently switch to the opposite side: it has its own independent
+ // probability, price and eligibility checks.
+ if(!Number.isFinite(percent)||percent<=0)return null;
+ return {side,percent,basis:'projection_direction_and_original_quote',validatedForBetting:false};
 }
 export function formatEvPercent(value:number){
  const percent=Math.round(value*10)/10;return `${percent>0?'+':''}${Object.is(percent,-0)?'0.0':percent.toFixed(1)}%`;
