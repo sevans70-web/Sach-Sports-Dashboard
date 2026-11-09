@@ -27,6 +27,11 @@ jobs:
           assert 'markets:["points","rebounds","assists"].map' in page, 'Q1 PTS/REB/AST tabs missing'
           assert 'key:"q1_threes_made"' not in page, 'Retired Q1 3PM remains visible'
           assert 'nbaDisplayedResearchEv(card.raw)' in page, 'One-sided EV view missing'
+          helper=Path('frontend/lib/estimated-ev.ts').read_text()
+          assert 'if(!Number.isFinite(percent)||percent<=0)return null;' in helper, 'Negative or zero NBA research EV still visible'
+          assert 'nbaPositiveEv' in page and "?'PASS':'—'" in page, 'Unqualified OVER still shown as a pick'
+          assert "researchOnly || sport==='nba'&&!nbaPositiveEv" in page, 'Old recommendation banner still visible'
+
           assert 'comparisonEv.over' not in page and 'comparisonEv.under' not in page, 'Dual EV still displayed'
           quotes=Path('frontend/lib/public-card-metrics.ts').read_text()
           assert "row.boardCapturedAt" in quotes, 'Saved Q1 receipt missing'
