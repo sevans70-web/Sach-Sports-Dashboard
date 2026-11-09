@@ -1,0 +1,63 @@
+name: Step 3 read-only Cloudflare vs Railway cutover audit
+# One small manual comparison, no deployments, credentials, or database writes.
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - '.github/workflows/step3-cutover-readonly.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Compare published history without revealing player information
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import concurrent.futures,json,urllib.request,urllib.error,hashlib
+          hosts={
+            'cloudflare':'https://sach-sports-cloudflare-test.sevans70.workers.dev',
+            'railway':'https://marvelous-wholeness-production-c8d3.up.railway.app'
+          }
+          sports=['nba','nfl','nhl','cfb','cbb']
+          def load(pair):
+            host,sport=pair
+            url=hosts[host]+f'/api/history/performance?sport={sport}&period=Today'
+            try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'Sach-Cutover-ReadOnly/1.0'}),timeout=50) as response:
+                data=json.load(response);code=response.status
+              if code!=200 or data.get('success') is False:
+                return host,sport,{'http':code,'usable':False,'error':'history_not_available'}
+              rows=data.get('records',[])
+              if not isinstance(rows,list):return host,sport,{'http':code,'usable':False,'error':'invalid_rows'}
+              keys={}
+              for row in rows:
+                game=str(row.get('gameId') or '')
+                player=str(row.get('playerId') or row.get('playerName') or '')
+                market=str(row.get('market') or '')
+                if not game or not player or not market:continue
+                ident=(game,player,market)
+                # Only a digest, never player or line values in logs.
+                immutable=json.dumps([row.get('pick'),row.get('line'),row.get('projection')],separators=(',',':'),sort_keys=True)
+                keys[ident]=hashlib.sha256(immutable.encode()).hexdigest()
+              return host,sport,{'http':code,'usable':True,'count':len(rows),'identities':keys,'pending':sum(str(r.get('status')).lower()=='pending' for r in rows),'settled':sum(str(r.get('status')).lower() in ('hit','miss','push') for r in rows),'partial':bool(data.get('partial')),'source':(data.get('coverage') or {}).get('historySource') if isinstance(data.get('coverage'),dict) else None}
+            except Exception as e:
+              return host,sport,{'usable':False,'error':type(e).__name__}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            results=list(executor.map(load,[(host,sport) for sport in sports for host in hosts]))
+          by={(host,sport):value for host,sport,value in results}
+          for sport in sports:
+            cf=by['cloudflare',sport];rw=by['railway',sport]
+            report={'sport':sport,'cloudflare':{k:v for k,v in cf.items() if k!='identities'},'railway':{k:v for k,v in rw.items() if k!='identities'}}
+            if cf.get('usable') and rw.get('usable'):
+              a,b=cf['identities'],rw['identities']
+              overlap=a.keys()&b.keys()
+              report['overlap']=len(overlap)
+              report['cloudflareOnly']=len(a.keys()-b.keys())
+              report['railwayOnly']=len(b.keys()-a.keys())
+              report['originalPickLineProjectionMismatches']=sum(a[k]!=b[k] for k in overlap)
+            print('STEP3_CUTOVER_AUDIT '+json.dumps(report,sort_keys=True))
+          PY
