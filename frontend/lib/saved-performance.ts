@@ -4,7 +4,7 @@ import {isOfficialFinal} from '@/lib/history-save-policy';
 import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
 import {cachedOfficialResult} from '@/lib/official-result-cache';
 import {savedResearchDecisions,observeSavedResearch} from '@/lib/saved-research-performance';
-import {cloudConfigured,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
+import {cloudConfigured,listCloudPerformanceDocuments,visitCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
 import {drivePerformanceConfigured,listDrivePerformanceDocuments} from '../scripts/drive-performance.mjs';
 
 import {promises as fs} from 'node:fs';
@@ -60,7 +60,6 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const drive=(!cloudOnly||!recent||!cloudConfigured())&&drivePerformanceConfigured();
  if(cloudOnly&&!drive&&!cloudConfigured())throw Error('Cloud history storage is unavailable');
  const firstDay=[...historyDays(drive?'Season':period,now)].sort()[0];
- const remoteWork=drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const directory=path.join(root,sport,sport==='mlb'?'performance':'');
  const names=cloudOnly?[]:await fs.readdir(directory).catch((e)=>{if(e.code==='ENOENT'&&cloudConfigured())return [] as string[];throw e;});
  const days=historyDays(period,now),fileDays=historyDays('Season',now),rows:any[]=[],errors:string[]=[],observations=new Map<string,any>();let files=0;
@@ -78,6 +77,8 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   if(sport==='mlb')rows.push(...mlbAdminSnapshot(payload,date));
   else {if(!Array.isArray(payload))throw Error('Invalid history array');rows.push(...payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
  };
+ const cloudBatch=cloudOnly&&!drive&&options.cloud!==false;
+ const remoteWork=cloudBatch?Promise.resolve({rows:[] as any[],errors:[] as string[]}):drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  // MLB performance snapshots live in a child directory; protected receipts and
  // newly captured boards use the shared sport root like every other sport.
  if(sport==='mlb'&&!cloudOnly){
@@ -95,10 +96,14 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
   for(const item of batch){if(item.error){errors.push(item.name);continue;}try{const date=item.name.match(/(\d{4}-\d{2}-\d{2})\.json$/)![1],stream=item.name.replace(/_?\d{4}-\d{2}-\d{2}\.json$/,'')||'performance';consume(item.payload,stream,date);files++;}catch{errors.push(item.name);}}
   await yieldToRequests();
  }
- const localFinishedAt=Date.now(),remote=await remoteWork,cloudFinishedAt=Date.now();errors.push(...remote.errors.map((x:string)=>(drive?'drive:':'cloud:')+x));
+ const localFinishedAt=Date.now(),remote=await remoteWork;
+ const cloud=cloudBatch?await visitCloudPerformanceDocuments(sport,firstDay,doc=>consume(doc.payload,doc.stream,doc.game_date)):null;
+ const cloudFinishedAt=Date.now(),cloudDocuments=cloud?.documents??(drive?0:remote.rows.length);
+ errors.push(...(cloud?.errors??remote.errors).map((x:string)=>(drive?'drive:':'cloud:')+x));
+ for(const date of cloud?.dates??[])availableDates.add(date);
  for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push((drive?'drive:':'cloud:')+doc.stream+'|'+doc.game_date);}
  const reconciled=reconcilePerformanceRecords(rows);
  const records=await observeSavedResearch(reconciled.records.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
- if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments:drive?0:remote.rows.length,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
- return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date),...records.map(r=>Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate).filter(Boolean)])].sort(),cloudDocuments:drive?0:remote.rows.length,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
+ if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
+ return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date),...records.map(r=>Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate).filter(Boolean)])].sort(),cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};
 }

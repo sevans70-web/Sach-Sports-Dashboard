@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {checksum,listCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {checksum,listCloudPerformanceDocuments,visitCloudPerformanceDocuments} from '../scripts/history-cloud.mjs';
 test('all sports enumerate metadata, coalesce reads and isolate corrupt source documents',async()=>{
  const original=globalThis.fetch,oldUrl=process.env.SUPABASE_URL,oldKey=process.env.SUPABASE_SECRET_KEY;let metadataCalls=0,payloadCalls=0,active=0,maxActive=0;
  process.env.SUPABASE_URL='https://test.invalid';process.env.SUPABASE_SECRET_KEY='test';
@@ -17,4 +17,48 @@ test('all sports enumerate metadata, coalesce reads and isolate corrupt source d
   assert.equal(metadataCalls,8);assert.equal(payloadCalls,16);assert(maxActive<=2);
   await listCloudPerformanceDocuments('nba');assert.equal(payloadCalls,16);
  }finally{globalThis.fetch=original;if(oldUrl===undefined)delete process.env.SUPABASE_URL;else process.env.SUPABASE_URL=oldUrl;if(oldKey===undefined)delete process.env.SUPABASE_SECRET_KEY;else process.env.SUPABASE_SECRET_KEY=oldKey;}
+});
+
+test('Workers read many saved documents in bounded day batches and isolate a corrupt checksum', async () => {
+ const originalFetch = globalThis.fetch;
+ const oldUrl = process.env.SUPABASE_URL;
+ const oldKey = process.env.SUPABASE_SECRET_KEY;
+ process.env.SUPABASE_URL = 'https://test.invalid';
+ process.env.SUPABASE_SECRET_KEY = 'test';
+ const payload = [{actual:0, status:'hit'}];
+ const docs = Array.from({length:250}, (_, i) => ({
+  stream: 'points_' + i,
+  game_date: i < 150 ? '2026-10-25' : '2026-10-24',
+  source_bytes: 32 * 1024,
+  checksum: i === 149 ? 'corrupt' : checksum(payload),
+  payload,
+ }));
+ let requests = 0;
+ globalThis.fetch = async input => {
+  requests++;
+  const query = new URL(input).searchParams;
+  if(query.get('select') === 'stream,game_date,source_bytes'){
+   const offset = Number(query.get('offset'));
+   return Response.json(docs.slice(offset, offset + 200).map(({payload, checksum, ...meta}) => meta));
+  }
+  const streams = query.get('stream').slice(4, -1).split(',');
+  const day = query.get('game_date').slice(3);
+  assert(streams.length <= 24);
+  return Response.json(docs.filter(doc => doc.game_date === day && streams.includes(doc.stream)));
+ };
+ try {
+  const visited = [];
+  const result = await visitCloudPerformanceDocuments('nba', '2026-10-24', row => visited.push(row.stream));
+  assert.equal(visited.length, 249);
+  assert.equal(result.documents, 249);
+  assert.deepEqual(result.dates, ['2026-10-25','2026-10-24']);
+  assert.deepEqual(result.errors, ['points_149|2026-10-25:invalid']);
+  assert.equal(requests, 14);
+ } finally {
+  globalThis.fetch = originalFetch;
+  if(oldUrl === undefined) delete process.env.SUPABASE_URL;
+  else process.env.SUPABASE_URL = oldUrl;
+  if(oldKey === undefined) delete process.env.SUPABASE_SECRET_KEY;
+  else process.env.SUPABASE_SECRET_KEY = oldKey;
+ }
 });

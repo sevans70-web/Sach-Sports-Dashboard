@@ -73,10 +73,13 @@ export async function listCloudDocuments(sport){
 }
 
 /** Indexed current-day reads for small dashboard views; never scan a sport archive. */
+function cloudDocumentsForDayRoute(sport,streams,day){
+ if(!/^[a-z0-9_-]+$/i.test(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(day)||streams.some(s=>!(/^[a-z0-9_-]+$/i.test(s))))throw Error('Invalid history scope');
+ return `history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&game_date=eq.${day}&stream=in.(${streams.join(',')})`;
+}
 export async function readCloudDocumentsForDay(sport,streams,day){
  if(!cloudConfigured()||!streams.length)return [];
- if(!/^[a-z0-9_-]+$/i.test(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(day)||streams.some(s=>!(/^[a-z0-9_-]+$/i.test(s))))throw Error('Invalid history scope');
- const rows=await cloudRequest(`history_documents?select=stream,game_date,payload,checksum&sport=eq.${sport}&game_date=eq.${day}&stream=in.(${streams.join(',')})`,{signal:AbortSignal.timeout(2500)});
+ const rows=await cloudRequest(cloudDocumentsForDayRoute(sport,streams,day),{signal:AbortSignal.timeout(2500)});
  for(const row of rows){if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');}
  return rows;
 }
@@ -90,10 +93,13 @@ async function performanceReadSlot(work){
  if(readState.active>=2)await new Promise(resolve=>readState.waiting.push(resolve));else readState.active++;
  try{return await work();}finally{const next=readState.waiting.shift();if(next)next();else readState.active--;}
 }
+function performanceDocumentScope(sport,firstDay){
+ return `sport=eq.${sport}&${firstDay?`game_date=gte.${firstDay}&`:''}stream=not.like.featured_selections*&stream=not.like.featured_results*&or=(stream.not.like.protected_*,stream.like.protected_final_*,stream.like.protected_pregame_*)&stream=not.like.performance_view_*&stream=not.like.player_history_*`;
+}
 async function fetchCloudPerformanceDocuments(sport,firstDay){
  if(!/^[a-z0-9_-]+$/i.test(sport))throw Error('Invalid history sport');
  const metadata=[],errors=[],rows=[];
- const scope=`sport=eq.${sport}&${firstDay?`game_date=gte.${firstDay}&`:''}stream=not.like.featured_selections*&stream=not.like.featured_results*&or=(stream.not.like.protected_*,stream.like.protected_final_*,stream.like.protected_pregame_*)&stream=not.like.performance_view_*&stream=not.like.player_history_*`;
+ const scope=performanceDocumentScope(sport,firstDay);
  const failure=e=>typeof e.code==='string'?'unavailable:'+e.code:'unavailable';
  try{
   for(let offset=0;;offset+=200){
@@ -132,6 +138,53 @@ export async function listCloudPerformanceDocuments(sport,firstDay){
  let work=readState.pending.get(scopeKey);
  if(!work){work=fetchCloudPerformanceDocuments(sport,firstDay).then(value=>{readState.cache.set(scopeKey,{at:Date.now(),value});return value;}).finally(()=>readState.pending.delete(scopeKey));readState.pending.set(scopeKey,work);}
  return work;
+}
+
+/** Workers read bounded batches and release each payload after it is consumed. */
+export async function visitCloudPerformanceDocuments(sport,firstDay,visit){
+ if(!/^[a-z0-9_-]+$/i.test(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid performance scope');
+ const scope=performanceDocumentScope(sport,firstDay),metadata=[],errors=[],dates=new Set();
+ const deadline=Date.now()+55000;
+ let requests=0,documents=0;
+ const read=route=>{
+  if(requests>=170||Date.now()>=deadline)throw Error('History read budget reached');
+  requests++;
+  return cloudRequest(route,{signal:AbortSignal.timeout(Math.max(1,Math.min(10000,deadline-Date.now())))});
+ };
+ try{
+  for(let offset=0;;offset+=200){
+   const page=await read(`history_documents?select=stream,game_date,source_bytes&${scope}&order=game_date.desc,stream.asc&limit=200&offset=${offset}`);
+   metadata.push(...page);
+   if(page.length<200)break;
+  }
+ }catch(e){errors.push(e.status?'inventory:http_'+e.status:'inventory:unavailable');}
+ for(let i=0;i<metadata.length;){
+  const day=metadata[i].game_date,streams=[];
+  let bytes=0;
+  while(i<metadata.length&&metadata[i].game_date===day&&streams.length<24){
+   const meta=metadata[i],size=Number(meta.source_bytes)||512*1024;
+   if(streams.length&&bytes+size>768*1024)break;
+   streams.push(meta.stream);
+   bytes+=size;
+   i++;
+  }
+  if(requests>=170||Date.now()>=deadline){errors.push('document_budget:checking');break;}
+  try{
+   const page=await read(cloudDocumentsForDayRoute(sport,streams,day));
+   const found=new Set();
+   for(const row of page){
+    found.add(row.stream);
+    try{
+     if(row.game_date!==day||!streams.includes(row.stream)||checksum(row.payload)!==row.checksum)throw Error('Invalid cloud history document');
+     visit(row);
+     dates.add(day);
+     documents++;
+    }catch{errors.push(row.stream+'|'+day+':invalid');}
+   }
+   for(const stream of streams)if(!found.has(stream))errors.push(stream+'|'+day+':missing');
+  }catch(e){errors.push('batch|'+day+(e.status?':http_'+e.status:':unavailable'));}
+ }
+ return {documents,dates:[...dates],errors};
 }
 
 export async function readCloudDocumentRange(sport,stream,first,last){
