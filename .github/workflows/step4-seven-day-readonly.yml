@@ -39,3 +39,24 @@ jobs:
           with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
             for result in pool.map(check,sports):print('STEP4_SEVEN_DAY_STATUS '+json.dumps(result,sort_keys=True))
           PY
+      - name: Check CBB source price availability without exposing raw quotes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request,json,collections
+          url='https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=cbb&mode=source-audit'
+          try:
+            with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=50) as res: data=json.load(res)
+            source=data.get('primary') or {}
+            games=source.get('fixtures') or []
+            prices=collections.Counter()
+            kinds=collections.Counter()
+            for game in games:
+              for book in game.get('samples') or []:
+                for prop in book.get('props') or []:
+                  kinds[str(prop.get('category'))]+=1
+                  prices['both' if prop.get('overPrice') is not None and prop.get('underPrice') is not None else 'missing_one_or_both']+=1
+            print('STEP3_CBB_SOURCE_AUDIT '+json.dumps({'primaryGames':source.get('games'),'primaryProps':source.get('props'),
+              'sampledProps':sum(prices.values()),'sampledCategories':dict(kinds),'sampledPrices':dict(prices),'providerUnavailable':bool(source.get('error'))},sort_keys=True))
+          except Exception as error:print('STEP3_CBB_SOURCE_AUDIT '+json.dumps({'error':type(error).__name__}))
+          PY
