@@ -92,6 +92,31 @@ async function db(env,path,init={},read=globalThis.fetch){
  const body=await response.text();
  return body?JSON.parse(body):null; // Supabase can reply 201 with an empty body for return=minimal.
 }
+/** Every capture and selection is an immutable insert. Database primary keys
+ * and insert-only grants make overlapping Cron ticks safe. */
+export async function saveImmutablePregameRows(env,table,quotes,reader=globalThis.fetch){
+ if(!['worker_pregame_originals','worker_pregame_picks'].includes(table))throw Error('Invalid pregame storage table');
+ let stored=0;
+ for(const day of [...new Set(quotes.map(q=>q.game_date))]){
+  const input=quotes.filter(q=>q.game_date===day);
+  const sport=input[0].sport,market=input[0].market;
+  const params=new URLSearchParams({select:'game_id,player_id,checksum',sport:'eq.'+sport,market:'eq.'+market,game_date:'eq.'+day,limit:'2000'});
+  const existing=await db(env,table+'?'+params.toString(),{},reader);
+  const seen=new Set((Array.isArray(existing)?existing:[]).map(r=>r.game_id+'|'+r.player_id));
+  const fresh=input.filter(q=>!seen.has(q.game_id+'|'+q.player_id));
+  if(!fresh.length)continue;
+  await db(env,table+'?on_conflict=sport,market,game_id,player_id',
+   {method:'POST',prefer:'resolution=ignore-duplicates,return=minimal',body:JSON.stringify(fresh)},reader);
+  const verified=await db(env,table+'?'+params.toString(),{},reader);
+  const saved=new Map((Array.isArray(verified)?verified:[]).map(r=>[r.game_id+'|'+r.player_id,r.checksum]));
+  for(const item of fresh){
+   const checksum=saved.get(item.game_id+'|'+item.player_id);
+   if(!checksum)throw Error('Cloudflare pregame '+table+' readback missing');
+   if(checksum===item.checksum)stored++;
+  }
+ }
+ return stored;
+}
 export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,now=Date.now(),reader=globalThis.fetch){
  const path=API_ROUTES[sport]+'?market='+encodeURIComponent(market);
  const response=await dashboard.fetch(new Request('https://sach-capture.internal'+path,{headers:{Accept:'application/json'}}),env,ctx);
@@ -101,26 +126,12 @@ export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,
  const quotes=(Array.isArray(body?.rows)?body.rows:[]).slice(0,75)
   .map(row=>originalPregameQuote(row,sport,market,now)).filter(Boolean);
  if(!quotes.length)return {sport,market,ok:true,eligible:0,stored:0,reason:'no_verified_pregame_quotes'};
- let stored=0;
- for(const day of [...new Set(quotes.map(q=>q.game_date))]){
-  const input=quotes.filter(q=>q.game_date===day);
-  const params=new URLSearchParams({select:'game_id,player_id,checksum',sport:'eq.'+sport,market:'eq.'+market,game_date:'eq.'+day,limit:'2000'});
-  const existing=await db(env,'worker_pregame_originals?'+params.toString(),{},reader);
-  const seen=new Set((Array.isArray(existing)?existing:[]).map(r=>r.game_id+'|'+r.player_id));
-  const fresh=input.filter(q=>!seen.has(q.game_id+'|'+q.player_id));
-  if(!fresh.length)continue;
-  await db(env,'worker_pregame_originals?on_conflict=sport,market,game_id,player_id',
-   {method:'POST',prefer:'resolution=ignore-duplicates,return=minimal',body:JSON.stringify(fresh)},reader);
-  const verified=await db(env,'worker_pregame_originals?'+params.toString(),{},reader);
-  const saved=new Map((Array.isArray(verified)?verified:[]).map(r=>[r.game_id+'|'+r.player_id,r.checksum]));
-  for(const item of fresh){
-   const checksum=saved.get(item.game_id+'|'+item.player_id);
-   if(!checksum)throw Error('Cloudflare pregame capture readback missing');
-   // An earlier tick might win the insert race. Never overwrite its original.
-   if(checksum===item.checksum)stored++;
-  }
- }
- return {sport,market,ok:true,eligible:quotes.length,stored};
+ const stored=await saveImmutablePregameRows(env,'worker_pregame_originals',quotes,reader);
+ // A quote without a fitted pick is preserved in originals, but MUST NOT
+ // occupy the write-once model-selection slot for a future actual pick.
+ const picked=quotes.filter(q=>q.prediction_side==='OVER'||q.prediction_side==='UNDER');
+ const picksStored=await saveImmutablePregameRows(env,'worker_pregame_picks',picked,reader);
+ return {sport,market,ok:true,eligible:quotes.length,stored,selections:picked.length,picksStored};
 }
 export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now()){
  const selected=marketsForCaptureTick(time),results=[];
@@ -129,5 +140,5 @@ export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now())
   results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market,Date.now()));
  }catch(error){results.push({sport,market,ok:false,reason:error instanceof Error?error.message.slice(0,110):'capture_failed'});}
  return {time:new Date(time).toISOString(),markets:selected.length,eligible:results.reduce((n,r)=>n+(r.eligible||0),0),
-  stored:results.reduce((n,r)=>n+(r.stored||0),0),failed:results.filter(r=>!r.ok).map(r=>({sport:r.sport,market:r.market,reason:r.reason}))};
+  stored:results.reduce((n,r)=>n+(r.stored||0),0),picksStored:results.reduce((n,r)=>n+(r.picksStored||0),0),failed:results.filter(r=>!r.ok).map(r=>({sport:r.sport,market:r.market,reason:r.reason}))};
 }
