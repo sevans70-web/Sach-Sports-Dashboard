@@ -48,7 +48,7 @@ export function modelPickNotice(row:any){
  if(reason==='reported_unavailable')return 'Reported unavailable';
  if(reason==='price_validation_failed')return 'Accuracy checks not met';
  if(reason==='price_validation_missing')return 'Pick verification is incomplete';
- if(reason==='market_model_not_fitted')return ['anytime_td','first_td','q1_anytime_td'].includes(row?.market)?'Scorer forecast not available yet':'Forecast not available yet';
+ if(reason==='market_model_not_fitted')return ['first_basket','anytime_td','first_td','q1_anytime_td'].includes(row?.market)?'Scorer forecast not available yet':'Forecast not available yet';
  return 'Not enough evidence for a pick';
 }
 
