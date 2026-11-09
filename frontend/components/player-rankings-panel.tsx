@@ -720,6 +720,11 @@ export function retainUpcomingFirstBasketCards(previous:RankingCard[],now=Date.n
 
 function isGradeablePrediction(card: RankingCard) {
   if (!card.playerName || card.playerName === "Player") return false;
+  // The NBA EV board must not reject a quote-backed Q1 forecast merely
+  // because the legacy generic-card modelProjection field is empty.
+  // Quarter forecasts are stored in researchForecast, and the full
+  // pregame quote/probability integrity check has already passed here.
+  if(card.raw?.sport==='nba'&&nbaCardEv(card)!=null)return true;
   // Research stays browsable, including missing-line and Q1 candidates.
   if (card.raw?.researchOnly) return true;
 
