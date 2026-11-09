@@ -39,7 +39,7 @@ jobs:
           for(const sport of ['cfb','cbb','wnba','mlb']){
             assert.ok(fs.existsSync('frontend/app/'+sport+'/page.tsx'),'preserve '+sport+' route');
           }
-          for(const sport of ['cfb','cbb'])assert.doesNotMatch(capture,new RegExp('^ '+sport+':\\\\[','m'));
+          for(const sport of ['cfb','cbb'])assert.ok(!capture.split('\n').some(line=>line.trimStart().startsWith(sport+':[')),'capture excludes '+sport);
           assert.match(grader,/const SPORTS=\['nba','nhl','nfl'\]/);
           console.log('NBA/NFL/NHL are active; paused routes preserved.');
           NODE
