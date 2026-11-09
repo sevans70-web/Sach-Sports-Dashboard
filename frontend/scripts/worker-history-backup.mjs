@@ -29,14 +29,28 @@ function driveArchive(env, authenticate){
   refreshToken:env.GOOGLE_OAUTH_REFRESH_TOKEN,
   fetchImpl:(url,options)=>fetch(url,{...options,signal:AbortSignal.timeout(15000)}),
  });
- return async function storeVerified(prefix, body){
+ const drive = async(url,options)=>{
+  const response = await request(url,options);
+  if(!response.ok)throw Error('Drive backup returned HTTP '+response.status);
+  return response;
+ };
+ async function readVerified({id,md5:digest,bytes}){
+  if(typeof id!=='string'||!id||!/^[a-f0-9]{32}$/.test(digest)||!Number.isInteger(bytes)||bytes<1||bytes>partBytes+1024)throw Error('Invalid Drive archive receipt');
+  const response=await drive(driveFiles+'/'+encodeURIComponent(id)+'?alt=media');
+  const chunks=[];
+  let length=0;
+  for await(const chunk of response.body){
+   length+=chunk.byteLength;
+   if(length>bytes)throw Error('Drive backup readback did not match');
+   chunks.push(chunk);
+  }
+  const restored=Buffer.concat(chunks,length);
+  if(length!==bytes||md5(restored)!==digest)throw Error('Drive backup readback did not match');
+  return restored.toString('utf8');
+ }
+ async function storeVerified(prefix, body){
   const digest = md5(body);
   const name = prefix+'-'+digest+'.json';
-  const drive = async(url,options)=>{
-   const response = await request(url,options);
-   if(!response.ok)throw Error('Drive backup returned HTTP '+response.status);
-   return response;
-  };
   const query = new URLSearchParams({q:"'"+folder+"' in parents and name = '"+name+"' and trashed = false",fields:'files(id,md5Checksum)',pageSize:'100'});
   const existing = await (await drive(driveFiles+'?'+query)).json();
   let file = existing.files?.find(item=>item.md5Checksum===digest);
@@ -49,13 +63,31 @@ function driveArchive(env, authenticate){
    })).json();
   }
   if(!file.id||file.md5Checksum!==digest)throw Error('Drive backup checksum did not match');
-  const restored = await (await drive(driveFiles+'/'+encodeURIComponent(file.id)+'?alt=media')).text();
-  if(restored!==body||md5(restored)!==digest)throw Error('Drive backup readback did not match');
-  return {name,id:file.id,md5:digest,bytes:Buffer.byteLength(body)};
- };
+  const receipt={name,id:file.id,md5:digest,bytes:Buffer.byteLength(body)};
+  if(await readVerified(receipt)!==body)throw Error('Drive backup readback did not match');
+  return receipt;
+ }
+ return {storeVerified,readVerified};
 }
 
-export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloudRequest,authenticate=driveAuth,observe=()=>{}){
+async function restoreVerifiedDay(readVerified,receipt,sport,day,visit){
+ const manifest=JSON.parse(await readVerified(receipt));
+ if(manifest.version!==1||manifest.sport!==sport||manifest.day!==day||!Array.isArray(manifest.parts))throw Error('Invalid history archive manifest');
+ const seen=new Set();
+ for(const part of manifest.parts){
+  const data=JSON.parse(await readVerified(part));
+  if(data.version!==1||data.sport!==sport||data.day!==day||!Array.isArray(data.documents)||data.documents.length!==part.documents)throw Error('History archive part does not match the manifest');
+  for(const row of data.documents){
+   if(row.game_date!==day||!row.stream||seen.has(row.stream)||checksum(row.payload)!==row.checksum)throw Error('Restored history document did not verify');
+   seen.add(row.stream);
+   visit(row);
+  }
+ }
+ if(seen.size!==manifest.documents)throw Error('Restored history count did not match the manifest');
+ return seen.size;
+}
+
+export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloudRequest,authenticate=driveAuth,observe){
  if(!SPORTS.has(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error('Invalid backup scope');
  let requests = 0;
  const read = route=>{
@@ -75,7 +107,7 @@ export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloud
  };
  const docs = await inventory();
  if(!docs.length)return {sport,day,documents:0,parts:0,bytes:0};
- const store = driveArchive(env,authenticate);
+ const {storeVerified,readVerified} = driveArchive(env,authenticate);
  const prefix = 'cloudflare-staging-history-v1-'+sport+'-'+day;
  const manifest = [];
  let part = [], bytes = 0;
@@ -83,7 +115,7 @@ export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloud
  const flush = async()=>{
   if(!part.length)return;
   const body = JSON.stringify({version:1,sport,day,documents:part});
-  const receipt = await store(prefix+'-part-'+(manifest.length+1),body);
+  const receipt = await storeVerified(prefix+'-part-'+(manifest.length+1),body);
   manifest.push({...receipt,documents:part.length});
   completed+=part.length;
   part=[];
@@ -109,13 +141,13 @@ export async function archiveWorkerHistoryDay(env,{sport,day},requestCloud=cloud
    const size = Buffer.byteLength(JSON.stringify(row))+1;
    if(size>partBytes)throw Error('History backup part exceeds size limit');
    if(bytes+size>partBytes)await flush();
-   observe(row);
    part.push(row);
    bytes+=size;
   }
  }
  await flush();
  if(checksum(await inventory())!==checksum(docs))throw Error('History backup inventory changed before the manifest');
- await store(prefix+'-manifest',JSON.stringify({version:1,sport,day,documents:completed,parts:manifest}));
- return {sport,day,documents:completed,parts:manifest.length,bytes:manifest.reduce((sum,p)=>sum+p.bytes,0)};
+ const receipt=await storeVerified(prefix+'-manifest',JSON.stringify({version:1,sport,day,documents:completed,parts:manifest}));
+ const restored=observe?await restoreVerifiedDay(readVerified,receipt,sport,day,observe):null;
+ return {sport,day,documents:completed,parts:manifest.length,restored,bytes:manifest.reduce((sum,p)=>sum+p.bytes,0)};
 }

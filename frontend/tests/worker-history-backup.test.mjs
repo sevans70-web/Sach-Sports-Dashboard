@@ -50,9 +50,12 @@ function fixture(){
 
 test('archives every stream, verifies byte-for-byte restores, and reuses a retried archive',async()=>{
  const {files,read,authenticate,tamper}=fixture();
- const result=await archiveWorkerHistoryDay(env,scope,read,authenticate);
+ const restored=[];
+ const result=await archiveWorkerHistoryDay(env,scope,read,authenticate,row=>restored.push(row));
  assert.equal(result.documents,30);
  assert.equal(result.parts,1);
+ assert.equal(result.restored,30);
+ assert.equal(restored[29].stream,'points_29');
  assert.equal(files.size,2);
  const manifest=JSON.parse([...files].find(([name])=>name.includes('-manifest-'))[1].body);
  assert.equal(manifest.documents,30);
