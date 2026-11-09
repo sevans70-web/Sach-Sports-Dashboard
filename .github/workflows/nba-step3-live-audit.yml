@@ -12,6 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
+      - uses: actions/checkout@v4
+      - name: Confirm every intended NBA tab and single-EV rendering
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          page=Path('frontend/components/player-rankings-panel.tsx').read_text()
+          markets=page.split('const BASKETBALL: Market[] = [',1)[1].split('];',1)[0]
+          props=['points','rebounds','assists','threes_made','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','steals','blocks']
+          missing=[p for p in props if f'key: "{p}"' not in markets]
+          assert not missing, 'Missing NBA prop tabs: '+str(missing)
+          assert 'key:"first_basket"' in page, 'Missing First Basket'
+          assert 'markets:["points","rebounds","assists"].map' in page, 'Q1 PTS/REB/AST tabs missing'
+          assert 'key:"q1_threes_made"' not in page, 'Retired Q1 3PM remains visible'
+          assert 'nbaDisplayedResearchEv(card.raw)' in page, 'One-sided EV view missing'
+          assert 'comparisonEv.over' not in page and 'comparisonEv.under' not in page, 'Dual EV still displayed'
+          quotes=Path('frontend/lib/public-card-metrics.ts').read_text()
+          assert "row.boardCapturedAt" in quotes, 'Saved Q1 receipt missing'
+          print('NBA_STEP3_TABS Verified 10 Props + First Basket + 3 Q1; one EV; original receipts retained')
+          PY
       - name: Verify live NBA market and featured-card coverage
         shell: bash
         run: |
