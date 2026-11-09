@@ -2,7 +2,7 @@ import {cloudRequest} from './history-cloud.mjs';
 import {createHash} from 'node:crypto';
 
 const SPORTS=new Set(['nba','nfl','nhl','cfb','cbb']);
-const dayOf=date=>{const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(date));const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
+const dayOf=date=>{const parsed=new Date(date);if(!Number.isFinite(parsed.getTime()))return '';const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(parsed);const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
 /** The legacy capture hash uses insertion-ordered JSON, while Postgres
  * jsonb reorders object keys. Reconstitute the exact v1 capture field order
  * before checking it; never mark a valid original as corrupted due to jsonb.
