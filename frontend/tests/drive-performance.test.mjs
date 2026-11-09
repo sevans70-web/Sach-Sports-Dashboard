@@ -48,6 +48,25 @@ test('parallel archive reads retain source order and the two-download limit',asy
  assert.equal(maximum,2);
 });
 
+test('overlapping Worker reads keep provider promises request scoped while reusing completed results',async()=>{
+ const file=document('d','points_2026-10-16.json',[{actual:3}]);
+ let transports=0;
+ const downloads=[];
+ const makeRequest=()=>{const owner=++transports;return async url=>{
+  const u=new URL(url);
+  if(u.searchParams.get('alt')==='media'){downloads.push(owner);return new Response(file.bytes);}
+  const parent=u.searchParams.get('q').match(/^'([^']+)' in parents/)[1];
+  return Response.json({files:parent==='root'?[folder('backup','railway-2026-10-24')]:parent==='backup'?[folder('history','sach-history')]:parent==='history'?[folder('wnba','wnba')]:[file]});
+ };};
+ const read=createDrivePerformanceReader({folderId:'root',makeRequest,parallelReads:true});
+ const results=await Promise.all([read('wnba'),read('wnba')]);
+ assert.equal(transports,2);
+ assert.deepEqual(downloads.sort(),[1,2]);
+ assert.deepEqual(results[0],results[1]);
+ assert.deepEqual(await read('wnba'),results[0]);
+ assert.equal(transports,2);
+});
+
 test('snapshot archives stream UTF-8 records, deduplicate repeated observations and discard all staged rows if the full checksum fails',async()=>{
  const snapshot={capturedAt:'2026-10-16T10:00Z',payload:[{key:'original',playerName:'José { \\" }',market:'points',status:'hit',actual:0}]};
  const file=document('archive','snapshots_points_2026-10-16.json',[snapshot,snapshot]);let altered=false;

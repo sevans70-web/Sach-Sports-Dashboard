@@ -11,26 +11,31 @@ export function drivePerformanceConfigured(){return ['BACKUP_DRIVE_FOLDER_ID','G
 
 /** Read backed-up daily documents, never restore files to the Railway volume.
  * Folder discovery is independent of the Supabase archive catalog. */
-export function createDrivePerformanceReader({request,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false}){
+export function createDrivePerformanceReader({request,makeRequest,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false}){
  const inventories=new Map(),pending=new Map(),results=new Map(),documents=new Map();
  const scheduled=new Set();
- let active=0,cacheBytes=0;const waiting=[];
+ let cacheBytes=0;
  const unpack=value=>({errors:value.errors,rows:value.rows.map(row=>({stream:row.stream,game_date:row.game_date,checksum:row.checksum,payload:JSON.parse(gunzipSync(row.zip).toString('utf8'))}))});
- async function slot(work){if(active>=2)await new Promise(resolve=>waiting.push(resolve));else active++;try{return await work();}finally{const next=waiting.shift();if(next)next();else active--;}}
- async function list(parent){
+ function transport(request){
+  let active=0;const waiting=[];
+  async function slot(work){if(active>=2)await new Promise(resolve=>waiting.push(resolve));else active++;try{return await work();}finally{const next=waiting.shift();if(next)next();else active--;}}
+  return {request,slot};
+ }
+ const shared=makeRequest?null:transport(request);
+ async function list(parent,send){
   const files=[];let pageToken;
   do{const url=new URL('https://www.googleapis.com/drive/v3/files');url.searchParams.set('q',`'${escape(parent)}' in parents and trashed = false`);url.searchParams.set('fields','nextPageToken,files(id,name,mimeType,size,md5Checksum,modifiedTime)');url.searchParams.set('pageSize','1000');if(pageToken)url.searchParams.set('pageToken',pageToken);
-   const response=await slot(()=>request(url,{signal:AbortSignal.timeout(12000)}));if(!response.ok)throw Error('Drive inventory HTTP '+response.status);const page=await response.json();if(!Array.isArray(page.files))throw Error('Invalid Drive inventory');files.push(...page.files);pageToken=page.nextPageToken;
+   const response=await send.slot(()=>send.request(url,{signal:AbortSignal.timeout(12000)}));if(!response.ok)throw Error('Drive inventory HTTP '+response.status);const page=await response.json();if(!Array.isArray(page.files))throw Error('Invalid Drive inventory');files.push(...page.files);pageToken=page.nextPageToken;
   }while(pageToken);return files;
  }
  const directory=(files,name)=>files.filter(f=>f.mimeType===FOLDER&&f.name===name).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0];
- async function inventory(sport){
+ async function inventory(sport,send){
   const old=inventories.get(sport);if(old&&now()-old.at<300000)return old.files;
-  const backups=(await list(folderId)).filter(f=>f.mimeType===FOLDER&&f.name.startsWith('railway-')).sort((a,b)=>b.name.localeCompare(a.name));if(!backups.length)throw Error('Verified backup folder is unavailable');
-  const history=directory(await list(backups[0].id),'sach-history');if(!history)throw Error('History backup folder is unavailable');
-  const sportFolder=directory(await list(history.id),sport);if(!sportFolder)throw Error('Sport backup folder is unavailable');
-  let files=await list(sportFolder.id);
-  if(sport==='mlb'){const performance=directory(files,'performance');if(performance)files=[...files,...await list(performance.id)];}
+  const backups=(await list(folderId,send)).filter(f=>f.mimeType===FOLDER&&f.name.startsWith('railway-')).sort((a,b)=>b.name.localeCompare(a.name));if(!backups.length)throw Error('Verified backup folder is unavailable');
+  const history=directory(await list(backups[0].id,send),'sach-history');if(!history)throw Error('History backup folder is unavailable');
+  const sportFolder=directory(await list(history.id,send),sport);if(!sportFolder)throw Error('Sport backup folder is unavailable');
+  let files=await list(sportFolder.id,send);
+  if(sport==='mlb'){const performance=directory(files,'performance');if(performance)files=[...files,...await list(performance.id,send)];}
   // Backup uploads retain versions. Use the newest copy of each exact daily
   // path; the performance reconciler selects original calls from its contents.
   const latest=new Map();
@@ -43,7 +48,8 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
  }
  async function load(sport,firstDay){
   const started=now();let files;
-  try{files=(await inventory(sport)).filter(f=>!firstDay||f.game_date>=firstDay);}catch{return {rows:results.get(sport+'|'+(firstDay||'all'))?.value.rows||[],errors:['unavailable']};}
+  const send=shared??transport(makeRequest());
+  try{files=(await inventory(sport,send)).filter(f=>!firstDay||f.game_date>=firstDay);}catch{return {rows:results.get(sport+'|'+(firstDay||'all'))?.value.rows||[],errors:['unavailable']};}
   const outcomes=new Array(files.length);
   let next=0;
   const collect=async()=>{while(next<files.length){
@@ -54,8 +60,8 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
    try{
     const streaming=file.stream.startsWith('snapshots_')||Number(file.size)>16*1024*1024;
     if(!/^[a-f0-9]{32}$/i.test(file.md5Checksum||'')||!Number.isFinite(Number(file.size))||Number(file.size)>4*1024*1024*1024)throw Error('Unverified or oversized backup document');
-    const row=await slot(async()=>{
-    const response=await request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(file.id)+'?alt=media',{signal:AbortSignal.timeout(streaming?120000:12000)});if(!response.ok||!response.body)throw Error('Backup read failed');
+    const row=await send.slot(async()=>{
+    const response=await send.request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(file.id)+'?alt=media',{signal:AbortSignal.timeout(streaming?120000:12000)});if(!response.ok||!response.body)throw Error('Backup read failed');
     let payload,bytes,size=0,stream=file.stream;const hash=createHash('md5');
     if(streaming){
      const decoder=new StringDecoder('utf8'),staged=new Map();let stagedBytes=0;
@@ -83,6 +89,7 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
  const read=async(sport,firstDay)=>{
   if(!['nfl','cfb','nba','nhl','cbb','soccer','wnba','mlb'].includes(sport)||firstDay&&!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid backup history scope');
   const key=sport+'|'+(firstDay||'all'),cached=results.get(key);if(cached&&now()-cached.at<(cached.value.errors.some(e=>e.endsWith(':checking'))?5000:60000))return unpack(cached.value);
+  if(makeRequest){const value=await load(sport,firstDay);results.set(key,{at:now(),value});return unpack(value);}
   let work=pending.get(key);if(!work){work=load(sport,firstDay).then(value=>{
    results.set(key,{at:now(),value});
    // Continue bounded work on the persistent server without requiring a browser
@@ -98,6 +105,12 @@ export function createDrivePerformanceReader({request,folderId,now=Date.now,budg
 let reader;
 export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
- if(!reader){const {request}=driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})});const worker=globalThis.navigator?.userAgent==='Cloudflare-Workers';reader=createDrivePerformanceReader({request,folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,schedule:worker?undefined:work=>{const timer=setTimeout(work,5000);timer.unref();}});}
+ if(!reader){
+  const makeRequest=()=>driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})}).request;
+  const worker=globalThis.navigator?.userAgent==='Cloudflare-Workers';
+  // Workers can share verified bytes, but fetches and their queues belong to
+  // the request that created them, including the OAuth refresh promise.
+  reader=createDrivePerformanceReader({folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,...(worker?{makeRequest}:{request:makeRequest(),schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}})});
+ }
  return reader(sport,firstDay);
 }
