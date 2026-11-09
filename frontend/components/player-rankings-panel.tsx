@@ -689,6 +689,20 @@ const PRICE_ONLY_MARKETS = new Set([
   "q1_anytime_td",
 ]);
 
+/** Do not drop an upcoming First Basket quote just because one refresh omits
+ * its fixture. The retained price is clearly labelled SAVED PREGAME, never
+ * offered as a fresh live quote. Do not retain a card past tipoff or with
+ * an unverifiable original quote or reported unavailable player. */
+export function retainUpcomingFirstBasketCards(previous:RankingCard[],now=Date.now()){
+ const today=nbaFixtureDay(new Date(now));
+ return previous.filter(card=>
+  card.market==='first_basket'&&nbaFixtureDay(card.gameTime)===today&&
+  Number.isFinite(Date.parse(card.gameTime))&&Date.parse(card.gameTime)>now&&
+  !excludeUnavailableRanking(card.raw)&&
+  firstBasketQuote({...card.raw,quoteRetained:true},now)!=null)
+ .map(card=>({...card,raw:{...card.raw,quoteRetained:true}}));
+}
+
 function isGradeablePrediction(card: RankingCard) {
   if (!card.playerName || card.playerName === "Player") return false;
   // Research stays browsable, including missing-line and Q1 candidates.
@@ -2186,7 +2200,9 @@ export function PlayerRankingsPanel({
 
         // Cards render immediately; image decoding must not delay the board.
         if(sport==='nba'&&(requestedMarket==='first_basket'||requestedMarket.startsWith('q1_'))&&!isolated.length){
-          setCards(previous=>previous.filter(card=>card.market===requestedMarket&&nbaFixtureDay(card.gameTime)===nbaFixtureDay(new Date())&&requestedNbaSlate==='active').map(card=>({...card,raw:{...card.raw,quoteRetained:true}})));
+          setCards(previous=>requestedMarket==='first_basket'&&requestedNbaSlate==='active'
+           ?retainUpcomingFirstBasketCards(previous)
+           :previous.filter(card=>card.market===requestedMarket&&nbaFixtureDay(card.gameTime)===nbaFixtureDay(new Date())&&requestedNbaSlate==='active').map(card=>({...card,raw:{...card.raw,quoteRetained:true}})));
           return;
         }
         const staged = isolated;
@@ -2197,11 +2213,17 @@ export function PlayerRankingsPanel({
         if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
         // The cards effect caches the merged state after official final
         // observations are retained; never publish the stale staged board.
-        setCards(previous=>staged.map(card=>{
+        setCards(previous=>{
+         const current=staged.map(card=>{
           const old=previous.find(p=>p.playerId===card.playerId&&p.market===card.market&&String(p.raw?.gameId||'')===String(card.raw?.gameId||''));
           const raw=retainParticipation(card.raw,old?.raw);
           return retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
-        }));
+         });
+         if(sport!=='nba'||requestedMarket!=='first_basket'||requestedNbaSlate!=='active')return current;
+         const present=new Set(current.map(card=>String(card.raw?.gameId)+'|'+String(card.playerId)));
+         const saved=retainUpcomingFirstBasketCards(previous).filter(card=>!present.has(String(card.raw?.gameId)+'|'+String(card.playerId)));
+         return [...current,...saved].sort((a,b)=>a.rank-b.rank).slice(0,25);
+        });
         setDropped(currentDroppedRows(rawDropped,rawRows,requestedMarket,rawRows[0]?.boardDay||torontoDay(new Date().toISOString())));
       } catch (cause) {
         if (!alive || controller.signal.aborted || requestId!==rankingRequestSeq.current) return;
