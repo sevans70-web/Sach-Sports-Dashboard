@@ -8,8 +8,7 @@ export const PREGAME_MARKETS=Object.freeze({
  nba:['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket','q1_points','q1_rebounds','q1_assists','q1_threes_made','q1_pts_rebs_asts'],
  nfl:['passing_yards','passing_tds','qb_rushing_yards','rushing_yards','receiving_yards','receptions','anytime_td','first_td','passing_rushing_yards','rushing_receiving_yards','passing_interceptions','sacks','tackles','tackles_assists','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'],
  nhl:['shots_on_goal','points','goals','assists','blocked_shots','goalie_saves'],
- cfb:['passing_yards','pass_completions','rushing_yards','receiving_yards','receptions','anytime_td','first_td','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'],
- cbb:['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts']
+ // CFB and CBB are intentionally paused. Their routes, code and historical data remain intact.
 });
 export const CAPTURE_MARKETS=Object.freeze(Object.entries(PREGAME_MARKETS).flatMap(([sport,markets])=>markets.map(market=>({sport,market}))));
 const numeric=(value)=>typeof value==='number'&&Number.isFinite(value);
