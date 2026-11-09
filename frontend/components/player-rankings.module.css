@@ -243,6 +243,14 @@
   font-weight: 950;
 }
 
+/* A failed ESPN player image must reveal the initials underneath rather than
+   show a broken-image icon or leave an empty First Basket portrait. */
+.photoWrap > .photo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .teamLogo {
   position: absolute;
   right: -2px;
