@@ -2240,9 +2240,22 @@ export function PlayerRankingsPanel({
 
         // Cards render immediately; image decoding must not delay the board.
         if(sport==='nba'&&(requestedMarket==='first_basket'||requestedMarket.startsWith('q1_'))&&!isolated.length){
-          setCards(previous=>requestedMarket==='first_basket'&&requestedNbaSlate==='active'
-           ?retainUpcomingFirstBasketCards(previous)
-           :previous.filter(card=>card.market===requestedMarket&&nbaFixtureDay(card.gameTime)===nbaFixtureDay(new Date())&&requestedNbaSlate==='active').map(card=>({...card,raw:{...card.raw,quoteRetained:true}})));
+          // A successful but incomplete Q1 feed may temporarily omit valid
+          // pregame cards. Retain only originally verified quotes with
+          // positive evidence-supported EV, for an upcoming game today.
+          // Never turn an expired/invalid quote into an approved live pick.
+          setCards(previous=>{
+            if(requestedNbaSlate!=='active')return [];
+            if(requestedMarket==='first_basket')return retainUpcomingFirstBasketCards(previous);
+            const now=Date.now(),day=nbaFixtureDay(new Date(now));
+            return previous.filter(card=>
+              card.market===requestedMarket&&
+              nbaFixtureDay(card.gameTime)===day&&
+              Number.isFinite(Date.parse(card.gameTime))&&Date.parse(card.gameTime)>now&&
+              nbaCardEv(card,now)!=null&&!excludeUnavailableRanking(card.raw)&&
+              verifiedPropQuote(card.raw,now,true)
+            ).map(card=>({...card,raw:{...card.raw,quoteRetained:true}}));
+          });
           return;
         }
         const staged = isolated;
