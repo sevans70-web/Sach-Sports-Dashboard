@@ -22,7 +22,7 @@ jobs:
         run: |
           set -u
           base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
-          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'nba-summary|/api/dashboard-summary?sport=nba' 'nfl-summary|/api/dashboard-summary?sport=nfl' 'nhl-summary|/api/dashboard-summary?sport=nhl' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket'; do
+          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'nba-summary|/api/dashboard-summary?sport=nba' 'nfl-summary|/api/dashboard-summary?sport=nfl' 'nhl-summary|/api/dashboard-summary?sport=nhl' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket' 'nba-rebounds|/api/nba/rankings?market=rebounds' 'nba-threes|/api/nba/rankings?market=threes_made' 'nfl-receiving|/api/nfl/rankings?market=receiving_yards' 'nfl-rushing|/api/nfl/rankings?market=rushing_yards' 'nhl-goals|/api/nhl/rankings?market=goals' 'nhl-saves|/api/nhl/rankings?market=goalie_saves'; do
             label="${entry%%|*}"
             route="${entry#*|}"
             response="$(mktemp)"
