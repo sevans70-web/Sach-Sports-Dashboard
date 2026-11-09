@@ -63,6 +63,27 @@ jobs:
             rm -f "$response"
           done
 
+      - name: Check whether NHL provider actually supplies goalie-save markets
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,json
+          url='https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nhl&mode=source-audit'
+          try:
+            with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'Sach-NHL-Saves-Audit/1.0'}),timeout=45) as response:
+              body=json.load(response)
+              report={'http':response.status}
+            for name in ('primary','supplement'):
+              src=body.get(name) or {}
+              categories=src.get('categories') or {}
+              report[name]={'games':src.get('games'),'props':src.get('props'),'savesCategories':{k:v for k,v in categories.items() if 'save' in k.lower() or 'goalie' in k.lower()},'categoriesCount':len(categories),'unavailable':bool(src.get('error'))}
+            print('NHL_SAVES_SOURCE_STATUS '+json.dumps(report,sort_keys=True))
+          except urllib.error.HTTPError as error:
+            print('NHL_SAVES_SOURCE_STATUS '+json.dumps({'http':error.code,'source':'not_available'}))
+          except Exception as error:
+            print('NHL_SAVES_SOURCE_STATUS '+json.dumps({'error':type(error).__name__}))
+          PY
+
       - name: Analyze bounded NBA OWLS points feed without exposing player data
         shell: bash
         run: |
