@@ -1,5 +1,6 @@
 name: Cloudflare staging live API diagnostics
-# Verify live API after explicit secret binding declarations; probe is read only.
+# Step 3: verify ONLY NBA, NFL, NHL active dashboards, with health and NBA first-basket.
+# Archived college, MLB and WNBA data are retained but not actively requested.
 
 on:
   push:
@@ -21,7 +22,7 @@ jobs:
         run: |
           set -u
           base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
-          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'cfb|/api/cfb/rankings-board' 'cbb|/api/cbb/rankings' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket'; do
+          for entry in 'health|/api/health' 'nba-points|/api/nba/rankings?market=points' 'nfl-passing|/api/nfl/rankings?market=passing_yards' 'nhl-shots|/api/nhl/rankings?market=shots_on_goal' 'nba-summary|/api/dashboard-summary?sport=nba' 'nfl-summary|/api/dashboard-summary?sport=nfl' 'nhl-summary|/api/dashboard-summary?sport=nhl' 'nba-tomorrow|/api/nba/rankings?market=points&day=tomorrow' 'nba-first-basket|/api/nba/rankings?market=first_basket'; do
             label="${entry%%|*}"
             route="${entry#*|}"
             response="$(mktemp)"
@@ -36,6 +37,8 @@ jobs:
               data=json.load(open(file))
               if isinstance(data,dict):
                   result['success']=data.get('success')
+                  if label.endswith('-summary'):
+                      result['dashboard']={k:data.get(k) for k in ('games','live','finals','rankedPlayers','playerProps','predictions','estimatedPicks','scheduleAvailable','rankingsAvailable','warning')}
                   result['rows']=len(data['rows']) if isinstance(data.get('rows'),list) else None
                   result['fields']=sorted(k for k in ('error','warning','market','source','boardDay','rows') if k in data)
                   if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')
