@@ -72,3 +72,32 @@ test('Toronto game dates are DST-aware',()=>{
  assert.equal(torontoCaptureDay('2026-11-09T01:00:00Z'),'2026-11-08');
  assert.equal(torontoCaptureDay('2026-11-09T22:00:00Z'),'2026-11-09');
 });
+
+test('a later legitimate pregame model pick is saved once even when the original quote was captured earlier',async()=>{
+ const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
+ const env={SUPABASE_URL:'https://database.example.test',SUPABASE_SECRET_KEY:'sb_secret_testonly'};
+ const backend=async(url,init={})=>{
+  const table=new URL(url).pathname.split('/').at(-1),records=tables[table];
+  assert.ok(records,'known database table only');
+  if(init.method==='POST'){
+   for(const row of JSON.parse(init.body)){const key=[row.sport,row.market,row.game_id,row.player_id].join('|');if(!records.has(key))records.set(key,row)}
+   return new Response(null,{status:201});
+  }
+  return new Response(JSON.stringify([...records.values()].map(row=>({game_id:row.game_id,player_id:row.player_id,checksum:row.checksum}))),{status:200});
+ };
+ let candidate=quote();
+ const worker={fetch:async()=>new Response(JSON.stringify({success:true,rows:[candidate]}))};
+ const first=await captureWorkerPregameMarket(env,worker,{},'nba','points',time,backend);
+ assert.equal(first.stored,1);assert.equal(first.picksStored,0);
+ const original=[...tables.worker_pregame_originals.values()][0].checksum;
+ candidate=quote({sportsbookLine:23.5,quoteUpdatedAt:'2026-11-09T18:59:30Z',
+  researchForecast:{status:'available',projection:22.1,modelSelection:{side:'UNDER',line:23.5,price:-110,quoteId:'exact-quote',sportsbookKey:'fanduel',calculatedAt:'2026-11-09T18:59:50Z'}}});
+ const second=await captureWorkerPregameMarket(env,worker,{},'nba','points',time,backend);
+ assert.equal(second.stored,0);
+ assert.equal(second.picksStored,1);
+ assert.equal(tables.worker_pregame_originals.size,1);
+ assert.equal([...tables.worker_pregame_originals.values()][0].checksum,original);
+ assert.equal([...tables.worker_pregame_picks.values()][0].payload.fittedModelPick,'UNDER');
+ const third=await captureWorkerPregameMarket(env,worker,{},'nba','points',time,backend);
+ assert.equal(third.picksStored,0,'the first actual selection remains locked');
+});
