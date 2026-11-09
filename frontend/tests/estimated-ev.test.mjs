@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {estimatedEv,estimatedEvText,nbaComparisonEv}=await loadTs(new URL('../lib/estimated-ev.ts',import.meta.url));
+const {estimatedEv,estimatedEvText,nbaComparisonEv,nbaDisplayedResearchEv}=await loadTs(new URL('../lib/estimated-ev.ts',import.meta.url));
 const now=Date.parse('2026-10-25T16:00Z');
 function row(side='OVER',price=100,probabilities=[.55,.45,0]){
  return {playerId:'p',gameId:'g',market:'passing_yards',gameTime:'2026-10-25T17:00Z',quoteVersion:1,quoteId:'q',sportsbook:'Book',sportsbookKey:'book',lineType:'main',sportsbookLine:200.5,overPrice:side==='OVER'?price:-110,underPrice:side==='UNDER'?price:-110,quoteUpdatedAt:'2026-10-25T15:59Z',capturedAt:'2026-10-25T16:00Z',boardCapturedAt:'2026-10-25T16:00Z',researchForecast:{status:'available',priceComparison:{overProbability:probabilities[0],underProbability:probabilities[1],pushProbability:probabilities[2]},modelSelection:{side,price,line:200.5,quoteId:'q',sportsbookKey:'book',calculatedAt:'2026-10-25T16:00Z'}}};
@@ -66,4 +66,24 @@ test('NBA comparison EV uses both exact prices without manufacturing a saved sel
  assert.ok(Math.abs(nbaComparisonEv(comparison,now).over-10)<1e-8);
  assert.ok(nbaComparisonEv(comparison,now).under<0);
  assert.equal(nbaComparisonEv({...comparison,underPrice:-120},now),null);
+});
+
+test('one NBA research EV follows displayed projection direction, never the most attractive side',()=>{
+ const base=row('OVER',100,[.55,.45,0]);
+ const quoted={...base,sport:'nba',researchForecast:{
+  status:'available',projection:220,calculatedAt:'2026-10-25T16:00Z',
+  priceComparison:{
+   quoteEvidence:{sport:'nba',market:'passing_yards',gameId:'g',playerId:'p',quoteId:'q',sportsbookKey:'book',line:200.5,overPrice:100,underPrice:-110,calculatedAt:'2026-10-25T16:00Z'},
+   overProbability:.55,underProbability:.45,pushProbability:0
+  }
+ }};
+ const over=nbaDisplayedResearchEv(quoted,now);
+ assert.equal(over?.side,'OVER');
+ assert.equal(Math.round(over.percent*10)/10,10);
+ assert.equal(over.validatedForBetting,false);
+ const under=nbaDisplayedResearchEv({...quoted,researchForecast:{...quoted.researchForecast,projection:180}},now);
+ assert.equal(under?.side,'UNDER');
+ assert.equal(Math.round(under.percent*10)/10,-14.1);
+ assert.equal(nbaDisplayedResearchEv({...quoted,researchForecast:{...quoted.researchForecast,projection:200.5}},now),null);
+ assert.equal(nbaDisplayedResearchEv({...quoted,quoteId:'changed'},now),null);
 });
