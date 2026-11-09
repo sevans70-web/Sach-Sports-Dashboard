@@ -30,7 +30,7 @@ jobs:
           assert 'rankNbaCardsByEv(scopedDisplayCards)' in page, 'Positive EV-only ranking filter missing'
           assert 'nbaCardEv(card)?.side' in page, 'EV ordering must apply existing under cap to genuine sides'
           helper=Path('frontend/lib/nba-ev-ranking.ts').read_text()
-          assert "selected.percent>0" in helper and "research.percent>0" in helper, 'Ranking must reject negative and missing EV'
+          assert "Math.round(selected.percent*10)/10>0" in helper and "Math.round(research.percent*10)/10>0" in helper, 'Ranking must reject negative, zero, or rounded-zero EV'
           assert 'b.ev.percent-a.ev.percent' in helper, 'Ranking not descending by EV'
 
           helper=Path('frontend/lib/estimated-ev.ts').read_text()
