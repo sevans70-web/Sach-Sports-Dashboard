@@ -35,6 +35,7 @@ type GamesPreviewResponse = {
   games: PreviewGame[];
   updatedAt?: string;
   error?: string;
+  savedSchedule?: boolean;
 };
 
 const SPORTS: Array<{ key: SportKey; label: string; href: string }> = [
@@ -273,6 +274,17 @@ function GamesPreview({ sport }: { sport: SportKey }) {
   useEffect(() => {
     let live = true;
     let controller: AbortController | null = null;
+    // Retain a short, explicitly labelled on-device schedule across refreshes.
+    // Do not persist an unbounded or silently stale live-game panel.
+    const cacheKey=`sach-games-preview-v1|${sport}|${league}`;
+    const recover=()=>{
+      try{
+        const saved=JSON.parse(window.sessionStorage.getItem(cacheKey)||'null');
+        if(saved?.at&&Date.now()-saved.at<10*60_000&&Array.isArray(saved.data?.games)&&saved.data.games.length)
+          setPayload({...saved.data,savedSchedule:true});
+      }catch{}
+    };
+    recover();
 
     const load = () => {
       controller?.abort();
@@ -289,12 +301,13 @@ function GamesPreview({ sport }: { sport: SportKey }) {
           // Do not replace a working current/next-games panel with a
           // transient provider error or a partial empty refresh.
           if(data?.success!==false&&Array.isArray(data?.games)&&data.games.length){
-            setPayload(data);
+            setPayload({...data,savedSchedule:false});
+            try{window.sessionStorage.setItem(cacheKey,JSON.stringify({at:Date.now(),data}));}catch{}
           }else{
-            setPayload(previous=>previous?.games?.length?previous:data);
+            setPayload(previous=>previous?.games?.length?{...previous,savedSchedule:true}:data);
           }
         })
-        .catch(() => {});
+        .catch(() => {if(live)setPayload(previous=>previous?.games?.length?{...previous,savedSchedule:true}:previous);});
     };
 
     load();
@@ -316,6 +329,7 @@ function GamesPreview({ sport }: { sport: SportKey }) {
     <section className="ssGamesPreview" aria-label={payload?.title || "Games"}>
       <div className="ssGamesPreviewHead">
         <h2>{payload?.title || (sport === "nfl" ? "NFL GAMES" : sport === "cfb" ? "THIS WEEK’S CFB GAMES" : `${sport.toUpperCase()} GAMES`)}</h2>
+        {payload?.savedSchedule?<small title="Provider is temporarily unavailable; previously verified games are shown.">Saved schedule · updating</small>:null}
         <Link href={viewAllHref}>View All <span aria-hidden="true">›</span></Link>
       </div>
 
