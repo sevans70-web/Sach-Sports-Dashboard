@@ -11,6 +11,29 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Verify NBA Q1 displayed EV eligibility after original quote integrity filtering
+        run: |
+          npm ci --prefix frontend --ignore-scripts --no-audit --no-fund --silent
+          node --input-type=module <<'NODE'
+          import {loadTs} from './frontend/tests/load-ts.mjs';
+          const {rankNbaCardsByEv}=await loadTs(new URL('./frontend/lib/nba-ev-ranking.ts',import.meta.url));
+          const {integrityRow}=await loadTs(new URL('./frontend/lib/prop-integrity.ts',import.meta.url));
+          const {publicNbaRanking}=await loadTs(new URL('./frontend/lib/public-card-metrics.ts',import.meta.url));
+          const base='https://sach-sports-cloudflare-test.sevans70.workers.dev';
+          for(const market of ['q1_points','q1_rebounds','q1_assists']){
+           const data=await(await fetch(base+'/api/nba/rankings?market='+market)).json();
+           const cleaned=(data.rows||[]).map(r=>integrityRow(r,'nba',market));
+           const publicRows=cleaned.filter(r=>publicNbaRanking(r));
+           const ranked=rankNbaCardsByEv(publicRows.map(r=>({rank:r.rank,playerId:String(r.playerId),raw:r})));
+           console.log('Q1_DISPLAY_DIAG',JSON.stringify({market,apiRows:data.rows?.length,integrityRetained:cleaned.filter(r=>r.quoteVerified).length,publicRows:publicRows.length,positiveEvRanked:ranked.length,topEv:ranked.slice(0,3).map(x=>x.rank)}));
+          }
+          NODE
       - name: Compare actual upcoming fixture dates and EV eligibility across three sports
         run: |
           python3 - <<'PY'
