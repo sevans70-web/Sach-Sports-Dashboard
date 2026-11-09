@@ -1,6 +1,6 @@
 name: Cloudflare pregame capture unit checks
 # One small runner; no npm install, provider API calls or deployments.
-# Re-check the real PostgREST 201 empty-body insert response.
+# Re-check both immutable quote and independently locked model pick storage.
 on:
   push:
     branches: [cloudflare-compatibility-test]
