@@ -27,6 +27,8 @@ jobs:
           assert 'markets:["points","rebounds","assists"].map' in page, 'Q1 PTS/REB/AST tabs missing'
           assert 'key:"q1_threes_made"' not in page, 'Retired Q1 3PM remains visible'
           assert 'nbaDisplayedResearchEv(card.raw)' in page, 'One-sided EV view missing'
+          assert "[['active','Today'],['previous','Previous Slate'],['tomorrow','Tomorrow']]" in page, 'NBA three-tab layout changed'
+          assert "if(sport==='nba'&&nbaSlate!=='active')return true;" in page, 'Previous/Tomorrow still filtered by current games'
           assert 'rankNbaCardsByEv(scopedDisplayCards)' in page, 'Positive EV-only ranking filter missing'
           assert 'nbaCardEv(card)?.side' in page, 'EV ordering must apply existing under cap to genuine sides'
           helper=Path('frontend/lib/nba-ev-ranking.ts').read_text()
