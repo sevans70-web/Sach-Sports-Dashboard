@@ -2,7 +2,9 @@
  * official FINAL player statistics. Never use a later live line or projection.
  * Grades live in a separate insert-only table, not in the original receipts.
  */
-const SPORTS=['nba','nhl','nfl','cfb','cbb'];
+// Only active professional sports receive new scheduled API requests.
+// Archived college records remain available for historical display and backup.
+const SPORTS=['nba','nhl','nfl'];
 const ROUTES={
  nba:'/api/basketball/live-player-stats?sport=nba&gameId=',
  cbb:'/api/basketball/live-player-stats?sport=cbb&gameId=',
