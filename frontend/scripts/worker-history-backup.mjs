@@ -20,7 +20,7 @@ export function workerHistoryBackupScope(scheduledTime, recent=false){
  return {sport,day:yesterday.toISOString().slice(0,10)};
 }
 
-function driveArchive(env, authenticate){
+export function driveArchive(env, authenticate){
  const folder = env.BACKUP_DRIVE_FOLDER_ID;
  if(!/^[a-zA-Z0-9_-]+$/.test(folder??''))throw Error('Drive backup folder is unavailable');
  const {request} = authenticate({
