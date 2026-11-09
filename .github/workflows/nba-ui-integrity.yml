@@ -1,0 +1,42 @@
+name: NBA EV and Q1 card integrity
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - '.github/workflows/nba-ui-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  focused-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install source-test runtime
+        run: npm ci --ignore-scripts --no-audit --no-fund --prefix frontend
+      - name: Verify EV and original quote receipts
+        run: node --test frontend/tests/estimated-ev.test.mjs frontend/tests/nba-q1-saved-quote-visibility.test.mjs
+      - name: Verify NBA tabs cover expected markets and omit retired Q1 three-pointers
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const code=fs.readFileSync('frontend/components/player-rankings-panel.tsx','utf8');
+          const nba=code.slice(code.indexOf('const BASKETBALL: Market[]'),code.indexOf('const NHL: Market[]'));
+          for(const name of ['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts'])
+            assert.ok(nba.includes('key: "'+name+'"'),'NBA prop missing '+name);
+          assert.ok(code.includes('markets: [...BASKETBALL,{key:"first_basket"'));
+          assert.match(code,/markets:\["points","rebounds","assists"\]\.map\(key=>\(\{key:"q1_"/);
+          assert.ok(!code.includes('key:"q1_threes_made"'));
+          const ev=code.slice(code.indexOf('const comparisonEv=sport'),code.indexOf('const evText=estimatedEvText'));
+          assert.ok(ev.includes('nbaDisplayedResearchEv'));
+          assert.ok(!code.includes('comparisonEv.over')&&!code.includes('comparisonEv.under'),'Do not display both EV sides');
+          console.log('10 NBA regular markets, First Basket and three Q1 tabs; one EV per card');
+          NODE
