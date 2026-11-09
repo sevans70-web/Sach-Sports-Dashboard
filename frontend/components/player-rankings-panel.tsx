@@ -7,7 +7,7 @@ import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scop
 import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
-import {estimatedEvText,estimatedEvNotice,formatEvPercent,nbaDisplayedResearchEv} from '@/lib/estimated-ev';
+import {estimatedEv,estimatedEvText,estimatedEvNotice,formatEvPercent,nbaDisplayedResearchEv} from '@/lib/estimated-ev';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
@@ -1019,10 +1019,17 @@ function PlayerCard({
   const milestoneChance=quarterTarget&&Number.isFinite(milestonePrice)&&milestonePrice!==0?(milestonePrice>0?10000/(milestonePrice+100):100*(-milestonePrice)/(-milestonePrice+100)):null;
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
-  const projectionComparison=!modelSelection&&footballForecast.side!=null;
-  const displayedPick=quarterCard ? (quarterTarget ? null : modelSelection?.side||null) : (modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction)));
+  const outcomeEv=estimatedEv(card.raw);
+  const nbaPositiveEv=sport!=='nba'||outcomeEv.status==='available'&&outcomeEv.percent>0;
+  // A projection pointing OVER is not a recommendation when that side has
+  // no positive, verified model EV. Never silently reverse it to UNDER.
+  const projectionComparison=sport!=='nba'&&!modelSelection&&footballForecast.side!=null;
+  const displayedPick=sport==='nba'&&!firstBasket
+    ? nbaPositiveEv?(quarterTarget?null:modelSelection?.side||null):null
+    : quarterCard?(quarterTarget?null:modelSelection?.side||null)
+    : modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction));
   const comparisonEv=sport==='nba'?nbaDisplayedResearchEv(card.raw):null;
-  const evText=estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
+  const evText=nbaPositiveEv?estimatedEvText(card.raw):'—',evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
@@ -1095,8 +1102,8 @@ function PlayerCard({
 
         {!firstBasket&&<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>{comparisonEv?'Research EV':'EV'}</span>
-          {comparisonEv?<><strong title="Research-only expected return for the direction shown; not a qualifying model pick." style={{borderColor:comparisonEv.percent<0?"#ef7777":"var(--green)"}}>{formatEvPercent(comparisonEv.percent)}</strong><small>{comparisonEv.side} · research only</small></>:<>
-          <strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"?<small title={evNotice}>Unavailable</small>:null}</>}
+          {comparisonEv?<><strong title="Positive research comparison only; not an approved pick." style={{borderColor:"var(--green)"}}>{formatEvPercent(comparisonEv.percent)}</strong><small>{comparisonEv.side} · research only</small></>:<>
+          <strong title={evNotice} style={{borderColor:evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"?<small title={evNotice}>{sport==='nba'?'No positive qualifying EV':'Unavailable'}</small>:null}</>}
         </div>}
       </div>
 
@@ -1126,7 +1133,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{projectionComparison?"Projection vs. line":"Sach Prediction"}</span>
+          <span>{sport==='nba'&&!displayedPick?'No qualifying pick':projectionComparison?'Projection vs. line':'Sach Prediction'}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1139,7 +1146,7 @@ function PlayerCard({
           >
             {["OVER", "UNDER"].includes(displayedPick) && card.sportsbookLine != null
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
-              : displayedPick||'—'}
+              : displayedPick||(sport==='nba'?'PASS':'—')}
           </strong>
           {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?<small>{modelPickNotice(card.raw)}</small>:footballForecast.side?<small>{footballForecast.basis}</small>:null}
 
@@ -1279,7 +1286,7 @@ function PlayerCard({
             <div>
               <b>EV</b>
               <span>Expected return</span>
-              {comparisonEv?<strong title="Research-only, not a qualifying bet">{comparisonEv.side} {formatEvPercent(comparisonEv.percent)}</strong>:<strong title={evNotice} style={{borderColor:evText.startsWith("-")?"#ef7777":evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>}
+              {comparisonEv?<strong title="Research-only, not a qualifying bet">{comparisonEv.side} {formatEvPercent(comparisonEv.percent)}</strong>:<strong title={evNotice} style={{borderColor:evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>}
             </div>
             </>}
           </div>
