@@ -47,6 +47,19 @@ jobs:
                       result['researchAvailable']=sum(isinstance(r.get('researchForecast'),dict) and r['researchForecast'].get('status')=='available' for r in rows)
                       result['researchBlockers']=dict(collections.Counter(str((r.get('researchForecast') or {}).get('reason') or (r.get('researchForecast') or {}).get('selectionReason') or 'no_selection_reason') for r in rows if not (r.get('researchForecast') or {}).get('modelSelection')).most_common(6))
                       result['verifiedQuotes']=sum(r.get('quoteVerified') is True for r in rows)
+                      result['evEvidence']={
+                        'completeModelProbabilities':sum(
+                          isinstance((r.get('researchForecast') or {}).get('priceComparison'),dict)
+                          and all(isinstance((r.get('researchForecast') or {}).get('priceComparison',{}).get(k),(int,float)) for k in ('overProbability','underProbability','pushProbability'))
+                          for r in rows
+                        ),
+                        'priceBoundForecasts':sum(bool((r.get('researchForecast') or {}).get('priceComparison',{}).get('quoteEvidence')) for r in rows),
+                        'selectedModelQuotes':sum(bool((r.get('researchForecast') or {}).get('modelSelection')) and bool(r.get('quoteVerified')) for r in rows),
+                        'missingModelReasons':dict(collections.Counter(
+                          str((r.get('researchForecast') or {}).get('giReason') or (r.get('researchForecast') or {}).get('selectionReason') or (r.get('researchForecast') or {}).get('reason') or 'no_reason')
+                          for r in rows if not (r.get('researchForecast') or {}).get('modelSelection')
+                        ).most_common(5))
+                      }
 
                   result['fields']=sorted(k for k in ('error','warning','market','source','boardDay','rows') if k in data)
                   if data.get('error'): result['errorType']=str(data['error'])[:100].replace('\\n',' ')
