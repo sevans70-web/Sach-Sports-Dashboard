@@ -48,7 +48,9 @@ export default {
    const comparison = await replay.verify(
     path=>dashboard.fetch(new Request('https://sach-staging.internal'+path),env,ctx),
     finals=>saveWorkerFinalCorrections(env.VINEXT_KV_CACHE,scope.sport,scope.day,finals),
-    Math.floor(controller.scheduledTime / (2 * 60_000)),
+    // One sport is revisited roughly every 16 minutes. Rotate its game batch
+    // on that cadence, rather than on every 2-minute global cron tick.
+    Math.floor(controller.scheduledTime / (16 * 60_000)),
    );
    console.info('[sach-staging-grading-replay]',JSON.stringify({...scope,...comparison}));
   }
