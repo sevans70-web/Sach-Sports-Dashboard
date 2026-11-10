@@ -26,6 +26,7 @@ jobs:
           const {integrityRow}=await loadTs(new URL('./frontend/lib/prop-integrity.ts',import.meta.url));
           const {publicNbaRanking}=await loadTs(new URL('./frontend/lib/public-card-metrics.ts',import.meta.url));
           const {nbaCardEv}=await loadTs(new URL('./frontend/lib/nba-ev-ranking.ts',import.meta.url));
+          const {estimatedEv,nbaComparisonEv}=await loadTs(new URL('./frontend/lib/estimated-ev.ts',import.meta.url));
           const {scopedNbaBoard,nbaFixtureDay}=await loadTs(new URL('./frontend/lib/nba-slate-scope.ts',import.meta.url));
           const base='https://sach-sports-cloudflare-test.sevans70.workers.dev';
           const today=nbaFixtureDay(new Date());
@@ -45,7 +46,20 @@ jobs:
                 const key=String(r.researchForecast?.selectionReason||r.researchForecast?.reason||r.researchForecast?.status||'none');
                 reasons[key]=(reasons[key]||0)+1;
               }
-              console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,http:response.status,apiRows:data.rows?.length,sourceBoardDay:data.boardDay,today,actualFixtureDayRows:sameDay,scoped:scoped.rows.length,verified:normalized.filter(r=>r.quoteVerified).length,public:visible.length,positiveEvBeforePublic:rawPositive.length,positiveEvAfterPublic:positive.length,blockedReasons:reasons,sourceFailures:data.error||null}));
+              const evReasons={};
+              const receiptAudit={frozen:0,capturedBeforeStart:0,forecastBeforeStart:0,forecastSelected:0,milestoneTarget:0,comparison:0};
+              for(const r of normalized){
+                const result=estimatedEv(r),why=String(result.reason||'available');
+                evReasons[why]=(evReasons[why]||0)+1;
+                const start=Date.parse(r.gameTime||''),capture=Date.parse(r.forecastCapturedAt||r.boardCapturedAt||''),decision=Date.parse(r.researchForecast?.modelSelection?.calculatedAt||r.researchForecast?.modelTargetForecast?.calculatedAt||'');
+                if(r.boardFrozen)receiptAudit.frozen++;
+                if(Number.isFinite(start)&&Number.isFinite(capture)&&capture<start)receiptAudit.capturedBeforeStart++;
+                if(Number.isFinite(start)&&Number.isFinite(decision)&&decision<start)receiptAudit.forecastBeforeStart++;
+                if(r.researchForecast?.modelSelection)receiptAudit.forecastSelected++;
+                if(r.researchForecast?.modelTargetForecast)receiptAudit.milestoneTarget++;
+                if(nbaComparisonEv(r)!=null)receiptAudit.comparison++;
+              }
+              console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,http:response.status,apiRows:data.rows?.length,sourceBoardDay:data.boardDay,today,actualFixtureDayRows:sameDay,scoped:scoped.rows.length,verified:normalized.filter(r=>r.quoteVerified).length,public:visible.length,positiveEvBeforePublic:rawPositive.length,positiveEvAfterPublic:positive.length,blockedReasons:reasons,evReasons,receiptAudit,sourceFailures:data.error||null}));
             }catch(error){console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,error:error?.name||String(error)}));}
           }
           NODE
