@@ -137,3 +137,15 @@ test('a tampered protected receipt stops read-only grading replay',async()=>{
  ),/checksum mismatch/);
  assert.equal(called,false);
 });
+
+
+test('Cloudflare staging routes the existing pregame cron to independent postgame replay',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const worker=await readFile(new URL('../worker-entry.mjs',import.meta.url),'utf8');
+ const {PREGAME_CAPTURE_CRON}=await import('../scripts/worker-pregame-capture.mjs');
+ assert.equal(PREGAME_CAPTURE_CRON,'*/2 * * * *');
+ assert.match(worker,/if\(controller\.cron===PREGAME_CAPTURE_CRON\|\|/);
+ assert.match(worker,/if\(controller\.cron===PREGAME_CAPTURE_CRON\)await recentReplayTick\(env,ctx,controller\.scheduledTime\)/);
+ assert.match(worker,/const source=await readWorkerRecentReplayDay\(env,scope,replay\.consume\)/);
+ assert.match(worker,/const comparison=await replay\.verify\(/);
+});
