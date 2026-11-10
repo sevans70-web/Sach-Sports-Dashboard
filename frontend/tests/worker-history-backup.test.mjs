@@ -85,18 +85,18 @@ test('the daily schedule rotates each sport and selects Toronto history dates',(
  assert.equal(workerHistoryBackupScope(Date.parse('2026-11-10T04:59:00Z'),true).day,'2026-11-08');
 });
 
-test('the two-minute recent grading replay covers every sport instead of only even indices',()=>{
- const start=Date.parse('2026-11-10T04:00:00Z');
- const scopes=Array.from({length:8},(_,i)=>workerHistoryBackupScope(start+i*120000,true));
- assert.equal(new Set(scopes.map(x=>x.sport)).size,8);
- assert(scopes.every(x=>x.day==='2026-11-08'));
+test('two-minute recent grading cycles only NBA NFL NHL, preserving other sports for daily archive',()=>{
+ const start=Date.parse('2026-11-10T05:00:00Z');
+ const scopes=Array.from({length:6},(_,i)=>workerHistoryBackupScope(start+i*120000,true));
+ assert.deepEqual(scopes.map(x=>x.sport),['nba','nfl','nhl','nba','nfl','nhl']);
+ assert(scopes.every(x=>x.day==='2026-11-09'));
 });
 
 test('successive checks of the same sport advance independent replay batches',()=>{
- const start=Date.parse('2026-11-10T04:02:00Z');
+ const start=Date.parse('2026-11-10T05:02:00Z');
  const observations=Array.from({length:4},(_,i)=>{
-  const time=start+i*16*60000;
-  return {sport:workerHistoryBackupScope(time,true).sport,batch:Math.floor(time/(16*60_000))};
+  const time=start+i*6*60000;
+  return {sport:workerHistoryBackupScope(time,true).sport,batch:Math.floor(time/(6*60_000))};
  });
  assert.equal(new Set(observations.map(x=>x.sport)).size,1);
  assert.equal(new Set(observations.map(x=>x.batch)).size,4);
