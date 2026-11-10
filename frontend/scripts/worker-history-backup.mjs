@@ -18,9 +18,14 @@ export function workerHistoryBackupScope(scheduledTime, recent=false){
  const sport = [...SPORTS][(recent?Math.floor(now.getUTCMinutes()/2):now.getUTCMinutes()) % SPORTS.size];
  const oldest = retentionCutoff(now);
  if(!recent)return {sport,day:oldest};
- const yesterday = new Date(oldest+'T00:00:00Z');
- yesterday.setUTCDate(yesterday.getUTCDate()+5);
- return {sport,day:yesterday.toISOString().slice(0,10)};
+ // Recent official-grade replays must inspect the immediately completed
+ // Toronto fixture day, not cutoff + 5 (which was two days old).
+ // Keep the daily archive path anchored to the six-day retention cutoff.
+ const torontoDay=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+ const part=k=>torontoDay.find(p=>p.type===k)?.value;
+ const today=Date.UTC(Number(part('year')),Number(part('month'))-1,Number(part('day')));
+ const yesterday=new Date(today-86400_000).toISOString().slice(0,10);
+ return {sport,day:yesterday};
 }
 
 export function driveArchive(env, authenticate){
