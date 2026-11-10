@@ -59,7 +59,20 @@ jobs:
                 if(r.researchForecast?.modelTargetForecast)receiptAudit.milestoneTarget++;
                 if(nbaComparisonEv(r)!=null)receiptAudit.comparison++;
               }
-              console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,http:response.status,apiRows:data.rows?.length,sourceBoardDay:data.boardDay,today,actualFixtureDayRows:sameDay,scoped:scoped.rows.length,verified:normalized.filter(r=>r.quoteVerified).length,public:visible.length,positiveEvBeforePublic:rawPositive.length,positiveEvAfterPublic:positive.length,blockedReasons:reasons,evReasons,receiptAudit,sourceFailures:data.error||null}));
+              const probabilities={numericTriplets:0,tripletsNearOne:0,tripletsNotOne:0,nullOver:0,nullUnder:0,nullPush:0,minSum:null,maxSum:null};
+              for(const r of normalized){
+                const p=r.researchForecast?.priceComparison||{};
+                for(const [field,key] of [['overProbability','nullOver'],['underProbability','nullUnder'],['pushProbability','nullPush']])if(typeof p[field]!=='number')probabilities[key]++;
+                const values=[p.overProbability,p.underProbability,p.pushProbability];
+                if(values.every(v=>typeof v==='number'&&Number.isFinite(v))){
+                  probabilities.numericTriplets++;
+                  const sum=values.reduce((a,b)=>a+b,0);
+                  probabilities.minSum=Math.min(probabilities.minSum??sum,sum);
+                  probabilities.maxSum=Math.max(probabilities.maxSum??sum,sum);
+                  if(Math.abs(sum-1)<=1e-6)probabilities.tripletsNearOne++;else probabilities.tripletsNotOne++;
+                }
+              }
+              console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,http:response.status,apiRows:data.rows?.length,sourceBoardDay:data.boardDay,today,actualFixtureDayRows:sameDay,scoped:scoped.rows.length,verified:normalized.filter(r=>r.quoteVerified).length,public:visible.length,positiveEvBeforePublic:rawPositive.length,positiveEvAfterPublic:positive.length,blockedReasons:reasons,evReasons,receiptAudit,probabilities,sourceFailures:data.error||null}));
             }catch(error){console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,error:error?.name||String(error)}));}
           }
           NODE
