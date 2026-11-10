@@ -46,3 +46,23 @@ test('staging stores verified corrections separately and keeps the newer officia
  assert.deepEqual(await readWorkerFinals(cache,'nhl','2026-11-08'),[]);
  await assert.rejects(saveWorkerFinalCorrections(cache,'nba','2026-11-08',[{...newest,state:'in'}]),/Invalid staging final/);
 });
+
+
+test('rotates each official final game in bounded two-fixture scheduled batches',async()=>{
+ const replay=createWorkerGradingReplay('nba');
+ for(const id of ['123','124','125','126','127']){
+  const row={...pregame,gameId:id,playerId:String(Number(id)+500)};
+  replay.consume({stream:'protected_pregame_'+id+'_points',payload:[{payload:{kind:'pregame_checkpoint',checkpointAt:checkpoint,rows:[row]}}]});
+  replay.consume({stream:'protected_final_'+id,payload:[{payload:{kind:'official_final_checkpoint',source:'official_final_boxscore',gameId:id,boxscore:{success:true,gameId:id,state:'post',rows:[{playerId:row.playerId,stats:{points:17}}]}}}]});
+ }
+ const examined=new Set();
+ for(let i=0;i<3;i++){
+  const outcome=await replay.verify(async route=>{
+   const id=new URL('https://example.invalid'+route).searchParams.get('gameId');
+   examined.add(id);
+   return Response.json({success:true,gameId:id,state:'post',rows:[{playerId:String(Number(id)+500),stats:{points:17}}]});
+  },undefined,i);
+  assert.equal(outcome.games,i===2?1:2);
+ }
+ assert.deepEqual([...examined].sort(),['123','124','125','126','127']);
+});
