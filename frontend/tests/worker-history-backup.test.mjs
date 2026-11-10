@@ -80,3 +80,10 @@ test('the daily schedule rotates each sport and selects Toronto history dates',(
  assert(entries.every(item=>item.day==='2026-11-03'));
  assert.equal(workerHistoryBackupScope(Date.parse('2026-11-09T04:16:00Z'),true).day,'2026-11-07');
 });
+
+test('the two-minute recent grading replay covers every sport instead of only even indices',()=>{
+ const start=Date.parse('2026-11-10T04:00:00Z');
+ const scopes=Array.from({length:8},(_,i)=>workerHistoryBackupScope(start+i*120000,true));
+ assert.equal(new Set(scopes.map(x=>x.sport)).size,8);
+ assert(scopes.every(x=>x.day==='2026-11-08'));
+});
