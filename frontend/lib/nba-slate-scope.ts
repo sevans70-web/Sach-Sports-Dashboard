@@ -20,7 +20,11 @@ export function firstBasketBookOnly(row:any){
  return {...row,headshot:row.headshot||(/^\d+$/.test(String(row.playerId||''))?`https://a.espncdn.com/i/headshots/nba/players/full/${row.playerId}.png`:''),researchForecast:{status:'unavailable',projection:null,giScore:null,reason:'market_model_not_fitted',validatedForBetting:false},pregameProbability:null};
 }
 export function scopedNbaBoard(payload:any,market:string,day:string){
- const mismatch=Boolean(payload?.market&&payload.market!==market||payload?.boardDay&&payload.boardDay!==day);
+ // The API's boardDay is advisory: UTC/calendar cache rollover may label
+ // the response differently from the Toronto fixture day. Scope by the
+ // actual timestamp on every row instead of deleting valid late games.
+ // A genuinely wrong market still cannot bleed across category tabs.
+ const mismatch=Boolean(payload?.market&&payload.market!==market);
  const scopedRows=mismatch?[]:nbaSlateRows(payload?.rows||[],market,day);
  const rows=market==='first_basket'?scopedRows.map(firstBasketBookOnly):scopedRows;
  const pickForAudit=(r:any)=>savedModelPick(r,String(r.market||'').startsWith('q1_')&&r.forecastCapturedAt?r.forecastCapturedAt:r.boardCapturedAt)||cardModelPick(r);
