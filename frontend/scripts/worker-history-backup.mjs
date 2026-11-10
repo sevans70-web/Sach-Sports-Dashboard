@@ -34,7 +34,7 @@ export function workerHistoryBackupScope(scheduledTime, recent=false){
  * Verify source checksums before delivering a receipt to the replay. */
 export async function readWorkerRecentReplayDay(env,{sport,day},visit,fetchImpl=fetch){
  if(!SPORTS.has(sport)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day)||typeof visit!=='function')throw Error('Invalid grading replay scope');
- const base=String(env?.SUPABASE_URL||'').replace(/\\/$/,'');
+ const base=String(env?.SUPABASE_URL||'').replace(/\/$/,'');
  const key=String(env?.SUPABASE_SECRET_KEY||'');
  if(!/^https:\/\//.test(base)||!key)throw Error('Protected grading history unavailable');
  const headers={apikey:key,Accept:'application/json',...(key.startsWith('sb_secret_')?{}:{Authorization:'Bearer '+key})};
