@@ -17,7 +17,7 @@ export function officialFinalStatDifferences(previous:any,next:any):number{
  if(!previous||!next||String(previous.gameId)!==String(next.gameId)||
     !isOfficialFinal(previous,String(previous.gameId))||
     !isOfficialFinal(next,String(previous.gameId)))return 0;
- const original=new Map<string,any>((previous.rows||[]).filter((r:any)=>/^\\d+$/.test(String(r?.playerId||''))).map((r:any)=>[String(r.playerId),r.stats]));
+ const original=new Map<string,any>((previous.rows||[]).filter((r:any)=>/^\d+$/.test(String(r?.playerId||''))).map((r:any)=>[String(r.playerId),r.stats]));
  let count=0;
  for(const player of next.rows||[]){
   const old=original.get(String(player?.playerId||''));
