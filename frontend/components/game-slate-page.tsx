@@ -1644,7 +1644,8 @@ export function GameSlatePage({
     }catch{}
     const load = () => {
       controller?.abort();
-      controller = new AbortController();
+      const requestController = new AbortController();
+      controller = requestController;
 
       const params = new URLSearchParams({
         sport,
@@ -1653,7 +1654,7 @@ export function GameSlatePage({
       });
 
       const readSlate=async()=>{
-        const options={cache:"no-store" as const,signal:controller!.signal};
+        const options={cache:"no-store" as const,signal:requestController.signal};
         const primary=await fetch(`/api/game-slate?${params.toString()}`,options)
           .then(response=>response.ok?response.json():null).catch(()=>null);
         if(primary?.success!==false&&Array.isArray(primary?.games)&&primary.games.length)return primary;
@@ -1667,7 +1668,7 @@ export function GameSlatePage({
       };
       readSlate()
         .then((payload) => {
-          if (!alive) return;
+          if (!alive || requestController.signal.aborted) return;
 
           // A provider error or partial empty refresh must not erase the
           // last successful current/next-game schedule from the screen.
