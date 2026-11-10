@@ -20,3 +20,5 @@ jobs:
           rows=[r for r in body.get('records') or [] if str(r.get('gameId'))=='401909957' and str(r.get('playerName') or '').lower().replace('ć','c')=='nikola jokic' and r.get('market') in ('assists','pts_asts')]
           print('CW01_CORRECTION_READBACK '+json.dumps({'success':body.get('success'),'historyCount':len(body.get('records') or []),'jokic':[{key:r.get(key) for key in ('gameDate','market','pick','line','actual','status','recordSource')} for r in rows]},sort_keys=True))
           PY
+
+# Nov 10 verification rerun: check live authoritative displayed history.
