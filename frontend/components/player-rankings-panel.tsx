@@ -2238,6 +2238,12 @@ export function PlayerRankingsPanel({
             return false;
           }
 
+          // Historical Previous Slate is an archive, not an actionable EV
+          // ranking. Preserve the originally captured pregame player/line,
+          // including Q1 and combo rows whose live EV cannot be recalculated
+          // after tipoff. Never synthesize a new probability or fresh quote.
+          if(sport==='nba'&&requestedNbaSlate==='previous'&&card.raw?.boardFrozen===true&&
+             card.playerName&&card.playerName!=='Player'&&verifiedPropQuote(card.raw,Date.now(),true))return true;
           return isGradeablePrediction(card);
         });
 
@@ -2445,6 +2451,11 @@ export function PlayerRankingsPanel({
         return next;
       })
       .filter((card) => {
+        if(sport==='nba'&&nbaSlate==='previous'&&card.raw?.boardFrozen===true){
+          // An archived verified pick remains visible even when the player
+          // is no longer currently available or a live model has no EV.
+          return Boolean(verifiedPropQuote(card.raw,Date.now(),true));
+        }
         if(sport==='nba'&&(excludeUnavailableRanking(card.raw)||!publicNbaRanking(card.raw)))return false;
         // Previous and Tomorrow were already date-scoped by scopedNbaBoard.
         // Do not compare these slates with TODAY's shared game schedule:
@@ -2491,6 +2502,10 @@ export function PlayerRankingsPanel({
     // zero, or negative EV can enter it. Sort the qualified original quotes
     // before assigning display-only rank numbers; saved history is untouched.
     if(sport==='nba'){
+      // Previous is a read-only historic board: show ORIGINAL saved order,
+      // not today's positive-EV eligibility gate (which can reject all rows
+      // once the original pregame model prices expire).
+      if(nbaSlate==='previous')return [...scopedDisplayCards].sort((a,b)=>a.rank-b.rank);
       const evRanked=rankNbaCardsByEv(scopedDisplayCards);
       const capped=capRankingUnders(evRanked,card=>nbaCardEv(card)?.side||null);
       return capped.map((card,index)=>({...card,rank:index+1}));
@@ -2508,7 +2523,7 @@ export function PlayerRankingsPanel({
       return card.raw?.researchForecast?.status==='available'?null:card.prediction;
     });
     return ordered.filter(card=>frozen.includes(card)||capped.includes(card));
-  },[scopedDisplayCards,sport]);
+  },[scopedDisplayCards,sport,nbaSlate]);
 
   const visible = full
     ? displayCards
