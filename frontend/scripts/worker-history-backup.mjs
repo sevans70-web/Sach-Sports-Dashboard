@@ -28,6 +28,40 @@ export function workerHistoryBackupScope(scheduledTime, recent=false){
  return {sport,day:yesterday};
 }
 
+/** A frequent correction tick needs only yesterday's immutable FINAL and
+ * PREGAME receipts. Never run a multipart Google Drive backup every 2 minutes;
+ * that is the DAILY job and its failure must not suppress final grading.
+ * Verify source checksums before delivering a receipt to the replay. */
+export async function readWorkerRecentReplayDay(env,{sport,day},visit,fetchImpl=fetch){
+ if(!SPORTS.has(sport)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day)||typeof visit!=='function')throw Error('Invalid grading replay scope');
+ const base=String(env?.SUPABASE_URL||'').replace(/\\/$/,'');
+ const key=String(env?.SUPABASE_SECRET_KEY||'');
+ if(!/^https:\/\//.test(base)||!key)throw Error('Protected grading history unavailable');
+ const headers={apikey:key,Accept:'application/json',...(key.startsWith('sb_secret_')?{}:{Authorization:'Bearer '+key})};
+ let documents=0,finals=0,pregame=0;
+ const limit=150;
+ for(let offset=0;offset<900;offset+=limit){
+  const params=new URLSearchParams({select:'stream,game_date,payload,checksum',sport:'eq.'+sport,game_date:'eq.'+day,
+    or:'(stream.like.protected_final_*,stream.like.protected_pregame_*)',
+    order:'stream.asc',limit:String(limit),offset:String(offset)});
+  const response=await fetchImpl(base+'/rest/v1/history_documents?'+params,{headers,cache:'no-store',signal:AbortSignal.timeout(18000)});
+  if(!response.ok)throw Error('Protected grading history read HTTP '+response.status);
+  const batch=await response.json();
+  if(!Array.isArray(batch))throw Error('Invalid protected grading history');
+  // Validate an entire page before replaying any records from it.
+  for(const row of batch)if(row.game_date!==day||typeof row.stream!=='string'||
+     !/^protected_(?:final|pregame)_[a-z0-9_-]+$/.test(row.stream)||checksum(row.payload)!==row.checksum)
+      throw Error('Protected grading history checksum mismatch');
+  for(const row of batch){
+   visit({stream:row.stream,payload:row.payload});
+   documents++;
+   if(row.stream.startsWith('protected_final_'))finals++;else pregame++;
+  }
+  if(batch.length<limit)return {sport,day,documents,finals,pregame};
+ }
+ throw Error('Protected grading history exceeded bounded replay pagination');
+}
+
 export function driveArchive(env, authenticate){
  const folder = env.BACKUP_DRIVE_FOLDER_ID;
  if(!/^[a-zA-Z0-9_-]+$/.test(folder??''))throw Error('Drive backup folder is unavailable');
