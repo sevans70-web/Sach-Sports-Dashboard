@@ -1154,3 +1154,22 @@ button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px so
 .faceMetrics.quarterMetrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .faceMetrics.quarterMetrics span { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
 .faceMetrics.quarterMetrics strong { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.3; }
+
+
+/* CW02: prevent narrow-screen Player Rankings header and market chips from
+   forcing the entire dashboard wider than the phone viewport. */
+.root,.header,.tabsFrame,.tabs {min-width:0;max-width:100%}
+.header > * {min-width:0}
+.header h2 {overflow-wrap:anywhere;line-height:1.08}
+.tabs {-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+.tabs button {scroll-snap-align:start;min-height:38px;touch-action:manipulation}
+.tabs button:focus-visible {outline:2px solid var(--gold);outline-offset:2px}
+@media(max-width:430px){
+  .root {padding:10px}
+  .header {gap:7px;align-items:flex-start}
+  .header h2 {font-size:clamp(19px,5.2vw,25px)}
+  .header p {font-size:11px;line-height:1.4}
+  .tabsFrame {padding-right:30px}
+  .tabs {gap:6px}
+  .tabs button {min-height:42px}
+}
