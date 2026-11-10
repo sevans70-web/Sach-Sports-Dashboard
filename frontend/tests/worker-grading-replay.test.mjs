@@ -66,3 +66,34 @@ test('rotates each official final game in bounded two-fixture scheduled batches'
  }
  assert.deepEqual([...examined].sort(),['123','124','125','126','127']);
 });
+
+
+test('detects later official FINAL player-stat corrections even without a protected research pick',async()=>{
+ const replay=createWorkerGradingReplay('nba');
+ const original={success:true,gameId:'777',state:'post',updatedAt:'2026-11-10T03:56:00Z',
+  rows:[{playerId:'3112335',stats:{points:25,assists:8,pts_asts:33,pts_rebs_asts:49}}]};
+ const revised={...original,updatedAt:'2026-11-10T05:12:00Z',
+  rows:[{playerId:'3112335',stats:{points:25,assists:9,pts_asts:34,pts_rebs_asts:50}}]};
+ replay.consume({stream:'protected_final_777',payload:[{payload:{kind:'official_final_checkpoint',source:'official_final_boxscore',gameId:'777',boxscore:original}}]});
+ const saved=[];
+ const result=await replay.verify(async path=>{
+  assert.equal(path,'/api/basketball/live-player-stats?sport=nba&gameId=777');
+  return Response.json(revised);
+ },async rows=>saved.push(...rows));
+ assert.equal(result.games,1);
+ assert(result.differences>=3);
+ assert.deepEqual(saved,[revised]);
+});
+
+test('never treats missing official stat rows as revisions or saves non-final data',async()=>{
+ const replay=createWorkerGradingReplay('nba');
+ const original={success:true,gameId:'777',state:'post',rows:[{playerId:'3112335',stats:{assists:8}}]};
+ replay.consume({stream:'protected_final_777',payload:[{payload:{kind:'official_final_checkpoint',source:'official_final_boxscore',gameId:'777',boxscore:original}}]});
+ let writes=0;
+ const missing=await replay.verify(async()=>Response.json({...original,rows:[]}),async()=>writes++);
+ assert.equal(missing.differences,0);
+ assert.equal(writes,0);
+ const nonfinal=await replay.verify(async()=>Response.json({...original,state:'in'}),async()=>writes++);
+ assert.equal(nonfinal.games,0);
+ assert.equal(writes,0);
+});
