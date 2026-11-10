@@ -45,12 +45,12 @@ async function loadPlayers():Promise<NbaPlayer[]>{const base={region:"us",lang:"
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
 export async function loadNbaGames(fullCalendar=true):Promise<NbaGame[]>{
- // ESPN's scoreboard endpoint is reliable for a single YYYYMMDD date. Large
- // date ranges can return an empty events array during the preseason/offseason,
- // so query individual days instead. This window includes recent games for live/
- // final state plus the next 45 days, which comfortably reaches the next slate.
+ // A 48-request fan-out overran the provider during iPhone Game Slate
+ // navigation, intermittently emptying the entire calendar. Keep a rolling
+ // two-week schedule (previous two days plus next 14 days); one day at a time
+ // remains the provider's supported unit. Current boards use the shorter span.
  const now=new Date();
- const dates=Array.from({length:fullCalendar?48:8},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
+ const dates=Array.from({length:fullCalendar?16:8},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
  const payloads=await successfulPayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,60)),"NBA");
  const seen=new Set<string>();const games:NbaGame[]=[];
  for(const payload of payloads)for(const v of list(payload.events)){
