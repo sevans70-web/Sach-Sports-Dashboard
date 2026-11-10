@@ -10,6 +10,25 @@ const paths:Record<string,string> = {
  nhl:'/api/nhl/live-player-stats?',
 };
 
+/** A later official FINAL may revise a player's stat after the first FINAL
+ * checkpoint. Compare only exact fixture/player/market numeric observations.
+ * Absence of a row or a provider response by itself is never a correction. */
+export function officialFinalStatDifferences(previous:any,next:any):number{
+ if(!previous||!next||String(previous.gameId)!==String(next.gameId)||
+    !isOfficialFinal(previous,String(previous.gameId))||
+    !isOfficialFinal(next,String(previous.gameId)))return 0;
+ const original=new Map<string,any>((previous.rows||[]).filter((r:any)=>/^\\d+$/.test(String(r?.playerId||''))).map((r:any)=>[String(r.playerId),r.stats]));
+ let count=0;
+ for(const player of next.rows||[]){
+  const old=original.get(String(player?.playerId||''));
+  if(!old||!player?.stats)continue;
+  for(const [market,value] of Object.entries(player.stats)){
+   if(typeof value==='number'&&Number.isFinite(value)&&typeof old[market]==='number'&&Number.isFinite(old[market])&&value!==old[market])count++;
+  }
+ }
+ return count;
+}
+
 export function createWorkerGradingReplay(sport:string){
  const originals = new Map<string,any>();
  const finals = new Map<string,any>();
@@ -34,13 +53,15 @@ export function createWorkerGradingReplay(sport:string){
    }
   },
   async verify(fetchRoute:(path:string)=>Promise<Response>,saveCorrections?:(finals:any[])=>Promise<void>,batchIndex=0){
-   const games = new Map<string,any[]>();
+   // Check every archived authenticated FINAL, not only games that happen
+   // to include a qualified research pick in protected_pregame documents.
+   // Immutable worker-model picks are saved separately and may be omitted
+   // from that research subset; their official results must still update.
+   const games = new Map<string,any[]>([...finals.keys()].map(game=>[game,[]]));
    for(const row of originals.values()){
     const game=String(row.gameId);
     if(!/^\d+$/.test(game)||!finals.has(game))continue;
-    const rows=games.get(game)??[];
-    rows.push(row);
-    games.set(game,rows);
+    games.get(game)!.push(row);
    }
    // Rotating bounded batches inspect every finished game over successive
    // scheduled ticks. Previously the top-two-only selection permanently
@@ -64,7 +85,14 @@ export function createWorkerGradingReplay(sport:string){
      if(expected?.status===actual?.status&&expected?.actual===actual?.actual)matched++;
      else differences++;
     }
-    if(differences>before)corrections.push(final);
+    // Original picks never change. A stat correction is a separately stored
+    // verified FINAL observation, including for worker-model picks which do
+    // not appear in the protected research replay subset.
+    const changedOfficialStats=officialFinalStatDifferences(finals.get(game),final);
+    if(changedOfficialStats>0){
+     differences+=Math.max(0,changedOfficialStats-(differences-before));
+     corrections.push(final);
+    }
    }
    if(corrections.length&&saveCorrections)await saveCorrections(corrections);
    return {games:checked,matched,differences,unavailable};
