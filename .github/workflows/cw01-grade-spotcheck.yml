@@ -66,3 +66,5 @@ jobs:
               samples.append({'gameId':gid,'officialSourceOk':official.get('success'),'officialState':official.get('state'),'historySettled':len(rows),'matched':matched,'actualMismatch':actualMismatch,'gradeMismatch':gradeMismatch})
             print('CW01_OFFICIAL_GRADE '+json.dumps({'sport':sport,'gameFinals':len(games),'publicTodaySettled':len(settled),'counts':dict(counts),'mismatchMarkets':dict(mismatchMarkets),'mismatchEvidence':mismatchEvidence[:25],'sampled':samples},sort_keys=True))
           PY
+
+# Final CW01 NFL/NHL unmatched-player evidence refresh for handoff to CW10.
