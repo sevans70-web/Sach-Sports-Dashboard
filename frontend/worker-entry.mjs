@@ -3,7 +3,7 @@ import {PREGAME_MARKETS,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON,scheduledPregame
 import {gradeSavedWorkerPicks} from './scripts/worker-pregame-grade.mjs';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
 import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
-import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker-history-backup.mjs';
+import {archiveWorkerHistoryDay,workerHistoryBackupScope,readWorkerRecentReplayDay} from './scripts/worker-history-backup.mjs';
 import {archiveWorkerPregameDay} from './scripts/worker-pregame-backup.mjs';
 
 export * from 'vinext/server/fetch-handler';
@@ -30,17 +30,29 @@ export default {
   const recent = controller.cron !== '10-17 9 * * *';
   const scope = workerHistoryBackupScope(controller.scheduledTime,recent);
   const replay = recent ? createWorkerGradingReplay(scope.sport) : null;
-  try{
-   const result = await archiveWorkerHistoryDay(env,scope,undefined,undefined,replay?.consume);
-   console.info('[sach-staging-history-archive]',JSON.stringify(result));
-  }finally{
-   // Back up the original picks/quotes even if a legacy history archive fails.
-   if(!recent&&Object.hasOwn(PREGAME_MARKETS,scope.sport)){
-    try{
-     const backup=await archiveWorkerPregameDay(env,scope);
-     console.info('[sach-staging-pregame-backup]',JSON.stringify(backup));
-    }catch(error){
-     console.error('[sach-staging-pregame-backup-failed]',error instanceof Error?error.message:'backup failed');
+  if(recent){
+   // Frequent grading checks must not perform 2-minute Drive uploads.
+   // Read checksum-verified yesterday originals and prior FINALs only.
+   try{
+    const source=await readWorkerRecentReplayDay(env,scope,replay.consume);
+    console.info('[sach-staging-grading-source]',JSON.stringify(source));
+   }catch(error){
+    console.error('[sach-staging-grading-source-failed]',error instanceof Error?error.message:'read failed');
+    return;
+   }
+  }else{
+   try{
+    const result=await archiveWorkerHistoryDay(env,scope);
+    console.info('[sach-staging-history-archive]',JSON.stringify(result));
+   }finally{
+    // Back up original picks/quotes even if legacy history archive fails.
+    if(Object.hasOwn(PREGAME_MARKETS,scope.sport)){
+     try{
+      const backup=await archiveWorkerPregameDay(env,scope);
+      console.info('[sach-staging-pregame-backup]',JSON.stringify(backup));
+     }catch(error){
+      console.error('[sach-staging-pregame-backup-failed]',error instanceof Error?error.message:'backup failed');
+     }
     }
    }
   }
