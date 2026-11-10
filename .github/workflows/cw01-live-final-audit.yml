@@ -1,0 +1,51 @@
+name: CW01 live and final read-only acceptance audit
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths: ['.github/workflows/cw01-live-final-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check NBA NFL NHL schedules, live game states and settled history
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import concurrent.futures,datetime,json,urllib.request,urllib.error,collections,zoneinfo
+          base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
+          now=datetime.datetime.now(zoneinfo.ZoneInfo('America/Toronto'))
+          print('CW01_AUDIT_TIME '+json.dumps({'toronto':now.isoformat()}))
+          routes={}
+          for sport in ('nba','nfl','nhl'):
+            routes[sport+'-games']='/api/game-slate?sport='+sport+'&scope=calendar'
+            routes[sport+'-live']='/api/game-slate?sport='+sport
+            routes[sport+'-today']='/api/history/performance?sport='+sport+'&period=Today'
+            routes[sport+'-yesterday']='/api/history/performance?sport='+sport+'&period=Yesterday'
+            routes[sport+'-week']='/api/history/performance?sport='+sport+'&period=Week'
+          routes.update({'nba-previous':'/api/nba/rankings?market=points&day=previous','nba-q1-points':'/api/nba/rankings?market=q1_points','nba-q1-assists':'/api/nba/rankings?market=q1_assists','nba-q1-rebounds':'/api/nba/rankings?market=q1_rebounds'})
+          def check(pair):
+            name,path=pair
+            try:
+              req=urllib.request.Request(base+path,headers={'Accept':'application/json','User-Agent':'Sach-CW01-ReadOnly/1.0'})
+              with urllib.request.urlopen(req,timeout=65) as response: code=response.status;data=json.load(response)
+              o={'route':name,'http':code,'success':data.get('success'),'partial':data.get('partial')}
+              if 'games' in name or 'live' in name:
+                games=data.get('games') or []
+                o['games']=len(games);o['stateCounts']=dict(collections.Counter(str(g.get('state') or g.get('gameState') or g.get('status') or 'unknown') for g in games))
+                o['torontoToday']=sum(str(g.get('date') or g.get('startTime') or '')[:10]==now.date().isoformat() for g in games)
+                o['withGameId']=sum(bool(g.get('id') or g.get('gameId')) for g in games)
+                o['withClock']=sum(bool(g.get('clock')) for g in games)
+                o['examples']=[{'id':str(g.get('id') or g.get('gameId') or '')[:24], 'state':str(g.get('state') or g.get('status') or ''),'period':g.get('period'),'clockAvailable':bool(g.get('clock'))} for g in games if str(g.get('state') or '').lower() in ('in','live','post','final')][:3]
+              elif 'q1' in name or 'previous' in name:
+                rows=data.get('rows') or [];o['rows']=len(rows);o['boardDay']=data.get('boardDay');o['gameDays']=dict(collections.Counter(str(r.get('gameTime') or '')[:10] for r in rows));o['frozen']=sum(bool(r.get('boardFrozen')) for r in rows);o['quoteVerified']=sum(r.get('quoteVerified') is True for r in rows)
+              else:
+                cov=data.get('coverage') or {};records=data.get('records') or [];o['records']=len(records);o['settled']=sum(str(r.get('status') or '').lower() in ('hit','miss','push','void') for r in records);o['pending']=sum(str(r.get('status') or '').lower()=='pending' for r in records);o['coverageErrors']=len(cov.get('errors') or []);o['sourceDays']=len(cov.get('availableDates') or []);o['historySource']=cov.get('historySource')
+              return o
+            except Exception as err:return {'route':name,'error':type(err).__name__,'detail':str(err)[:95]}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            for result in pool.map(check,routes.items()):print('CW01_READONLY '+json.dumps(result,sort_keys=True))
+          PY
