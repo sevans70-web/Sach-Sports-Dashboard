@@ -908,10 +908,12 @@ function PlayerCard({
   card,
   sport,
   league,
+  archivedPrevious = false,
 }: {
   card: RankingCard;
   sport: RankingsSport;
   league: string;
+  archivedPrevious?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [formSpan, setFormSpan] = useState<5 | 10 | 20>(10);
@@ -965,7 +967,14 @@ function PlayerCard({
     actual: card.actual,
   });
 
-  const statusBadge=cardStatusBadge({...card.raw,gameState:card.gameState},state);
+  // Previous Slate is historical. An already-played game can await the
+  // official final status fetch, but it must never claim its lineup is pending
+  // as though the fixture were still upcoming.
+  const pendingHistoricalFinal=archivedPrevious&&state==='pregame'&&
+    Number.isFinite(Date.parse(card.gameTime))&&Date.parse(card.gameTime)<Date.now();
+  const statusBadge=pendingHistoricalFinal
+    ? {label:'Checking final status',tone:'pending' as const,notice:null}
+    : cardStatusBadge({...card.raw,gameState:card.gameState},state);
   const voidNote=voidRecordNote({...card.raw,resultStatus:card.resultStatus});
 
   const current =
@@ -1940,6 +1949,9 @@ export function PlayerRankingsPanel({
     const run = async () => {
       try {
         const params = new URLSearchParams({ sport });
+        // Previous NBA cards must match YESTERDAY's completed fixture IDs.
+        // The default current-slate feed may omit those games entirely.
+        if (sport === 'nba' && nbaSlate === 'previous') params.set('scope','calendar');
         if (sport === "soccer") params.set("league", league);
         const response = await fetch(`/api/game-slate?${params.toString()}`, { cache: "no-store" });
         if (!response.ok || stopped) return;
@@ -1957,7 +1969,7 @@ export function PlayerRankingsPanel({
       stopped = true;
       interval();
     };
-  }, [sport, league]);
+  }, [sport, league, nbaSlate]);
 
   useEffect(() => {
     if (sport !== "cfb") {
@@ -2686,7 +2698,7 @@ export function PlayerRankingsPanel({
               </section>
             ))
           : visible.map((card) => (
-              <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.raw?.gameId}`} card={card} sport={sport} league={league} />
+              <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.raw?.gameId}`} card={card} sport={sport} league={league} archivedPrevious={sport==='nba'&&nbaSlate==='previous'} />
             ))}
       </div>
 
