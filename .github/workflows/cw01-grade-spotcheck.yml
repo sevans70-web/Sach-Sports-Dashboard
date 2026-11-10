@@ -1,0 +1,58 @@
+name: CW01 read-only official grade spotcheck
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths: ['.github/workflows/cw01-grade-spotcheck.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Compare exact-game settled saved player records to official observations
+        run: |
+          python3 - <<'PY'
+          import json,urllib.request,collections
+          base='https://sach-sports-cloudflare-test.sevans70.workers.dev'
+          def get(url):
+            try:
+              req=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'Sach-CW01-Official-Grade-Audit'})
+              with urllib.request.urlopen(req,timeout=50) as f:return json.load(f)
+            except Exception as exc:return {'success':False,'error':type(exc).__name__}
+          for sport in ['nba','nfl','nhl']:
+            slate=get(base+'/api/game-slate?sport='+sport)
+            history=get(base+'/api/history/performance?sport='+sport+'&period=Today')
+            games=[g for g in (slate.get('games') or []) if g.get('state')=='post']
+            settled=[r for r in (history.get('records') or []) if str(r.get('status')).lower() in ('hit','miss','push') and r.get('gameId') and r.get('market')]
+            bygame=collections.Counter(str(r.get('gameId')) for r in settled)
+            sampled=sorted(games,key=lambda g:-bygame.get(str(g.get('id'))))[:3]
+            counts=collections.Counter()
+            samples=[]
+            for game in sampled:
+              gid=str(game.get('id'))
+              endpoint=('/api/basketball/live-player-stats?sport=nba&gameId='+gid) if sport=='nba' else ('/api/football/live-player-stats?sport=nfl&gameId='+gid) if sport=='nfl' else ('/api/nhl/live-player-stats?gameId='+gid)
+              official=get(base+endpoint)
+              players={str(r.get('playerId')):r for r in (official.get('rows') or [])}
+              rows=[r for r in settled if str(r.get('gameId'))==gid]
+              matched=0;actualMismatch=0;gradeMismatch=0
+              for r in rows:
+                playerId=str(r.get('playerId') or '')
+                if not playerId:
+                  counts['noPlayerIdInPublicHistory']+=1
+                  continue
+                p=players.get(playerId)
+                val=(p.get('stats') or {}).get(r.get('market')) if p else None
+                actual=r.get('actual')
+                if not isinstance(val,(int,float)) or not isinstance(actual,(int,float)):
+                  counts['notComparable']+=1
+                  continue
+                matched+=1;counts['numericComparable']+=1
+                if abs(float(val)-float(actual))>1e-8:actualMismatch+=1;counts['actualMismatch']+=1
+                line=r.get('line');pick=str(r.get('pick') or '').upper()
+                expected='hit' if (pick=='OVER' and val>line or pick=='UNDER' and val<line) else 'push' if val==line else 'miss' if pick in ('OVER','UNDER') and isinstance(line,(int,float)) else None
+                if expected and str(r.get('status')).lower()!=expected:gradeMismatch+=1;counts['gradeMismatch']+=1
+              samples.append({'gameId':gid,'officialSourceOk':official.get('success'),'officialState':official.get('state'),'historySettled':len(rows),'matched':matched,'actualMismatch':actualMismatch,'gradeMismatch':gradeMismatch})
+            print('CW01_OFFICIAL_GRADE '+json.dumps({'sport':sport,'gameFinals':len(games),'publicTodaySettled':len(settled),'counts':dict(counts),'sampled':samples},sort_keys=True))
+          PY
