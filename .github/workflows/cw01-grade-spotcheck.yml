@@ -27,8 +27,9 @@ jobs:
             games=[g for g in (slate.get('games') or []) if g.get('state')=='post']
             settled=[r for r in (history.get('records') or []) if str(r.get('status')).lower() in ('hit','miss','push') and r.get('gameId') and r.get('market')]
             bygame=collections.Counter(str(r.get('gameId')) for r in settled)
-            sampled=sorted(games,key=lambda g:-bygame.get(str(g.get('id'))))[:3]
+            sampled=sorted(games,key=lambda g:-int(bygame.get(str(g.get('id')),0)))[:3]
             counts=collections.Counter()
+            mismatchMarkets=collections.Counter()
             samples=[]
             for game in sampled:
               gid=str(game.get('id'))
@@ -53,10 +54,10 @@ jobs:
                   counts['notComparable']+=1
                   continue
                 matched+=1;counts['numericComparable']+=1
-                if abs(float(val)-float(actual))>1e-8:actualMismatch+=1;counts['actualMismatch']+=1
+                if abs(float(val)-float(actual))>1e-8:actualMismatch+=1;counts['actualMismatch']+=1;mismatchMarkets['actual:'+str(r.get('market'))]+=1
                 line=r.get('line');pick=str(r.get('pick') or '').upper()
                 expected=('hit' if (pick=='OVER' and val>line or pick=='UNDER' and val<line) else 'push' if val==line else 'miss') if pick in ('OVER','UNDER') and isinstance(line,(int,float)) else None
-                if expected and str(r.get('status')).lower()!=expected:gradeMismatch+=1;counts['gradeMismatch']+=1
+                if expected and str(r.get('status')).lower()!=expected:gradeMismatch+=1;counts['gradeMismatch']+=1;mismatchMarkets['grade:'+str(r.get('market'))]+=1
               samples.append({'gameId':gid,'officialSourceOk':official.get('success'),'officialState':official.get('state'),'historySettled':len(rows),'matched':matched,'actualMismatch':actualMismatch,'gradeMismatch':gradeMismatch})
-            print('CW01_OFFICIAL_GRADE '+json.dumps({'sport':sport,'gameFinals':len(games),'publicTodaySettled':len(settled),'counts':dict(counts),'sampled':samples},sort_keys=True))
+            print('CW01_OFFICIAL_GRADE '+json.dumps({'sport':sport,'gameFinals':len(games),'publicTodaySettled':len(settled),'counts':dict(counts),'mismatchMarkets':dict(mismatchMarkets),'sampled':samples},sort_keys=True))
           PY
