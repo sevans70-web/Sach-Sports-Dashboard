@@ -62,7 +62,7 @@ test('rotates each official final game in bounded two-fixture scheduled batches'
    examined.add(id);
    return Response.json({success:true,gameId:id,state:'post',rows:[{playerId:String(Number(id)+500),stats:{points:17}}]});
   },undefined,i);
-  assert.equal(outcome.games,i===2?1:2);
+  assert.equal(outcome.games,2);
  }
  assert.deepEqual([...examined].sort(),['123','124','125','126','127']);
 });
