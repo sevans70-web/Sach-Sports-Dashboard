@@ -15,7 +15,8 @@ export function workerHistoryBackupScope(scheduledTime, recent=false){
  // The short-interval staging cron ticks on EVEN minutes. Indexing those
  // minutes directly skips every odd-index sport forever; advance one sport per
  // two-minute tick for recent reconciliation, keeping daily archive scope intact.
- const sport = [...SPORTS][(recent?Math.floor(now.getUTCMinutes()/2):now.getUTCMinutes()) % SPORTS.size];
+ const active=['nba','nfl','nhl'];
+ const sport = recent?active[Math.floor(now.getUTCMinutes()/2)%active.length]:[...SPORTS][now.getUTCMinutes()%SPORTS.size];
  const oldest = retentionCutoff(now);
  if(!recent)return {sport,day:oldest};
  // Recent official-grade replays must inspect the immediately completed
