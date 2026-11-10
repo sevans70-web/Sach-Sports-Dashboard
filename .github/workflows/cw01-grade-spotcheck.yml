@@ -35,14 +35,18 @@ jobs:
               endpoint=('/api/basketball/live-player-stats?sport=nba&gameId='+gid) if sport=='nba' else ('/api/football/live-player-stats?sport=nfl&gameId='+gid) if sport=='nfl' else ('/api/nhl/live-player-stats?gameId='+gid)
               official=get(base+endpoint)
               players={str(r.get('playerId')):r for r in (official.get('rows') or [])}
+              byname=collections.defaultdict(list)
+              def namekey(v):return ''.join(ch for ch in str(v or '').lower() if ch.isalpha())
+              for player in (official.get('rows') or []):byname[namekey(player.get('playerName'))].append(player)
               rows=[r for r in settled if str(r.get('gameId'))==gid]
               matched=0;actualMismatch=0;gradeMismatch=0
               for r in rows:
                 playerId=str(r.get('playerId') or '')
-                if not playerId:
-                  counts['noPlayerIdInPublicHistory']+=1
-                  continue
-                p=players.get(playerId)
+                p=players.get(playerId) if playerId else None
+                if not p:
+                  named=byname.get(namekey(r.get('playerName')),[])
+                  p=named[0] if len(named)==1 else None
+                if not p:counts['missingExactPlayerMatch']+=1
                 val=(p.get('stats') or {}).get(r.get('market')) if p else None
                 actual=r.get('actual')
                 if not isinstance(val,(int,float)) or not isinstance(actual,(int,float)):
@@ -51,7 +55,7 @@ jobs:
                 matched+=1;counts['numericComparable']+=1
                 if abs(float(val)-float(actual))>1e-8:actualMismatch+=1;counts['actualMismatch']+=1
                 line=r.get('line');pick=str(r.get('pick') or '').upper()
-                expected='hit' if (pick=='OVER' and val>line or pick=='UNDER' and val<line) else 'push' if val==line else 'miss' if pick in ('OVER','UNDER') and isinstance(line,(int,float)) else None
+                expected=('hit' if (pick=='OVER' and val>line or pick=='UNDER' and val<line) else 'push' if val==line else 'miss') if pick in ('OVER','UNDER') and isinstance(line,(int,float)) else None
                 if expected and str(r.get('status')).lower()!=expected:gradeMismatch+=1;counts['gradeMismatch']+=1
               samples.append({'gameId':gid,'officialSourceOk':official.get('success'),'officialState':official.get('state'),'historySettled':len(rows),'matched':matched,'actualMismatch':actualMismatch,'gradeMismatch':gradeMismatch})
             print('CW01_OFFICIAL_GRADE '+json.dumps({'sport':sport,'gameFinals':len(games),'publicTodaySettled':len(settled),'counts':dict(counts),'sampled':samples},sort_keys=True))
