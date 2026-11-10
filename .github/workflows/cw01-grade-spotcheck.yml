@@ -22,8 +22,8 @@ jobs:
               with urllib.request.urlopen(req,timeout=50) as f:return json.load(f)
             except Exception as exc:return {'success':False,'error':type(exc).__name__}
           for sport in ['nba','nfl','nhl']:
-            slate=get(base+'/api/game-slate?sport='+sport)
-            history=get(base+'/api/history/performance?sport='+sport+'&period=Today')
+            slate=get(base+'/api/game-slate?sport='+sport+'&scope=calendar')
+            history=get(base+'/api/history/performance?sport='+sport+'&period=Yesterday')
             games=[g for g in (slate.get('games') or []) if g.get('state')=='post']
             settled=[r for r in (history.get('records') or []) if str(r.get('status')).lower() in ('hit','miss','push') and r.get('gameId') and r.get('market')]
             bygame=collections.Counter(str(r.get('gameId')) for r in settled)
