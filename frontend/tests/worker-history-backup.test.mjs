@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {checksum} from '../scripts/history-cloud.mjs';
-import {archiveWorkerHistoryDay,workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
+import {archiveWorkerHistoryDay,workerHistoryBackupScope,readWorkerRecentReplayDay} from '../scripts/worker-history-backup.mjs';
 
 const scope={sport:'nba',day:'2026-11-09'};
 const env={BACKUP_DRIVE_FOLDER_ID:'staging-folder'};
@@ -100,4 +100,40 @@ test('successive checks of the same sport advance independent replay batches',()
  });
  assert.equal(new Set(observations.map(x=>x.sport)).size,1);
  assert.equal(new Set(observations.map(x=>x.batch)).size,4);
+});
+
+
+test('recent replay reads checksum-protected finals without uploading to Drive',async()=>{
+ const day='2026-11-09',payload=[{payload:{kind:'official_final_checkpoint',gameId:'777'}}];
+ const row={stream:'protected_final_777',game_date:day,payload,checksum:checksum(payload)};
+ const visited=[];
+ let requests=0;
+ const result=await readWorkerRecentReplayDay(
+  {SUPABASE_URL:'https://example.supabase.co/',SUPABASE_SECRET_KEY:'sb_secret_test'},
+  {sport:'nba',day},doc=>visited.push(doc),
+  async(url,options)=>{
+   requests++;
+   assert.equal(new URL(url).pathname,'/rest/v1/history_documents');
+   assert.equal(new URL(url).searchParams.get('game_date'),'eq.'+day);
+   assert.equal(new URL(url).searchParams.get('sport'),'eq.nba');
+   assert.equal(options?.headers?.apikey,'sb_secret_test');
+   assert.equal(options?.method,undefined);
+   return Response.json([row]);
+  }
+ );
+ assert.equal(requests,1);
+ assert.deepEqual(result,{sport:'nba',day,documents:1,finals:1,pregame:0});
+ assert.deepEqual(visited,[{stream:row.stream,payload}]);
+});
+
+test('a tampered protected receipt stops read-only grading replay',async()=>{
+ const payload=[{savedAt:'2026-11-10T00:00:00Z',payload:{kind:'pregame_checkpoint'}}];
+ const row={stream:'protected_pregame_777_points',game_date:'2026-11-09',payload,checksum:'not-valid'};
+ let called=false;
+ await assert.rejects(readWorkerRecentReplayDay(
+  {SUPABASE_URL:'https://example.supabase.co',SUPABASE_SECRET_KEY:'sb_secret_test'},
+  {sport:'nba',day:'2026-11-09'},()=>{called=true;},
+  async()=>Response.json([row])
+ ),/checksum mismatch/);
+ assert.equal(called,false);
 });
