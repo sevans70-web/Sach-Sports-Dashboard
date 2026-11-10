@@ -79,6 +79,10 @@ test('the daily schedule rotates each sport and selects Toronto history dates',(
  assert.equal(new Set(entries.map(item=>item.sport)).size,8);
  assert(entries.every(item=>item.day==='2026-11-03'));
  assert.equal(workerHistoryBackupScope(Date.parse('2026-11-09T04:16:00Z'),true).day,'2026-11-07');
+ // Toronto midnight rolls at 05:00Z in November; a morning replay must
+ // inspect yesterday, not the day before yesterday.
+ assert.equal(workerHistoryBackupScope(Date.parse('2026-11-10T16:00:00Z'),true).day,'2026-11-09');
+ assert.equal(workerHistoryBackupScope(Date.parse('2026-11-10T04:59:00Z'),true).day,'2026-11-08');
 });
 
 test('the two-minute recent grading replay covers every sport instead of only even indices',()=>{
