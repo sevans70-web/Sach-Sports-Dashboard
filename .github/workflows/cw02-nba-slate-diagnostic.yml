@@ -1,0 +1,32 @@
+name: CW02 NBA game slate outage diagnostic
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths: ['.github/workflows/cw02-nba-slate-diagnostic.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect staging NBA calendar endpoint and independent ESPN NBA scoreboard
+        run: |
+          python3 - <<'PY'
+          import urllib.request,json,concurrent.futures,time
+          urls={
+            'nba-calendar':'https://sach-sports-cloudflare-test.sevans70.workers.dev/api/game-slate?sport=nba&scope=calendar',
+            'nba-current':'https://sach-sports-cloudflare-test.sevans70.workers.dev/api/game-slate?sport=nba',
+            'espn-nov10':'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261110&limit=100',
+          }
+          def audit(x):
+            label,url=x;start=time.monotonic()
+            try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'Sach-CW02-Slate-Diagnostic'}),timeout=80) as res:
+                payload=json.load(res)
+                rows=payload.get('games') if label.startswith('nba') else payload.get('events')
+                return dict(label=label,http=res.status,success=payload.get('success'),count=len(rows or []),error=str(payload.get('error') or '')[:180],seconds=round(time.monotonic()-start,1),games=[{'id':str(g.get('id')),'state':g.get('state'),'date':g.get('date')} for g in (rows or [])[:4]])
+            except Exception as ex:return dict(label=label,error=str(ex)[:250],seconds=round(time.monotonic()-start,1))
+          with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+            for row in pool.map(audit,urls.items()):print('CW02_NBA_SLATE '+json.dumps(row,sort_keys=True))
+          PY
