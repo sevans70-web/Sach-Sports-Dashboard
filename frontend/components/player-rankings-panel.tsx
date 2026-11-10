@@ -1944,8 +1944,10 @@ export function PlayerRankingsPanel({
         const response = await fetch(`/api/game-slate?${params.toString()}`, { cache: "no-store" });
         if (!response.ok || stopped) return;
         const payload = await response.json();
-        if (!stopped) {
-          setSharedStatusGames(Array.isArray(payload?.games) ? payload.games : []);
+        // Failed or malformed polls are not an official zero-game slate.
+        // Preserve last valid live/final fixture statuses across transient errors.
+        if (!stopped && payload?.success !== false && Array.isArray(payload?.games)) {
+          if (payload.games.length) setSharedStatusGames(payload.games);
         }
       } catch {}
     };
