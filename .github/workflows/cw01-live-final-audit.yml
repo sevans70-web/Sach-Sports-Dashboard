@@ -11,6 +11,38 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - name: Trace actual Q1 cards through public visibility and positive EV
+        shell: bash
+        run: |
+          npm ci --prefix frontend --ignore-scripts --no-audit --no-fund --silent
+          node --input-type=module <<'NODE'
+          import {loadTs} from './frontend/tests/load-ts.mjs';
+          const {integrityRow}=await loadTs(new URL('./frontend/lib/prop-integrity.ts',import.meta.url));
+          const {publicNbaRanking}=await loadTs(new URL('./frontend/lib/public-card-metrics.ts',import.meta.url));
+          const {nbaCardEv}=await loadTs(new URL('./frontend/lib/nba-ev-ranking.ts',import.meta.url));
+          const {scopedNbaBoard,nbaFixtureDay}=await loadTs(new URL('./frontend/lib/nba-slate-scope.ts',import.meta.url));
+          const base='https://sach-sports-cloudflare-test.sevans70.workers.dev';
+          const today=nbaFixtureDay(new Date());
+          for(const market of ['q1_points','q1_rebounds','q1_assists']){
+            const url=base+'/api/nba/rankings?market='+market+'&calendar='+today;
+            try{
+              const response=await fetch(url,{signal:AbortSignal.timeout(60000)});
+              const data=await response.json();
+              const scoped=scopedNbaBoard(data,market,today);
+              const normalized=scoped.rows.map(r=>integrityRow(r,'nba',market));
+              const visible=normalized.filter(r=>publicNbaRanking(r));
+              const positive=visible.filter(r=>nbaCardEv({raw:r})!=null);
+              const rawPositive=normalized.filter(r=>nbaCardEv({raw:r})!=null);
+              const sameDay=data.rows.filter(r=>nbaFixtureDay(r.gameTime)===today).length;
+              const reasons={};
+              for(const r of visible.filter(r=>nbaCardEv({raw:r})==null)) {
+                const key=String(r.researchForecast?.selectionReason||r.researchForecast?.reason||r.researchForecast?.status||'none');
+                reasons[key]=(reasons[key]||0)+1;
+              }
+              console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,http:response.status,apiRows:data.rows?.length,sourceBoardDay:data.boardDay,today,actualFixtureDayRows:sameDay,scoped:scoped.rows.length,verified:normalized.filter(r=>r.quoteVerified).length,public:visible.length,positiveEvBeforePublic:rawPositive.length,positiveEvAfterPublic:positive.length,blockedReasons:reasons,sourceFailures:data.error||null}));
+            }catch(error){console.log('CW01_Q1_FUNNEL '+JSON.stringify({market,error:error?.name||String(error)}));}
+          }
+          NODE
       - name: Check NBA NFL NHL schedules, live game states and settled history
         shell: bash
         run: |
