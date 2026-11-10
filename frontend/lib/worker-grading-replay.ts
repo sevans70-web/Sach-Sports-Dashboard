@@ -33,7 +33,7 @@ export function createWorkerGradingReplay(sport:string){
     }
    }
   },
-  async verify(fetchRoute:(path:string)=>Promise<Response>,saveCorrections?:(finals:any[])=>Promise<void>){
+  async verify(fetchRoute:(path:string)=>Promise<Response>,saveCorrections?:(finals:any[])=>Promise<void>,batchIndex=0){
    const games = new Map<string,any[]>();
    for(const row of originals.values()){
     const game=String(row.gameId);
@@ -42,7 +42,13 @@ export function createWorkerGradingReplay(sport:string){
     rows.push(row);
     games.set(game,rows);
    }
-   const candidates=[...games].sort((a,b)=>b[1].length-a[1].length).slice(0,2);
+   // Rotating bounded batches inspect every finished game over successive
+   // scheduled ticks. Previously the top-two-only selection permanently
+   // skipped other final fixtures and their late boxscore corrections.
+   const ordered=[...games].sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0]));
+   const index=Number.isFinite(batchIndex)?Math.max(0,Math.floor(batchIndex)):0;
+   const start=ordered.length?(index*2)%ordered.length:0;
+   const candidates=Array.from({length:Math.min(2,ordered.length)},(_,i)=>ordered[(start+i)%ordered.length]);
    let checked=0,matched=0,differences=0,unavailable=0;
    const corrections=[];
    for(const [game,rows] of candidates){
