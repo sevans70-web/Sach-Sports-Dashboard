@@ -1629,7 +1629,19 @@ export function GameSlatePage({
   useEffect(() => {
     let alive = true;
     let controller: AbortController | null = null;
-
+    // A cold navigation must not turn a previously verified slate into "0
+    // games" because one provider polling request failed. Restore only a
+    // recent real API response; never fabricate or retain expired fixtures.
+    const cacheKey=`sach:verified-game-calendar:v1:${sport}:${league}`;
+    try{
+      const saved=JSON.parse(window.localStorage.getItem(cacheKey)||'null');
+      if(saved&&Number.isFinite(saved.at)&&Date.now()-saved.at<30*60_000&&
+         Array.isArray(saved.games)&&saved.games.length&&
+         saved.games.every((game:Game)=>game.id&&Number.isFinite(Date.parse(game.date)))){
+        setGames(saved.games);
+        setWeekNumber(Number(saved.weekNumber||0)||null);
+      }
+    }catch{}
     const load = () => {
       controller?.abort();
       controller = new AbortController();
@@ -1640,11 +1652,20 @@ export function GameSlatePage({
         league,
       });
 
-      fetch(`/api/game-slate?${params.toString()}`, {
-        cache: "no-store",
-        signal: controller.signal,
-      })
-        .then((response) => response.json())
+      const readSlate=async()=>{
+        const options={cache:"no-store" as const,signal:controller!.signal};
+        const primary=await fetch(`/api/game-slate?${params.toString()}`,options)
+          .then(response=>response.ok?response.json():null).catch(()=>null);
+        if(primary?.success!==false&&Array.isArray(primary?.games)&&primary.games.length)return primary;
+        // Recover the current/tomorrow game window if broad calendar fetch
+        // fails. This remains sourced exclusively from actual schedule data.
+        const fallbackParams=new URLSearchParams({sport,league});
+        const fallback=await fetch(`/api/game-slate?${fallbackParams.toString()}`,options)
+          .then(response=>response.ok?response.json():null).catch(()=>null);
+        return fallback?.success!==false&&Array.isArray(fallback?.games)&&fallback.games.length
+          ?{...fallback,partialCalendar:true}:primary||fallback||{success:false,games:[]};
+      };
+      readSlate()
         .then((payload) => {
           if (!alive) return;
 
@@ -1656,8 +1677,11 @@ export function GameSlatePage({
           if(valid){
             setGames(incoming);
             setWeekNumber(Number(payload?.weekNumber||0)||null);
+            try{window.localStorage.setItem(cacheKey,JSON.stringify({
+              at:Date.now(),games:incoming,weekNumber:payload?.weekNumber||null,
+            }));}catch{}
           }
-          setError(valid?"":payload?.success===false
+          setError(valid?(payload?.partialCalendar?"Showing verified current games; full calendar is temporarily unavailable.":""):payload?.success===false
              ?payload?.error||"Schedule temporarily unavailable; showing last saved games."
              : "Schedule temporarily unavailable; showing last saved games.");
 
