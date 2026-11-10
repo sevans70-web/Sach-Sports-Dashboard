@@ -9,7 +9,18 @@ import "./dashboard-shell.css";
 
 export const metadata: Metadata = {
   title: "Sach Sports",
+  applicationName: "Sach Sports",
   description: "Multi-sport game intelligence and player prop research",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Sach Sports",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: "/brand/sach-sports-crown-logo.png",
+    apple: "/brand/sach-sports-crown-logo.png",
+  },
 };
 
 export const viewport: Viewport = {
