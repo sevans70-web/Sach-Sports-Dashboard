@@ -1,0 +1,49 @@
+name: CW01 Nov 10 slate rollover acceptance
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths: ['.github/workflows/cw01-nov10-rollover.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Validate Toronto Previous/Today/Tomorrow NBA rankings and saved results
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import concurrent.futures,json,urllib.request,urllib.error,datetime,collections,zoneinfo
+          base="https://sach-sports-cloudflare-test.sevans70.workers.dev"
+          now=datetime.datetime.now(zoneinfo.ZoneInfo('America/Toronto'))
+          print("CW01_ROLLOVER_TIME "+json.dumps({'toronto':now.isoformat(),'today':now.date().isoformat(),'previous':(now.date()-datetime.timedelta(days=1)).isoformat()}))
+          routes={}
+          for market in ['points','rebounds','assists','threes_made','steals','blocks','q1_points','q1_rebounds','q1_assists','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket']:
+            routes['previous-'+market]='/api/nba/rankings?market='+market+'&day=previous'
+          routes['today-points']='/api/nba/rankings?market=points&day=today'
+          routes['tomorrow-points']='/api/nba/rankings?market=points&day=tomorrow'
+          routes['history-nba-yesterday']='/api/history/performance?sport=nba&period=Yesterday'
+          routes['history-nba-week']='/api/history/performance?sport=nba&period=Week'
+          routes['history-nfl-yesterday']='/api/history/performance?sport=nfl&period=Yesterday'
+          routes['history-nhl-yesterday']='/api/history/performance?sport=nhl&period=Yesterday'
+          def fetch(pair):
+            key,path=pair
+            try:
+              req=urllib.request.Request(base+path,headers={'Accept':'application/json','User-Agent':'Sach-CW01-Nov10-Rollover/1.0'})
+              with urllib.request.urlopen(req,timeout=55) as res:
+                status=res.status;d=json.load(res)
+              out={'route':key,'http':status,'success':d.get('success'),'partial':d.get('partial')}
+              if key.startswith(('previous','today','tomorrow')):
+                rows=d.get('rows') or []
+                out.update({'boardDay':d.get('boardDay'),'rows':len(rows),'frozen':sum(r.get('boardFrozen') is True for r in rows),'quoteVerified':sum(r.get('quoteVerified') is True for r in rows),'gameTimeUTCDateCounts':dict(collections.Counter(str(r.get('gameTime') or '')[:10] for r in rows)),'boardUnavailable':d.get('boardUnavailable'),'warning':str(d.get('warning') or '')[:100]})
+              else:
+                records=d.get('records') or []
+                out.update({'records':len(records),'settled':sum(str(r.get('status')).lower() in ('hit','miss','push','void') for r in records),'pending':sum(str(r.get('status')).lower()=='pending' for r in records),'coverageErrors':len((d.get('coverage') or {}).get('errors') or []),'recordDates':dict(collections.Counter(str(r.get('gameDate') or '')[:10] for r in records))})
+              return out
+            except urllib.error.HTTPError as err:return {'route':key,'http':err.code,'error':'HTTPError'}
+            except Exception as err:return {'route':key,'error':type(err).__name__,'message':str(err)[:110]}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
+            for item in pool.map(fetch,routes.items()):print('CW01_ROLLOVER '+json.dumps(item,sort_keys=True))
+          PY
