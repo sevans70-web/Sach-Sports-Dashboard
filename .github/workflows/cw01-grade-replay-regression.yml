@@ -1,0 +1,27 @@
+name: CW01 postgame replay regression
+on:
+  push:
+    branches: [cloudflare-compatibility-test]
+    paths:
+      - 'frontend/lib/worker-grading-replay.ts'
+      - 'frontend/scripts/worker-history-backup.mjs'
+      - 'frontend/worker-entry.mjs'
+      - 'frontend/tests/worker-grading-replay.test.mjs'
+      - 'frontend/tests/worker-history-backup.test.mjs'
+      - '.github/workflows/cw01-grade-replay-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --prefix frontend --ignore-scripts --no-audit --no-fund --silent
+      - run: node --test frontend/tests/worker-grading-replay.test.mjs frontend/tests/worker-history-backup.test.mjs
