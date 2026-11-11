@@ -2382,7 +2382,7 @@ export function PlayerRankingsPanel({
       interval();
       if(retryTimer)clearTimeout(retryTimer);
     };
-  }, [sport, groupKey, marketKey, league, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sport, groupKey, marketKey, league, cfbSlate, nbaSlate, nhlSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!["nfl","cfb","nhl","nba","wnba","cbb"].includes(sport) || !cards.length) return;
