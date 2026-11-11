@@ -135,3 +135,60 @@
 .shPlayerDetails small {
   text-transform: none;
 }
+
+.ssSiteNav:has(a.active[href="/"]) {
+  width: min(100%, 360px);
+  margin-inline: auto;
+  gap: 3px;
+}
+.ssSiteNav:has(a.active[href="/"]) a {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+}
+.shHero.shHomeArena {
+  align-items: flex-start;
+}
+.shHomeArena .shHeroContent {
+  padding-top: clamp(24px, 5vw, 42px);
+}
+.shHomeArena .shHeroContent p {
+  max-width: 440px;
+  margin: 12px 0 0;
+  color: #f2ebe0;
+  font-size: clamp(13px, 2vw, 17px);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.shRoot [data-sport="nba"] { --sh-sport-accent: #f4ac76; }
+.shRoot [data-sport="nfl"] { --sh-sport-accent: #8fd0be; }
+.shRoot [data-sport="nhl"] { --sh-sport-accent: #a9c6fa; }
+.shSnapshotList a strong,
+.shPickStatus strong {
+  color: var(--sh-sport-accent, #eac46d);
+}
+.shPredictionRow[data-sport],
+.shPickStatus {
+  border-inline-start: 2px solid var(--sh-sport-accent, #eac46d);
+}
+.shPickStatus small {
+  display: block;
+  margin-top: 4px;
+  color: #c6c1b8;
+}
+.shPickEv {
+  align-self: flex-start;
+  flex-shrink: 0;
+  color: #eee7db;
+  background: #262425;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.shPositiveEv {
+  color: #a6ebc9;
+  background: #163426;
+}

@@ -27,6 +27,7 @@ type Summary = {
 type SavedPlay = {
   basis: string;
   price: number;
+  expectedReturn: number;
   row: {
     playerId: string;
     playerName: string;
@@ -40,6 +41,7 @@ type SavedPlay = {
     sportsbook: string;
     headshot?: string;
     photoUrl?: string;
+    estimatedEv?: { status: string; percent: number | null; side?: string; line?: number; odds?: number; sportsbook?: string };
   };
 };
 type Featured = { slateDay: string; plays: { key: string; pick: SavedPlay | null }[] };
@@ -114,7 +116,7 @@ export default function HomeShowcase() {
         <section className="shHero shHomeArena">
           <div className="shHeroContent">
             <h1>YOUR <em>GAME.</em><br />OUR INTELLIGENCE.</h1>
-            <p>Player data <i>•</i> Game context <i>•</i> Smarter predictions</p>
+            <p>Get a clear read on the slate. Explore matchups, compare player props, and see the numbers behind each Sach Pick.</p>
           </div>
         </section>
 
@@ -134,7 +136,7 @@ export default function HomeShowcase() {
           <div className="shSnapshotList">
             {VISIBLE_SPORTS.map(sport => {
               const summary = summaries[sport];
-              return <Link href={`/${sport}`} key={sport}>
+              return <Link href={`/${sport}`} key={sport} data-sport={sport}>
                 <strong>{sport.toUpperCase()}</strong>
                 <span>{summary?.scheduleAvailable ? `${summary.games} games` : summary === undefined ? "Loading games…" : "Games unavailable"}</span>
                 <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} picks` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
@@ -170,23 +172,41 @@ export default function HomeShowcase() {
               <div className="shPredList">
                 {VISIBLE_SPORTS.map(sport => {
                   const slate = featured[sport];
-                  const play = slate?.plays.find(card => card.key === "play")?.pick;
+                  const play = ["play", "value", "long"]
+                    .map(category => slate?.plays.find(card => card.key === category)?.pick)
+                    .find(pick => pick?.basis === "model" && Number.isFinite(pick.expectedReturn) && pick.expectedReturn > 0);
                   const row = play?.row;
                   const team = row?.teamName || row?.team || row?.teamAbbr;
                   const teamKey = team?.toLowerCase().replace(/[^a-z0-9]/g, "");
                   if (!slate || play?.basis !== "model" || !row || !teamKey || teams.has(teamKey) || (today && slate.slateDay < today)) {
-                    return <p className="shHomeEmpty" key={sport}><strong>{sport.toUpperCase()}</strong> {slate === undefined ? "Checking saved picks…" : slate === null ? "Saved picks unavailable" : "No qualifying pick"}</p>;
+                    const nextGame = [...(summaries[sport]?.previewGames ?? [])]
+                      .filter(game => game.state === "pre" && Date.parse(game.date) > Date.now())
+                      .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))[0];
+                    return <div className="shHomeEmpty shPickStatus" key={sport} data-sport={sport}>
+                      <strong>{sport.toUpperCase()}</strong>
+                      <span>{slate === undefined ? "Checking saved picks…" : slate === null ? "Saved picks unavailable" : "Awaiting a qualified pick"}
+                        {nextGame && <small>{nextGame.awayAbbr} @ {nextGame.homeAbbr} · {displayTime(nextGame.date)}</small>}
+                      </span>
+                    </div>;
                   }
                   teams.add(teamKey);
                   const photo = row.headshot || row.photoUrl;
-                  return <Link className="shPredictionRow" href={`/${sport}`} key={sport}>
+                  const ev = row.estimatedEv;
+                  const verifiedEv = ev?.status === "available" && typeof ev.percent === "number" &&
+                    Number.isFinite(ev.percent) && ev.side === row.prediction &&
+                    ev.line === row.sportsbookLine && ev.odds === play.price && ev.sportsbook === row.sportsbook
+                    ? ev.percent : null;
+                  return <Link className="shPredictionRow" href={`/${sport}`} key={sport} data-sport={sport}>
                     {photo && <img src={photo} alt="" />}
                     <span className="shPlayerDetails">
                       <strong>{row.playerName}</strong>
                       <small>{sport.toUpperCase()} · {team} · {row.market.replaceAll("_", " ")}</small>
-                      <small>{row.prediction} {row.sportsbookLine} · {row.sportsbook} {play.price > 0 ? "+" : ""}{play.price}</small>
+                      <small>{row.prediction} {row.sportsbookLine} · Saved at {row.sportsbook} {play.price > 0 ? "+" : ""}{play.price}</small>
                       {today && slate.slateDay > today && <small>Next slate · {displayTime(row.gameTime)}</small>}
                     </span>
+                    {verifiedEv !== null && <span className={`shPickEv ${verifiedEv > 0 ? "shPositiveEv" : ""}`}>
+                      EV {verifiedEv > 0 ? "+" : ""}{verifiedEv.toFixed(1)}%
+                    </span>}
                   </Link>;
                 })}
               </div>
