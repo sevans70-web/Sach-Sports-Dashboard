@@ -1,60 +1,66 @@
-import {NextRequest,NextResponse} from "next/server";
-import {GET as nfl} from "../nfl/performance/route";
-import {GET as nba} from "../nba/performance/route";
-import {GET as nhl} from "../nhl/performance/route";
+import {NextResponse} from "next/server";
+import {cloudConfigured,cloudRequest} from "../../../scripts/history-cloud.mjs";
+import {NFL_MARKETS} from "@/lib/nfl";
+import {NHL_MARKETS} from "@/lib/nhl";
 
-// The home page describes *recent* prediction accuracy, not just a single
-// default market on the current day. Use seven days of saved, graded NBA/NFL/NHL
-// predictions, matching Results & History (hits / hits + misses, no pushes).
+// Home hit rate is the combined *all-recorded-history* performance of saved,
+// graded NBA/NFL/NHL predictions. Never invoke expensive full-season grading
+// endpoints on a homepage request. Those remain available in Results & History.
 export const dynamic="force-dynamic";
-const SOURCES = [
-  {sport:"nba",handler:nba},
-  {sport:"nhl",handler:nhl},
-  {sport:"nfl",group:"QB",handler:nfl},
-  {sport:"nfl",group:"Offense",handler:nfl},
-  {sport:"nfl",group:"Defense",handler:nfl},
-] as const;
-type Result={sport:string;group?:string;connected:boolean;hits:number;settled:number;pending:number};
-let cached:{at:number;payload:any}|null=null;
-let pending:Promise<any>|null=null;
-const integer=(v:unknown)=>typeof v==="number"&&Number.isSafeInteger(v)&&v>=0?v:0;
-async function source(req:NextRequest,entry:typeof SOURCES[number]):Promise<Result>{
- const url=new URL(`/api/${entry.sport}/performance`,req.nextUrl.origin);
- url.searchParams.set("period","Week");
- if("group" in entry&&entry.group)url.searchParams.set("group",entry.group);
- let timer:ReturnType<typeof setTimeout>|undefined;
- try{
-  const response=await Promise.race([
-   entry.handler(new NextRequest(url)),
-   new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error("Performance source timed out")),30_000)}),
-  ]);
-  const data=await response.json();
-  const result=(data.sachPickPerformance&&typeof data.sachPickPerformance==="object")?data.sachPickPerformance:data;
-  const connected=response.ok&&data.success!==false&&result.connected!==false&&data.historyPartial!==true;
-  // NBA saved-model summaries include pushes in "settled"; hit rate must
-  // divide by decisions (hits + misses), never by pushes.
-  const decisions=entry.sport==="nba"&&typeof result.misses==="number"
-   ? integer(result.hits)+integer(result.misses)
-   : integer(result.settled);
-  return {sport:entry.sport,...("group" in entry?{group:entry.group}:{}),connected,hits:connected?integer(result.hits):0,settled:connected?decisions:0,pending:connected?integer(result.pending):0};
- }catch{
-  return {sport:entry.sport,...("group" in entry?{group:entry.group}:{}),connected:false,hits:0,settled:0,pending:0};
- }finally{clearTimeout(timer)}
+type Grade="hit"|"miss"|"pending"|"push"|"void";
+type Sport="nba"|"nfl"|"nhl";
+type Tally={sport:Sport;hits:number;misses:number;pending:number;pushes:number;void:number;settled:number};
+type Document={stream:string;game_date:string;payload:unknown};
+const PAGE_SIZE=200;
+const sources:{sport:Sport;filter:string}[]=[
+ {sport:"nba",filter:"stream=like.model_pick_results_*"},
+ {sport:"nfl",filter:`stream=in.(${NFL_MARKETS.map(m=>m[0]).join(",")})`},
+ {sport:"nhl",filter:`stream=in.(${NHL_MARKETS.map(m=>m[0]).join(",")})`},
+];
+const empty=(sport:Sport):Tally=>({sport,hits:0,misses:0,pending:0,pushes:0,void:0,settled:0});
+async function tallySport(sport:Sport,filter:string):Promise<Tally>{
+ const result=empty(sport);
+ for(let offset=0;;offset+=PAGE_SIZE){
+  const path=`history_documents?select=stream,game_date,payload&sport=eq.${sport}&${filter}&order=game_date.asc,stream.asc&limit=${PAGE_SIZE}&offset=${offset}`;
+  const rows=await cloudRequest(path,{signal:AbortSignal.timeout(15_000)}) as Document[];
+  if(!Array.isArray(rows))throw Error("History documents response unavailable");
+  for(const row of rows){
+   if(!Array.isArray(row.payload))continue;
+   for(const record of row.payload){
+    if(!record||typeof record!=="object")continue;
+    const status=(record as {status?:string}).status as Grade|undefined;
+    if(status==="hit")result.hits++;
+    else if(status==="miss")result.misses++;
+    else if(status==="pending")result.pending++;
+    else if(status==="push")result.pushes++;
+    else if(status==="void")result.void++;
+   }
+  }
+  if(rows.length<PAGE_SIZE)break;
+  if(offset>=5000)throw Error("History document pagination exceeded safe limit");
+ }
+ result.settled=result.hits+result.misses;
+ return result;
 }
-export async function GET(req:NextRequest){
- if(cached&&Date.now()-cached.at<120_000)return NextResponse.json(cached.payload,{headers:{"Cache-Control":"no-store"}});
- if(!pending)pending=(async()=>{
-  const sports=await Promise.all(SOURCES.map(entry=>source(req,entry)));
+let cached:{at:number;payload:unknown}|null=null;
+let running:Promise<unknown>|null=null;
+export async function GET(){
+ if(cached&&Date.now()-cached.at<300_000)return NextResponse.json(cached.payload,{headers:{"Cache-Control":"no-store"}});
+ if(!cloudConfigured())return NextResponse.json({success:false,error:"Saved performance storage not configured",hitRate:null},{status:503});
+ if(!running)running=(async()=>{
+  const sports=await Promise.all(sources.map(s=>tallySport(s.sport,s.filter)));
   const hits=sports.reduce((n,s)=>n+s.hits,0);
-  const settled=sports.reduce((n,s)=>n+s.settled,0);
-  const partial=sports.some(s=>!s.connected);
-  const payload={success:!partial,partial,hits,settled,pending:sports.reduce((n,s)=>n+s.pending,0),
-   hitRate:settled?Math.round(hits/settled*1000)/10:null,
-   sports,scope:"Last 7 calendar days · NBA/NFL/NHL · all tracked markets",
-   updatedAt:new Date().toISOString()};
-  // Never cache an all-source failure as a legitimate 0% hit rate.
-  if(sports.some(s=>s.connected))cached={at:Date.now(),payload};
-  return payload;
- })().finally(()=>{pending=null});
- return NextResponse.json(await pending,{headers:{"Cache-Control":"no-store"}});
+  const misses=sports.reduce((n,s)=>n+s.misses,0);
+  const settled=hits+misses;
+  const payload={success:true,partial:false,scope:"Overall recorded results · NBA/NFL/NHL",hits,misses,settled,
+    pending:sports.reduce((n,s)=>n+s.pending,0),
+    hitRate:settled?Math.round(hits/settled*1000)/10:null,
+    sports,updatedAt:new Date().toISOString()};
+  cached={at:Date.now(),payload};return payload;
+ })().finally(()=>{running=null});
+ try{return NextResponse.json(await running,{headers:{"Cache-Control":"no-store"}})}
+ catch(error){console.error("[platform-performance] overall read failed",error instanceof Error?error.message:String(error));
+  if(cached)return NextResponse.json(cached.payload,{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({success:false,hitRate:null,error:"Overall performance temporarily unavailable"},{status:503,headers:{"Cache-Control":"no-store"}});
+ }
 }
