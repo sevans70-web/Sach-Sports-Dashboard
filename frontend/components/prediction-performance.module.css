@@ -575,3 +575,14 @@
 .researchTracking { display: grid; gap: 7px; margin-top: 14px; padding: 14px; border: 1px solid #675725; border-radius: 12px; color: #dedbd2; font-size: 13px; }
 .researchTracking strong { color: #e8bf43; }
 .researchTracking small { color: #a6a6ad; line-height: 1.5; }
+
+/* CW02: compact featured results, without a second bordered box. */
+.featuredPanel > .categoryBody {margin:0;padding:12px;border:0;border-radius:0;background:transparent}
+.featuredTitle {margin:0 0 12px;font-size:clamp(16px,4.4vw,24px);line-height:1.2;letter-spacing:-.025em}
+.featuredMetrics {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.featuredMetrics .metricCard {min-height:88px;padding:10px 7px}
+.featuredMetrics .metricCopy > span {font-size:12px;line-height:1.25}
+.featuredMetrics .metricCopy > small {font-size:11px;line-height:1.35;min-height:0}
+.featuredPanel details {margin-top:12px;font-size:13px;line-height:1.45}
+.featuredPanel details p {margin:4px 0;color:#c8c9cc}
+@media(min-width:800px){.featuredMetrics{grid-template-columns:repeat(4,minmax(0,1fr))}}

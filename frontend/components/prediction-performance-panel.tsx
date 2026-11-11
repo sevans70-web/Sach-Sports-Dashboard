@@ -436,10 +436,9 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
   return (
     <div className={`ssPredictionPerformanceRoot ${styles.root}`}>
-      <section className={styles.categoryPanel} aria-label="Featured Picks Performance">
+      <section className={`${styles.categoryPanel} ${styles.featuredPanel}`} aria-label="Featured Picks Performance">
         <div className={styles.categoryBody}>
-          <h2>⭐ Featured Picks Performance</h2>
-          <p>Original saved selections only · recorded results, not placed bets</p>
+          <h2 className={styles.featuredTitle}>Featured Picks Performance</h2>
         <div className={styles.periodTabs} aria-label="Prediction performance period">
           {PERIODS.map((item) => (
             <button
@@ -453,9 +452,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
           ))}
         </div>
 
-          <p>Featured results · {period}</p>
           {featured?.historyComplete===false?<p>Some featured history could not be verified. Totals cover only the saved selections currently available.</p>:null}
-          <div className={styles.summaryMetrics}>
+          <div className={styles.featuredMetrics}>
             {([["play","⭐ Play of the Day"],["value","💎 Best Value"],["first","🏀 First Basket"],["long","🚀 Long Shot"]] as const)
               .filter(([key])=>key!=="first"||["nba","wnba","cbb"].includes(sport))
               .map(([key,label])=>{

@@ -68,7 +68,7 @@ export const HERO_COPY: Record<SportKey, { title: string; message: string }> = {
   nba: {
     title: "NBA Intelligence Center",
     message:
-      "Follow the shifts that change a prop fast — minutes, usage, injuries, rotations, pace, and matchup pressure all matter here.",
+      "Read the game. Find your edge. Compare player form, minutes and matchups with the sportsbook line before choosing your play.",
   },
   wnba: {
     title: "WNBA Intelligence Center",
@@ -224,10 +224,10 @@ export function GamesPreviewCard({ game }: { game: PreviewGame }) {
         <span>{when.date}</span>
         <span>{when.time}</span>
       </div>
-      <div className={`ssGameStatus ssGameStatus-${game.state}`}>
+      {game.state !== "pre" ? <div className={`ssGameStatus ssGameStatus-${game.state}`}>
         {game.state === "in" ? <i aria-hidden="true" /> : null}
         {statusText(game)}
-      </div>
+      </div> : null}
       <small className="ssGameContext">{gameIntelligence({...game,sport:game.sport||(game.href.includes("/nhl")?"nhl":"")})[0]}</small>
     </Link>
   );

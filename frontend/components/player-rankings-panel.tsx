@@ -2620,7 +2620,7 @@ export function PlayerRankingsPanel({
               </button>
             ))}
           </div>
-          <button type="button" className={styles.scrollCue} onClick={groupScroll.more}>›</button>
+
         </div>
       ) : null}
 
