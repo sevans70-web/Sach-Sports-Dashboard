@@ -123,10 +123,10 @@ export default function HomeShowcase() {
         <section className="shIntel">
           <div className="shIntelTitle"><h2>Current Slate Intelligence</h2></div>
           <div className="shStats">
-            <div><span className="shStatHead">Games</span><strong>{available.length ? total("games") : "—"}</strong><small>{total("live")} live</small></div>
-            <div><span className="shStatHead">Player Props</span><strong>{available.length ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
-            <div><span className="shStatHead">Sach Picks</span><strong>{available.length ? total("estimatedPicks") : "—"}</strong><small>Featured markets</small></div>
-            <div><span className="shStatHead">Hit Rate</span><strong>{performance?.settled ? performance.hitRate + "%" : "—"}</strong><small>{performance?.settled ? `${performance.partial ? "Partial · " : ""}${performance.hits} / ${performance.settled} settled today` : performance?.success ? "No settled picks today" : "Checking results"}</small></div>
+            <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{available.length ? total("games") : "—"}</strong><small>{total("live")} live</small></div>
+            <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{available.length ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
+            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{available.length ? total("estimatedPicks") : "—"}</strong><small>Featured markets</small></div>
+            <div data-metric="results"><span className="shStatHead"><b aria-hidden="true">◎</b>Hit Rate</span><strong>{performance?.settled ? performance.hitRate + "%" : "—"}</strong><small>{performance?.settled ? `${performance.partial ? "Partial · " : ""}${performance.hits} / ${performance.settled} settled today` : performance?.success ? "No settled picks today" : "Checking results"}</small></div>
           </div>
           {partial && <p className="ssScopeNote">Some feeds are unavailable. Totals are partial.</p>}
         </section>

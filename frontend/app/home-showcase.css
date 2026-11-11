@@ -162,16 +162,17 @@
   line-height: 1.45;
   text-wrap: pretty;
 }
-.shRoot [data-sport="nba"] { --sh-sport-accent: #f4ac76; }
-.shRoot [data-sport="nfl"] { --sh-sport-accent: #8fd0be; }
-.shRoot [data-sport="nhl"] { --sh-sport-accent: #a9c6fa; }
+.shRoot [data-sport="nba"] { --sh-sport-accent: #ff505b; }
+.shRoot [data-sport="nfl"] { --sh-sport-accent: #21df86; }
+.shRoot [data-sport="nhl"] { --sh-sport-accent: #5295ff; }
 .shSnapshotList a strong,
 .shPickStatus strong {
   color: var(--sh-sport-accent, #eac46d);
 }
 .shPredictionRow[data-sport],
 .shPickStatus {
-  border-inline-start: 2px solid var(--sh-sport-accent, #eac46d);
+  border-inline-start: 3px solid var(--sh-sport-accent, #eac46d);
+  background: linear-gradient(105deg, color-mix(in srgb, var(--sh-sport-accent) 14%, #101012), #101012 65%);
 }
 .shPickStatus small {
   display: block;
@@ -191,4 +192,46 @@
 .shPositiveEv {
   color: #a6ebc9;
   background: #163426;
+}
+
+.shStats [data-metric="games"] { --sh-metric-accent: #f0bf53; }
+.shStats [data-metric="props"] { --sh-metric-accent: #5295ff; }
+.shStats [data-metric="picks"] { --sh-metric-accent: #21df86; }
+.shStats [data-metric="results"] { --sh-metric-accent: #ff765d; }
+
+.shStats > [data-metric] {
+  min-width: 0;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--sh-metric-accent) 54%, #211c14);
+  border-top: 3px solid var(--sh-metric-accent);
+  background: linear-gradient(150deg, color-mix(in srgb, var(--sh-metric-accent) 19%, #111114), #101012 72%);
+  box-shadow: inset 0 1px 0 #ffffff16;
+}
+.shStats .shStatHead {
+  flex-direction: column;
+  gap: 5px;
+  color: #f1ece3;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.shStats .shStatHead b {
+  width: 27px;
+  height: 27px;
+  border-radius: 6px;
+  color: var(--sh-metric-accent);
+  background: #08090bd9;
+  font-size: 19px;
+  line-height: 1;
+}
+.shStats > [data-metric] strong {
+  color: var(--sh-metric-accent);
+  font-variant-numeric: tabular-nums;
+}
+.shStats > [data-metric] small {
+  color: #d5cec4;
+}
+@media (max-width: 650px) {
+  .shStats > [data-metric] { min-height: 116px; gap: 5px; }
+  .shStats .shStatHead { font-size: clamp(9px, 2.5vw, 12px); }
+  .shStats .shStatHead b { width: 21px; height: 21px; font-size: 15px; }
 }
