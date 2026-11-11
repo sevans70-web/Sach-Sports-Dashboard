@@ -1180,9 +1180,9 @@ button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px so
    scrolling viewport, so it never covers a category pill. */
 .marketTabsFrame { display:flex; align-items:stretch; gap:6px; padding-right:0; }
 .marketTabsFrame .tabs { flex:1 1 auto; min-width:0; flex-wrap:nowrap; overflow-x:auto; scroll-padding-inline:3px; }
-.marketTabsFrame .tabs button { flex:0 0 auto; }
+.marketTabsFrame .tabs button { flex:0 0 auto; min-height:35px; padding:6px 10px; font-size:11px; line-height:1.2; border-radius:9px; }
 .marketTabsFrame .scrollCue { position:static; flex:0 0 24px; width:24px; min-height:39px; align-self:stretch; font-size:20px; }
 @media(max-width:430px) {
   .marketTabsFrame { padding-right:0; gap:5px; }
-  .marketTabsFrame .scrollCue { flex-basis:22px; width:22px; }
+  .marketTabsFrame .tabs button { min-height:35px; padding:6px 9px; font-size:11px; }\n  .marketTabsFrame .scrollCue { flex-basis:22px; width:22px; }
 }
