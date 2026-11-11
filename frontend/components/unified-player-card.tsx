@@ -433,6 +433,18 @@ export function UnifiedPlayerCard({
       [history, span]
     );
 
+  // Comparisons use observed game logs only; do not infer a betting edge
+  // or claim a matchup advantage without verified opponent-level data.
+  const recentFive = history.slice(-5);
+  const precedingFive = history.slice(-10,-5);
+  const recentFiveAverage = recentFive.length ? historyAverage(recentFive) : null;
+  const precedingFiveAverage = precedingFive.length ? historyAverage(precedingFive) : null;
+  const recentLineResults = line == null ? null : {
+    above: recentFive.filter(p=>p.value>line).length,
+    below: recentFive.filter(p=>p.value<line).length,
+    equal: recentFive.filter(p=>p.value===line).length,
+  };
+
   const replay = useMemo(() => {
     if (!visibleHistory.length || line == null || !effectivePick) {
       return null;
@@ -611,10 +623,10 @@ export function UnifiedPlayerCard({
         </b>
       </section>
 
-      <details style={{margin:"12px 0",padding:"12px 16px",border:"1px solid #454036",borderRadius:12}}>
+      {savedSelection ? <details style={{margin:"12px 0",padding:"12px 16px",border:"1px solid #454036",borderRadius:12}}>
         <summary>Probability details</summary>
-        <p>Model probability {savedSelection?<SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>:"—"}</p>
-      </details>
+        <p>Verified saved-pick probability: <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/></p>
+      </details> : null}
 
       {hasPrediction ? (
         <>
@@ -766,6 +778,16 @@ export function UnifiedPlayerCard({
 
         </>
       )}
+
+      <section className={styles.historySection} aria-label="Player analysis and matchup evidence">
+        <h2 style={{fontSize:19,margin:"0 0 12px"}}>Player Analysis</h2>
+        {recentFiveAverage != null ? <>
+          <p><strong>Recent production:</strong> {fmt(recentFiveAverage)} {marketLabel(researchMarket).toLowerCase()} per game across {recentFive.length} verified appearance{recentFive.length===1?"":"s"}.</p>
+          {precedingFiveAverage != null ? <p><strong>Form comparison:</strong> {fmt(recentFiveAverage)} in the latest {recentFive.length}, versus {fmt(precedingFiveAverage)} in the preceding {precedingFive.length} games.</p> : null}
+          {recentLineResults ? <p><strong>Results against {propLineText(line)}:</strong> {recentLineResults.above} above, {recentLineResults.below} below{recentLineResults.equal ? `, ${recentLineResults.equal} equal` : ""} over the last {recentFive.length} recorded appearances. Historical results do not guarantee the next result.</p> : null}
+        </> : !historyLoading ? <p>Verified recent-game evidence is not available for this market. No prediction advantage can be established from this card.</p> : null}
+        {matchup ? <p><strong>Upcoming matchup:</strong> {matchup}. Opponent defensive rankings and head-to-head prop evidence have not been verified here.</p> : null}
+      </section>
 
       <section
         className={styles.historySection}
