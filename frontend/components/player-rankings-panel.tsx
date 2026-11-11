@@ -205,9 +205,17 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         key: "Props",
         label: "Props",
         icon: "🏀",
-        markets: [...BASKETBALL,{key:"first_basket",label:"First Basket",icon:"1️⃣"}],
+        // One category bar: standard props and Q1 props belong together.
+        markets: [
+          ...BASKETBALL,
+          {key:"first_basket",label:"First Basket",icon:"1️⃣"},
+          ...["points","rebounds","assists"].map(key=>({
+            key:"q1_"+key,
+            label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),
+            icon:"⏱️",
+          })),
+        ],
       },
-      {key:"Q1",label:"Q1",icon:"⏱️",markets:["points","rebounds","assists"].map(key=>({key:"q1_"+key,label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),icon:"⏱️"}))},
     ],
   },
   wnba: {
@@ -2562,9 +2570,7 @@ export function PlayerRankingsPanel({
       <div className={styles.header}>
         <div>
           <h2>Player Rankings</h2>
-          <p>
-            Market-specific intelligence · live matchup context
-          </p>
+
         </div>
 
       </div>
@@ -2643,12 +2649,8 @@ export function PlayerRankingsPanel({
       </div>
 
       <div className={styles.marketTitle}>
-        <h3>{market.icon} {market.label} Rankings</h3>
-        <p>
-          Player Rankings · {sourceText}
-          {sport==='nba'&&nbaBoardLabel?` · ${nbaBoardLabel}`:''}
-          {sport==='nba'&&displayCards.some(c=>c.raw?.boardFrozen)?' · Locked at first tipoff':''}
-        </p>
+        <h3>{market.icon} {market.label}</h3>
+        {sport!=='nba'&&sport!=='nfl'&&sport!=='nhl'?<p>Player Rankings · {sourceText}</p>:null}
       </div>
 
       {dropped.length ? (
