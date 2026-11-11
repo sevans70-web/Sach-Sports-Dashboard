@@ -186,9 +186,13 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
   nfl: {
     label: "NFL",
     groups: [
-      { key: "QB", label: "QB", icon: "🏈", markets: NFL_QB },
-      { key: "Offense", label: "Offense", icon: "🏃", markets: NFL_OFFENSE },
-      { key: "Defense", label: "Defense", icon: "🛡️", markets: [{key:"sacks",label:"Sacks",icon:"🛡️"},{key:"tackles",label:"Solo Tackles",icon:"🛡️"},{key:"tackles_assists",label:"Tackles + Assists",icon:"🛡️"}] },
+      { key: "Markets", label: "Markets", icon: "🏈", markets: [
+        ...NFL_QB,
+        ...NFL_OFFENSE,
+        {key:"sacks",label:"Sacks",icon:"🛡️"},
+        {key:"tackles",label:"Solo Tackles",icon:"🛡️"},
+        {key:"tackles_assists",label:"Tackles + Assists",icon:"🛡️"},
+      ] },
     ],
   },
   cfb: {
@@ -1692,7 +1696,15 @@ type CfbLiveGame = {
   rows?: CfbLiveRow[];
 };
 
-type CfbSlateKey = "all" | "early" | "afternoon" | "evening";
+type CfbSlateKey = "all" | "early" | "afternoon" | "evening" | "late";
+
+const NFL_SLATES: Array<{key:CfbSlateKey;label:string}> = [
+  {key:"all",label:"All Day"},
+  {key:"early",label:"Noon / Early"},
+  {key:"afternoon",label:"Afternoon"},
+  {key:"evening",label:"Evening"},
+  {key:"late",label:"Late"},
+];
 
 const CFB_SLATES: Array<{ key: CfbSlateKey; label: string }> = [
   { key: "all", label: "All Day" },
@@ -1705,7 +1717,7 @@ function cfbSlateLabel(value: CfbSlateKey) {
   return CFB_SLATES.find((item) => item.key === value)?.label || "All Day";
 }
 
-function rankingSlateForTime(value: string): Exclude<CfbSlateKey, "all"> {
+function rankingSlateForTime(value: string, includeLate=false): Exclude<CfbSlateKey, "all"> {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "early";
 
@@ -1718,6 +1730,7 @@ function rankingSlateForTime(value: string): Exclude<CfbSlateKey, "all"> {
   const hour = Number(parts.find((item) => item.type === "hour")?.value || 0);
   if (hour < 15) return "early";
   if (hour < 19) return "afternoon";
+  if (includeLate && hour >= 22) return "late";
   return "evening";
 }
 
@@ -1817,7 +1830,6 @@ export function PlayerRankingsPanel({
   const [nbaSlate,setNbaSlate]=useState("active");
   const [nbaBoardLabel,setNbaBoardLabel]=useState("");
   const [nflSlate, setNflSlate] = useState<CfbSlateKey>("all");
-  const nflSunday=new Intl.DateTimeFormat('en-US',{timeZone:'America/Toronto',weekday:'short'}).format(new Date())==='Sun';
   const nflToday=torontoDay(new Date().toISOString());
   const [cfbLiveGames, setCfbLiveGames] = useState<CfbLiveGame[]>([]);
   const [sharedStatusGames, setSharedStatusGames] = useState<SharedStatusGame[]>([]);
@@ -2490,14 +2502,13 @@ export function PlayerRankingsPanel({
       });
 
     if (sport === "nfl") {
+      // Rankings may be published before game day. Do not hide the upcoming
+      // board merely because the local calendar day has no kickoff.
+      const availableDays=[...new Set(withStatus.map(card=>card.gameTime?torontoDay(card.gameTime):"").filter(day=>day>=nflToday))].sort();
+      const selectedDay=availableDays[0]||nflToday;
       return withStatus
-        .filter(card=>{
-          // On Thursday/Monday or any non-Sunday schedule, show TODAY,
-          // not unused Sunday time-of-day buckets.
-          if(!nflSunday)return Boolean(card.gameTime&&torontoDay(card.gameTime)===nflToday);
-          if(nflSlate==="all")return true;
-          return Boolean(card.gameTime&&rankingSlateForTime(card.gameTime)===nflSlate);
-        })
+        .filter(card=>card.gameTime&&torontoDay(card.gameTime)===selectedDay)
+        .filter(card=>nflSlate==="all"||rankingSlateForTime(card.gameTime,true)===nflSlate)
         .sort((a,b)=>a.rank-b.rank);
     }
 
@@ -2514,7 +2525,7 @@ export function PlayerRankingsPanel({
         }
         return a.rank - b.rank;
       });
-  }, [sport, market.key, cfbSlate, nflSlate, nflSunday, nflToday, nbaSlate, cards, cfbLiveGames, sharedStatusGames]);
+  }, [sport, market.key, cfbSlate, nflSlate, nflToday, nbaSlate, cards, cfbLiveGames, sharedStatusGames]);
 
   const displayCards = useMemo(() => {
     // NBA is an EV-ranked board, not a general slate catalogue. No missing,
@@ -2594,7 +2605,7 @@ export function PlayerRankingsPanel({
       {sport === "nfl" ? (
         <div className={styles.tabsFrame}>
           <div className={styles.tabs}>
-            {(nflSunday?CFB_SLATES:[{key:'all' as CfbSlateKey,label:'Today'}]).map((item) => (
+            {NFL_SLATES.map((item) => (
               <button
                 type="button"
                 key={item.key}
@@ -2630,7 +2641,7 @@ export function PlayerRankingsPanel({
       ) : null}
 
       <div className={`${styles.tabsFrame} ${styles.marketTabsFrame}`}>
-        <div className={`${styles.tabs} ${styles.wrappingMarketTabs}`} role="group" aria-label={`${sport.toUpperCase()} player prop markets`} ref={marketScroll.ref}>
+        <div className={`${styles.tabs} ${sport === "nba" ? styles.nbaMarketTabs : ""}`} role="group" aria-label={`${sport.toUpperCase()} player prop markets`} ref={marketScroll.ref}>
           {group.markets.map((item) => (
             <button
               type="button"
@@ -2644,6 +2655,7 @@ export function PlayerRankingsPanel({
             </button>
           ))}
         </div>
+        <button type="button" className={styles.scrollCue} onClick={marketScroll.more} aria-label="More player markets">›</button>
       </div>
 
       <div className={styles.marketTitle}>
