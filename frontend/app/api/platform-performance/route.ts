@@ -31,7 +31,12 @@ async function source(req:NextRequest,entry:typeof SOURCES[number]):Promise<Resu
   const data=await response.json();
   const result=(data.sachPickPerformance&&typeof data.sachPickPerformance==="object")?data.sachPickPerformance:data;
   const connected=response.ok&&data.success!==false&&result.connected!==false&&data.historyPartial!==true;
-  return {sport:entry.sport,...("group" in entry?{group:entry.group}:{}),connected,hits:connected?integer(result.hits):0,settled:connected?integer(result.settled):0,pending:connected?integer(result.pending):0};
+  // NBA saved-model summaries include pushes in "settled"; hit rate must
+  // divide by decisions (hits + misses), never by pushes.
+  const decisions=entry.sport==="nba"&&typeof result.misses==="number"
+   ? integer(result.hits)+integer(result.misses)
+   : integer(result.settled);
+  return {sport:entry.sport,...("group" in entry?{group:entry.group}:{}),connected,hits:connected?integer(result.hits):0,settled:connected?decisions:0,pending:connected?integer(result.pending):0};
  }catch{
   return {sport:entry.sport,...("group" in entry?{group:entry.group}:{}),connected:false,hits:0,settled:0,pending:0};
  }finally{clearTimeout(timer)}
