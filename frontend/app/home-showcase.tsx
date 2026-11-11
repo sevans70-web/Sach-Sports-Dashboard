@@ -126,9 +126,9 @@ export default function HomeShowcase() {
             <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{available.length ? total("games") : "—"}</strong><small>{total("live")} live</small></div>
             <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{available.length ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
             <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{available.length ? total("estimatedPicks") : "—"}</strong><small>Featured markets</small></div>
-            <div data-metric="results"><span className="shStatHead"><b aria-hidden="true">◎</b>Hit Rate</span><strong>{performance?.settled && typeof performance.hitRate === "number" ? performance.hitRate.toFixed(1) + "%" : "—"}</strong><small>{performance?.settled ? `${performance.partial ? "Partial · " : ""}${performance.hits} / ${performance.settled} decisions · last 7 days` : performance?.success ? "No graded picks in last 7 days" : "Checking recent results"}</small></div>
+            <div data-metric="results"><span className="shStatHead"><b aria-hidden="true">◎</b>Hit Rate</span><strong>{performance?.settled && typeof performance.hitRate === "number" ? performance.hitRate.toFixed(1) + "%" : "—"}</strong><small>{performance?.settled ? `${performance.hits} / ${performance.settled} graded decisions` : performance?.success ? "No graded results yet" : "Checking overall results"}</small></div>
           </div>
-          {partial && <p className="ssScopeNote">Some feeds are unavailable. Totals are partial.</p>}
+          <p className="ssScopeNote">Overall hit rate · All recorded results · NBA, NFL &amp; NHL</p>
         </section>
 
         <section className="shPanel shSnapshots">
