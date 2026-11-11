@@ -1828,6 +1828,7 @@ export function PlayerRankingsPanel({
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
   const [nbaSlate,setNbaSlate]=useState("active");
+  const [nhlSlate,setNhlSlate]=useState<"today"|"tomorrow">("today");
   const [nbaBoardLabel,setNbaBoardLabel]=useState("");
   const [nflSlate, setNflSlate] = useState<CfbSlateKey>("all");
   const nflToday=torontoDay(new Date().toISOString());
@@ -1913,6 +1914,17 @@ export function PlayerRankingsPanel({
     setNbaSlate(key);
   };
 
+  const selectNhlSlate=(key:"today"|"tomorrow")=>{
+    if(sport!=="nhl"||nhlSlate===key)return;
+    rankingRequestSeq.current+=1;
+    setCards([]);
+    setDropped([]);
+    setError("");
+    setLoading(true);
+    setFull(false);
+    setNhlSlate(key);
+  };
+
   const selectNflSlate = (key: CfbSlateKey) => {
     if (sport !== "nfl" || key === nflSlate) return;
     setFull(false);
@@ -1926,6 +1938,7 @@ export function PlayerRankingsPanel({
     setMarketKey(next.markets[0].key);
     setCfbSlate("all");
     setNflSlate("all");
+    setNhlSlate("today");
     setFull(false);
   }, [sport]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -2066,12 +2079,12 @@ export function PlayerRankingsPanel({
       // NBA history recovery and roster loading are expensive. Prefetch only
       // the next market, with the correct slate; never fan out concurrently.
       for (const item of (sport === "nba" ? neighbors.slice(0,1) : neighbors)) {
-        prefetchJson(sport === "nba" ? nbaSlateRequest(item.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(item.key)}`);
+        prefetchJson(sport === "nba" ? nbaSlateRequest(item.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(item.key)}${sport==="nhl"?`&slate=${nhlSlate}`:""}`);
       }
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [sport, league, groupKey, market.key, cfbSlate, nbaSlate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sport, league, groupKey, market.key, cfbSlate, nbaSlate, nhlSlate]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   useEffect(() => {
@@ -2150,7 +2163,7 @@ export function PlayerRankingsPanel({
           const rankingUrl =
             sport === "cfb"
               ? `/api/cfb/rankings-board?market=${encodeURIComponent(market.key)}&slate=${encodeURIComponent(requestedCfbSlate)}`
-              : sport === "nba" ? nbaSlateRequest(market.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}`;
+              : sport === "nba" ? nbaSlateRequest(market.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}${sport==="nhl"?`&slate=${nhlSlate}`:""}`;
 
           // Never make rankings wait for grading/performance data.
           const rankingPayload = await fetchJson(
@@ -2492,6 +2505,7 @@ export function PlayerRankingsPanel({
         // Do not compare these slates with TODAY's shared game schedule:
         // yesterday's games disappear from that feed after midnight.
         if(sport==='nba'&&nbaSlate!=='active')return true;
+        if(sport==='nhl'&&nhlSlate==='tomorrow')return Boolean(card.gameTime&&torontoDay(card.gameTime)===torontoDay(new Date(Date.now()+86400000).toISOString()));
         if (card.raw?.boardFrozen === true) return true;
         if (!sharedStatusGames.length) return true;
 
@@ -2525,7 +2539,7 @@ export function PlayerRankingsPanel({
         }
         return a.rank - b.rank;
       });
-  }, [sport, market.key, cfbSlate, nflSlate, nflToday, nbaSlate, cards, cfbLiveGames, sharedStatusGames]);
+  }, [sport, market.key, cfbSlate, nflSlate, nflToday, nbaSlate, nhlSlate, cards, cfbLiveGames, sharedStatusGames]);
 
   const displayCards = useMemo(() => {
     // NBA is an EV-ranked board, not a general slate catalogue. No missing,
@@ -2618,6 +2632,8 @@ export function PlayerRankingsPanel({
           </div>
         </div>
       ) : null}
+
+      {sport==='nhl'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NHL ranking slate">{(["today","tomorrow"] as const).map(key=><button type="button" key={key} className={nhlSlate===key?styles.activeTab:""} onClick={()=>selectNhlSlate(key)}>{key==="today"?"Today":"Tomorrow"}</button>)}</div></div>:null}
 
       {sport==='nba'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NBA ranking slate">{[['active','Today'],['previous','Previous Slate'],['tomorrow','Tomorrow']].map(([key,label])=><button type="button" key={key} className={nbaSlate===key?styles.activeTab:''} onClick={()=>selectNbaSlate(key)}>{label}</button>)}</div></div>:null}
 
