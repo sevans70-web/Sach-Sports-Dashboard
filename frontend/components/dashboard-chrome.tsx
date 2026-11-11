@@ -4,6 +4,7 @@ import Link from "next/link";
 import {gameIntelligence} from "@/lib/card-intelligence";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import heroStyles from "./intelligence-hero.module.css";
 
 type SportKey = "mlb" | "nfl" | "cfb" | "nba" | "wnba" | "nhl" | "soccer" | "cbb";
 
@@ -58,7 +59,7 @@ export const HERO_COPY: Record<SportKey, { title: string; message: string }> = {
   nfl: {
     title: "NFL Intelligence Center",
     message:
-      "See where opportunity meets matchup — usage, injuries, red-zone role, game script, and defensive weaknesses drive the strongest prop angles.",
+      "Follow the touches that matter. Track carries, targets and red-zone roles to see who has the most opportunity in each matchup.",
   },
   cfb: {
     title: "CFB Intelligence Center",
@@ -68,7 +69,7 @@ export const HERO_COPY: Record<SportKey, { title: string; message: string }> = {
   nba: {
     title: "NBA Intelligence Center",
     message:
-      "Read the game. Find your edge. Compare player form, minutes and matchups with the sportsbook line before choosing your play.",
+      "See who stands to gain when rotations shift. Compare minutes, usage and pace against the sportsbook line.",
   },
   wnba: {
     title: "WNBA Intelligence Center",
@@ -78,7 +79,7 @@ export const HERO_COPY: Record<SportKey, { title: string; message: string }> = {
   nhl: {
     title: "NHL Intelligence Center",
     message:
-      "Read the ice through workload and opportunity — line combinations, shot volume, goalie usage, matchup quality, and recent form shape the strongest plays.",
+      "Read the ice shift by shift. Use line combinations, power-play time, shot volume and goalie matchups to evaluate each prop.",
   },
   soccer: {
     title: "Soccer Intelligence Center",
@@ -133,8 +134,26 @@ export function SportsNav({ active }: { active: SportKey }) {
   );
 }
 
+const ACTIVE_HERO_ART = {
+  nba: "/hero/nba-intelligence.webp",
+  nfl: "/hero/nfl-intelligence.webp",
+  nhl: "/hero/nhl-intelligence.webp",
+};
+
 export function IntelligenceHero({ sport }: { sport: SportKey }) {
   const c = HERO_COPY[sport];
+
+  if (sport === "nba" || sport === "nfl" || sport === "nhl") {
+    return (
+      <section className={heroStyles.hero} aria-labelledby="sport-hero-title" data-sach-sport={sport}>
+        <img className={heroStyles.art} src={ACTIVE_HERO_ART[sport]} alt="" />
+        <div className={heroStyles.copy}>
+          <h1 id="sport-hero-title">{c.title}</h1>
+          <p>{c.message}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -358,7 +377,7 @@ function AutoGamesPreview() {
   const [sport, setSport] = useState<SportKey | null>(null);
 
   useEffect(() => {
-    const hero = document.querySelector<HTMLElement>(".ssHeroFinal[data-sach-sport]");
+    const hero = document.querySelector<HTMLElement>("section[data-sach-sport]");
     const value = hero?.dataset.sachSport as SportKey | undefined;
     if (value) setSport(value);
   }, []);

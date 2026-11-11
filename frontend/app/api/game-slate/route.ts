@@ -242,7 +242,12 @@ async function espnFootball(sport:"nfl"|"cfb") {
   const good=boards.flatMap(x=>x.status==="fulfilled"?[x.value]:[]);
   if(!good.length)throw new Error(`${sport} schedule providers unavailable`);
   const events=new Map<string,any>();
-  for(const board of good)for(const event of board.events||[])events.set(String(event.id),event);
+  for (const board of good) {
+    for (const event of board.events || []) {
+      const week = sport === "nfl" ? event.week ?? board.week : event.week;
+      events.set(String(event.id), { ...event, week });
+    }
+  }
   const payload={...good[0],events:[...events.values()]};
   const weekNumber = Number(payload?.week?.number || 0) || null;
 
@@ -288,7 +293,7 @@ async function espnFootball(sport:"nfl"|"cfb") {
       state,
       status,
       venue:String(comp?.venue?.fullName || ""),
-      weekNumber:Number(event?.week?.number || weekNumber || 0) || null,
+      weekNumber: Number(event?.week?.number || (sport === "cfb" ? weekNumber : null)) || null,
     };
   });
 

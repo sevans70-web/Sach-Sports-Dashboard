@@ -1,0 +1,49 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: center;
+  min-height: clamp(192px, 45vw, 360px);
+  overflow: hidden;
+  border: 1.5px solid #d9b85d;
+  border-radius: 18px;
+  background: #080706;
+  color: #fff;
+}
+
+.art {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, #080706 0%, rgb(8 7 6 / 88%) 34%, rgb(8 7 6 / 35%) 60%, transparent 79%);
+}
+
+.copy {
+  padding: clamp(15px, 4vw, 36px);
+}
+
+.copy h1 {
+  margin: 0 0 0.45em;
+  font: 800 clamp(18px, 4.8vw, 43px)/1.08 Arial, Helvetica, sans-serif;
+  letter-spacing: -0.025em;
+  text-shadow: 0 1px 10px #000;
+}
+
+.copy p {
+  max-width: 55%;
+  margin: 0;
+  color: #f2efea;
+  font: 400 clamp(13px, 3.25vw, 20px)/1.42 Arial, Helvetica, sans-serif;
+  text-shadow: 0 1px 8px #000;
+}

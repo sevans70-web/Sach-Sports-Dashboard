@@ -1875,6 +1875,10 @@ export function GameSlatePage({
     return () => controller.abort();
   }, [sport, league, selectedDay, visibleGames.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const selectedWeek = sport === "nfl"
+    ? (selectedDay ? visibleGames.find((game) => game.weekNumber)?.weekNumber : null)
+    : weekNumber;
+
   const selectedLabel =
     selectedDay
       ? fullDayLabel(selectedDay)
@@ -1979,8 +1983,8 @@ export function GameSlatePage({
           </h1>
 
           <p>
-            {weekNumber
-              ? `Week ${weekNumber} · `
+            {selectedWeek
+              ? `Week ${selectedWeek} · `
               : ""}
             {selectedLabel}
           </p>
