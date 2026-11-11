@@ -7,9 +7,18 @@ const row={playerId:'p',gameId:'g',gameTime:'2026-10-23T23:00Z',market:'points',
 test('a client eligibility flag, high score or bookmaker probability cannot promote an unvalidated model',()=>{
  assert.ok(todayTopPlays([row],'nba',now).every(card=>card.pick===null));
 });
-test('basketball has four categories; football and hockey do not offer first basket',()=>{
- for(const sport of ['nba','wnba','cbb'])assert.equal(todayTopPlays([],sport,now).length,4);
- for(const sport of ['nfl','cfb','nhl','mlb'])assert.deepEqual(todayTopPlays([],sport,now).map(c=>c.key),['play','value','long']);
+test('active sports feature their own first-scorer market and a distinct long-shot player',()=>{
+ for(const [sport,market,title] of [['nba','first_basket','First Basket'],['nfl','first_td','First Touchdown'],['nhl','first_goal','First Goal']]){
+  const quote={...row,market,lineType:'scorer',sportsbookLine:null,underPrice:null,overPrice:350};
+  const cards=todayTopPlays([quote,{...quote,playerId:'other',overPrice:600},{...quote,playerId:'wrong',market:'anytime_td',overPrice:200}],sport,now);
+  assert.deepEqual(cards.map(c=>c.key),['play','value','first','long']);
+  assert.ok(cards[2].title.endsWith(title));
+  assert.equal(cards[2].pick.row.playerId,'p');
+  assert.equal(cards[2].pick.basis,'bookmaker_implied');
+  assert.equal(cards[3].pick.row.playerId,'other');
+  assert.equal(todayTopPlays([{...quote,market:'anytime_td'}],sport,now)[2].pick,null);
+ }
+ for(const sport of ['cfb','mlb'])assert.deepEqual(todayTopPlays([],sport,now).map(c=>c.key),['play','value','long']);
 });
 test('featured cards reuse an exact saved pregame model selection and its side-specific probability/EV',()=>{
  const q={...row,capturedAt:'2026-10-23T17:59:30Z',quoteId:'q',overPrice:-110,underPrice:-110,boardCapturedAt:'2026-10-23T17:59:30Z',researchForecast:{modelSelection:{side:'UNDER',line:20.5,price:-110,quoteId:'q',sportsbookKey:'book',calculatedAt:'2026-10-23T17:59:30Z'},priceComparison:{overProbability:.3,underProbability:.7,underExpectedReturn:.33,overExpectedReturn:-.3}}};

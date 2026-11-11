@@ -5,7 +5,7 @@ import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 import Link from 'next/link';
 import {useEffect,useState} from 'react';
-import {todayTopPlays} from '@/lib/top-plays';
+import {featuredScorer,todayTopPlays} from '@/lib/top-plays';
 import {dashboardDay} from '@/lib/dashboard-contract';
 import type {DashboardSport} from '@/lib/dashboard-contract';
 import styles from './today-top-plays.module.css';
@@ -18,14 +18,37 @@ export function TodayTopPlays({sport}:{sport:DashboardSport;rows?:any[];loading?
  // different players or newer prices. Wait for the saved slate choices.
  const confirmed=live?.sport===sport;
  const featured=confirmed?live.plays:todayTopPlays([],sport);
- return <section className={styles.section} aria-label="Today's Top Plays">
-  <h2>{live?.sport===sport&&live.slateDay&&live.slateDay!==dashboardDay(new Date())?'Next Slate’s Featured Picks':'Today’s Featured Picks'}</h2>
-  <div className={styles.carousel} tabIndex={0} aria-label="Featured pick categories">
-   {featured.map(({key,title,pick})=>{const correction=reportedFeaturedOriginal(sport,live?.sport===sport?live.slateDay||dashboardDay(new Date()):dashboardDay(new Date()),key);return <article className={styles.card} key={key}>
-    <h3>{title}</h3>
-    {correction?<><strong>{correction.playerName}</strong><p>Reported original · Anytime touchdown</p><p>Official final: {correction.officialTouchdowns} touchdown</p><p>{correction.note}</p><Link href={`/${sport}/player/${correction.playerId}?market=${correction.market}`}>View Intelligence ›</Link></>:pick?<><strong>{pick.row.playerName}</strong>{(pick.row.teamName||pick.row.team||pick.row.teamAbbr||pick.row.teamAbbreviation)?<p>{String(pick.row.teamName||pick.row.team||pick.row.teamAbbr||pick.row.teamAbbreviation)}</p>:null}{pick.row.featuredRetained&&<p>Saved pregame selection · {Date.parse(pick.row.gameTime)<=Date.now()?'Game started':'Today'}</p>}<p>{pick.row.prediction} {pick.row.lineType==='scorer'?'':pick.row.sportsbookLine} · {String(pick.row.market).replaceAll('_',' ')}</p><p>{pick.row.boardFrozen?'Saved pregame · ':''}{pick.row.sportsbook} · {pick.price>0?'+':''}{pick.price}</p>{pick.basis==='bookmaker_implied'?<p title="Odds alone do not establish a positive expected-value bet.">Bookmaker odds only · Model EV unavailable</p>:<p title={estimatedEvNotice(pick.row)}>EV: {estimatedEvText(pick.row)}</p>}<Link href={`/${sport}/player/${encodeURIComponent(pick.row.playerId)}?name=${encodeURIComponent(pick.row.playerName)}&team=${encodeURIComponent(pick.row.teamName||pick.row.team||'')}&market=${encodeURIComponent(pick.row.market)}${savedQuoteQuery(pick.row)}`}>View Intelligence ›</Link></>:<><strong>{!confirmed?(failed?'Saved picks temporarily unavailable':'Checking saved plays…'):'No Qualified Pick'}</strong><p>{!confirmed?'Loading original selections and saved pregame prices.':key==='first'?'No qualifying first-basket selection is available.':'No selection currently meets the criteria.'}</p></>}
-   </article>})}
+ const today=dashboardDay(new Date());
+ const slateDay=confirmed?live.slateDay||today:today;
+ const nextSlate=slateDay>today;
+ const slateLabel=nextSlate?new Intl.DateTimeFormat('en-US',{
+  timeZone:'America/Toronto',weekday:'short',month:'short',day:'numeric',
+ }).format(new Date(slateDay+'T12:00:00Z')):null;
+ const scorer=featuredScorer(sport);
+
+ return <section className={styles.section} aria-labelledby={`featured-picks-${sport}`}>
+  <header className={styles.header}>
+   <h2 id={`featured-picks-${sport}`}>Today’s Featured Picks</h2>
+   {slateLabel&&<span>Next slate · {slateLabel}</span>}
+  </header>
+  <div className={styles.grid}>
+   {featured.map(({key,title,pick})=>{
+    const correction=reportedFeaturedOriginal(sport,slateDay,key);
+    const row=pick?.row;
+    const team=row?.teamName||row?.team||row?.teamAbbr||row?.teamAbbreviation;
+    const market=row?.market===scorer?.market?scorer?.label:String(row?.market||'').replaceAll('_',' ');
+    const selection=row?.lineType==='scorer'?market:`${row?.prediction} ${row?.sportsbookLine} · ${market}`;
+    return <article className={styles.card} key={key}>
+     <h3>{title}</h3>
+     {correction?<><strong>{correction.playerName}</strong><p>Reported original · Anytime touchdown</p><p>Official final: {correction.officialTouchdowns} touchdown</p><p>{correction.note}</p><Link href={`/${sport}/player/${correction.playerId}?market=${correction.market}`}>View Intelligence ›</Link></>:row&&pick?<>
+      <div className={styles.player}><strong>{row.playerName}</strong>{team&&<span>{String(team)}</span>}</div>
+      <p>{selection}</p>
+      <p>{row.sportsbook} {pick.price>0?'+':''}{pick.price}{(row.featuredRetained||row.boardFrozen)&&' · Saved pregame'}</p>
+      {pick.basis==='bookmaker_implied'?<p>Book odds · No model EV</p>:<p title={estimatedEvNotice(row)}>EV {estimatedEvText(row)}</p>}
+      <Link href={`/${sport}/player/${encodeURIComponent(row.playerId)}?name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName||row.team||'')}&market=${encodeURIComponent(row.market)}${savedQuoteQuery(row)}`}>View Intelligence ›</Link>
+     </>:<p className={styles.status}>{!confirmed?(failed?'Saved picks temporarily unavailable':'Checking saved plays…'):'No Qualified Pick'}</p>}
+    </article>;
+   })}
   </div>
  </section>;
 }
-

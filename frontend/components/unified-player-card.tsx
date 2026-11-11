@@ -103,6 +103,7 @@ function marketLabel(value: string) {
     q1_rushing_yards: "First Quarter Rushing Yards",
     q1_receiving_yards: "First Quarter Receiving Yards",
     anytime_td: "Touchdowns",
+    first_td: "First Touchdown",
     points: "Points",
     rebounds: "Rebounds",
     assists: "Assists",

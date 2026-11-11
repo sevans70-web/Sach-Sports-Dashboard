@@ -2,6 +2,13 @@ import {eligiblePropPrediction,verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick} from '@/lib/saved-model-pick';
 import {dashboardDay} from '@/lib/dashboard-contract';
 
+export function featuredScorer(sport:string){
+ if(sport==='nfl')return {market:'first_td',label:'First Touchdown',title:'🏈 First Touchdown'};
+ if(sport==='nhl')return {market:'first_goal',label:'First Goal',title:'🏒 First Goal'};
+ if(['nba','wnba','cbb'].includes(sport))return {market:'first_basket',label:'First Basket',title:'🏀 First Basket'};
+ return null;
+}
+
 export function topPlayDay(rows:any[],now=Date.now()){
  const today=dashboardDay(new Date(now));
  const days=[...new Set(rows.map(r=>dashboardDay(r.gameTime)).filter(d=>d&&d>=today))].sort();
@@ -41,10 +48,11 @@ export function selectFeaturedCandidates(priced:any[],scorers:any[],sport:string
  const identity=(p:any)=>String(p.row.playerId||p.row.playerName).trim().toLowerCase();
  const take=(pick:any)=>{if(!pick||used.has(identity(pick)))return null;used.add(identity(pick));return pick};
  const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].filter(p=>!used.has(identity(p))).sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
+ const first=featuredScorer(sport);
  return [
   {key:'play',title:'⭐ Play of the Day',pick:choose('play',()=>best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability))},
   {key:'value',title:'💎 Best Value',pick:choose('value',()=>best(priced.filter(p=>p.expectedReturn>0),p=>p.expectedReturn))},
-  ...(['nba','wnba','cbb'].includes(sport)?[{key:'first',title:'🏀 First Basket',pick:choose('first',()=>best(scorers.filter(p=>p.row.market==='first_basket'),p=>p.probability))}]:[]),
+  ...(first?[{key:'first',title:first.title,pick:choose('first',()=>best(scorers.filter(p=>p.row.market===first.market),p=>p.probability))}]:[]),
   {key:'long',title:'🚀 Long Shot',pick:choose('long',()=>best(priced.filter(p=>p.price>=300&&p.expectedReturn>0),p=>p.expectedReturn)||best(scorers.filter(p=>p.price>=300),p=>p.probability))},
  ];
 }

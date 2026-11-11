@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 export const PREGAME_MARKETS=Object.freeze({
  nba:['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket','q1_points','q1_rebounds','q1_assists','q1_pts_rebs_asts'],
  nfl:['passing_yards','passing_tds','qb_rushing_yards','rushing_yards','receiving_yards','receptions','anytime_td','first_td','passing_rushing_yards','rushing_receiving_yards','passing_interceptions','sacks','tackles','tackles_assists','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'],
- nhl:['shots_on_goal','points','goals','assists','blocked_shots','goalie_saves'],
+ nhl:['shots_on_goal','points','goals','assists','blocked_shots','goalie_saves','first_goal'],
  // CFB and CBB are intentionally paused. Their routes, code and historical data remain intact.
 });
 export const CAPTURE_MARKETS=Object.freeze(Object.entries(PREGAME_MARKETS).flatMap(([sport,markets])=>markets.map(market=>({sport,market}))));
@@ -44,7 +44,7 @@ export function originalPregameQuote(row,sport,market,now=Date.now()){
  const line=row?.sportsbookLine;
  if(!str(row?.quoteId)||!str(row?.sportsbookKey)||!validPrice(row?.overPrice))return null;
  if(!scorer&&(!numeric(line)||!validPrice(row?.underPrice)))return null;
- if(scorer&&market!=='first_basket'&&market!=='first_td'&&market!=='anytime_td'&&market!=='q1_anytime_td')return null;
+ if(scorer&&!['first_basket','first_td','first_goal','anytime_td','q1_anytime_td'].includes(market))return null;
  const allowed=new Set(['OVER','UNDER','YES','FIRST BASKET']);
  const sourceSide=str(row?.prediction).toUpperCase();
  const selection=row?.researchForecast?.modelSelection;

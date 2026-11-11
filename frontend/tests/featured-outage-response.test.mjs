@@ -9,6 +9,7 @@ const sports=['nba','nfl','cfb','nhl','cbb','soccer','wnba','mlb'];
 function load(stage){
  let saves=0,updates=0;const exports={};
  const modules={
+  '../../../scripts/history-cloud.mjs':{cloudHistoryReadOnly:()=>false},
   '@/lib/estimated-ev':{estimatedEv:()=>null},
   '@/lib/featured-history-corrections':{reportedFeaturedOriginal:()=>null},
   '@/lib/top-plays':{distinctFeaturedPlayers:x=>x},

@@ -50,6 +50,28 @@ async function buildNhlRankingsRaw(m:NhlMarketKey){
  return {success:true,market:m,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
 }
 
+export async function buildNhlFirstGoalBoard(){
+ return rankingResponse('nhl|first_goal',async()=>{
+  const market='first_goal';
+  const [overview,payload]=await Promise.all([loadNhlOverview(),owls()]);
+  const players=new Map(overview.players.filter(player=>player.position!=='G')
+    .map(player=>[cleanNhlName(player.playerName),player]));
+  const games=activeRankingSlate(overview.games,nhlDay);
+  const quotes=mainMarketQuotes(payload,market,prop=>
+    ['firstgoal','firstgoalscorer','playerfirstgoalscorer'].includes(norm(prop.category??prop.market??prop.type)));
+  const rows=quotes.flatMap(quote=>{
+    const player=players.get(cleanNhlName(quote.playerName));
+    if(!player)return [];
+    const game=uniqueQuoteFixture(quote,games,player.team,15*60_000);
+    if(!game||game.state!=='pre'||Date.parse(game.tipoff||'')<=Date.now())return [];
+    return [{...footballQuoteFields(quote),market,playerId:player.playerId,playerName:player.playerName,
+      teamName:player.team,teamId:player.team,gameId:game.gameId,gameTime:game.tipoff,gameState:game.state,
+      matchup:`${game.awayTeam} @ ${game.homeTeam}`,sportsbookLine:null,marketBacked:true}];
+  });
+  return guardRankingPayload({success:true,market,rows,updatedAt:new Date().toISOString()},'nhl');
+ });
+}
+
 export async function captureAllNhlMarkets(){
  const markets=(await import("@/lib/nhl")).NHL_MARKETS.map(x=>x[0]);
  const results:any[]=[],boards:any[]=[];
@@ -61,6 +83,8 @@ export async function captureAllNhlMarkets(){
    results.push({market,count:r.rows.length,verifiedPredictions:backed,locked:Boolean((r as any).locked)});
   }catch(e){results.push({market,count:0,verifiedPredictions:0,error:e instanceof Error?e.message:String(e)});}
  }
+ try{boards.push(await buildNhlFirstGoalBoard());}
+ catch(error){results.push({market:'first_goal',count:0,verifiedPredictions:0,error:error instanceof Error?error.message:String(error)});}
  const verifiedPredictions=results.reduce((sum:number,r:any)=>sum+r.verifiedPredictions,0);
  const research=await archiveResearchBoards("nhl",boards);
  return {...research,success:research.researchArchived||(results.every(x=>!x.error)&&verifiedPredictions>0),verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:"Research snapshots archived separately; no validated NHL betting picks are available."};

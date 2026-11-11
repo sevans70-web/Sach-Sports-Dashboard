@@ -48,7 +48,7 @@ export function sgoBookGames(payload:any){
   for(const [id,odd]of Object.entries(odds) as [string,any][]){
    const pid=String(odd.playerID||odd.statEntityID||''),name=sgoPlayerName(event,odd),period=String(odd.periodID||''),stat=String(odd.statID||'');
    if(!pid||['all','home','away'].includes(pid)||!name||!stat||!period||odd.isAlternate===true||odd.isMainLine===false)continue;
-   const scorer=['firstbasket','firstscorer','firsttouchdown','firsttouchdownscorer'].includes(norm(stat));
+   const scorer=['firstbasket','firstscorer','firsttouchdown','firsttouchdownscorer','firstgoal','firstgoalscorer'].includes(norm(stat));
    if(scorer?odd.sideID!=='yes'||!['yn','ml'].includes(odd.betTypeID):odd.sideID!=='over'||odd.betTypeID!=='ou')continue;
    const opposing=odds[odd.opposingOddID];
    if(!scorer&&(!opposing||opposing.sideID!=='under'||opposing.betTypeID!=='ou'||String(opposing.playerID||opposing.statEntityID)!==pid||opposing.statID!==stat||opposing.periodID!==period))continue;

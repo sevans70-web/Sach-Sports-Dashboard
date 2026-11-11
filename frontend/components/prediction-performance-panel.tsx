@@ -1,5 +1,6 @@
 "use client";
 import {filterPerformanceResults,type PerformanceResultFilter} from '@/lib/performance-result-filter';
+import {featuredScorer} from '@/lib/top-plays';
 import {savedProjectionText} from '@/lib/saved-projection';
 import {fetchHistoryJson} from '@/lib/history-fetch';
 
@@ -454,8 +455,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
           {featured?.historyComplete===false?<p>Some featured history could not be verified. Totals cover only the saved selections currently available.</p>:null}
           <div className={styles.featuredMetrics}>
-            {([["play","⭐ Play of the Day"],["value","💎 Best Value"],["first","🏀 First Basket"],["long","🚀 Long Shot"]] as const)
-              .filter(([key])=>key!=="first"||["nba","wnba","cbb"].includes(sport))
+            {([["play","⭐ Play of the Day"],["value","💎 Best Value"],["first",featuredScorer(sport)?.title],["long","🚀 Long Shot"]] as const)
+              .filter(([,label])=>label)
               .map(([key,label])=>{
                 const stat=featured?.categories?.[key];
                 return <article className={styles.metricCard} key={key}>
@@ -471,7 +472,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
             <div style={{maxHeight:440,overflow:"auto"}}>
               {featured.records.map((r:any,i:number)=><article key={r.day+"|"+r.key+"|"+i} style={{padding:"10px 0",borderBottom:"1px solid #454036"}}>
                 <strong>{r.playerName}</strong>
-                <p>{r.day} · {r.key==="play"?"Play of the Day":r.key==="value"?"Best Value":r.key==="first"?"First Basket":"Long Shot"} · {String(r.market).replaceAll("_"," ")}</p>
+                <p>{r.day} · {r.key==="play"?"Play of the Day":r.key==="value"?"Best Value":r.key==="first"?featuredScorer(sport)?.label:"Long Shot"} · {String(r.market).replaceAll("_"," ")}</p>
                 <p>{r.side||"No direction"} {r.line??""} · {r.sportsbook||"Sportsbook not recorded"} {r.odds!=null?"· "+(r.odds>0?"+":"")+r.odds:""}</p>
                 <p>Pregame EV: {r.estimatedEvText||"—"}</p>
                 <p>{r.selectionIssue}</p>
