@@ -45,7 +45,7 @@ export function TodayTopPlays({sport}:{sport:DashboardSport;rows?:any[];loading?
       <p>{selection}</p>
       <p>{row.sportsbook} {pick.price>0?'+':''}{pick.price}{(row.featuredRetained||row.boardFrozen)&&' · Saved pregame'}</p>
       {pick.basis==='bookmaker_implied'?<p>Book odds · No model EV</p>:<p title={estimatedEvNotice(row)}>EV {estimatedEvText(row)}</p>}
-      <Link href={`/${sport}/player/${encodeURIComponent(row.playerId)}?name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName||row.team||'')}&market=${encodeURIComponent(row.market)}${savedQuoteQuery(row)}`}>View Intelligence ›</Link>
+      <Link href={`/${sport}/player/${encodeURIComponent(row.playerId)}?name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName||row.team||'')}&market=${encodeURIComponent(row.market)}&position=${encodeURIComponent(String(row.position||""))}&matchup=${encodeURIComponent(String(row.matchup||""))}&img=${encodeURIComponent(String(row.headshot||""))}&line=${encodeURIComponent(String(row.sportsbookLine??""))}&state=${encodeURIComponent(String(row.gameState||""))}&status=${encodeURIComponent(String(row.gameStatus||""))}&mode=prediction${savedQuoteQuery(row)}`}>View Intelligence ›</Link>
      </>:<p className={styles.status}>{!confirmed?(failed?'Saved picks temporarily unavailable':'Checking saved plays…'):'No Qualified Pick'}</p>}
     </article>;
    })}
