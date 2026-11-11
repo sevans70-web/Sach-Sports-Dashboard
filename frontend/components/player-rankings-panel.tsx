@@ -1170,7 +1170,7 @@ function PlayerCard({
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
               : displayedPick||(sport==='nba'?'PASS':'—')}
           </strong>
-          {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?<small>{modelPickNotice(card.raw)}</small>:footballForecast.side?<small>{footballForecast.basis}</small>:null}
+          {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?(modelPickNotice(card.raw)==='Model forecast'?null:<small>{modelPickNotice(card.raw)}</small>):footballForecast.side&&footballForecast.basis!=='Model forecast'?<small>{footballForecast.basis}</small>:null}
 
         </div>
 
