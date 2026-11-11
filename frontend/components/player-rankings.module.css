@@ -1184,5 +1184,19 @@ button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px so
 .marketTabsFrame .scrollCue { position:static; flex:0 0 24px; width:24px; min-height:39px; align-self:stretch; font-size:20px; }
 @media(max-width:430px) {
   .marketTabsFrame { padding-right:0; gap:5px; }
-  .marketTabsFrame .tabs button { min-height:35px; padding:6px 9px; font-size:11px; }\n  .marketTabsFrame .scrollCue { flex-basis:22px; width:22px; }
+  .marketTabsFrame .tabs button { min-height:35px; padding:6px 9px; font-size:11px; }
+  .marketTabsFrame .scrollCue { flex-basis:22px; width:22px; }
+}
+
+/* CW02: date/slate tabs (Today, Tomorrow, All Day and time windows)
+   use the same compact button scale as market categories. */
+.root .tabsFrame:not(.marketTabsFrame) .tabs button {
+  min-height:35px;
+  padding:6px 10px;
+  font-size:11px;
+  line-height:1.2;
+  border-radius:9px;
+}
+@media(max-width:430px){
+  .root .tabsFrame:not(.marketTabsFrame) .tabs button { min-height:35px; padding:6px 9px; }
 }
