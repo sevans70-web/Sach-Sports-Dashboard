@@ -1175,3 +1175,8 @@ button.barSlot:focus-visible,button.barSlot[aria-pressed="true"] {outline:2px so
   .tabs {gap:6px}
   .tabs button {min-height:42px}
 }
+
+/* CW02: market tabs may wrap to complete rows; never clip a pill behind an arrow. */
+.marketTabsFrame { padding-right: 0; }
+.wrappingMarketTabs { flex-wrap: wrap; overflow: visible; }
+.wrappingMarketTabs button { max-width: 100%; }
