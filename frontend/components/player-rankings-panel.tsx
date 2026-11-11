@@ -31,7 +31,6 @@ import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
 import Link from "next/link";
-import {savedQuoteQuery} from "@/lib/saved-quote-evidence";
 
 export type RankingsSport =
   | "mlb"
@@ -1071,13 +1070,13 @@ function PlayerCard({
     matchup:card.matchup||"", market:card.market,
     gameTime:card.gameTime||"", status:card.gameStatus||"",
     state:card.gameState||"", img:card.headshot||"",
-    gameId:String(card.raw?.gameId||""),
+    gameId:String(card.raw?.gameId||card.raw?.game_pk||card.raw?.gamePk||""),
     quoteId:String(card.raw?.quoteId||""),
-    forecastAt:String(card.raw?.forecastAt||""),
+    forecastAt:String(card.raw?.researchForecast?.modelSelection?.calculatedAt||card.raw?.forecastAt||""),
     line:card.sportsbookLine==null?"":String(card.sportsbookLine),
     mode:card.raw?.quoteVerified===true?"prediction":"profile",
   });
-  const fullPlayerUrl=`/${sport}/player/${encodeURIComponent(card.playerId)}?${playerPageQuery.toString()}${savedQuoteQuery(card.raw)}`;
+  const fullPlayerUrl=`/${sport}/player/${encodeURIComponent(card.playerId)}?${playerPageQuery.toString()}`;
 
 
   const lineMovement =
