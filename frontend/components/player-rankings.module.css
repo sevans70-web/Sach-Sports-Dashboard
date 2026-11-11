@@ -38,7 +38,7 @@
   gap: 12px;
   margin: 0 0 10px;
   padding: 11px 4px 8px;
-  border-bottom: 1px solid rgba(229, 187, 69, .34);
+  border-bottom: 0;
 }
 
 .header h2 {
