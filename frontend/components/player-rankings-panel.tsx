@@ -207,13 +207,14 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         icon: "🏀",
         // One category bar: standard props and Q1 props belong together.
         markets: [
-          ...BASKETBALL,
-          {key:"first_basket",label:"First Basket",icon:"1️⃣"},
+          ...BASKETBALL.slice(0,4),
           ...["points","rebounds","assists"].map(key=>({
             key:"q1_"+key,
             label:"Q1 "+(BASKETBALL.find(m=>m.key===key)?.label||key),
             icon:"⏱️",
           })),
+          ...BASKETBALL.slice(4),
+          {key:"first_basket",label:"First Basket",icon:"1️⃣"},
         ],
       },
     ],
@@ -1087,9 +1088,7 @@ function PlayerCard({
               onError={event=>{event.currentTarget.style.display='none';}} />
           ) : null}
 
-          {card.teamLogo ? (
-            <img src={card.teamLogo} alt="" className={styles.teamLogo} />
-          ) : null}
+
         </div>
 
         <div className={styles.identity}>
@@ -1245,7 +1244,7 @@ function PlayerCard({
 
       {state === "final" && (q1MilestoneFinal || /^✅ SACH PICK WON|^❌ SACH PICK LOST/.test(researchOutcome.label)) ? (
         <div className={`${styles.resultStrip} ${(q1MilestoneFinal ? result === 'miss' : researchOutcome.label.startsWith('❌')) ? styles.missStrip : ''}`}>
-          <strong>{q1MilestoneFinal ? (result === 'hit' ? '✅ SACH PICK WON' : '❌ SACH PICK LOST') : researchOutcome.label}</strong>
+          <strong>{(q1MilestoneFinal ? result === 'hit' : !researchOutcome.label.startsWith('❌')) ? '✓ WON' : '✕ LOST'}</strong>
         </div>
       ) : null}
 
@@ -1261,7 +1260,7 @@ function PlayerCard({
 
       {open ? (
         <div className={styles.intelligence}>
-          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied OVER chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):predictionProbabilityText(card.raw)}</strong><small>{quarterTarget?'Only OVER odds supplied':'Saved pregame estimate'}</small></div>:null}
+          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied OVER chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):predictionProbabilityText(card.raw)}</strong>{quarterTarget?<small>Book-implied chance from OVER odds</small>:null}</div>:null}
           <div className={`${styles.expandedHeader} ${firstBasket?styles.firstBasketExpanded:''}`}>
             {firstBasket?<>
               <div><b>First basket chance</b><span>Book-implied likelihood</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>
@@ -2630,8 +2629,8 @@ export function PlayerRankingsPanel({
         </div>
       ) : null}
 
-      <div className={styles.tabsFrame}>
-        <div className={`${styles.tabs} ${sport === "nba" ? styles.nbaMarketTabs : ""}`} role="group" aria-label={`${sport.toUpperCase()} player prop markets`} ref={marketScroll.ref}>
+      <div className={`${styles.tabsFrame} ${styles.marketTabsFrame}`}>
+        <div className={`${styles.tabs} ${styles.wrappingMarketTabs}`} role="group" aria-label={`${sport.toUpperCase()} player prop markets`} ref={marketScroll.ref}>
           {group.markets.map((item) => (
             <button
               type="button"
@@ -2645,7 +2644,6 @@ export function PlayerRankingsPanel({
             </button>
           ))}
         </div>
-        <button type="button" className={styles.scrollCue} onClick={marketScroll.more}>›</button>
       </div>
 
       <div className={styles.marketTitle}>
