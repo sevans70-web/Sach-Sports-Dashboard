@@ -202,7 +202,7 @@
 
 .cardTop {
   display: grid;
-  grid-template-columns: 38px 66px minmax(0, 1fr) 52px;
+  grid-template-columns: 38px 66px minmax(0, 1fr) 72px;
   gap: 8px;
   align-items: center;
   padding: 10px 10px 7px;
@@ -341,6 +341,7 @@
 }
 
 .gi {
+  min-width: 0;
   text-align: center;
 }
 
@@ -353,7 +354,8 @@
 
 .gi small {
   display: block;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-size: 10px;
 }
 
@@ -932,7 +934,7 @@
   }
 
   .cardTop {
-    grid-template-columns: 32px 58px minmax(0, 1fr) 45px;
+    grid-template-columns: 32px 58px minmax(0, 1fr) 68px;
     gap: 6px;
     padding: 9px 8px 7px;
   }
