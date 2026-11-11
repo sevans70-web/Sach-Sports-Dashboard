@@ -104,24 +104,41 @@
 }
 .shSnapshotList {
   display: grid;
+  gap: 8px;
 }
 .shSnapshotList a {
+  --sh-sport-accent: #eac46d;
   display: grid;
-  grid-template-columns: minmax(42px, .6fr) 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: center;
-  padding: 12px 4px;
-  font-size: 13px;
+  gap: clamp(7px, 2vw, 16px);
+  min-height: 48px;
+  padding: 8px clamp(8px, 2vw, 14px);
+  border: 1px solid color-mix(in srgb, var(--sh-sport-accent) 38%, #282325);
+  border-inline-start: 3px solid var(--sh-sport-accent);
+  border-radius: 9px;
+  background: linear-gradient(105deg, color-mix(in srgb, var(--sh-sport-accent) 15%, #101012), #101012 65%);
+  font-size: clamp(12px, 2.5vw, 14px);
 }
-.shSnapshotList a + a {
-  border-top: 1px solid #594424;
+.shSnapshotList a:hover {
+  border-color: var(--sh-sport-accent);
 }
-.shSnapshotList strong,
-.shHomeEmpty strong {
-  color: #eac46d;
+.shSnapshotList a:focus-visible {
+  outline: 2px solid #eac46d;
+  outline-offset: 2px;
+}
+.shSnapshotSport {
+  min-width: 3em;
+  font-weight: 800;
 }
 .shSnapshotList span {
-  color: #d9d2c6;
+  color: #e5dfd5;
+  font-variant-numeric: tabular-nums;
+}
+.shSnapshotList .shSnapshotArrow {
+  color: var(--sh-sport-accent);
+  font-size: 24px;
+  line-height: 1;
 }
 .shHomeEmpty {
   display: flex;

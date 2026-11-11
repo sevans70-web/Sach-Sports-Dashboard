@@ -137,9 +137,10 @@ export default function HomeShowcase() {
             {VISIBLE_SPORTS.map(sport => {
               const summary = summaries[sport];
               return <Link href={`/${sport}`} key={sport} data-sport={sport}>
-                <strong>{sport.toUpperCase()}</strong>
+                <strong className="shSnapshotSport">{sport.toUpperCase()}</strong>
                 <span>{summary?.scheduleAvailable ? `${summary.games} games` : summary === undefined ? "Loading games…" : "Games unavailable"}</span>
                 <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} picks` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
+                <span className="shSnapshotArrow" aria-hidden="true">›</span>
               </Link>;
             })}
           </div>
