@@ -28,9 +28,10 @@ async function owls(){
  return {data};
 }
 function board(payload:any,market:NhlMarketKey){return mainMarketQuotes(payload,market,p=>match(p.category??p.market??p.type,market))}
-async function buildNhlRankingsRaw(m:NhlMarketKey){
+async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="today"){
  const [overview,payload]=await Promise.all([loadNhlOverview(),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
- const todayGames=activeRankingSlate(overview.games,nhlDay),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
+ const tomorrowDay=nhlDay(new Date(Date.now()+86400000));
+ const todayGames=slate==="tomorrow"?overview.games.filter(g=>g.tipoff&&nhlDay(g.tipoff)===tomorrowDay):activeRankingSlate(overview.games,nhlDay),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
  for(const x of b){const p=byName.get(cleanNhlName(x.playerName));if(!p||!activeTeams.has(p.team)||(m==='goalie_saves'&&p.position!=='G'))continue;const game=uniqueQuoteFixture(x,todayGames,p.team,15*60_000);if(!game)continue;const base=playerBaseline(p,m),edge=base!=null&&x.line!=null?base-x.line:null,reliability=Math.min(1,(p.gamesPlayed||0)/30),gi=Math.round((55+Math.min(25,Math.abs(edge||0)*7)+reliability*15)*10)/10;rows.push({...footballQuoteFields(x),providerGameTime:x.gameTime,providerMatchup:x.matchup,playerId:p.playerId,playerName:p.playerName,teamId:p.team,season:game.season,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:x.line,bookmakerCount:x.bookmakerCount,modelProjection:base,modelProbability:edge==null?null:Math.max(50,Math.min(82,Math.round((55+Math.abs(edge)*5+reliability*5)*10)/10)),giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:`${overview.season} baseline ${base==null?"loading":base.toFixed(2)} vs verified line ${x.line}. GI adds recent-season sample reliability, role and active matchup context.`})}
  rows.splice(0,rows.length,...uniqueRankingRows(rows));
  const used=new Set(rows.map(x=>cleanNhlName(x.playerName)));
@@ -39,6 +40,8 @@ async function buildNhlRankingsRaw(m:NhlMarketKey){
  // Started boards retain their original public limit; only pregame pools backfill.
  const started=pool.some(r=>['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=Date.now());
  const ranked=(started?pool.slice(0,25):pool).map((x,i)=>({...x,rank:i+1}));
+ // A tomorrow preview must not be written into today's settled/locked history.
+ if(slate==="tomorrow")return {success:true,market:m,slate:"tomorrow",boardDay:tomorrowDay,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"NHL upcoming sportsbook markets":"NHL upcoming schedule; quotes pending"};
  const saved=await saveNhlSlate(m,ranked,false);
  const byKey=new Map(saved.predictions.map(p=>[String(p.playerId)+"|"+p.gameId,p]));
  const frozen=ranked.map(row=>{
@@ -90,7 +93,7 @@ export async function captureAllNhlMarkets(){
  return {...research,success:research.researchArchived||(results.every(x=>!x.error)&&verifiedPredictions>0),verifiedPredictions,markets:results,updatedAt:new Date().toISOString(),warning:"Research snapshots archived separately; no validated NHL betting picks are available."};
 }
 
-export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return rankingResponse('nhl|'+args[0],async()=>{
+export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return rankingResponse('nhl|'+args[0]+'|'+(args[1]||"today"),async()=>{
  const payload=await attachFittedResearchForecasts(guardRankingPayload(limitAvailablePregameRankings(await buildNhlRankingsRaw(...args)),'nhl'),'nhl');
  return {...payload,rows:prioritizeModelPicks(payload.rows||[])};
 })}
