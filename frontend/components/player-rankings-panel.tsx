@@ -2506,6 +2506,7 @@ export function PlayerRankingsPanel({
         // yesterday's games disappear from that feed after midnight.
         if(sport==='nba'&&nbaSlate!=='active')return true;
         if(sport==='nhl'&&nhlSlate==='tomorrow')return Boolean(card.gameTime&&torontoDay(card.gameTime)===torontoDay(new Date(Date.now()+86400000).toISOString()));
+        if(sport==='nfl'&&card.gameTime&&torontoDay(card.gameTime)>=nflToday)return true;
         if (card.raw?.boardFrozen === true) return true;
         if (!sharedStatusGames.length) return true;
 
@@ -2578,6 +2579,9 @@ export function PlayerRankingsPanel({
     return rankingTimeBlocks(displayCards);
   }, [sport, cfbSlate, nflSlate, displayCards]);
 
+  const nflBoardDay = sport==="nfl"?[...new Set(cards.filter(card=>card.gameTime&&torontoDay(card.gameTime)>=nflToday).map(card=>torontoDay(card.gameTime)))].sort()[0]||"":""; 
+  const nflSlateDayLabel=nflBoardDay?(nflBoardDay===nflToday?"Today":"Next Slate · "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",month:"short",day:"numeric"}).format(new Date(nflBoardDay+"T12:00:00-05:00"))):"Next Slate";
+
   const sourceText = useMemo(() => {
     if (sport === "soccer") {
       return LEAGUES.find((item) => item[1] === league)?.[0] || "Soccer";
@@ -2617,6 +2621,8 @@ export function PlayerRankingsPanel({
       ) : null}
 
       {sport === "nfl" ? (
+        <>
+        <div className={styles.nflSlateLabel}>{nflSlateDayLabel}</div>
         <div className={styles.tabsFrame}>
           <div className={styles.tabs}>
             {NFL_SLATES.map((item) => (
@@ -2631,6 +2637,7 @@ export function PlayerRankingsPanel({
             ))}
           </div>
         </div>
+        </>
       ) : null}
 
       {sport==='nhl'?<div className={styles.tabsFrame}><div className={styles.tabs} aria-label="NHL ranking slate">{(["today","tomorrow"] as const).map(key=><button type="button" key={key} className={nhlSlate===key?styles.activeTab:""} onClick={()=>selectNhlSlate(key)}>{key==="today"?"Today":"Tomorrow"}</button>)}</div></div>:null}
