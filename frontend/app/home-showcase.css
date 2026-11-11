@@ -137,7 +137,7 @@
 }
 
 .ssSiteNav:has(a.active[href="/"]) {
-  width: min(100%, 360px);
+  width: min(100%, 320px);
   margin-inline: auto;
   gap: 3px;
 }
