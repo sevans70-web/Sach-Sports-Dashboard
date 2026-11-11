@@ -1,6 +1,6 @@
 "use client";
-import {usePathname} from "next/navigation";
-import {useEffect,useState} from "react";
+import {usePathname,useSearchParams} from "next/navigation";
+import {Suspense,useEffect,useState} from "react";
 import {VISIBLE_SPORTS,type DashboardSport} from "@/lib/dashboard-contract";
 import type {SearchPlayer} from "@/lib/player-search";
 export function SiteHeader(){
@@ -23,7 +23,7 @@ export function SiteHeader(){
  },[search,query]);
  return <header className="ssSiteHeader">
   <div className="ssSiteBrandRow"><Link className="ssSiteBrand" href="/" aria-label="Go to Sach Sports homepage"><img src="/brand/sach-sports-crown-logo.png" width="64" height="64" alt=""/><span><b>SACH</b> SPORTS</span></Link><div className="ssSiteActions"><button aria-label="Search players" aria-expanded={search} onClick={()=>{setSearch(!search);setMenu(false)}}>⌕</button><button aria-label="Open navigation menu" aria-expanded={menu} onClick={()=>{setMenu(!menu);setSearch(false)}}>☰</button></div></div>
-  <nav className="ssSiteNav" aria-label="Sports dashboards"><Link href="/" className={!active?"active":""} aria-current={!active?"page":undefined}>HOME</Link>{VISIBLE_SPORTS.map(s=><Link href={`/${s}`} key={s} className={active===s?"active":""} aria-current={active===s?"page":undefined}>{s==="soccer"?"Soccer":s.toUpperCase()}</Link>)}</nav>
+  <Suspense fallback={<SportsNavLinks active={active} performance={active==="performance"}/>}><SiteSportsNavigation pathname={pathname}/></Suspense>
   {menu?<div className="ssSiteMenu"><Link href="/">Home</Link>{VISIBLE_SPORTS.map(s=><Link key={s} href={`/${s}`}>{s.toUpperCase()} dashboard ›</Link>)}<Link href={`/performance?sport=${VISIBLE_SPORTS.includes(active as DashboardSport)?active:"nba"}`}>Prediction Performance ›</Link><Link href="/admin">Administrator sign-in ›</Link></div>:null}
   {search?<section className="ssSiteSearch" aria-label="Player search"><label htmlFor="ss-player-search">Search players across all sports</label><div><input id="ss-player-search" type="search" autoFocus autoComplete="off" placeholder="Player name…" value={query} onChange={e=>setQuery(e.target.value)}/><button aria-label="Close search" onClick={()=>setSearch(false)}>✕</button></div>
    <p role="status" aria-live="polite">{busy?"Searching…":error?error:query.trim().length<2?"Enter at least two letters.":results.length?`${results.length} player${results.length===1?"":"s"} found`:partial?"Some player results are temporarily unavailable. Please try again.":"No matching players found. Try a first or last name."}</p>
@@ -34,3 +34,12 @@ export function SiteHeader(){
  </header>;
 }
 import {SportLink as Link} from "./sport-link";
+
+function SportsNavLinks({active,performance}:{active:string;performance:boolean}){
+ return <nav className="ssSiteNav" aria-label={performance?"Results by sport":"Sports dashboards"}><Link href="/" className={!active?"active":""} aria-current={!active?"page":undefined}>HOME</Link>{VISIBLE_SPORTS.map(s=><Link href={performance?`/performance?sport=${s}`:`/${s}`} key={s} className={active===s?"active":""} aria-current={active===s?"page":undefined}>{s==="soccer"?"Soccer":s.toUpperCase()}</Link>)}</nav>;
+}
+function SiteSportsNavigation({pathname}:{pathname:string}){
+ const params=useSearchParams(),performance=pathname==="/performance";
+ const requested=params.get("sport"),active=performance?(VISIBLE_SPORTS.includes(requested as DashboardSport)?requested!:"nba"):pathname.split("/")[1];
+ return <SportsNavLinks active={active} performance={performance}/>;
+}

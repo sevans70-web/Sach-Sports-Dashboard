@@ -8,7 +8,6 @@ export default async function PerformancePage({searchParams}:{searchParams:Promi
  const sport:DashboardSport=allowed.some(s=>s===requested)?requested as DashboardSport:'nba';
  return <main className="ssDashboard ssPerformanceDashboard">
   <header className="ssPerformancePageHead"><Link href={`/${sport}`}>‹ Back to {sport.toUpperCase()} Intelligence</Link><h1>{sport.toUpperCase()} Results &amp; History</h1></header>
-  <nav className="ssPerformanceSports" aria-label="Performance by sport">{allowed.map(s=><Link key={s} href={`/performance?sport=${s}`} aria-current={sport===s?'page':undefined}>{s.toUpperCase()}</Link>)}</nav>
   <PredictionPerformancePanel key={sport} sport={sport}/>
  </main>;
 }
