@@ -30,6 +30,8 @@ import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
+import Link from "next/link";
+import {savedQuoteQuery} from "@/lib/saved-quote-evidence";
 
 export type RankingsSport =
   | "mlb"
@@ -1062,6 +1064,21 @@ function PlayerCard({
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
+  // All three entry points lead to the same full player-intelligence page.
+  // Preserve this inline research expansion for users who want a quick preview.
+  const playerPageQuery = new URLSearchParams({
+    name:card.playerName, team:card.teamName, position:card.position||"",
+    matchup:card.matchup||"", market:card.market,
+    gameTime:card.gameTime||"", status:card.gameStatus||"",
+    state:card.gameState||"", img:card.headshot||"",
+    gameId:String(card.raw?.gameId||""),
+    quoteId:String(card.raw?.quoteId||""),
+    forecastAt:String(card.raw?.forecastAt||""),
+    line:card.sportsbookLine==null?"":String(card.sportsbookLine),
+    mode:card.raw?.quoteVerified===true?"prediction":"profile",
+  });
+  const fullPlayerUrl=`/${sport}/player/${encodeURIComponent(card.playerId)}?${playerPageQuery.toString()}${savedQuoteQuery(card.raw)}`;
+
 
   const lineMovement =
     card.openingLine != null && card.sportsbookLine != null
@@ -1252,14 +1269,11 @@ function PlayerCard({
         </div>
       ) : null}
 
-      <button
-        type="button"
-        className={styles.intelButton}
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-      >
-        {open ? "Collapse Intelligence" : "View Intelligence"}
-        <span>{open ? "⌃" : "›"}</span>
+      <Link href={fullPlayerUrl} className={styles.intelButton} style={{display:"flex",justifyContent:"flex-end",alignItems:"center",textDecoration:"none",gap:10}}>
+        View Intelligence <span>›</span>
+      </Link>
+      <button type="button" className={styles.intelButton} onClick={() => setOpen((value) => !value)} aria-expanded={open} style={{fontSize:11,opacity:.86}}>
+        {open ? "Hide quick analysis" : "Expand quick analysis"} <span>{open ? "⌃" : "›"}</span>
       </button>
 
       {open ? (
