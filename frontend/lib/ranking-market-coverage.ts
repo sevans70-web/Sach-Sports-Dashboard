@@ -11,7 +11,7 @@ type CoverageCache = {
  get(key:string,type:'json'):Promise<unknown>;
  put(key:string,value:string,options:{expirationTtl:number}):Promise<void>;
 };
-const cacheKey=(sport:string,day:string,market:string)=>`sach:ranking-coverage:v1:${sport}:${day}:${market}`;
+const cacheKey=(sport:string,day:string,market:string)=>`sach:ranking-coverage:v2:${sport}:${day}:${market}`;
 
 export function rankingMarketCoverage(sport:string,market:string,day:string,rows:any[],now=Date.now()):MarketCoverage{
  const matches=new Map<string,any>();
