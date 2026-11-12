@@ -2723,7 +2723,7 @@ export function PlayerRankingsPanel({
                   onClick={()=>setBlockExpanded(previous=>({...previous,[`${market.key}|${block.key}`]:!(previous[`${market.key}|${block.key}`]??!block.completed)}))}
                   style={{ display: "flex", width:"100%", background:"transparent", cursor:"pointer", border:0, textAlign:"left", justifyContent: "space-between", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(229,187,69,.35)", padding: "8px 2px", marginBottom: 8 }}>
                   <strong style={{ color: "#e5bb45" }}>{block.label}</strong>
-                  <span style={{ color: "#9da1a8", fontSize: 11 }}>{block.completed?"Final · ":""}{sport==="nfl"?`${pickCount} ${pickCount===1?"pick":"picks"}`:`${block.rows.length} saved`} · {(blockExpanded[`${market.key}|${block.key}`]??!block.completed)?"Collapse ⌃":"Expand ›"}</span>
+                  <span style={{ color: "#9da1a8", fontSize: 11 }}>{block.completed?"Final · ":""}{sport==="nfl"?`${block.rows.length} ${block.rows.length===1?"ranking":"rankings"} · ${pickCount} ${pickCount===1?"pick":"picks"}`:`${block.rows.length} saved`} · {(blockExpanded[`${market.key}|${block.key}`]??!block.completed)?"Collapse ⌃":"Expand ›"}</span>
                 </button>
                 {(blockExpanded[`${market.key}|${block.key}`]??!block.completed) ? <div id={`cfb-block-${block.key}`}>
                   {(full ? block.rows : block.rows.slice(0, 5)).map((card) => (
@@ -2739,11 +2739,11 @@ export function PlayerRankingsPanel({
 
       {!loading && !error && !displayCards.length ? (
         <div className={styles.state}>
-          {sport==='nhl' ? `No qualified ${market.label} picks with verified odds for this slate.` : sport==='nba'&&market.key!=='first_basket' ? `No positive, verified EV is available for ${market.label} on this slate.` : <>No eligible {market.label} rankings are available for the current slate.</>}
+          No eligible {market.label} rankings are available for the current slate.
         </div>
       ) : null}
 
-      {displayCards.length > (["nfl","cfb"].includes(sport) ? 15 : 5) ? (
+      {(sport==="nfl"&&nflSlate==="all" ? cfbAllDayGroups.some(block=>block.rows.length>5) : displayCards.length>5) ? (
         <button
           type="button"
           className={styles.bottomViewAll}
