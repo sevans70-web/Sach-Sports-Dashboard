@@ -1427,7 +1427,7 @@ function PlayerCard({
               <p>{card.gameStatus || (state === "pregame" ? "Scheduled" : state === "live" ? "In progress" : "Final")}</p>
             </div>
             <div className={styles.reasonList} aria-label="Player matchup and availability analysis">
-              {playerMatchupAndAbsence({...card.raw,teamName:card.teamName,teammateAvailability:verifiedTeammates},sport,card.market,historyValues).map((note,i)=><p key={i}>{note}</p>)}
+              {playerMatchupAndAbsence({...card.raw,teamName:card.teamName,matchup:card.matchup,teammateAvailability:verifiedTeammates},sport,card.market,historyValues,historyPoints).map((note,i)=><p key={i}>{note}</p>)}
             </div>
           </section>
 
