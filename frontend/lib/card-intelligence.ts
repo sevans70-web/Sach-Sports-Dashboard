@@ -56,7 +56,7 @@ export function gameRankingTeam(row:any,side:'away'|'home',game:any){
 /** Evidence-based context shared by compact rankings and full player profiles.
  * An absence is a possible role change, never proof of extra minutes or targets.
  */
-export function playerMatchupAndAbsence(row:any,sport:string,market:string,history:number[]=[]){
+export function playerMatchupAndAbsence(row:any,sport:string,market:string,history:number[]=[],datedHistory:Array<{value:number;opponent?:string}>=[]){
  const numeric=(x:any)=>x==null||x===''||!Number.isFinite(Number(x))?null:Number(x);
  const fmt=(x:number)=>Number(x.toFixed(1)).toString();
  const line=numeric(row?.sportsbookLine),values=history.filter(x=>Number.isFinite(x)).slice(-5);
@@ -65,6 +65,15 @@ export function playerMatchupAndAbsence(row:any,sport:string,market:string,histo
   const avg=values.reduce((a,b)=>a+b,0)/values.length;
   notes.push('What the recent form means: '+fmt(avg)+' '+market.replaceAll('_',' ')+' per game in the last '+values.length+' recorded appearances'+(line!=null?'; the displayed line is '+fmt(line)+'.':' (no verified comparison line).')+' A historical average is not a prediction.');
  }else notes.push('At least three dated appearances are needed before recent form can be assessed reliably.');
+ const opponent=String(row?.opponentName||'')||(()=>{
+  const parts=String(row?.matchup||'').split(/\s+@\s+|\s+vs\.?\s+/i);
+  if(parts.length!==2)return '';
+  const norm=(x:string)=>x.toLowerCase().replace(/[^a-z0-9]/g,'');
+  return norm(parts[0])===norm(String(row?.teamName||''))?parts[1]:norm(parts[1])===norm(String(row?.teamName||''))?parts[0]:'';
+ })();
+ const normTeam=(x:string)=>x.toLowerCase().replace(/[^a-z0-9]/g,'');
+ const pastOpp=datedHistory.filter(x=>x.opponent&&Number.isFinite(x.value)&&opponent&&(normTeam(String(x.opponent))===normTeam(opponent)||normTeam(opponent).endsWith(normTeam(String(x.opponent)))&&normTeam(String(x.opponent)).length>=5)).slice(-5);
+ if(pastOpp.length)notes.push('Against '+opponent+': '+pastOpp.length+' recorded meeting'+(pastOpp.length===1?'':'s')+', averaging '+fmt(pastOpp.reduce((a,b)=>a+b.value,0)/pastOpp.length)+' '+market.replaceAll('_',' ')+'. A small head-to-head sample does not predict this game.');
  const opp=row?.opponentDefense||row?.matchupEvidence;
  if(opp?.verified===true&&opp?.gameId&&String(opp.gameId)===String(row?.gameId)&&typeof opp.summary==='string'&&opp.summary.trim()){
   notes.push('Opponent matchup: '+opp.summary.trim());
