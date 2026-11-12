@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { SportLink as Link } from "@/components/sport-link";
-import { fetchDashboardSummary } from "@/components/use-dashboard-summary";
+import { fetchDashboardSummary, peekDashboardSummary } from "@/components/use-dashboard-summary";
 import { dashboardDay, VISIBLE_SPORTS, type DashboardSport } from "@/lib/dashboard-contract";
 import { visiblePolling } from "@/lib/visible-polling";
 import "./home-showcase.css";
@@ -64,12 +64,22 @@ export default function HomeShowcase() {
   useEffect(() => {
     let active = true;
     let refreshing = false;
+    // Render last verified same-day snapshot immediately on return visits.
+    setToday(dashboardDay(new Date()));
+    setSummaries(previous=>{
+      const next={...previous};
+      for(const sport of VISIBLE_SPORTS){
+        const snapshot=peekDashboardSummary(sport,"eng.1","today");
+        if(snapshot)next[sport]=snapshot;
+      }
+      return next;
+    });
     async function refresh() {
       if (refreshing) return;
       refreshing = true;
       if (active) setToday(dashboardDay(new Date()));
       try {
-        await Promise.all([
+        void Promise.all([
           ...VISIBLE_SPORTS.map(async sport => {
             try {
               const summary = await fetchDashboardSummary(sport, "eng.1", "today");
@@ -95,9 +105,9 @@ export default function HomeShowcase() {
             .then(response => response.ok ? response.json() : null)
             .then(result => { if (active && result) setPerformance(result); })
             .catch(() => {}),
-        ]);
-      } finally {
-        refreshing = false;
+        ]).finally(()=>{refreshing=false;});
+      } catch {
+        refreshing=false;
       }
     }
     void refresh();
@@ -144,8 +154,8 @@ export default function HomeShowcase() {
               const summary = summaryFor(sport);
               return <Link href={`/${sport}`} key={sport} data-sport={sport}>
                 <strong className="shSnapshotSport">{sport.toUpperCase()}</strong>
-                <span>{summary?.scheduleAvailable ? `${summary.games} ${summary.games === 1 ? "game" : "games"}` : summary === undefined ? "Loading games…" : "Games unavailable"}</span>
-                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "pick" : "picks"}` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
+                <span>{summary?.scheduleAvailable ? `${summary.games} ${summary.games === 1 ? "game" : "games"}` : summary === undefined ? "Updating…" : "Games unavailable"}</span>
+                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "pick" : "picks"}` : summary === undefined ? "Updating…" : "Picks unavailable"}</span>
                 <span className="shSnapshotArrow" aria-hidden="true">›</span>
               </Link>;
             })}
@@ -161,7 +171,7 @@ export default function HomeShowcase() {
                   const summary = summaryFor(sport);
                   const games = [...(summary?.previewGames ?? [])].filter(game => game.state !== "post");
                   const game = games.sort((a, b) => Number(b.state === "in") - Number(a.state === "in") || Date.parse(a.date) - Date.parse(b.date))[0];
-                  if (!game) return <p className="shHomeEmpty" key={sport}><strong>{sport.toUpperCase()}</strong> {summary === undefined ? "Loading games…" : summary?.scheduleAvailable ? "No upcoming games" : "Schedule unavailable"}</p>;
+                  if (!game) return <p className="shHomeEmpty" key={sport}><strong>{sport.toUpperCase()}</strong> {summary === undefined ? "Updating…" : summary?.scheduleAvailable ? "No upcoming games" : "Schedule unavailable"}</p>;
                   return <Link href={`/${sport}/games`} className="shGame" key={sport}>
                     <div className="shTeam">{game.awayLogo && <img src={game.awayLogo} alt="" />}<b>{game.awayAbbr}</b></div>
                     <span className="shAt">@</span>
