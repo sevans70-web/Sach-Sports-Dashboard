@@ -1,5 +1,5 @@
 import {datedCardHistoryPoints} from '@/lib/public-prop-context';
-export type PlayerHistoryPoint={value:number;date?:string;opponent?:string;gameId?:string;period?:string;minutes?:number|string;iceTimeSeconds?:number;workload?:number};
+export type PlayerHistoryPoint={value:number;date?:string;opponent?:string;gameId?:string;period?:string;minutes?:number|string;iceTimeSeconds?:number;workload?:number;fieldGoalAttempts?:number;freeThrowAttempts?:number;threePointAttempts?:number;shots?:number;shotsAgainst?:number;carries?:number;targets?:number};
 const numeric=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 /** Missing statistics never become zeroes; fixture views use prior dated games only. */
 export function playerCardHistory(payload:any,sport:string,market:string,before?:string,gameId?:string):PlayerHistoryPoint[]{

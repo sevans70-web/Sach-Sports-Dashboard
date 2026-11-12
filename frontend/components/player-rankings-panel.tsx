@@ -13,6 +13,7 @@ import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
 import {propIntelligence,playerMatchupNotes} from "@/lib/card-intelligence";
+import {playerFormInsight} from "@/lib/player-card-analysis";
 import {publicPropContext} from "@/lib/public-prop-context";
 import {currentDroppedRows,trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow,verifiedPropQuote} from "@/lib/prop-integrity";
@@ -1003,7 +1004,8 @@ function PlayerCard({
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
-  const reasons = researchOnly ? intelligence.facts : splitReasons(card.summary);
+  const formInsight=playerFormInsight(sport,card.market,historyPoints,card.marketLabel.toLowerCase());
+  const reasons = formInsight ? [formInsight] : researchOnly ? intelligence.facts : splitReasons(card.summary);
   // All three entry points lead to the same full player-intelligence page.
   // Preserve this inline research expansion for users who want a quick preview.
   const playerPageQuery = new URLSearchParams({

@@ -103,6 +103,13 @@ function parseSeason(payload:any,season:number,market:HistoryMarket){
   if(!indexes.length||indexes.some(i=>i<0))return [];
 
   const events=payload?.events||{};
+  const passingAttempts=statIndexFor(payload,["passingattempts","passattempts"]);
+  const carries=statIndexFor(payload,["rushingattempts","rushingcarries","rushattempts","carries"]);
+  const targets=statIndexFor(payload,["receivingtargets","receptiontargets","targets","tgts"]);
+  const count=(stats:any[],index:number)=>{
+    const value=stats[index];
+    return value!=null&&String(value).trim()!==''&&Number.isFinite(Number(value))&&Number(value)>=0?Number(value):null;
+  };
   const rows:any[]=[];
   const seen=new Set<string>();
 
@@ -135,7 +142,9 @@ function parseSeason(payload:any,season:number,market:HistoryMarket){
           ),
           atVs:String(meta?.atVs||""),
           value,
-          workload:(()=>{const ix=statIndexFor(payload,["passingattempts","passattempts"]);return ix>=0&&stats[ix]!=null&&String(stats[ix]).trim()!==''&&Number.isFinite(Number(stats[ix]))?Number(stats[ix]):null})()
+          workload:count(stats,passingAttempts),
+          carries:count(stats,carries),
+          targets:count(stats,targets)
         });
       }
     }

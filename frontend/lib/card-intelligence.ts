@@ -1,3 +1,4 @@
+import {matchupRoleRead} from '@/lib/player-card-analysis';
 import {cardModelProjection} from '@/lib/saved-model-pick';
 import {rankingGameForRow} from "@/lib/ranking-card-state";
 const number=(v:any)=>v==null||(typeof v==='string'&&!v.trim())||typeof v==='boolean'?null:Number.isFinite(Number(v))?Number(v):null;
@@ -71,25 +72,25 @@ export function playerMatchupNotes(row:any,market:string,history:import("@/lib/p
   (!row.gameId||String(point.gameId)!==String(row.gameId))&&
   (!/^\d{4}-\d{2}-\d{2}$/.test(point.date!)||point.date!<day))
   .sort((a,b)=>Date.parse(a.date!)-Date.parse(b.date!));
- const meetings=prior.filter(against).slice(-5);
- const other=prior.filter(point=>point.opponent&&!against(point)).slice(-5);
- const average=(points:typeof prior)=>fmt(points.reduce((sum,point)=>sum+point.value,0)/points.length);
+ const unique=[...new Map(prior.map(point=>[point.gameId||`${point.date}|${normalize(point.opponent)}`,point])).values()];
+ const meetings=unique.filter(against).slice(-5);
+ const other=unique.filter(point=>point.opponent&&!against(point)).slice(-5);
  const line=row.quoteVerified===true?number(row.sportsbookLine):null;
  const unit=market.replace(/^q1_/,'').replaceAll('_',' ');
  const notes:string[]=[];
  if(meetings.length){
-  const results=meetings.map(point=>fmt(point.value)).join(', ');
-  const againstLine=line!=null&&!/first|anytime/.test(market)
-   ? ` At the recorded ${fmt(line)} line, ${meetings.filter(point=>point.value>line).length} went over, ${meetings.filter(point=>point.value<line).length} went under${meetings.some(point=>point.value===line)?`, and ${meetings.filter(point=>point.value===line).length} landed on the line`:''}.`:'';
-  notes.push(`Against ${opponent}: ${results} ${unit} across ${meetings.length} prior ${meetings.length===1?'meeting':'meetings'}${other.length?`, averaging ${average(meetings)} versus ${average(other)} in the last ${other.length} games against other opponents`:''}.${againstLine}`);
- }
- const recent=prior.slice(-5);
- const workload=market.startsWith('q1_')?null:row.sport==='nhl'?{label:'time on ice',unit:'minutes',value:(point:typeof prior[number])=>point.iceTimeSeconds==null?null:point.iceTimeSeconds/60}:
-  row.sport==='nba'?{label:'court time',unit:'minutes',value:(point:typeof prior[number])=>number(point.minutes)}:
-  /^(passing_|qb_passing)/.test(market)?{label:'passing volume',unit:'attempts',value:(point:typeof prior[number])=>number(point.workload)}:null;
- if(workload){
-  const values=recent.map(workload.value).filter((value):value is number=>value!=null&&value>0);
-  if(values.length>=3)notes.push(`Recent ${workload.label}: ${fmt(values.reduce((sum,value)=>sum+value,0)/values.length)} ${workload.unit} per game across ${values.length} recorded appearances (range ${fmt(Math.min(...values))}–${fmt(Math.max(...values))}).`);
+  const role=matchupRoleRead(row.sport,market,meetings,other);
+  if(meetings.length===1){
+   const value=meetings[0].value;
+   const compared=line!=null&&!/first|anytime/.test(market)?` It finished ${value===line?'on':value>line?'above':'below'} the recorded ${fmt(line)} line.`:'';
+   notes.push(`One prior meeting with ${opponent}: ${fmt(value)} ${unit}.${compared}${role} Treat that single game as limited evidence.`);
+  }else{
+   const avg=fmt(meetings.reduce((sum,point)=>sum+point.value,0)/meetings.length);
+   const over=line==null?0:meetings.filter(point=>point.value>line).length;
+   const under=line==null?0:meetings.filter(point=>point.value<line).length;
+   const compared=line!=null&&!/first|anytime/.test(market)?` At the recorded ${fmt(line)} line: ${over} over, ${under} under${over+under<meetings.length?`, ${meetings.length-over-under} on the line`:''}.`:'';
+   notes.push(`Against ${opponent}: ${avg} ${unit} per game across ${meetings.length} prior meetings (range ${fmt(Math.min(...meetings.map(point=>point.value)))}–${fmt(Math.max(...meetings.map(point=>point.value)))}).${compared}${role}`);
+  }
  }
  const evidence=row.opponentDefense||row.matchupEvidence;
  if(row.gameId&&evidence?.verified===true&&String(evidence.gameId)===String(row.gameId)&&evidence.market===market&&

@@ -1,6 +1,7 @@
 "use client";
 import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {propLineText} from '@/lib/prop-line-format';
+import {playerFormInsight} from "@/lib/player-card-analysis";
 import {playerMatchupNotes,playerFixtureOpponent} from '@/lib/card-intelligence';
 import {useSavedSelection} from '@/components/saved-estimated-ev';
 
@@ -397,10 +398,9 @@ export function UnifiedPlayerCard({
     );
 
   const recentFive = history.slice(-5);
-  const priorFive = history.slice(-10, -5);
   const recentAverage = historyAverage(recentFive);
-  const earlierAverage = historyAverage(priorFive);
   const stat = historyLabel || marketLabel(researchMarket);
+  const formInsight=playerFormInsight(sport,researchMarket,history,stat.toLowerCase());
   const historicalLine = savedSelection?.line ?? savedEvidence.forecast?.line ?? null;
   const matchupNotes = playerMatchupNotes({
     sport, gameId: first(query.gameId), gameTime: historyCutoff, teamName: team, matchup,
@@ -467,8 +467,8 @@ export function UnifiedPlayerCard({
         <section className={styles.section}>
           <h2>Player Analysis</h2>
           {recentAverage != null ? <ul className={styles.notes}>
-            <li><strong>Recent form</strong><span>{fmt(recentAverage)} {stat.toLowerCase()} per game over the last {recentFive.length}{earlierAverage != null ? `, versus ${fmt(earlierAverage)} over the preceding ${priorFive.length}` : ''}.</span></li>
-            {showComparison && <li><strong>Results at {propLineText(historicalLine)}</strong><span>{hitCount} over · {recentFive.length - hitCount - pushCount} under{pushCount ? ` · ${pushCount} on the line` : ''} in the last {recentFive.length} games.</span></li>}
+            <li><strong>Recent form</strong><span>{formInsight||`${fmt(recentAverage)} ${stat.toLowerCase()} per game over the last ${recentFive.length} appearances.`}</span></li>
+            {showComparison && <li><strong>Last {recentFive.length} at {propLineText(historicalLine)}</strong><span>{hitCount} over · {recentFive.length - hitCount - pushCount} under{pushCount ? ` · ${pushCount} on the line` : ''}.</span></li>}
           </ul> : <p className={styles.muted}>{historyLoading ? 'Loading game history…' : 'Game history unavailable for this market.'}</p>}
         </section>
 

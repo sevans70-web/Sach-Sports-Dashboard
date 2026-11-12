@@ -57,8 +57,21 @@ test('matchup compares prior results for the selected market and omits unsupport
   {value:100,date:'2026-11-12',opponent:'Indiana Pacers'}
  ];
  const notes=playerMatchupNotes(row,'points',games);
- assert.match(notes[0],/12, 18 points.*averaging 15 versus 22.*1 went over, 1 went under/);
- assert.match(notes[1],/29 minutes per game/);
+ assert.match(notes[0],/15 points per game across 2 prior meetings.*1 over, 1 under/);
+ assert.match(playerMatchupNotes(row,'points',games.slice(1))[0],/One prior meeting.*18 points.*above the recorded 14.5/);
  assert.ok(notes.every(note=>!/99|100|Injured teammate/.test(note)));
  assert.ok(playerMatchupNotes({...row,quoteVerified:false},'points',games).every(note=>!note.includes('recorded 14.5')));
+});
+
+test('form distinguishes changes in opportunity from changes in production rate',async()=>{
+ const {playerFormInsight}=await loadTs(new URL('../lib/player-card-analysis.ts',import.meta.url));
+ const window=(row)=>Array.from({length:5},()=>({...row}));
+ const before=window({value:6,minutes:12,fieldGoalAttempts:5});
+ const volume=window({value:12,minutes:24,fieldGoalAttempts:10});
+ assert.match(playerFormInsight('nba','points',[...before,...volume],'points'),/mainly alongside a change in minutes.*18 vs. 18 points per 36 minutes/);
+ assert.match(playerFormInsight('nba','points',[...before,...volume],'points'),/Field-goal attempts per 36 minutes: 15 vs. 15/);
+ assert.match(playerFormInsight('nba','points',[...before,...window({value:12,minutes:12})],'points'),/change in output per 36 minutes/);
+ assert.match(playerFormInsight('nfl','receptions',[...window({value:2,targets:4}),...window({value:4,targets:8})],'receptions'),/change in targets/);
+ assert.match(playerFormInsight('nhl','goals',[...window({value:0,shots:3}),...window({value:1,shots:3})],'goals'),/change in output per shot/);
+ assert.match(playerFormInsight('nba','q1_points',[...before,...volume],'points'),/opportunity is incomplete/);
 });
