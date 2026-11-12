@@ -77,7 +77,7 @@ export function formatEvPercent(value:number){
  const percent=Math.round(value*10)/10;return `${percent>0?'+':''}${Object.is(percent,-0)?'0.0':percent.toFixed(1)}%`;
 }
 export function estimatedEvText(row:any,now=Date.now()){
- const ev=estimatedEv(row,now);return ev.status==='available'?formatEvPercent(ev.percent):'—';
+ const ev=estimatedEv(row,now);return ev.status==='available'&&typeof ev.percent==='number'&&Number.isFinite(ev.percent)&&Math.round(ev.percent*10)/10>0?formatEvPercent(ev.percent):'—';
 }
 export function estimatedEvNotice(row:any,now=Date.now()){
  const ev=estimatedEv(row,now);return ev.status==='available'?(String(row?.market||'').startsWith('q1_')?'Research EV from held-out quarter prediction residuals and verified sportsbook odds; not independently validated for betting.':'Expected net return per $100 at the saved pregame odds, based on model probabilities. Not a win probability or guaranteed profit.'):ev.reason;
