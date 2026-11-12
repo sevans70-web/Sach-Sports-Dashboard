@@ -42,9 +42,17 @@ export async function GET(req:NextRequest){
  const payload=await json(`${ESPN}/common/v3/sports/${path}/athletes/${id}`);
  const athlete=payload?.athlete;
  if(String(athlete?.id)!==id)return NextResponse.json({draftYear:null,rookie:false,games:[]});
- const draftYear=year(athlete.draft?.year??athlete.draftYear??String(athlete.draft?.displayText||'').match(/\b(?:19|20)\d{2}\b/)?.[0]);
- const rookie=athlete.isRookie===true||/\brookie\b/i.test(String(athlete.experience?.displayValue||''))||
-  (athlete.experience?.years===0&&draftYear===dateYear(new Date()));
+ const draftFrom=(player:any)=>year(player?.draft?.year??player?.draftYear??
+  String(player?.draft?.displayText||player?.displayDraft||'').match(/\b(?:19|20)\d{2}\b/)?.[0]);
+ const directDraft=draftFrom(athlete);
+ const [category,league]=path.split('/');
+ const profile=directDraft==null?await json(`https://sports.core.api.espn.com/v2/sports/${category}/leagues/${league}/athletes/${id}`):null;
+ const core=String(profile?.id)===id?profile:null;
+ const draftYear=directDraft??draftFrom(core);
+ const experience=core?.experience??athlete.experience;
+ const seasonStart=dateYear(new Date())-(sport==='nba'&&new Date().getUTCMonth()<8?1:0);
+ const rookie=athlete.isRookie===true||core?.isRookie===true||/\brookie\b/i.test(String(experience?.displayValue||athlete.displayExperience||''))||
+  (experience?.years===0&&draftYear===seasonStart);
  const teamId=String(athlete.team?.id||'');
  const requested=normalize(q.get('team'));
  const matchesTeam=!requested||[athlete.team?.abbreviation,athlete.team?.displayName,athlete.team?.shortDisplayName].some(name=>normalize(name)===requested);
