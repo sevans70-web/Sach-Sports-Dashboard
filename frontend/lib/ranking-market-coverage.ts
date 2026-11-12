@@ -42,7 +42,7 @@ export function rankingMarketCoverage(sport:string,market:string,day:string,rows
   if(verifiedPropQuote(raw,now,raw.boardFrozen===true))game.lines++;
   if(cardModelProjection(raw,now)!=null)game.projections++;
   if(displayed.has(raw)){
-   if(completeRankingProp(raw,now)!=null)game.ev++;
+   if(ev.status==='available'&&Number.isFinite(ev.percent))game.ev++;
    if(qualifiedQuarterTarget(raw,now)||pick&&ev.status==='available'&&ev.percent>0)game.picks++;
   }
   games.set(gameId,game);
