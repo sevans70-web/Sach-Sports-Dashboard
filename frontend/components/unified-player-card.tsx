@@ -8,6 +8,7 @@ import {useSavedSelection} from '@/components/saved-estimated-ev';
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./unified-player-card.module.css";
+import {usePlayerFixtureResult} from "./use-player-fixture-result";
 import {usePlayerChartContext} from "./use-player-chart-context";
 import {HeadToHeadChart} from "./head-to-head-chart";
 import {RecentChart} from "./recent-player-chart";
@@ -300,14 +301,15 @@ export function UnifiedPlayerCard({
   const savedSelection=savedEvidence.selection;
   const line = savedSelection?.line ?? savedEvidence.forecast?.line ?? finite(query.line);
   const projection = savedEvidence.forecast?.projection ?? null;
-  const actual =
-    finite(query.actual);
-
-  const gameState =
-    first(query.state).toLowerCase();
-
-  const gameStatus =
-    first(query.status);
+  const linkedState = first(query.state).toLowerCase();
+  const fixture = usePlayerFixtureResult(sport, first(query.gameId), playerId, researchMarket);
+  const observed = fixture.result;
+  const actual = fixture.enabled ? observed?.actual ?? null : finite(query.actual);
+  const gameState = observed?.state ?? linkedState;
+  const sameState = gameState === linkedState ||
+    (gameState === 'in' && linkedState === 'live') ||
+    (gameState === 'post' && linkedState === 'final');
+  const gameStatus = sameState ? first(query.status) : '';
 
   const image =
     first(query.img);
@@ -431,7 +433,7 @@ export function UnifiedPlayerCard({
     return hit ? "HIT" : "MISS";
   }, [final, actual, line, effectivePick]);
 
-  const status = live ? 'Live' : final ? 'Final' : gameStatus ? 'Scheduled' : '';
+  const status = live ? 'Live' : final ? 'Final' : gameState === 'pre' || gameStatus ? 'Scheduled' : '';
   const probability = savedSelection && savedEvidence.probabilityText !== '—' ? savedEvidence.probabilityText : '';
   const ev = savedSelection && savedEvidence.evText !== '—' ? savedEvidence.evText : '';
   const hitCount = historicalLine == null ? null : recentFive.filter(point => point.value > historicalLine).length;
@@ -449,7 +451,7 @@ export function UnifiedPlayerCard({
             <h1>{name}</h1>
             <p>{[position,team,chartContext?.rookie?'Rookie':'',chartContext?.draftYear?`Drafted ${chartContext.draftYear}`:''].filter(Boolean).join(' · ')}</p>
             {matchup && <p className={styles.fixture}>{matchup}</p>}
-            {status && <p className={styles.status}>{status}{gameStatus && gameStatus.toLowerCase() !== status.toLowerCase() ? ' · ' + gameStatus : ''}</p>}
+            {status && <p className={styles.status}>{[status, gameStatus && gameStatus.toLowerCase() !== status.toLowerCase() ? gameStatus : '', observed?.notice].filter(Boolean).join(' · ')}</p>}
           </div>
           <div className={styles.ev} data-available={Boolean(ev)}><span>EV</span><strong>{ev || <Unavailable />}</strong></div>
         </header>

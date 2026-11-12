@@ -19,7 +19,7 @@ async function transpile(file){
 }
 const [cardCode,chartCode]=await Promise.all([transpile('unified-player-card.tsx'),transpile('recent-player-chart.tsx')]);
 
-function component({points=[],effects=[],fetch=()=>{},evidence={selection:null,forecast:null}}={}){
+function component({points=[],effects=[],fetch=()=>{},evidence={selection:null,forecast:null},fixture={enabled:false,result:null}}={}){
  let n=0;
  const changes=[];
  const initial=[10,points,points,null,false,'Points'];
@@ -31,6 +31,7 @@ function component({points=[],effects=[],fetch=()=>{},evidence={selection:null,f
   '@/lib/player-card-analysis':analysis,
   '@/lib/card-intelligence':intelligence,
   '@/components/saved-estimated-ev':{useSavedSelection:()=>evidence},
+  './use-player-fixture-result':{usePlayerFixtureResult:()=>fixture},
   './use-player-chart-context':{usePlayerChartContext:()=>null},
   './unified-player-card.module.css':{},
   './recent-player-chart.module.css':{},
@@ -69,4 +70,11 @@ test('full-card history request binds the selected fixture cutoff and drops targ
  assert.match(requests[0],/before=2026-10-30T20%3A00Z/);
  assert.deepEqual(changes.filter(c=>c.i===1).at(-1).x.map(p=>p.value),[0,10]);
  cleanup();
+});
+
+test('the full card displays a verified final appearance and stat even when the link has no game status',()=>{
+ const {Card}=component({fixture:{enabled:true,result:{state:'post',notice:'Played',actual:22}}});
+ const html=renderToStaticMarkup(createElement(Card,{sport:'nba',playerId:'4712849',query:{name:'Anthony Black',gameId:'401909973',market:'points'}}));
+ assert.match(html,/Final · Played/);
+ assert.match(html,/Final points · 22/);
 });
