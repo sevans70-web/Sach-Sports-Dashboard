@@ -31,6 +31,16 @@ export function publicNbaRanking(row:any,now=Date.now()){
  return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
 }
 
+/** A visible ranking can be supported by a quote, a fitted projection, or a
+ * sourced historical baseline. Pick and EV eligibility are evaluated separately. */
+export function marketRankingEvidence(row:any,now=Date.now()){
+ if(!row?.playerId||!row?.gameId||row.withdrawnFromBoard===true||row.resultStatus==='void'||row.archivedOriginal?.resultStatus==='void')return false;
+ return row.sport==='nba'&&publicNbaRanking(row,now)||
+  verifiedPropQuote(row,now,row.boardFrozen===true)||
+  cardModelProjection(row,now)!=null||
+  (typeof row.modelProjection==='number'&&Number.isFinite(row.modelProjection)&&row.modelProjection>=0);
+}
+
 /** Hockey's public rankings contain complete, gradeable picks. */
 export function publicNhlRanking(row:any,now=Date.now()){
  if(row?.withdrawnFromBoard===true||row?.resultStatus==='void'||cardModelProjection(row,now)==null)return false;

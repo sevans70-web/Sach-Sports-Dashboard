@@ -25,7 +25,7 @@ import {rankingStatusText,completedRankingsLast,rankingCardState,rankingLineProg
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
 import {cardModelPick,cardModelProjection,modelPickNotice,capRankingUnders} from '@/lib/saved-model-pick';
-import {cardQuotePrices,firstBasketQuote,publicNbaRanking,publicNhlRanking,forecastDetailText} from '@/lib/public-card-metrics';
+import {cardQuotePrices,firstBasketQuote,marketRankingEvidence,publicNhlRanking,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {voidRecordNote,recordNoteFields,playerAvailabilityNote} from '@/lib/record-notes';
 import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation';
@@ -972,7 +972,7 @@ function PlayerCard({
   const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
-  const modelSelection=cardModelPick(card.raw);
+  const modelSelection=sport==='nhl'&&!publicNhlRanking(card.raw)?null:cardModelPick(card.raw);
   const firstBasket=card.market==='first_basket';
   const quarterCard=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_');
   const quarterTarget=['nfl','nba'].includes(sport)&&card.market.startsWith('q1_')&&card.raw?.lineType==='milestone';
@@ -994,6 +994,7 @@ function PlayerCard({
   const comparisonEv=sport==='nba'?nbaDisplayedResearchEv(card.raw):null;
   const evText=nbaPositiveEv?estimatedEvText(card.raw):'—',evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
+  const historicalBaseline=displayedAverage==null&&['nba','nfl','nhl'].includes(sport)&&!quarterCard&&!firstBasket ? finite(card.raw?.modelProjection) : null;
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
   const formInsight=playerFormInsight(sport,card.market,historyPoints,card.marketLabel.toLowerCase());
@@ -1134,14 +1135,14 @@ function PlayerCard({
           <span>
             {binaryEvent
               ? "HR Probability"
-              : "Sach Projection"}
+              : historicalBaseline!=null?"Historical Baseline":"Sach Projection"}
           </span>
           <strong>
             {binaryEvent
               ? card.modelProbability == null
                 ? "—"
                 : `${shortNumber(card.modelProbability)}%`
-              : displayedAverage==null?'Unavailable':shortNumber(displayedAverage)}
+              : displayedAverage==null?(historicalBaseline==null?'Unavailable':shortNumber(historicalBaseline)):shortNumber(displayedAverage)}
           </strong>
         </div>:null}
 
@@ -1242,7 +1243,7 @@ function PlayerCard({
               <b>
                 {binaryEvent
                   ? "HR Probability"
-                  : "Sach Projection"}
+                  : historicalBaseline!=null?"Historical Baseline":"Sach Projection"}
               </b>
               <span>{displayedAverage==null?'Unavailable':'Model projection'}</span>
               <strong>
@@ -2483,8 +2484,7 @@ export function PlayerRankingsPanel({
           // is no longer currently available or a live model has no EV.
           return Boolean(verifiedPropQuote(card.raw,Date.now(),true));
         }
-        if(sport==='nba'&&(excludeUnavailableRanking(card.raw)||!publicNbaRanking(card.raw)))return false;
-        if(sport==='nhl'&&!publicNhlRanking(card.raw))return false;
+        if((sport==='nba'||sport==='nhl')&&(excludeUnavailableRanking(card.raw)||!marketRankingEvidence(card.raw)))return false;
         // Previous and Tomorrow were already date-scoped by scopedNbaBoard.
         // Do not compare these slates with TODAY's shared game schedule:
         // yesterday's games disappear from that feed after midnight.
@@ -2526,17 +2526,12 @@ export function PlayerRankingsPanel({
   }, [sport, market.key, cfbSlate, nflSlate, nflToday, nbaSlate, nhlSlate, cards, cfbLiveGames, sharedStatusGames, requestedNflDay]);
 
   const displayCards = useMemo(() => {
-    // NBA is an EV-ranked board, not a general slate catalogue. No missing,
-    // zero, or negative EV can enter it. Sort the qualified original quotes
-    // before assigning display-only rank numbers; saved history is untouched.
     if(sport==='nba'){
-      // Previous is a read-only historic board: show ORIGINAL saved order,
-      // not today's positive-EV eligibility gate (which can reject all rows
-      // once the original pregame model prices expire).
       if(nbaSlate==='previous'||market.key==='first_basket')return [...scopedDisplayCards].sort((a,b)=>a.rank-b.rank);
       const evRanked=rankNbaCardsByEv(scopedDisplayCards);
       const capped=capRankingUnders(evRanked,card=>nbaCardEv(card)?.side||null);
-      return capped.map((card,index)=>({...card,rank:index+1}));
+      const supporting=scopedDisplayCards.filter(card=>nbaCardEv(card)==null);
+      return [...capped,...supporting].slice(0,25).map((card,index)=>({...card,rank:index+1}));
     }
     const ordered=completedRankingsLast(scopedDisplayCards);
     if(!['nhl','nfl','cbb','cfb'].includes(sport))return ordered;
@@ -2546,11 +2541,15 @@ export function PlayerRankingsPanel({
     const active=ordered.filter(card=>!frozen.includes(card));
     const capped=capRankingUnders(active,card=>{
       const selected=cardModelPick(card.raw)?.side;
-      if(selected)return selected;
+      if(selected&&(sport!=='nhl'||publicNhlRanking(card.raw)))return selected;
       if(sport==='nfl'||sport==='cfb')return footballForecastDisplay(card.raw).side;
-      return card.raw?.researchForecast?.status==='available'?null:card.prediction;
+      return null;
     });
-    return ordered.filter(card=>frozen.includes(card)||capped.includes(card));
+    const eligible=ordered.filter(card=>frozen.includes(card)||capped.includes(card));
+    if(sport!=='nhl'||frozen.length)return eligible;
+    const priority=eligible.filter(card=>publicNhlRanking(card.raw));
+    const supporting=eligible.filter(card=>!priority.includes(card));
+    return [...priority,...supporting].map((card,index)=>({...card,rank:index+1}));
   },[scopedDisplayCards,sport,nbaSlate,market.key]);
 
   const visible = full
@@ -2682,7 +2681,7 @@ export function PlayerRankingsPanel({
         {['nba','nfl','nhl'].includes(sport)
           ? !loading && !error && <p>{sport==='nba'&&market.key==='first_basket'
             ? `${displayCards.length} ${displayCards.length===1?'candidate':'candidates'}`
-            : `${marketPickCount} ${marketPickCount===1?'pick':'picks'}`}</p>
+            : `${displayCards.length} ${displayCards.length===1?'ranking':'rankings'} · ${marketPickCount} ${marketPickCount===1?'pick':'picks'}`}</p>
           : <p>Player Rankings · {sourceText}</p>}
       </div>
 

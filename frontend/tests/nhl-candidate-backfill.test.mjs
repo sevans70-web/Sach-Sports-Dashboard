@@ -15,7 +15,7 @@ test('NHL applies saved availability before pregame Top25, rejects skaters for g
   '@/lib/nba-game-match':{nbaPropMatchesGame:()=>true},'@/lib/provider-fetch':{},'@/lib/research-capture':{},
   '@/lib/nhl':{loadNhlOverview:async()=>({players,games:[game],season:'baseline'}),cleanNhlName:s=>s.toLowerCase(),nhlHeadshot:()=>'',playerBaseline:()=>10},
   '@/lib/active-ranking-slate':{activeRankingSlate:g=>g},
-  '@/lib/nhl-history':{saveNhlSlate:async()=>({predictions:unavailable?players.slice(0,5).map(p=>({...p,gameId:'g',injuryStatus:'Out',gameTime:game.tipoff})):[]})}
+  '@/lib/nhl-history':{nhlDay:d=>new Date(d).toISOString().slice(0,10),saveNhlSlate:async()=>({predictions:unavailable?players.slice(0,5).map(p=>({...p,gameId:'g',injuryStatus:'Out',gameTime:game.tipoff})):[]})}
  };
  const code=ts.transpileModule(await readFile(new URL('../lib/nhl-rankings-server.ts',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
  const module={exports:{}};vm.runInNewContext(code,{module,exports:module.exports,require:n=>mocks[n],Date,console});
