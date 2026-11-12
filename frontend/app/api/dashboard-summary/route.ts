@@ -71,7 +71,7 @@ export async function GET(req:NextRequest){
    }
    const ids=new Set(games.map((game:any)=>String(game.id)));
    const marketCounts=[...perMarket.values()].map(({market,games})=>({market,...games.filter(game=>ids.has(game.gameId)).reduce(
-    (sum,game)=>({lines:sum.lines+game.lines,picks:sum.picks+game.picks,ev:sum.ev+game.ev}),{lines:0,picks:0,ev:0})}));
+    (sum,game)=>({rankings:sum.rankings+game.rows,lines:sum.lines+game.lines,projections:sum.projections+game.projections,picks:sum.picks+game.picks,ev:sum.ev+game.ev}),{rankings:0,lines:0,projections:0,picks:0,ev:0})}));
    const marketTotals=todayOnly?{
     playerProps:marketCounts.reduce((sum,market)=>sum+market.lines,0),
     estimatedPicks:marketCounts.reduce((sum,market)=>sum+market.picks,0),
@@ -81,7 +81,9 @@ export async function GET(req:NextRequest){
    const coverageAudit=todayOnly?{
      expectedMarkets:markets.length,
      observedMarkets:perMarket.size,
+     rankings:marketCounts.reduce((n,item)=>n+item.rankings,0),
      verifiedLines:marketCounts.reduce((n,item)=>n+item.lines,0),
+     supportedProjections:marketCounts.reduce((n,item)=>n+item.projections,0),
      selectedPicks:marketCounts.reduce((n,item)=>n+item.picks,0),
      evAvailable:marketCounts.reduce((n,item)=>n+item.ev,0),
      missingMarkets:markets.filter(m=>!perMarket.has(m))
