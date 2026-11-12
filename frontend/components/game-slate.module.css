@@ -1751,7 +1751,7 @@
 .intelScore span small { font-size: 11px; }
 
 .intelTabs {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 7px;
   margin: 12px 0 4px;
 }
@@ -1760,6 +1760,15 @@
   min-height: 42px;
   padding: 8px 10px;
   font-size: 13px;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .intelTabs { gap: 4px; }
+  .intelTabs button {
+    padding-inline: 4px;
+    font-size: clamp(11px, 3.1vw, 13px);
+  }
 }
 
 .overview { display: grid; gap: 12px; }
