@@ -987,7 +987,10 @@ function PlayerCard({
   const projectionComparison=!complete&&!modelSelection&&footballForecast.side!=null;
   const displayedPick=complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
-  const evText=complete?formatEvPercent(complete.percent):estimatedEvText(card.raw),evNotice=estimatedEvNotice(card.raw);
+  const evPercent=complete?.percent??estimatedEv(card.raw).percent;
+  // A non-positive expected return is an abstention, not an actionable EV card.
+  // Retain the original signed value in the underlying record for auditing.
+  const evText=typeof evPercent==='number'&&Number.isFinite(evPercent)&&evPercent>0?formatEvPercent(evPercent):'—',evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=complete?.projection??(quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null));
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
