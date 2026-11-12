@@ -38,6 +38,7 @@ type SavedPlay = {
     gameTime: string;
     market: string;
     prediction: string;
+    lineType?: string;
     sportsbookLine: number;
     sportsbook: string;
     headshot?: string;
@@ -184,7 +185,7 @@ export default function HomeShowcase() {
                   const row = play?.row;
                   const team = row?.teamName || row?.team || row?.teamAbbr;
                   const teamKey = team?.toLowerCase().replace(/[^a-z0-9]/g, "");
-                  if (!slate || play?.basis !== "model" || !row || !teamKey || teams.has(teamKey) || (today && slate.slateDay < today)) {
+                  if (!slate || play?.basis !== "model" || !row || !teamKey || teams.has(teamKey) || (today && slate.slateDay !== today)) {
                     const nextGame = [...(summaryFor(sport)?.previewGames ?? [])]
                       .filter(game => game.state === "pre" && Date.parse(game.date) > Date.now())
                       .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))[0];
@@ -207,8 +208,7 @@ export default function HomeShowcase() {
                     <span className="shPlayerDetails">
                       <strong>{row.playerName}</strong>
                       <small>{sport.toUpperCase()} · {team} · {row.market.replaceAll("_", " ")}</small>
-                      <small>{row.prediction} {row.sportsbookLine} · Saved at {row.sportsbook} {play.price > 0 ? "+" : ""}{play.price}</small>
-                      {today && slate.slateDay > today && <small>Next slate · {displayTime(row.gameTime)}</small>}
+                      <small>{row.lineType==='milestone'?`${row.sportsbookLine}+`:`${row.prediction} ${row.sportsbookLine}`} · Saved at {row.sportsbook} {play.price > 0 ? "+" : ""}{play.price}</small>
                     </span>
                     {verifiedEv !== null && <span className={`shPickEv ${verifiedEv > 0 ? "shPositiveEv" : ""}`}>
                       EV {verifiedEv > 0 ? "+" : ""}{verifiedEv.toFixed(1)}%

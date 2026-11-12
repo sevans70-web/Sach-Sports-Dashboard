@@ -1,5 +1,6 @@
 "use client";
 import {filterPerformanceResults,type PerformanceResultFilter} from '@/lib/performance-result-filter';
+import {NBA_DISPLAY_MARKETS} from "@/lib/nba";
 import {featuredScorer} from '@/lib/top-plays';
 import {savedProjectionText} from '@/lib/saved-projection';
 import {fetchHistoryJson} from '@/lib/history-fetch';
@@ -78,20 +79,9 @@ const CONFIG: Record<PerformanceSport, CategoryConfig[]> = {
     { key: "QB", label: "QB", icon: "🏈", group: "QB" },
     { key: "Offense", label: "Offense", icon: "🏃", group: "Offense" },
   ],
-  nba: [
-    { key: "points", label: "Points", icon: "🏀", market: "points" },
-    { key: "rebounds", label: "Rebounds", icon: "💪", market: "rebounds" },
-    { key: "assists", label: "Assists", icon: "🎯", market: "assists" },
-    { key: "threes_made", label: "3PT", icon: "3️⃣", market: "threes_made" },
-    { key: "pts_rebs_asts", label: "PRA", icon: "📊", market: "pts_rebs_asts" },
-    { key: "pts_rebs", label: "P+R", icon: "📊", market: "pts_rebs" },
-    { key: "pts_asts", label: "P+A", icon: "📊", market: "pts_asts" },
-    { key: "rebs_asts", label: "R+A", icon: "📊", market: "rebs_asts" },
-    { key: "steals", label: "Steals", icon: "🖐️", market: "steals" },
-    { key: "blocks", label: "Blocks", icon: "🧱", market: "blocks" },
-    {key:"first_basket",label:"First Basket",icon:"1️⃣",market:"first_basket"},
-    ...["points","rebounds","assists","threes_made","pts_rebs_asts"].map(key=>({key:"q1_"+key,label:"Q1 "+({points:"Points",rebounds:"REB",assists:"AST",threes_made:"3PT",pts_rebs_asts:"PRA"} as Record<string,string>)[key],icon:"⏱️",market:"q1_"+key})),
-  ],
+  nba: NBA_DISPLAY_MARKETS.map(([key,label])=>({
+    key,label,market:key,icon:key.startsWith("q1_")?"⏱️":({points:"🏀",rebounds:"💪",assists:"🎯",threes_made:"3️⃣",steals:"🖐️",blocks:"🧱",first_basket:"1️⃣"} as Record<string,string>)[key]||"📊",
+  })),
   wnba: [
     { key: "points", label: "Points", icon: "🏀", market: "points" },
     { key: "rebounds", label: "Rebounds", icon: "💪", market: "rebounds" },
@@ -361,6 +351,11 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const activeCategory =
     categories.find((category) => category.key === categoryKey) || categories[0];
 
+  const firstBasketCategory=sport==='nba'&&activeCategory?.market==='first_basket';
+  const firstBasketRecords=firstBasketCategory
+    ? (featured?.records||[]).filter((record:any)=>record.market==='first_basket')
+    : [];
+
   useEffect(() => {
     setCategoryKey(categories[0]?.key || "");
   }, [sport]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -543,6 +538,12 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                 </div>
               </div>
 
+              {firstBasketCategory&&firstBasketRecords.length>0&&<div>
+                <h3>Saved First Basket selections</h3>
+                {firstBasketRecords.map((record:any)=><p key={record.day+'|'+record.key}>
+                  <strong>{record.playerName}</strong> · {record.day} · {record.sportsbook} {record.odds>0?'+':''}{record.odds} · {record.status}
+                </p>)}
+              </div>}
               <PerformanceCards stat={researchView?researchStat(categoryStat):categoryStat} research={researchView} compact />
               <details style={{marginTop:16}}><summary>Probability accuracy for this category</summary>
                 <p>Compare saved pregame estimates with results. Small samples do not establish reliable accuracy. Pushes are excluded from these percentages.</p>

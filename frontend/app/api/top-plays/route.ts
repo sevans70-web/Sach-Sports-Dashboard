@@ -1,7 +1,9 @@
 import {cloudHistoryReadOnly} from '../../../scripts/history-cloud.mjs';
 import {estimatedEv} from '@/lib/estimated-ev';
 import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
-import {distinctFeaturedPlayers} from '@/lib/top-plays';
+import {readPregameBoard} from '@/lib/ranking-board-cache';
+import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
+import {distinctFeaturedPlayers,featuredPlayerKeys} from '@/lib/top-plays';
 import {retainedTopPlays} from '@/lib/retained-top-plays';
 import {readHistorySnapshots} from '@/lib/history-archive';
 import {saveFeaturedSelections} from '@/lib/featured-selection-capture';
@@ -31,8 +33,28 @@ async function featuredResponse(req:NextRequest){
  const day=dashboardDay(new Date());
  const definitions:Record<string,readonly (readonly any[])[]>={nba:NBA_MARKETS,nfl:NFL_MARKETS,cfb:CFB_MARKETS,nhl:[...NHL_MARKETS,['first_goal']],cbb:CBB_MARKETS,wnba:WNBA_MARKETS,soccer:SOCCER_MARKETS,mlb:[...BATTER_MARKETS,...PITCHER_MARKETS]};
  const markets=[...new Set(definitions[sport].map(m=>String(m[0])))];
- const saved=await readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),...FEATURED_STREAMS],day,{requireComplete:true});
+ const [saved,cached]=await Promise.all([
+  readDurableHistoryBatch(sport,[...markets.map(m=>'featured_'+m),...FEATURED_STREAMS],day,{requireComplete:true}),
+  ['nba','nfl','nhl'].includes(sport)
+   ? Promise.all(markets.map(market=>readPregameBoard(workerRuntimeBinding('VINEXT_KV_CACHE'),sport,market,day)))
+   : Promise.resolve([]),
+ ]);
  for(const record of saved){const board=record.payload?.[0],stamp=Date.parse(board?.featuredCapturedAt||'');if(board&&Number.isFinite(stamp)&&Date.now()-stamp<15*60000)updateTopPlayMarket(sport,board,stamp);}
+ for(const entry of cached)if(entry)updateTopPlayMarket(sport,entry.board,entry.capturedAt);
+ if(sport==='nfl'&&!topPlayMarketState(sport).plays.some(card=>card.key==='play'&&card.pick)){
+  const quarterMarkets=['q1_rushing_yards','q1_passing_yards','q1_receiving_yards'].filter(market=>!cached.some(entry=>entry?.board.market===market));
+  const fetchQuarter=async(market:string)=>{
+   const {GET}=await import('../nfl/rankings/route');
+   const response=await GET(new NextRequest(`https://sach-capture.internal/api/nfl/rankings?market=${market}&day=${day}`));
+   const board=await response.json();
+   if(board?.rows?.length)updateTopPlayMarket(sport,board);
+  };
+  const work=Promise.allSettled(quarterMarkets.map(fetchQuarter));
+  let timeout:ReturnType<typeof setTimeout>|undefined;
+  await Promise.race([work,new Promise(resolve=>{timeout=setTimeout(resolve,4500)})]);
+  clearTimeout(timeout);
+  after(async()=>{await work});
+ }
  const scorerMarket=sport==='nhl'?'first_goal':sport==='nfl'?'first_td':null;
  if(scorerMarket&&!topPlayMarketRows(sport).some(row=>row.market===scorerMarket&&Date.parse(row.gameTime)>Date.now())){
   try{
@@ -61,8 +83,8 @@ async function featuredResponse(req:NextRequest){
   const options=[previous.find((p:any)=>p.key===card.key)?.pick,card.pick,retained.find(p=>p.key===card.key)?.pick];
   for(const pick of options){
    if(!pick||dashboardDay(pick.row.gameTime)!==selectionDay)continue;
-   const id=String(pick.row.playerId||pick.row.playerName).trim().toLowerCase();
-   if(used.has(id))continue;used.add(id);
+   const keys=featuredPlayerKeys(pick.row);
+   if(keys.some(key=>used.has(key)))continue;keys.forEach(key=>used.add(key));
    return {...card,pick:pick===card.pick?pick:{...pick,row:{...pick.row,featuredRetained:true}}};
   }
   return {...card,pick:null};

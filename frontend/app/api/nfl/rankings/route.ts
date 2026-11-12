@@ -89,7 +89,7 @@ async function sharedOwlsGames(){
  const payload=await getOwlsPayload("nfl");return Array.isArray(payload?.data)?payload.data:[];
 }
 async function fetchOwlsRows(market:NflMarketKey){
- const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),market.startsWith('q1_')?getSgoSupplement('NFL'):Promise.resolve({data:[]})]);
+ const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),getSgoSupplement('NFL')]);
  const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
  if(!primary&&!extra?.data?.length){const reason=owls.status==='rejected'?owlsFailureCategory(owls.reason):'provider_empty_feed';throw Error('NFL book feeds are unavailable: '+reason);}
  const quotes=footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now(),market.startsWith('q1_'));
@@ -296,12 +296,16 @@ export async function GET(req:NextRequest){return rankings(req)}
 async function rankings(req:NextRequest,refresh=false):Promise<Response>{
  const market=(req.nextUrl.searchParams.get("market")||"passing_yards") as NflMarketKey;
  if(!NFL_MARKETS.some(x=>x[0]===market))return rankingJson({success:false,error:"Unsupported NFL market"},{status:400});
+ const requestedDay=req.nextUrl.searchParams.get("day");
+ const todayKey=easternDayKey(new Date().toISOString())||"";
+ if(requestedDay&&(!/^\d{4}-\d{2}-\d{2}$/.test(requestedDay)||requestedDay<todayKey||Date.parse(requestedDay)>Date.now()+8*86400000))
+  return NextResponse.json({success:false,rows:[],error:"Choose a game day from this NFL week."},{status:400});
  let locked:any=null;
  try{
   const lockSchedule=await getEspnNflSchedule();
-  locked=await lockedNflBoard(market,lockSchedule);
+  locked=!requestedDay||requestedDay===todayKey?await lockedNflBoard(market,lockSchedule):null;
   if(!refresh){
-   const day=activeFootballBoardDay(lockSchedule),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
+   const day=requestedDay||activeFootballBoardDay(lockSchedule),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
    const retained=retainedNflRankingPayload(locked,published,market,day);
    if(retained){
     const key=market+'|'+day;
@@ -316,10 +320,12 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
     // Legacy fallback rows have already lost per-book prices and market structure.
     // They cannot establish a verified O/U quote; fall back to model watch instead.
     return [];
-  }),getEspnNflSchedule()]),today=activeFootballBoardDay(lockSchedule);
-  const candidates=owlsRows.length?owlsRows:await modelOnlyRows(market,schedule);
+  }),getEspnNflSchedule()]),today=requestedDay||activeFootballBoardDay(lockSchedule);
+  const scopedSchedule=requestedDay?schedule.filter(game=>easternDayKey(game.date)===requestedDay):schedule;
+  const quoted=owlsRows.filter(row=>!requestedDay||easternDayKey(rowGameTime(row,schedule))===requestedDay);
+  const candidates=quoted.length?quoted:await modelOnlyRows(market,scopedSchedule);
   const frozenSlates=new Set(locked?.lockedSlates||[]);
-  const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(frozenSlates.has(footballSlate(t)))return false;if(!t||Date.parse(t)<=Date.now())return false;const k=easternDayKey(t);return !k||k>=today});
+  const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(frozenSlates.has(footballSlate(t)))return false;if(!t||Date.parse(t)<=Date.now())return false;const k=easternDayKey(t);return requestedDay?k===requestedDay:!k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
   const byGameTime=(row:any)=>Date.parse(rowGameTime(row,schedule))||Infinity;
@@ -366,7 +372,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const primaryDay=playableDays.includes(today)?today:(playableDays[0]||today);
   const nextDay=playableDays.find((d:string)=>d>primaryDay)||"";
   const priority=(r:any)=>{const day=easternDayKey(rowGameTime(r,schedule));return day===primaryDay?12:day===nextDay?3:0};
-  rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const scheduledBoardDay=schedule.some((g:any)=>easternDayKey(g.date)===today)?today:primaryDay;const boardDay=(market==='anytime_td'||market==='first_td')?nearestQuotedFootballDay(rows,scheduledBoardDay,today):scheduledBoardDay;const ranked=independentFootballRankings(rows,25,boardDay);
+  rows.sort((a,b)=>(b.giScore+priority(b))-(a.giScore+priority(a))||b.giScore-a.giScore);const scheduledBoardDay=schedule.some((g:any)=>easternDayKey(g.date)===today)?today:primaryDay;const boardDay=!requestedDay&&(market==='anytime_td'||market==='first_td')?nearestQuotedFootballDay(rows,scheduledBoardDay,today):scheduledBoardDay;const ranked=independentFootballRankings(rows,25,boardDay);
    if(market==='anytime_td'||market==='first_td')console.info('[N04 ranked audit]',JSON.stringify({market,marketQuotes:owlsRows.length,matched:resolved.length,ranked:ranked.length,verifiedQuotes:ranked.filter(r=>verifiedPropQuote(r)).length,matchedEvents:new Set(ranked.map(r=>r.gameId).filter(Boolean)).size}));
   // Storage is optional for rendering a fresh board, never for overwriting
   // historical records. Failed reads stay failed on the persistence path.

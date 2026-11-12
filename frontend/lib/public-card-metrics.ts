@@ -1,3 +1,4 @@
+import {estimatedEv} from '@/lib/estimated-ev';
 import {footballForecastDisplay} from '@/lib/football-forecast-display';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
@@ -28,6 +29,13 @@ export function publicNbaRanking(row:any,now=Date.now()){
  if(row?.market==='first_basket')return firstBasketQuote(row,now)!=null;
  if(String(row?.market||'').startsWith('q1_'))return verifiedPropQuote(row,now,row.boardFrozen===true||Boolean(row.boardCapturedAt&&Date.parse(row.boardCapturedAt)<Date.parse(row.gameTime)))&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
  return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
+}
+
+/** Hockey's public rankings contain complete, gradeable picks. */
+export function publicNhlRanking(row:any,now=Date.now()){
+ if(row?.withdrawnFromBoard===true||row?.resultStatus==='void'||cardModelProjection(row,now)==null)return false;
+ const ev=estimatedEv(row,now);
+ return ev.status==='available'&&ev.percent>0;
 }
 
 /** Combined expectations have no joint interval; display only supplied fields. */

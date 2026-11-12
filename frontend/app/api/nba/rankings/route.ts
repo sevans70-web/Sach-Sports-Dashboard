@@ -14,7 +14,7 @@ import {nbaBoardDates} from '@/lib/nba-board-window';
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
-const allowed=new Set(NBA_MARKETS.map(x=>x[0]));
+const allowed=new Set<string>(NBA_MARKETS.map(x=>x[0]));
 
 export async function GET(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"points") as NbaMarketKey;

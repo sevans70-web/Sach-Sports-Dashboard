@@ -8,9 +8,10 @@ export const NBA_MARKETS = [
   ["threes_made","3-Pointers Made","3PM"],["pts_rebs_asts","Points + Rebounds + Assists","PRA"],
   ["pts_rebs","Points + Rebounds","P+R"],["pts_asts","Points + Assists","P+A"],
   ["rebs_asts","Rebounds + Assists","R+A"],["steals","Steals","STL"],["blocks","Blocks","BLK"],["first_basket","First Basket","1ST"],
-  ["q1_points","Q1 Points","1Q PTS"],["q1_rebounds","Q1 Rebounds","1Q REB"],["q1_assists","Q1 Assists","1Q AST"],["q1_threes_made","Q1 3-Pointers","1Q 3PM"],["q1_pts_rebs_asts","Q1 PRA","1Q PRA"],
+  ["q1_points","Q1 Points","1Q PTS"],["q1_rebounds","Q1 Rebounds","1Q REB"],["q1_assists","Q1 Assists","1Q AST"],
 ] as const;
-export type NbaMarketKey=(typeof NBA_MARKETS)[number][0];
+export const NBA_DISPLAY_MARKETS=[...NBA_MARKETS.slice(0,4),...NBA_MARKETS.filter(([key])=>key.startsWith("q1_")),...NBA_MARKETS.slice(4).filter(([key])=>!key.startsWith("q1_"))];
+export type NbaMarketKey=(typeof NBA_MARKETS)[number][0] | "q1_threes_made" | "q1_pts_rebs_asts";
 
 export type NbaPlayer={
   playerId:number;playerName:string;team:string;gamesPlayed:number|null;minutesPerGame:number|null;

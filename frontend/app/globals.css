@@ -1195,3 +1195,9 @@
 }
 
 .ssGameContext { display: block; color: #b8b8bf; font-size: 11px; line-height: 1.5; margin-top: 10px; }
+
+.ssScheduleDay {
+  margin: 14px 0 8px;
+  color: var(--gold);
+  font-size: 0.9375rem;
+}

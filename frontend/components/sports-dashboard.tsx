@@ -1,5 +1,5 @@
 "use client";
-import {useCallback,useEffect,useState} from "react";
+import {type ComponentProps,useCallback,useEffect,useState} from "react";
 import Link from "next/link";
 import {IntelligenceHero,UpdatedStamp,GamesPreviewCard} from "./dashboard-chrome";
 import {SnapshotPanel,snapshotGameDetail} from "./snapshot-panel";
@@ -8,13 +8,21 @@ import {PredictionPerformancePanel} from "./prediction-performance-panel";
 import {TodayTopPlays} from "./today-top-plays";
 import {useDashboardSummary,useDashboardSchedule} from "./use-dashboard-summary";
 import {SOCCER_LEAGUES} from "@/lib/soccer";
-import {dashboardCounts,DEFAULT_MARKETS,type DashboardSport} from "@/lib/dashboard-contract";
+import {dashboardCounts,dashboardDay,DEFAULT_MARKETS,type DashboardSport} from "@/lib/dashboard-contract";
 export function SportsDashboard({sport}:{sport:DashboardSport}){
  const [league,setLeague]=useState("eng.1"),{data:summary,error}=useDashboardSummary(sport,league),schedule=useDashboardSchedule(sport,league);
  const [boardCount,setBoardCount]=useState<{scope:string;market:string;count:number}|null>(null);
  const onPickCount=useCallback((value:{market:string;count:number})=>setBoardCount({...value,scope:`${sport}|${league}`}),[sport,league]);
  const currentBoard=boardCount?.scope===`${sport}|${league}`?boardCount:null;
  const data=summary||(schedule?{...dashboardCounts(schedule.games||[],[]),previewGames:schedule.games||[],weekNumber:schedule.weekNumber,market:DEFAULT_MARKETS[sport],updatedAt:schedule.updatedAt,scheduleAvailable:schedule.success!==false,rankingsAvailable:false}:null);
+ const games:Array<ComponentProps<typeof GamesPreviewCard>["game"]> = schedule?.games?.length?schedule.games:data?.previewGames||[];
+ const today=dashboardDay(new Date());
+ const gameGroups=sport==='nfl'
+  ? [...new Set(games.map(game=>dashboardDay(game.date)).filter(Boolean))].sort().map(day=>({
+    label:day===today?'Today':new Intl.DateTimeFormat('en-US',{weekday:'long',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(day+'T12:00:00Z')),
+    games:games.filter(game=>dashboardDay(game.date)===day),
+   }))
+  : [{label:'',games:sport==='soccer'?games.slice(0,3):games}];
  const ready=data?.scheduleAvailable,ranked=currentBoard!=null||data?.rankingsAvailable,market=String(currentBoard?.market||data?.market||"").replaceAll("_"," ");
 
  const viewAll=`/${sport}/games${sport==="soccer"?`?league=${encodeURIComponent(league)}`:""}`;
@@ -25,7 +33,10 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
   <TodayTopPlays sport={sport} rows={summary?.verifiedRows||[]} loading={!summary&&!error}/>
   <section className="ssGamesPreview" aria-label={`${sport.toUpperCase()} current slate`}>
    <div className="ssGamesPreviewHead"><h2>{sport==="nfl"?`${data?.weekNumber?`WEEK ${data.weekNumber}`:"CURRENT WEEK"} NFL GAMES`:`${sport.toUpperCase()} Games`}</h2><Link href={viewAll}>View All ›</Link></div>
-   <div className={sport==="soccer"?"ssGamesPreviewGrid":"ssGamesPreviewGrid ssGamesSwipe"}>{data?.previewGames?.length?(sport==="soccer"?data.previewGames.slice(0,3):data.previewGames).map((g:any)=><GamesPreviewCard key={g.id} game={{...g,href:viewAll}}/>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}</div>
+   {games.length?gameGroups.map(group=><div key={group.label}>
+    {group.label&&<h3 className="ssScheduleDay">{group.label}</h3>}
+    <div className={sport==="soccer"?"ssGamesPreviewGrid":"ssGamesPreviewGrid ssGamesSwipe"}>{group.games.map(game=><GamesPreviewCard key={game.id} game={{...game,href:viewAll}}/>)}</div>
+   </div>):<div className="ssGamesPreviewEmpty">{error||data?.scheduleAvailable===false?"Schedule temporarily unavailable":data?"No games in the current schedule window":"Loading the current slate…"}</div>}
   </section>
   {sport==="soccer"?<SnapshotPanel title={`${sport.toUpperCase()} Snapshot`} note="" metrics={[
    {label:"Games",value:ready?data.games:"…",detail:ready?snapshotGameDetail(data.games,data.live,data.finals):"Loading current + next slate",icon:"games",tone:"green"},

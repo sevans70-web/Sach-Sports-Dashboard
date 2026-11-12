@@ -28,8 +28,8 @@ export function TodayTopPlays({sport}:{sport:DashboardSport;rows?:any[];loading?
 
  return <section className={styles.section} aria-labelledby={`featured-picks-${sport}`}>
   <header className={styles.header}>
-   <h2 id={`featured-picks-${sport}`}>Today’s Featured Picks</h2>
-   {slateLabel&&<span>Next slate · {slateLabel}</span>}
+   <h2 id={`featured-picks-${sport}`}>{slateLabel?'Upcoming Featured Picks':'Today’s Featured Picks'}</h2>
+   {slateLabel&&<span>{slateLabel}</span>}
   </header>
   <div className={styles.grid}>
    {featured.map(({key,title,pick})=>{
@@ -37,14 +37,14 @@ export function TodayTopPlays({sport}:{sport:DashboardSport;rows?:any[];loading?
     const row=pick?.row;
     const team=row?.teamName||row?.team||row?.teamAbbr||row?.teamAbbreviation;
     const market=row?.market===scorer?.market?scorer?.label:String(row?.market||'').replaceAll('_',' ');
-    const selection=row?.lineType==='scorer'?market:`${row?.prediction} ${row?.sportsbookLine} · ${market}`;
+    const selection=row?.lineType==='scorer'?market:row?.lineType==='milestone'?`${row.sportsbookLine}+ · ${market}`:`${row?.prediction} ${row?.sportsbookLine} · ${market}`;
     return <article className={styles.card} key={key}>
      <h3>{title}</h3>
      {correction?<><strong>{correction.playerName}</strong><p>Reported original · Anytime touchdown</p><p>Official final: {correction.officialTouchdowns} touchdown</p><p>{correction.note}</p><Link href={`/${sport}/player/${correction.playerId}?market=${correction.market}`}>View Intelligence ›</Link></>:row&&pick?<>
       <div className={styles.player}><strong>{row.playerName}</strong>{team&&<span>{String(team)}</span>}</div>
       <p>{selection}</p>
       <p>{row.sportsbook} {pick.price>0?'+':''}{pick.price}{(row.featuredRetained||row.boardFrozen)&&' · Saved pregame'}</p>
-      {pick.basis==='bookmaker_implied'?<p>Book odds · No model EV</p>:<p title={estimatedEvNotice(row)}>EV {estimatedEvText(row)}</p>}
+      {pick.basis==='model'&&estimatedEvText(row)!=='—'&&<p title={estimatedEvNotice(row)}>EV {estimatedEvText(row)}</p>}
       <Link href={`/${sport}/player/${encodeURIComponent(row.playerId)}?name=${encodeURIComponent(row.playerName)}&team=${encodeURIComponent(row.teamName||row.team||'')}&market=${encodeURIComponent(row.market)}&position=${encodeURIComponent(String(row.position||""))}&matchup=${encodeURIComponent(String(row.matchup||""))}&img=${encodeURIComponent(String(row.headshot||""))}&line=${encodeURIComponent(String(row.sportsbookLine??""))}&state=${encodeURIComponent(String(row.gameState||""))}&status=${encodeURIComponent(String(row.gameStatus||""))}&mode=prediction${savedQuoteQuery(row)}`}>View Intelligence ›</Link>
      </>:<p className={styles.status}>{!confirmed?(failed?'Saved picks temporarily unavailable':'Checking saved plays…'):'No Qualified Pick'}</p>}
     </article>;

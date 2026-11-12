@@ -1,4 +1,5 @@
 import {eligiblePropPrediction,verifiedPropQuote} from '@/lib/prop-integrity';
+import {estimatedEv,qualifiedQuarterTarget} from '@/lib/estimated-ev';
 import {cardModelPick} from '@/lib/saved-model-pick';
 import {dashboardDay} from '@/lib/dashboard-contract';
 
@@ -20,6 +21,10 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now(),locked:any[
   dashboardDay(row.gameTime)===slateDay&&Date.parse(row.gameTime)>now&&
   !row.withdrawnFromBoard&&!['out','inactive'].includes(String(row.availabilityStatus||'').toLowerCase()));
  const priced=eligible.flatMap(row=>{
+  const ev=estimatedEv(row,now);
+  if(ev.status==='available'&&(row.lineType!=='milestone'||qualifiedQuarterTarget(row,now))){
+   return [{row:{...row,prediction:ev.side},probability:ev.winProbability*100,price:ev.odds,expectedReturn:ev.percent/100,basis:'model'}];
+  }
   const saved=cardModelPick(row,now),approved=eligiblePropPrediction(row,now);
   if(!saved&&!approved)return [];
   const side=saved?.side||row.prediction,comparison=row.researchForecast?.priceComparison;
@@ -43,11 +48,11 @@ export function todayTopPlays(rows:any[],sport:string,now=Date.now(),locked:any[
 /** Apply category requirements to a complete candidate pool, including saved evidence. */
 export function selectFeaturedCandidates(priced:any[],scorers:any[],sport:string,locked:any[]=[]){
  const originals=distinctFeaturedPlayers(locked);
- const used=new Set<string>(originals.filter(c=>c.pick).map(c=>String(c.pick.row.playerId||c.pick.row.playerName).trim().toLowerCase()));
+ const used=new Set<string>(originals.flatMap(c=>featuredPlayerKeys(c.pick?.row)));
  const choose=(key:string,find:()=>any)=>originals.find(c=>c.key===key)?.pick||take(find());
- const identity=(p:any)=>String(p.row.playerId||p.row.playerName).trim().toLowerCase();
- const take=(pick:any)=>{if(!pick||used.has(identity(pick)))return null;used.add(identity(pick));return pick};
- const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].filter(p=>!used.has(identity(p))).sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
+ const available=(pick:any)=>!featuredPlayerKeys(pick.row).some(key=>used.has(key));
+ const take=(pick:any)=>{if(!pick||!available(pick))return null;featuredPlayerKeys(pick.row).forEach(key=>used.add(key));return pick};
+ const best=(items:typeof priced,score:(item:typeof priced[number])=>number)=>[...items].filter(available).sort((a,b)=>score(b)-score(a)||String(a.row.playerId).localeCompare(String(b.row.playerId)))[0]||null;
  const first=featuredScorer(sport);
  return [
   {key:'play',title:'⭐ Play of the Day',pick:choose('play',()=>best(priced.filter(p=>p.probability>=60&&p.expectedReturn>0),p=>p.probability))},
@@ -57,8 +62,14 @@ export function selectFeaturedCandidates(priced:any[],scorers:any[],sport:string
  ];
 }
 
+export function featuredPlayerKeys(row:any){
+ const id=String(row?.playerId||'').trim().toLowerCase();
+ const name=String(row?.playerName||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g,'');
+ return [...(id?['id:'+id]:[]),...(name?['name:'+name]:[])];
+}
+
 /** Guard saved/retained responses as well as new selections. */
 export function distinctFeaturedPlayers<T extends {pick:any}>(cards:T[]):T[]{
- const seen=new Set<string>();return cards.map(card=>{if(!card.pick)return card;const row=card.pick.row,key=String(row.playerId||row.playerName).trim().toLowerCase();if(seen.has(key))return {...card,pick:null};seen.add(key);return card});
+ const seen=new Set<string>();return cards.map(card=>{if(!card.pick)return card;const keys=featuredPlayerKeys(card.pick.row);if(keys.some(key=>seen.has(key)))return {...card,pick:null};keys.forEach(key=>seen.add(key));return card});
 }
 

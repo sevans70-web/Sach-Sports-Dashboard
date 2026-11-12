@@ -4,6 +4,7 @@ import {estimatedEv,qualifiedQuarterTarget} from '@/lib/estimated-ev';
 import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {capRankingUnders,cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
+import {publicNhlRanking} from '@/lib/public-card-metrics';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 
 type MarketCount = {gameId:string;rows:number;lines:number;projections:number;picks:number;ev:number};
@@ -36,7 +37,7 @@ export function rankingMarketCoverage(sport:string,market:string,day:string,rows
   if(cardModelProjection(raw,now)!=null)game.projections++;
   if(displayed.has(raw)){
    if(ev.status==='available'||sport==='nba'&&nbaCardEv({raw},now)!=null)game.ev++;
-   if(qualifiedQuarterTarget(raw,now)||pick&&(sport==='nhl'||ev.status==='available'&&ev.percent>0))game.picks++;
+   if(qualifiedQuarterTarget(raw,now)||pick&&(sport==='nhl'?publicNhlRanking(raw,now):ev.status==='available'&&ev.percent>0))game.picks++;
   }
   games.set(gameId,game);
  }
