@@ -1,5 +1,6 @@
 "use client";
 import {NBA_DISPLAY_MARKETS} from "@/lib/nba";
+import {NFL_ACTIVE_MARKETS} from '@/lib/nfl';
 import {visiblePolling} from '@/lib/visible-polling';
 
 import {playerCardHistory} from '@/lib/player-card-history';
@@ -198,6 +199,7 @@ const CONFIG: Record<RankingsSport, SportConfig> = {
         {key:"sacks",label:"Sacks",icon:"🛡️"},
         {key:"tackles",label:"Solo Tackles",icon:"🛡️"},
         {key:"tackles_assists",label:"Tackles + Assists",icon:"🛡️"},
+        ...NFL_ACTIVE_MARKETS.filter(([key])=>key.startsWith("q1_")).map(([key,,label])=>({key,label,icon:"⏱️"})),
       ] },
     ],
   },
