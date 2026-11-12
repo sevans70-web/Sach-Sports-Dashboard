@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import ts from 'typescript';
 import {loadTs} from './load-ts.mjs';
+const matchup=await loadTs(new URL('../lib/game-overview-matchup.ts',import.meta.url));
 const roster=await loadTs(new URL('../lib/game-roster.ts',import.meta.url));
 const code=ts.transpileModule(await readFile(new URL('../app/api/game-slate-detail/route.ts',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
 const competitors=[{homeAway:'home',team:{id:'B',displayName:'Home',abbreviation:'HME'}},{homeAway:'away',team:{id:'A',displayName:'Away',abbreviation:'AWY'}}];
@@ -11,6 +12,7 @@ async function request(sport,{box=false,wrongFixture=false,wrongRoster=false}={}
  const calls=[];
  const summary={header:{id:wrongFixture?'other':'g',competitions:[{competitors}]},boxscore:{players:box?[{team:{id:'B',displayName:'Home',abbreviation:'HME'},statistics:[{athletes:[{athlete:{id:'b',displayName:'Home Player'},starter:true}]}]},{team:{id:'A',displayName:'Away',abbreviation:'AWY'},statistics:[{athletes:[{athlete:{id:'a',displayName:'Away Player'},starter:false,gamesStarted:20}]}]},{team:{id:'OTHER'},statistics:[{athletes:[{athlete:{id:'intruder'}}]}]}]:[]}};
  const mocks={
+  '@/lib/game-overview-matchup':matchup,
   '@/lib/player-participation':{espnParticipation:()=>[]},'@/lib/game-roster':roster,
   '@/lib/mlb-server':{},'next/server':{NextResponse:{json:(body,init)=>({body,status:init?.status||200})}},
   '@/lib/provider-fetch':{providerFetch:async url=>{calls.push(url);const id=/teams\/([^/]+)\/roster/.exec(url)?.[1];return {ok:true,json:async()=>id?{team:{id:wrongRoster?'OTHER':id},athletes:[{id:id.toLowerCase(),displayName:id+' Player',starter:true,gamesStarted:20}]}:summary}}}
