@@ -479,7 +479,11 @@ export async function GET(req:NextRequest) {
     let weekNumber:number|null = null;
 
     if(sport === "nfl") {
-      games=calendar?(await espnFootball("nfl")).games:slateSort((await getEspnNflSchedule()).map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)})));
+      // A transient empty weekly response must not become a false zero-game slate.
+      const primary=calendar?[]:await getEspnNflSchedule().catch(()=>[]);
+      const source=calendar||primary.length===0?(await espnFootball("nfl")).games:primary;
+      games=slateSort(source.map(g=>({...g,awayAbbr:g.awayAbbr||acronym(g.awayTeam),homeAbbr:g.homeAbbr||acronym(g.homeTeam)})));
+      if(!games.length)throw new Error("NFL schedule returned no games; refusing an unverified empty slate");
       weekNumber=games.find(g=>g.weekNumber)?.weekNumber||null;
     } else if(sport === "cfb") {
       const football = await espnFootball(sport);
@@ -490,10 +494,14 @@ export async function GET(req:NextRequest) {
     } else if(sport === "soccer") {
       games = dailyWindow(await soccerGames(league));
     } else if(sport === "nba") {
+      // Retry the wider calendar if the short NBA window is unavailable.
+      const primary=await loadNbaGames(calendar).catch(()=>[]);
+      const source=primary.length?primary:await loadNbaGames(true);
+      if(!source.length)throw new Error("NBA schedule returned no games; refusing an unverified empty slate");
       games = dailyWindow(
         await enrichBasketballLiveStatus(
           "nba",
-          dailyWindow((await loadNbaGames(calendar)).map(game => fromOverview("nba", game)))
+          dailyWindow(source.map(game => fromOverview("nba", game)))
         )
       );
     } else if(sport === "wnba") {
