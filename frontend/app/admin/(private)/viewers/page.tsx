@@ -1,0 +1,10 @@
+"use client";
+import {useEffect,useState} from "react";
+type Viewer={user_id:string;email:string;status:"approved"|"suspended";invited_at:string};
+export default function ViewersPage(){
+ const [viewers,setViewers]=useState<Viewer[]>([]),[email,setEmail]=useState(""),[message,setMessage]=useState(""),[busy,setBusy]=useState(false);
+ async function load(){const r=await fetch("/api/admin/viewers",{cache:"no-store"});const d=await r.json();if(!r.ok)throw Error(d.error);setViewers(d.viewers||[]);}
+ useEffect(()=>{load().catch(e=>setMessage(String(e)))},[]);
+ async function change(action:string,other:Record<string,string>){setBusy(true);setMessage("");try{const r=await fetch("/api/admin/viewers",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,...other})});const d=await r.json();if(!r.ok)throw Error(d.error||"Request failed");setMessage(action==="invite"?"Invitation sent. Viewer must accept the email link.":"Access updated.");setEmail("");await load();}catch(e){setMessage(e instanceof Error?e.message:"Request failed");}finally{setBusy(false);}}
+ return <main style={{maxWidth:820,margin:"40px auto",padding:24}}><h1>Viewer access</h1><p>Only you can invite or approve viewers. Suspended users are denied at every authorization check.</p><form onSubmit={e=>{e.preventDefault();void change("invite",{email})}}><label>Invite email <input type="email" required value={email} onChange={e=>setEmail(e.target.value)}/></label> <button disabled={busy}>Send invitation</button></form>{message&&<p role="status">{message}</p>}<h2>Invited viewers</h2>{viewers.map(v=><div key={v.user_id} style={{padding:"12px 0",borderBottom:"1px solid #555"}}><strong>{v.email}</strong> · {v.status} <button disabled={busy} onClick={()=>change("status",{userId:v.user_id,status:v.status==="approved"?"suspended":"approved"})}>{v.status==="approved"?"Suspend":"Approve"}</button></div>)}{!viewers.length&&<p>No viewers invited yet.</p>}<p><a href="/admin">Back to admin</a></p></main>;
+}
