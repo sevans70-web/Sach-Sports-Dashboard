@@ -168,7 +168,23 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){
   const row={...r,researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
-  rows.push({...row,estimatedEv:estimatedEv(row,now),pregameProbability:predictionProbability(row,now)});
+  // Record the actual pregame decision/capture timestamp when a freshly fitted
+  // selection is paired with a currently verified sportsbook quote. Without
+  // this receipt estimatedEv rejects otherwise valid priced forecasts.
+  // Never stamp a historical, frozen, stale, or model-only candidate.
+  const selection=row.researchForecast?.modelSelection;
+  const decision=Date.parse(selection?.calculatedAt||'');
+  const kickoff=Date.parse(row.gameTime||'');
+  const eligibleReceipt=selection&&Number.isFinite(decision)&&decision<=Date.now()&&
+   Number.isFinite(kickoff)&&decision<kickoff&&verifiedPropQuote(row,now)&&
+   row.researchForecast?.priceComparison?.quoteEvidence&&
+   !row.boardFrozen&&!row.frozen&&!row.lockedAtKickoff;
+  const priced=eligibleReceipt?{
+   ...row,
+   forecastCapturedAt:new Date(decision).toISOString(),
+   boardCapturedAt:row.boardCapturedAt||new Date(decision).toISOString(),
+  }:row;
+  rows.push({...priced,estimatedEv:estimatedEv(priced,now),pregameProbability:predictionProbability(priced,now)});
   // Even a large slate must let health/history requests run between players.
   await yieldToRequests();
  }
