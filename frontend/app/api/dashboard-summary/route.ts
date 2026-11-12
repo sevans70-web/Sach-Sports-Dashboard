@@ -77,9 +77,17 @@ export async function GET(req:NextRequest){
     estimatedPicks:marketCounts.reduce((sum,market)=>sum+market.picks,0),
    }:{};
    const scheduleAvailable=slate.success!==false;
-   const rankingsAvailable=todayOnly?scheduleAvailable&&(!games.length||perMarket.size===markets.length):ranking.success!==false;
+   const rankingsAvailable=todayOnly?scheduleAvailable&&rankResult.status==="fulfilled"&&ranking.success!==false&&perMarket.size===markets.length:ranking.success!==false;
+   const coverageAudit=todayOnly?{
+     expectedMarkets:markets.length,
+     observedMarkets:perMarket.size,
+     verifiedLines:marketCounts.reduce((n,item)=>n+item.lines,0),
+     selectedPicks:marketCounts.reduce((n,item)=>n+item.picks,0),
+     evAvailable:marketCounts.reduce((n,item)=>n+item.ev,0),
+     missingMarkets:markets.filter(m=>!perMarket.has(m))
+   }:undefined;
    const payload={success:scheduleAvailable,sport,league,market,scope:todayOnly?"Today · saved ranking markets":"Current slate · default ranking market",
-    ...(todayOnly?{slateDay:day,marketsCounted:perMarket.size,marketCounts}:{}),weekNumber:slate.weekNumber,...counts,...marketTotals,previewGames:games,scheduleAvailable,rankingsAvailable,
+    ...(todayOnly?{slateDay:day,marketsCounted:perMarket.size,marketCounts,coverageAudit}:{}),weekNumber:slate.weekNumber,...counts,...marketTotals,previewGames:games,scheduleAvailable,rankingsAvailable,
     warning:[slate.error,ranking.error,ranking.warning].filter(Boolean).join(" · ")||null,updatedAt:new Date().toISOString()};
    // Failed feeds retry promptly and never become a durable fallback.
    cache.set(key,{expires:Date.now()+(payload.rankingsAvailable&&payload.scheduleAvailable?30_000:5_000),payload});
