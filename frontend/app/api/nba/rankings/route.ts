@@ -2,6 +2,7 @@ import {scopedNbaBoard,nbaSlateRows} from '@/lib/nba-slate-scope';
 import {currentNbaPregameSnapshot,readNbaSlateBoard} from '@/lib/nba-slate-board';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
 import {attachBasketballAvailability} from '@/lib/basketball-pregame-context';
+import {estimatedEv} from '@/lib/estimated-ev';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {cloudHistoryReadOnly} from '../../../../scripts/history-cloud.mjs';
@@ -61,7 +62,8 @@ export async function GET(req:NextRequest){
           quote.line!==row.sportsbookLine||quote.sportsbookKey!==row.sportsbookKey||
           quote.overPrice!==row.overPrice||quote.underPrice!==row.underPrice||
           Date.parse(forecast.calculatedAt)>=Date.parse(row.gameTime))return row;
-       return {...row,researchForecast:forecast,forecastCapturedAt:forecast.calculatedAt,comparisonResearchOnly:!forecast.modelSelection};
+       const refreshed={...row,researchForecast:forecast,forecastCapturedAt:forecast.calculatedAt,comparisonResearchOnly:!forecast.modelSelection};
+       return {...refreshed,estimatedEv:estimatedEv(refreshed)};
       })};
      }catch(error){console.error('[nba combo readonly forecast]',error instanceof Error?error.message:'unavailable');}
     }
