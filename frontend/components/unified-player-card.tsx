@@ -137,9 +137,7 @@ function historyUrl(
 ) {
   if(sport==='nhl'&&source==='espn')return `/api/player-search/history?${new URLSearchParams({id:playerId,market})}`;
   if (
-    ["nfl", "cfb", "nba", "wnba", "cbb"].includes(
-      sport
-    )
+    ["nfl", "cfb", "nba", "wnba", "cbb", "nhl"].includes(sport)
   ) {
     return `/api/${sport}/player/${encodeURIComponent(
       playerId
