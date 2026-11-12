@@ -10,7 +10,7 @@ test('NHL applies saved availability before pregame Top25, rejects skaters for g
   '@/lib/saved-model-pick':{prioritizeModelPicks:r=>r},'@/lib/ranking-response-cache':{rankingResponse:async(k,f)=>f()},
   '@/lib/record-notes':{recordNoteFields:p=>({injuryStatus:p.injuryStatus})},
   '@/lib/main-market-quotes':{...fixtureMatching,mainMarketQuotes:()=>quotes,quoteMatchesFixture:()=>true},
-  '@/lib/football-book-quotes':{footballQuoteFields:()=>({})},'@/lib/prop-integrity':{guardRankingPayload:p=>p},
+  '@/lib/football-book-quotes':{footballQuoteFields:()=>({})},'@/lib/prop-integrity':{guardRankingPayload:p=>p,verifiedPropQuote:r=>r.marketBacked===true},
   '@/lib/owls-provider':{getOwlsPayload:async()=>({data:[]})},'@/lib/unique-ranking-rows':{uniqueRankingRows:r=>r},
   '@/lib/nba-game-match':{nbaPropMatchesGame:()=>true},'@/lib/provider-fetch':{},'@/lib/research-capture':{},
   '@/lib/nhl':{loadNhlOverview:async()=>({players,games:[game],season:'baseline'}),cleanNhlName:s=>s.toLowerCase(),nhlHeadshot:()=>'',playerBaseline:()=>10},

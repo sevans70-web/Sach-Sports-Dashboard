@@ -7,7 +7,7 @@ import {recordNoteFields} from "@/lib/record-notes";
 import {uniqueQuoteFixture,mainMarketQuotes,quoteMatchesFixture} from "@/lib/main-market-quotes";
 import {archiveResearchBoards} from "@/lib/research-capture";
 import {footballQuoteFields} from "@/lib/football-book-quotes";
-import {guardRankingPayload} from "@/lib/prop-integrity";
+import {guardRankingPayload,verifiedPropQuote} from "@/lib/prop-integrity";
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
 import {nbaPropMatchesGame as propMatchesGame} from "@/lib/nba-game-match";
@@ -39,7 +39,11 @@ async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="toda
  const pool=uniqueRankingRows(rows.sort((a,b)=>b.giScore-a.giScore));
  // Started boards retain their original public limit; only pregame pools backfill.
  const started=pool.some(r=>['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=Date.now());
- const ranked=(started?pool.slice(0,25):pool).map((x,i)=>({...x,rank:i+1}));
+ const now=Date.now();
+ const pregamePool=started?pool:pool.map(row=>({row,priced:verifiedPropQuote({...row,market:m},now)}))
+  .sort((a,b)=>Number(b.priced)-Number(a.priced))
+  .map(({row})=>row);
+ const ranked=(started?pregamePool.slice(0,25):pregamePool).map((x,i)=>({...x,rank:i+1}));
  // A tomorrow preview must not be written into today's settled/locked history.
  if(slate==="tomorrow")return {success:true,market:m,slate:"tomorrow",boardDay:tomorrowDay,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"NHL upcoming sportsbook markets":"NHL upcoming schedule; quotes pending"};
  const saved=await saveNhlSlate(m,ranked,false);
