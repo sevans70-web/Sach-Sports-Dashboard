@@ -72,7 +72,7 @@ export function playerMatchupAndAbsence(row:any,sport:string,market:string,histo
  const verifiedAbsences=(Array.isArray(row?.teammateAvailability)?row.teammateAvailability:Array.isArray(row?.teammateInjuries)?row.teammateInjuries:[]).filter((item:any)=>
   item && item.verified===true && item.playerName &&
   item.gameId && row?.gameId && String(item.gameId)===String(row.gameId) &&
-  item.teamId && row?.teamId && String(item.teamId)===String(row.teamId) &&
+  (item.teamId&&row?.teamId?String(item.teamId)===String(row.teamId):String(item.teamName||'').toLowerCase().replace(/[^a-z0-9]/g,'')===String(row?.teamName||'').toLowerCase().replace(/[^a-z0-9]/g,'')) &&
   /^(out|inactive|injured reserve|suspended|dnp)$/i.test(String(item.status||'')) &&
   (item.source||item.reportedAt));
  const absence=verifiedAbsences.slice(0,3).map((item:any)=>{
@@ -89,4 +89,25 @@ export function playerMatchupAndAbsence(row:any,sport:string,market:string,histo
  if(absence.length)notes.push(...absence);
  else notes.push('Teammate absence impact: no fixture-matched, source-verified absence and role adjustment has been established for this player. An injury elsewhere on the team does not automatically imply more minutes.');
  return notes;
+}
+
+/** Game report is already used by the slate. Cache it by fixture, not player. */
+const matchupAvailabilityCache=new Map<string,{at:number;rows:any[]}>();
+export async function gameTeammateAbsences(sport:string,gameId:string,teamName:string,playerName:string,league='eng.1'):Promise<any[]>{
+ if(!gameId||!teamName)return [];
+ const key=sport+'|'+gameId+'|'+league;
+ const cached=matchupAvailabilityCache.get(key);
+ let rows=cached&&Date.now()-cached.at<60000?cached.rows:null;
+ if(!rows){
+  try{
+   const response=await fetch('/api/game-slate-detail?'+new URLSearchParams({sport,gameId,league}),{cache:'no-store'});
+   if(!response.ok)return [];
+   const payload=await response.json();
+   rows=Array.isArray(payload?.injuries)?payload.injuries:[];
+   matchupAvailabilityCache.set(key,{at:Date.now(),rows});
+  }catch{return [];}
+ }
+ const normalize=(s:any)=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ return rows.filter((item:any)=>normalize(item.teamName)===normalize(teamName)&&normalize(item.playerName)!==normalize(playerName)&&/^(out|inactive|injured reserve|suspended|dnp)$/i.test(String(item.status||'')))
+  .map((item:any)=>({playerName:item.playerName,teamName,gameId,status:item.status,reportedAt:item.reportedAt,source:'Game injury report',verified:true}));
 }
