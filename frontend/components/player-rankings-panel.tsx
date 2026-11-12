@@ -2556,12 +2556,13 @@ export function PlayerRankingsPanel({
   const visible = full
     ? displayCards
     : displayCards.slice(0, 5);
-  const marketPickCount = displayCards.filter(card => {
+  const countsAsPick = (card:RankingCard) => {
     if (qualifiedQuarterTarget(card.raw)) return true;
     if (!cardModelPick(card.raw) || card.raw?.withdrawnFromBoard || card.raw?.resultStatus === 'void') return false;
     const ev = estimatedEv(card.raw);
-    return sport === 'nhl' || ev.status === 'available' && ev.percent > 0;
-  }).length;
+    return ev.status === 'available' && ev.percent > 0;
+  };
+  const marketPickCount=displayCards.filter(countsAsPick).length;
 
   const cfbAllDayGroups = useMemo(() => {
     if (!((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))) return [];
@@ -2679,7 +2680,9 @@ export function PlayerRankingsPanel({
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label}</h3>
         {['nba','nfl','nhl'].includes(sport)
-          ? !loading && !error && <p>{marketPickCount} {marketPickCount === 1 ? 'pick' : 'picks'}</p>
+          ? !loading && !error && <p>{sport==='nba'&&market.key==='first_basket'
+            ? `${displayCards.length} ${displayCards.length===1?'candidate':'candidates'}`
+            : `${marketPickCount} ${marketPickCount===1?'pick':'picks'}`}</p>
           : <p>Player Rankings · {sourceText}</p>}
       </div>
 
@@ -2713,22 +2716,23 @@ export function PlayerRankingsPanel({
           {[0,1,2].map(item=><div className={styles.skeletonCard} key={item}><i/><span/><b/><em/></div>)}
         </div>:null}
         {((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))
-          ? cfbAllDayGroups.map((block) => (
-              <section key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
+          ? cfbAllDayGroups.map((block) => {
+              const pickCount=block.rows.filter(countsAsPick).length;
+              return <section key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
                 <button type="button" aria-expanded={blockExpanded[`${market.key}|${block.key}`] ?? !block.completed}
                   aria-controls={`cfb-block-${block.key}`}
                   onClick={()=>setBlockExpanded(previous=>({...previous,[`${market.key}|${block.key}`]:!(previous[`${market.key}|${block.key}`]??!block.completed)}))}
                   style={{ display: "flex", width:"100%", background:"transparent", cursor:"pointer", border:0, textAlign:"left", justifyContent: "space-between", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(229,187,69,.35)", padding: "8px 2px", marginBottom: 8 }}>
                   <strong style={{ color: "#e5bb45" }}>{block.label}</strong>
-                  <span style={{ color: "#9da1a8", fontSize: 11 }}>{block.completed?"Final · ":""}{block.rows.length} {block.rows.length===1?"pick":"picks"} · {(blockExpanded[`${market.key}|${block.key}`]??!block.completed)?"Collapse ⌃":"Expand ›"}</span>
+                  <span style={{ color: "#9da1a8", fontSize: 11 }}>{block.completed?"Final · ":""}{sport==="nfl"?`${pickCount} ${pickCount===1?"pick":"picks"}`:`${block.rows.length} saved`} · {(blockExpanded[`${market.key}|${block.key}`]??!block.completed)?"Collapse ⌃":"Expand ›"}</span>
                 </button>
                 {(blockExpanded[`${market.key}|${block.key}`]??!block.completed) ? <div id={`cfb-block-${block.key}`}>
                   {(full ? block.rows : block.rows.slice(0, 5)).map((card) => (
                     <PlayerCard key={`${sport}-${market.key}-${block.key}-${card.playerId}-${card.raw?.gameId}`} card={card} sport={sport} league={league} />
                   ))}
                 </div> : null}
-              </section>
-            ))
+              </section>;
+            })
           : visible.map((card) => (
               <PlayerCard key={`${sport}-${market.key}-${card.playerId}-${card.raw?.gameId}`} card={card} sport={sport} league={league} archivedPrevious={sport==='nba'&&nbaSlate==='previous'} />
             ))}
