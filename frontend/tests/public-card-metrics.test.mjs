@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadTs} from './load-ts.mjs';
-const {firstBasketQuote,marketRankingEvidence,publicNbaRanking,publicNhlRanking}=await loadTs(new URL('../lib/public-card-metrics.ts',import.meta.url));
+const {firstBasketQuote,completeRankingProp,publicNbaRanking,publicNhlRanking}=await loadTs(new URL('../lib/public-card-metrics.ts',import.meta.url));
 const {cardModelProjection}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
 const now=Date.parse('2026-10-23T18:00Z'),stamp='2026-10-23T17:59Z',start='2026-10-23T23:00Z';
 const quote={market:'first_basket',quoteVersion:1,gameId:'g',playerId:'p',gameTime:start,lineType:'scorer',sportsbook:'FanDuel',sportsbookKey:'fanduel',quoteId:'q',overPrice:900,quoteUpdatedAt:stamp,capturedAt:stamp};
@@ -20,19 +20,21 @@ test('Tre Jones final result cannot replace or fabricate the saved pregame proje
  assert.equal(publicNbaRanking({...row,boardCapturedAt:'2026-10-24T00:00Z',researchForecast:{...row.researchForecast,modelSelection:null}},now),false);
 });
 
-test('NHL blocks and saves can rank from historical evidence without qualifying as picks',()=>{
- for(const [market,modelProjection] of [['blocked_shots',2.1],['goalie_saves',26.3]]){
-  const row={sport:'nhl',market,gameId:'g',playerId:'p',gameTime:start,modelProjection};
-  assert.equal(marketRankingEvidence(row,now),true);
-  assert.equal(publicNhlRanking(row,now),false);
-  assert.equal(marketRankingEvidence({...row,modelProjection:null},now),false);
-  assert.equal(marketRankingEvidence({...row,withdrawnFromBoard:true},now),false);
-  assert.equal(marketRankingEvidence({...row,archivedOriginal:{resultStatus:'void'}},now),false);
+
+test('active rankings require a verified prop, projection, prediction and exact-price EV across all three sports',()=>{
+ for(const [sport,market] of [['nba','points'],['nfl','sacks'],['nhl','shots_on_goal']]){
+  const row={...quote,sport,market,lineType:'main',sportsbookLine:9.5,underPrice:-110,overPrice:-110};
+  const binding={sport,market,gameId:row.gameId,playerId:row.playerId,quoteId:row.quoteId,sportsbookKey:row.sportsbookKey,line:9.5,overPrice:-110,underPrice:-110,calculatedAt:stamp};
+  const researchForecast={status:'available',projection:10,calculatedAt:stamp,priceComparison:{quoteEvidence:binding,overProbability:.51,underProbability:.49,pushProbability:0}};
+  assert.equal(completeRankingProp(row,now),null);
+  assert.equal(completeRankingProp({...row,modelProjection:10},now),null);
+  const forecast=completeRankingProp({...row,researchForecast},now);
+  assert.equal(forecast.side,'OVER');
+  assert.equal(forecast.projection,10);
+  assert.ok(forecast.percent<0);
+  assert.equal(forecast.comparison,true);
+  assert.equal(completeRankingProp({...row,researchForecast,quoteVersion:0},now),null);
+  assert.equal(completeRankingProp({...row,researchForecast,overPrice:105},now),null);
+  assert.equal(completeRankingProp({...row,researchForecast,withdrawnFromBoard:true},now),null);
  }
-});
-test('a verified NBA prop can rank without a fitted forecast or qualifying pick',()=>{
- const row={...quote,sport:'nba',market:'rebs_asts',sportsbookLine:9.5,underPrice:-115,lineType:'main'};
- assert.equal(marketRankingEvidence(row,now),true);
- assert.equal(publicNbaRanking(row,now),false);
- assert.equal(marketRankingEvidence({...row,quoteVersion:0},now),false);
 });

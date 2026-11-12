@@ -1,4 +1,4 @@
-import {estimatedEv} from '@/lib/estimated-ev';
+import {estimatedEv,rankedModelComparison} from '@/lib/estimated-ev';
 import {footballForecastDisplay} from '@/lib/football-forecast-display';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 import {cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
@@ -31,14 +31,15 @@ export function publicNbaRanking(row:any,now=Date.now()){
  return (cardModelPick(row,now)!=null||footballForecastDisplay(row,now).side!=null)&&cardModelProjection(row,now)!=null&&row?.withdrawnFromBoard!==true&&row?.resultStatus!=='void';
 }
 
-/** A visible ranking can be supported by a quote, a fitted projection, or a
- * sourced historical baseline. Pick and EV eligibility are evaluated separately. */
-export function marketRankingEvidence(row:any,now=Date.now()){
- if(!row?.playerId||!row?.gameId||row.withdrawnFromBoard===true||row.resultStatus==='void'||row.archivedOriginal?.resultStatus==='void')return false;
- return row.sport==='nba'&&publicNbaRanking(row,now)||
-  verifiedPropQuote(row,now,row.boardFrozen===true)||
-  cardModelProjection(row,now)!=null||
-  (typeof row.modelProjection==='number'&&Number.isFinite(row.modelProjection)&&row.modelProjection>=0);
+/** Active rankings require an exact sportsbook prop and a complete model output. */
+export function completeRankingProp(row:any,now=Date.now()){
+ if(!row?.playerId||!row?.gameId||row.withdrawnFromBoard===true||row.resultStatus==='void'||row.archivedOriginal?.resultStatus==='void')return null;
+ const projection=cardModelProjection(row,now);
+ if(projection==null||!verifiedPropQuote(row,now,row.boardFrozen===true))return null;
+ const selection=estimatedEv(row,now);
+ if(selection.status==='available')return {side:selection.side,percent:selection.percent,projection,comparison:false};
+ const forecast=rankedModelComparison(row,now);
+ return forecast?{...forecast,projection,comparison:true}:null;
 }
 
 /** Hockey's public rankings contain complete, gradeable picks. */
