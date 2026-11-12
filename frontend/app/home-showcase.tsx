@@ -83,7 +83,7 @@ export default function HomeShowcase() {
           ...VISIBLE_SPORTS.map(async sport => {
             try {
               const summary = await fetchDashboardSummary(sport, "eng.1", "today");
-              if (active) setSummaries(previous => ({ ...previous, [sport]: summary }));
+              if (active) setSummaries(previous => ({ ...previous, [sport]: summary?.scheduleAvailable === false && previous[sport]?.scheduleAvailable ? previous[sport] : summary }));
             } catch {
               if (active) setSummaries(previous => ({ ...previous, [sport]: previous[sport] ?? null }));
             }
