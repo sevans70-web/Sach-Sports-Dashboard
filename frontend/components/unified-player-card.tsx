@@ -239,6 +239,10 @@ function defaultResearchMarket(
   return "";
 }
 
+function Unavailable() {
+  return <span className={styles.unavailable} aria-label="Unavailable">—</span>;
+}
+
 export function UnifiedPlayerCard({
   sport,
   playerId,
@@ -446,18 +450,22 @@ export function UnifiedPlayerCard({
             {matchup && <p className={styles.fixture}>{matchup}</p>}
             {status && <p className={styles.status}>{status}{gameStatus && gameStatus.toLowerCase() !== status.toLowerCase() ? ' · ' + gameStatus : ''}</p>}
           </div>
-          {ev && <div className={styles.ev}><span>EV</span><strong>{ev}</strong></div>}
+          <div className={styles.ev} data-available={Boolean(ev)}><span>EV</span><strong>{ev || <Unavailable />}</strong></div>
         </header>
 
-        <div className={styles.market} aria-label="Market and prediction">
-          <div><span>{stat}</span><strong>{line == null ? 'Game log' : `O/U ${propLineText(line)}`}</strong></div>
-          {effectivePick && line != null && <div><span>Sach Prediction</span><strong className={effectivePick === 'OVER' ? styles.over : styles.under}>{effectivePick} {propLineText(line)}</strong></div>}
-          {projection != null && <div><span>Sach Projection</span><strong>{fmt(projection)}</strong></div>}
-          {edge != null && <div><span>Projection vs line</span><strong>{edge > 0 ? '+' : ''}{fmt(edge)}</strong></div>}
-        </div>
-        {savedSelection && <div className={styles.odds}>{savedSelection.sportsbook} {formatOdds(savedSelection.odds)} · Saved pregame</div>}
-        {probability && <div className={styles.probability}><span>Model probability</span><strong>{probability}</strong></div>}
-        {(live || final) && actual != null && <div className={styles.odds}>{final ? 'Final' : 'Live'} {stat.toLowerCase()} · {fmt(actual)}{result ? ' · ' + result : ''}</div>}
+        <section className={styles.marketSummary} aria-label="Market and prediction">
+          <div className={styles.market}>
+            <div><span>{stat}</span><strong>{line == null ? <Unavailable /> : `O/U ${propLineText(line)}`}</strong></div>
+            <div><span>Sach Prediction</span><strong className={effectivePick === 'OVER' ? styles.over : effectivePick === 'UNDER' ? styles.under : undefined}>
+              {effectivePick && line != null ? `${effectivePick} ${propLineText(line)}` : <Unavailable />}
+            </strong></div>
+            <div><span>Sach Projection</span><strong>{projection == null ? <Unavailable /> : fmt(projection)}</strong></div>
+            <div><span>Projection vs line</span><strong>{edge == null ? <Unavailable /> : `${edge > 0 ? '+' : ''}${fmt(edge)}`}</strong></div>
+          </div>
+          <p className={styles.odds}>{savedSelection ? `${savedSelection.sportsbook} ${formatOdds(savedSelection.odds)} · Saved pregame` : 'Saved pick odds unavailable'}</p>
+          <div className={styles.probability}><span>Model probability</span><strong>{probability || <Unavailable />}</strong></div>
+          {(live || final) && <p className={styles.odds}>{final ? 'Final' : 'Live'} {stat.toLowerCase()} · {actual == null ? 'Stat unavailable' : fmt(actual)}{result ? ' · ' + result : ''}</p>}
+        </section>
 
         <section className={styles.section}>
           <h2>Player Analysis</h2>
@@ -467,10 +475,12 @@ export function UnifiedPlayerCard({
           </ul> : <p className={styles.muted}>{historyLoading ? 'Loading game history…' : 'Game history unavailable for this market.'}</p>}
         </section>
 
-        {matchupNotes.length > 0 && <section className={styles.section}>
+        <section className={styles.section}>
           <h2>Matchup</h2>
-          <ul className={styles.notes}>{matchupNotes.map(note => <li key={note}>{note}</li>)}</ul>
-        </section>}
+          {matchupNotes.length > 0
+            ? <ul className={styles.notes}>{matchupNotes.map(note => <li key={note}>{note}</li>)}</ul>
+            : <p className={styles.muted}>{historyLoading ? 'Loading matchup history…' : 'Comparable matchup history unavailable.'}</p>}
+        </section>
 
         <section className={styles.section}>
           <div className={styles.sectionHeading}>

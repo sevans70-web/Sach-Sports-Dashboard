@@ -1022,7 +1022,7 @@ function PlayerCard({
     gameId:String(card.raw?.gameId||card.raw?.game_pk||card.raw?.gamePk||""),
     quoteId:String(card.raw?.quoteId||""),
     forecastAt:String(card.raw?.researchForecast?.modelSelection?.calculatedAt||card.raw?.forecastAt||""),
-    line:card.sportsbookLine==null?"":String(card.sportsbookLine),
+    line:progressLine==null?"":String(progressLine),
     actual:String((state==='final'?card.actual:state==='live'?card.liveCurrent:null)??""),
     mode:card.raw?.quoteVerified===true?"prediction":"profile",
   });
