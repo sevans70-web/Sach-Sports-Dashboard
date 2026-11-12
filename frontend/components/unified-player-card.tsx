@@ -1,6 +1,7 @@
 "use client";
 import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {propLineText} from '@/lib/prop-line-format';
+import {playerMatchupAndAbsence} from '@/lib/card-intelligence';
 import {SavedEstimatedEv,useSavedSelection} from '@/components/saved-estimated-ev';
 
 import { useEffect, useMemo, useState } from "react";
@@ -786,7 +787,8 @@ export function UnifiedPlayerCard({
           {precedingFiveAverage != null ? <p><strong>Form comparison:</strong> {fmt(recentFiveAverage)} in the latest {recentFive.length}, versus {fmt(precedingFiveAverage)} in the preceding {precedingFive.length} games.</p> : null}
           {recentLineResults ? <p><strong>Results against {propLineText(line)}:</strong> {recentLineResults.above} above, {recentLineResults.below} below{recentLineResults.equal ? `, ${recentLineResults.equal} equal` : ""} over the last {recentFive.length} recorded appearances. Historical results do not guarantee the next result.</p> : null}
         </> : !historyLoading ? <p>Verified recent-game evidence is not available for this market. No prediction advantage can be established from this card.</p> : null}
-        {matchup ? <p><strong>Upcoming matchup:</strong> {matchup}. Opponent defensive rankings and head-to-head prop evidence have not been verified here.</p> : null}
+        {matchup ? <p><strong>Upcoming matchup:</strong> {matchup}.</p> : null}
+        {playerMatchupAndAbsence({sportsbookLine:line,gameId:first(query.gameId),teamId:first(query.teamId)},sport,researchMarket,history.map(p=>p.value)).map((note,i)=><p key={i}>{note}</p>)}
       </section>
 
       <section
