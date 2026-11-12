@@ -1,0 +1,82 @@
+.chart {
+  position: relative;
+  height: 105px;
+  border-bottom: 1px solid #373a3d;
+  background:
+    linear-gradient(to top, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 100% 33%;
+  overflow: hidden;
+}
+
+.chartBars {
+  position: absolute;
+  inset: 5px 6px 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.barSlot {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column-reverse;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.bar {
+  width: 70%;
+  max-width: 18px;
+  min-height: 0;
+  border-radius: 3px 3px 0 0;
+  background: #e4ba47;
+}
+
+.liveBar {
+  background: #00d883;
+}
+
+.barSlot span {
+  margin-top: 3px;
+  color: #888c91;
+  font-size: 7px;
+}
+
+.projectionMarker {
+  pointer-events: none;
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  border-top: 1px dashed #d8d8db;
+  pointer-events: none;
+}
+
+.projectionMarker span {
+  position: absolute;
+  right: 0;
+  top: -13px;
+  border-radius: 4px;
+  background: #33363a;
+  color: #fff;
+  padding: 1px 3px;
+  font-size: 7px;
+}
+
+.chartEmpty {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  border: 1px dashed #33373a;
+  border-radius: 8px;
+  color: #91949a;
+  font-size: 9px;
+  text-align: center;
+  padding: 8px;
+}
+
+
+.chartReadout { margin: 8px 0 0; color: #e8d48a; font-size: 12px; min-height: 18px; }

@@ -12,7 +12,7 @@ import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
-import {propIntelligence,playerMatchupAndAbsence,gameTeammateAbsences} from "@/lib/card-intelligence";
+import {propIntelligence,playerMatchupNotes} from "@/lib/card-intelligence";
 import {publicPropContext} from "@/lib/public-prop-context";
 import {currentDroppedRows,trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow,verifiedPropQuote} from "@/lib/prop-integrity";
@@ -30,6 +30,7 @@ import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
+import {RecentChart} from "./recent-player-chart";
 import Link from "next/link";
 
 export type RankingsSport =
@@ -858,66 +859,6 @@ async function loadRecentFormForCard(
   return recent;
 }
 
-function RecentChart({
-  values,
-  points,
-  statLabel,
-  line,
-  projection,
-  liveValue,
-}: {
-  values: number[];
-  points:RecentPoint[];
-  statLabel:string;
-  line: number | null;
-  projection: number | null;
-  liveValue?: number | null;
-}) {
-  const [selected,setSelected]=useState<number|null>(null);
-  useEffect(()=>setSelected(null),[values.length,liveValue]);
-  const plotted = liveValue == null ? values : [...values, liveValue];
-  if (!plotted.length) {
-    return (
-      <div className={styles.chartEmpty}>
-        Recent game-by-game values are not available from this feed yet.
-      </div>
-    );
-  }
-
-  const max = Math.max(
-    1,
-    ...plotted,
-    line || 0,
-    projection || 0
-  );
-
-  return (
-    <><div className={styles.chart}>
-      <div className={styles.chartBars}>
-        {plotted.map((value, index) => (
-          <button type="button" className={styles.barSlot} key={`${value}-${index}`} onClick={()=>setSelected(index)} aria-pressed={selected===index} aria-label={`${points[index]?.date||`Game ${index+1}`} ${points[index]?.opponent||""}: ${value} ${statLabel}`}>
-            <div
-              className={`${styles.bar} ${index === plotted.length - 1 && liveValue != null ? styles.liveBar : ""}`}
-              style={{ height: `${Math.max(7, (value / max) * 100)}%` }}
-            />
-            <span>{index === plotted.length - 1 && liveValue != null ? "Live" : `G${index + 1}`}</span>
-          </button>
-        ))}
-      </div>
-
-      {projection != null ? (
-        <div
-          className={styles.projectionMarker}
-          style={{ bottom: `${Math.min(96, Math.max(4, (projection / max) * 100))}%` }}
-        >
-          <span>{shortNumber(projection)}</span>
-        </div>
-      ) : null}
-    </div>
-    <p className={styles.chartReadout} role="status">{selected==null?"Tap a bar for the exact game result.":`${points[selected]?.date?new Date(points[selected].date!).toLocaleDateString("en-US",{timeZone:/^\d{4}-\d{2}-\d{2}$/.test(points[selected].date!)?"UTC":"America/Toronto",month:"short",day:"numeric"}):selected===values.length?"Live":"Game "+(selected+1)}${points[selected]?.opponent?" · "+points[selected].opponent:""}: ${plotted[selected]} ${statLabel}`}</p></>
-  );
-}
-
 function PlayerCard({
   card,
   sport,
@@ -935,14 +876,6 @@ function PlayerCard({
   const [historyValues, setHistoryValues] = useState<number[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [verifiedTeammates,setVerifiedTeammates]=useState<any[]>([]);
-  useEffect(()=>{
-    setVerifiedTeammates([]);
-    if(!open)return;
-    let active=true;
-    gameTeammateAbsences(sport,String(card.raw?.gameId||''),card.teamName,card.playerName,league).then(rows=>{if(active)setVerifiedTeammates(rows);});
-    return ()=>{active=false;};
-  },[open,sport,card.raw?.gameId,card.teamName,card.playerName,league]);
 
   useEffect(() => {
     setHistoryValues([]);
@@ -1082,6 +1015,7 @@ function PlayerCard({
     quoteId:String(card.raw?.quoteId||""),
     forecastAt:String(card.raw?.researchForecast?.modelSelection?.calculatedAt||card.raw?.forecastAt||""),
     line:card.sportsbookLine==null?"":String(card.sportsbookLine),
+    actual:String((state==='final'?card.actual:state==='live'?card.liveCurrent:null)??""),
     mode:card.raw?.quoteVerified===true?"prediction":"profile",
   });
   const fullPlayerUrl=`/${sport}/player/${encodeURIComponent(card.playerId)}?${playerPageQuery.toString()}`;
@@ -1427,7 +1361,7 @@ function PlayerCard({
               <p>{card.gameStatus || (state === "pregame" ? "Scheduled" : state === "live" ? "In progress" : "Final")}</p>
             </div>
             <div className={styles.reasonList} aria-label="Player matchup and availability analysis">
-              {playerMatchupAndAbsence({...card.raw,teamName:card.teamName,matchup:card.matchup,teammateAvailability:verifiedTeammates},sport,card.market,historyValues,historyPoints).map((note,i)=><p key={i}>{note}</p>)}
+              {playerMatchupNotes({...card.raw,sport,teamName:card.teamName,matchup:card.matchup,gameTime:card.gameTime},card.market,historyPoints).map((note,i)=><p key={i}>{note}</p>)}
             </div>
           </section>
 

@@ -53,70 +53,74 @@ export function gameRankingTeam(row:any,side:'away'|'home',game:any){
 }
 
 
-/** Evidence-based context shared by compact rankings and full player profiles.
- * An absence is a possible role change, never proof of extra minutes or targets.
- */
-export function playerMatchupAndAbsence(row:any,sport:string,market:string,history:number[]=[],datedHistory:Array<{value:number;opponent?:string}>=[]){
- const numeric=(x:any)=>x==null||x===''||!Number.isFinite(Number(x))?null:Number(x);
- const fmt=(x:number)=>Number(x.toFixed(1)).toString();
- const line=numeric(row?.sportsbookLine),values=history.filter(x=>Number.isFinite(x)).slice(-5);
+/** Market-specific matchup facts from the player's dated pregame history. */
+export function playerMatchupNotes(row:any,market:string,history:import("@/lib/player-card-history").PlayerHistoryPoint[]){
+ const normalize=(name:unknown)=>String(name||'').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g,'');
+ const teams=String(row.matchup||'').split(/\s+@\s+|\s+vs\.?\s+/i);
+ const team=normalize(row.teamName);
+ const own=teams.findIndex(name=>normalize(name)===team);
+ const opponent=String(row.opponentName||(teams.length===2&&own>=0?teams[1-own]:''));
+ const aliases=[opponent,...(Array.isArray(row.opponentAliases)?row.opponentAliases:[])].map(normalize).filter(Boolean);
+ const against=(point:{opponent?:string})=>{
+  const name=normalize(point.opponent);
+  return Boolean(name)&&aliases.some(alias=>alias===name||(name.length>=5&&alias.endsWith(name)));
+ };
+ const cutoff=Date.parse(row.gameTime||'');
+ const day=Number.isFinite(cutoff)?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto'}).format(cutoff):'';
+ const prior=history.filter(point=>Number.isFinite(point.value)&&Date.parse(point.date||'')<cutoff&&
+  (!row.gameId||String(point.gameId)!==String(row.gameId))&&
+  (!/^\d{4}-\d{2}-\d{2}$/.test(point.date!)||point.date!<day))
+  .sort((a,b)=>Date.parse(a.date!)-Date.parse(b.date!));
+ const meetings=prior.filter(against).slice(-5);
+ const other=prior.filter(point=>point.opponent&&!against(point)).slice(-5);
+ const average=(points:typeof prior)=>fmt(points.reduce((sum,point)=>sum+point.value,0)/points.length);
+ const line=row.quoteVerified===true?number(row.sportsbookLine):null;
+ const unit=market.replace(/^q1_/,'').replaceAll('_',' ');
  const notes:string[]=[];
- if(values.length>=3){
-  const avg=values.reduce((a,b)=>a+b,0)/values.length;
-  notes.push('What the recent form means: '+fmt(avg)+' '+market.replaceAll('_',' ')+' per game in the last '+values.length+' recorded appearances'+(line!=null?'; the displayed line is '+fmt(line)+'.':' (no verified comparison line).')+' A historical average is not a prediction.');
- }else notes.push('At least three dated appearances are needed before recent form can be assessed reliably.');
- const opponent=String(row?.opponentName||'')||(()=>{
-  const parts=String(row?.matchup||'').split(/\s+@\s+|\s+vs\.?\s+/i);
-  if(parts.length!==2)return '';
-  const norm=(x:string)=>x.toLowerCase().replace(/[^a-z0-9]/g,'');
-  return norm(parts[0])===norm(String(row?.teamName||''))?parts[1]:norm(parts[1])===norm(String(row?.teamName||''))?parts[0]:'';
- })();
- const normTeam=(x:string)=>x.toLowerCase().replace(/[^a-z0-9]/g,'');
- const pastOpp=datedHistory.filter(x=>x.opponent&&Number.isFinite(x.value)&&opponent&&(normTeam(String(x.opponent))===normTeam(opponent)||normTeam(opponent).endsWith(normTeam(String(x.opponent)))&&normTeam(String(x.opponent)).length>=5)).slice(-5);
- if(pastOpp.length)notes.push('Against '+opponent+': '+pastOpp.length+' recorded meeting'+(pastOpp.length===1?'':'s')+', averaging '+fmt(pastOpp.reduce((a,b)=>a+b.value,0)/pastOpp.length)+' '+market.replaceAll('_',' ')+'. A small head-to-head sample does not predict this game.');
- const opp=row?.opponentDefense||row?.matchupEvidence;
- if(opp?.verified===true&&opp?.gameId&&String(opp.gameId)===String(row?.gameId)&&typeof opp.summary==='string'&&opp.summary.trim()){
-  notes.push('Opponent matchup: '+opp.summary.trim());
- }else notes.push('Opponent matchup: defensive allowance, positional coverage and head-to-head context are not verified for this fixture. No favorable matchup is claimed.');
- const verifiedAbsences=(Array.isArray(row?.teammateAvailability)?row.teammateAvailability:Array.isArray(row?.teammateInjuries)?row.teammateInjuries:[]).filter((item:any)=>
-  item && item.verified===true && item.playerName &&
-  item.gameId && row?.gameId && String(item.gameId)===String(row.gameId) &&
-  (item.teamId&&row?.teamId?String(item.teamId)===String(row.teamId):String(item.teamName||'').toLowerCase().replace(/[^a-z0-9]/g,'')===String(row?.teamName||'').toLowerCase().replace(/[^a-z0-9]/g,'')) &&
-  /^(out|inactive|injured reserve|suspended|dnp)$/i.test(String(item.status||'')) &&
-  (item.source||item.reportedAt));
- const absence=verifiedAbsences.slice(0,3).map((item:any)=>{
-  const explicit=numeric(item?.verifiedMinutesChange);
-  const effect=explicit!=null&&item?.minutesImpactVerified===true?
-   'A verified rotation projection estimates '+(explicit>=0?'+':'')+fmt(explicit)+' minutes for this player.':
-   sport==='nba'||sport==='wnba'||sport==='cbb'?'This could change rotation minutes or usage, but an increase for this player has not been confirmed.':
-   sport==='nhl'?'This could change ice time, line deployment or power-play usage; the effect is unconfirmed.':
-   'This could affect snaps, carries or targets; a workload increase has not been confirmed.';
-  return item.playerName+' ('+item.status+'): '+effect;
- });
- const playerStatus=String(row?.injuryStatus||row?.injury?.status||row?.availabilityEvidence?.text||'');
- if(row?.isOut===true||/^(out|inactive|dnp|injured reserve)$/i.test(playerStatus))notes.unshift('Player availability alert: reported '+(playerStatus||'out')+'. Do not assume this player will participate.');
- if(absence.length)notes.push(...absence);
- else notes.push('Teammate absence impact: no fixture-matched, source-verified absence and role adjustment has been established for this player. An injury elsewhere on the team does not automatically imply more minutes.');
+ if(meetings.length){
+  const results=meetings.map(point=>fmt(point.value)).join(', ');
+  const againstLine=line!=null&&!/first|anytime/.test(market)
+   ? ` At the recorded ${fmt(line)} line, ${meetings.filter(point=>point.value>line).length} went over, ${meetings.filter(point=>point.value<line).length} went under${meetings.some(point=>point.value===line)?`, and ${meetings.filter(point=>point.value===line).length} landed on the line`:''}.`:'';
+  notes.push(`Against ${opponent}: ${results} ${unit} across ${meetings.length} prior ${meetings.length===1?'meeting':'meetings'}${other.length?`, averaging ${average(meetings)} versus ${average(other)} in the last ${other.length} games against other opponents`:''}.${againstLine}`);
+ }
+ const recent=prior.slice(-5);
+ const workload=market.startsWith('q1_')?null:row.sport==='nhl'?{label:'time on ice',unit:'minutes',value:(point:typeof prior[number])=>point.iceTimeSeconds==null?null:point.iceTimeSeconds/60}:
+  row.sport==='nba'?{label:'court time',unit:'minutes',value:(point:typeof prior[number])=>number(point.minutes)}:
+  /^(passing_|qb_passing)/.test(market)?{label:'passing volume',unit:'attempts',value:(point:typeof prior[number])=>number(point.workload)}:null;
+ if(workload){
+  const values=recent.map(workload.value).filter((value):value is number=>value!=null&&value>0);
+  if(values.length>=3)notes.push(`Recent ${workload.label}: ${fmt(values.reduce((sum,value)=>sum+value,0)/values.length)} ${workload.unit} per game across ${values.length} recorded appearances (range ${fmt(Math.min(...values))}–${fmt(Math.max(...values))}).`);
+ }
+ const evidence=row.opponentDefense||row.matchupEvidence;
+ if(row.gameId&&evidence?.verified===true&&String(evidence.gameId)===String(row.gameId)&&evidence.market===market&&
+  typeof evidence.summary==='string'&&evidence.summary.trim())notes.push(evidence.summary.trim());
+
+ // An injury report confirms who is out. Show an effect only when the
+ // evidence identifies this player's role and the selected market.
+ const impact=row.roleImpact;
+ if(row.gameId&&row.playerId&&impact?.verified===true&&String(impact.gameId)===String(row.gameId)&&
+  String(impact.playerId)===String(row.playerId)&&impact.market===market&&impact.source&&
+  typeof impact.summary==='string'&&impact.summary.trim())notes.push(impact.summary.trim());
  return notes;
 }
 
-/** Game report is already used by the slate. Cache it by fixture, not player. */
-const matchupAvailabilityCache=new Map<string,{at:number;rows:any[]}>();
-export async function gameTeammateAbsences(sport:string,gameId:string,teamName:string,playerName:string,league='eng.1'):Promise<any[]>{
- if(!gameId||!teamName)return [];
- const key=sport+'|'+gameId+'|'+league;
- const cached=matchupAvailabilityCache.get(key);
- let rows=cached&&Date.now()-cached.at<60000?cached.rows:null;
- if(!rows){
-  try{
-   const response=await fetch('/api/game-slate-detail?'+new URLSearchParams({sport,gameId,league}),{cache:'no-store'});
-   if(!response.ok)return [];
-   const payload=await response.json();
-   rows=Array.isArray(payload?.injuries)?payload.injuries:[];
-   matchupAvailabilityCache.set(key,{at:Date.now(),rows});
-  }catch{return [];}
- }
- const normalize=(s:any)=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- return rows.filter((item:any)=>normalize(item.teamName)===normalize(teamName)&&normalize(item.playerName)!==normalize(playerName)&&/^(out|inactive|injured reserve|suspended|dnp)$/i.test(String(item.status||'')))
-  .map((item:any)=>({playerName:item.playerName,teamName,gameId,status:item.status,reportedAt:item.reportedAt,source:'Game injury report',verified:true}));
+/** Resolve full names and abbreviations from the official fixture roster. */
+export async function playerFixtureOpponent(sport:string,gameId:string,playerId:string,team:string,league:string,signal:AbortSignal){
+ if(!gameId||!playerId)return null;
+ try{
+  const query=new URLSearchParams({sport,gameId,league});
+  const response=await fetch('/api/game-slate-detail?'+query,{signal,cache:'no-store'});
+  if(!response.ok)return null;
+  const payload=await response.json();
+  if(payload?.success!==true||String(payload.gameId)!==gameId||!Array.isArray(payload.rosters))return null;
+  const normalize=(value:unknown)=>String(value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const rosters=payload.rosters;
+  if(rosters.length!==2)return null;
+  const byTeam=rosters.filter((row:any)=>[row.teamName,row.teamAbbr].some(value=>normalize(value)===normalize(team)));
+  const byPlayer=rosters.filter((row:any)=>row.players?.some((player:any)=>String(player.playerId)===playerId));
+  const own=byTeam.length===1?byTeam[0]:byPlayer.length===1?byPlayer[0]:null;
+  if(!own||(byPlayer.length===1&&byPlayer[0]!==own))return null;
+  const opponent=rosters.find((row:any)=>row!==own);
+  return opponent?.teamName?{name:opponent.teamName,aliases:[opponent.teamAbbr]}:null;
+ }catch{return null;}
 }

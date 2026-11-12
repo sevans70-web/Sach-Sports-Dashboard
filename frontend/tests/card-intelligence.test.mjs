@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {propIntelligence,gameIntelligence}=await loadTs(new URL('../lib/card-intelligence.ts',import.meta.url));
+const {propIntelligence,gameIntelligence,playerMatchupNotes}=await loadTs(new URL('../lib/card-intelligence.ts',import.meta.url));
 const {trackRankBoard}=await loadTs(new URL('../lib/rank-movement.ts',import.meta.url));
 const {guardPerformancePayload}=await loadTs(new URL('../lib/prop-integrity.ts',import.meta.url));
 test('player research facts use dated included pregame observations, not future or excluded relief outcomes',()=>{
@@ -43,4 +43,22 @@ test('game ranking joins reject blank-team and shared-substring leaks and repeat
  assert.equal(gameRankingTeam({gameId:game.id,teamId:'1',teamName:'Atlanta Falcons'},'home',game),true);
  assert.equal(gameRankingTeam({gameId:game.id,teamName:''},'away',game),false);
  assert.equal(gameRankingMatches({teamName:'Atlanta Falcons',gameTime:'2026-10-11T17:00:00Z'},game),false);
+});
+
+test('matchup compares prior results for the selected market and omits unsupported injury effects',()=>{
+ const row={sport:'nba',gameId:'target',playerId:'player',gameTime:'2026-11-11T23:00:00Z',teamName:'WSH',
+  opponentName:'Indiana Pacers',opponentAliases:['IND'],sportsbookLine:14.5,quoteVerified:true,
+  teammateAvailability:[{playerName:'Injured teammate',status:'Out',verified:true,gameId:'target'}]};
+ const games=[
+  {value:12,date:'2026-11-01',opponent:'IND',minutes:24},
+  {value:18,date:'2026-11-02',opponent:'Pacers',minutes:30},
+  {value:22,date:'2026-11-03',opponent:'Miami Heat',minutes:33},
+  {value:99,date:'2026-11-11',opponent:'Indiana Pacers',gameId:'target'},
+  {value:100,date:'2026-11-12',opponent:'Indiana Pacers'}
+ ];
+ const notes=playerMatchupNotes(row,'points',games);
+ assert.match(notes[0],/12, 18 points.*averaging 15 versus 22.*1 went over, 1 went under/);
+ assert.match(notes[1],/29 minutes per game/);
+ assert.ok(notes.every(note=>!/99|100|Injured teammate/.test(note)));
+ assert.ok(playerMatchupNotes({...row,quoteVerified:false},'points',games).every(note=>!note.includes('recorded 14.5')));
 });

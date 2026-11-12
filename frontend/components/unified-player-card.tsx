@@ -1,12 +1,13 @@
 "use client";
 import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {propLineText} from '@/lib/prop-line-format';
-import {playerMatchupAndAbsence,gameTeammateAbsences} from '@/lib/card-intelligence';
-import {SavedEstimatedEv,useSavedSelection} from '@/components/saved-estimated-ev';
+import {playerMatchupNotes,playerFixtureOpponent} from '@/lib/card-intelligence';
+import {useSavedSelection} from '@/components/saved-estimated-ev';
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./unified-player-card.module.css";
+import {RecentChart} from "./recent-player-chart";
 
 type SportKey =
   | "mlb"
@@ -238,25 +239,6 @@ function defaultResearchMarket(
   return "";
 }
 
-function shortDate(value: string) {
-  if (!value) return "";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat(
-    "en-US",
-    {
-      month: "numeric",
-      day: "numeric",
-      year: "2-digit",
-      timeZone: /^\d{4}-\d{2}-\d{2}$/.test(value)?"UTC":"America/Toronto",
-    }
-  ).format(date);
-}
-
 export function UnifiedPlayerCard({
   sport,
   playerId,
@@ -271,7 +253,7 @@ export function UnifiedPlayerCard({
     useState<5 | 10 | 20>(10);
   const [history, setHistory] =
     useState<HistoryPoint[]>([]);
-  const [verifiedTeammates,setVerifiedTeammates]=useState<any[]>([]);
+  const [fixtureOpponent,setFixtureOpponent]=useState<{name:string;aliases:string[]}|null>(null);
   const [historyLoading, setHistoryLoading] =
     useState(false);
   const [historyLabel, setHistoryLabel] =
@@ -284,12 +266,13 @@ export function UnifiedPlayerCard({
     first(query.team) || LABELS[sport];
 
   const matchup = first(query.matchup);
-  useEffect(()=>{
-    setVerifiedTeammates([]);
-    let active=true;
-    gameTeammateAbsences(sport,first(query.gameId),team,name,first(query.league)||'eng.1').then(rows=>{if(active)setVerifiedTeammates(rows);});
-    return ()=>{active=false;};
-  },[sport,query.gameId,query.league,team,name]);
+  useEffect(() => {
+    const controller = new AbortController();
+    setFixtureOpponent(null);
+    playerFixtureOpponent(sport, first(query.gameId), playerId, team, first(query.league) || 'eng.1', controller.signal)
+      .then(opponent => { if (!controller.signal.aborted) setFixtureOpponent(opponent); });
+    return () => controller.abort();
+  }, [sport, query.gameId, query.league, playerId, team]);
 
   const requestedMarket =
     first(query.market);
@@ -306,11 +289,10 @@ export function UnifiedPlayerCard({
       position
     );
 
-  const savedEvidence=useSavedSelection(sport,playerId,researchMarket,first(query.gameId)||undefined,first(query.quoteId)||undefined,first(query.forecastAt)||undefined);
+  const savedEvidence=useSavedSelection(sport,playerId,researchMarket,first(query.gameId)||undefined,first(query.quoteId)||undefined,first(query.forecastAt)||undefined,historyCutoff);
   const savedSelection=savedEvidence.selection;
   const line = savedSelection?.line ?? savedEvidence.forecast?.line ?? finite(query.line);
   const projection = savedEvidence.forecast?.projection ?? null;
-  const probability = null;
   const actual =
     finite(query.actual);
 
@@ -323,35 +305,8 @@ export function UnifiedPlayerCard({
   const image =
     first(query.img);
 
-  const hasPrediction = Boolean(
-    requestedMarket &&
-      line != null &&
-      (
-        projection != null ||
-        probability != null ||
-        savedSelection || savedEvidence.forecast || first(query.mode)==='prediction'
-      )
-  );
-
   const effectivePick = savedSelection?.side || '';
-  // Direction from a model estimate is not a verified betting selection.
-  const forecastDirection = !effectivePick && projection != null && line != null
-    ? projection > line ? 'OVER' : projection < line ? 'UNDER' : 'AT LINE'
-    : '';
-  const displayedPick = effectivePick || (forecastDirection ? `Forecast ${forecastDirection}` : 'Not established');
-
-  const edge =
-    line != null &&
-    projection != null
-      ? projection - line
-      : null;
-
-  const edgePct =
-    line != null &&
-    line !== 0 &&
-    projection != null
-      ? ((projection - line) / Math.abs(line)) * 100
-      : null;
+  const edge = line != null && projection != null ? projection - line : null;
 
   useEffect(() => {
     if (
@@ -441,44 +396,17 @@ export function UnifiedPlayerCard({
       [history, span]
     );
 
-  // Comparisons use observed game logs only; do not infer a betting edge
-  // or claim a matchup advantage without verified opponent-level data.
   const recentFive = history.slice(-5);
-  const precedingFive = history.slice(-10,-5);
-  const recentFiveAverage = recentFive.length ? historyAverage(recentFive) : null;
-  const precedingFiveAverage = precedingFive.length ? historyAverage(precedingFive) : null;
-  const recentLineResults = line == null ? null : {
-    above: recentFive.filter(p=>p.value>line).length,
-    below: recentFive.filter(p=>p.value<line).length,
-    equal: recentFive.filter(p=>p.value===line).length,
-  };
-
-  const replay = useMemo(() => {
-    if (!visibleHistory.length || line == null || !effectivePick) {
-      return null;
-    }
-
-    const under = effectivePick === "UNDER";
-    const hits = visibleHistory.filter((point) =>
-      under ? point.value < line : point.value > line
-    ).length;
-
-    return {
-      hits,
-      total: visibleHistory.length,
-      pct: Math.round((hits / visibleHistory.length) * 100),
-    };
-  }, [visibleHistory, line, effectivePick]);
-
-  const chartMax = Math.max(
-    1,
-    ...visibleHistory.map(
-      (point) => point.value
-    ),
-    line || 0,
-    projection || 0,
-    actual || 0
-  );
+  const priorFive = history.slice(-10, -5);
+  const recentAverage = historyAverage(recentFive);
+  const earlierAverage = historyAverage(priorFive);
+  const stat = historyLabel || marketLabel(researchMarket);
+  const historicalLine = savedSelection?.line ?? savedEvidence.forecast?.line ?? null;
+  const matchupNotes = playerMatchupNotes({
+    sport, gameId: first(query.gameId), gameTime: historyCutoff, teamName: team, matchup,
+    opponentName: fixtureOpponent?.name, opponentAliases: fixtureOpponent?.aliases,
+    sportsbookLine: historicalLine, quoteVerified: historicalLine != null,
+  }, researchMarket, history);
 
   const live =
     gameState === "in" ||
@@ -503,424 +431,65 @@ export function UnifiedPlayerCard({
     return hit ? "HIT" : "MISS";
   }, [final, actual, line, effectivePick]);
 
-  const scheduled =
-    !live && !final;
-
-  const statusLabel =
-    live
-      ? "LIVE"
-      : final
-        ? "FINAL"
-        : "SCHEDULED";
+  const status = live ? 'Live' : final ? 'Final' : gameStatus ? 'Scheduled' : '';
+  const probability = savedSelection && savedEvidence.probabilityText !== '—' ? savedEvidence.probabilityText : '';
+  const ev = savedSelection && savedEvidence.evText !== '—' ? savedEvidence.evText : '';
+  const hitCount = historicalLine == null ? null : recentFive.filter(point => point.value > historicalLine).length;
+  const pushCount = historicalLine == null ? 0 : recentFive.filter(point => point.value === historicalLine).length;
+  const showComparison = hitCount != null && recentFive.length > 0 && !/first|anytime/.test(researchMarket);
+  const formatOdds = (odds:number) => odds > 0 ? '+' + odds : String(odds);
 
   return (
     <main className={styles.shell}>
-      <div
-        className={styles.goldWash}
-        aria-hidden="true"
-      />
+      <button type="button" className={styles.back} onClick={() => router.back()}>← Back to {LABELS[sport]}</button>
+      <article className={styles.card} data-live={live}>
+        <header className={styles.header}>
+          <div className={styles.photo}>{image ? <img src={image} alt="" /> : <span>{initials(name)}</span>}</div>
+          <div className={styles.identity}>
+            <h1>{name}</h1>
+            <p>{[position, team].filter(Boolean).join(' · ')}</p>
+            {matchup && <p className={styles.fixture}>{matchup}</p>}
+            {status && <p className={styles.status}>{status}{gameStatus && gameStatus.toLowerCase() !== status.toLowerCase() ? ' · ' + gameStatus : ''}</p>}
+          </div>
+          {ev && <div className={styles.ev}><span>EV</span><strong>{ev}</strong></div>}
+        </header>
 
-      <div className={styles.utilityRow}>
-        <button
-          type="button"
-          className={styles.back}
-          onClick={() =>
-            router.back()
-          }
-        >
-          ← Back to {LABELS[sport]}
-        </button>
-
-        <span
-          className={
-            hasPrediction
-              ? styles.modePrediction
-              : styles.modeResearch
-          }
-        >
-          {hasPrediction
-            ? "Prediction Intelligence"
-            : "Player Intelligence"}
-        </span>
-      </div>
-
-      <section className={styles.identityCard}>
-        <div className={styles.photo}>
-          {image ? (
-            <img src={image} alt="" />
-          ) : (
-            <span>
-              {initials(name)}
-            </span>
-          )}
+        <div className={styles.market} aria-label="Market and prediction">
+          <div><span>{stat}</span><strong>{line == null ? 'Game log' : `O/U ${propLineText(line)}`}</strong></div>
+          {effectivePick && line != null && <div><span>Sach Prediction</span><strong className={effectivePick === 'OVER' ? styles.over : styles.under}>{effectivePick} {propLineText(line)}</strong></div>}
+          {projection != null && <div><span>Sach Projection</span><strong>{fmt(projection)}</strong></div>}
+          {edge != null && <div><span>Projection vs line</span><strong>{edge > 0 ? '+' : ''}{fmt(edge)}</strong></div>}
         </div>
+        {savedSelection && <div className={styles.odds}>{savedSelection.sportsbook} {formatOdds(savedSelection.odds)} · Saved pregame</div>}
+        {probability && <div className={styles.probability}><span>Model probability</span><strong>{probability}</strong></div>}
+        {(live || final) && actual != null && <div className={styles.odds}>{final ? 'Final' : 'Live'} {stat.toLowerCase()} · {fmt(actual)}{result ? ' · ' + result : ''}</div>}
 
-        <div className={styles.identity}>
-          <small>
-            {LABELS[sport]}
-          </small>
-
-          <h1>{name}</h1>
-
-          <p>
-            {position
-              ? `${position} · `
-              : ""}
-            {team}
-          </p>
-
-          {matchup ? (
-            <strong>
-              {matchup}
-            </strong>
-          ) : null}
-        </div>
-      </section>
-
-      {(live ||
-        final ||
-        gameStatus) ? (
-        <section
-          className={`${styles.statusCard} ${
-            live
-              ? styles.live
-              : ""
-          }`}
-        >
-          <span>GAME STATUS</span>
-
-          <strong>
-            {statusLabel}
-          </strong>
-
-          <p>
-            {gameStatus ||
-              (live
-                ? "In Progress"
-                : final
-                  ? "Final"
-                  : "Scheduled")}
-          </p>
+        <section className={styles.section}>
+          <h2>Player Analysis</h2>
+          {recentAverage != null ? <ul className={styles.notes}>
+            <li><strong>Recent form</strong><span>{fmt(recentAverage)} {stat.toLowerCase()} per game over the last {recentFive.length}{earlierAverage != null ? `, versus ${fmt(earlierAverage)} over the preceding ${priorFive.length}` : ''}.</span></li>
+            {showComparison && <li><strong>Results at {propLineText(historicalLine)}</strong><span>{hitCount} over · {recentFive.length - hitCount - pushCount} under{pushCount ? ` · ${pushCount} on the line` : ''} in the last {recentFive.length} games.</span></li>}
+          </ul> : <p className={styles.muted}>{historyLoading ? 'Loading game history…' : 'Game history unavailable for this market.'}</p>}
         </section>
-      ) : null}
 
-      <section
-        className={`${styles.marketBar} ${
-          live
-            ? styles.liveMarket
-            : ""
-        }`}
-      >
-        <div>
-          <span>
-            {hasPrediction
-              ? "ACTIVE MARKET"
-              : "RESEARCH STAT"}
-          </span>
+        {matchupNotes.length > 0 && <section className={styles.section}>
+          <h2>Matchup</h2>
+          <ul className={styles.notes}>{matchupNotes.map(note => <li key={note}>{note}</li>)}</ul>
+        </section>}
 
-          <strong>
-            {marketLabel(
-              researchMarket
-            )}
-          </strong>
-        </div>
-
-        <b>
-          EV {savedSelection?<SavedEstimatedEv sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/>:"—"}
-
-        </b>
-      </section>
-
-      {savedSelection ? <details style={{margin:"12px 0",padding:"12px 16px",border:"1px solid #454036",borderRadius:12}}>
-        <summary>Probability details</summary>
-        <p>Verified saved-pick probability: <SavedEstimatedEv metric="probability" sport={sport} playerId={playerId} market={researchMarket} gameId={first(query.gameId)||undefined} quoteId={first(query.quoteId)||undefined} forecastAt={first(query.forecastAt)||undefined}/></p>
-      </details> : null}
-
-      {hasPrediction ? (
-        <>
-          <section
-            className={styles.metrics}
-          >
-            <article>
-              <span>
-                {savedSelection||savedEvidence.forecast?"Sportsbook Line":"Reference Line"}
-              </span>
-              <strong>
-                {propLineText(line)}
-              </strong>
-            </article>
-
-            <article>
-              <span>
-                Sach projection
-              </span>
-              <strong>
-                {projection==null?'Unavailable':fmt(projection)}
-              </strong>
-            </article>
-
-            <article>
-              <span>
-                {effectivePick ? "Saved selection" : "Forecast Direction"}
-              </span>
-              <strong
-                className={
-                  styles.pick
-                }
-              >
-                {displayedPick}
-              </strong>
-            </article>
-
-            <article>
-              <span>Model Edge</span>
-              <strong>
-                {edge == null
-                  ? "—"
-                  : `${edge >= 0 ? "+" : ""}${fmt(edge)}`}
-              </strong>
-              {edgePct != null ? (
-                <small className={styles.metricNote}>
-                  {Math.abs(edgePct).toFixed(0)}% {edgePct >= 0 ? "above" : "below"} line
-                </small>
-              ) : null}
-            </article>
-          </section>
-
-          <section className={styles.playCard}>
-            <div className={styles.playHead}>
-              <div>
-                <small>SACH PLAY</small>
-                <h2>{marketLabel(researchMarket)}</h2>
-              </div>
-              <strong>{effectivePick?`${effectivePick} ${propLineText(line)}`:forecastDirection?`Forecast ${forecastDirection} ${propLineText(line)}`:'Not established'}</strong>
+        <section className={styles.section}>
+          <div className={styles.sectionHeading}>
+            <h2>Recent Form</h2>
+            <div className={styles.tabs} aria-label="Recent games">
+              {([5, 10, 20] as const).map(value => <button key={value} type="button" aria-pressed={span===value} onClick={() => setSpan(value)}>Last {value}</button>)}
             </div>
-
-            <div className={styles.playRows}>
-              <div>
-                <span>
-                  <b>Main Play</b>
-                  <small>{effectivePick ? `${savedSelection?.sportsbook} · ${savedSelection?.odds>0?'+':''}${savedSelection?.odds} · saved pregame` : "Forecast only — no verified selection"}</small>
-                </span>
-                <strong>{effectivePick?`${effectivePick} ${propLineText(line)}`:forecastDirection?`Forecast ${forecastDirection} ${propLineText(line)}`:'Not established'}</strong>
-              </div>
-              <div>
-                <span>
-                  <b>Sach projection</b>
-                  <small>Model estimate</small>
-                </span>
-                <strong>{projection==null?'Unavailable':fmt(projection)}</strong>
-              </div>
-              <div>
-                <span>
-                  <b>Recent Replay</b>
-                  <small>Last {span} at this line</small>
-                </span>
-                <strong>
-                  {replay
-                    ? `${replay.hits}/${replay.total} · ${replay.pct}%`
-                    : "Waiting for verified history"}
-                </strong>
-              </div>
-            </div>
-          </section>
-
-          {final ? (
-            <section
-              className={`${styles.resultCard} ${result === "MISS" ? styles.resultMiss : ""}`}
-            >
-              <span>RESULT</span>
-
-              <strong>
-                {actual == null
-                  ? "Actual stat not attached yet"
-                  : `${result === "HIT" ? "✅ HIT" : result === "MISS" ? "❌ MISS" : result === "PUSH" ? "➖ PUSH" : "FINAL"} · Actual ${fmt(actual)}`}
-              </strong>
-            </section>
-          ) : null}
-
-
-        </>
-      ) : (
-        <>
-          <section
-            className={
-              styles.researchMetrics
-            }
-          >
-            <article>
-              <span>Position</span>
-              <strong>
-                {position || "—"}
-              </strong>
-            </article>
-
-            <article>
-              <span>Team</span>
-              <strong>
-                {team || "—"}
-              </strong>
-            </article>
-
-            <article>
-              <span>
-                Stat
-              </span>
-              <strong>
-                {marketLabel(
-                  researchMarket
-                )}
-              </strong>
-            </article>
-
-            <article>
-              <span>Status</span>
-              <strong>
-                {scheduled
-                  ? "Scheduled"
-                  : statusLabel}
-              </strong>
-            </article>
-          </section>
-
-
-        </>
-      )}
-
-      <section className={styles.historySection} aria-label="Player analysis and matchup evidence">
-        <h2 style={{fontSize:19,margin:"0 0 12px"}}>Player Analysis</h2>
-        {recentFiveAverage != null ? <>
-          <p><strong>Recent production:</strong> {fmt(recentFiveAverage)} {marketLabel(researchMarket).toLowerCase()} per game across {recentFive.length} verified appearance{recentFive.length===1?"":"s"}.</p>
-          {precedingFiveAverage != null ? <p><strong>Form comparison:</strong> {fmt(recentFiveAverage)} in the latest {recentFive.length}, versus {fmt(precedingFiveAverage)} in the preceding {precedingFive.length} games.</p> : null}
-          {recentLineResults ? <p><strong>Results against {propLineText(line)}:</strong> {recentLineResults.above} above, {recentLineResults.below} below{recentLineResults.equal ? `, ${recentLineResults.equal} equal` : ""} over the last {recentFive.length} recorded appearances. Historical results do not guarantee the next result.</p> : null}
-        </> : !historyLoading ? <p>Verified recent-game evidence is not available for this market. No prediction advantage can be established from this card.</p> : null}
-        {matchup ? <p><strong>Upcoming matchup:</strong> {matchup}.</p> : null}
-        {playerMatchupAndAbsence({sportsbookLine:line,gameId:first(query.gameId),teamId:first(query.teamId),teamName:team,matchup,teammateAvailability:verifiedTeammates},sport,researchMarket,history.map(p=>p.value),history).map((note,i)=><p key={i}>{note}</p>)}
-      </section>
-
-      <section
-        className={styles.historySection}
-      >
-        <div
-          className={styles.historyTabs}
-        >
-          {(
-            [5, 10, 20] as const
-          ).map((value) => (
-            <button
-              type="button"
-              key={value}
-              className={
-                span === value
-                  ? styles.activeHistory
-                  : ""
-              }
-              aria-pressed={span===value}
-              onClick={() =>
-                setSpan(value)
-              }
-            >
-              Last {value}
-            </button>
-          ))}
-        </div>
-
-        <div
-          className={
-            styles.historyHeading
-          }
-        >
-          <div>
-            <small>
-              RECENT FORM
-            </small>
-
-            <h2>
-              Last {span} Games
-            </h2>
           </div>
-
-          <strong>
-            {historyLabel ||
-              marketLabel(
-                researchMarket
-              )}
-          </strong>
-        </div>
-
-        {visibleHistory.length?<p>Last {visibleHistory.length} average: {fmt(historyAverage(visibleHistory))} · Historical results</p>:null}
-
-        {historyLoading &&
-        !visibleHistory.length ? (
-          <div
-            className={
-              styles.historyEmpty
-            }
-          >
-            Loading verified recent
-            history…
-          </div>
-        ) : visibleHistory.length ? (
-          <div className={styles.chart}>
-            {visibleHistory.map(
-              (point, index) => (
-                <div
-                  className={
-                    styles.barSlot
-                  }
-                  key={`${point.value}-${point.date}-${index}`}
-                >
-                  <b>
-                    {fmt(
-                      point.value
-                    )}
-                  </b>
-
-                  <i
-                    style={{
-                      height: `${Math.max(
-                        8,
-                        (
-                          point.value /
-                          chartMax
-                        ) * 100
-                      )}%`,
-                    }}
-                  />
-
-                  <span>
-                    {shortDate(
-                      point.date || ""
-                    ) ||
-                      `G${index + 1}`}
-                  </span>
-
-                  {point.opponent ? (
-                    <em>
-                      {point.opponent}
-                    </em>
-                  ) : null}
-                </div>
-              )
-            )}
-          </div>
-        ) : (
-          <div
-            className={
-              styles.historyEmpty
-            }
-          >
-            Verified game-by-game
-            {researchMarket
-              ? ` ${marketLabel(
-                  researchMarket
-                )}`
-              : ""}{" "}
-            history is not available from
-            this feed yet.
-          </div>
-        )}
-      </section>
+          {visibleHistory.length > 0 && <p className={styles.muted}>Last {visibleHistory.length} average · {fmt(historyAverage(visibleHistory))} {stat.toLowerCase()}</p>}
+          {historyLoading && !visibleHistory.length ? <p className={styles.muted}>Loading recent form…</p> :
+            <RecentChart key={`${playerId}|${researchMarket}|${span}`} points={visibleHistory} values={visibleHistory.map(point => point.value)}
+              statLabel={stat.toLowerCase()} line={line} projection={projection} liveValue={live ? actual : null} />}
+        </section>
+      </article>
     </main>
   );
 }

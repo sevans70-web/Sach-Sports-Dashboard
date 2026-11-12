@@ -9,14 +9,14 @@ export function SavedEstimatedEv({sport,playerId,market,gameId,quoteId,forecastA
  return <span title={value.notice}>{value.text}</span>;
 }
 
-export function useSavedSelection(sport:string,playerId:string,market:string,gameId?:string,quoteId?:string,forecastAt?:string){
- const key=JSON.stringify([sport,playerId,market,gameId,quoteId,forecastAt]);
+export function useSavedSelection(sport:string,playerId:string,market:string,gameId?:string,quoteId?:string,forecastAt?:string,gameTime?:string){
+ const key=JSON.stringify([sport,playerId,market,gameId,quoteId,forecastAt,gameTime]);
  const [state,setState]=useState<{key:string;payload:any}|null>(null);
  useEffect(()=>{let active=true;const controller=new AbortController();
- if(gameId&&quoteId){const q=new URLSearchParams({sport,playerId,market,gameId,quoteId});if(forecastAt)q.set('forecastAt',forecastAt);
+ if(gameId&&quoteId){const q=new URLSearchParams({sport,playerId,market,gameId,quoteId});if(forecastAt)q.set('forecastAt',forecastAt);if(gameTime)q.set('gameTime',gameTime);
  fetch('/api/estimated-ev?'+q,{cache:'no-store',signal:controller.signal}).then(r=>{if(!r.ok)throw Error('Evidence unavailable');return r.json()}).then(payload=>{if(active)setState({key,payload})}).catch(()=>{if(active)setState({key,payload:null})});}
  return()=>{active=false;controller.abort()};
- },[key,sport,playerId,market,gameId,quoteId,forecastAt]);
+ },[key,sport,playerId,market,gameId,quoteId,forecastAt,gameTime]);
  const payload=state?.key===key?state.payload:null;
- return {selection:fullCardSelection(payload,{playerId,gameId,quoteId,forecastAt}),forecast:fullCardForecast(payload,{playerId,gameId,quoteId})};
+ return {selection:fullCardSelection(payload,{playerId,gameId,quoteId,forecastAt}),forecast:fullCardForecast(payload,{playerId,gameId,quoteId}),evText:payload?.text||'—',probabilityText:payload?.probabilityText||'—'};
 }

@@ -5,7 +5,7 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {NextRequest,NextResponse} from 'next/server';
 import {DASHBOARD_SPORTS,type DashboardSport,dashboardDay} from '@/lib/dashboard-contract';
-import {historyRoot} from '@/lib/durable-history';
+import {historyRoot,readDurableHistoryBatch} from '@/lib/durable-history';
 import {estimatedEv,estimatedEvText,estimatedEvNotice} from '@/lib/estimated-ev';
 export const dynamic='force-dynamic';
 export async function GET(req:NextRequest){
@@ -16,12 +16,24 @@ export async function GET(req:NextRequest){
  // Prefer the locked featured selection, then original boards. Never read a
  // caller-supplied EV, price or probability as historical evidence.
  names.sort((a,b)=>Number(b.startsWith('featured_selections_'))-Number(a.startsWith('featured_selections_')));
- for(const name of names)try{
-  const records=JSON.parse(await fs.readFile(path.join(dir,name),'utf8'));if(!Array.isArray(records))continue;
-  for(const record of records){const candidates=record.pick?.row?[record.pick.row]:record.rows||[];
-   for(const r of candidates)if(String(r.playerId)===playerId&&r.market===market&&(!gameId||String(r.gameId)===gameId)&&(!quoteId||r.quoteId===quoteId))rows.push({...r,_featured:!!record.pick,boardCapturedAt:r.boardCapturedAt||record.capturedAt||record.featuredCapturedAt});
+ const collect=(records:any[])=>{
+  for(const record of records){
+   const candidates=record.pick?.row?[record.pick.row]:record.rows||[];
+   for(const r of candidates)if(String(r.playerId)===playerId&&r.market===market&&(!gameId||String(r.gameId)===gameId)&&(!quoteId||r.quoteId===quoteId))
+    rows.push({...r,_featured:!!record.pick,boardCapturedAt:r.boardCapturedAt||record.capturedAt||record.featuredCapturedAt});
   }
+ };
+ for(const name of names)try{
+  const records=JSON.parse(await fs.readFile(path.join(dir,name),'utf8'));
+  if(Array.isArray(records))collect(records);
  }catch{}
+ if(gameId&&quoteId&&!rows.length){
+  const today=dashboardDay(new Date()),gameDay=dashboardDay(q.get('gameTime')||'');
+  const days=[...new Set([today,gameDay].filter(day=>day&&day>=cutoff))];
+  const streams=['featured_selections','featured_'+market,'slate_board_'+market,'slate_locked_'+market,'locked_research_'+market];
+  const documents=await Promise.all(days.map(day=>readDurableHistoryBatch(sport,streams,day)));
+  for(const day of documents)for(const document of day)collect(document.payload);
+ }
  const {row,ambiguous}=selectSavedQuoteEvidence(rows,gameId,quoteId,Date.now(),forecastAt);
  const forecast=recordedCardForecast(row);
  return NextResponse.json({forecast,probability:predictionProbability(row),probabilityText:predictionProbabilityText(row),ev:estimatedEv(row),text:estimatedEvText(row),notice:ambiguous?'Select a specific game and saved quote to view its EV':estimatedEvNotice(row)},{headers:{'Cache-Control':'no-store'}});
