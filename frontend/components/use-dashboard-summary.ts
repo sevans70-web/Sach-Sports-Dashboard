@@ -3,12 +3,30 @@ import {visiblePolling} from '@/lib/visible-polling';
 import {useEffect,useState} from "react";
 import {dashboardDay,type DashboardSport} from "@/lib/dashboard-contract";
 const cached=new Map<string,{at:number,data:any}>(),pending=new Map<string,Promise<any>>();
+const storageKey=(key:string)=>"sach:summary:v2:"+key;
+export function peekDashboardSummary(sport:DashboardSport,league="eng.1",scope="today"){
+ const day=scope==="today"?dashboardDay(new Date()):"";
+ const key=day?`${sport}|${league}|today`:`${sport}|${league}`;
+ const hit=cached.get(key);
+ if(hit&&(!day||hit.data?.slateDay===day))return hit.data;
+ if(typeof window==="undefined")return null;
+ try {
+  const raw=window.sessionStorage.getItem(storageKey(key));
+  if(!raw)return null;
+  const stored=JSON.parse(raw);
+  if(Date.now()-stored.at>15*60_000||day&&stored.data?.slateDay!==day)return null;
+  cached.set(key,stored);return stored.data;
+ }catch{return null}
+}
+
 export function fetchDashboardSummary(sport:DashboardSport,league="eng.1",scope="current"){
  const day=scope==="today"?dashboardDay(new Date()):"";
- const key=day?`${sport}|${league}|today`:`${sport}|${league}`,hit=cached.get(key);
+ const key=day?`${sport}|${league}|today`:`${sport}|${league}`;
+ peekDashboardSummary(sport,league,scope);
+ const hit=cached.get(key);
  if(hit&&Date.now()-hit.at<30_000&&(!day||hit.data.slateDay===day))return Promise.resolve(hit.data);
  const current=pending.get(key);if(current)return current;
- const work=fetch(`/api/dashboard-summary?sport=${sport}&league=${encodeURIComponent(league)}&scope=${encodeURIComponent(scope)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)}).then(async r=>{if(!r.ok)throw Error(`Dashboard unavailable (${r.status})`);return r.json()}).then(data=>{cached.set(key,{at:Date.now(),data});return data}).finally(()=>pending.delete(key));pending.set(key,work);return work;
+ const work=fetch(`/api/dashboard-summary?sport=${sport}&league=${encodeURIComponent(league)}&scope=${encodeURIComponent(scope)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)}).then(async r=>{if(!r.ok)throw Error(`Dashboard unavailable (${r.status})`);return r.json()}).then(data=>{if(data?.success!==false&&data?.scheduleAvailable!==false){const entry={at:Date.now(),data};cached.set(key,entry);try{window.sessionStorage.setItem(storageKey(key),JSON.stringify(entry))}catch{}}return data}).finally(()=>pending.delete(key));pending.set(key,work);return work;
 }
 export function useDashboardSummary(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`;
