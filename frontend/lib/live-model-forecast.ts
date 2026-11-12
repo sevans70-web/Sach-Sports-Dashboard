@@ -30,16 +30,21 @@ export function createRuntimeForecastIndex(observations:OpportunityGame[]){
  return {histories,basketball};
 }
 let cached:RuntimeBundle|null=null;
-let goalieBundle:RuntimeBundle|null=null;
+const supplementalBundles=new Map<string,RuntimeBundle>();
+const supplementalFiles:Record<string,string>={'nhl|goalie_saves':'nhl-goalie-saves.json.gz','nfl|sacks':'nfl-sacks.json.gz'};
 function bundle(sport:string,market:string):RuntimeBundle|null{
  const worker=workerModelRuntime(sport,market);
  if(worker)return worker;
  if(globalThis.navigator?.userAgent==='Cloudflare-Workers')return null;
  const root=join(process.cwd(),'model-runtime');
- if(sport==='nhl'&&market==='goalie_saves'){
-  if(goalieBundle)return goalieBundle;
-  const bytes=readFileSync(join(root,'nhl-goalie-saves.json.gz'));
-  return goalieBundle={...JSON.parse(gunzipSync(bytes).toString()),digest:createHash('sha256').update(bytes).digest('hex'),gi:{},giStatus:{}};
+ const key=sport+'|'+market,file=supplementalFiles[key];
+ if(file){
+  const hit=supplementalBundles.get(key);
+  if(hit)return hit;
+  const bytes=readFileSync(join(root,file));
+  const value={...JSON.parse(gunzipSync(bytes).toString()),digest:createHash('sha256').update(bytes).digest('hex'),gi:{},giStatus:{}};
+  supplementalBundles.set(key,value);
+  return value;
  }
  if(cached)return cached;
  const manifest=JSON.parse(readFileSync(join(root,'manifest.json'),'utf8'));
@@ -107,7 +112,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   basis:'fitted_distribution_and_exact_quote',validatedForBetting:false,
  }:null;
  return {status:'available',projection:Math.round(f.projection*10)/10,expectedWorkload:Math.round(f.expectedWorkload*10)/10,
-  workloadUnit:['nba','wnba','cbb'].includes(sport)?'minutes':market==='passing_yards'?'pass attempts':market==='rushing_yards'?'carries':sport==='nhl'?'minutes':'targets',
+  workloadUnit:market==='sacks'?'defensive snaps':['nba','wnba','cbb'].includes(sport)?'minutes':market==='passing_yards'?'pass attempts':market==='rushing_yards'?'carries':sport==='nhl'?'minutes':'targets',
   interval80:{lower:Math.round(values[Math.floor((values.length-1)*.1)]*10)/10,upper:Math.round(values[Math.floor((values.length-1)*.9)]*10)/10},
   modelId:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
@@ -136,7 +141,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   forecastBlockers:{market_model_not_fitted:payload.rows.length},fittedResearchForecastCount:0,modelSelectionCount:0};
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
- if(sport==='nfl'||sport==='nhl'){
+ if((sport==='nfl'||sport==='nhl')&&payload.market!=='sacks'){
   const pricedGoalies=sport==='nhl'&&payload.market==='goalie_saves';
   const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];

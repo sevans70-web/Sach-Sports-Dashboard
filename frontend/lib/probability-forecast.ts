@@ -10,7 +10,7 @@ export type DistributionModel={version:1;group:string;trainedThrough:string;cali
  workloadCalibration?:{expectedWorkload:number;residual:number}[];
  featurePolicy?:'basketball_context';
  calibrationSamples?:number;
- minimum:number|null;integer:boolean;validatedForBetting:false};
+ minimum:number|null;integer:boolean;halfPoint?:boolean;validatedForBetting:false};
 export type ExactQuote={sport:string;market:string;period:'game'|'q1';gameId:string;playerId:string;
  bookmaker:string;quoteId:string;line:number;overPrice:number;underPrice:number;
  updatedAt:string;capturedAt:string;decisionAt:string;mainLine:boolean};
@@ -20,7 +20,7 @@ const validTime=(s:string)=>Number.isFinite(Date.parse(s));
 const groupOf=(g:OpportunityGame)=>g.sport+'|'+g.market;
 const outcomeKey=(g:OpportunityGame)=>[g.sport,g.market,g.playerId,g.gameId].join('|');
 const supported=(g:Pick<OpportunityGame,'sport'|'market'>)=>
- ['nfl','cfb'].includes(g.sport)?['passing_yards','rushing_yards','receiving_yards','receptions','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'].includes(g.market):
+ ['nfl','cfb'].includes(g.sport)?['passing_yards','sacks','rushing_yards','receiving_yards','receptions','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'].includes(g.market):
  ['nba','wnba','cbb'].includes(g.sport)?['points','rebounds','assists','threes_made','steals','blocks'].includes(g.market):
  g.sport==='nhl'&&['shots_on_goal','goals','assists','points','goalie_saves'].includes(g.market);
 
@@ -86,7 +86,7 @@ export function distributionValues(model:DistributionModel,projection:number){
  if(!Number.isFinite(projection)||!model.residuals.length)throw Error('Missing calibrated distribution');
  return model.residuals.map(e=>{
   const raw=projection+e,v=model.minimum==null?raw:Math.max(model.minimum,raw);
-  return model.integer?Math.round(v):v;
+  return model.halfPoint?Math.round(v*2)/2:model.integer?Math.round(v):v;
  }).sort((a,b)=>a-b);
 }
 /** Separate experimental calibration policy, fixed before evaluation: use the
@@ -203,6 +203,7 @@ export function evaluateProbabilityModels(games:OpportunityGame[],quotes:ExactQu
   const minimum=['passing_yards','rushing_yards','receiving_yards'].includes(market.replace(/^q1_/,''))?null:0;
   const model:DistributionModel={version:1,group,trainedThrough,calibratedThrough,workload,rate,
    residuals:[],trainingRows:train.length,calibrationRows:calibration.length,minimum,integer:true,validatedForBetting:false};
+  if(market==='sacks')model.halfPoint=true;
   if(options.featurePolicy)model.featurePolicy=options.featurePolicy;
   if(options.pointPolicy==='direct'){const direct=fitLinear(train.map(r=>({x:r.x,y:r.game.actual})));if(!direct)throw Error('Direct fit failed');model.direct=direct;}
   if(market.startsWith('q1_'))model.rateTrainingRows=rateTraining.length;
