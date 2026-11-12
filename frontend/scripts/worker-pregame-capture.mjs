@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
  * the original price, prediction or timestamp, including after kickoff.
  */
 export const PREGAME_MARKETS=Object.freeze({
- nba:['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket','q1_points','q1_rebounds','q1_assists','q1_pts_rebs_asts'],
+ nba:['points','rebounds','assists','threes_made','steals','blocks','pts_rebs_asts','pts_rebs','pts_asts','rebs_asts','first_basket','q1_points','q1_rebounds','q1_assists','q1_threes_made','q1_pts_rebs_asts'],
  nfl:['passing_yards','passing_tds','qb_rushing_yards','rushing_yards','receiving_yards','receptions','anytime_td','first_td','passing_rushing_yards','rushing_receiving_yards','passing_interceptions','sacks','tackles','tackles_assists','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'],
  nhl:['shots_on_goal','points','goals','assists','blocked_shots','goalie_saves','first_goal'],
  // CFB and CBB are intentionally paused. Their routes, code and historical data remain intact.
@@ -117,12 +117,13 @@ export async function saveImmutablePregameRows(env,table,quotes,reader=globalThi
  }
  return stored;
 }
-export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,now,reader=globalThis.fetch){
+export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,now,reader=globalThis.fetch,publish){
  const path=API_ROUTES[sport]+'?market='+encodeURIComponent(market);
  const response=await dashboard.fetch(new Request('https://sach-capture.internal'+path,{headers:{Accept:'application/json'}}),env,ctx);
  if(!response.ok)return {sport,market,ok:false,reason:'rankings_http_'+response.status};
  const body=await response.json();
  if(body?.success===false)return {sport,market,ok:false,reason:'rankings_unavailable'};
+ if(publish)ctx.waitUntil(publish(sport,market,body).catch(error=>console.error('[ranking coverage write]',sport,market,error instanceof Error?error.message:'unavailable')));
  const capturedAt=now??Date.now();
  const quotes=(Array.isArray(body?.rows)?body.rows:[]).slice(0,75)
   .map(row=>originalPregameQuote(row,sport,market,capturedAt)).filter(Boolean);
@@ -134,11 +135,11 @@ export async function captureWorkerPregameMarket(env,dashboard,ctx,sport,market,
  const picksStored=await saveImmutablePregameRows(env,'worker_pregame_picks',picked,reader);
  return {sport,market,ok:true,eligible:quotes.length,stored,selections:picked.length,picksStored};
 }
-export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now(),legacy=false){
+export async function scheduledPregameCapture(env,dashboard,ctx,time=Date.now(),legacy=false,publish){
  const selected=marketsForCaptureTick(time,legacy),results=[];
  // Bounded serial processing prevents a large simultaneous ESPN/OWLS burst.
  for(const {sport,market} of selected)try{
-  results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market));
+  results.push(await captureWorkerPregameMarket(env,dashboard,ctx,sport,market,undefined,undefined,publish));
  }catch(error){results.push({sport,market,ok:false,reason:error instanceof Error?error.message.slice(0,110):'capture_failed'});}
  return {time:new Date(time).toISOString(),markets:selected.length,eligible:results.reduce((n,r)=>n+(r.eligible||0),0),
   checked:results.filter(r=>r.ok).map(({sport,market,eligible})=>({sport,market,eligible})),

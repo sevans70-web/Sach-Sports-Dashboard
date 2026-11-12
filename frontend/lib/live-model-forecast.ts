@@ -91,7 +91,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  // A directional model selection does not require a GI return-ranking fit.
  // Keep it distinct from the approved recommendation registry and its grades.
  // A market that already failed exact-price evaluation remains withheld.
- const selectionSide=directCombination||data.giStatus?.[key]?.reason==='price_validation_failed'?null:pricing?.candidateSide;
+ const selectionSide=data.giStatus?.[key]?.reason==='price_validation_failed'?null:pricing?.candidateSide;
  const modelSelection=selectionSide?{
   side:selectionSide as 'OVER'|'UNDER',line:row.sportsbookLine,
   price:selectionSide==='OVER'?row.overPrice:row.underPrice,
@@ -108,7 +108,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,
-  selectionReason:modelSelection?null:directCombination&&pricing?'research_ev_only':data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
+  selectionReason:modelSelection?null:data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
   // Comparison and probabilities are research calculations, never a pick.
   priceComparison:pricing?{quoteEvidence:{sport,market,gameId:String(row.gameId),playerId:String(row.playerId),quoteId:row.quoteId,sportsbookKey:row.sportsbookKey,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,calculatedAt:new Date(now).toISOString()},overProbability:pricing.over,underProbability:pricing.under,pushProbability:pricing.push,overExpectedReturn:pricing.overEv,underExpectedReturn:pricing.underEv}:null,
   validatedForBetting:false,reason:null,

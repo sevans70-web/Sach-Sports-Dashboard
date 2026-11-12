@@ -20,12 +20,26 @@ export async function refreshQuarterObservations(rows:any[],sport:'nba'|'nfl',no
   const id=String(row.playerId),season=String(row.pregameContext?.season||row.season||'');
   if(!/^\d{4}$/.test(season)){unavailable.add(id);return}
   try{
-   const log=await get(`https://site.web.api.espn.com/apis/common/v3/sports/${route}/athletes/${id}/gamelog?season=${season}`);
-   if(!Array.isArray(log?.seasonTypes)||!log.events)throw Error('Incomplete official log');
-   const groups=sport==='nba'?basketballRegularSeasonGroups(log):log.seasonTypes.filter((g:any)=>Number(g.type)===2||/regular season/i.test(String(g.displayName||'')));
-   const events=groups.flatMap((g:any)=>(g.categories||[]).filter((c:any)=>c.type==='event').flatMap((c:any)=>c.events||[])).map((e:any)=>({id:String(e.eventId||''),meta:log.events[e.eventId]})).filter((e:any)=>/^\d+$/.test(e.id)&&['W','L','T'].includes(String(e.meta?.gameResult))&&Date.parse(e.meta?.gameDate)<now-48*3600000&&Date.parse(e.meta?.gameDate)>now-366*86400000).sort((a:any,b:any)=>String(b.meta.gameDate).localeCompare(String(a.meta.gameDate))).slice(0,10);
+   const logUrl=(year:string)=>`https://site.web.api.espn.com/apis/common/v3/sports/${route}/athletes/${id}/gamelog?season=${year}`;
+   const eventsFor=(log:any,year:string)=>{
+    if(!Array.isArray(log?.seasonTypes)||!log.events)throw Error('Incomplete official log');
+    const groups=sport==='nba'?basketballRegularSeasonGroups(log):log.seasonTypes.filter((g:any)=>Number(g.type)===2||/regular season/i.test(String(g.displayName||'')));
+    return groups.flatMap((g:any)=>(g.categories||[]).filter((c:any)=>c.type==='event').flatMap((c:any)=>c.events||[]))
+     .map((e:any)=>({id:String(e.eventId||''),meta:log.events[e.eventId],season:year}))
+     .filter((e:any)=>/^\d+$/.test(e.id)&&['W','L','T'].includes(String(e.meta?.gameResult))&&Date.parse(e.meta?.gameDate)<now-48*3600000&&Date.parse(e.meta?.gameDate)>now-366*86400000);
+   };
+   const current=eventsFor(await get(logUrl(season)),season);
+   const previousSeason=String(Number(season)-1);
+   const previous=sport==='nfl'&&current.length<10
+    ?await get(logUrl(previousSeason)).then(log=>eventsFor(log,previousSeason)).catch(()=>[])
+    :[];
+   const events=[...current,...previous].sort((a,b)=>String(b.meta.gameDate).localeCompare(String(a.meta.gameDate))).slice(0,10);
    if(events[0])latest.set(id,events[0].id);
-   for(const event of events){const f=fixtures.get(event.id)||{season,players:new Set<string>()};if(f.season!==season)throw Error('Conflicting fixture season');f.players.add(id);fixtures.set(event.id,f)}
+   for(const event of events){
+    const f=fixtures.get(event.id)||{season:event.season,players:new Set<string>()};
+    if(f.season!==event.season)throw Error('Conflicting fixture season');
+    f.players.add(id);fixtures.set(event.id,f);
+   }
   }catch{unavailable.add(id)}
  }));
  const jobs=[...fixtures],observations:QuarterObservation[]=[];

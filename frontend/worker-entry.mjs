@@ -1,4 +1,5 @@
 import dashboard from 'vinext/server/fetch-handler';
+import {recordRankingMarket} from './lib/ranking-market-coverage';
 import {PREGAME_MARKETS,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON,scheduledPregameCapture} from './scripts/worker-pregame-capture.mjs';
 import {gradeSavedWorkerPicks} from './scripts/worker-pregame-grade.mjs';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
@@ -30,10 +31,23 @@ export * from 'vinext/server/fetch-handler';
 
 export default {
  ...dashboard,
+ async fetch(request,env,ctx){
+  const response=await dashboard.fetch(request,env,ctx);
+  if(request.method!=='GET'||!response.ok)return response;
+  const url=new URL(request.url),match=url.pathname.match(/^\/api\/(nba|nfl|nhl)\/rankings$/);
+  const sport=match?.[1],market=url.searchParams.get('market');
+  const day=url.searchParams.get('day'),slate=url.searchParams.get('slate');
+  if(sport&&market&&!['tomorrow','previous'].includes(slate)&&(!day||day==='today'||day===new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto'}).format(new Date()))){
+   ctx.waitUntil(response.clone().json().then(body=>recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body)).catch(error=>
+    console.error('[ranking coverage write]',sport,market,error instanceof Error?error.message:'unavailable')));
+  }
+  return response;
+ },
  async scheduled(controller,env,ctx){
   if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *'){
    try{
-    const report=await scheduledPregameCapture(env,dashboard,ctx,controller.scheduledTime,controller.cron!==PREGAME_CAPTURE_CRON);
+    const report=await scheduledPregameCapture(env,dashboard,ctx,controller.scheduledTime,controller.cron!==PREGAME_CAPTURE_CRON,
+     (sport,market,body)=>recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body));
     console.info('[sach-staging-pregame-capture]',JSON.stringify(report));
    }catch(error){
     console.error('[sach-staging-pregame-capture-failed]',error instanceof Error?error.message:'capture failed');

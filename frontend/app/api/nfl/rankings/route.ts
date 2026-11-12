@@ -322,6 +322,8 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const active=candidates.filter((row:any)=>{if(row.quoteVersion===1&&!footballQuoteGame(row,schedule))return false;const t=rowGameTime(row,schedule);if(frozenSlates.has(footballSlate(t)))return false;if(!t||Date.parse(t)<=Date.now())return false;const k=easternDayKey(t);return !k||k>=today});
   // Resolve beyond the first 25 sportsbook rows. Position filtering and alias de-duplication
   // happen later, so stopping at 25 here can incorrectly leave a market with only 12-18 players.
+  const byGameTime=(row:any)=>Date.parse(rowGameTime(row,schedule))||Infinity;
+  active.sort((a,b)=>byGameTime(a)-byGameTime(b));
   const built=await Promise.all(active.slice(0,150).map(async(row:any)=>{
    const profile=row.profile||await resolvePlayer(row.playerName,row.teamName,row.matchup,schedule);
    const quoteGame=row.quoteVersion===1?footballQuoteGame(row,schedule):null;
@@ -336,7 +338,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    if(row.earlyModel&&(m.projection==null||m.games<2))return null;
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
-   const game=matchupGame(schedule,row.matchup);
+   const game=quoteGame||matchupGame(schedule,row.matchup);
    return {...footballQuoteFields(row),market,rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
      const label=NFL_MARKETS.find(x=>x[0]===market)?.[2]||market;
      const edge=row.line!=null&&m.projection!=null?Number(m.projection)-Number(row.line):null;
@@ -353,7 +355,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const resolved=built.filter(Boolean) as any[];
   const unique=new Map<string,any>();
   for(const row of resolved){
-    const key=row.marketBacked===false&&["passing_yards","passing_tds","passing_interceptions","passing_rushing_yards"].includes(market)?`${row.teamId}|${row.gameId}`:String(row.playerId||cleanName(row.playerName));
+    const key=row.marketBacked===false&&["passing_yards","passing_tds","passing_interceptions","passing_rushing_yards"].includes(market)?`${row.teamId}|${row.gameId}`:`${row.gameId}|${row.playerId||cleanName(row.playerName)}`;
     const prior=unique.get(key);
     if(!prior||(row.marketBacked===false&&Number(row.modelProjection)>Number(prior.modelProjection))||Number(row.bookmakerCount||0)>Number(prior.bookmakerCount||0)||(Number(row.bookmakerCount||0)===Number(prior.bookmakerCount||0)&&Number(row.giScore||0)>Number(prior.giScore||0))) unique.set(key,row);
   }

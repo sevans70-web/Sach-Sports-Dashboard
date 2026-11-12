@@ -13,10 +13,12 @@ import {NBA_MARKETS} from "@/lib/nba";
 import {NFL_ACTIVE_MARKETS} from "@/lib/nfl";
 import {NHL_MARKETS} from "@/lib/nhl";
 import {readDurableHistoryBatch} from "@/lib/durable-history";
+import {workerRuntimeBinding} from "@/lib/worker-runtime-secret";
+import {rankingMarketCoverage,readRankingMarketCoverage} from "@/lib/ranking-market-coverage";
 export const dynamic="force-dynamic";
 export const revalidate=0;
 const handlers:Record<string,any>={nfl:nflRankings,cfb:cfbRankings,nba:nbaRankings,wnba:wnbaRankings,nhl:nhlRankings,cbb:cbbRankings,soccer:soccerRankings,mlb:mlbRankings};
-const homeMarkets={nba:NBA_MARKETS,nfl:NFL_ACTIVE_MARKETS,nhl:NHL_MARKETS};
+const homeMarkets={nba:NBA_MARKETS,nfl:NFL_ACTIVE_MARKETS,nhl:[...NHL_MARKETS,["first_goal"]]};
 const shared=globalThis as typeof globalThis&{__dashboardSummary?:Map<string,{expires:number,payload:any}>,__dashboardSummaryPending?:Map<string,Promise<any>>};
 const cache=shared.__dashboardSummary??=new Map(),pending=shared.__dashboardSummaryPending??=new Map();
 export async function GET(req:NextRequest){
@@ -31,11 +33,16 @@ export async function GET(req:NextRequest){
  if(!work){
   work=(async()=>{
    const market=DEFAULT_MARKETS[sport],origin=req.nextUrl.origin;
-   const streams=todayOnly?homeMarkets[sport as keyof typeof homeMarkets].map(([market])=>"featured_"+market):[];
-   const [slateResult,rankResult,savedResult]=await Promise.allSettled([
+   const markets=todayOnly?homeMarkets[sport as keyof typeof homeMarkets].map(([market])=>market):[];
+   const streams=markets.map(market=>"featured_"+market);
+   const coveragePromise=todayOnly&&globalThis.navigator?.userAgent==="Cloudflare-Workers"
+    ? readRankingMarketCoverage(workerRuntimeBinding("VINEXT_KV_CACHE"),sport,day,markets).catch(()=>[])
+    : Promise.resolve([]);
+   const [slateResult,rankResult,savedResult,coverageResult]=await Promise.allSettled([
     gameSlate(new NextRequest(`${origin}/api/game-slate?sport=${sport}&league=${encodeURIComponent(league)}`)).then(r=>r.json()),
     handlers[sport](new NextRequest(`${origin}/api/${sport}/rankings?market=${market}&slate=${todayOnly?"today":"all"}&league=${encodeURIComponent(league)}`)).then((r:Response)=>r.json()),
-    todayOnly?readDurableHistoryBatch(sport,streams,day,{requireComplete:true}):Promise.resolve([])
+    todayOnly?readDurableHistoryBatch(sport,streams,day,{requireComplete:true}):Promise.resolve([]),
+    coveragePromise
    ]);
    const slate=slateResult.status==="fulfilled"?slateResult.value:{success:false,games:[],error:"Schedule unavailable"};
    const ranking=rankResult.status==="fulfilled"?rankResult.value:{success:false,rows:[],error:"Rankings unavailable"};
@@ -58,10 +65,21 @@ export async function GET(req:NextRequest){
    }
    const countRows=todayOnly?[...marketRows.values()].flat().filter(row=>row.gameId&&dashboardDay(row.gameTime)===day):rows;
    const counts=dashboardCounts(games,countRows,sport==="cfb"||sport==="nfl");
+   const perMarket=new Map([...marketRows].map(([market,rows])=>[market,rankingMarketCoverage(sport,market,day,rows)]));
+   if(coverageResult.status==="fulfilled")for(const coverage of coverageResult.value){
+    if(coverage.market!==market||ranking.success===false||!perMarket.get(market)?.games.length)perMarket.set(coverage.market,coverage);
+   }
+   const ids=new Set(games.map((game:any)=>String(game.id)));
+   const marketCounts=[...perMarket.values()].map(({market,games})=>({market,...games.filter(game=>ids.has(game.gameId)).reduce(
+    (sum,game)=>({lines:sum.lines+game.lines,picks:sum.picks+game.picks,ev:sum.ev+game.ev}),{lines:0,picks:0,ev:0})}));
+   const marketTotals=todayOnly?{
+    playerProps:marketCounts.reduce((sum,market)=>sum+market.lines,0),
+    estimatedPicks:marketCounts.reduce((sum,market)=>sum+market.picks,0),
+   }:{};
    const scheduleAvailable=slate.success!==false;
-   const rankingsAvailable=todayOnly?scheduleAvailable&&(!games.length||savedResult.status==="fulfilled"&&marketRows.size>0):ranking.success!==false;
+   const rankingsAvailable=todayOnly?scheduleAvailable&&(!games.length||perMarket.size===markets.length):ranking.success!==false;
    const payload={success:scheduleAvailable,sport,league,market,scope:todayOnly?"Today · saved ranking markets":"Current slate · default ranking market",
-    ...(todayOnly?{slateDay:day,marketsCounted:marketRows.size}:{}),weekNumber:slate.weekNumber,...counts,previewGames:games,scheduleAvailable,rankingsAvailable,
+    ...(todayOnly?{slateDay:day,marketsCounted:perMarket.size,marketCounts}:{}),weekNumber:slate.weekNumber,...counts,...marketTotals,previewGames:games,scheduleAvailable,rankingsAvailable,
     warning:[slate.error,ranking.error,ranking.warning].filter(Boolean).join(" · ")||null,updatedAt:new Date().toISOString()};
    // Failed feeds retry promptly and never become a durable fallback.
    cache.set(key,{expires:Date.now()+(payload.rankingsAvailable&&payload.scheduleAvailable?30_000:5_000),payload});

@@ -46,7 +46,7 @@ export async function GET(req:NextRequest){
     const eligible=visible.rows.filter((row:any)=>
      !row.boardFrozen&&!row.frozen&&!row.lockedAtKickoff&&
      !row.researchForecast?.modelSelection&&
-     !row.researchForecast?.priceComparison?.quoteEvidence&&
+     (!row.researchForecast?.priceComparison?.quoteEvidence||row.researchForecast?.selectionReason==="research_ev_only")&&
      Date.parse(row.gameTime)>at&&verifiedPropQuote(row,at));
     if(eligible.length){
      try{
@@ -61,7 +61,7 @@ export async function GET(req:NextRequest){
           quote.line!==row.sportsbookLine||quote.sportsbookKey!==row.sportsbookKey||
           quote.overPrice!==row.overPrice||quote.underPrice!==row.underPrice||
           Date.parse(forecast.calculatedAt)>=Date.parse(row.gameTime))return row;
-       return {...row,researchForecast:forecast,forecastCapturedAt:forecast.calculatedAt,comparisonResearchOnly:true};
+       return {...row,researchForecast:forecast,forecastCapturedAt:forecast.calculatedAt,comparisonResearchOnly:!forecast.modelSelection};
       })};
      }catch(error){console.error('[nba combo readonly forecast]',error instanceof Error?error.message:'unavailable');}
     }

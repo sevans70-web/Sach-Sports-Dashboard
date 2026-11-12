@@ -54,3 +54,16 @@ test('homepage counts one Eastern date and keeps different markets for the same 
  assert.equal(counts.estimatedPicks,2);
  assert.equal(counts.playerProps,2);
 });
+
+test('category counts match priced selections and exclude research comparisons and other dates',async()=>{
+ const {rankingMarketCoverage}=await loadTs(new URL('../lib/ranking-market-coverage.ts',import.meta.url));
+ const {dashboardDay}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
+ const full={...row,sport:'nba',market:'points',capturedAt:stamp,quoteId:'q',
+  researchForecast:{status:'available',projection:12,calculatedAt:stamp,priceComparison:{overProbability:.7,underProbability:.3,pushProbability:0},
+   modelSelection:{side:'OVER',line:10.5,price:-110,quoteId:'q',sportsbookKey:'fanduel',calculatedAt:stamp}}};
+ const negative={...full,playerId:'2',researchForecast:{...full.researchForecast,priceComparison:{overProbability:.3,underProbability:.7,pushProbability:0}}};
+ const future={...full,playerId:'3',gameTime:new Date(Date.now()+86400000).toISOString()};
+ const other={...full,playerId:'4',market:'assists'};
+ const coverage=rankingMarketCoverage('nba','points',dashboardDay(time),[full,full,negative,future,other]);
+ assert.deepEqual(coverage.games,[{gameId:'a',rows:2,lines:2,projections:2,picks:1,ev:1}]);
+});

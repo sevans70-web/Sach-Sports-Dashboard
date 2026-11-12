@@ -130,7 +130,7 @@ export default function HomeShowcase() {
           <div className="shStats">
             <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{schedulesReady ? total("games") : "—"}</strong><small>{schedulesReady ? `${total("live")} live today` : "Today · ET"}</small></div>
             <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{rankingsReady ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
-            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{rankingsReady ? total("estimatedPicks") : "—"}</strong><small>Saved ranking picks</small></div>
+            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{rankingsReady ? total("estimatedPicks") : "—"}</strong><small>Across ranking markets</small></div>
             <div data-metric="results"><span className="shStatHead"><b aria-hidden="true">◎</b>Hit Rate</span><strong>{performance?.settled && typeof performance.hitRate === "number" ? performance.hitRate.toFixed(1) + "%" : "—"}</strong><small>{performance?.settled ? `${performance.hits} / ${performance.settled} graded decisions` : performance?.success ? "No graded results yet" : "Checking overall results"}</small></div>
           </div>
           <p className="ssScopeNote">Overall hit rate · All recorded results · NBA, NFL &amp; NHL</p>
@@ -144,7 +144,7 @@ export default function HomeShowcase() {
               return <Link href={`/${sport}`} key={sport} data-sport={sport}>
                 <strong className="shSnapshotSport">{sport.toUpperCase()}</strong>
                 <span>{summary?.scheduleAvailable ? `${summary.games} ${summary.games === 1 ? "game" : "games"}` : summary === undefined ? "Loading games…" : "Games unavailable"}</span>
-                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "saved pick" : "saved picks"}` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
+                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "pick" : "picks"}` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
                 <span className="shSnapshotArrow" aria-hidden="true">›</span>
               </Link>;
             })}

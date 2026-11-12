@@ -995,6 +995,7 @@ function PlayerCard({
     ? nbaPositiveEv?(quarterTarget?null:modelSelection?.side||null):null
     : quarterCard?(quarterTarget?null:modelSelection?.side||null)
     : modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction));
+  const quarterPick = quarterCard && !quarterTarget && outcomeEv.status === 'available' && outcomeEv.percent > 0 && Boolean(modelSelection);
   const comparisonEv=sport==='nba'?nbaDisplayedResearchEv(card.raw):null;
   const evText=nbaPositiveEv?estimatedEvText(card.raw):'—',evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
@@ -1091,8 +1092,8 @@ function PlayerCard({
 
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
-          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`O/U ${propLineText(Math.max(0,(card.sportsbookLine??0)-0.5))}`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
-          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetForecast?(targetForecast.direction==='REACHES'?'OVER':'UNDER'):'—'):['OVER','UNDER'].includes(displayedPick)?displayedPick:'—'}</strong>{quarterTarget?<small>{targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:!['OVER','UNDER'].includes(displayedPick)?<small>Not available</small>:null}</div>
+          <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
+          <div><span>{quarterPick?'Sach Prediction':'Model forecast'}</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetForecast?(targetForecast.direction==='REACHES'?'Reaches target':'Below target'):'—'):quarterPick?displayedPick:modelSelection?.side||'—'}</strong>{quarterTarget?<small>{targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:!modelSelection?<small>Prediction unavailable</small>:!quarterPick?<small>No qualifying pick</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
@@ -1115,7 +1116,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{sport==='nba'&&!displayedPick?'No qualifying pick':projectionComparison?'Projection vs. line':'Sach Prediction'}</span>
+          <span>{sport==='nba'&&!displayedPick?(comparisonEv?'Model forecast':'No qualifying pick'):projectionComparison?'Projection vs. line':'Sach Prediction'}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1128,7 +1129,7 @@ function PlayerCard({
           >
             {["OVER", "UNDER"].includes(displayedPick) && card.sportsbookLine != null
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
-              : displayedPick||(sport==='nba'?'PASS':sport==='nhl'?'No saved pick':'—')}
+              : displayedPick||(sport==='nba'?(comparisonEv&&card.sportsbookLine!=null?`${comparisonEv.side} ${propLineText(card.sportsbookLine)}`:'PASS'):sport==='nhl'?'No saved pick':'—')}
           </strong>
           {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?(modelPickNotice(card.raw)==='Model forecast'?null:<small>{modelPickNotice(card.raw)}</small>):footballForecast.side&&footballForecast.basis!=='Model forecast'?<small>{footballForecast.basis}</small>:null}
 
@@ -2558,6 +2559,11 @@ export function PlayerRankingsPanel({
   const visible = full
     ? displayCards
     : displayCards.slice(0, 5);
+  const marketPickCount = displayCards.filter(card => {
+    if (!cardModelPick(card.raw) || card.raw?.withdrawnFromBoard || card.raw?.resultStatus === 'void') return false;
+    const ev = estimatedEv(card.raw);
+    return sport === 'nhl' || ev.status === 'available' && ev.percent > 0;
+  }).length;
 
   const cfbAllDayGroups = useMemo(() => {
     if (!((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))) return [];
@@ -2668,7 +2674,9 @@ export function PlayerRankingsPanel({
 
       <div className={styles.marketTitle}>
         <h3>{market.icon} {market.label}</h3>
-        {sport!=='nba'&&sport!=='nfl'&&sport!=='nhl'?<p>Player Rankings · {sourceText}</p>:null}
+        {['nba','nfl','nhl'].includes(sport)
+          ? !loading && !error && <p>{marketPickCount} {marketPickCount === 1 ? 'pick' : 'picks'}</p>
+          : <p>Player Rankings · {sourceText}</p>}
       </div>
 
       {dropped.length ? (

@@ -5,7 +5,7 @@ import {loadTs} from '../tests/load-ts.mjs';
 const q=JSON.parse(gunzipSync(await readFile('model-runtime/quarter-snapshot.json.gz')));
 const {quarterFeatureIndex,fitQuarterModel}=await loadTs(new URL('../lib/quarter-forecast.ts',import.meta.url));
 const quarter={};
-for(const existing of q.models.filter(m=>/^nba\|q1_(points|rebounds|assists)$/.test(m.group))){
+for(const existing of q.models.filter(m=>/^(nba|nfl)\|q1_/.test(m.group))){
  const observations=q.rows.flatMap(r=>{const f=q.fixtures[r[0]],p=q.players[r[1]],m=q.markets[r[2]];return m.join('|')===existing.group?[{sport:m[0],market:m[1],gameId:f[0],gameTime:f[1],season:f[2],playerId:p[0],teamId:p[1],actual:r[3],role:r[4],starter:r[5]===1}]:[]}).sort((a,b)=>a.gameTime.localeCompare(b.gameTime));
  const inputs=quarterFeatureIndex(observations);
  const rows=observations.filter(g=>Number(g.season)<2026).flatMap(g=>{const f=inputs(g);return f.features?[{...g,features:f.features}]:[]});
