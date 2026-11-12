@@ -12,7 +12,7 @@ export function footballForecastDisplay(row:any,now=Date.now()){
  const projection=fitted;
  const line=typeof row?.sportsbookLine==='number'&&Number.isFinite(row.sportsbookLine)?row.sportsbookLine:null;
  const quote=verifiedPropQuote(row,now,row?.boardFrozen===true);
- const side=saved?.side||(projection!=null&&line!=null&&quote&&pregameEvidence&&row.lineType==='main'?(projection>line?'OVER':projection<line?'UNDER':'AT LINE'):null);
+ const side=saved?.side||(row?.sport!=='nhl'&&projection!=null&&line!=null&&quote&&pregameEvidence&&row.lineType==='main'?(projection>line?'OVER':projection<line?'UNDER':'AT LINE'):null);
  const evidence=predictionProbability(row,now);
  const probability=evidence&&evidence.side===side?evidence.win:null;
  return {projection,side,basis:fitted!=null?'Model forecast':null,

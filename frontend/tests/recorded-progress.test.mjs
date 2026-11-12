@@ -61,6 +61,7 @@ test('started NHL cards prefer the original saved pick, or show the quote and pr
  const original=originalPregameQuote({...row,researchForecast:{projection:3.1}},'nhl',row.market,capture);
  const pick=originalPregameQuote({...row,quoteId:'later-quote',sportsbookLine:2.5,researchForecast:{projection:3.2,
   modelSelection:{side:'OVER',line:2.5,quoteId:'later-quote',sportsbookKey:row.sportsbookKey,price:row.overPrice,calculatedAt}}},'nhl',row.market,capture);
+ const {footballForecastDisplay}=await loadTs(new URL('../lib/football-forecast-display.ts',import.meta.url));
  const live={...row,gameState:'in',sportsbookLine:null,quoteVerified:false};
  const restored=savedNhlCardRow(live,original,pick,now);
  assert.equal(restored.quoteVerified,true);
@@ -70,6 +71,7 @@ test('started NHL cards prefer the original saved pick, or show the quote and pr
  const quoteOnly=savedNhlCardRow(live,original,{...pick,prediction_side:'UNDER'},now);
  assert.equal(quoteOnly.sportsbookLine,3.5);
  assert.equal(cardModelPick(quoteOnly,now),null);
+ assert.equal(footballForecastDisplay(quoteOnly,now).side,null);
  assert.equal(cardModelProjection(quoteOnly,now),3.1);
  assert.equal(savedNhlCardRow({...live,market:'points'},original,pick,now),null);
 });
