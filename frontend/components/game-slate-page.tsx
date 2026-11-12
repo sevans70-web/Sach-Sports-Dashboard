@@ -902,7 +902,8 @@ function ExpandedGame({
 }) {
   const [detail, setDetail] = useState<DetailPayload>({});
   const [rankings, setRankings] = useState<RankingRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(true);
+  const [rankingsLoading, setRankingsLoading] = useState(true);
   const [tab, setTab] = useState<DetailTab>("overview");
   const [rosterSide, setRosterSide] =
     useState<"away" | "home">("away");
@@ -917,52 +918,40 @@ function ExpandedGame({
     const cachedDetail = gameDetailCache.get(cacheKey);
     const cachedRankings = gameRankingCache.get(cacheKey);
 
-    if (cachedDetail && Date.now() - cachedDetail.at < GAME_CACHE_MS) {
-      setDetail(cachedDetail.payload);
-    }
+    const freshDetail = cachedDetail && Date.now() - cachedDetail.at < GAME_CACHE_MS;
+    const freshRankings = cachedRankings && Date.now() - cachedRankings.at < GAME_CACHE_MS;
+    if (freshDetail) setDetail(cachedDetail.payload);
+    if (freshRankings) setRankings(cachedRankings.rows);
+    setDetailLoading(!freshDetail);
+    setRankingsLoading(!freshRankings);
 
-    if (cachedRankings && Date.now() - cachedRankings.at < GAME_CACHE_MS) {
-      setRankings(cachedRankings.rows);
-    }
+    const query = new URLSearchParams({sport, gameId: game.id, league});
+    fetch(`/api/game-slate-detail?${query}`, {cache: "no-store", signal: controller.signal})
+      .then(async response => {
+        if (!response.ok) return cachedDetail?.payload || {};
+        const payload = await response.json();
+        gameDetailCache.set(cacheKey, {at: Date.now(), payload});
+        return payload;
+      })
+      .catch(() => cachedDetail?.payload || {})
+      .then(payload => {
+        if (controller.signal.aborted) return;
+        setDetail(payload || {});
+        setDetailLoading(false);
+      });
 
-    setLoading(!(cachedDetail && cachedRankings));
-
-    Promise.all([
-      fetch(
-        `/api/game-slate-detail?sport=${encodeURIComponent(
-          sport
-        )}&gameId=${encodeURIComponent(
-          game.id
-        )}&league=${encodeURIComponent(league)}`,
-        {
-          cache: "no-store",
-          signal: controller.signal,
-        }
-      )
-        .then(async (response) => {
-          if (!response.ok) return cachedDetail?.payload || {};
-          const payload = await response.json();
-          gameDetailCache.set(cacheKey, { at: Date.now(), payload });
-          return payload;
-        })
-        .catch(() => cachedDetail?.payload || {}),
-      fetchRankings(
-        sport,
-        league,
-        game,
-        controller.signal
-      ).catch(() => cachedRankings?.rows || []),
-    ]).then(([nextDetail, nextRankings]) => {
-      if (controller.signal.aborted) return;
-
-      setDetail(nextDetail || {});
-      setRankings(nextRankings || []);
-      setLoading(false);
-    });
+    fetchRankings(sport, league, game, controller.signal)
+      .catch(() => cachedRankings?.rows || [])
+      .then(rows => {
+        if (controller.signal.aborted) return;
+        setRankings(rows);
+        setRankingsLoading(false);
+      });
 
     return () => controller.abort();
   }, [sport, league, game.id]);
 
+  const loading = tab === "overview" || tab === "rosters" ? detailLoading : rankingsLoading;
   const rosters = detail.rosters || [];
   const context = detail.context || {};
   const injuries = detail.injuries || [];
@@ -1847,6 +1836,7 @@ export function GameSlatePage({
       {activeGame ? (
         <section className={styles.intelligencePage}>
           <ExpandedGame
+            key={activeGame.id}
             sport={sport}
             league={league}
             game={activeGame}
