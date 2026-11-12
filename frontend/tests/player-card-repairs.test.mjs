@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadTs} from './load-ts.mjs';
-const {playerCardHistory,historyAverage}=await loadTs(new URL('../lib/player-card-history.ts',import.meta.url));
+const {playerCardHistory,historyAverage,playerChartSlots}=await loadTs(new URL('../lib/player-card-history.ts',import.meta.url));
 const {completedRankingsLast,rankingStatusText}=await loadTs(new URL('../lib/ranking-card-state.ts',import.meta.url));
 const {cardProjectionLabel,cardQuotePrices}=await loadTs(new URL('../lib/public-card-metrics.ts',import.meta.url));
 const sports=['nba','nfl','cfb','nhl','cbb','soccer','wnba','mlb'];
@@ -27,4 +27,18 @@ test('clock labels distinguish quarters, college halves, hockey periods and supp
  assert.equal(rankingStatusText({state:'in',period:4},'nhl'),'In Progress · OT1');
  assert.equal(rankingStatusText({state:'pre',clock:'12:00',period:1},'nba'),'Scheduled');
  assert.equal(rankingStatusText({state:'post',status:'Final',clock:'0:00',period:4},'nba'),'Final');
+});
+
+test('NFL charts span seasons, keep missed games blank, and distinguish a recorded zero',()=>{
+ const points=[
+  {gameId:'a',date:'2025-12-14',season:2025,value:210,workload:32},
+  {gameId:'c',date:'2026-09-20',season:2026,value:0,workload:1}
+ ];
+ const games=[{gameId:'a',date:'2025-12-14',opponent:'A'},{gameId:'b',date:'2026-09-13',opponent:'B'},{gameId:'c',date:'2026-09-20',opponent:'C'}];
+ const history=playerCardHistory({points},'nfl','passing_yards','2026-09-27T18:00Z',undefined,true);
+ const slots=playerChartSlots(history,games,20);
+ assert.equal(slots.length,20);
+ assert.deepEqual(slots.slice(-3).map(slot=>slot.value),[210,null,0]);
+ assert.equal(slots.at(-2).opponent,'B');
+ assert.equal(playerCardHistory({points},'nfl','passing_yards','2026-09-27T18:00Z').length,0);
 });

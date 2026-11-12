@@ -8,6 +8,7 @@ import {useSavedSelection} from '@/components/saved-estimated-ev';
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./unified-player-card.module.css";
+import {usePlayerChartContext} from "./use-player-chart-context";
 import {RecentChart} from "./recent-player-chart";
 
 type SportKey =
@@ -252,6 +253,7 @@ export function UnifiedPlayerCard({
     useState<5 | 10 | 20>(10);
   const [history, setHistory] =
     useState<HistoryPoint[]>([]);
+  const [chartHistory,setChartHistory]=useState<HistoryPoint[]>([]);
   const [fixtureOpponent,setFixtureOpponent]=useState<{name:string;aliases:string[]}|null>(null);
   const [historyLoading, setHistoryLoading] =
     useState(false);
@@ -277,6 +279,7 @@ export function UnifiedPlayerCard({
     first(query.market);
 
   const historyCutoff = first(query.gameTime)||first(query.date);
+  const chartContext=usePlayerChartContext(sport,playerId,first(query.team),historyCutoff,first(query.source));
 
   const position =
     first(query.position);
@@ -312,6 +315,7 @@ export function UnifiedPlayerCard({
       !playerId ||
       !researchMarket
     ) {
+      setChartHistory([]);
       setHistory([]);
       setHistoryLabel("");
       return;
@@ -320,6 +324,7 @@ export function UnifiedPlayerCard({
     const controller =
       new AbortController();
 
+    setChartHistory([]);
     setHistory([]);
     setHistoryLabel("");
     setHistoryLoading(true);
@@ -361,9 +366,8 @@ export function UnifiedPlayerCard({
 
         const points = playerCardHistory(payload,sport,researchMarket,historyCutoff||undefined,first(query.gameId)||undefined);
 
-        setHistory(
-          points.slice(-20)
-        );
+        setHistory(points.slice(-20));
+        setChartHistory(playerCardHistory(payload,sport,researchMarket,historyCutoff||undefined,first(query.gameId)||undefined,true));
       })
       .catch(() => {})
       .finally(() => {
@@ -387,13 +391,6 @@ export function UnifiedPlayerCard({
     historyCutoff,
     query.gameId,
   ]);
-
-  const visibleHistory =
-    useMemo(
-      () =>
-        history.slice(-span),
-      [history, span]
-    );
 
   const recentFive = history.slice(-5);
   const recentAverage = historyAverage(recentFive);
@@ -445,7 +442,7 @@ export function UnifiedPlayerCard({
           <div className={styles.photo}>{image ? <img src={image} alt="" /> : <span>{initials(name)}</span>}</div>
           <div className={styles.identity}>
             <h1>{name}</h1>
-            <p>{[position, team].filter(Boolean).join(' · ')}</p>
+            <p>{[position,team,chartContext?.rookie?'Rookie':'',chartContext?.draftYear?`Drafted ${chartContext.draftYear}`:''].filter(Boolean).join(' · ')}</p>
             {matchup && <p className={styles.fixture}>{matchup}</p>}
             {status && <p className={styles.status}>{status}{gameStatus && gameStatus.toLowerCase() !== status.toLowerCase() ? ' · ' + gameStatus : ''}</p>}
           </div>
@@ -482,9 +479,9 @@ export function UnifiedPlayerCard({
               {([5, 10, 20] as const).map(value => <button key={value} type="button" aria-pressed={span===value} onClick={() => setSpan(value)}>Last {value}</button>)}
             </div>
           </div>
-          {visibleHistory.length > 0 && <p className={styles.muted}>Last {visibleHistory.length} average · {fmt(historyAverage(visibleHistory))} {stat.toLowerCase()}</p>}
-          {historyLoading && !visibleHistory.length ? <p className={styles.muted}>Loading recent form…</p> :
-            <RecentChart key={`${playerId}|${researchMarket}|${span}`} points={visibleHistory} values={visibleHistory.map(point => point.value)}
+          {historyLoading && !chartHistory.length ? <p className={styles.muted}>Loading recent form…</p> :
+            <RecentChart key={`${playerId}|${researchMarket}|${span}`} points={chartHistory}
+              games={chartContext?.games} span={span} rookie={chartContext?.rookie}
               statLabel={stat.toLowerCase()} line={line} projection={projection} liveValue={live ? actual : null} />}
         </section>
       </article>

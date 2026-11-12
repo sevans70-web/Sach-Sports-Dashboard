@@ -159,6 +159,11 @@ async function loadHistory(
 ){
   const{id}=await params;
 
+  const cutoff=Date.parse(req.nextUrl.searchParams.get('before')||new Date().toISOString());
+  const date=new Date(Number.isFinite(cutoff)?cutoff:Date.now());
+  const season=date.getUTCFullYear()-(date.getUTCMonth()<6?1:0);
+  const seasons=[season-2,season-1,season];
+
   const market=(
     req.nextUrl.searchParams.get("market")||
     "passing_yards"
@@ -177,8 +182,7 @@ async function loadHistory(
   if(String(market).startsWith("q1_")){
     if(!["q1_passing_yards","q1_rushing_yards","q1_receiving_yards"].includes(String(market)))return NextResponse.json({success:true,supported:false,points:[]});
     const base=String(market).replace(/^q1_/,"") as HistoryMarket;
-    const logs=await Promise.all([2025,2026].map(async season=>{try{return parseSeason(await fetchLog(id,season),season,base)}catch{return []}}));
-    const cutoff=Date.parse(req.nextUrl.searchParams.get('before')||new Date().toISOString());
+    const logs=await Promise.all(seasons.map(async season=>{try{return parseSeason(await fetchLog(id,season),season,base)}catch{return []}}));
     const games=logs.flat().filter(p=>Date.parse(p.date)<cutoff).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-8);
     const points=(await Promise.all(games.map(async game=>{
       try{
@@ -202,7 +206,7 @@ async function loadHistory(
   }
 
   const blocks=await Promise.all(
-    [2025,2026].map(async season=>{
+    seasons.map(async season=>{
       try{
         return parseSeason(
           await fetchLog(id,season),
@@ -217,6 +221,7 @@ async function loadHistory(
 
   const points=blocks
     .flat()
+    .filter(point=>Date.parse(point.date)<date.getTime())
     .sort(
       (a,b)=>
         new Date(a.date).getTime()-

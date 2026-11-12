@@ -1,7 +1,7 @@
 "use client";
 import {visiblePolling} from '@/lib/visible-polling';
 
-import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
+import {playerCardHistory} from '@/lib/player-card-history';
 import {quarterTargetDisplay} from '@/lib/quarter-target-display';
 import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scope";
 import {sharedJsonRequest} from '@/lib/shared-json-request';
@@ -31,6 +31,7 @@ import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
+import {usePlayerChartContext} from "./use-player-chart-context";
 import {RecentChart} from "./recent-player-chart";
 import Link from "next/link";
 
@@ -810,14 +811,15 @@ const NATIVE_HISTORY_SPORTS = new Set<RankingsSport>([
 ]);
 
 type RecentPoint={value:number;date?:string;opponent?:string;gameId?:string};
-const recentFormCache = new Map<string, RecentPoint[]>();
+type CardHistory={analysis:RecentPoint[];chart:RecentPoint[]};
+const recentFormCache = new Map<string, CardHistory>();
 
 async function loadRecentFormForCard(
   card: RankingCard,
   sport: RankingsSport,
   league: string,
   signal: AbortSignal
-):Promise<RecentPoint[]> {
+):Promise<CardHistory> {
   const key = `${sport}|${league}|${card.playerId}|${card.market}|${card.gameTime}`;
   const cached = recentFormCache.get(key);
   if (cached) return cached;
@@ -850,14 +852,15 @@ async function loadRecentFormForCard(
     signal,
   });
 
-  if (!response.ok) return [];
+  if (!response.ok) return {analysis:[],chart:[]};
 
   const payload = await response.json();
 
-  const values = playerCardHistory(payload,sport,card.market,card.gameTime,card.raw?.gameId);
-  const recent = values.slice(-20);
-  if (recent.length) recentFormCache.set(key, recent);
-  return recent;
+  const analysis=playerCardHistory(payload,sport,card.market,card.gameTime,card.raw?.gameId);
+  const chart=playerCardHistory(payload,sport,card.market,card.gameTime,card.raw?.gameId,true);
+  const history={analysis,chart};
+  if(chart.length)recentFormCache.set(key,history);
+  return history;
 }
 
 function PlayerCard({
@@ -872,6 +875,8 @@ function PlayerCard({
   archivedPrevious?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const chartContext=usePlayerChartContext(sport,card.playerId,card.teamName,card.gameTime,'',open);
+  const [chartPoints,setChartPoints]=useState<RecentPoint[]>([]);
   const [formSpan, setFormSpan] = useState<5 | 10 | 20>(10);
   const [historyPoints,setHistoryPoints]=useState<RecentPoint[]>([]);
   const [historyValues, setHistoryValues] = useState<number[]>([]);
@@ -881,6 +886,7 @@ function PlayerCard({
   useEffect(() => {
     setHistoryValues([]);
     setHistoryPoints([]);
+    setChartPoints([]);
     setHistoryLoaded(false);
   }, [card.playerId, card.market, card.gameTime]);
 
@@ -891,10 +897,11 @@ function PlayerCard({
     setHistoryLoading(true);
 
     loadRecentFormForCard(card, sport, league, controller.signal)
-      .then((values) => {
+      .then(({analysis,chart}) => {
         if(controller.signal.aborted)return;
-        setHistoryPoints(values);
-        setHistoryValues(values.map(p=>p.value));
+        setHistoryPoints(analysis);
+        setHistoryValues(analysis.map(p=>p.value));
+        setChartPoints(chart);
       })
       .catch(() => {})
       .finally(() => {
@@ -916,8 +923,6 @@ function PlayerCard({
     card.gameTime,
   ]);
 
-  const recentFormValues =
-    historyValues.slice(-formSpan);
   const state = deriveState(card.raw, {
     status: card.resultStatus,
     actual: card.actual,
@@ -1338,17 +1343,17 @@ function PlayerCard({
               </div>
             </div>
 
-            {recentFormValues.length?<p>Last {recentFormValues.length} average: {shortNumber(historyAverage(historyPoints.slice(-formSpan)))} · Historical results</p>:null}
-            {historyLoading && !recentFormValues.length ? (
+            {(chartContext?.rookie||chartContext?.draftYear)&&<p>{[chartContext.rookie?'Rookie':'',chartContext.draftYear?`Drafted ${chartContext.draftYear}`:''].filter(Boolean).join(' · ')}</p>}
+            {historyLoading && !chartPoints.length ? (
               <div className={styles.chartEmpty}>
                 Loading recent game-by-game form…
               </div>
             ) : (
               <RecentChart
                 key={`${card.playerId}|${card.market}|${formSpan}`}
-                points={historyPoints.slice(-formSpan)}
+                points={chartPoints}
+                games={chartContext?.games} span={formSpan} rookie={chartContext?.rookie}
                 statLabel={card.market.replaceAll("_"," ")}
-                values={recentFormValues}
                 line={card.sportsbookLine}
                 projection={displayedAverage}
                 liveValue={state === "live" ? current : null}
