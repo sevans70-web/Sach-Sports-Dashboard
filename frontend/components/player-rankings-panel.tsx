@@ -949,6 +949,7 @@ function PlayerCard({
   const observedProgress=cardObservedProgress(current,progressLine,card.market);
   const researchOutcome=researchFinalOutcome(card.raw,current,card.sportsbookLine,card.market);
   const progress=observedProgress?.percent??0;
+  const nhlProgressCaption=current==null?"Waiting for live stats":"Pregame line unavailable";
 
   const binaryEvent =
     isBinaryEventMarket(card.market);
@@ -1192,6 +1193,9 @@ function PlayerCard({
             <span>
               {current == null
                 ? "Live stat pending"
+                : sport==="nhl" ? observedProgress
+                  ? `${shortNumber(current)} / ${shortNumber(observedProgress.line)} · ${shortNumber(observedProgress.remaining)} to line`
+                  : `${shortNumber(current)} current`
                 : card.market==="anytime_td" ? `${shortNumber(current)} TD · target 1+` : researchOnly ? observedProgress ? `${shortNumber(current)} / ${shortNumber(observedProgress.line)} · ${shortNumber(observedProgress.remaining)} to line` : `${shortNumber(current)} current · verified line unavailable` : binaryEvent
                   ? current >= 1
                     ? `✅ ${shortNumber(current)} HR`
@@ -1206,8 +1210,11 @@ function PlayerCard({
               <i style={{ width: `${progress}%` }} />
             </div>
             <small className={styles.progressCaption}>{card.market==="anytime_td"?"Toward 1+ touchdown target":card.sportsbookLine==null?`Pregame line ${shortNumber(progressLine)} · ${card.raw?.progressQuote?.sportsbook||'saved quote'}`:"Toward recorded line"}</small>
+          </> : sport==="nhl" ? <>
+            <div className={styles.progressTrack} role="progressbar" aria-label={`${card.playerName} ${card.marketLabel}`} aria-valuetext={nhlProgressCaption} />
+            <small className={styles.progressCaption}>{nhlProgressCaption}</small>
           </> : null}
-          {current!=null&&!observedProgress&&!firstBasket&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
+          {sport!=="nhl"&&current!=null&&!observedProgress&&!firstBasket&&card.market!=="first_td" ? <small className={styles.progressCaption}>Progress bar unavailable: a verified numeric line is missing.</small>:null}
         </div>
       ) : null}
 
@@ -1625,6 +1632,7 @@ function applySharedGameStatus(card: RankingCard, game: SharedStatusGame | null,
   const suppliedState = String(game.state || "").toLowerCase();
   const state = suppliedState === "live" ? "in" : suppliedState === "final" ? "post" : suppliedState;
   if (state !== "in" && state !== "post") return card;
+  if(sport==="nhl"&&state==="in"&&card.raw?.nhlBoxscoreState==="post")return card;
   const gameStatus = rankingStatusText({...game,state},sport);
   return {
     ...card,
@@ -2289,6 +2297,12 @@ export function PlayerRankingsPanel({
           const old=previous.find(p=>p.playerId===card.playerId&&p.market===card.market&&String(p.raw?.gameId||'')===String(card.raw?.gameId||''));
           const raw=retainParticipation(card.raw,old?.raw);
           const merged=retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
+          const oldNhlState=old?.raw?.nhlBoxscoreState;
+          if(sport==='nhl'&&old&&(oldNhlState==='post'||oldNhlState==='in'&&merged.gameState!=='post')){
+           return {...merged,gameState:oldNhlState,gameStatus:merged.gameState===oldNhlState?merged.gameStatus:old.gameStatus,
+            liveCurrent:old.liveCurrent,raw:{...merged.raw,gameState:oldNhlState,nhlBoxscoreState:oldNhlState,
+             liveCurrent:old.liveCurrent,liveStatsUpdatedAt:old.raw.liveStatsUpdatedAt}};
+          }
           return sport==='nba'&&requestedMarket==='first_basket'?captureVerifiedFirstBasketCard(merged):merged;
          });
          if(sport!=='nba'||requestedNbaSlate!=='active')return current;
@@ -2363,7 +2377,7 @@ export function PlayerRankingsPanel({
     const run = async () => {
       const payloads = await Promise.all(
         statusGames.map(async (game) => {
-          if(game.state==="pre"){
+          if(game.state==="pre"&&!(sport==="nhl"&&Date.parse(game.date||"")<=Date.now())){
             const last=pregameFetched.get(String(game.id))||0;
             const refreshMs=Date.parse(game.date||"")-Date.now()>2*60*60_000?5*60_000:60_000;
             if(Date.now()-last<refreshMs)return {game,payload:null};
@@ -2394,15 +2408,23 @@ export function PlayerRankingsPanel({
             (entry) => String(entry.game.id) === String(game.id)
           )?.payload;
 
-          const row = (payload?.rows || []).find((item:any)=>String(item.playerId||"")===String(card.playerId||""));
-
-          const participant = payload?.success===true && String(payload.gameId)===String(game.id)
-            ? (payload.participants||[]).find((p:any)=>String(p.playerId)===String(card.playerId)) : null;
+          if(payload?.success!==true||String(payload.gameId)!==String(game.id))return card;
+          const row = (payload.rows || []).find((item:any)=>String(item.playerId||"")===String(card.playerId||""));
+          const nhlBoxscoreState=sport==="nhl"&&["in","post"].includes(payload.state)?payload.state:undefined;
+          if(sport==="nhl"&&(Date.parse(payload.updatedAt)<Date.parse(card.raw?.liveStatsUpdatedAt)||
+            card.raw?.nhlBoxscoreState&&!nhlBoxscoreState||
+            card.raw?.nhlBoxscoreState==="post"&&nhlBoxscoreState!=="post"))return card;
+          const gameState=nhlBoxscoreState||(payload.state==="post"||game.state==="post"?"post":String(game.state||card.gameState));
+          const gameStatus=nhlBoxscoreState&&game.state!==gameState?rankingStatusText({state:gameState},sport):card.gameStatus;
+          const boxscoreFields=nhlBoxscoreState?{gameState,gameStatus,nhlBoxscoreState:gameState,liveStatsUpdatedAt:payload.updatedAt}:{};
           const updatedRaw=applyParticipationEvidence({...card.raw,gameId:String(game.id),playerId:card.playerId},payload,String(game.id));
-          const current = payload?.success===true&&String(payload.gameId)===String(game.id)?finite(row?.stats?.[card.market]):null;
+          const current = finite(row?.stats?.[card.market]);
           if (current == null) {
             const checkedQuarter=['nfl','cfb','nba'].includes(sport)&&card.market.startsWith('q1_')&&row?.stats&&Object.hasOwn(row.stats,card.market);
-            return payload?.success===true&&String(payload.gameId)===String(game.id) ? {...card,...(checkedQuarter?{actual:null,liveCurrent:null,liveProgressPct:null}:{}),raw:{...updatedRaw,...(checkedQuarter?{quarterObservationChecked:true,observedQuarterValue:null,actualResult:null,liveCurrent:null,officialFinalObservation:null}: {})},lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending"} : card;
+            return {...card,...(nhlBoxscoreState?{gameState,gameStatus}:{}),
+              ...(checkedQuarter?{actual:null,liveCurrent:null,liveProgressPct:null}:{}),
+              raw:{...updatedRaw,...boxscoreFields,...(checkedQuarter?{quarterObservationChecked:true,observedQuarterValue:null,actualResult:null,liveCurrent:null,officialFinalObservation:null}:{})},
+              lineupStatus:playerAvailability({...updatedRaw,gameState}).confirmed?"Confirmed":"Pending"};
           }
 
           const progress =
@@ -2412,18 +2434,20 @@ export function PlayerRankingsPanel({
 
           return {
             ...card,
-            lineupStatus:playerAvailability({...updatedRaw,gameState:game.state}).confirmed?"Confirmed":"Pending",
-            gameState:payload.state==="post"?"post":String(game.state||card.gameState),
-            liveCurrent: game.state === "in" ? current : card.liveCurrent,
-            actual: payload.state === "post" || game.state === "post" ? current : card.actual,
+            lineupStatus:playerAvailability({...updatedRaw,gameState}).confirmed?"Confirmed":"Pending",
+            gameState,
+            gameStatus,
+            liveCurrent: gameState === "in" ? current : card.liveCurrent,
+            actual: gameState === "post" ? current : card.actual,
             liveProgressPct: progress,
             raw: {
               ...updatedRaw,
               ...(['nfl','cfb','nba'].includes(sport)&&card.market.startsWith('q1_')?{quarterObservationChecked:true,observedQuarterValue:current}:{}),
-              gameState:payload.state==="post"?"post":String(game.state||card.gameState),
-              liveCurrent: game.state === "in" ? current : card.liveCurrent,
-              actualResult: payload.state === "post" || game.state === "post" ? current : card.actual,
-              ...(payload.state==='post'||game.state==='post'?{officialFinalObservation:{sport,gameId:String(game.id),playerId:String(card.playerId),market:card.market,value:current,at:payload.updatedAt||new Date().toISOString()}}:{}),
+              ...boxscoreFields,
+              gameState,
+              liveCurrent: gameState === "in" ? current : card.liveCurrent,
+              actualResult: gameState === "post" ? current : card.actual,
+              ...(gameState==='post'?{officialFinalObservation:{sport,gameId:String(game.id),playerId:String(card.playerId),market:card.market,value:current,at:payload.updatedAt||new Date().toISOString()}}:{}),
               liveStatsUpdatedAt: payload.updatedAt,
               liveProgressPct: progress,
             },

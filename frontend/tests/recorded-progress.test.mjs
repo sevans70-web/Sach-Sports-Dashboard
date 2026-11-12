@@ -28,3 +28,25 @@ test('live, late, stale, unverified, cross-player, cross-fixture and other-marke
  assert.equal(cardProgressLine({...live,playerId:'other',progressQuote},null,'points'),null);
  assert.equal(cardProgressLine({...live,progressQuote},null,'rebounds'),null);
 });
+
+test('NHL progress recovers an immutable pregame quote for the exact player, game and market',async()=>{
+ const {originalPregameQuote}=await import('../scripts/worker-pregame-capture.mjs');
+ const {immutableNhlProgressQuote}=await loadTs(new URL('../lib/recorded-progress.ts',import.meta.url));
+ const row={...saved,market:'shots_on_goal',gameId:'2026020142',playerId:'8478402',playerName:'Player',
+  marketBacked:true,sportsbookLine:2.5,quoteUpdatedAt:'2026-10-20T18:56:00Z'};
+ const receipt=originalPregameQuote(row,'nhl',row.market,Date.parse('2026-10-20T18:57:00Z'));
+ assert.ok(receipt);
+ const live={...row,sportsbookLine:null,gameState:'in'};
+ const progressQuote=immutableNhlProgressQuote(live,receipt,now);
+ assert.equal(progressQuote?.sportsbookLine,2.5);
+ assert.equal(progressQuote?.prediction,undefined);
+ const line=cardProgressLine({...live,progressQuote},null,live.market);
+ assert.equal(cardObservedProgress(null,line,live.market),null);
+ assert.equal(cardObservedProgress(0,line,live.market).percent,0);
+ assert.equal(cardObservedProgress(1,line,live.market).percent,40);
+ assert.equal(cardObservedProgress(3,line,live.market).percent,100);
+ assert.equal(immutableNhlProgressQuote({...live,playerId:'8478403'},receipt,now),null);
+ assert.equal(immutableNhlProgressQuote({...live,gameId:'2026020143'},receipt,now),null);
+ assert.equal(immutableNhlProgressQuote({...live,market:'points'},receipt,now),null);
+ assert.equal(immutableNhlProgressQuote(live,{...receipt,checksum:'f'.repeat(64)},now),null);
+});
