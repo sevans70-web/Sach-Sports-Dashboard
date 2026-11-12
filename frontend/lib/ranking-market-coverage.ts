@@ -1,10 +1,8 @@
 import {dashboardDay} from '@/lib/dashboard-contract';
-import {footballForecastDisplay} from '@/lib/football-forecast-display';
 import {estimatedEv,qualifiedQuarterTarget} from '@/lib/estimated-ev';
-import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {capRankingUnders,cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
-import {publicNhlRanking} from '@/lib/public-card-metrics';
+import {completeRankingProp} from '@/lib/public-card-metrics';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
 
 type MarketCount = {gameId:string;rows:number;lines:number;projections:number;picks:number;ev:number};
@@ -22,22 +20,30 @@ export function rankingMarketCoverage(sport:string,market:string,day:string,rows
     row.withdrawnFromBoard===true||row.resultStatus==='void'||excludeUnavailableRanking(row,now))continue;
   matches.set(`${row.gameId}|${row.playerId}`,{...row,market,sport});
  }
+ // Match the public card filter before claiming that a market has rankings.
+ // A raw sportsbook quote is not a visible ranking without a complete forecast.
  const ranked=[...matches.values()].map((raw,index)=>({raw,rank:index+1,playerId:String(raw.playerId)}));
- const frozen=ranked.filter(({raw})=>raw.boardFrozen||raw.frozen||raw.lockedAtKickoff);
- const upcoming=ranked.filter(card=>!frozen.includes(card));
- const cards=sport==='nba'?capRankingUnders(rankNbaCardsByEv(ranked,now),card=>nbaCardEv(card,now)?.side??null):
-  [...frozen,...capRankingUnders(upcoming,({raw})=>cardModelPick(raw,now)?.side||(sport==='nfl'?footballForecastDisplay(raw,now).side:null))];
- const displayed=new Set(cards.map(card=>card.raw));
+ const eligible=ranked.flatMap(card=>{
+  const forecast=completeRankingProp(card.raw,now);
+  return forecast?[{...card,forecast}]:[];
+ });
+ const frozen=eligible.filter(card=>card.raw.boardFrozen||card.raw.frozen||card.raw.lockedAtKickoff);
+ const upcoming=eligible.filter(card=>!frozen.includes(card));
+ const sorted=sport==='nba'?[...upcoming].sort((a,b)=>b.forecast.percent-a.forecast.percent||a.rank-b.rank):upcoming;
+ const visible=capRankingUnders(sorted,card=>sport==='nba'
+  ?card.forecast.percent>0?card.forecast.side:null
+  :cardModelPick(card.raw,now)?.side||card.forecast.side);
+ const displayed=new Set([...frozen,...visible].map(card=>card.raw));
  const games=new Map<string,MarketCount>();
  for(const {raw} of ranked){
   const gameId=String(raw.gameId),game=games.get(gameId)||{gameId,rows:0,lines:0,projections:0,picks:0,ev:0};
   const ev=estimatedEv(raw,now),pick=cardModelPick(raw,now);
-  game.rows++;
+  if(displayed.has(raw))game.rows++;
   if(verifiedPropQuote(raw,now,raw.boardFrozen===true))game.lines++;
   if(cardModelProjection(raw,now)!=null)game.projections++;
   if(displayed.has(raw)){
-   if(ev.status==='available'||sport==='nba'&&nbaCardEv({raw},now)!=null)game.ev++;
-   if(qualifiedQuarterTarget(raw,now)||pick&&(sport==='nhl'?publicNhlRanking(raw,now):ev.status==='available'&&ev.percent>0))game.picks++;
+   if(completeRankingProp(raw,now)!=null)game.ev++;
+   if(qualifiedQuarterTarget(raw,now)||pick&&ev.status==='available'&&ev.percent>0)game.picks++;
   }
   games.set(gameId,game);
  }
