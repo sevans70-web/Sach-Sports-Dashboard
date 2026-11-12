@@ -1,3 +1,4 @@
+import {espnPriorMeetings, espnGameComparison, nhlPriorMeetings} from '@/lib/game-overview-matchup';
 import {espnParticipation} from '@/lib/player-participation';
 import {gameRosterStarter} from '@/lib/game-roster';
 import {providerFetch as fetch} from "@/lib/provider-fetch";
@@ -38,6 +39,8 @@ type Roster = {
 
 type InjuryRow = {
   teamName: string;
+  teamId?: string;
+  teamAbbr?: string;
   playerName: string;
   position: string;
   status: string;
@@ -57,6 +60,7 @@ type GameContext = {
   broadcast: string[];
   venue: string;
   provider: string;
+  teamComparison?: string;
 };
 
 const text = (value: any) =>
@@ -195,6 +199,8 @@ function parseInjuries(
 
       out.push({
         teamName,
+        teamId: text(group?.team?.id) || undefined,
+        teamAbbr: text(group?.team?.abbreviation) || undefined,
         reportedAt: text(row.date) || undefined,
         participation: participants.some(p=>p.playerId===String(athlete.id)&&p.participationConfirmed) ? (state==="post"?"Played":state==="in"?"Playing":undefined) : undefined,
         playerName: text(
@@ -221,96 +227,6 @@ function parseInjuries(
   }
 
   return out;
-}
-
-function parseSeasonSeries(
-  summary: any
-): RecentRow[] {
-  const candidates = [
-    ...(summary?.seasonseries || []),
-    ...(summary?.seasonSeries || []),
-    ...(summary?.headToHeadGames || []),
-  ];
-
-  const out: RecentRow[] = [];
-
-  for (const item of candidates) {
-    const event =
-      item?.event || item;
-
-    const competition =
-      event?.competitions?.[0] || {};
-
-    const competitors =
-      competition?.competitors || [];
-
-    const away =
-      competitors.find(
-        (entry: any) =>
-          entry?.homeAway === "away"
-      ) || {};
-
-    const home =
-      competitors.find(
-        (entry: any) =>
-          entry?.homeAway === "home"
-      ) || {};
-
-    const awayName = text(
-      away?.team?.abbreviation ||
-        away?.team?.shortDisplayName ||
-        away?.team?.displayName
-    );
-
-    const homeName = text(
-      home?.team?.abbreviation ||
-        home?.team?.shortDisplayName ||
-        home?.team?.displayName
-    );
-
-    if (!awayName || !homeName) continue;
-
-    const awayScore = text(
-      away?.score?.displayValue ??
-        away?.score ??
-        ""
-    );
-
-    const homeScore = text(
-      home?.score?.displayValue ??
-        home?.score ??
-        ""
-    );
-
-    out.push({
-      date: text(
-        event?.date ||
-          competition?.date ||
-          ""
-      )
-        ? new Intl.DateTimeFormat(
-            "en-US",
-            {
-              timeZone: "America/Toronto",
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            }
-          ).format(
-            new Date(
-              event?.date ||
-                competition?.date
-            )
-          )
-        : "Recent",
-      result:
-        awayScore || homeScore
-          ? `${awayName} ${awayScore || "—"} – ${homeName} ${homeScore || "—"}`
-          : `${awayName} @ ${homeName}`,
-    });
-  }
-
-  return out.slice(0, 5);
 }
 
 function espnContext(summary: any) {
@@ -404,6 +320,20 @@ async function espnGameDetail(
     )
       ? competition.competitors
       : [];
+
+  const recentMatchups = espnPriorMeetings(summary);
+  const priorMeetings = (async () => {
+    if (recentMatchups.length || !['nba', 'nfl'].includes(sport)) return recentMatchups;
+    const teamId = text(competitors[0]?.team?.id);
+    const season = Number(summary?.header?.season?.year);
+    if (!/^\d+$/.test(teamId) || !Number.isInteger(season) || season < 1900) return [];
+    for (const year of [season, season - 1]) {
+      const schedule = await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/${path}/teams/${teamId}/schedule?season=${year}`).catch(() => null);
+      const meetings = espnPriorMeetings(summary, schedule?.events || []);
+      if (meetings.length) return meetings;
+    }
+    return [];
+  })();
 
   const sideByTeam = new Map<
     string,
@@ -593,10 +523,9 @@ async function espnGameDetail(
 
   return {
     rosters,
-    context: espnContext(summary),
+    context: {...espnContext(summary), teamComparison: espnGameComparison(summary, sport)},
     injuries: parseInjuries(summary,sport),
-    recentMatchups:
-      parseSeasonSeries(summary),
+    recentMatchups: await priorMeetings,
   };
 }
 
@@ -832,6 +761,28 @@ async function nhlGameDetail(
       )}/boxscore`
     );
 
+  if (text(payload?.id) !== gameId) throw new Error("NHL game detail fixture identity mismatch");
+  const away = payload.awayTeam;
+  const home = payload.homeTeam;
+  const hasShots = [away, home].every(team => team?.abbrev && Number.isInteger(team.sog) && team.sog >= 0);
+  const live = ['LIVE', 'CRIT'].includes(payload.gameState);
+  const final = ['FINAL', 'OFF'].includes(payload.gameState);
+  const teamComparison = (live || final) && hasShots
+    ? `Shots on goal ${final ? 'at final' : 'so far'}: ${away.abbrev} ${away.sog} · ${home.abbrev} ${home.sog}.`
+    : '';
+
+  const priorMeetings = (async () => {
+    const season = String(payload.season || '');
+    if (!/^[A-Z]{2,3}$/.test(away?.abbrev || '') || !/^\d{8}$/.test(season)) return [];
+    const startYear = Number(season.slice(0, 4));
+    for (const year of [season, `${startYear - 1}${startYear}`]) {
+      const schedule = await fetchJson(`https://api-web.nhle.com/v1/club-schedule-season/${away.abbrev}/${year}`).catch(() => null);
+      const meetings = nhlPriorMeetings(payload, schedule?.games || []);
+      if (meetings.length) return meetings;
+    }
+    return [];
+  })();
+
   const rosters: Roster[] = [];
 
   for (
@@ -1000,7 +951,8 @@ async function nhlGameDetail(
     context: {
       spread: "",
       total: null,
-      weather: "Indoor / rink",
+      weather: "",
+      teamComparison,
       broadcast: [],
       venue: text(
         payload?.venue?.default ||
@@ -1009,7 +961,7 @@ async function nhlGameDetail(
       provider: "",
     } satisfies GameContext,
     injuries: [] as InjuryRow[],
-    recentMatchups: [] as RecentRow[],
+    recentMatchups: await priorMeetings,
   };
 }
 

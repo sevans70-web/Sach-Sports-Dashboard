@@ -86,6 +86,8 @@ type RankingRow = {
 
 type InjuryRow = {
   teamName: string;
+  teamId?: string;
+  teamAbbr?: string;
   playerName: string;
   position: string;
   status: string;
@@ -107,6 +109,7 @@ type DetailPayload = {
     broadcast?: string[];
     venue?: string;
     provider?: string;
+    teamComparison?: string;
   };
   injuries?: InjuryRow[];
   recentMatchups?: RecentRow[];
@@ -219,6 +222,10 @@ const clean = (value: unknown) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+
+const injuryReportDate = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Toronto", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+});
 
 function localDay(value: string) {
   const d = new Date(value);
@@ -574,26 +581,6 @@ function gradeableRankingRow(row: RankingRow) {
   );
 }
 
-function rosterWatchRow(
-  player: RosterPlayer | undefined,
-  teamName: string
-): RankingRow | undefined {
-  if (!player) return undefined;
-
-  return {
-    playerId: player.playerId,
-    playerName: player.playerName,
-    teamName,
-    position: player.position,
-    headshot: player.headshot,
-    market: "",
-    marketLabel: "Player to Watch",
-    sportsbookLine: null,
-    modelProjection: null,
-    giScore: null,
-  };
-}
-
 async function fetchRankings(
   sport: GameSlateSport,
   league: string,
@@ -785,71 +772,32 @@ function ContextMetric({
   );
 }
 
-function PlayerWatchCard({
-  sport,
-  game,
-  row,
-  fallbackTeam,
-  logo,
-}: {
+function PlayerWatchCard({ sport, game, row, team, logo }: {
   sport: GameSlateSport;
   game: Game;
-  row?: RankingRow;
-  fallbackTeam: string;
+  row: RankingRow & { modelProjection: number };
+  team: string;
   logo?: string | null;
 }) {
-  const body = (
-    <div className={styles.watchCard}>
-      <div className={styles.watchTop}>
-        <TeamLogo src={logo} name={fallbackTeam} />
-        <span>
-          <b>{row?.playerName || fallbackTeam}</b>
-          <small>
-            {[
-              row?.position,
-              row?.marketLabel || row?.market,
-            ]
-              .filter(Boolean)
-              .join(" · ") || "Team watch"}
-          </small>
-        </span>
-      </div>
-
-      <ul>
-        {row ? (
-          <>
-            <li>
-              EV{" "}
-              {estimatedEvText(row)}
-            </li>
-            <li>
-              {row.modelProjection == null
-                ? "Sach Projection unavailable"
-                : `Sach Projection ${Number(
-                    row.modelProjection
-                  ).toFixed(1)}`}
-            </li>
-            <li>
-              {row.sportsbookLine == null
-                ? "Sportsbook line pending"
-                : `Line ${row.sportsbookLine}`}
-            </li>
-          </>
-        ) : (
-          <li>Player intelligence will populate as rankings become available.</li>
-        )}
-      </ul>
-    </div>
-  );
-
-  if (!row) return body;
-
+  const ev = estimatedEv(row);
+  if (ev.status !== "available") return null;
   return (
-    <Link
-      href={playerHref(sport, row, game)}
-      className={styles.watchLink}
-    >
-      {body}
+    <Link href={playerHref(sport, row, game)} className={styles.watchLink}>
+      <div className={styles.watchCard}>
+        <div className={styles.watchTop}>
+          <TeamLogo src={logo} name={team} />
+          <span>
+            <b>{row.playerName}</b>
+            <small>{[row.position, row.marketLabel || row.market].filter(Boolean).join(" · ")}</small>
+          </span>
+        </div>
+        <ul>
+          <li>EV {estimatedEvText(row)}</li>
+          <li>Sach Projection {row.modelProjection.toFixed(1)}</li>
+          <li>Saved line: {ev.side} {ev.line}</li>
+        </ul>
+        <p className={styles.contextCopy}>Highest positive model EV among {team} props with a saved line and projection for this game.</p>
+      </div>
     </Link>
   );
 }
@@ -1028,18 +976,6 @@ function ExpandedGame({
       ? awayRoster
       : homeRoster;
 
-  const awayRows = dedupePlayers(
-    rankings.filter((row) =>
-      rowBelongsTo(row, "away", game)
-    )
-  );
-
-  const homeRows = dedupePlayers(
-    rankings.filter((row) =>
-      rowBelongsTo(row, "home", game)
-    )
-  );
-
   const positions = [
     "All",
     ...Array.from(
@@ -1077,41 +1013,30 @@ function ExpandedGame({
     ? rosterPlayers
     : rosterPlayers.slice(0, 12);
 
-  const awayWatch =
-    awayRows[0] ||
-    rosterWatchRow(
-      awayRoster?.players?.find((player) => player.starter) ||
-        awayRoster?.players?.[0],
-      game.awayTeam
-    );
+  const teams = (["away", "home"] as const).map(side => {
+    const name = game[`${side}Team`];
+    const abbr = game[`${side}Abbr`];
+    const roster = side === "away" ? awayRoster : homeRoster;
+    const id = game[`${side}TeamId`] || roster?.teamId;
+    const names = [name, abbr, roster?.teamName, roster?.teamAbbr].map(clean).filter(Boolean);
+    const reports = injuries.filter(row => {
+      if (id && row.teamId) return String(row.teamId) === String(id);
+      return [row.teamName, row.teamAbbr].map(clean).some(value => names.includes(value));
+    });
+    const watch = rankings.filter((row): row is RankingRow & { modelProjection: number } =>
+      Boolean(row.playerId) && rowBelongsTo(row, side, game) && Number.isFinite(row.modelProjection) &&
+      (estimatedEv(row).percent ?? 0) > 0
+    ).sort((a, b) => (estimatedEv(b).percent ?? 0) - (estimatedEv(a).percent ?? 0))[0];
+    return {side, name, logo: game[`${side}Logo`], reports, watch};
+  });
 
-  const homeWatch =
-    homeRows[0] ||
-    rosterWatchRow(
-      homeRoster?.players?.find((player) => player.starter) ||
-        homeRoster?.players?.[0],
-      game.homeTeam
-    );
-
-  const injuryByTeam = (teamName: string) =>
-    injuries
-      .filter(
-        (row) =>
-          clean(row.teamName).includes(clean(teamName)) ||
-          clean(teamName).includes(clean(row.teamName))
-      )
-      .slice(0, 4);
-
-  const spread = context.spread || "—";
-  const total =
-    context.total == null
-      ? "—"
-      : String(context.total);
-  const weather =
-    context.weather || "Conditions not supplied";
-
-  const matchupFacts=gameIntelligence({...game,sport},context,injuries);
-  const overviewCopy=matchupFacts.join(" ");
+  const hasScore = game.state !== "pre" && finiteNumber(game.awayScore) != null && finiteNumber(game.homeScore) != null;
+  const overviewCopy = hasScore ? gameIntelligence({...game, sport})[0].replace(/; (\d+) combined (points|goals)([^.]*)./, ". Combined $2$3: $1.") : "";
+  const metrics = [
+    context.spread && {label: "Spread", value: context.spread},
+    context.total != null && Number.isFinite(context.total) && {label: "Game Total", value: String(context.total)},
+    !["nba", "wnba", "cbb", "nhl"].includes(sport) && context.weather && {label: "Weather", value: context.weather},
+  ].filter((metric): metric is {label:string; value:string} => Boolean(metric));
 
   const trendRows = [...rankings]
     .filter(
@@ -1166,7 +1091,7 @@ function ExpandedGame({
             <span>
               <b>{game.awayTeam}</b>
               <small>
-                {game.awayRecord || "—"} · AWAY
+                {game.awayRecord && game.awayRecord !== "—" && game.awayRecord !== "-" ? `${game.awayRecord} · ` : ""}AWAY
               </small>
             </span>
             {game.state !== "pre" ? (
@@ -1184,7 +1109,7 @@ function ExpandedGame({
             <span>
               <b>{game.homeTeam}</b>
               <small>
-                {game.homeRecord || "—"} · HOME
+                {game.homeRecord && game.homeRecord !== "—" && game.homeRecord !== "-" ? `${game.homeRecord} · ` : ""}HOME
               </small>
             </span>
             {game.state !== "pre" ? (
@@ -1194,7 +1119,7 @@ function ExpandedGame({
         </div>
       </section>
 
-      <nav className={styles.intelTabs}>
+      <nav className={styles.intelTabs} aria-label="Game details">
         {[
           ["overview", "Overview"],
           ["rankings", "Player Rankings"],
@@ -1204,6 +1129,8 @@ function ExpandedGame({
         ].map(([key, label]) => (
           <button
             key={key}
+            type="button"
+            aria-pressed={tab === key}
             className={
               tab === key
                 ? styles.activeIntelTab
@@ -1225,111 +1152,66 @@ function ExpandedGame({
       ) : null}
 
       {!loading && tab === "overview" ? (
-        <div className={styles.tabBody}>
-          <section className={styles.goldPanel}>
+        <div className={`${styles.tabBody} ${styles.overview}`}>
+          {(metrics.length > 0 || overviewCopy) && <section className={styles.goldPanel}>
             <div className={styles.panelTitle}>
-              <span>▦</span>
+              <span aria-hidden="true">▦</span>
               <h4>Game Context</h4>
             </div>
-
-            <div className={styles.contextMetrics}>
-              {context.spread ? <ContextMetric label="Spread" value={spread} /> : null}
-              {context.total != null ? <ContextMetric label="Game Total" value={total} /> : null}
-              {!["nba","wnba","cbb","nhl"].includes(sport) && context.weather ? <ContextMetric label="Weather" value={weather} /> : null}
-            </div>
-
-            <p className={styles.contextCopy}>
-              {overviewCopy}
-            </p>
-          </section>
+            {metrics.length > 0 && <div className={styles.contextMetrics}>
+              {metrics.map(metric => <ContextMetric key={metric.label} {...metric} />)}
+            </div>}
+            {overviewCopy && <p className={styles.contextCopy}>{overviewCopy}</p>}
+          </section>}
 
           <section className={styles.goldPanel}>
             <div className={styles.panelTitle}>
-              <span>★</span>
-              <h4>Key Players to Watch</h4>
+              <span aria-hidden="true">▥</span>
+              <h4>Matchup</h4>
             </div>
-
-            <div className={styles.watchGrid}>
-              <PlayerWatchCard
-                sport={sport}
-                game={game}
-                row={awayWatch}
-                fallbackTeam={game.awayTeam}
-                logo={game.awayLogo}
-              />
-
-              <PlayerWatchCard
-                sport={sport}
-                game={game}
-                row={homeWatch}
-                fallbackTeam={game.homeTeam}
-                logo={game.homeLogo}
-              />
-            </div>
+            {context.teamComparison && <p className={styles.contextCopy}>{context.teamComparison}</p>}
+            {recent.length > 0 ? <div className={styles.historyList} aria-label="Prior meetings">
+              {recent.map((row, index) => (
+                <div key={`${row.date}-${index}`}>
+                  <span>{index === 0 ? "Last meeting · " : ""}{row.date}</span>
+                  <strong>{row.result}</strong>
+                </div>
+              ))}
+            </div> : !context.teamComparison && <p className={styles.contextCopy}>Verified matchup history unavailable for this game.</p>}
           </section>
 
-          {(recent.length > 0 || injuries.length > 0) ? <section className={styles.overviewGrid}>
-            {recent.length > 0 ?             <div className={styles.goldPanel}>
-              <div className={styles.panelTitle}>
-                <span>▥</span>
-                <h4>Recent Matchups</h4>
-              </div>
+          {teams.some(team => team.watch) && <section className={styles.goldPanel}>
+            <div className={styles.panelTitle}>
+              <span aria-hidden="true">★</span>
+              <h4>Key Players to Watch</h4>
+            </div>
+            <div className={styles.watchGrid}>
+              {teams.map(team => team.watch && <PlayerWatchCard key={team.side}
+                sport={sport} game={game} row={team.watch} team={team.name} logo={team.logo} />)}
+            </div>
+          </section>}
 
-              {recent.length ? (
-                <div className={styles.historyList}>
-                  {recent.slice(0, 4).map((row, index) => (
-                    <div key={`${row.date}-${index}`}>
-                      <span>{row.date || "Recent"}</span>
-                      <strong>{row.result}</strong>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className={styles.smallMuted}>
-                  Recent head-to-head history will appear when the live provider publishes it.
-                </p>
-              )}
-            </div> : null}
-
-            {injuries.length > 0 ?             <div className={styles.goldPanel}>
-              <div className={styles.panelTitle}>
-                <span>✚</span>
-                <h4>Injury Report</h4>
-              </div>
-
-              <div className={styles.injuryColumns}>
-                {[game.awayTeam, game.homeTeam].map(
-                  (team) => {
-                    const rows = injuryByTeam(team);
-
-                    return (
-                      <div key={team}>
-                        <strong>{team}</strong>
-
-                        {rows.length ? (
-                          rows.map((row, index) => (
-                            <span
-                              key={`${row.playerName}-${index}`}
-                            >
-                              {row.playerName}
-                              {row.position
-                                ? ` · ${row.position}`
-                                : ""}
-                              <em>
-                                {row.participation ? `${row.participation} · ` : ""}Reported {row.status || "injury"}{row.reportedAt ? ` · ${new Date(row.reportedAt).toLocaleString()}` : " · date unavailable"}
-                              </em>
-                            </span>
-                          ))
-                        ) : (
-                          <span>No active injury feed</span>
-                        )}
-                      </div>
-                    );
-                  }
-                )}
-              </div>
-            </div> : null}
-          </section> : null}
+          <section className={styles.goldPanel}>
+            <div className={styles.panelTitle}>
+              <span aria-hidden="true">✚</span>
+              <h4>Injury Report</h4>
+            </div>
+            <div className={styles.injuryColumns}>
+              {teams.map(team => <div key={team.side}>
+                <strong>{team.name}</strong>
+                {team.reports.length > 0 ? <ul>
+                  {team.reports.map((row, index) => {
+                    const reported = Date.parse(row.reportedAt || "");
+                    return <li key={`${row.playerName}-${index}`}>
+                      <b>{row.playerName}{row.position ? ` · ${row.position}` : ""}</b>
+                      <em>{row.participation ? `${row.participation} · Reported ` : ""}{row.status}</em>
+                      {Number.isFinite(reported) && <small>{injuryReportDate.format(reported)} ET</small>}
+                    </li>;
+                  })}
+                </ul> : <p>No injury reports available.</p>}
+              </div>)}
+            </div>
+          </section>
         </div>
       ) : null}
 

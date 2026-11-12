@@ -1743,3 +1743,53 @@
 
 .propCard > small { grid-column: 1 / -1; line-height: 1.5; color: #c4c4c9; font-size: 12px; }
 .compactRankRow > strong { font-size: 11px; overflow-wrap: anywhere; }
+
+/* Interior game navigation and overview */
+.intelHeadline > strong { font-size: clamp(15px, 3.8vw, 20px); }
+.intelHeadline > p { font-size: 13px; }
+.intelScore span b { font-size: clamp(12px, 3.3vw, 16px); white-space: normal; }
+.intelScore span small { font-size: 11px; }
+
+.intelTabs {
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0 4px;
+}
+.intelTabs button {
+  flex: 1 0 auto;
+  min-height: 42px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.overview { display: grid; gap: 12px; }
+.overview .goldPanel { margin: 0; padding: 14px; }
+.overview .panelTitle { margin-bottom: 12px; }
+.overview .panelTitle h4 { font-size: 17px; }
+.overview .contextMetrics { grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr)); gap: 8px; }
+.overview .contextMetric { padding: 9px 6px; }
+.overview .contextMetric span { font-size: 11px; }
+.overview .contextMetric strong { font-size: 15px; }
+.overview .contextCopy { font-size: 14px; line-height: 1.5; }
+
+.overview .watchGrid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 208px), 1fr)); gap: 10px; }
+.overview .watchCard { padding: 12px; }
+.overview .watchTop b { font-size: 15px; }
+.overview .watchTop small,
+.overview .watchCard ul { font-size: 13px; }
+.overview .historyList { margin-top: 8px; }
+.overview .historyList > div {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 148px), 1fr));
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.overview .injuryColumns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.overview .injuryColumns > div { padding: 9px; border: 1px solid #5a4925; border-radius: 8px; }
+.overview .injuryColumns > div > strong { font-size: 13px; white-space: normal; overflow: visible; }
+.overview .injuryColumns ul { margin: 0; padding: 0; list-style: none; }
+.overview .injuryColumns li { display: grid; gap: 2px; padding: 8px 0; border-bottom: 1px solid #262418; }
+.overview .injuryColumns li:last-child { border-bottom: 0; padding-bottom: 0; }
+.overview .injuryColumns li,
+.overview .injuryColumns p { font-size: 12px; line-height: 1.4; }
+.overview .injuryColumns small { font-size: 11px; color: #bdbebd; }
