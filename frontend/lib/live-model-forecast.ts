@@ -124,8 +124,8 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  if(!options.offlineOnly)payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
- let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
- if(!data)return {...payload,rows:payload.rows.map((r:any)=>({...r,researchForecast:unavailable('market_model_not_fitted')})),
+ let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>(sport==='nhl'&&r.boardFrozen&&r.researchForecast?r:{...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
+ if(!data)return {...payload,rows:payload.rows.map((r:any)=>(sport==='nhl'&&r.boardFrozen&&r.researchForecast?r:{...r,researchForecast:unavailable('market_model_not_fitted')})),
   forecastBlockers:{market_model_not_fitted:payload.rows.length},fittedResearchForecastCount:0,modelSelectionCount:0};
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
@@ -154,7 +154,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){
-  const row={...r,researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  const row={...r,researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
   rows.push({...row,estimatedEv:estimatedEv(row,now),pregameProbability:predictionProbability(row,now)});
   // Even a large slate must let health/history requests run between players.
   await yieldToRequests();

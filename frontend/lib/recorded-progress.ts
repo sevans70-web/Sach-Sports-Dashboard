@@ -3,6 +3,7 @@ import {captureVersionOneChecksum} from '../scripts/worker-pregame-history.mjs';
 import {retentionCutoff} from '../scripts/retention-policy.mjs';
 import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
+import {savedModelPick} from '@/lib/saved-model-pick';
 
 /** Recover display evidence only; never turn a live quote into a pregame pick. */
 export function archivedProgressQuote(row:any,snapshots:any[],now=Date.now()){
@@ -48,33 +49,56 @@ export function immutableNhlProgressQuote(row:any,original:any,now=Date.now()){
  return verifiedPropQuote(progressQuote,captured,true)?progressQuote:null;
 }
 
-async function readNhlProgressOriginals(market:string,players:any[]){
+export function savedNhlCardRow(row:any,original:any,pickRecord:any,now=Date.now()){
+ const pickQuote=immutableNhlProgressQuote(row,pickRecord,now);
+ const originalQuote=immutableNhlProgressQuote(row,original,now);
+ for(const [record,quote] of [[pickRecord,pickQuote],[original,originalQuote]]){
+  if(!quote)continue;
+  const receipt=record.payload, selection=receipt.modelSelection;
+  const restored={...row,...quote,quoteVerified:true,boardFrozen:true,boardCapturedAt:quote.capturedAt,
+   researchForecast:Number.isFinite(receipt.modelProjection)?{status:'available',projection:receipt.modelProjection,
+    calculatedAt:selection?.calculatedAt||quote.capturedAt,modelSelection:selection,validatedForBetting:receipt.modelValidation===true}:null};
+  if(selection?.side===record.prediction_side&&savedModelPick(restored))return restored;
+  if(record===original)return {...restored,researchForecast:restored.researchForecast&&{...restored.researchForecast,
+   calculatedAt:quote.capturedAt,modelSelection:null}};
+ }
+ return null;
+}
+
+export async function readSavedNhlCardRows(market:string,players:any[],now=Date.now()){
  const ids=(key:string)=>[...new Set(players.map(row=>String(row[key])).filter(id=>/^\d{1,24}$/.test(id)))];
  const games=ids('gameId'),athletes=ids('playerId');
- if(!games.length||!athletes.length)return [];
- const query=new URLSearchParams({select:'sport,market,game_id,player_id,game_time,quote_updated_at,sportsbook_line,checksum,payload',
+ if(!cloudConfigured()||!games.length||!athletes.length)return new Map();
+ const query=new URLSearchParams({select:'sport,market,game_id,player_id,game_time,quote_updated_at,sportsbook_line,prediction_side,checksum,payload',
   sport:'eq.nhl',market:'eq.'+market,game_id:`in.(${games.join(',')})`,player_id:`in.(${athletes.join(',')})`});
- return await cloudRequest('worker_pregame_originals?'+query.toString(),{signal:AbortSignal.timeout(2500)});
+ const sources=await Promise.allSettled(['worker_pregame_originals','worker_pregame_picks'].map(table=>
+  cloudRequest(table+'?'+query.toString(),{signal:AbortSignal.timeout(3500)})));
+ const [originals,picks]=sources.map(result=>new Map<string,any>(
+  (result.status==='fulfilled'&&Array.isArray(result.value)?result.value:[])
+   .map((entry:any)=>[`${entry.player_id}|${entry.game_id}`,entry])));
+ const rows=new Map<any,any>();
+ for(const row of players){
+  const key=`${row.playerId}|${row.gameId}`;
+  const saved=savedNhlCardRow({...row,market},originals.get(key),picks.get(key),now);
+  if(saved)rows.set(row,saved);
+ }
+ return rows;
 }
 
 export async function attachRecordedProgressLines(payload:any,sport:string,now=Date.now()){
  if(!Array.isArray(payload?.rows))return payload;
- const rows=payload.rows,needed=rows.filter((r:any)=>r.sportsbookLine==null&&r.gameId&&r.playerId&&Date.parse(r.gameTime)<=now);
+ const rows=payload.rows,needed=rows.filter((r:any)=>(sport==='nhl'||r.sportsbookLine==null)&&r.gameId&&r.playerId&&Date.parse(r.gameTime)<=now);
  if(!needed.length)return payload;
- const quotes=new Map<any,any>();
+ const quotes=new Map<any,any>(),restored=new Map<any,any>();
  const markets=[...new Set<string>(needed.map((row:any)=>String(payload.market||row.market||'')))];
  for(const market of markets){
   if(!market)continue;
   const players=needed.filter((r:any)=>String(payload.market||r.market||'')===market),days=new Set<string>();
-  if(sport==='nhl'&&cloudConfigured())try{
-   const originals=await readNhlProgressOriginals(market,players);
-   const byPlayerGame=new Map<string,any>(originals.map((row:any)=>[`${row.player_id}|${row.game_id}`,row]));
-   for(const row of players){
-    const candidate=immutableNhlProgressQuote({...row,market},byPlayerGame.get(`${row.playerId}|${row.gameId}`),now);
-    if(candidate)quotes.set(row,candidate);
-   }
-  }catch(e){console.error('[NHL progress originals unavailable]',market,e instanceof Error?e.message:String(e));}
-  const unresolved=players.filter((row:any)=>!quotes.has(row));
+  if(sport==='nhl'){
+   const records=await readSavedNhlCardRows(market,players,now);
+   for(const [row,record] of records)restored.set(row,record);
+  }
+  const unresolved=players.filter((row:any)=>row.sportsbookLine==null&&!restored.has(row));
   for(const row of unresolved)for(let offset=0;offset<3;offset++)days.add(torontoHistoryDay(new Date(Date.parse(row.gameTime)-offset*86400000)));
   for(const day of [...days].filter(Boolean))try{await visitHistorySnapshots(sport,market,day,snapshot=>{
    for(const row of unresolved){
@@ -83,5 +107,10 @@ export async function attachRecordedProgressLines(payload:any,sport:string,now=D
    }
   },day>=retentionCutoff());}catch(e){console.error('[progress archive unavailable]',sport,market,day,e instanceof Error?e.message:String(e));}
  }
- return {...payload,rows:rows.map((row:any)=>row.sportsbookLine!=null?row:{...row,progressQuote:quotes.get(row)||null})};
+ return {...payload,rows:rows.map((row:any)=>{
+  if(restored.has(row))return restored.get(row);
+  const quote=quotes.get(row);
+  if(sport==='nhl'&&quote)return {...row,...quote,quoteVerified:true,boardFrozen:true,boardCapturedAt:quote.capturedAt};
+  return row.sportsbookLine!=null?row:{...row,progressQuote:quote||null};
+ })};
 }

@@ -50,3 +50,26 @@ test('NHL progress recovers an immutable pregame quote for the exact player, gam
  assert.equal(immutableNhlProgressQuote({...live,market:'points'},receipt,now),null);
  assert.equal(immutableNhlProgressQuote(live,{...receipt,checksum:'f'.repeat(64)},now),null);
 });
+
+test('started NHL cards prefer the original saved pick, or show the quote and projection alone',async()=>{
+ const {originalPregameQuote}=await import('../scripts/worker-pregame-capture.mjs');
+ const {savedNhlCardRow}=await loadTs(new URL('../lib/recorded-progress.ts',import.meta.url));
+ const {cardModelPick,cardModelProjection}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
+ const row={...saved,sport:'nhl',market:'shots_on_goal',gameId:'2026020142',playerId:'8478402',
+  playerName:'Player',marketBacked:true,sportsbookLine:3.5,quoteUpdatedAt:'2026-10-20T18:54:00Z'};
+ const capture=Date.parse('2026-10-20T18:57:00Z'),calculatedAt='2026-10-20T18:56:00.000Z';
+ const original=originalPregameQuote({...row,researchForecast:{projection:3.1}},'nhl',row.market,capture);
+ const pick=originalPregameQuote({...row,quoteId:'later-quote',sportsbookLine:2.5,researchForecast:{projection:3.2,
+  modelSelection:{side:'OVER',line:2.5,quoteId:'later-quote',sportsbookKey:row.sportsbookKey,price:row.overPrice,calculatedAt}}},'nhl',row.market,capture);
+ const live={...row,gameState:'in',sportsbookLine:null,quoteVerified:false};
+ const restored=savedNhlCardRow(live,original,pick,now);
+ assert.equal(restored.quoteVerified,true);
+ assert.equal(restored.sportsbookLine,2.5);
+ assert.equal(cardModelPick(restored,now)?.side,'OVER');
+ assert.equal(cardModelProjection(restored,now),3.2);
+ const quoteOnly=savedNhlCardRow(live,original,{...pick,prediction_side:'UNDER'},now);
+ assert.equal(quoteOnly.sportsbookLine,3.5);
+ assert.equal(cardModelPick(quoteOnly,now),null);
+ assert.equal(cardModelProjection(quoteOnly,now),3.1);
+ assert.equal(savedNhlCardRow({...live,market:'points'},original,pick,now),null);
+});

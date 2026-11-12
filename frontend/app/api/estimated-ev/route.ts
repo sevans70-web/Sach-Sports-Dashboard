@@ -1,3 +1,5 @@
+import {readSavedNhlCardRows} from '@/lib/recorded-progress';
+import {savedModelPick} from '@/lib/saved-model-pick';
 import {recordedCardForecast} from '@/lib/full-card-forecast';
 import {selectSavedQuoteEvidence} from '@/lib/saved-quote-evidence';
 import {predictionProbability,predictionProbabilityText} from '@/lib/prediction-probability';
@@ -34,7 +36,15 @@ export async function GET(req:NextRequest){
   const documents=await Promise.all(days.map(day=>readDurableHistoryBatch(sport,streams,day)));
   for(const day of documents)for(const document of day)collect(document.payload);
  }
+ if(sport==='nhl'&&gameId&&quoteId){
+  const requested={playerId,gameId,gameTime:q.get('gameTime')};
+  const saved=(await readSavedNhlCardRows(market,[requested])).get(requested);
+  if(saved?.quoteId===quoteId)rows.push(saved);
+ }
  const {row,ambiguous}=selectSavedQuoteEvidence(rows,gameId,quoteId,Date.now(),forecastAt);
+ const pick=sport==='nhl'?savedModelPick(row):null;
+ const selection=pick?{playerId:row.playerId,gameId:row.gameId,quoteId:row.quoteId,calculatedAt:pick.calculatedAt,
+  side:pick.side,line:pick.line,odds:pick.price,sportsbook:row.sportsbook}:null;
  const forecast=recordedCardForecast(row);
- return NextResponse.json({forecast,probability:predictionProbability(row),probabilityText:predictionProbabilityText(row),ev:estimatedEv(row),text:estimatedEvText(row),notice:ambiguous?'Select a specific game and saved quote to view its EV':estimatedEvNotice(row)},{headers:{'Cache-Control':'no-store'}});
+ return NextResponse.json({forecast,selection,probability:predictionProbability(row),probabilityText:predictionProbabilityText(row),ev:estimatedEv(row),text:estimatedEvText(row),notice:ambiguous?'Select a specific game and saved quote to view its EV':estimatedEvNotice(row)},{headers:{'Cache-Control':'no-store'}});
 }

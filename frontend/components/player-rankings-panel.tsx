@@ -1128,7 +1128,7 @@ function PlayerCard({
           >
             {["OVER", "UNDER"].includes(displayedPick) && card.sportsbookLine != null
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
-              : displayedPick||(sport==='nba'?'PASS':'—')}
+              : displayedPick||(sport==='nba'?'PASS':sport==='nhl'?'No saved pick':'—')}
           </strong>
           {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?(modelPickNotice(card.raw)==='Model forecast'?null:<small>{modelPickNotice(card.raw)}</small>):footballForecast.side&&footballForecast.basis!=='Model forecast'?<small>{footballForecast.basis}</small>:null}
 
