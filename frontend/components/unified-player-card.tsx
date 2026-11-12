@@ -795,7 +795,7 @@ export function UnifiedPlayerCard({
           {recentLineResults ? <p><strong>Results against {propLineText(line)}:</strong> {recentLineResults.above} above, {recentLineResults.below} below{recentLineResults.equal ? `, ${recentLineResults.equal} equal` : ""} over the last {recentFive.length} recorded appearances. Historical results do not guarantee the next result.</p> : null}
         </> : !historyLoading ? <p>Verified recent-game evidence is not available for this market. No prediction advantage can be established from this card.</p> : null}
         {matchup ? <p><strong>Upcoming matchup:</strong> {matchup}.</p> : null}
-        {playerMatchupAndAbsence({sportsbookLine:line,gameId:first(query.gameId),teamId:first(query.teamId),teamName:team,teammateAvailability:verifiedTeammates},sport,researchMarket,history.map(p=>p.value)).map((note,i)=><p key={i}>{note}</p>)}
+        {playerMatchupAndAbsence({sportsbookLine:line,gameId:first(query.gameId),teamId:first(query.teamId),teamName:team,matchup,teammateAvailability:verifiedTeammates},sport,researchMarket,history.map(p=>p.value),history).map((note,i)=><p key={i}>{note}</p>)}
       </section>
 
       <section
