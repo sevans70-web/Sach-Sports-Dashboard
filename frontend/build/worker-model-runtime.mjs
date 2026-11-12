@@ -22,7 +22,7 @@ export function partitionModelRuntime(root){
    partitions[sport+'|'+market]={bytes:bytes.toString('base64'),sha256:hash(bytes)};
   }
  }
- const supplementalFiles={'nhl|goalie_saves':'nhl-goalie-saves.json.gz','nfl|sacks':'nfl-sacks.json.gz'};
+ const supplementalFiles={'nhl|goalie_saves':'nhl-goalie-saves.json.gz','nfl|sacks':'nfl-sacks.json.gz','nfl|passing_tds':'nfl-passing-tds.json.gz'};
  for(const [key,file] of Object.entries(supplementalFiles)){
   const source=readFileSync(resolve(root,file));
   const value=JSON.parse(gunzipSync(source));

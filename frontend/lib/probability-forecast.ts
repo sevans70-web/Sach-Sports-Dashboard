@@ -20,14 +20,14 @@ const validTime=(s:string)=>Number.isFinite(Date.parse(s));
 const groupOf=(g:OpportunityGame)=>g.sport+'|'+g.market;
 const outcomeKey=(g:OpportunityGame)=>[g.sport,g.market,g.playerId,g.gameId].join('|');
 const supported=(g:Pick<OpportunityGame,'sport'|'market'>)=>
- ['nfl','cfb'].includes(g.sport)?['passing_yards','sacks','rushing_yards','receiving_yards','receptions','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'].includes(g.market):
+ ['nfl','cfb'].includes(g.sport)?['passing_yards','passing_tds','sacks','rushing_yards','receiving_yards','receptions','q1_passing_yards','q1_rushing_yards','q1_receiving_yards'].includes(g.market):
  ['nba','wnba','cbb'].includes(g.sport)?['points','rebounds','assists','threes_made','steals','blocks'].includes(g.market):
  g.sport==='nhl'&&['shots_on_goal','goals','assists','points','goalie_saves'].includes(g.market);
 
 export function probabilityInputs(history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>,availableAt=target.gameTime){
  if(!supported(target))return {features:null,baseline:null,reason:'unsupported_market'};
  let eligible=history;
- if(['nfl','cfb'].includes(target.sport)&&['passing_yards','q1_passing_yards'].includes(target.market)){
+ if(['nfl','cfb'].includes(target.sport)&&['passing_yards','passing_tds','q1_passing_yards'].includes(target.market)){
   const prior=history.filter(g=>g.sport===target.sport&&g.market===target.market&&g.playerId===target.playerId&&g.teamId===target.teamId&&g.season===target.season&&Date.parse(g.gameTime)<Date.parse(availableAt)-48*3600000).sort((a,b)=>a.gameTime.localeCompare(b.gameTime));
   const role=(g:OpportunityGame)=>target.market.startsWith('q1_')?g.roleWorkload:g.workload;
   const latestRole=prior.at(-1)?role(prior.at(-1)!):null;

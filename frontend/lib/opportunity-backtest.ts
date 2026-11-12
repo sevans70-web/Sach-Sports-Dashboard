@@ -5,6 +5,7 @@ const norm=(v:any)=>String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"");
 function numeric(v:any){if(v==null||typeof v==='boolean'||!String(v).trim())return null;const n=Number(String(v).replaceAll(',',''));return Number.isFinite(n)?n:null}
 function minutes(v:any){const m=String(v??'').match(/^(\d+):(\d{2})$/);return m?Number(m[1])+Number(m[2])/60:numeric(v)}
 const football:Record<string,{outcome:string[];volume:string[]}>= {
+ passing_tds:{outcome:['passingtouchdowns','passingtds','passtds'],volume:['passingattempts','passattempts']},
  passing_yards:{outcome:['passingyards','passyards'],volume:['passingattempts','passattempts']},
  rushing_yards:{outcome:['rushingyards','rushyards'],volume:['rushingattempts','rushattempts','carries']},
  receiving_yards:{outcome:['receivingyards','receptionyards'],volume:['receivingtargets','targets']},
