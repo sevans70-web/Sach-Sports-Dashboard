@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {loa
 const {quarterFeatureIndex,quarterPoint}=await loadTs(new URL('../lib/quarter-forecast.ts',import.meta.url));
 const {fittedQuarterForecast,attachQuarterForecasts}=await loadTs(new URL('../lib/live-quarter-forecast.ts',import.meta.url));
 const {cardModelPick}=await loadTs(new URL('../lib/saved-model-pick.ts',import.meta.url));
-const {estimatedEv}=await loadTs(new URL('../lib/estimated-ev.ts',import.meta.url));
+const {estimatedEv,qualifiedQuarterTarget}=await loadTs(new URL('../lib/estimated-ev.ts',import.meta.url));
 const now=Date.parse('2026-10-29T20:00Z');
 const history=Array.from({length:6},(_,i)=>({sport:'nba',market:'q1_points',season:'2026',playerId:'1',teamId:'A',gameId:'prior'+i,gameTime:`2026-04-${String(10+i).padStart(2,'0')}T00:00Z`,actual:i===0?0:4,role:30,starter:true,source:'official',retrievedAt:'2026-10-24T12:00Z'}));
 const row={market:'q1_points',gameId:'upcoming',playerId:'1',teamId:'A',gameTime:'2026-10-30T00:00Z',gameState:'pre',quoteVersion:1,lineType:'main',sportsbook:'Book',sportsbookKey:'book',quoteId:'q',sportsbookLine:4.5,overPrice:-110,underPrice:-110,quoteUpdatedAt:'2026-10-29T19:59Z',capturedAt:'2026-10-29T20:00Z',pregameContext:{gameId:'upcoming',playerId:'1',teamId:'A',gameTime:'2026-10-30T00:00Z',season:'2027',seasonType:2,opponentId:'B',availability:[]}};
@@ -24,6 +24,13 @@ test('fitted Q1 expectation creates exact saved direction without claiming proba
 test('milestones retain one-sided contract; target comparison never invents an UNDER wager',()=>{
  const f=fittedQuarterForecast({...row,lineType:'milestone',sportsbookLine:6,underPrice:null},'nba','q1_points',bundle,now);
  assert.equal(f.projection,5);assert.equal(f.modelSelection,null);assert.deepEqual(f.modelTargetForecast,{direction:'BELOW',target:6,quoteId:'q',calculatedAt:new Date(now).toISOString()});
+ const calibrated={...bundle,models:[{...model,residuals:Array(100).fill(1)}]};
+ const target={...row,forecastCapturedAt:new Date(now).toISOString(),sport:'nba',lineType:'milestone',sportsbookLine:5,underPrice:null};
+ const priced={...target,researchForecast:fittedQuarterForecast(target,'nba','q1_points',calibrated,now)};
+ assert.equal(qualifiedQuarterTarget(priced,now)?.target,5);
+ const below={...target,sportsbookLine:6};
+ assert.equal(qualifiedQuarterTarget({...below,researchForecast:fittedQuarterForecast(below,'nba','q1_points',calibrated,now)},now),null);
+ assert.equal(qualifiedQuarterTarget({...priced,overPrice:-125},now),null);
 });
 test('wrong fixture context, unavailability, future artifact and started row fail closed',()=>{
  for(const patch of [{pregameContext:{...row.pregameContext,gameId:'other'}},{pregameContext:{...row.pregameContext,availability:[{status:'Out'}]}},{pregameContext:null},{frozen:true},{boardFrozen:true},{gameState:'post'},{gameTime:'2026-10-29T18:00Z'}])assert.equal(fittedQuarterForecast({...row,...patch},'nba','q1_points',bundle,now).status,'unavailable');

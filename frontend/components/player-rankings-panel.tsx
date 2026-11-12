@@ -7,7 +7,7 @@ import {nbaSlateRequest,scopedNbaBoard,nbaFixtureDay} from "@/lib/nba-slate-scop
 import {sharedJsonRequest} from '@/lib/shared-json-request';
 import {savedProjectionEvidence} from '@/lib/saved-projection';
 import {predictionProbabilityText} from '@/lib/prediction-probability';
-import {estimatedEv,estimatedEvText,estimatedEvNotice,formatEvPercent,nbaDisplayedResearchEv} from '@/lib/estimated-ev';
+import {estimatedEv,estimatedEvText,estimatedEvNotice,formatEvPercent,nbaDisplayedResearchEv,qualifiedQuarterTarget} from '@/lib/estimated-ev';
 import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
@@ -995,7 +995,8 @@ function PlayerCard({
     ? nbaPositiveEv?(quarterTarget?null:modelSelection?.side||null):null
     : quarterCard?(quarterTarget?null:modelSelection?.side||null)
     : modelSelection?.side||footballForecast?.side||(footballScorer?null:(researchOnly?null:card.prediction));
-  const quarterPick = quarterCard && !quarterTarget && outcomeEv.status === 'available' && outcomeEv.percent > 0 && Boolean(modelSelection);
+  const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
+  const quarterPick = Boolean(targetPick) || quarterCard && !quarterTarget && outcomeEv.status === 'available' && outcomeEv.percent > 0 && Boolean(modelSelection);
   const comparisonEv=sport==='nba'?nbaDisplayedResearchEv(card.raw):null;
   const evText=nbaPositiveEv?estimatedEvText(card.raw):'—',evNotice=estimatedEvNotice(card.raw);
   const displayedAverage=quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null);
@@ -1093,7 +1094,7 @@ function PlayerCard({
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
           <div><span>{card.marketLabel}</span><strong>{card.raw?.quoteVerified&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
-          <div><span>{quarterPick?'Sach Prediction':'Model forecast'}</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetForecast?(targetForecast.direction==='REACHES'?'Reaches target':'Below target'):'—'):quarterPick?displayedPick:modelSelection?.side||'—'}</strong>{quarterTarget?<small>{targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:!modelSelection?<small>Prediction unavailable</small>:!quarterPick?<small>No qualifying pick</small>:null}</div>
+          <div><span>{quarterPick?'Sach Prediction':'Model forecast'}</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetPick?`${propLineText(targetPick.target)}+`:targetForecast?(targetForecast.direction==='REACHES'?'Reaches target':'Below target'):'—'):quarterPick?displayedPick:modelSelection?.side||'—'}</strong>{quarterTarget?<small>{targetPick?'Sportsbook target':targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:!modelSelection?<small>Prediction unavailable</small>:!quarterPick?<small>No qualifying pick</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
@@ -2560,6 +2561,7 @@ export function PlayerRankingsPanel({
     ? displayCards
     : displayCards.slice(0, 5);
   const marketPickCount = displayCards.filter(card => {
+    if (qualifiedQuarterTarget(card.raw)) return true;
     if (!cardModelPick(card.raw) || card.raw?.withdrawnFromBoard || card.raw?.resultStatus === 'void') return false;
     const ev = estimatedEv(card.raw);
     return sport === 'nhl' || ev.status === 'available' && ev.percent > 0;

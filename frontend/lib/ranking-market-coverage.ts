@@ -1,6 +1,6 @@
 import {dashboardDay} from '@/lib/dashboard-contract';
 import {footballForecastDisplay} from '@/lib/football-forecast-display';
-import {estimatedEv} from '@/lib/estimated-ev';
+import {estimatedEv,qualifiedQuarterTarget} from '@/lib/estimated-ev';
 import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {capRankingUnders,cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
@@ -36,7 +36,7 @@ export function rankingMarketCoverage(sport:string,market:string,day:string,rows
   if(cardModelProjection(raw,now)!=null)game.projections++;
   if(displayed.has(raw)){
    if(ev.status==='available'||sport==='nba'&&nbaCardEv({raw},now)!=null)game.ev++;
-   if(pick&&(sport==='nhl'||ev.status==='available'&&ev.percent>0))game.picks++;
+   if(qualifiedQuarterTarget(raw,now)||pick&&(sport==='nhl'||ev.status==='available'&&ev.percent>0))game.picks++;
   }
   games.set(gameId,game);
  }

@@ -22,6 +22,13 @@ export function estimatedEv(row:any,now=Date.now()){
  const win=pick.side==='OVER'?over:under,loss=pick.side==='OVER'?under:over,profit=odds>0?odds/100:100/-odds;
  return {version:1 as const,status:'available' as const,percent:100*(win*profit-loss),reason:null,side:pick.side,line:pick.line,odds,winProbability:win,pushProbability:push,lossProbability:loss,sportsbook:row.sportsbook,sportsbookKey:row.sportsbookKey,quoteId:row.quoteId,gameId:row.gameId,playerId:row.playerId,calculatedAt:pick.calculatedAt,basis:'model_probability_and_exact_quote',validatedForBetting:false};
 }
+/** A one-sided quarter offer can qualify only on the actual posted target. */
+export function qualifiedQuarterTarget(row:any,now=Date.now()){
+ const target=quarterTargetDisplay(row,now);
+ if(target?.direction!=='REACHES')return null;
+ const ev=estimatedEv(row,now);
+ return ev.status==='available'&&ev.percent>0?target:null;
+}
 export function nbaComparisonEv(row:any,now=Date.now()){
  const forecast=row?.researchForecast,comparison=forecast?.priceComparison,binding=comparison?.quoteEvidence;
  if(row?.sport!=='nba'||row.lineType!=='main'||forecast?.status!=='available'||forecast.modelSelection||
