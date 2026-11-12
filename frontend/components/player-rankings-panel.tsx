@@ -1126,7 +1126,7 @@ function PlayerCard({
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
               : displayedPick||(sport==='nba'?(comparisonEv&&card.sportsbookLine!=null?`${comparisonEv.side} ${propLineText(card.sportsbookLine)}`:'PASS'):sport==='nhl'?'No saved pick':'Unavailable')}
           </strong>
-          {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?(modelPickNotice(card.raw)==='Model forecast'?null:<small>{modelPickNotice(card.raw)}</small>):footballForecast.side&&footballForecast.basis!=='Model forecast'?<small>{footballForecast.basis}</small>:null}
+          {!modelSelection&&projectionComparison?<small>Projection-based direction · not a verified Sach Pick</small>:!modelSelection&&state==='pregame'&&researchOnly?<small>{modelPickNotice(card.raw)}</small>:footballForecast.side&&footballForecast.basis!=='Model forecast'?<small>{footballForecast.basis}</small>:null}
 
         </div>
 
