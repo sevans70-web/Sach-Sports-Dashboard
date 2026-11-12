@@ -12,7 +12,7 @@ import {nbaCardEv,rankNbaCardsByEv} from '@/lib/nba-ev-ranking';
 import {cardObservationGames} from '@/lib/card-observation-games';
 import {footballForecastDisplay,footballForecastOutcome} from '@/lib/football-forecast-display';
 import {playerAvailability,applyParticipationEvidence,retainParticipation,cardStatusBadge} from "@/lib/player-participation";
-import {propIntelligence} from "@/lib/card-intelligence";
+import {propIntelligence,playerMatchupAndAbsence} from "@/lib/card-intelligence";
 import {publicPropContext} from "@/lib/public-prop-context";
 import {currentDroppedRows,trackRankBoard,type RankBoard} from "@/lib/rank-movement";
 import {integrityRow,verifiedPropQuote} from "@/lib/prop-integrity";
@@ -1417,6 +1417,9 @@ function PlayerCard({
             <div className={styles.matchupBox}>
               <strong>{card.matchup || "Matchup context"}</strong>
               <p>{card.gameStatus || (state === "pregame" ? "Scheduled" : state === "live" ? "In progress" : "Final")}</p>
+            </div>
+            <div className={styles.reasonList} aria-label="Player matchup and availability analysis">
+              {playerMatchupAndAbsence(card.raw,sport,card.market,historyValues).map((note,i)=><p key={i}>{note}</p>)}
             </div>
           </section>
 
