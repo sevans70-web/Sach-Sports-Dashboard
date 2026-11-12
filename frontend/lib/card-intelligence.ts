@@ -51,3 +51,42 @@ export function gameRankingTeam(row:any,side:'away'|'home',game:any){
  const names=[row.teamName,row.teamAbbr,row.team_abbreviation].map(clean).filter(Boolean),targets=[game[side+'Team'],game[side+'Abbr']].map(clean).filter(Boolean);
  return names.some(n=>targets.includes(n));
 }
+
+
+/** Evidence-based context shared by compact rankings and full player profiles.
+ * An absence is a possible role change, never proof of extra minutes or targets.
+ */
+export function playerMatchupAndAbsence(row:any,sport:string,market:string,history:number[]=[]){
+ const numeric=(x:any)=>x==null||x===''||!Number.isFinite(Number(x))?null:Number(x);
+ const fmt=(x:number)=>Number(x.toFixed(1)).toString();
+ const line=numeric(row?.sportsbookLine),values=history.filter(x=>Number.isFinite(x)).slice(-5);
+ const notes:string[]=[];
+ if(values.length>=3){
+  const avg=values.reduce((a,b)=>a+b,0)/values.length;
+  notes.push('What the recent form means: '+fmt(avg)+' '+market.replaceAll('_',' ')+' per game in the last '+values.length+' recorded appearances'+(line!=null?'; the displayed line is '+fmt(line)+'.':' (no verified comparison line).')+' A historical average is not a prediction.');
+ }else notes.push('At least three dated appearances are needed before recent form can be assessed reliably.');
+ const opp=row?.opponentDefense||row?.matchupEvidence;
+ if(opp?.verified===true&&opp?.gameId&&String(opp.gameId)===String(row?.gameId)&&typeof opp.summary==='string'&&opp.summary.trim()){
+  notes.push('Opponent matchup: '+opp.summary.trim());
+ }else notes.push('Opponent matchup: defensive allowance, positional coverage and head-to-head context are not verified for this fixture. No favorable matchup is claimed.');
+ const verifiedAbsences=(Array.isArray(row?.teammateAvailability)?row.teammateAvailability:Array.isArray(row?.teammateInjuries)?row.teammateInjuries:[]).filter((item:any)=>
+  item && item.verified===true && item.playerName &&
+  item.gameId && row?.gameId && String(item.gameId)===String(row.gameId) &&
+  item.teamId && row?.teamId && String(item.teamId)===String(row.teamId) &&
+  /^(out|inactive|injured reserve|suspended|dnp)$/i.test(String(item.status||'')) &&
+  (item.source||item.reportedAt));
+ const absence=verifiedAbsences.slice(0,3).map((item:any)=>{
+  const explicit=numeric(item?.verifiedMinutesChange);
+  const effect=explicit!=null&&item?.minutesImpactVerified===true?
+   'A verified rotation projection estimates '+(explicit>=0?'+':'')+fmt(explicit)+' minutes for this player.':
+   sport==='nba'||sport==='wnba'||sport==='cbb'?'This could change rotation minutes or usage, but an increase for this player has not been confirmed.':
+   sport==='nhl'?'This could change ice time, line deployment or power-play usage; the effect is unconfirmed.':
+   'This could affect snaps, carries or targets; a workload increase has not been confirmed.';
+  return item.playerName+' ('+item.status+'): '+effect;
+ });
+ const playerStatus=String(row?.injuryStatus||row?.injury?.status||row?.availabilityEvidence?.text||'');
+ if(row?.isOut===true||/^(out|inactive|dnp|injured reserve)$/i.test(playerStatus))notes.unshift('Player availability alert: reported '+(playerStatus||'out')+'. Do not assume this player will participate.');
+ if(absence.length)notes.push(...absence);
+ else notes.push('Teammate absence impact: no fixture-matched, source-verified absence and role adjustment has been established for this player. An injury elsewhere on the team does not automatically imply more minutes.');
+ return notes;
+}
