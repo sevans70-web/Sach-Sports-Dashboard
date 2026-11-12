@@ -1,7 +1,7 @@
 "use client";
 import {playerCardHistory,historyAverage} from '@/lib/player-card-history';
 import {propLineText} from '@/lib/prop-line-format';
-import {playerMatchupAndAbsence} from '@/lib/card-intelligence';
+import {playerMatchupAndAbsence,gameTeammateAbsences} from '@/lib/card-intelligence';
 import {SavedEstimatedEv,useSavedSelection} from '@/components/saved-estimated-ev';
 
 import { useEffect, useMemo, useState } from "react";
@@ -271,6 +271,7 @@ export function UnifiedPlayerCard({
     useState<5 | 10 | 20>(10);
   const [history, setHistory] =
     useState<HistoryPoint[]>([]);
+  const [verifiedTeammates,setVerifiedTeammates]=useState<any[]>([]);
   const [historyLoading, setHistoryLoading] =
     useState(false);
   const [historyLabel, setHistoryLabel] =
@@ -283,6 +284,12 @@ export function UnifiedPlayerCard({
     first(query.team) || LABELS[sport];
 
   const matchup = first(query.matchup);
+  useEffect(()=>{
+    setVerifiedTeammates([]);
+    let active=true;
+    gameTeammateAbsences(sport,first(query.gameId),team,name,first(query.league)||'eng.1').then(rows=>{if(active)setVerifiedTeammates(rows);});
+    return ()=>{active=false;};
+  },[sport,query.gameId,query.league,team,name]);
 
   const requestedMarket =
     first(query.market);
@@ -788,7 +795,7 @@ export function UnifiedPlayerCard({
           {recentLineResults ? <p><strong>Results against {propLineText(line)}:</strong> {recentLineResults.above} above, {recentLineResults.below} below{recentLineResults.equal ? `, ${recentLineResults.equal} equal` : ""} over the last {recentFive.length} recorded appearances. Historical results do not guarantee the next result.</p> : null}
         </> : !historyLoading ? <p>Verified recent-game evidence is not available for this market. No prediction advantage can be established from this card.</p> : null}
         {matchup ? <p><strong>Upcoming matchup:</strong> {matchup}.</p> : null}
-        {playerMatchupAndAbsence({sportsbookLine:line,gameId:first(query.gameId),teamId:first(query.teamId)},sport,researchMarket,history.map(p=>p.value)).map((note,i)=><p key={i}>{note}</p>)}
+        {playerMatchupAndAbsence({sportsbookLine:line,gameId:first(query.gameId),teamId:first(query.teamId),teamName:team,teammateAvailability:verifiedTeammates},sport,researchMarket,history.map(p=>p.value)).map((note,i)=><p key={i}>{note}</p>)}
       </section>
 
       <section
