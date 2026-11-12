@@ -39,9 +39,12 @@ export function nhlOpportunityGames(payload:any,identity:{sport:string;season:st
  for(const g of payload?.gameLog||[]){const time=Date.parse(g.gameDate||''),workload=minutes(g.toi);if(!Number.isFinite(time)||time>=Date.parse(identity.retrievedAt)-48*3600000||workload==null||workload<0)continue;
   const gameId=String(g.gameId||''),teamId=String(g.teamAbbrev||''),opponentId=String(g.opponentAbbrev||'');if(!gameId||!teamId||!opponentId)continue;
   const shotsAgainst=numeric(g.shotsAgainst),goalsAgainst=numeric(g.goalsAgainst),goalie=shotsAgainst!=null;
-  const saves=numeric(g.saves)??(shotsAgainst!=null&&goalsAgainst!=null&&shotsAgainst>=goalsAgainst?shotsAgainst-goalsAgainst:null);
+  const saves=numeric(g.gamesStarted)!==1?null:numeric(g.saves)??(shotsAgainst!=null&&goalsAgainst!=null&&shotsAgainst>=goalsAgainst?shotsAgainst-goalsAgainst:null);
   const values:Record<string,number|null>=goalie?{goalie_saves:saves}:{shots_on_goal:numeric(g.shots),goals:numeric(g.goals),assists:numeric(g.assists),points:numeric(g.points)};
-  for(const [market,actual] of Object.entries(values))if(actual!=null)out.push({...identity,gameId,gameTime:new Date(time).toISOString(),teamId,opponentId,market,actual,workload});
+  for(const [market,actual] of Object.entries(values))if(actual!=null){
+  const gameTime=goalie?g.gameDate+'T23:59:59Z':new Date(time).toISOString();
+  if(Date.parse(gameTime)<Date.parse(identity.retrievedAt)-48*3600000)out.push({...identity,gameId,gameTime,teamId,opponentId,market,actual,workload});
+ }
  }
  return out;
 }

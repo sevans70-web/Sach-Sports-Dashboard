@@ -22,6 +22,10 @@ export function partitionModelRuntime(root){
    partitions[sport+'|'+market]={bytes:bytes.toString('base64'),sha256:hash(bytes)};
   }
  }
+ const goalie=readFileSync(resolve(root,'nhl-goalie-saves.json.gz'));
+ const goalieValue=JSON.parse(gunzipSync(goalie));
+ const goaliePartition=gzipSync(JSON.stringify({...goalieValue,digest:hash(goalie),gi,giStatus}));
+ partitions['nhl|goalie_saves']={bytes:goaliePartition.toString('base64'),sha256:hash(goaliePartition)};
  const quarterManifest=JSON.parse(readFileSync(resolve(root,'quarter-manifest.json'),'utf8'));
  const quarterBytes=readFileSync(resolve(root,'quarter-snapshot.json.gz'));
  if(hash(quarterBytes)!==quarterManifest.sha256)throw Error('Quarter snapshot checksum mismatch');

@@ -30,12 +30,19 @@ export function createRuntimeForecastIndex(observations:OpportunityGame[]){
  return {histories,basketball};
 }
 let cached:RuntimeBundle|null=null;
+let goalieBundle:RuntimeBundle|null=null;
 function bundle(sport:string,market:string):RuntimeBundle|null{
  const worker=workerModelRuntime(sport,market);
  if(worker)return worker;
  if(globalThis.navigator?.userAgent==='Cloudflare-Workers')return null;
+ const root=join(process.cwd(),'model-runtime');
+ if(sport==='nhl'&&market==='goalie_saves'){
+  if(goalieBundle)return goalieBundle;
+  const bytes=readFileSync(join(root,'nhl-goalie-saves.json.gz'));
+  return goalieBundle={...JSON.parse(gunzipSync(bytes).toString()),digest:createHash('sha256').update(bytes).digest('hex'),gi:{},giStatus:{}};
+ }
  if(cached)return cached;
- const root=join(process.cwd(),'model-runtime'),manifest=JSON.parse(readFileSync(join(root,'manifest.json'),'utf8'));
+ const manifest=JSON.parse(readFileSync(join(root,'manifest.json'),'utf8'));
  const bytes=readFileSync(join(root,'snapshot.json.gz'));
  if(createHash('sha256').update(bytes).digest('hex')!==manifest.sha256)throw Error('Forecast snapshot checksum mismatch');
  const data=JSON.parse(gunzipSync(bytes).toString());
@@ -130,7 +137,8 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
  if(sport==='nfl'||sport==='nhl'){
-  const players=[...new Map<string,any>(payload.rows.filter((r:any)=>/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
+  const pricedGoalies=sport==='nhl'&&payload.market==='goalie_saves';
+  const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
    const season=String(row.season),url=sport==='nhl'?`https://api-web.nhle.com/v1/player/${encodeURIComponent(row.playerId)}/game-log/${encodeURIComponent(season)}/2`:`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
