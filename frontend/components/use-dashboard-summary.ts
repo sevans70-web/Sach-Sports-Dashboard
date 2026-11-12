@@ -1,12 +1,14 @@
 "use client";
 import {visiblePolling} from '@/lib/visible-polling';
 import {useEffect,useState} from "react";
-import type {DashboardSport} from "@/lib/dashboard-contract";
+import {dashboardDay,type DashboardSport} from "@/lib/dashboard-contract";
 const cached=new Map<string,{at:number,data:any}>(),pending=new Map<string,Promise<any>>();
-export function fetchDashboardSummary(sport:DashboardSport,league="eng.1"){
- const key=`${sport}|${league}`,hit=cached.get(key);if(hit&&Date.now()-hit.at<30_000)return Promise.resolve(hit.data);
+export function fetchDashboardSummary(sport:DashboardSport,league="eng.1",scope="current"){
+ const day=scope==="today"?dashboardDay(new Date()):"";
+ const key=day?`${sport}|${league}|today`:`${sport}|${league}`,hit=cached.get(key);
+ if(hit&&Date.now()-hit.at<30_000&&(!day||hit.data.slateDay===day))return Promise.resolve(hit.data);
  const current=pending.get(key);if(current)return current;
- const work=fetch(`/api/dashboard-summary?sport=${sport}&league=${encodeURIComponent(league)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)}).then(async r=>{if(!r.ok)throw Error(`Dashboard unavailable (${r.status})`);return r.json()}).then(data=>{cached.set(key,{at:Date.now(),data});return data}).finally(()=>pending.delete(key));pending.set(key,work);return work;
+ const work=fetch(`/api/dashboard-summary?sport=${sport}&league=${encodeURIComponent(league)}&scope=${encodeURIComponent(scope)}`,{cache:"no-store",signal:AbortSignal.timeout(20000)}).then(async r=>{if(!r.ok)throw Error(`Dashboard unavailable (${r.status})`);return r.json()}).then(data=>{cached.set(key,{at:Date.now(),data});return data}).finally(()=>pending.delete(key));pending.set(key,work);return work;
 }
 export function useDashboardSummary(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`;

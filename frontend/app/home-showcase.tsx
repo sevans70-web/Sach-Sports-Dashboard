@@ -8,6 +8,7 @@ import { visiblePolling } from "@/lib/visible-polling";
 import "./home-showcase.css";
 
 type Summary = {
+  slateDay: string;
   scheduleAvailable: boolean;
   rankingsAvailable: boolean;
   games: number;
@@ -70,7 +71,7 @@ export default function HomeShowcase() {
         await Promise.all([
           ...VISIBLE_SPORTS.map(async sport => {
             try {
-              const summary = await fetchDashboardSummary(sport);
+              const summary = await fetchDashboardSummary(sport, "eng.1", "today");
               if (active) setSummaries(previous => ({ ...previous, [sport]: summary }));
             } catch {
               if (active) setSummaries(previous => ({ ...previous, [sport]: previous[sport] ?? null }));
@@ -103,11 +104,15 @@ export default function HomeShowcase() {
     return () => { active = false; stop(); };
   }, []);
 
-  const available = Object.values(summaries).filter(Boolean);
-  const ready = VISIBLE_SPORTS.every(sport => summaries[sport] !== undefined);
-  const partial = ready && VISIBLE_SPORTS.some(sport => !summaries[sport]?.scheduleAvailable || !summaries[sport]?.rankingsAvailable);
+  const summaryFor = (sport: DashboardSport) => {
+    const summary = summaries[sport];
+    return summary && summary.slateDay !== today ? undefined : summary;
+  };
+  const current = VISIBLE_SPORTS.map(summaryFor);
+  const schedulesReady = current.every(summary => summary?.scheduleAvailable);
+  const rankingsReady = current.every(summary => summary?.rankingsAvailable);
   const total = (field: "games" | "live" | "playerProps" | "estimatedPicks") =>
-    available.reduce((sum, summary) => sum + (Number(summary?.[field]) || 0), 0);
+    current.reduce((sum, summary) => sum + (Number(summary?.[field]) || 0), 0);
   const teams = new Set<string>();
 
   return (
@@ -123,9 +128,9 @@ export default function HomeShowcase() {
         <section className="shIntel">
           <div className="shIntelTitle"><h2>Current Slate Intelligence</h2></div>
           <div className="shStats">
-            <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{available.length ? total("games") : "—"}</strong><small>{total("live")} live</small></div>
-            <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{available.length ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
-            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{available.length ? total("estimatedPicks") : "—"}</strong><small>Featured markets</small></div>
+            <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{schedulesReady ? total("games") : "—"}</strong><small>{schedulesReady ? `${total("live")} live today` : "Today · ET"}</small></div>
+            <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{rankingsReady ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
+            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{rankingsReady ? total("estimatedPicks") : "—"}</strong><small>Saved ranking picks</small></div>
             <div data-metric="results"><span className="shStatHead"><b aria-hidden="true">◎</b>Hit Rate</span><strong>{performance?.settled && typeof performance.hitRate === "number" ? performance.hitRate.toFixed(1) + "%" : "—"}</strong><small>{performance?.settled ? `${performance.hits} / ${performance.settled} graded decisions` : performance?.success ? "No graded results yet" : "Checking overall results"}</small></div>
           </div>
           <p className="ssScopeNote">Overall hit rate · All recorded results · NBA, NFL &amp; NHL</p>
@@ -135,11 +140,11 @@ export default function HomeShowcase() {
           <div className="shSectionTitle"><h2>Sport Snapshots</h2></div>
           <div className="shSnapshotList">
             {VISIBLE_SPORTS.map(sport => {
-              const summary = summaries[sport];
+              const summary = summaryFor(sport);
               return <Link href={`/${sport}`} key={sport} data-sport={sport}>
                 <strong className="shSnapshotSport">{sport.toUpperCase()}</strong>
-                <span>{summary?.scheduleAvailable ? `${summary.games} games` : summary === undefined ? "Loading games…" : "Games unavailable"}</span>
-                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} picks` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
+                <span>{summary?.scheduleAvailable ? `${summary.games} ${summary.games === 1 ? "game" : "games"}` : summary === undefined ? "Loading games…" : "Games unavailable"}</span>
+                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "saved pick" : "saved picks"}` : summary === undefined ? "Loading picks…" : "Picks unavailable"}</span>
                 <span className="shSnapshotArrow" aria-hidden="true">›</span>
               </Link>;
             })}
@@ -152,7 +157,7 @@ export default function HomeShowcase() {
               <div className="shSectionTitle shPanelHeading"><h2>Games</h2></div>
               <div className="shGameList">
                 {VISIBLE_SPORTS.map(sport => {
-                  const summary = summaries[sport];
+                  const summary = summaryFor(sport);
                   const games = [...(summary?.previewGames ?? [])].filter(game => game.state !== "post");
                   const game = games.sort((a, b) => Number(b.state === "in") - Number(a.state === "in") || Date.parse(a.date) - Date.parse(b.date))[0];
                   if (!game) return <p className="shHomeEmpty" key={sport}><strong>{sport.toUpperCase()}</strong> {summary === undefined ? "Loading games…" : summary?.scheduleAvailable ? "No upcoming games" : "Schedule unavailable"}</p>;
@@ -180,7 +185,7 @@ export default function HomeShowcase() {
                   const team = row?.teamName || row?.team || row?.teamAbbr;
                   const teamKey = team?.toLowerCase().replace(/[^a-z0-9]/g, "");
                   if (!slate || play?.basis !== "model" || !row || !teamKey || teams.has(teamKey) || (today && slate.slateDay < today)) {
-                    const nextGame = [...(summaries[sport]?.previewGames ?? [])]
+                    const nextGame = [...(summaryFor(sport)?.previewGames ?? [])]
                       .filter(game => game.state === "pre" && Date.parse(game.date) > Date.now())
                       .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))[0];
                     return <div className="shHomeEmpty shPickStatus" key={sport} data-sport={sport}>

@@ -21,6 +21,12 @@ export function dashboardSlate<T extends {id?:string;date:string;state:string}>(
  const order:Record<string,number>={in:0,pre:1,post:2};
  return selected.sort((a,b)=>(order[a.state]??1)-(order[b.state]??1)||Date.parse(a.date)-Date.parse(b.date));
 }
+/** Homepage totals use the Toronto date. Calendar and preview windows can span dates. */
+export function dashboardToday<T extends {date:string}>(games:T[],now=new Date()):T[]{
+ const day=dashboardDay(now);
+ return games.filter(game=>dashboardDay(game.date)===day);
+}
+
 export function dashboardCounts(games:any[],rows:any[],requireFootballQuote=false){
  const gameIds=new Set(games.map(g=>String(g.id||g.gameId||""))),days=new Set(games.map(g=>dashboardDay(g.date||g.tipoff||"")));
  const unique=new Map<string,any>();
@@ -31,7 +37,7 @@ export function dashboardCounts(games:any[],rows:any[],requireFootballQuote=fals
   const player=String(row.playerId||row.player_id||row.playerName||row.name||"");if(!player)continue;
   const line=row.sportsbookLine??row.marketLine??row.line,projection=row.modelProjection??row.projection??row.model_projection;
   const side=row.prediction??row.pickSide??(line!=null&&projection!=null?(Number(projection)>=Number(line)?"OVER":"UNDER"):null);
-  unique.set(`${player}|${id||dashboardDay(time)}`,{...row,sportsbookLine:line,modelProjection:projection,prediction:side});
+  unique.set(`${player}|${id||dashboardDay(time)}|${row.market||""}`,{...row,sportsbookLine:line,modelProjection:projection,prediction:side});
  }
  const ranked=[...unique.values()];
  const props=ranked.filter(r=>verifiedPropQuote(r,Date.now(),r.boardFrozen===true)&&r.marketBacked!==false&&!r.earlyModel);

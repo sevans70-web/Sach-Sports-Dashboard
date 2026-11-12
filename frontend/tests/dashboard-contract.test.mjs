@@ -38,3 +38,19 @@ test('shared Toronto date formatter preserves midnight and daylight-saving bound
  for(const [instant,day] of [['2026-10-26T03:59:59Z','2026-10-25'],['2026-10-26T04:00:00Z','2026-10-26'],['2026-11-01T05:59:59Z','2026-11-01'],['2026-11-01T06:00:00Z','2026-11-01'],['2026-11-02T04:59:59Z','2026-11-01'],['2026-11-02T05:00:00Z','2026-11-02']])assert.equal(dashboardDay(instant),day);
  assert.equal(dashboardDay('invalid'),'');
 });
+
+test('homepage counts one Eastern date and keeps different markets for the same player and game',async()=>{
+ const {dashboardToday}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
+ const now=new Date('2026-11-12T12:30:00-05:00');
+ const slate=dashboardToday([
+  {id:'prior',date:'2026-11-12T04:30:00Z',state:'in'},
+  {id:'a',date:'2026-11-13T00:00:00Z',state:'pre'},
+  {id:'next',date:'2026-11-14T00:00:00Z',state:'pre'},
+ ],now);
+ assert.deepEqual(slate.map(game=>game.id),['a']);
+ const quoted={...row,capturedAt:stamp,quoteId:'q',researchForecast:{modelSelection:{side:'OVER',line:10.5,price:-110,quoteId:'q',sportsbookKey:'fanduel',calculatedAt:stamp}}};
+ const points={...quoted,market:'points'},rebounds={...quoted,market:'rebounds'};
+ const counts=dashboardCounts(slate,[points,points,rebounds,{...points,gameId:'next'}]);
+ assert.equal(counts.estimatedPicks,2);
+ assert.equal(counts.playerProps,2);
+});
