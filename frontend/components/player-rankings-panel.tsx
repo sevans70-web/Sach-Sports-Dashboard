@@ -32,6 +32,7 @@ import {finalCardObservation,retainCardFinal} from '@/lib/final-card-observation
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./player-rankings.module.css";
 import {usePlayerChartContext} from "./use-player-chart-context";
+import {HeadToHeadChart} from "./head-to-head-chart";
 import {RecentChart} from "./recent-player-chart";
 import Link from "next/link";
 
@@ -814,39 +815,28 @@ type RecentPoint={value:number;date?:string;opponent?:string;gameId?:string};
 type CardHistory={analysis:RecentPoint[];chart:RecentPoint[]};
 const recentFormCache = new Map<string, CardHistory>();
 
+function recentFormUrl(card: RankingCard, sport: RankingsSport, league: string) {
+  if (NATIVE_HISTORY_SPORTS.has(sport)) {
+    return `/api/${sport}/player/${encodeURIComponent(card.playerId)}/history?market=${encodeURIComponent(card.market)}`;
+  }
+  const params = new URLSearchParams({
+    sport, playerId: card.playerId, playerName: card.playerName, team: card.teamName, market: card.market,
+  });
+  if (sport === "soccer" && league) params.set("league", league);
+  return `/api/player-history?${params}`;
+}
+
 async function loadRecentFormForCard(
   card: RankingCard,
   sport: RankingsSport,
   league: string,
   signal: AbortSignal
 ):Promise<CardHistory> {
-  const key = `${sport}|${league}|${card.playerId}|${card.market}|${card.gameTime}`;
+  const key = `${sport}|${league}|${card.playerId}|${card.market}|${card.gameTime}|${card.raw?.gameId||""}`;
   const cached = recentFormCache.get(key);
   if (cached) return cached;
 
-  let url = "";
-
-  if (NATIVE_HISTORY_SPORTS.has(sport)) {
-    url =
-      `/api/${sport}/player/${encodeURIComponent(card.playerId)}/history` +
-      `?market=${encodeURIComponent(card.market)}&before=${encodeURIComponent(card.gameTime)}`;
-  } else {
-    const params = new URLSearchParams({
-      sport,
-      playerId: card.playerId,
-      playerName: card.playerName,
-      team: card.teamName,
-      market: card.market,
-      before: card.gameTime,
-    });
-
-    if (sport === "soccer" && league) {
-      params.set("league", league);
-    }
-
-    url = `/api/player-history?${params.toString()}`;
-  }
-
+  const url = recentFormUrl(card, sport, league) + `&before=${encodeURIComponent(card.gameTime)}`;
   const response = await fetch(url, {
     cache: "no-store",
     signal,
@@ -877,7 +867,7 @@ function PlayerCard({
   const [open, setOpen] = useState(false);
   const chartContext=usePlayerChartContext(sport,card.playerId,card.teamName,card.gameTime,'',open);
   const [chartPoints,setChartPoints]=useState<RecentPoint[]>([]);
-  const [formSpan, setFormSpan] = useState<5 | 10 | 20>(10);
+  const [formSpan, setFormSpan] = useState<5 | 10 | 20 | "head-to-head">(10);
   const [historyPoints,setHistoryPoints]=useState<RecentPoint[]>([]);
   const [historyValues, setHistoryValues] = useState<number[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -1336,7 +1326,7 @@ function PlayerCard({
             <div className={styles.sectionTitleRow}>
               <h4>Recent Form</h4>
               <div className={styles.formTabs}>
-                {([5, 10, 20] as const).map((span) => (
+                {([5, 10, 20, "head-to-head"] as const).map((span) => (
                   <button
                     type="button"
                     key={span}
@@ -1344,14 +1334,20 @@ function PlayerCard({
                     onClick={() => setFormSpan(span)}
                     aria-pressed={formSpan === span}
                   >
-                    Last {span}
+                    {span === "head-to-head" ? "Head-to-Head" : `Last ${span}`}
                   </button>
                 ))}
               </div>
             </div>
 
             {(chartContext?.rookie||chartContext?.draftYear)&&<p>{[chartContext.rookie?'Rookie':'',chartContext.draftYear?`Drafted ${chartContext.draftYear}`:''].filter(Boolean).join(' · ')}</p>}
-            {historyLoading && !chartPoints.length ? (
+            {formSpan === "head-to-head" ? <HeadToHeadChart
+              key={`${sport}|${card.playerId}|${card.market}|${card.gameTime}|${card.raw?.gameId||""}`}
+              sport={sport} league={league} playerId={card.playerId} gameId={String(card.raw?.gameId||"")}
+              gameTime={card.gameTime} team={card.teamName} matchup={card.matchup}
+              market={card.market} statLabel={card.marketLabel.trim().toLowerCase()} recent={chartPoints}
+              historyUrl={recentFormUrl(card,sport,league)} line={progressLine} />
+            : historyLoading && !chartPoints.length ? (
               <div className={styles.chartEmpty}>
                 Loading recent game-by-game form…
               </div>

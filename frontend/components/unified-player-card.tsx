@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./unified-player-card.module.css";
 import {usePlayerChartContext} from "./use-player-chart-context";
+import {HeadToHeadChart} from "./head-to-head-chart";
 import {RecentChart} from "./recent-player-chart";
 
 type SportKey =
@@ -254,7 +255,7 @@ export function UnifiedPlayerCard({
 }) {
   const router = useRouter();
   const [span, setSpan] =
-    useState<5 | 10 | 20>(10);
+    useState<5 | 10 | 20 | "head-to-head">(10);
   const [history, setHistory] =
     useState<HistoryPoint[]>([]);
   const [chartHistory,setChartHistory]=useState<HistoryPoint[]>([]);
@@ -485,11 +486,18 @@ export function UnifiedPlayerCard({
         <section className={styles.section}>
           <div className={styles.sectionHeading}>
             <h2>Recent Form</h2>
-            <div className={styles.tabs} aria-label="Recent games">
-              {([5, 10, 20] as const).map(value => <button key={value} type="button" aria-pressed={span===value} onClick={() => setSpan(value)}>Last {value}</button>)}
+            <div className={styles.tabs} aria-label="Player history view">
+              {([5, 10, 20, "head-to-head"] as const).map(value => <button key={value} type="button" aria-pressed={span===value} onClick={() => setSpan(value)}>{value === "head-to-head" ? "Head-to-Head" : `Last ${value}`}</button>)}
             </div>
           </div>
-          {historyLoading && !chartHistory.length ? <p className={styles.muted}>Loading recent form…</p> :
+          {span === "head-to-head" ? <HeadToHeadChart
+            key={`${sport}|${playerId}|${researchMarket}|${historyCutoff}|${first(query.gameId)}`}
+            sport={sport} league={first(query.league)||'eng.1'} playerId={playerId}
+            gameId={first(query.gameId)} gameTime={historyCutoff} team={team} matchup={matchup}
+            market={researchMarket} statLabel={stat.toLowerCase()} recent={chartHistory} opponent={fixtureOpponent}
+            historyUrl={historyUrl(sport,playerId,name,team,researchMarket,first(query.league)||'eng.1',first(query.source))}
+            line={line} />
+          : historyLoading && !chartHistory.length ? <p className={styles.muted}>Loading recent form…</p> :
             <RecentChart key={`${playerId}|${researchMarket}|${span}`} points={chartHistory}
               games={chartContext?.games} span={span} rookie={chartContext?.rookie}
               statLabel={stat.toLowerCase()} line={line} projection={projection} liveValue={live ? actual : null} />}

@@ -6,16 +6,18 @@ export const dynamic='force-dynamic';
 async function loadHistory(req:NextRequest,{params}:{params:Promise<{id:string}>}){
  const {id}=await params,market=req.nextUrl.searchParams.get('market')||'';
  if(!/^\d+$/.test(id)||!['points','goals','assists','shots_on_goal','blocked_shots','goalie_saves'].includes(market))return NextResponse.json({success:false,points:[],error:'Unsupported player or market'},{status:400});
- const now=new Date(),year=now.getUTCFullYear(),seasonStart=now.getUTCMonth()>=8?year:year-1;
+ const historicalDate=req.nextUrl.searchParams.get('view')==='head-to-head'?Date.parse(req.nextUrl.searchParams.get('before')||''):NaN;
+ const now=Number.isFinite(historicalDate)?new Date(historicalDate):new Date(),year=now.getUTCFullYear(),seasonStart=now.getUTCMonth()>=8?year:year-1;
  const blocks=await Promise.all([seasonStart-1,seasonStart].map(async start=>{
   try{const r=await providerFetch(`https://api-web.nhle.com/v1/player/${id}/game-log/${start}${start+1}/2`,{cache:'no-store'});if(!r.ok)return {ok:false,points:[]};return {ok:true,points:nhlHistoryPoints(await r.json(),market)}}catch{return {ok:false,points:[]}}
  }));
- const points=[...new Map(blocks.flatMap(b=>b.points).map(p=>[p.gameId,p])).values()].sort((a,b)=>a.date.localeCompare(b.date)).slice(-30);
+ const points=[...new Map(blocks.flatMap(b=>b.points).map(p=>[p.gameId,p])).values()].sort((a,b)=>a.date.localeCompare(b.date)).filter(point=>!Number.isFinite(historicalDate)||Date.parse(point.date)<historicalDate).slice(-(req.nextUrl.searchParams.get('view')==='head-to-head'?200:30));
  const success=blocks.some(b=>b.ok);
  return NextResponse.json({success,points,updatedAt:new Date().toISOString()},{status:success?200:502,headers:{'Cache-Control':'no-store'}});
 }
 
 export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
  const {id}=await context.params;const response=await loadHistory(req,context);
+ if(req.nextUrl.searchParams.get('view')==='head-to-head')return response;
  return retainPlayerHistory('nhl',id,req.nextUrl.searchParams.get('market')||'shots_on_goal',response,req.nextUrl.searchParams.get('before'));
 }

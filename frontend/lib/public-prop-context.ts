@@ -2,7 +2,7 @@ import {propLineText} from '@/lib/prop-line-format';
 const num=(v:any)=>v==null||typeof v==='boolean'||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
 const fmt=(v:number)=>Number(v.toFixed(1)).toString();
 /** Descriptive pregame history only; never a forecast, edge, or GI score. */
-export function datedCardHistoryPoints(points:any[],kickoff:string,market:string,sport:string,gameId?:string,chart=false){
+export function datedCardHistoryPoints(points:any[],kickoff:string,market:string,sport:string,gameId?:string,chart=false,limit=20){
  const cutoff=Date.parse(kickoff);if(!Number.isFinite(cutoff))return [];
  const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(cutoff));
  return points.filter(p=>Number.isFinite(Date.parse(p.date))&&Date.parse(p.date)<cutoff&&num(p.value)!=null)
@@ -11,7 +11,7 @@ export function datedCardHistoryPoints(points:any[],kickoff:string,market:string
   .filter(p=>!market.startsWith('q1_')||p.period==='q1')
   .filter(p=>chart||!['nfl','cfb'].includes(sport)||p.season==null||Number(p.season)===new Date(cutoff).getUTCFullYear())
   .filter(p=>chart||!['nfl','cfb'].includes(sport)||!['passing_yards','passing_tds','passing_interceptions','passing_rushing_yards'].includes(market.replace(/^q1_/,''))||num(p.workload)!=null&&Number(p.workload)>=10)
-  .sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-20).map(p=>({...p,value:Number(p.value)}));
+  .sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-limit).map(p=>({...p,value:Number(p.value)}));
 }
 export function datedCardHistory(points:any[],kickoff:string,market:string,sport:string,gameId?:string){
  return datedCardHistoryPoints(points,kickoff,market,sport,gameId).map(p=>p.value);

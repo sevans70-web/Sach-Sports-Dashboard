@@ -54,17 +54,20 @@ export function gameRankingTeam(row:any,side:'away'|'home',game:any){
 }
 
 
-/** Market-specific matchup facts from the player's dated pregame history. */
-export function playerMatchupNotes(row:any,market:string,history:import("@/lib/player-card-history").PlayerHistoryPoint[]){
+type MatchupHistoryPoint = import("@/lib/player-card-history").PlayerHistoryPoint;
+
+/** Match actual player appearances to the opponent in the selected fixture. */
+export function playerMatchupHistory(row:any,history:MatchupHistoryPoint[]){
  const normalize=(name:unknown)=>String(name||'').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g,'');
  const teams=String(row.matchup||'').split(/\s+@\s+|\s+vs\.?\s+/i);
  const team=normalize(row.teamName);
  const own=teams.findIndex(name=>normalize(name)===team);
  const opponent=String(row.opponentName||(teams.length===2&&own>=0?teams[1-own]:''));
  const aliases=[opponent,...(Array.isArray(row.opponentAliases)?row.opponentAliases:[])].map(normalize).filter(Boolean);
- const against=(point:{opponent?:string})=>{
+ const against=(point:MatchupHistoryPoint)=>{
   const name=normalize(point.opponent);
-  return Boolean(name)&&aliases.some(alias=>alias===name||(name.length>=5&&alias.endsWith(name)));
+  const abbr=normalize(point.opponentAbbr);
+  return (abbr && aliases.includes(abbr)) || Boolean(name)&&aliases.some(alias=>alias===name||(name.length>=5&&alias.endsWith(name)));
  };
  const cutoff=Date.parse(row.gameTime||'');
  const day=Number.isFinite(cutoff)?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto'}).format(cutoff):'';
@@ -75,6 +78,12 @@ export function playerMatchupNotes(row:any,market:string,history:import("@/lib/p
  const unique=[...new Map(prior.map(point=>[point.gameId||`${point.date}|${normalize(point.opponent)}`,point])).values()];
  const meetings=unique.filter(against).slice(-5);
  const other=unique.filter(point=>point.opponent&&!against(point)).slice(-5);
+ return {opponent,meetings,other};
+}
+
+/** Market-specific matchup facts from the player's dated pregame history. */
+export function playerMatchupNotes(row:any,market:string,history:MatchupHistoryPoint[]){
+ const {opponent,meetings,other}=playerMatchupHistory(row,history);
  const line=row.quoteVerified===true?number(row.sportsbookLine):null;
  const unit=market.replace(/^q1_/,'').replaceAll('_',' ');
  const notes:string[]=[];

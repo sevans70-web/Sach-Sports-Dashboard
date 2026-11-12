@@ -57,6 +57,7 @@ function parseSeason(payload:any,season:number,market:CfbMarketKey){
         seen.add(eventId);
         rows.push({season,gameId:eventId,date:String(meta?.gameDate||ev?.gameDate||""),
           opponent:String(meta?.opponent?.displayName||meta?.opponent?.abbreviation||""),
+          opponentAbbr:String(meta?.opponent?.abbreviation||""),
           atVs:String(meta?.atVs||""),value});
       }
     }
@@ -85,12 +86,14 @@ async function loadHistory(req:NextRequest,{params}:{params:Promise<{id:string}>
   if(market==="first_td")return NextResponse.json({success:true,supported:false,points:[],statLabel:"First TD",message:"First TD does not have a reliable game-by-game stat series."});
   if(!STAT_KEYS[market])return NextResponse.json({success:true,supported:false,points:[],statLabel:"Player History",message:"This market does not have a reliable game-by-game history series."});
   const blocks=await Promise.all([2025,2026].map(async season=>{try{return parseSeason(await fetchLog(id,season),season,market)}catch{return []}}));
-  const points=blocks.flat().sort((a,b)=>new Date(a.date).getTime()-new Date(b.date).getTime()).slice(-20);
+  const before=req.nextUrl.searchParams.get('view')==='head-to-head'?Date.parse(req.nextUrl.searchParams.get('before')||''):NaN;
+  const points=blocks.flat().filter(point=>!Number.isFinite(before)||Date.parse(point.date)<before).sort((a,b)=>new Date(a.date).getTime()-new Date(b.date).getTime()).slice(-(req.nextUrl.searchParams.get('view')==='head-to-head'?200:20));
   return NextResponse.json({success:true,supported:true,points,statLabel:LABELS[market]||"Player History",
     message:points.length?"":"No verified game-by-game history was returned for this player and market.",updatedAt:new Date().toISOString()});
 }
 
 export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
  const {id}=await context.params;const response=await loadHistory(req,context);
+ if(req.nextUrl.searchParams.get('view')==='head-to-head')return response;
  return retainPlayerHistory('cfb',id,req.nextUrl.searchParams.get('market')||'passing_yards',response,req.nextUrl.searchParams.get('before'));
 }

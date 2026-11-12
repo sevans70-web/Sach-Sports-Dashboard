@@ -140,6 +140,7 @@ function parseSeason(payload:any,season:number,market:HistoryMarket){
             meta?.opponent?.abbreviation||
             ""
           ),
+          opponentAbbr:String(meta?.opponent?.abbreviation||""),
           atVs:String(meta?.atVs||""),
           value,
           workload:count(stats,passingAttempts),
@@ -227,7 +228,7 @@ async function loadHistory(
         new Date(a.date).getTime()-
         new Date(b.date).getTime()
     )
-    .slice(-20);
+    .slice(-(req.nextUrl.searchParams.get('view')==='head-to-head'?200:20));
 
   return NextResponse.json({
     success:true,
@@ -243,5 +244,6 @@ async function loadHistory(
 
 export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
  const {id}=await context.params;const response=await loadHistory(req,context);
+ if(req.nextUrl.searchParams.get('view')==='head-to-head')return response;
  return retainPlayerHistory('nfl',id,req.nextUrl.searchParams.get('market')||'passing_yards',response,req.nextUrl.searchParams.get('before'));
 }

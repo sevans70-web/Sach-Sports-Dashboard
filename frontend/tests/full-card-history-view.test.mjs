@@ -34,6 +34,7 @@ function component({points=[],effects=[],fetch=()=>{},evidence={selection:null,f
   './use-player-chart-context':{usePlayerChartContext:()=>null},
   './unified-player-card.module.css':{},
   './recent-player-chart.module.css':{},
+  './head-to-head-chart':{HeadToHeadChart:()=>null},
  };
  function evaluate(code){
   const module={exports:{}};
@@ -52,6 +53,7 @@ for(const sport of ['nba','nfl','cfb','nhl','cbb','soccer','wnba','mlb'])test(sp
  assert.deepEqual(labels.map(label=>html.indexOf('>'+label+'<')).toSorted((a,b)=>a-b),labels.map(label=>html.indexOf('>'+label+'<')));
  assert.match(html,/2 of .*10.* games with recorded stats.*6.* average/);
  assert.match(html,/aria-pressed="true"/);
+ assert.match(html,/Head-to-Head/);
  assert.equal((html.match(/aria-label="Unavailable"/g)||[]).length,6);
 });
 

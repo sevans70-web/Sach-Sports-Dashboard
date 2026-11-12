@@ -10,7 +10,7 @@ export function basketballRegularSeasonGroups(payload:any){
  return (Array.isArray(payload?.seasonTypes)?payload.seasonTypes:[]).filter((group:any)=>/\bregular season\b/i.test(String(group.displayName||'')));
 }
 /** Filter before taking Last 20 so later games cannot displace pregame history. */
-export function basketballHistoryWindow(rows:any[],before:string|null,now=Date.now()){
+export function basketballHistoryWindow(rows:any[],before:string|null,now=Date.now(),limit=20){
  const parsed=before?Date.parse(before):now,cutoff=Number.isFinite(parsed)?parsed:now;
  const unique=new Map<string,any>();
  for(const row of rows){
@@ -18,5 +18,5 @@ export function basketballHistoryWindow(rows:any[],before:string|null,now=Date.n
   if(!row.gameId||!Number.isFinite(time)||time>=cutoff||typeof row.value!=='number'||!Number.isFinite(row.value))continue;
   unique.set(String(row.gameId),row);
  }
- return [...unique.values()].sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-20);
+ return [...unique.values()].sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-limit);
 }

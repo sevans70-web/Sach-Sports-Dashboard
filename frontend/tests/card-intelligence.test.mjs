@@ -75,3 +75,19 @@ test('form distinguishes changes in opportunity from changes in production rate'
  assert.match(playerFormInsight('nhl','goals',[...window({value:0,shots:3}),...window({value:1,shots:3})],'goals'),/change in output per shot/);
  assert.match(playerFormInsight('nba','q1_points',[...before,...volume],'points'),/opportunity is incomplete/);
 });
+
+test('head-to-head keeps the five latest verified appearances, including zero, before the selected fixture',async()=>{
+ const {playerMatchupHistory}=await loadTs(new URL('../lib/card-intelligence.ts',import.meta.url));
+ const {playerCardHistory}=await loadTs(new URL('../lib/player-card-history.ts',import.meta.url));
+ const history=[
+  ...Array.from({length:6},(_,i)=>({gameId:'meeting-'+i,date:`2025-10-0${i+1}`,opponent:'NYG',value:i===5?0:i,period:'q1'})),
+  ...Array.from({length:25},(_,i)=>({gameId:'other-'+i,date:`2026-09-${String(i+1).padStart(2,'0')}`,opponent:'PHI',value:20,period:'q1'})),
+  {gameId:'repeat',date:'2026-10-03',opponent:'New York Giants',value:44},
+  {gameId:'future',date:'2026-11-12',opponent:'NYG',value:99,period:'q1'},
+ ];
+ const gameTime='2026-11-12T23:00:00Z';
+ const points=playerCardHistory({points:history},'nfl','q1_passing_yards',gameTime,'selected',true,200);
+ const result=playerMatchupHistory({gameId:'selected',gameTime,opponentName:'New York Giants',opponentAliases:['NYG']},[...points,...points]);
+ assert.equal(result.opponent,'New York Giants');
+ assert.deepEqual(result.meetings.map(point=>point.value),[1,2,3,4,0]);
+});

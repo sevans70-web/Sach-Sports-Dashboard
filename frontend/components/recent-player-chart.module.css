@@ -80,3 +80,8 @@
 
 
 .chartReadout { margin: 8px 0 0; color: #e8d48a; font-size: 12px; min-height: 18px; }
+
+.meetingPlot { position: relative; width: 100%; flex: 1; }
+.meetingBar { position: absolute; left: 50%; transform: translateX(-50%); max-width: 30px; }
+.zeroAxis { position: absolute; left: 0; right: 0; border-top: 1px solid #757980; }
+.barSlot .meetingDate { font-size: 10px; color: #c6c9cc; white-space: nowrap; }
