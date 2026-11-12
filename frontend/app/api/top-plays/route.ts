@@ -1,7 +1,7 @@
 import {cloudHistoryReadOnly} from '../../../scripts/history-cloud.mjs';
 import {estimatedEv} from '@/lib/estimated-ev';
 import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
-import {readPregameBoard} from '@/lib/ranking-board-cache';
+import {cachePregameBoard,readPregameBoard} from '@/lib/ranking-board-cache';
 import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
 import {distinctFeaturedPlayers,featuredPlayerKeys} from '@/lib/top-plays';
 import {retainedTopPlays} from '@/lib/retained-top-plays';
@@ -47,7 +47,10 @@ async function featuredResponse(req:NextRequest){
    const {GET}=await import('../nfl/rankings/route');
    const response=await GET(new NextRequest(`https://sach-capture.internal/api/nfl/rankings?market=${market}&day=${day}`));
    const board=await response.json();
-   if(board?.rows?.length)updateTopPlayMarket(sport,board);
+   if(board?.rows?.length){
+    updateTopPlayMarket(sport,board);
+    await cachePregameBoard(workerRuntimeBinding('VINEXT_KV_CACHE'),sport,market,board);
+   }
   };
   const work=Promise.allSettled(quarterMarkets.map(fetchQuarter));
   let timeout:ReturnType<typeof setTimeout>|undefined;

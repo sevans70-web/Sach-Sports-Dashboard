@@ -57,10 +57,10 @@ export function savedNhlCardRow(row:any,original:any,pickRecord:any,now=Date.now
   const receipt=record.payload, selection=receipt.modelSelection;
   const restored={...row,...quote,quoteVerified:true,boardFrozen:true,boardCapturedAt:quote.capturedAt,
    researchForecast:Number.isFinite(receipt.modelProjection)?{status:'available',projection:receipt.modelProjection,
-    calculatedAt:selection?.calculatedAt||quote.capturedAt,modelSelection:selection,validatedForBetting:receipt.modelValidation===true}:null};
+    calculatedAt:selection?.calculatedAt||quote.capturedAt,modelSelection:selection,priceComparison:receipt.priceComparison,validatedForBetting:receipt.modelValidation===true}:null};
   if(selection?.side===record.prediction_side&&savedModelPick(restored))return restored;
   if(record===original)return {...restored,researchForecast:restored.researchForecast&&{...restored.researchForecast,
-   calculatedAt:quote.capturedAt,modelSelection:null}};
+   calculatedAt:quote.capturedAt,modelSelection:null,priceComparison:null}};
  }
  return null;
 }

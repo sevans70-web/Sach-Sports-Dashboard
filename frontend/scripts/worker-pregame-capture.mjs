@@ -55,6 +55,11 @@ export function originalPregameQuote(row,sport,market,now=Date.now()){
   selection.price===(selection.side==='OVER'?row.overPrice:row.underPrice)&&
   Number.isFinite(selectionTime)&&selectionTime>=updated&&selectionTime<=now&&selectionTime<start
    ?selection.side:null;
+ const comparison=row.researchForecast?.priceComparison;
+ const probabilities=[comparison?.overProbability,comparison?.underProbability,comparison?.pushProbability];
+ const priceComparison=sport==='nhl'&&side&&probabilities.every(p=>numeric(p)&&p>=0&&p<=1)&&
+  Math.abs(probabilities.reduce((sum,p)=>sum+p,0)-1)<=1e-6
+   ? {overProbability:probabilities[0],underProbability:probabilities[1],pushProbability:probabilities[2]}:null;
  const capturedAt=new Date(now).toISOString(),gameTime=new Date(start).toISOString();
  const payload={
   version:1,sport,market,gameId,playerId,playerName:str(row.playerName),teamName:str(row.teamName),matchup:str(row.matchup),
@@ -64,6 +69,7 @@ export function originalPregameQuote(row,sport,market,now=Date.now()){
   // after kickoff from the result or a later moved sportsbook line.
   modelSelection:side?{side,line,price:selection.price,quoteId:str(selection.quoteId),
    sportsbookKey:str(selection.sportsbookKey),calculatedAt:new Date(selectionTime).toISOString()}:null,
+  ...(priceComparison?{priceComparison}:{}),
   modelProjection:numeric(row?.researchForecast?.projection)?row.researchForecast.projection:null,
   historicalBaseline:numeric(row?.modelProjection)?row.modelProjection:null,
   quote:{quoteId:str(row.quoteId),sportsbook:str(row.sportsbook),sportsbookKey:str(row.sportsbookKey),

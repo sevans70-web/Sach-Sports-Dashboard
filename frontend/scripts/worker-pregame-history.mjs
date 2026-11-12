@@ -12,8 +12,9 @@ export function captureVersionOneChecksum(value){
  const pick=(source,fields)=>Object.fromEntries(fields.filter(k=>Object.hasOwn(source||{},k)).map(k=>[k,source[k]]));
  const quote=pick(value.quote,['quoteId','sportsbook','sportsbookKey','line','overPrice','underPrice','lineType','quoteUpdatedAt','quotePeriod','quoteMarket']);
  const model=value.modelSelection==null?null:pick(value.modelSelection,['side','line','price','quoteId','sportsbookKey','calculatedAt']);
- const ordered=pick(value,['version','sport','market','gameId','playerId','playerName','teamName','matchup','gameTime','capturedAt','sourcePrediction','fittedModelPick','modelSelection','modelProjection','historicalBaseline','quote','modelValidation','dataType']);
+ const ordered=pick(value,['version','sport','market','gameId','playerId','playerName','teamName','matchup','gameTime','capturedAt','sourcePrediction','fittedModelPick','modelSelection','priceComparison','modelProjection','historicalBaseline','quote','modelValidation','dataType']);
  ordered.modelSelection=model;ordered.quote=quote;
+ if(ordered.priceComparison)ordered.priceComparison=pick(ordered.priceComparison,['overProbability','underProbability','pushProbability']);
  return createHash('sha256').update(JSON.stringify(ordered)).digest('hex');
 }
 const id=(row)=>[row?.market,row?.game_id,row?.player_id].join('|');
