@@ -1081,7 +1081,7 @@ function PlayerCard({
         {!firstBasket&&<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>{comparisonEv?'Research EV':'EV'}</span>
           {comparisonEv?<><strong title="Positive research comparison only; not an approved pick." style={{borderColor:"var(--green)"}}>{formatEvPercent(comparisonEv.percent)}</strong><small>{comparisonEv.side} · research only</small></>:<>
-          <strong title={evNotice} style={{borderColor:evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"?<small title={evNotice}>{sport==='nba'?'No positive qualifying EV':'Unavailable'}</small>:null}</>}
+          <strong title={evNotice} style={{borderColor:evText==="—"?"#686b72":"var(--green)"}}>{evText}</strong>{evText==="—"?<small title={evNotice}>{sport==='nba'?'No positive qualifying EV':evNotice}</small>:null}</>}
         </div>}
       </div>
 
@@ -1111,7 +1111,7 @@ function PlayerCard({
         </div>
 
         <div>
-          <span>{sport==='nba'&&!displayedPick?(comparisonEv?'Model forecast':'No qualifying pick'):projectionComparison?'Projection vs. line':'Sach Prediction'}</span>
+          <span>{sport==='nba'&&!displayedPick?(comparisonEv?'Model forecast':'No qualifying pick'):'Sach Prediction'}</span>
           <strong
             className={
               displayedPick === "UNDER"
@@ -1124,7 +1124,7 @@ function PlayerCard({
           >
             {["OVER", "UNDER"].includes(displayedPick) && card.sportsbookLine != null
               ? `${displayedPick} ${propLineText(card.sportsbookLine)}`
-              : displayedPick||(sport==='nba'?(comparisonEv&&card.sportsbookLine!=null?`${comparisonEv.side} ${propLineText(card.sportsbookLine)}`:'PASS'):sport==='nhl'?'No saved pick':'—')}
+              : displayedPick||(sport==='nba'?(comparisonEv&&card.sportsbookLine!=null?`${comparisonEv.side} ${propLineText(card.sportsbookLine)}`:'PASS'):sport==='nhl'?'No saved pick':'Unavailable')}
           </strong>
           {!modelSelection&&(projectionComparison||state==='pregame'&&researchOnly)?(modelPickNotice(card.raw)==='Model forecast'?null:<small>{modelPickNotice(card.raw)}</small>):footballForecast.side&&footballForecast.basis!=='Model forecast'?<small>{footballForecast.basis}</small>:null}
 
@@ -1254,8 +1254,8 @@ function PlayerCard({
               </strong>
             </div>
             <div>
-              <b>{state === "pregame" ? "Projection vs line" : "Actual"}</b>
-              <span>{state === "pregame" ? "vs line" : state === "live" ? "live" : "final"}</span>
+              <b>{state === "pregame" ? "Projection vs. Line" : "Actual"}</b>
+              <span>{state === "pregame" ? "Model minus sportsbook line" : state === "live" ? "live" : "final"}</span>
               <strong>
                 {state === "pregame"
                   ? edge == null
