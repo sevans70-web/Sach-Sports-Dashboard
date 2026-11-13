@@ -19,7 +19,7 @@ export function quarterFeatureIndex(observations:QuarterObservation[]){
   if(last.role<role3*.4||role3<role10*.5)return {features:null,reason:'quarter_prior_role_uncertain'};
   if(target.market==='q1_passing_yards'&&(last.role<10||recent.some(g=>g.role<10)))return {features:null,reason:'quarter_passing_role_uncertain'};
   const vals=rows.map(g=>g.actual),r=recent.map(g=>g.actual),weight=rows.reduce((s,_,i)=>s+i+1,0),weighted=rows.reduce((s,g,i)=>s+g.actual*(i+1),0)/weight;
-  const features=[last.actual,avg(r),avg(vals),weighted,Math.sqrt(avg(vals.map(v=>(v-avg(vals))**2))),avg(r.map(v=>Number(v===0))),avg(vals.map(v=>Number(v===0))),role3,role10,last.role,Number(last.starter===true),avg(recent.map(g=>Number(g.starter===true))),Math.min(30,(start-Date.parse(last.gameTime))/86400000),Number(last.season!==target.season)];
+  const features=[last.actual,avg(r),avg(vals),weighted,Math.sqrt(avg(vals.map(v=>(v-avg(vals))**2))),avg(r.map(v=>Number(v===0))),avg(vals.map(v=>Number(v===0))),role3,role10,last.role,Number(last.starter===true),avg(recent.map(g=>Number(g.starter===true))),Math.min(30,(start-Date.parse(last.gameTime))/86400000),Number(seasonStart(last.season)!==seasonStart(target.season))];
   return {features,baseline:weighted,historyGames:rows.length,latestHistoryAt:last.gameTime,historyEvidence:rows.map(g=>({gameId:g.gameId,gameTime:g.gameTime,actual:g.actual,role:g.role,starter:g.starter===true,source:g.source,retrievedAt:g.retrievedAt})),reason:null};
  };
 }
