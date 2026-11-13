@@ -3,6 +3,9 @@ export type QuarterObservation={sport:string;season:string;gameId:string;gameTim
 export type QuarterTarget=Pick<QuarterObservation,'sport'|'season'|'gameId'|'gameTime'|'playerId'|'teamId'|'market'>;
 export type QuarterModel={version:1;group:string;model:LinearModel;trainedThrough:string;calibratedThrough:string;residuals:number[];trainingRows:number;calibrationRows:number;validatedForBetting:false};
 const avg=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
+// Season IDs can be a year (2026) or a league season (2025-26 / 2025-2026).
+// Number('2025-26') is NaN, which previously discarded every matching Q1 history row.
+const seasonStart=(value:string)=>{const match=/^(\d{4})(?:[-/]\d{2,4})?$/.exec(value.trim());return match?Number(match[1]):NaN};
 export function quarterFeatureIndex(observations:QuarterObservation[]){
  const index=new Map<string,QuarterObservation[]>();
  for(const g of observations){const key=[g.sport,g.market,g.playerId,g.teamId].join('|'),xs=index.get(key)||[];xs.push(g);index.set(key,xs)}
@@ -10,7 +13,7 @@ export function quarterFeatureIndex(observations:QuarterObservation[]){
  return (target:QuarterTarget,decisionAt=target.gameTime)=>{
   const now=Date.parse(decisionAt),start=Date.parse(target.gameTime);
   if(!Number.isFinite(now)||!Number.isFinite(start)||now>start)return {features:null,reason:'invalid_pregame_time'};
-  const rows=(index.get([target.sport,target.market,target.playerId,target.teamId].join('|'))||[]).filter(g=>Date.parse(g.gameTime)<now-48*3600000&&Date.parse(g.gameTime)>start-366*86400000&&Number(g.season)<=Number(target.season)&&Number(g.season)>=Number(target.season)-1&&Number.isFinite(g.actual)&&Number.isFinite(g.role)&&g.role>0).slice(-10);
+  const rows=(index.get([target.sport,target.market,target.playerId,target.teamId].join('|'))||[]).filter(g=>Date.parse(g.gameTime)<now-48*3600000&&Date.parse(g.gameTime)>start-366*86400000&&seasonStart(g.season)<=seasonStart(target.season)&&seasonStart(g.season)>=seasonStart(target.season)-1&&Number.isFinite(g.actual)&&Number.isFinite(g.role)&&g.role>0).slice(-10);
   if(rows.length<5)return {features:null,reason:'fewer_than_five_quarter_history_games'};
   const recent=rows.slice(-3),last=rows.at(-1)!,role3=avg(recent.map(g=>g.role)),role10=avg(rows.map(g=>g.role));
   if(last.role<role3*.4||role3<role10*.5)return {features:null,reason:'quarter_prior_role_uncertain'};
