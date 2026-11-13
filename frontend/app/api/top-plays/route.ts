@@ -68,7 +68,20 @@ async function featuredResponse(req:NextRequest){
    if(board?.rows?.length)updateTopPlayMarket(sport,board);
   }catch{ /* Saved selections remain available during a provider failure. */ }
  }
- const state=topPlayMarketState(sport),selectionDay=state.slateDay;
+ // NBA featured selections stay on the current slate until every scheduled game is final.
+ // On provider failure, fail closed: do not prematurely promote tomorrow's picks.
+ let nbaSlateComplete=false;
+ if(sport==='nba'){
+  try{
+   const {loadNbaGames}=await import('@/lib/nba');
+   const games=await loadNbaGames(true);
+   const todayGames=games.filter((g:any)=>dashboardDay(g.tipoff||g.date)===day);
+   nbaSlateComplete=todayGames.length>0&&todayGames.every((g:any)=>['post','final'].includes(String(g.state||g.status||'').toLowerCase()));
+  }catch(error){console.warn('[top-plays] NBA slate status unavailable; preserving current-day featured picks',error instanceof Error?error.message:String(error));}
+ }
+ const state=topPlayMarketState(sport);
+ const selectionDay=sport==='nba'&&!nbaSlateComplete?day:state.slateDay;
+ state.slateDay=selectionDay;
  const previous=selectionDay===day?mergeFeaturedOriginals(saved,day):await readFeaturedOriginals(sport,selectionDay);
  const boards=saved.filter(r=>!FEATURED_STREAMS.includes(r.stream)).map(r=>r.payload?.[0]).filter(Boolean);
  // First-basket refreshes legitimately become empty at tipoff. Original scorer
