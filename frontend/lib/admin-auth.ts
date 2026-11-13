@@ -17,8 +17,9 @@ export function mutationAllowed(req: NextRequest) {
   return sameOriginMutation(req.headers.get("origin"), dashboardOrigin(req), req.headers.get("sec-fetch-site"));
 }
 export function dashboardOrigin(req: NextRequest) {
-  const domain = process.env.RAILWAY_PUBLIC_DOMAIN;
-  return domain ? `https://${domain}` : new URL(`${req.nextUrl.protocol}//${req.headers.get("host") || req.nextUrl.host}`).origin;
+  // The legacy Railway domain must never determine auth origins on Cloudflare.
+  const host=req.headers.get("host")||req.nextUrl.host;
+  return new URL(`${req.nextUrl.protocol}//${host}`).origin;
 }
 export async function currentAdmin(token?: string) {
   const access = token || (await cookies()).get(ACCESS_COOKIE)?.value;
