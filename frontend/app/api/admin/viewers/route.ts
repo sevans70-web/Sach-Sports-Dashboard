@@ -16,7 +16,7 @@ export async function POST(req:NextRequest){
   const email=String(body.email||"").trim().toLowerCase();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||email.length>254)return adminJson({error:"Valid email required"},400);
   // Invitation email sends a one-time setup link. Do not create an unrestricted signup.
-  const {data,error}=await client.auth.admin.inviteUserByEmail(email,{redirectTo:new URL("/viewer/login",req.url).toString()});
+  const {data,error}=await client.auth.admin.inviteUserByEmail(email,{redirectTo:"https://sach-sports-cloudflare-test.sevans70.workers.dev/viewer/login"});
   if(error||!data.user)return adminJson({error:error?.message||"Invitation failed"},502);
   const {error:saveError}=await client.from("dashboard_viewer_access").upsert({user_id:data.user.id,email,status:"approved",updated_at:new Date().toISOString()},{onConflict:"user_id"});
   if(saveError)return adminJson({error:"Invitation sent but approval record failed; access remains blocked"},503);
