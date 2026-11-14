@@ -3,6 +3,13 @@ import {mkdtemp,readdir,readFile} from 'node:fs/promises';import {tmpdir} from '
 import {encodeShadowArtifacts} from './cw08-cloudflare-artifacts.mjs';
 if(process.env.CF_CW08_SHADOW_ONLY!=='1')throw Error('Explicit shadow-only runner mode required');
 if(!process.env.OWLS_INSIGHT_API_KEY)throw Error('Cloudflare encrypted feed binding missing from manual runner');
+// Dedicated namespace prefix only: never read or overwrite dashboard cache keys.
+const account='d3d6d023ab7ab731cc3e191d0ea3c179',namespace='644df6a469e84dba90c8f7dac410f895';
+const token=process.env.CLOUDFLARE_API_TOKEN;if(!token)throw Error('Cloudflare build token unavailable for durable shadow evidence');
+const storageRoot=`https://api.cloudflare.com/client/v4/accounts/${account}/storage/kv/namespaces/${namespace}/values/`;
+const headers={Authorization:`Bearer ${token}`};
+const probe=await fetch(storageRoot+encodeURIComponent('cw08-shadow/artifacts/permission-probe'),{headers});
+if(!probe.ok&&probe.status!==404)throw Error(`Shadow storage permission check failed (${probe.status}); no feed capture attempted`);
 const root=resolve(import.meta.dirname,'..'),work=await mkdtemp(resolve(tmpdir(),'cw08-cloudflare-'));
 const run=(script,args=[])=>{const r=spawnSync(process.execPath,[resolve(root,'scripts',script),...args],{cwd:root,env:process.env,stdio:'inherit'});if(r.error)throw r.error;return r.status;};
 // Workers Builds may use shallow clones. Fetch only the already-frozen model
@@ -21,6 +28,11 @@ const bundle=JSON.parse(files[0].content),receipts=files.filter(f=>f.path.starts
 const result={kind:'cw08_cloudflare_shadow_job',capturedAt:new Date().toISOString(),sourceEntries:bundle.entries.length,accepted:receipts.length,sourceRejections:bundle.rejections.length,production:false,dashboardBuilt:false,deployed:false,modelCommit:frozen};
 files.push({path:'job-result.json',content:JSON.stringify(result)+'\n'});
 const exported=encodeShadowArtifacts(files,['OWLS_INSIGHT_API_KEY','SPORTSGAMEODDS_API_KEY','CLOUDFLARE_API_TOKEN'].map(k=>process.env[k]));
-if(exported.bytes>900000)throw Error('Shadow package exceeds safe log export budget; no incomplete evidence is approved');
-console.log('CW08_SHADOW_MANIFEST '+JSON.stringify({sha256:exported.sha256,bytes:exported.bytes,chunks:exported.chunks.length,...result}));
-for(let index=0;index<exported.chunks.length;index++){console.log('CW08_SHADOW_CHUNK '+JSON.stringify({sha256:exported.sha256,index,value:exported.chunks[index]}));await new Promise(resolve=>setTimeout(resolve,25));}
+const key='cw08-shadow/artifacts/'+exported.sha256+'.json';
+const payload=JSON.stringify({format:'cw08-shadow-artifact-v2',sha256:exported.sha256,bytes:exported.bytes,base64:exported.chunks.join(''),job:result});
+// Content-addressed, no expiry, no overwriting mutable production keys. Keep
+// the complete source history and every receipt; logs carry only the checksum.
+const uploaded=await fetch(storageRoot+encodeURIComponent(key),{method:'PUT',headers:{...headers,'Content-Type':'text/plain'},body:payload});
+if(!uploaded.ok)throw Error(`Durable shadow storage failed (${uploaded.status}); evidence is not approved`);
+const response=await uploaded.json();if(response.success!==true)throw Error('Durable shadow storage rejected evidence');
+console.log('CW08_SHADOW_MANIFEST '+JSON.stringify({sha256:exported.sha256,bytes:exported.bytes,storage:'cloudflare-kv',namespace,key,...result}));
