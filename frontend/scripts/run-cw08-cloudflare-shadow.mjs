@@ -21,5 +21,6 @@ const bundle=JSON.parse(files[0].content),receipts=files.filter(f=>f.path.starts
 const result={kind:'cw08_cloudflare_shadow_job',capturedAt:new Date().toISOString(),sourceEntries:bundle.entries.length,accepted:receipts.length,sourceRejections:bundle.rejections.length,production:false,dashboardBuilt:false,deployed:false,modelCommit:frozen};
 files.push({path:'job-result.json',content:JSON.stringify(result)+'\n'});
 const exported=encodeShadowArtifacts(files,['OWLS_INSIGHT_API_KEY','SPORTSGAMEODDS_API_KEY','CLOUDFLARE_API_TOKEN'].map(k=>process.env[k]));
+if(exported.bytes>900000)throw Error('Shadow package exceeds safe log export budget; no incomplete evidence is approved');
 console.log('CW08_SHADOW_MANIFEST '+JSON.stringify({sha256:exported.sha256,bytes:exported.bytes,chunks:exported.chunks.length,...result}));
-exported.chunks.forEach((value,index)=>console.log('CW08_SHADOW_CHUNK '+JSON.stringify({sha256:exported.sha256,index,value})));
+for(let index=0;index<exported.chunks.length;index++){console.log('CW08_SHADOW_CHUNK '+JSON.stringify({sha256:exported.sha256,index,value:exported.chunks[index]}));await new Promise(resolve=>setTimeout(resolve,25));}

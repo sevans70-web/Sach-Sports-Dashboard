@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {encodeShadowArtifacts,decodeShadowArtifacts} from '../scripts/cw08-cloudflare-artifacts.mjs';
 test('Cloudflare shadow export roundtrips public evidence and detects tampering',()=>{
- const files=[{path:'receipts/goals-123-456.json',content:JSON.stringify({production:false,quote:{line:.5,overPrice:200,underPrice:-240}})}];
+ const files=[{path:'receipts/goals-123-456.json',content:JSON.stringify({production:false,quote:{line:.5,overPrice:200,underPrice:-240}})+'\n'},{path:'bundle.json',content:JSON.stringify({shared:Array(100).fill({features:[1,2,3],nested:{a:1}})})},{path:'pretty.json',content:'{\n "unchanged": true\n}'}];
  const e=encodeShadowArtifacts(files);assert.deepEqual(decodeShadowArtifacts(e),files);assert.ok(e.chunks.every(c=>c.length<=3000));assert.throws(()=>decodeShadowArtifacts({...e,sha256:'changed'}),/checksum/);
 });
 test('Cloudflare shadow export refuses credentials and path traversal',()=>{
