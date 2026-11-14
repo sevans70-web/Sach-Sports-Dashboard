@@ -1,0 +1,98 @@
+{
+  "task": "CW08",
+  "candidate": "nhl-count-poisson-candidate-v1",
+  "sourceSha256": "bd800eb0ef4bf94011d03d49e75973b58a9e0836f6d87e19c5109d2a539c475b",
+  "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "savedAuditSha256": "16c815c3e38a9e7c09507fd245f75eacd1b9d33d9f66355d6df2fb867ee379eb",
+  "protocol": {
+    "evaluationSeason": "20252026",
+    "line": 0.5,
+    "refit": false,
+    "historyWrites": false,
+    "source": "existing selected-player archived cohort",
+    "limitations": [
+      "Previously inspected season is a regression set, not a fresh holdout.",
+      "Only ten skaters in the original source cohort; population and exact-price validation are missing.",
+      "Saved November means are rounded and most probability receipts are absent; exact historical recalculation is not claimed.",
+      "A lower Brier score alone would not approve betting selections."
+    ]
+  },
+  "reports": [
+    {
+      "market": "goals",
+      "trainingRows": 476,
+      "calibrationRows": 216,
+      "calibrationPlayers": 10,
+      "trainedThrough": "2025-02-08T00:00:00.000Z",
+      "calibratedThrough": "2025-04-17T00:00:00.000Z",
+      "evaluationRows": 746,
+      "evaluationFixtures": 315,
+      "projectionMean": 0.3526335229102199,
+      "actualMean": 0.34048257372654156,
+      "observedOverRate": 0.28820375335120646,
+      "legacyMeanOverProbability": 0.25,
+      "candidateMeanOverProbability": 0.29607113609784436,
+      "legacyBrier": 0.20660187667560323,
+      "candidateBrier": 0.2078174772130788,
+      "brierChange": 0.0012156005374755752,
+      "accuracyRegressionPassed": false,
+      "exactPriceValidationPassed": false,
+      "selectionApproved": false,
+      "saved": {
+        "picks": 29,
+        "under": 29,
+        "over": 0,
+        "firstDay": "2026-11-09",
+        "lastDay": "2026-11-13",
+        "probabilityReceipts": 7,
+        "missingProbabilityReceipts": 22,
+        "savedOverProbabilities": [
+          0.25
+        ],
+        "underMeanAboveLine": 0,
+        "hits": 18,
+        "misses": 5
+      }
+    },
+    {
+      "market": "assists",
+      "trainingRows": 476,
+      "calibrationRows": 216,
+      "calibrationPlayers": 10,
+      "trainedThrough": "2025-02-08T00:00:00.000Z",
+      "calibratedThrough": "2025-04-17T00:00:00.000Z",
+      "evaluationRows": 746,
+      "evaluationFixtures": 315,
+      "projectionMean": 0.5692640142057135,
+      "actualMean": 0.5924932975871313,
+      "observedOverRate": 0.43297587131367293,
+      "legacyMeanOverProbability": 0.4011704398768772,
+      "candidateMeanOverProbability": 0.42462702488582144,
+      "legacyBrier": 0.24262168579934296,
+      "candidateBrier": 0.24429850601456626,
+      "brierChange": 0.001676820215223307,
+      "accuracyRegressionPassed": false,
+      "exactPriceValidationPassed": false,
+      "selectionApproved": false,
+      "saved": {
+        "picks": 61,
+        "under": 57,
+        "over": 4,
+        "firstDay": "2026-11-09",
+        "lastDay": "2026-11-13",
+        "probabilityReceipts": 8,
+        "missingProbabilityReceipts": 53,
+        "savedOverProbabilities": [
+          0.375,
+          0.37037037037037035,
+          0.44907407407407407
+        ],
+        "underMeanAboveLine": 44,
+        "hits": 31,
+        "misses": 22
+      }
+    }
+  ],
+  "selectionApproved": false,
+  "blocker": "Both count candidates regress on archived-season Brier; new selections and old GI reuse are withheld pending count calibration and exact-price validation."
+}

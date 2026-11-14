@@ -2531,7 +2531,7 @@ export function PlayerRankingsPanel({
         .map(({card},index)=>({...card,rank:index+1}));
     }
     const ordered=completedRankingsLast(scopedDisplayCards);
-    if(!['nhl','nfl','cbb','cfb'].includes(sport))return ordered;
+    if(!['nfl','cbb','cfb'].includes(sport))return ordered;
     // Keep historic frozen rows verbatim. Apply the cap to new pregame
     // candidates even when the board also contains completed games.
     const frozen=ordered.filter(card=>card.raw?.boardFrozen===true||card.raw?.frozen||card.raw?.lockedAtKickoff);

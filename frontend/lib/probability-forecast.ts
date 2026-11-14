@@ -143,6 +143,13 @@ export function quoteProblem(q:ExactQuote,g:Pick<OpportunityGame,'sport'|'market
 function payout(price:number){return price>0?price/100:100/-price}
 export function evaluatePrice(values:number[],q:ExactQuote){
  const p=outcomeProbabilities(values,q.line);
+ return evaluateProbabilityPrice(p,q);
+}
+/** Price a normalized outcome distribution. The default research policy is
+ * unchanged; discrete long-odds candidates can explicitly use an EV-only gate. */
+export function evaluateProbabilityPrice(p:{over:number;under:number;push:number},q:ExactQuote,minimumConditional=.55){
+ if(![p.over,p.under,p.push].every(v=>Number.isFinite(v)&&v>=0&&v<=1)||Math.abs(p.over+p.under+p.push-1)>1e-9)throw Error('Invalid outcome probabilities');
+ if(!Number.isFinite(minimumConditional)||minimumConditional<0||minimumConditional>1)throw Error('Invalid probability threshold');
  const overEv=p.over*payout(q.overPrice)-p.under,underEv=p.under*payout(q.underPrice)-p.over;
  const side=overEv>=underEv?'OVER':'UNDER',win=side==='OVER'?p.over:p.under,ev=Math.max(overEv,underEv);
  const conditional=1-p.push>0?win/(1-p.push):null;
@@ -150,7 +157,7 @@ export function evaluatePrice(values:number[],q:ExactQuote){
  // Research-only fixed policy, declared before this evaluation. No tuning
  // against test outcomes and no live GI or recommendation is emitted.
  return {...p,overEv,underEv,marketOver:impliedOver/(impliedOver+impliedUnder),
-  candidateSide:conditional!=null&&conditional>=.55&&ev>=.03?side:null,conditionalWinProbability:conditional};
+  candidateSide:conditional!=null&&conditional>=minimumConditional&&ev>=.03?side:null,conditionalWinProbability:conditional};
 }
 export function forecastDistribution(model:DistributionModel,history:OpportunityGame[],target:Omit<OpportunityGame,'actual'|'workload'>,availableAt=target.gameTime,preparedBasketball?:ReturnType<typeof basketballFeatureIndex>){
  if(model.group!==groupOf(target as OpportunityGame))return {reason:'wrong_group' as string,forecast:null};

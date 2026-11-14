@@ -14,7 +14,7 @@ WITH sample AS (
    ON g.sport=p.sport AND g.market=p.market
   AND g.game_id=p.game_id AND g.player_id=p.player_id
  WHERE p.sport='nhl' AND p.market IN ('goals','assists')
-   AND p.game_date >= DATE '2026-11-01'
+   AND p.game_date BETWEEN DATE '2026-11-01' AND DATE '2026-11-13'
 )
 SELECT market,prediction_side,count(*) AS saved_picks,
        count(*) FILTER (WHERE projection>sportsbook_line) AS mean_above_line,

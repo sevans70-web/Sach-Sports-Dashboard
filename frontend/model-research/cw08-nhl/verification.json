@@ -1,0 +1,55 @@
+{
+  "task": "CW08",
+  "branch": "cloudflare-compatibility-test",
+  "baselineCommit": "b5de46b",
+  "targeted": {
+    "command": "node --test tests/nhl-count-model.test.mjs tests/probability-forecast.test.mjs tests/live-model-forecast.test.mjs tests/nhl-lock.test.mjs tests/worker-model-runtime.test.mjs",
+    "tests": 31,
+    "passed": 31,
+    "failed": 0
+  },
+  "fullRegression": {
+    "command": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "tests": 698,
+    "passed": 689,
+    "failed": 9,
+    "allFailuresReproducedOnBaseline": true,
+    "failureLocations": [
+      "tests/dashboard-contract.test.mjs:58:1",
+      "tests/estimated-ev.test.mjs:7:1",
+      "tests/featured-loading.test.mjs:50:1",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/nba-slate-scope.test.mjs:19:1",
+      "tests/opportunity-backtest.test.mjs:24:1",
+      "tests/quarter-markets.test.mjs:11:1"
+    ]
+  },
+  "baselineFailureReplay": {
+    "tests": 43,
+    "passed": 34,
+    "failed": 9
+  },
+  "typecheck": {
+    "command": "tsc --noEmit --incremental false",
+    "baselineErrors": 9,
+    "changedErrors": 9,
+    "newDiagnostics": 0
+  },
+  "countAccuracyGate": {
+    "command": "node scripts/audit-cw08-nhl.mjs --require-approval",
+    "exitCode": 1,
+    "expected": "withhold candidate failing accuracy and exact-price validation"
+  },
+  "historyPreservation": {
+    "readOnlyDatabaseQueries": true,
+    "picksBefore": 90,
+    "picksAfter": 90,
+    "orderedRecordMd5Before": "c5943527f521dac178cd20bd680ff936",
+    "orderedRecordMd5After": "c5943527f521dac178cd20bd680ff936",
+    "frozenForecastTestsPassed": true
+  },
+  "deployed": false,
+  "releaseApproved": false
+}

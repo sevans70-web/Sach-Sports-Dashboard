@@ -30,7 +30,7 @@ export function rankingMarketCoverage(sport:string,market:string,day:string,rows
  const frozen=eligible.filter(card=>card.raw.boardFrozen||card.raw.frozen||card.raw.lockedAtKickoff);
  const upcoming=eligible.filter(card=>!frozen.includes(card));
  const sorted=sport==='nba'?[...upcoming].sort((a,b)=>b.forecast.percent-a.forecast.percent||a.rank-b.rank):upcoming;
- const visible=capRankingUnders(sorted,card=>sport==='nba'
+ const visible=sport==='nhl'?sorted:capRankingUnders(sorted,card=>sport==='nba'
   ?card.forecast.percent>0?card.forecast.side:null
   :cardModelPick(card.raw,now)?.side||card.forecast.side);
  const displayed=new Set([...frozen,...visible].map(card=>card.raw));

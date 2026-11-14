@@ -18,6 +18,7 @@ import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
 import {nbaCombinationHistory,NBA_COMBINATION_MARKETS} from '@/lib/nba-combination-history';
 import {firstBasketBookOnly} from '@/lib/nba-slate-scope';
+import {NHL_COUNT_POLICY,nhlCountMarket,nhlCountDistribution,evaluateNhlCountPrice} from '@/lib/nhl-count-model';
 export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
 const BASKETBALL_COMBINATIONS:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
 export function runtimeSupportsMarket(data:Pick<RuntimeBundle,'models'>,sport:string,market:string){
@@ -90,20 +91,29 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  if(index&&model.featurePolicy==='basketball_context'&&!prepared){prepared=basketballFeatureIndex(history);index.basketball.set(key,prepared);}
  const result=forecastDistribution(model,history,target,new Date(now).toISOString(),prepared);
  if(!result.forecast)return unavailable(result.reason||'forecast_inputs_unavailable');
- const f=result.forecast,values=[...f.values].sort((a,b)=>a-b);
- if(!Number.isFinite(f.projection)||!Number.isFinite(f.expectedWorkload)||!values.length||!values.every(Number.isFinite))return unavailable('invalid_fitted_output');
+ const f=result.forecast,countMarket=nhlCountMarket(sport,market);
+ if(!Number.isFinite(f.projection)||!Number.isFinite(f.expectedWorkload))return unavailable('invalid_fitted_output');
+ if(countMarket&&(f.projection<0||f.projection>100))return unavailable('invalid_fitted_output');
+ const values=countMarket?nhlCountDistribution(f.projection).values:[...f.values].sort((a,b)=>a-b);
+ if(!values.length||!values.every(Number.isFinite))return unavailable('invalid_fitted_output');
  let pricing:any=null,gi:any=null;
  if(verifiedPropQuote(row,now)&&row.lineType==='main'){
   const quote:ExactQuote={sport,market,period:market.startsWith('q1_')?'q1':'game',gameId:target.gameId,playerId:target.playerId,bookmaker:row.sportsbookKey,quoteId:row.quoteId,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,updatedAt:row.quoteUpdatedAt,capturedAt:row.capturedAt||new Date(now).toISOString(),decisionAt:new Date(now).toISOString(),mainLine:true};
   if(!quoteProblem(quote,target)){
-   pricing=evaluatePrice(values,quote);
-   const artifact=data.gi[key];if(artifact&&data.giStatus?.[key]?.reason!=='price_validation_failed')gi=opportunityStrength(artifact,Math.max(pricing.overEv,pricing.underEv),quote.decisionAt);
+   pricing=countMarket?evaluateNhlCountPrice(f.projection,quote):evaluatePrice(values,quote);
+   // Existing GI artifacts evaluated the old residual likelihood and 55%
+   // selection policy. They cannot certify a different count distribution.
+   const artifact=data.gi[key];if(!countMarket&&artifact&&data.giStatus?.[key]?.reason!=='price_validation_failed')gi=opportunityStrength(artifact,Math.max(pricing.overEv,pricing.underEv),quote.decisionAt);
   }
  }
  // A directional model selection does not require a GI return-ranking fit.
  // Keep it distinct from the approved recommendation registry and its grades.
  // A market that already failed exact-price evaluation remains withheld.
- const selectionSide=data.giStatus?.[key]?.reason==='price_validation_failed'?null:pricing?.candidateSide;
+ // CW08's archived-season regression does not approve the count candidate.
+ // Keep its diagnostics available, but emit no new selections until count
+ // accuracy and exact-price validation pass. Frozen saved forecasts bypass
+ // this function in attachFittedResearchForecasts and are never rewritten.
+ const selectionSide=countMarket||data.giStatus?.[key]?.reason==='price_validation_failed'?null:pricing?.candidateSide;
  const modelSelection=selectionSide?{
   side:selectionSide as 'OVER'|'UNDER',line:row.sportsbookLine,
   price:selectionSide==='OVER'?row.overPrice:row.underPrice,
@@ -114,13 +124,14 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  return {status:'available',projection:Math.round(f.projection*10)/10,expectedWorkload:Math.round(f.expectedWorkload*10)/10,
   workloadUnit:market==='sacks'?'defensive snaps':['nba','wnba','cbb'].includes(sport)?'minutes':['passing_yards','passing_tds'].includes(market)?'pass attempts':market==='rushing_yards'?'carries':sport==='nhl'?'minutes':'targets',
   interval80:{lower:Math.round(values[Math.floor((values.length-1)*.1)]*10)/10,upper:Math.round(values[Math.floor((values.length-1)*.9)]*10)/10},
-  modelId:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
+  modelId:countMarket?NHL_COUNT_POLICY:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
+  ...(countMarket?{countModelValidation:{selectionApproved:false,reason:'nhl_count_revalidation_required',pointModel:'existing_workload_rate',probabilityModel:'poisson',distributionSamples:1001}}:{}),
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
   inputReceipt:forecastInputReceipt(key,data.digest,new Date(now).toISOString(),f.inputFeatures),
-  giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
+  giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:countMarket?'price_validation_failed':gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,
-  selectionReason:modelSelection?null:data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
+  selectionReason:countMarket?'price_validation_failed':modelSelection?null:data.giStatus?.[key]?.reason==='price_validation_failed'?'price_validation_failed':!pricing?'verified_quote_unavailable':'price_threshold_not_met',
   // Comparison and probabilities are research calculations, never a pick.
   priceComparison:pricing?{quoteEvidence:{sport,market,gameId:String(row.gameId),playerId:String(row.playerId),quoteId:row.quoteId,sportsbookKey:row.sportsbookKey,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,calculatedAt:new Date(now).toISOString()},overProbability:pricing.over,underProbability:pricing.under,pushProbability:pricing.push,overExpectedReturn:pricing.overEv,underExpectedReturn:pricing.underEv}:null,
   validatedForBetting:false,reason:null,
