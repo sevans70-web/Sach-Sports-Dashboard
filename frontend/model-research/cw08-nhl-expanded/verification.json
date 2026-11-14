@@ -1,0 +1,11 @@
+{
+  "sourceRows": 149522,
+  "featureRows": 271872,
+  "officialGamelogGamesCrosschecked": 360,
+  "independentDistributionChecks": 272,
+  "targetAndFutureMutationChecks": 20,
+  "pythonHurdleMetricsReproducedGroups": 8,
+  "protocolHashVerified": true,
+  "runtimeSnapshotUnchanged": true,
+  "selectionApproved": false
+}

@@ -1,0 +1,70 @@
+{
+  "method": "Deterministic hash-selected two skaters per season; official Stats REST versus official player game logs",
+  "checks": [
+    "goals",
+    "assists",
+    "team",
+    "opponent",
+    "date",
+    "ice-time seconds versus MM:SS"
+  ],
+  "matchedGames": 360,
+  "receipts": [
+    {
+      "season": "20232024",
+      "playerId": 8478446,
+      "url": "https://api-web.nhle.com/v1/player/8478446/game-log/20232024/2",
+      "sha256": "fea56edaf351e74b5b4b94b15b3a1aba4e4ed480f16ffff19190c2335c332343",
+      "matchedGames": 1
+    },
+    {
+      "season": "20232024",
+      "playerId": 8475786,
+      "url": "https://api-web.nhle.com/v1/player/8475786/game-log/20232024/2",
+      "sha256": "cbbd3d8bce55fb636ef1a16dfbe9d29f4582da068cf3bde4cc37b2b66643fb2c",
+      "matchedGames": 80
+    },
+    {
+      "season": "20242025",
+      "playerId": 8475786,
+      "url": "https://api-web.nhle.com/v1/player/8475786/game-log/20242025/2",
+      "sha256": "155b95c578d3ae6baed572c7326baa927d28a8373d63f317c1f10f2132d80fa7",
+      "matchedGames": 73
+    },
+    {
+      "season": "20242025",
+      "playerId": 8483431,
+      "url": "https://api-web.nhle.com/v1/player/8483431/game-log/20242025/2",
+      "sha256": "6023f9bafd95fa8de9e01a64383d109b4767ab5f68ff3d55f359745790cdce8d",
+      "matchedGames": 75
+    },
+    {
+      "season": "20252026",
+      "playerId": 8475786,
+      "url": "https://api-web.nhle.com/v1/player/8475786/game-log/20252026/2",
+      "sha256": "7262c06ad594707c8252d80c4ef16b7ab2dcbabc45f573d6048c4939355a3287",
+      "matchedGames": 58
+    },
+    {
+      "season": "20252026",
+      "playerId": 8483431,
+      "url": "https://api-web.nhle.com/v1/player/8483431/game-log/20252026/2",
+      "sha256": "89a7a7c9b7c62f737154f22f611b37c04f6f581462e6559c3395d1e304338691",
+      "matchedGames": 54
+    },
+    {
+      "season": "20262027",
+      "playerId": 8475786,
+      "url": "https://api-web.nhle.com/v1/player/8475786/game-log/20262027/2",
+      "sha256": "c868aaba01bd8fb90e8b28fc8934b324857c1bfe0efb41408b3137a5f9ef3274",
+      "matchedGames": 5
+    },
+    {
+      "season": "20262027",
+      "playerId": 8483431,
+      "url": "https://api-web.nhle.com/v1/player/8483431/game-log/20262027/2",
+      "sha256": "8cd10a3c1f7179430574265a99ca7cdaf1365654d0b9ad0d328a0110a6ba5180",
+      "matchedGames": 14
+    }
+  ]
+}

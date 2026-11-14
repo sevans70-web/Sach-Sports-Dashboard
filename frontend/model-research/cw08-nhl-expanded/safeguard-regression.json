@@ -1,0 +1,10 @@
+{
+  "safeguardCommit": "e00bd93",
+  "tests": 31,
+  "passed": 31,
+  "failed": 0,
+  "command": "node --test tests/nhl-count-model.test.mjs tests/probability-forecast.test.mjs tests/live-model-forecast.test.mjs tests/nhl-lock.test.mjs tests/worker-model-runtime.test.mjs",
+  "logSha256": "9d6e410b712efd7d63bd68aa5dd95d0fda3770b0584d59016ad8be2ee9644e59",
+  "applicationOrRuntimeFilesChangedAfterSafeguardCommit": false,
+  "deployed": false
+}

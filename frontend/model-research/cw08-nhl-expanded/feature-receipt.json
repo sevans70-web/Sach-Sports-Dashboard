@@ -1,0 +1,85 @@
+{
+  "sourceSha256": "02e9c65fd2104e473a006ef2b82e08e972803229b55c0f3977da4e41675d160f",
+  "runtimeSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+  "protocolSha256": "89e5971019777d196f786a6ea211dfa1c3b73d75da6e31d4e8caeac501f7d3f6",
+  "featureSha256": "ee116e3e5243fe0aec1037c07f4db6c2cb31c0e894ebc181126129343e13b25a",
+  "rows": 271872,
+  "originalPlayers": [
+    "8475745",
+    "8477940",
+    "8478427",
+    "8478460",
+    "8478864",
+    "8480800",
+    "8480830",
+    "8481557",
+    "8482720",
+    "8484166"
+  ],
+  "coverage": {
+    "goals|20232024": {
+      "observations": 47221,
+      "forecasts": 43659,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 3399,
+        "prior_workload_role_uncertain": 163
+      }
+    },
+    "goals|20242025": {
+      "observations": 47224,
+      "forecasts": 43511,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 3594,
+        "prior_workload_role_uncertain": 119
+      }
+    },
+    "goals|20252026": {
+      "observations": 47230,
+      "forecasts": 43485,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 3579,
+        "prior_workload_role_uncertain": 166
+      }
+    },
+    "goals|20262027": {
+      "observations": 7847,
+      "forecasts": 5281,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 2556,
+        "prior_workload_role_uncertain": 10
+      }
+    },
+    "assists|20232024": {
+      "observations": 47221,
+      "forecasts": 43659,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 3399,
+        "prior_workload_role_uncertain": 163
+      }
+    },
+    "assists|20242025": {
+      "observations": 47224,
+      "forecasts": 43511,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 3594,
+        "prior_workload_role_uncertain": 119
+      }
+    },
+    "assists|20252026": {
+      "observations": 47230,
+      "forecasts": 43485,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 3579,
+        "prior_workload_role_uncertain": 166
+      }
+    },
+    "assists|20262027": {
+      "observations": 7847,
+      "forecasts": 5281,
+      "abstentions": {
+        "fewer_than_three_same_season_team_appearances": 2556,
+        "prior_workload_role_uncertain": 10
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "task": "CW08 expanded NHL calibration",
+  "version": 1,
+  "frozenBeforeCollection": true,
+  "source": "Official NHL Stats REST skater summary, individual regular-season games, all players, monthly partitions",
+  "collectionSeasons": [20232024, 20242025, 20252026, 20262027],
+  "collectionCutoff": "2026-10-31",
+  "fitThrough": "2025-02-08",
+  "calibrationFrom": "2025-02-11",
+  "calibrationThrough": "2025-04-17",
+  "testFrom": "2025-10-01",
+  "testThrough": "2026-06-30",
+  "confirmationFrom": "2026-10-01",
+  "confirmationThrough": "2026-10-31",
+  "lagHours": 48,
+  "features": "Existing ten opportunityFeatures; same-season, same-team, at least three prior appearances and unchanged role checks; no target-game workload",
+  "alternatives": [
+    "legacy frozen workload-rate ridge plus rounded pooled residuals",
+    "legacy mean with Poisson likelihood (previous CW08 candidate)",
+    "expanded Poisson GLM, standardized features, alpha=1.0",
+    "expanded Poisson GLM plus negative-binomial dispersion fitted on calibration only",
+    "expanded hurdle: logistic any-event probability plus zero-truncated Poisson positive count, L2 C=1, alpha=1.0"
+  ],
+  "calibration": "One nonnegative multiplicative mean factor for Poisson/NB; one intercept correction for hurdle event probability, on calibration only",
+  "evaluation": ["Brier at lines 0.5 and 1.5", "binary log loss at 0.5", "full-count negative log likelihood for count candidates", "mean bias", "calibration bins", "paired fixture-cluster bootstrap 95% intervals"],
+  "primary": "0.5-line Brier, both NHL markets separately, with fixture-cluster uncertainty",
+  "independence": "Report all eligible players and separately exclude the ten original cohort players. Confirmation period is later than every fitting, calibration and evaluation period.",
+  "selection": "No OVER/UNDER balancing. No model selection or hyperparameter tuning on test/confirmation results. No odds-dependent bet or profit claim without archived exact pregame quotes.",
+  "approval": "No production promotion in this experiment. Require noninferiority versus legacy on independent time windows, count calibration, exact-price validation, prospective frozen capture, and application regressions. Preserve all original picks."
+}

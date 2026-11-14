@@ -1,0 +1,214 @@
+{
+  "protocolSha256": "89e5971019777d196f786a6ea211dfa1c3b73d75da6e31d4e8caeac501f7d3f6",
+  "source": "Official NHL Stats REST skater/summary",
+  "recordSha256": "a75621cb7135560fa9353af81683e24b8e1c60a29a7473d366c6b954cc834e4e",
+  "compressedSha256": "02e9c65fd2104e473a006ef2b82e08e972803229b55c0f3977da4e41675d160f",
+  "rows": 149522,
+  "players": 1228,
+  "timeOnIceUnit": "seconds (converted to minutes only when making features)",
+  "limitations": [
+    "Retrospectively revised official results, not frozen historical publication vintages.",
+    "Appeared skaters only; absent/DNP players are not observations.",
+    "The regular-season windows are October through April; postseason excluded."
+  ],
+  "receipts": [
+    {
+      "season": 20232024,
+      "from": "2023-10-01",
+      "before": "2023-11-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222023-10-01%22+and+gameDate%3C%222023-11-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 5035,
+      "sha256": "68885e08659d6a08a6810aa4670cd174879d7c38c3837d6379706641e462e8ee",
+      "retrievedAt": "2026-11-14T01:07:36.332655+00:00"
+    },
+    {
+      "season": 20232024,
+      "from": "2023-11-01",
+      "before": "2023-12-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222023-11-01%22+and+gameDate%3C%222023-12-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 7667,
+      "sha256": "85acaf54ddd7c5911feb291a6bf12e7fc427f42463a0bc2aebf17ac35b377532",
+      "retrievedAt": "2026-11-14T01:07:36.553357+00:00"
+    },
+    {
+      "season": 20232024,
+      "from": "2023-12-01",
+      "before": "2024-01-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222023-12-01%22+and+gameDate%3C%222024-01-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 7884,
+      "sha256": "41d9bd18933b7233c482f5bab18f9698098a12fadfe9ed9785278e820bf4f518",
+      "retrievedAt": "2026-11-14T01:07:36.540269+00:00"
+    },
+    {
+      "season": 20232024,
+      "from": "2024-01-01",
+      "before": "2024-02-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-01-01%22+and+gameDate%3C%222024-02-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 7488,
+      "sha256": "07976ff4c18a947c5e6153665dbe519aa6d884d37686941ab643b05b35e0d373",
+      "retrievedAt": "2026-11-14T01:07:37.536142+00:00"
+    },
+    {
+      "season": 20232024,
+      "from": "2024-02-01",
+      "before": "2024-03-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-02-01%22+and+gameDate%3C%222024-03-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 6190,
+      "sha256": "12e82216dc258cadf94406afaf6b001b72bb409d522ec308a1f298ffad234e0b",
+      "retrievedAt": "2026-11-14T01:07:37.427039+00:00"
+    },
+    {
+      "season": 20232024,
+      "from": "2024-03-01",
+      "before": "2024-04-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-03-01%22+and+gameDate%3C%222024-04-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8207,
+      "sha256": "77a91e271950cd7da69bbc828fc004cd427d71d743996595a638416227682789",
+      "retrievedAt": "2026-11-14T01:07:37.456214+00:00"
+    },
+    {
+      "season": 20232024,
+      "from": "2024-04-01",
+      "before": "2024-05-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20232024+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-04-01%22+and+gameDate%3C%222024-05-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 4750,
+      "sha256": "e2b1980370cf1fe925336fcd16056a2d7e3ad628c6cd8d37a3750ab72d05b8e1",
+      "retrievedAt": "2026-11-14T01:07:37.979808+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2024-10-01",
+      "before": "2024-11-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-10-01%22+and+gameDate%3C%222024-11-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 5975,
+      "sha256": "3642520e96b1751c2aa4223c0ccd193fd161671a69694e6ce77e12f40ca31cc2",
+      "retrievedAt": "2026-11-14T01:07:38.318500+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2024-11-01",
+      "before": "2024-12-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-11-01%22+and+gameDate%3C%222024-12-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 7920,
+      "sha256": "236ccb4053654224198a40f8e3bb25acb646ba80a612edd2b9fd56f036a429e7",
+      "retrievedAt": "2026-11-14T01:07:38.423012+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2024-12-01",
+      "before": "2025-01-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222024-12-01%22+and+gameDate%3C%222025-01-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 7704,
+      "sha256": "fac3ba1a2322093a90a19ee17002ebd02873f9444cff65d24eb368de97006363",
+      "retrievedAt": "2026-11-14T01:07:38.755184+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2025-01-01",
+      "before": "2025-02-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-01-01%22+and+gameDate%3C%222025-02-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8063,
+      "sha256": "5978be2a1b4d713a701090bc4bfdb3a4b6b3aa69c8cef81052a33658e80b4495",
+      "retrievedAt": "2026-11-14T01:07:39.190668+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2025-02-01",
+      "before": "2025-03-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-02-01%22+and+gameDate%3C%222025-03-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 4392,
+      "sha256": "3bd4211cac1558fad265fd47e6737c0ad62f4794377b49ac7fe30f03db538f3f",
+      "retrievedAt": "2026-11-14T01:07:39.241917+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2025-03-01",
+      "before": "2025-04-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-03-01%22+and+gameDate%3C%222025-04-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8423,
+      "sha256": "f86d2d58096c70e34316b97cb04b219417d06fec909a58a0291310ea6fc1b585",
+      "retrievedAt": "2026-11-14T01:07:39.614400+00:00"
+    },
+    {
+      "season": 20242025,
+      "from": "2025-04-01",
+      "before": "2025-05-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20242025+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-04-01%22+and+gameDate%3C%222025-05-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 4747,
+      "sha256": "be01b31b164b66837b70793be6fff0489dc5d38d2a76f7ad159f2ee696203ebd",
+      "retrievedAt": "2026-11-14T01:07:39.867834+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2025-10-01",
+      "before": "2025-11-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-10-01%22+and+gameDate%3C%222025-11-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 6480,
+      "sha256": "6659226f361f5864f9555944c9c41d2841d3b6c25d8531da1f73ef18b8667edc",
+      "retrievedAt": "2026-11-14T01:07:39.932458+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2025-11-01",
+      "before": "2025-12-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-11-01%22+and+gameDate%3C%222025-12-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8100,
+      "sha256": "a882ca710ff602a9058fa50d5956ea9a8103b42732f8b17c8773ef8fa9c092b2",
+      "retrievedAt": "2026-11-14T01:07:40.488016+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2025-12-01",
+      "before": "2026-01-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222025-12-01%22+and+gameDate%3C%222026-01-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8135,
+      "sha256": "dac97c2aa30e4b7af13be9d628126aa9eb3547a017a4219bcc9d4837583b007d",
+      "retrievedAt": "2026-11-14T01:07:40.767483+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2026-01-01",
+      "before": "2026-02-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222026-01-01%22+and+gameDate%3C%222026-02-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8640,
+      "sha256": "7e5bdefd13118f4e970e444ecb4ad1504db4af5d4decaeeaf9aeec17de171780",
+      "retrievedAt": "2026-11-14T01:07:40.895914+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2026-02-01",
+      "before": "2026-03-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222026-02-01%22+and+gameDate%3C%222026-03-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 2663,
+      "sha256": "08acd08574667b4cd98414bd4a83c9b484917df78cd1fcba9ae75e1e7b1d8890",
+      "retrievedAt": "2026-11-14T01:07:40.994700+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2026-03-01",
+      "before": "2026-04-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222026-03-01%22+and+gameDate%3C%222026-04-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 8712,
+      "sha256": "d06fec2b183c1d3f93ee0b5b5146c13880810a4f400646a064f3ecad9a206fac",
+      "retrievedAt": "2026-11-14T01:07:41.639678+00:00"
+    },
+    {
+      "season": 20252026,
+      "from": "2026-04-01",
+      "before": "2026-05-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20252026+and+gameTypeId%3D2+and+gameDate%3E%3D%222026-04-01%22+and+gameDate%3C%222026-05-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 4500,
+      "sha256": "7155f2f812467bd50005f10da2774e3a3711bac5b11e08ecdd5d52aa45b33b5b",
+      "retrievedAt": "2026-11-14T01:07:41.475889+00:00"
+    },
+    {
+      "season": 20262027,
+      "from": "2026-10-01",
+      "before": "2026-11-01",
+      "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=true&start=0&limit=-1&cayenneExp=seasonId%3D20262027+and+gameTypeId%3D2+and+gameDate%3E%3D%222026-10-01%22+and+gameDate%3C%222026-11-01%22&sort=%5B%7B%22property%22%3A%22gameId%22%2C%22direction%22%3A%22ASC%22%7D%2C%7B%22property%22%3A%22playerId%22%2C%22direction%22%3A%22ASC%22%7D%5D",
+      "rows": 7847,
+      "sha256": "369cb31753fdc3d82f97165b4c022156acc9b8cc919d411a2a3e65445fefa074",
+      "retrievedAt": "2026-11-14T01:07:41.808302+00:00"
+    }
+  ]
+}
