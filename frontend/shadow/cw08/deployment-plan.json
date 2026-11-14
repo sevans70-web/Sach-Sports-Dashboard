@@ -1,0 +1,21 @@
+{
+  "worker": "sach-cw08-nhl-shadow",
+  "className": "NhlShadowCoordinator",
+  "study": "cw08-nhl-v3-prospective-shadow",
+  "cron": "*/15 * * * *",
+  "compatibilityDate": "2026-11-14",
+  "localRuntimeDate": "2026-11-11",
+  "productionWorker": "sach-sports-cloudflare-test",
+  "productionVersion": "49db8837-1cce-425a-8ca8-d821e34ec62d",
+  "dashboardTrigger": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+  "pausedBranchInclude": "__cw08_manual_release_only__",
+  "activationRequiresUserApproval": true,
+  "runtimeSecrets": [
+    "OWLS_INSIGHT_API_KEY",
+    "BOOTSTRAP_TOKEN"
+  ],
+  "productionBindings": [],
+  "automaticPromotion": false,
+  "dashboardDeployment": false,
+  "namespaceTitle": "sach-cw08-nhl-shadow-evidence"
+}

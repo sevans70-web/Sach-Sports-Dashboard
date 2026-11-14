@@ -1,0 +1,73 @@
+{
+  "checkedAtUTC": "2026-11-14T04:41:20.747043+00:00",
+  "branch": "cloudflare-compatibility-test",
+  "status": "implemented_tested_activation_requires_user_approval",
+  "productionModelChanged": false,
+  "dashboardBuilt": false,
+  "cloudflareWritesPerformed": false,
+  "schedulerActivated": false,
+  "frozenModelCommit": "007c02b",
+  "frozenImplementationCommit": "396af74",
+  "originalSeedGitAnchor": "27324da",
+  "originalSeedReceiptCount": 339,
+  "protocolSha256": "c4e30799f23a01d8b429296fc919e831a8343726b621b9ce02f7fa5f3884d138",
+  "workerBundleSha256": "90045cb710663ca0d10cfb138fc12eb3932ccb4bb4bd77b1e8e1f25b1d4fec05",
+  "workerBundleBytes": 144129,
+  "focusedTests": {
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "logSha256": "b891c71942df15e8a8c45b44149dc9f8a8063f6fc4303e5921ac8408cba91072"
+  },
+  "fullSuite": {
+    "tests": 715,
+    "passed": 706,
+    "failed": 9,
+    "baselineFailuresUnchanged": true,
+    "failureLocations": [
+      "tests/dashboard-contract.test.mjs:58:1",
+      "tests/estimated-ev.test.mjs:7:1",
+      "tests/featured-loading.test.mjs:50:1",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/nba-slate-scope.test.mjs:19:1",
+      "tests/opportunity-backtest.test.mjs:24:1",
+      "tests/quarter-markets.test.mjs:11:1"
+    ],
+    "logSha256": "c450bd862205d8b70b6d9f1d8774c6456762d2b4d871ceec5c1458cda45f5cfd"
+  },
+  "typecheck": {
+    "errors": 9,
+    "newDiagnostics": 0,
+    "sameBaselineDiagnostics": true,
+    "logSha256": "621c3669f656ed7b3eaced2e01e67f2985c33e932f49cb4dd6722a25e5452fa5"
+  },
+  "independentReplay": {
+    "modelsUnchangedSincePreEvaluationCommit": "007c02b",
+    "featureChecks": 368,
+    "causalityChecks": 368,
+    "independentPythonPriceProbabilityEvSideChecks": 221,
+    "productionArtifactsChanged": false,
+    "prospectiveAcceptedCaptures": 0,
+    "releaseApproved": false
+  },
+  "localRuntime": {
+    "miniflare": "5.20261104.0-beta",
+    "compatibilityDate": "2026-11-11",
+    "proposedDeploymentCompatibilityDate": "2026-11-14",
+    "actualCloudflareStartupAndPermissions": "pending_activation_approval"
+  },
+  "storage": {
+    "authoritative": "dedicated Durable Object SQLite",
+    "backup": "dedicated Cloudflare KV namespace",
+    "productionBindings": [],
+    "wormClaimed": false
+  },
+  "regressionScoreIdenticalOn339SeedReceipts": true,
+  "lastCloudflareCheck": {
+    "executed": false,
+    "reason": "automatic approval review usage limit; no unsafe-action determination"
+  },
+  "releaseApproved": false
+}
