@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "study": "CW08 persistent-player-skill and quote-eligible shadow v3",
+  "fitThrough": "2025-02-08",
+  "calibrationFrom": "2025-02-11",
+  "calibrationThrough": "2025-04-17",
+  "freshFrom": "2026-11-01",
+  "freshThrough": "2026-11-08",
+  "freshStatus": "Outcomes not previously collected or scored by CW08; fetch only after committing the fitted artifacts and protocol",
+  "historicalQuoteWindow": ["2026-11-09", "2026-11-13"],
+  "historicalQuoteStatus": "All 317 archived quote rows, including abstentions; retrospective diagnostic, not untouched validation because some original pick outcomes were previously inspected",
+  "features": "Existing ten same-season/team opportunity features plus logit of Beta-20 shrunk prior-60-game any-event rate, log of Gamma prior-20-games count/minute rate, current prior-three-game minutes times shrunk count/minute rate, log1p prior games. Persistent skill may cross seasons/teams; current role never inherits another team's minutes.",
+  "lagHours": 48,
+  "candidates": ["v2 frozen expanded hurdle", "long-history hurdle with global intercept calibration", "long-history hurdle with fixed prior-minute bands <12 / 12-18 / >=18 intercept calibration"],
+  "eventFit": "Standardize fitting inputs only; logistic L2 C=1; fixed max_iter=500",
+  "positiveFit": "Zero-truncated Poisson likelihood, standardized fitting inputs only, L2 strength 1; positive-count factor calibrated on calibration rows only",
+  "selection": "Choose global versus role-conditioned candidate on calibration Brier only, before fetching new evaluation outcomes. No hyperparameter search. No use of test outcomes or future quote eligibility in fitting.",
+  "pricing": "Exact count masses, normalized probabilities, integer pushes, two-sided American-price EV, >=3% EV with no 55% win floor and no direction quota",
+  "release": "Never auto-promote. Require actual fixture/quote-eligible fresh pregame evidence and nonregression versus frozen baselines, original and broad cohorts, adequate fixture uncertainty, prospective finalized shadow outcomes, history preservation and application regressions.",
+  "scope": "NHL goals and assists research/shadow only. No production route, scheduler, database write, original pick overwrite, dashboard rebuild or deployment."
+}

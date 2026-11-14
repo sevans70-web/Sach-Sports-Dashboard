@@ -1,0 +1,26 @@
+{
+  "protocolSha256": "9f651da684f20ba8ab2fd6fdbddc29c333943facbe0a0dbf7b53a93b2545d1e0",
+  "priorSourceSha256": "02e9c65fd2104e473a006ef2b82e08e972803229b55c0f3977da4e41675d160f",
+  "modelsSha256": "636fa9dc04ce7b3e734a7b8bc8c4582628989124b293f9e0e2f81545e02f5194",
+  "diagnostics": {
+    "goals": {
+      "fitRows": 72407,
+      "calibrationRows": 14692,
+      "calibrationBrier": {
+        "global": 0.12210497774208105,
+        "role": 0.12209516669557832
+      },
+      "selectedBeforeFreshEvaluation": "role"
+    },
+    "assists": {
+      "fitRows": 72407,
+      "calibrationRows": 14692,
+      "calibrationBrier": {
+        "global": 0.1730336337450019,
+        "role": 0.17287747739893508
+      },
+      "selectedBeforeFreshEvaluation": "role"
+    }
+  },
+  "freshOutcomesRead": false
+}
