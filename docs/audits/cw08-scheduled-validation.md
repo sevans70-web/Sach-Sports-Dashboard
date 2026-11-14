@@ -198,3 +198,21 @@ verification timestamp less than 15 minutes old, alongside the approved commit.
 The script continues to verify the production Worker version before and after
 activation. The control connection must reverify the pause and restore build
 commands after every manual attempt. No token permissions are broadened.
+
+## Live roster redirect repair
+
+The first natural cycle at 05:15 UTC ran but its manifest exposed 31 roster
+HTTP 307 failures. This is not a successful enrollment cycle. The official
+`/roster/TEAM/current` endpoint redirects to `/roster/TEAM/20262027`. Collection
+was paused while bounded same-origin NHL redirect handling was repaired.
+Sportsbook redirects remain rejected, off-host/HTTP redirects are forbidden,
+and no feed credentials are attached to official NHL requests. Full workflow
+tests now reproduce the actual roster redirect; loop/off-host/credential
+forwarding checks and all 18 focused tests pass.
+
+The research-only replacement is fenced against the exact observed old bundle
+SHA-256. It reuses the existing SQLite namespace and KV binding, checks ready
+enrollment after upload, and avoids reimporting already verified original
+receipts. The frozen model, original seed hashes and evaluation protocol are
+unchanged. Live status and manifests now expose collection-health counts rather
+than treating a technically completed cycle as proof of successful data capture.

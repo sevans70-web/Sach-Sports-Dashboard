@@ -6,13 +6,20 @@ const root=resolve(import.meta.dirname,'..'),seed=JSON.parse(await readFile(reso
 const bytes=await readFile(resolve(root,'model-research/cw08-nhl-v3',pkg.file)),files=decodeShadowArtifacts({sha256:pkg.packageSha256,chunks:[bytes.toString('base64')]}),receipts=files.filter(f=>f.path.startsWith('receipts/')).map(f=>JSON.parse(f.content));
 const initial=Date.now()+5*60000,gameTime='2026-11-14T18:30:00.000Z',gameId='2026020999',playerId='999123',team='NJD',other='VGK',name='Shadow Testplayer';
 const official={id:Number(gameId),season:20262027,gameType:2,startTimeUTC:gameTime,gameState:'FUT',awayTeam:{abbrev:team,name:{default:'New Jersey Devils'}},homeTeam:{abbrev:other,name:{default:'Vegas Golden Knights'}}};
-let final=false,missing=false,failFeed=0,feedCalls=0,historyCalls=0,finalGoals=1;const outbound=[];
+let final=false,missing=false,failFeed=0,feedCalls=0,historyCalls=0,finalGoals=1,redirectFeed=false;const outbound=[];
 function answer(request){
  const u=new URL(request.url);outbound.push({url:request.url,method:request.method});assert.equal(request.method,'GET');assert.ok(['api-web.nhle.com','api.owlsinsight.com'].includes(u.hostname));
  if(u.hostname==='api.owlsinsight.com'){
+  if(redirectFeed)return new Response(null,{status:307,headers:{Location:'https://api-web.nhle.com/v1/redirect-fixture/done'}});
   feedCalls++;assert.equal(request.headers.get('Authorization'),'Bearer synthetic-no-real-credential');if(failFeed-->0)return new Response('{}',{status:503});
   return Response.json({data:[{gameId,awayTeam:'New Jersey Devils',homeTeam:'Vegas Golden Knights',commenceTime:gameTime,books:[{key:'fixture_book',lastUpdate:new Date().toISOString(),props:['goals','assists'].map(category=>({category,period:'game',playerName:name,teamName:team,line:.5,overPrice:200,underPrice:-240,isMainLine:true,propId:category+'-'+playerId}))}]}]});
  }
+ assert.equal(request.headers.get('Authorization'),null);assert.equal(request.headers.get('x-api-key'),null);
+ if(u.pathname==='/v1/redirect-fixture/same')return new Response(null,{status:307,headers:{Location:'/v1/redirect-fixture/done'}});
+ if(u.pathname==='/v1/redirect-fixture/done')return Response.json({ok:true});
+ if(u.pathname==='/v1/redirect-fixture/escape')return new Response(null,{status:307,headers:{Location:'https://example.test/leak'}});
+ if(u.pathname==='/v1/redirect-fixture/loop')return new Response(null,{status:307,headers:{Location:u.pathname}});
+ if(u.pathname.includes('/roster/')&&u.pathname.endsWith('/current'))return new Response(null,{status:307,headers:{Location:u.pathname.replace('/current','/20262027')}});
  if(u.pathname.includes('/schedule/'))return Response.json({gameWeek:[{games:[official]}]});
  if(u.pathname.includes('/standings/'))return Response.json({standings:[{seasonId:20262027,teamAbbrev:{default:team},teamName:{default:'New Jersey Devils'},teamCommonName:{default:'Devils'}},{seasonId:20262027,teamAbbrev:{default:other},teamName:{default:'Vegas Golden Knights'},teamCommonName:{default:'Golden Knights'}}]});
  if(u.pathname.includes('/roster/'))return Response.json({forwards:u.pathname.includes('/'+team+'/')?[{id:Number(playerId),firstName:{default:'Shadow'},lastName:{default:'Testplayer'}}]:[],defensemen:[]});
@@ -31,6 +38,10 @@ test('scheduled Cloudflare workflow preserves seeds, serializes, recovers upload
  try{
   runtime=await setup(dir);let {mf,call,status}=runtime;
   assert.equal((await call('tick')).state,'bootstrap_pending');assert.equal(feedCalls,0);
+  assert.deepEqual(await call('source',{url:'https://api-web.nhle.com/v1/redirect-fixture/same'}),{ok:true});
+  await assert.rejects(call('source',{url:'https://api-web.nhle.com/v1/redirect-fixture/escape'}),/source_redirect_forbidden/);
+  await assert.rejects(call('source',{url:'https://api-web.nhle.com/v1/redirect-fixture/loop'}),/source_redirect_limit/);
+  redirectFeed=true;await assert.rejects(call('source',{url:'https://api.owlsinsight.com/api/v1/nhl/props',key:'synthetic-no-real-credential'}),/source_http_307/);redirectFeed=false;
   assert.equal((await mf.dispatchFetch('https://shadow.test/bootstrap',{method:'POST',body:'{}'})).status,401);
   assert.equal((await mf.dispatchFetch('https://shadow.test/collect',{method:'POST'})).status,404);
   // The authenticated production bootstrap route imports only known anchored seeds.
@@ -53,7 +64,7 @@ test('scheduled Cloudflare workflow preserves seeds, serializes, recovers upload
   let inspected=await call('inspect');assert.equal(inspected.storageError.code,'injected_ack_loss');assert.ok((await status()).pendingUploads>0);
   await mf.dispose();runtime=await setup(dir);({mf,call,status}=runtime);assert.equal((await status()).ready,true);assert.equal((await status()).receipts,341);await call('clock',(await status()).active[0].retryAt+1);
   for(let i=0;i<60&&(await status()).completedCycles===0;i++)await call('step');
-  s=await status();if(s.receipts!==341)console.log((await call('inspect')).cycles.map(r=>JSON.parse(r.data)));assert.equal(s.completedCycles,1);assert.equal(s.receipts,341);assert.equal(s.pendingUploads,0);assert.equal(s.grades,0);assert.ok(s.manifestHead);
+  s=await status();if(s.receipts!==341)console.log((await call('inspect')).cycles.map(r=>JSON.parse(r.data)));assert.equal(s.completedCycles,1);assert.equal(s.receipts,341);assert.equal(s.pendingUploads,0);assert.equal(s.grades,0);assert.ok(s.manifestHead);assert.equal(s.latestCollectionHealth.state,'healthy');assert.equal(s.latestCollectionHealth.rosterFailures,0);
   inspected=await call('inspect');const newRows=inspected.receipts.filter(r=>r.game_id===gameId);assert.equal(newRows.length,2);const firstSha=newRows.map(r=>r.sha),firstRefs=newRows.map(r=>r.object_key),firstManifest=s.manifestHead;
   await call('clock',initial+SLOT_FOR_TEST);await call('tick');for(let i=0;i<45&&(await status()).active.length;i++)await call('step');
   assert.equal((await status()).receipts,341);assert.deepEqual((await call('inspect')).receipts.filter(r=>r.game_id===gameId).map(r=>r.sha),firstSha);assert.equal(historyCalls,4,'same-day history is retained without refetch');

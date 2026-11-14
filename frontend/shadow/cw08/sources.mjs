@@ -6,8 +6,16 @@ const NHL='https://api-web.nhle.com/v1',OWLS='https://api.owlsinsight.com/api/v1
 const clean=v=>String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 export async function readSource(url,key){
  if(!(url.startsWith(NHL+'/')||url===OWLS))throw Error('forbidden_source');
- const r=await fetch(url,{method:'GET',redirect:'manual',headers:url===OWLS?{Authorization:`Bearer ${key}`,'x-api-key':key,Accept:'application/json'}:{Accept:'application/json'},signal:AbortSignal.timeout(10000),cache:'no-store'});
- if(!r.ok){await r.body?.cancel();throw Error('source_http_'+r.status);}
+ let current=url,r;
+ for(let hop=0;hop<=3;hop++){
+  r=await fetch(current,{method:'GET',redirect:'manual',headers:url===OWLS?{Authorization:`Bearer ${key}`,'x-api-key':key,Accept:'application/json'}:{Accept:'application/json'},signal:AbortSignal.timeout(10000),cache:'no-store'});
+  if([301,302,303,307,308].includes(r.status)&&url!==OWLS){
+   const location=r.headers.get('Location');await r.body?.cancel();if(!location)throw Error('source_redirect_missing');
+   const next=new URL(location,current);if(next.origin!=='https://api-web.nhle.com'||!next.pathname.startsWith('/v1/')||next.username||next.password)throw Error('source_redirect_forbidden');
+   if(hop===3)throw Error('source_redirect_limit');current=next.href;continue;
+  }
+  if(!r.ok){await r.body?.cancel();throw Error('source_http_'+r.status);}break;
+ }
  // These endpoints are fixed public/provider contracts. Cap responses before parsing.
  const reader=r.body.getReader(),chunks=[];let size=0;
  for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>16*1024*1024){await reader.cancel();throw Error('source_response_too_large');}chunks.push(value);}

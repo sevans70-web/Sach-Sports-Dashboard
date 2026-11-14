@@ -1,10 +1,12 @@
 // Local-only harness. The production build never imports this module.
 import {verifyForecast} from '../../shadow/cw08/domain.mjs';
+import {readSource} from '../../shadow/cw08/sources.mjs';
 import production from '../../shadow/cw08/entry.mjs';
 import {NhlShadowCoordinator as Coordinator} from '../../shadow/cw08/coordinator.mjs';
 export class NhlShadowCoordinator extends Coordinator {
  now(){return this.meta('testNow')||Date.now();}
  async test(action,value){
+  if(action==='source')return readSource(value.url,value.key);
   if(action==='clock'){this.setMeta('testNow',value);return this.status();}
   if(action==='tick')return this.tick();
   if(action==='step'){await this.alarm();return this.status();}
