@@ -1,0 +1,137 @@
+{
+  "status": "active_research_transport_live_verified",
+  "worker": "sach-cw08-nhl-shadow",
+  "sourceCommit": "c08afc5b0b0b4139413a046824539d9f5d01c795",
+  "manualBuild": "c88755cd-bcd7-4864-9bdc-3f6c85f80483",
+  "deployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+  "createdAtUTC": "2026-11-14T19:54:01.859122Z",
+  "createdAtToronto": "2026-11-14 14:54:01 EST",
+  "rollbackVersion": "08e854d6-fcdb-404a-9820-c156d1485d98",
+  "bundle": {
+    "bytes": 151874,
+    "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+  },
+  "frozenReferencesAvailableInManualEnvironment": true,
+  "frozenModel": "007c02b",
+  "validationPeriod": "2026-11-14T12:00:00Z to 2026-12-15T12:00:00Z, frozen protocol unchanged",
+  "durableObjectNamespace": "24d604463d7f410f880ba8366769e853",
+  "evidenceKV": "94a4f6693e144aa1ae92d2939d563014",
+  "receiptImportOrRewrite": false,
+  "priorReceiptsRequired": 669,
+  "actualPreDeploymentReceipts": 673,
+  "actualReceiptBytesPreservedAfterUpload": 673,
+  "receiptByteHashMismatches": 0,
+  "secretBindingsPreservedWithoutReadCopyOrRotation": true,
+  "cron": "*/15 * * * *",
+  "cronModifiedUTC": "2026-11-14T05:24:15.908994Z",
+  "dashboardDeploymentUnchanged": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+  "dashboardVersionUnchanged": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
+  "dashboardBuildsPaused": true,
+  "normalDashboardBuildCommandsRestored": true,
+  "dashboardAvailability": {
+    "nba": {
+      "http": 200,
+      "games": 14
+    },
+    "nfl": {
+      "http": 200,
+      "games": 14
+    },
+    "nhl": {
+      "http": 200,
+      "games": 19
+    }
+  },
+  "tests": {
+    "focusedReleaseAndScheduledWorkflow": {
+      "passed": 10,
+      "failed": 0
+    },
+    "previousSourceFullSuite": {
+      "passed": 749,
+      "failed": 0,
+      "typescriptDiagnostics": 0
+    }
+  },
+  "newServicesResourcesPlansOrPaidFeatures": false,
+  "operationalTableAdded": "source_cache; same existing SQLite Durable Object",
+  "modelOrProductionPredictionChange": false,
+  "actualReceiptBytesPreservedAfterScheduledCycle": 673,
+  "scheduledCycle": {
+    "id": "1994096",
+    "startedAtUTC": "2026-11-14T20:00:24.287Z",
+    "completedAtUTC": "2026-11-14T20:07:26.251Z",
+    "startedAtToronto": "2026-11-14 15:00:24 EST",
+    "completedAtToronto": "2026-11-14 15:07:26 EST",
+    "manifest": "runs/19b27e98613fa43618eb21d44053464f5986c94c3acb7dc29312c8ade370b6f6.json",
+    "manifestSha256": "19b27e98613fa43618eb21d44053464f5986c94c3acb7dc29312c8ade370b6f6",
+    "manifestBytesHashVerified": true,
+    "health": {
+      "historySourceFailures": 0,
+      "newReceipts": 9,
+      "rejectionsByReason": {
+        "fewer_than_three_same_season_team_appearances": 9,
+        "official_history_missing": 47,
+        "prior_history_unavailable": 73,
+        "prior_workload_role_uncertain": 1,
+        "unresolved_or_ambiguous_official_player": 153
+      },
+      "rosterFailures": 0,
+      "sourceDeferrals": 1,
+      "sourceSnapshots": 18,
+      "state": "healthy",
+      "warmedPlayers": 16
+    }
+  },
+  "liveRetry": {
+    "naturallyObservedHTTP429": true,
+    "phase": "roster",
+    "heldCursor": 12,
+    "retryAtEpochMs": 1794686538305,
+    "providerBlockedUntilEpochMs": 1794686538305,
+    "durableReadDuringCooldownCursor": 12,
+    "durableReadDuringCooldownGateUnchanged": true,
+    "cursorAfterSuccessfulRetry": 18,
+    "lastErrorCleared": true,
+    "blockedUntilAfterSuccess": 0,
+    "failuresAfterSuccess": 0,
+    "deferralCountInImmutableManifest": 1,
+    "providerLimitsBypassed": false,
+    "forcedTestTraffic": false
+  },
+  "newReceiptReplay": {
+    "receipts": 9,
+    "allObjectHashesVerified": true,
+    "allTargetsUnique": true,
+    "allFirstReceiptsAnchoredPregame": true,
+    "allFrozenCandidateAndBaselineForecastsReproduced": true
+  },
+  "operationalCache": {
+    "entries": 62,
+    "compressedStoredBytes": 153592,
+    "sameExistingSQLiteObject": true,
+    "readOnlySQLInspectionRowsWritten": 0
+  },
+  "finalStatus": {
+    "receipts": 682,
+    "completedCycles": 59,
+    "grades": 0,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "active": [],
+    "production": false,
+    "releaseApproved": false,
+    "modelCommit": "007c02b"
+  },
+  "grading": {
+    "overdueUngradedAtVerification": 0,
+    "firstEligibleAtUTC": "2026-11-14T21:00:00Z",
+    "firstEligibleAtToronto": "2026-11-14 16:00:00 EST",
+    "officialFinalEvidenceStillRequired": true,
+    "liveGradeOccurred": false,
+    "officialFinalAndStorageRecoveryRuntimeTest": "passed"
+  },
+  "manualInterventionRequiredNow": false,
+  "modelValidationComplete": false
+}

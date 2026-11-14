@@ -1,5 +1,5 @@
 {
-  "status": "approved_release_stopped_at_provenance_preflight",
+  "status": "active_research_transport_live_verified",
   "worker": "sach-cw08-nhl-shadow",
   "replaceVersion": "08e854d6-fcdb-404a-9820-c156d1485d98",
   "durableObjectClass": "NhlShadowCoordinator",
@@ -34,12 +34,23 @@
     "bytes": 151874,
     "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
   },
+  "previousAttempts": [
+    {
+      "build": "fe8750e7-ef75-4137-834b-dc84265cf2c2",
+      "sourceCommit": "ca30060bb3aa663d3334547264a0724570cc7499",
+      "outcome": "failed_before_upload",
+      "reason": "Cloudflare shallow Git checkout lacks frozen reference commit 007c02b",
+      "researchVersionUnchanged": "08e854d6-fcdb-404a-9820-c156d1485d98",
+      "correction": "Fetch only the three full pinned historical commit objects before the unchanged artifact guard; tested locally, not retried on Cloudflare because the user required a stop on unexpected failure."
+    }
+  ],
   "lastAttempt": {
-    "build": "fe8750e7-ef75-4137-834b-dc84265cf2c2",
-    "sourceCommit": "ca30060bb3aa663d3334547264a0724570cc7499",
-    "outcome": "failed_before_upload",
-    "reason": "Cloudflare shallow Git checkout lacks frozen reference commit 007c02b",
-    "researchVersionUnchanged": "08e854d6-fcdb-404a-9820-c156d1485d98",
-    "correction": "Fetch only the three full pinned historical commit objects before the unchanged artifact guard; tested locally, not retried on Cloudflare because the user required a stop on unexpected failure."
+    "build": "c88755cd-bcd7-4864-9bdc-3f6c85f80483",
+    "sourceCommit": "c08afc5b0b0b4139413a046824539d9f5d01c795",
+    "outcome": "deployed_and_scheduled_cycle_verified",
+    "deployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+    "scheduledCycle": "1994096",
+    "evidence": "transport-activation.json"
   }
 }
