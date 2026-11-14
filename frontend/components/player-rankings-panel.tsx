@@ -1,4 +1,6 @@
 "use client";
+import {NbaEvMetric} from './nba-ev-metric';
+import {nbaRankingEv,nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {NBA_DISPLAY_MARKETS} from "@/lib/nba";
 import {NFL_ACTIVE_MARKETS} from '@/lib/nfl';
 import {visiblePolling} from '@/lib/visible-polling';
@@ -738,6 +740,7 @@ function isGradeablePrediction(card: RankingCard) {
   // because the legacy generic-card modelProjection field is empty.
   // Quarter forecasts are stored in researchForecast, and the full
   // pregame quote/probability integrity check has already passed here.
+  if(card.raw?.sport==='nba'&&nbaEvMarket(card.market))return true;
   if(card.raw?.sport==='nba'&&nbaCardEv(card)!=null)return true;
   // Research stays browsable, including missing-line and Q1 candidates.
   if (card.raw?.researchOnly) return true;
@@ -987,7 +990,8 @@ function PlayerCard({
   const projectionComparison=!complete&&!modelSelection&&footballForecast.side!=null;
   const displayedPick=complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
-  const evPercent=complete?.percent??estimatedEv(card.raw).percent;
+  const nbaDisplayEv=sport==='nba'&&nbaEvMarket(card.market)?nbaRankingEv(card.raw):null;
+  const evPercent=nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
   // A non-positive expected return is an abstention, not an actionable EV card.
   // Retain the original signed value in the underlying record for auditing.
   const evText=typeof evPercent==='number'&&Number.isFinite(evPercent)&&evPercent>0?formatEvPercent(evPercent):'—',evNotice=estimatedEvNotice(card.raw);
@@ -1078,7 +1082,7 @@ function PlayerCard({
 
         {!firstBasket&&<div className={`${styles.gi} ${researchOnly ? styles.researchGi : ""}`}>
           <span>EV</span>
-          <strong title={complete?.comparison?'Expected return for the displayed model prediction':evNotice} style={{borderColor:complete&&complete.percent>0?"var(--green)":"#686b72"}}>{evText}</strong>
+          {nbaDisplayEv?<NbaEvMetric ev={nbaDisplayEv}/>:<strong title={complete?.comparison?'Expected return for the displayed model prediction':evNotice} style={{borderColor:complete&&complete.percent>0?"var(--green)":"#686b72"}}>{evText}</strong>}
         </div>}
       </div>
 
@@ -1264,7 +1268,7 @@ function PlayerCard({
             <div>
               <b>EV</b>
               <span>Expected return</span>
-              <strong title={evNotice} style={{borderColor:complete&&complete.percent>0?"var(--green)":"#686b72"}}>{evText}</strong>
+              {nbaDisplayEv?<NbaEvMetric ev={nbaDisplayEv}/>:<strong title={evNotice} style={{borderColor:complete&&complete.percent>0?"var(--green)":"#686b72"}}>{evText}</strong>}
             </div>
             </>}
           </div>
@@ -2476,9 +2480,11 @@ export function PlayerRankingsPanel({
       })
       .filter((card) => {
         if(sport==='nba'&&nbaSlate==='previous'&&card.raw?.boardFrozen===true){
-          return completeRankingProp(card.raw)!=null;
+          return nbaEvMarket(card.market)||completeRankingProp(card.raw)!=null;
         }
-        if(['nba','nfl','nhl'].includes(sport)&&(excludeUnavailableRanking(card.raw)||!completeRankingProp(card.raw)))return false;
+        if(sport==='nba'&&nbaEvMarket(card.market)){if(excludeUnavailableRanking(card.raw))return false;}
+        else if(sport==='nba'&&card.market==='first_basket'){if(!firstBasketQuote(card.raw))return false;}
+        else if(['nba','nfl','nhl'].includes(sport)&&(excludeUnavailableRanking(card.raw)||!completeRankingProp(card.raw)))return false;
         // Previous and Tomorrow were already date-scoped by scopedNbaBoard.
         // Do not compare these slates with TODAY's shared game schedule:
         // yesterday's games disappear from that feed after midnight.
@@ -2521,7 +2527,7 @@ export function PlayerRankingsPanel({
 
   const displayCards = useMemo(() => {
     if(sport==='nba'){
-      if(nbaSlate==='previous')return [...scopedDisplayCards].sort((a,b)=>a.rank-b.rank);
+      if(nbaSlate==='previous'||nbaEvMarket(market.key)||market.key==='first_basket')return [...scopedDisplayCards].sort((a,b)=>a.rank-b.rank);
       const ranked=scopedDisplayCards.flatMap(card=>{
         const forecast=completeRankingProp(card.raw);
         return forecast?[{card,forecast}]:[];

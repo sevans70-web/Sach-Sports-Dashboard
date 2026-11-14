@@ -1,3 +1,4 @@
+import {nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {workerModelRuntime} from "@/lib/worker-model-runtime";
 import {attachQuarterForecasts} from '@/lib/live-quarter-forecast';
 import {setImmediate as yieldToRequests} from 'node:timers/promises';
@@ -59,6 +60,7 @@ function bundle(sport:string,market:string):RuntimeBundle|null{
  if(combinations.sourceSha256!==manifest.sha256)throw Error('NBA combination model source mismatch');
  return cached={...data,models:[...data.models,...combinations.models],digest:manifest.sha256,asOf:manifest.asOf,gi,giStatus};
 }
+const keepNbaOriginal=(r:any,sport:string,market:string,now:number)=>sport==='nba'&&nbaEvMarket(market)&&r.researchForecast&&(r.boardFrozen||r.frozen||r.lockedAtKickoff||Date.parse(r.gameTime)<=now);
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** Experimental outputs remain separate from the validated recommendation
  * registry and never rewrite historical lines, bets, grades or probabilities. */
@@ -147,8 +149,8 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  if(!options.offlineOnly)payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
- let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>(sport==='nhl'&&r.boardFrozen&&r.researchForecast?r:{...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
- if(!data)return {...payload,rows:payload.rows.map((r:any)=>(sport==='nhl'&&r.boardFrozen&&r.researchForecast?r:{...r,researchForecast:unavailable('market_model_not_fitted')})),
+ let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>((sport==='nhl'&&r.boardFrozen&&r.researchForecast)||keepNbaOriginal(r,sport,String(payload.market||r.market||''),now)?r:{...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
+ if(!data)return {...payload,rows:payload.rows.map((r:any)=>((sport==='nhl'&&r.boardFrozen&&r.researchForecast)||keepNbaOriginal(r,sport,String(payload.market||r.market||''),now)?r:{...r,researchForecast:unavailable('market_model_not_fitted')})),
   forecastBlockers:{market_model_not_fitted:payload.rows.length},fittedResearchForecastCount:0,modelSelectionCount:0};
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
@@ -178,15 +180,17 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){
-  const row={...r,researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
-  // Record the actual pregame decision/capture timestamp when a freshly fitted
-  // selection is paired with a currently verified sportsbook quote. Without
-  // this receipt estimatedEv rejects otherwise valid priced forecasts.
+  const preserveNba=keepNbaOriginal(r,sport,String(payload.market||r.market||''),now);
+  const row={...r,researchForecast:preserveNba?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  // Record the actual pregame decision/capture time for a fresh selection
+  // or an NBA comparison. A comparison must not inherit an older board
+  // timestamp merely because it did not qualify as a betting selection.
   // Never stamp a historical, frozen, stale, or model-only candidate.
   const selection=row.researchForecast?.modelSelection;
-  const decision=Date.parse(selection?.calculatedAt||'');
+  const nbaComparisonReceipt=sport==='nba'&&nbaEvMarket(String(payload.market||r.market||''))&&row.researchForecast?.status==='available'&&row.researchForecast?.priceComparison?.quoteEvidence;
+  const decision=Date.parse(selection?.calculatedAt||(nbaComparisonReceipt?row.researchForecast.calculatedAt:''));
   const kickoff=Date.parse(row.gameTime||'');
-  const eligibleReceipt=selection&&Number.isFinite(decision)&&decision<=Date.now()&&
+  const eligibleReceipt=(selection||nbaComparisonReceipt)&&!preserveNba&&Number.isFinite(decision)&&decision<=(nbaComparisonReceipt?now:Date.now())&&
    Number.isFinite(kickoff)&&decision<kickoff&&verifiedPropQuote(row,now)&&
    row.researchForecast?.priceComparison?.quoteEvidence&&
    !row.boardFrozen&&!row.frozen&&!row.lockedAtKickoff;

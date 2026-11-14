@@ -20,9 +20,10 @@ test('scope handles UTC rollover and filters wrong date, market, missing and inv
  const good={market:'points',gameTime:'2026-10-29T00:00Z',playerId:'1',gameId:'today',quoteId:'original',projection:12};
  const payload={market:'points',boardDay:'2026-10-28',rows:[good,{...good,gameTime:'2026-10-28T02:00Z'},{...good,gameTime:'2026-10-30T00:00Z'},{...good,market:'assists'},{...good,gameTime:'bad'},{...good,gameTime:null}],dropped:[good,{...good,gameTime:'bad'}]};
  const before=structuredClone(payload),result=scopedNbaBoard(payload,'points','2026-10-28');
- assert.deepEqual(result.rows,[good]);assert.deepEqual(result.dropped,[good]);assert.equal(result.publicRankingCount,1);assert.deepEqual(payload,before);
+ const {nbaEv,sport,...original}=result.rows[0];assert.deepEqual(original,good);assert.equal(sport,'nba');assert.equal(nbaEv.status,'unavailable');assert.ok(nbaEv.reason);assert.deepEqual(result.dropped,[good]);assert.equal(result.publicRankingCount,1);assert.deepEqual(payload,before);
  assert.equal(nbaFixtureDay(good.gameTime),'2026-10-28');
- for(const patch of [{boardDay:'2026-10-27'},{market:'rebounds'}])assert.deepEqual(scopedNbaBoard({...payload,...patch},'points','2026-10-28').rows,[]);
+ assert.deepEqual(scopedNbaBoard({...payload,market:'rebounds'},'points','2026-10-28').rows,[]);
+ assert.deepEqual(scopedNbaBoard({...payload,boardDay:'2026-10-27'},'points','2026-10-28').rows,result.rows,'advisory board day cannot override the exact fixture day');
  assert.deepEqual(nbaSlateRows([], 'points','2026-10-28'),[]);
 });
 test('every NBA market and combination is independently scoped',()=>{
