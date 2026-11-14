@@ -2,12 +2,27 @@
 
 ## Current status
 
-Implemented and tested; **activation requires the user's explicit approval**.
-No research Worker, Durable Object, namespace or schedule has been created by
-this continuation. No production model has been deployed or tuned. The existing
-`cloudflare-compatibility-test` Git trigger remains paused on
-`__cw08_manual_release_only__`. The dashboard's build/deploy commands remain
-unchanged. The verified November 14 package and all previous commits are intact.
+**Activated with explicit user approval.** The separate research Worker,
+SQLite Durable Object, dedicated KV namespace and 15-minute schedule are live.
+The 05:45 UTC natural scheduled cycle completed healthy at 05:48:15.876 UTC,
+adding 21 new pregame receipts (9 goals, 12 assists). There are now 360 receipts.
+All 339 originals were independently rechecked after the repair: exact content
+and receipt hashes match, with no missing/expiring records or replacements.
+All 21 new forecasts independently reproduce in Node within the established
+1e-10 tolerance, including features, probabilities, prices, EV and selections.
+Their evidence package is anchored in this Git commit before puck drop at
+`frontend/model-research/cw08-nhl-v3/shadow-evidence/2026-11-14T054815Z.json.gz`.
+
+Live status: <https://sach-cw08-nhl-shadow.sevans70.workers.dev/status>.
+Machine-readable deployment, schedule, namespace, manifest and verification
+records are in `frontend/shadow/cw08/live-activation.json`. Earlier pending
+activation/test receipts remain historical provenance, not current status.
+
+The existing dashboard still runs version
+`49db8837-1cce-425a-8ca8-d821e34ec62d` at 100%. Original build/deploy commands
+are restored, and automatic builds remain paused on
+`__cw08_manual_release_only__`. No production model or dashboard was deployed.
+No Cloudflare plan upgrade, R2 activation or additional service was introduced.
 
 ## Exact activation change
 
@@ -216,3 +231,37 @@ enrollment after upload, and avoids reimporting already verified original
 receipts. The frozen model, original seed hashes and evaluation protocol are
 unchanged. Live status and manifests now expose collection-health counts rather
 than treating a technically completed cycle as proof of successful data capture.
+
+## Verified live operation after repair
+
+The repaired Worker version is `08e854d6-fcdb-404a-9820-c156d1485d98`, deployed
+from `1a41f0c`; it retained both namespace IDs and the entire study state.
+Natural scheduled cycle `1994039` began at 05:45:23.755 UTC and completed at
+05:48:15.876 UTC. Its content-addressed manifest is
+`runs/bd5517f59475ff1654881debd097a674a15f8e5f0eac4685b9a0330ed194a9fa.json`.
+It links the earlier failed-source manifest rather than rewriting that history.
+
+The cycle warmed 21 player histories, saved 19 source snapshots and added 21
+unique receipts. It had zero roster failures and zero history-source HTTP
+failures. Twenty-three unresolved identities and three unavailable official
+history cases were explicitly excluded; three capture entries consequently had
+no usable history. These exclusions remain in the manifest and are not filled
+with invented zeroes. Pending uploads, storage errors and late anchors were zero.
+
+All original fixtures were independently confirmed FUT with matching official
+IDs and start times. Actual grades remain zero; synthetic test finals were never
+uploaded. The earliest original target starts at 18:00 UTC (1 p.m. Toronto),
+with grading first eligible at 21:00 UTC (4 p.m. Toronto), still requiring exact
+FINAL/OFF participant data. Automatic grading is active and tested, but live
+settlement correctness cannot yet be claimed from nonexistent future outcomes.
+
+Final focused checks: 18/18 passed. Final full suite: 707 passed / the same nine
+baseline failures / 716 total. Existing TypeScript diagnostics remain separately
+recorded. No frozen model, protocol, production registry or historical pick was
+changed. CW08 performance/release requirements still await future results.
+
+Future study enrollment must use the serialized Durable Object workflow. Do not
+run the legacy standalone/manual capture path concurrently or treat its later
+quotes as replacements for automated first receipts. The original Git seed
+ledger stays frozen; subsequent enrollment and hash-linked manifests live in the
+dedicated research state, with independent exports retained for audit.

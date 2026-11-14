@@ -1,0 +1,109 @@
+{
+  "status": "active_research_only",
+  "approvedPlan": "deployment-plan.json",
+  "deployedCommit": "1a41f0c681ee9135fdc316ebaea98c0edd681478",
+  "worker": "sach-cw08-nhl-shadow",
+  "statusUrl": "https://sach-cw08-nhl-shadow.sevans70.workers.dev/status",
+  "researchDeployment": {
+    "id": "13a75869-0946-4318-aa1d-e62dea253444",
+    "version": "08e854d6-fcdb-404a-9820-c156d1485d98",
+    "createdAtUTC": "2026-11-14T05:24:11.74996Z"
+  },
+  "durableObjectNamespace": "24d604463d7f410f880ba8366769e853",
+  "evidenceNamespace": "94a4f6693e144aa1ae92d2939d563014",
+  "activationJob": "c8f8414a-12d2-48b3-a2f6-26ab629f4a28",
+  "redirectRepairJob": "60355a12-c5b3-4883-9d86-0a57619b36e9",
+  "cron": "*/15 * * * *",
+  "clock": "UTC; runs at minute 00/15/30/45 in Toronto as well",
+  "receiptTotals": {
+    "originals": 339,
+    "new": 21,
+    "total": 360,
+    "goals": 251,
+    "assists": 109
+  },
+  "lastHealthyCycle": {
+    "checkedAtUTC": "2026-11-14T05:50:31.922Z",
+    "manifestKey": "runs/bd5517f59475ff1654881debd097a674a15f8e5f0eac4685b9a0330ed194a9fa.json",
+    "manifestSha256": "bd5517f59475ff1654881debd097a674a15f8e5f0eac4685b9a0330ed194a9fa",
+    "startedAt": "2026-11-14T05:45:23.755Z",
+    "completedAt": "2026-11-14T05:48:15.876Z",
+    "previousManifest": {
+      "hash": "162a5297cd5618864013ce79320d79109dc41fb6b6359bf2b8a749fd5ef233e0",
+      "key": "runs/162a5297cd5618864013ce79320d79109dc41fb6b6359bf2b8a749fd5ef233e0.json"
+    },
+    "receiptCount": 21,
+    "markets": {
+      "goals": 9,
+      "assists": 12
+    },
+    "collectionHealth": {
+      "historySourceFailures": 0,
+      "newReceipts": 21,
+      "rejectionsByReason": {
+        "official_history_missing": 3,
+        "prior_history_unavailable": 3,
+        "unresolved_or_ambiguous_official_player": 23
+      },
+      "rosterFailures": 0,
+      "sourceSnapshots": 19,
+      "state": "healthy",
+      "warmedPlayers": 21
+    },
+    "sourceSnapshots": 19,
+    "histories": 21,
+    "allReceiptHashesAndPregameBackupTimesVerified": true,
+    "packageBytes": 275412,
+    "releaseApproved": false,
+    "packageSha256": "25823ad35e1c0256cc43cfbddf009b202b36e3c18bfd10815b44857a32db0d53"
+  },
+  "independentVerification": {
+    "checkedAtUTC": "2026-11-14T05:52:32.788Z",
+    "originalReceiptsChecked": 339,
+    "missing": 0,
+    "errors": 0,
+    "expiring": 0,
+    "allOriginalReceiptsUnchanged": true,
+    "productionDeployment": "e85e558a-5c4c-41fc-9e51-ac144759ca80",
+    "productionVersion": "49db8837-1cce-425a-8ca8-d821e34ec62d",
+    "dashboardBranches": [
+      "__cw08_manual_release_only__"
+    ],
+    "dashboardBuildCommand": "cd frontend && npm ci && npm run build:vinext",
+    "dashboardDeployCommand": "cd frontend && npm run deploy:vinext",
+    "researchSchedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  },
+  "tests": {
+    "focused": {
+      "tests": 18,
+      "passed": 18,
+      "failed": 0
+    },
+    "fullSuite": {
+      "tests": 716,
+      "passed": 707,
+      "failed": 9,
+      "samePreviouslyRecordedBaselineFailures": true
+    }
+  },
+  "officialFinalGrading": {
+    "enabled": true,
+    "settled": 0,
+    "reason": "All 13 original enrolled fixtures were verified FUT; the scheduled grader passed its no-due-finals phase. Official-final/participant/settlement and failure recovery paths passed local runtime tests; no synthetic outcomes are included in live evidence.",
+    "earliestOriginalGameTimeUTC": "2026-11-14T18:00:00Z",
+    "earliestOriginalGradeEligibilityUTC": "2026-11-14T21:00:00Z"
+  },
+  "frozenModelCommit": "007c02b",
+  "protocolUnchanged": true,
+  "cloudflarePlanUpgraded": false,
+  "r2Enabled": false,
+  "additionalPaidServicesIntroduced": false,
+  "productionModelChanged": false,
+  "releaseApproved": false
+}
