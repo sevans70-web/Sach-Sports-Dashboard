@@ -1,0 +1,136 @@
+{
+  "dashboard": {
+    "status": "deployed_and_live_verified",
+    "sourceCommit": "f93184a2a421f75018c0262c7b820b5ce9d95b76",
+    "manualBuild": "096f5a49-0d3c-401d-b2eb-3eca6791ad01",
+    "deployment": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+    "version": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
+    "createdAtUTC": "2026-11-14T19:01:59.627835Z",
+    "createdAtToronto": "2026-11-14 14:01:59 EST",
+    "rollbackVersion": "46f9dc62-01e2-407f-b1c3-845d10e613d9",
+    "hydrationErrors": [],
+    "scheduleGames": {
+      "nba": 14,
+      "nfl": 14,
+      "nhl": 19
+    },
+    "scheduleFixtureIdsMatch": true,
+    "cardCounts": {
+      "points": {
+        "rankings": 22,
+        "picks": 9,
+        "countsMatch": true
+      },
+      "rebounds": {
+        "rankings": 23,
+        "picks": 5,
+        "countsMatch": true
+      },
+      "assists": {
+        "rankings": 17,
+        "picks": 6,
+        "countsMatch": true
+      },
+      "threes_made": {
+        "rankings": 25,
+        "picks": 10,
+        "countsMatch": true
+      },
+      "pts_rebs_asts": {
+        "rankings": 25,
+        "picks": 9,
+        "countsMatch": true
+      },
+      "pts_rebs": {
+        "rankings": 25,
+        "picks": 11,
+        "countsMatch": true
+      },
+      "pts_asts": {
+        "rankings": 21,
+        "picks": 8,
+        "countsMatch": true
+      },
+      "nfl": {
+        "market": "q1_passing_yards",
+        "rankings": 14,
+        "picks": 6,
+        "countsMatch": true
+      },
+      "nhl": {
+        "market": "shots_on_goal",
+        "rankings": 11,
+        "picks": 2,
+        "countsMatch": true
+      }
+    },
+    "negativeEvValuesObserved": 39,
+    "exactZeroEvObservedLive": false,
+    "zeroEvVerification": "component/regression tests; no live quote or probability manufactured",
+    "historicalOriginalsPreserved": 576,
+    "nbaFeaturedOriginalsPreserved": 4,
+    "nhlTodayAndTomorrowRows": 25,
+    "scope": "Expanded NBA seven markets; NFL Nov 15 Q1 passing; NHL today shots. Aggregate coverage partial, accurately labelled; no claim all markets have current sportsbook coverage."
+  },
+  "research": {
+    "status": "existing_worker_running_update_stopped_at_release_check",
+    "deployment": "13a75869-0946-4318-aa1d-e62dea253444",
+    "version": "08e854d6-fcdb-404a-9820-c156d1485d98",
+    "cron": "*/15 * * * *",
+    "scheduleModifiedAtUTC": "2026-11-14T05:24:15.908994Z",
+    "receiptReferences": 667,
+    "originalReferencesVerified": 339,
+    "completedCycles": 55,
+    "grades": 0,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "health": {
+      "rosterFailures": 15,
+      "historySourceFailures": 24,
+      "rejectionsByReason": {
+        "source_http_429": 39,
+        "unresolved_or_ambiguous_official_player": 786,
+        "prior_history_unavailable": 31,
+        "fewer_than_three_same_season_team_appearances": 4
+      },
+      "warmedPlayers": 4,
+      "newReceipts": 1,
+      "sourceSnapshots": 18,
+      "state": "degraded"
+    },
+    "codeUploaded": false,
+    "resourcesCredentialsOrScheduleChanged": false,
+    "blocker": "Unexpected rebuild digest mismatch due solely to source path comments from different cwd; stopped before upload per user instruction. Local canonical cwd fix reproduces exact approved digest. Research activation awaits resumption after this report.",
+    "approvedBundle": {
+      "bytes": 151874,
+      "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+    },
+    "unexpectedRootBuild": {
+      "bytes": 152072,
+      "sha256": "8cf8006abee738c09c2587be57e065924f3c8d9a8e8e460b085f90fd2657efb6"
+    },
+    "entireDifferenceSourcePathComments": true,
+    "newUploader": "Code-only, exact commit/version/resource/hash fences, retained secret bindings, no cron mutation or receipt import, identity checks before/after. Not executed."
+  },
+  "automaticDashboardBuildsPaused": true,
+  "pauseBranchFilter": [
+    "__cw08_manual_release_only__"
+  ],
+  "frozenModelOrProtocolChanged": false,
+  "testResults": {
+    "previousApprovedCommitFullSuite": {
+      "passed": 744,
+      "failed": 0
+    },
+    "newFullSuite": {
+      "passed": 747,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typescript": {
+      "diagnostics": 0
+    },
+    "localProductionBuild": "passed",
+    "prebuiltDryRun": "passed"
+  }
+}
