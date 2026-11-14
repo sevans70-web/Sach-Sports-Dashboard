@@ -185,3 +185,16 @@ TypeScript has the same nine baseline diagnostics. Independent replay repeated
 The latest Cloudflare read-only recheck was not executed: automatic approval
 review hit a usage limit. This is a review failure, not an unsafe-action finding.
 No Cloudflare writes were attempted, and activation remains explicitly pending.
+
+## Activation preflight correction
+
+The first approved manual job `f27c3dcc-0c39-4a15-a5bd-605265f52364`
+stopped on a read-only build-trigger API request: the existing build token
+returned HTTP 403. No research resource was created. Original dashboard build
+commands were restored with automatic builds still paused. The authorized
+Cloudflare control connection can verify that pause without changing token
+permissions. Activation now requires that exact trigger UUID and an external
+verification timestamp less than 15 minutes old, alongside the approved commit.
+The script continues to verify the production Worker version before and after
+activation. The control connection must reverify the pause and restore build
+commands after every manual attempt. No token permissions are broadened.

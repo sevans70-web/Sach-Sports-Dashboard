@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,readFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {resolve,join} from 'node:path';
 import {activationGuard,workerMetadata,plan} from '../shadow/cw08/activate.mjs';import {buildShadow} from '../shadow/cw08/build.mjs';
-const sha='a'.repeat(40),env={CF_CW08_ACTIVATION:'approved',CF_CW08_APPROVED_COMMIT:sha,CLOUDFLARE_API_TOKEN:'synthetic-build-token',OWLS_INSIGHT_API_KEY:'synthetic-feed-token'};
+const sha='a'.repeat(40),env={CF_CW08_PAUSE_VERIFIED_AT:new Date().toISOString(),CF_CW08_PAUSE_TRIGGER:plan.dashboardTrigger,CF_CW08_ACTIVATION:'approved',CF_CW08_APPROVED_COMMIT:sha,CLOUDFLARE_API_TOKEN:'synthetic-build-token',OWLS_INSIGHT_API_KEY:'synthetic-feed-token'};
 test('activation requires explicit approval for the exact commit and Cloudflare-only credentials',()=>{
- assert.doesNotThrow(()=>activationGuard(env,sha));for(const patch of [{CF_CW08_ACTIVATION:''},{CF_CW08_APPROVED_COMMIT:'b'.repeat(40)},{CLOUDFLARE_API_TOKEN:''},{OWLS_INSIGHT_API_KEY:''}])assert.throws(()=>activationGuard({...env,...patch},sha));
+ assert.doesNotThrow(()=>activationGuard(env,sha));for(const patch of [{CF_CW08_ACTIVATION:''},{CF_CW08_APPROVED_COMMIT:'b'.repeat(40)},{CLOUDFLARE_API_TOKEN:''},{OWLS_INSIGHT_API_KEY:''},{CF_CW08_PAUSE_VERIFIED_AT:''},{CF_CW08_PAUSE_TRIGGER:'another-trigger'},{CF_CW08_PAUSE_VERIFIED_AT:new Date(Date.now()-16*60000).toISOString()},{CF_CW08_PAUSE_VERIFIED_AT:new Date(Date.now()+60000).toISOString()}])assert.throws(()=>activationGuard({...env,...patch},sha));
 });
 test('research deployment has only its own DO/namespace and two narrowly used secrets',()=>{
  const metadata=workerMetadata('synthetic-feed-token','synthetic-bootstrap-token','c'.repeat(64),'d'.repeat(32));
