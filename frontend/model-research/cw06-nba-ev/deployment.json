@@ -1,0 +1,470 @@
+{
+  "status": "deployed_and_live_verified",
+  "checkedAtUTC": "2026-11-14T17:17:44.060703+00:00",
+  "deployedAtToronto": "2026-11-14 12:09:42 EST",
+  "worker": "sach-sports-cloudflare-test",
+  "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev",
+  "sourceCommit": "6a4db752bc57faa233805c9547f1ec059383f79f",
+  "branch": "cloudflare-compatibility-test",
+  "deploymentId": "b5705072-a97f-4794-b71b-8bbf73a1da60",
+  "versionId": "46f9dc62-01e2-407f-b1c3-845d10e613d9",
+  "manualBuildId": "6054438a-9c6f-46fb-b18f-a73313e63708",
+  "manualBuildOutcome": "success",
+  "deploymentMethod": "existing authenticated Cloudflare integration -> manual Workers Build pinned to exact source commit; existing deployment commands unchanged",
+  "tokensRequestedCopiedOrExposed": false,
+  "automaticBuildsPaused": true,
+  "pausedBranchFilter": [
+    "__cw08_manual_release_only__"
+  ],
+  "previousDeploymentId": "e85e558a-5c4c-41fc-9e51-ac144759ca80",
+  "rollbackVersionId": "49db8837-1cce-425a-8ca8-d821e34ec62d",
+  "rollbackVersionVerifiedAvailable": true,
+  "rollbackRequired": false,
+  "bindingsAndCompatibilityPreserved": true,
+  "markets": {
+    "points": {
+      "renderedCards": 21,
+      "positive": 15,
+      "negative": 5,
+      "zero": 0,
+      "unavailable": 1,
+      "visibleReasons": [
+        "Projection equals the line; no OVER/UNDER direction is displayed"
+      ],
+      "apiArithmeticVerification": {
+        "rows": 22,
+        "available": 21,
+        "positive": 17,
+        "negative": 4,
+        "zero": 0,
+        "unavailable": {
+          "direction_unavailable": 1
+        },
+        "evDiagnostics": {
+          "available": 21,
+          "unavailable": 1,
+          "reasons": {
+            "direction_unavailable": 1
+          }
+        },
+        "examples": [
+          {
+            "player": "Jerami Grant",
+            "side": "UNDER",
+            "ev": 14.022480191634418,
+            "display": "+14.0%"
+          },
+          {
+            "player": "Naji Marshall",
+            "side": "UNDER",
+            "ev": 35.015399194503665,
+            "display": "+35.0%"
+          },
+          {
+            "player": "Terrence Shannon Jr.",
+            "side": "OVER",
+            "ev": 24.159575952015615,
+            "display": "+24.2%"
+          }
+        ]
+      }
+    },
+    "rebounds": {
+      "renderedCards": 25,
+      "positive": 8,
+      "negative": 16,
+      "zero": 0,
+      "unavailable": 1,
+      "visibleReasons": [
+        "Projection equals the line; no OVER/UNDER direction is displayed"
+      ],
+      "apiArithmeticVerification": {
+        "rows": 25,
+        "available": 24,
+        "positive": 8,
+        "negative": 16,
+        "zero": 0,
+        "unavailable": {
+          "direction_unavailable": 1
+        },
+        "evDiagnostics": {
+          "available": 24,
+          "unavailable": 1,
+          "reasons": {
+            "direction_unavailable": 1
+          }
+        },
+        "examples": [
+          {
+            "player": "Naji Marshall",
+            "side": "UNDER",
+            "ev": 35.02487562189055,
+            "display": "+35.0%"
+          },
+          {
+            "player": "Norman Powell",
+            "side": "UNDER",
+            "ev": 20.59701492537313,
+            "display": "+20.6%"
+          },
+          {
+            "player": "Aaron Gordon",
+            "side": "UNDER",
+            "ev": 15.970149253731353,
+            "display": "+16.0%"
+          }
+        ]
+      }
+    },
+    "assists": {
+      "renderedCards": 21,
+      "positive": 9,
+      "negative": 12,
+      "zero": 0,
+      "unavailable": 0,
+      "visibleReasons": [],
+      "apiArithmeticVerification": {
+        "rows": 21,
+        "available": 21,
+        "positive": 8,
+        "negative": 13,
+        "zero": 0,
+        "unavailable": {},
+        "evDiagnostics": {
+          "available": 21,
+          "unavailable": 0,
+          "reasons": {}
+        },
+        "examples": [
+          {
+            "player": "Jeremiah Fears",
+            "side": "UNDER",
+            "ev": 19.671641791044784,
+            "display": "+19.7%"
+          },
+          {
+            "player": "Egor Demin",
+            "side": "UNDER",
+            "ev": 15.970149253731353,
+            "display": "+16.0%"
+          },
+          {
+            "player": "Ausar Thompson",
+            "side": "UNDER",
+            "ev": 15.806930260975822,
+            "display": "+15.8%"
+          }
+        ]
+      }
+    },
+    "threes_made": {
+      "renderedCards": 25,
+      "positive": 14,
+      "negative": 9,
+      "zero": 0,
+      "unavailable": 2,
+      "visibleReasons": [
+        "Projection equals the line; no OVER/UNDER direction is displayed"
+      ],
+      "apiArithmeticVerification": {
+        "rows": 25,
+        "available": 23,
+        "positive": 14,
+        "negative": 9,
+        "zero": 0,
+        "unavailable": {
+          "direction_unavailable": 2
+        },
+        "evDiagnostics": {
+          "available": 23,
+          "unavailable": 2,
+          "reasons": {
+            "direction_unavailable": 2
+          }
+        },
+        "examples": [
+          {
+            "player": "Isaac Okoro",
+            "side": "UNDER",
+            "ev": 34.9502487562189,
+            "display": "+35.0%"
+          },
+          {
+            "player": "Egor Demin",
+            "side": "UNDER",
+            "ev": 44.97512437810946,
+            "display": "+45.0%"
+          },
+          {
+            "player": "Cameron Johnson",
+            "side": "OVER",
+            "ev": 3.8528288788615086,
+            "display": "+3.9%"
+          }
+        ]
+      }
+    },
+    "pts_rebs_asts": {
+      "renderedCards": 25,
+      "positive": 10,
+      "negative": 2,
+      "zero": 0,
+      "unavailable": 13,
+      "visibleReasons": [
+        "A joint combination probability model is required; component projections alone cannot produce EV"
+      ],
+      "apiArithmeticVerification": {
+        "rows": 20,
+        "available": 8,
+        "positive": 7,
+        "negative": 1,
+        "zero": 0,
+        "unavailable": {
+          "probability_unavailable": 12
+        },
+        "evDiagnostics": {
+          "available": 8,
+          "unavailable": 12,
+          "reasons": {
+            "probability_unavailable": 12
+          }
+        },
+        "examples": [
+          {
+            "player": "Daniss Jenkins",
+            "side": "OVER",
+            "ev": 15.831556503198296,
+            "display": "+15.8%"
+          },
+          {
+            "player": "Jeremiah Fears",
+            "side": "OVER",
+            "ev": 6.355017366000188,
+            "display": "+6.4%"
+          },
+          {
+            "player": "Davion Mitchell",
+            "side": "UNDER",
+            "ev": 61.19402985074627,
+            "display": "+61.2%"
+          }
+        ]
+      }
+    },
+    "pts_rebs": {
+      "renderedCards": 25,
+      "positive": 8,
+      "negative": 2,
+      "zero": 0,
+      "unavailable": 15,
+      "visibleReasons": [
+        "A joint combination probability model is required; component projections alone cannot produce EV"
+      ],
+      "apiArithmeticVerification": {
+        "rows": 24,
+        "available": 8,
+        "positive": 6,
+        "negative": 2,
+        "zero": 0,
+        "unavailable": {
+          "probability_unavailable": 16
+        },
+        "evDiagnostics": {
+          "available": 8,
+          "unavailable": 16,
+          "reasons": {
+            "probability_unavailable": 16
+          }
+        },
+        "examples": [
+          {
+            "player": "Terrence Shannon Jr.",
+            "side": "OVER",
+            "ev": 33.01141352063213,
+            "display": "+33.0%"
+          },
+          {
+            "player": "Daniss Jenkins",
+            "side": "OVER",
+            "ev": -0.5970149253731294,
+            "display": "-0.6%"
+          },
+          {
+            "player": "Daniel Gafford",
+            "side": "OVER",
+            "ev": 43.82473596927641,
+            "display": "+43.8%"
+          }
+        ]
+      }
+    },
+    "pts_asts": {
+      "renderedCards": 23,
+      "positive": 10,
+      "negative": 1,
+      "zero": 0,
+      "unavailable": 12,
+      "visibleReasons": [
+        "A joint combination probability model is required; component projections alone cannot produce EV"
+      ],
+      "apiArithmeticVerification": {
+        "rows": 19,
+        "available": 8,
+        "positive": 7,
+        "negative": 1,
+        "zero": 0,
+        "unavailable": {
+          "probability_unavailable": 11
+        },
+        "evDiagnostics": {
+          "available": 8,
+          "unavailable": 11,
+          "reasons": {
+            "probability_unavailable": 11
+          }
+        },
+        "examples": [
+          {
+            "player": "Daniss Jenkins",
+            "side": "OVER",
+            "ev": 6.716417910447764,
+            "display": "+6.7%"
+          },
+          {
+            "player": "Davion Mitchell",
+            "side": "UNDER",
+            "ev": 43.038903841448494,
+            "display": "+43.0%"
+          },
+          {
+            "player": "Jeremiah Fears",
+            "side": "OVER",
+            "ev": 31.071913161465393,
+            "display": "+31.1%"
+          }
+        ]
+      }
+    }
+  },
+  "browserPageErrors": [],
+  "browserOtherChecks": {
+    "nba": {
+      "status": 200,
+      "rankingCards": 5,
+      "pageErrors": [],
+      "fourFeaturedOriginalsRendered": true,
+      "expandedEvMatchesCompact": true,
+      "firstBasketCards": 5,
+      "firstBasketHasNoInventedEv": true
+    },
+    "nfl": {
+      "status": 200,
+      "rankingCards": 10,
+      "pageErrors": []
+    },
+    "nhl": {
+      "status": 200,
+      "rankingCards": 5,
+      "pageErrors": []
+    }
+  },
+  "featured": {
+    "categories": [
+      "play",
+      "value",
+      "first",
+      "long"
+    ],
+    "players": [
+      "3064514",
+      "4278104",
+      "3032977",
+      "4066261"
+    ],
+    "originalSelectionsPreserved": true
+  },
+  "history": {
+    "before": 576,
+    "after": 576,
+    "allOriginalFieldsPreserved": true
+  },
+  "sportApis": {
+    "nba": {
+      "games": 14,
+      "rankings": 22,
+      "savedSelections": 9
+    },
+    "nfl": {
+      "games": 14,
+      "rankings": 24,
+      "savedSelections": 0
+    },
+    "nhl": {
+      "games": 19,
+      "rankings": 25,
+      "savedSelections": 5
+    }
+  },
+  "fullRegression": {
+    "passed": 730,
+    "failed": 0
+  },
+  "typecheckDiagnostics": 0,
+  "zeroAndIntegrityRecheck": {
+    "passed": 7,
+    "failed": 0
+  },
+  "zeroLiveObserved": false,
+  "zeroVerification": "Controlled arithmetic and actual React component regression checks passed. No exact-zero EV occurred naturally in the live sample; no probabilities or prices were fabricated to create one.",
+  "limitations": [
+    "Some legacy combination rows lack quote-bound joint probabilities; they remain visible with an explanation rather than invented EV.",
+    "NFL full-game passing forecasts remain unqualified by the existing price-validation gate; no guard was relaxed. Sunday Q1 passing rankings were verified in the browser.",
+    "EV is research pricing, not newly certified model calibration or betting validation."
+  ],
+  "cw08": {
+    "ready": true,
+    "receipts": 639,
+    "grades": 0,
+    "completedCycles": 47,
+    "pendingUploads": 0,
+    "active": [
+      {
+        "id": "1994085",
+        "phase": "history",
+        "retries": 0,
+        "retryAt": 0,
+        "lastError": null
+      }
+    ],
+    "lastStorageError": null,
+    "latestCollectionHealth": {
+      "rosterFailures": 22,
+      "historySourceFailures": 15,
+      "rejectionsByReason": {
+        "source_http_429": 37,
+        "unresolved_or_ambiguous_official_player": 1016,
+        "prior_history_unavailable": 19,
+        "fewer_than_three_same_season_team_appearances": 1
+      },
+      "warmedPlayers": 1,
+      "newReceipts": 0,
+      "sourceSnapshots": 19,
+      "state": "degraded"
+    }
+  },
+  "cw08WorkerVersion": "08e854d6-fcdb-404a-9820-c156d1485d98",
+  "cw08Schedule": "*/15 * * * *",
+  "cw08ScheduleModifiedAtUTC": "2026-11-14T05:24:15.908994Z",
+  "evidenceHashes": {
+    "live-verification-results.json": "376af6f1d515394ef9c0b519a95f1030a8d8471fe92aed2c83bec2fbf19f6349",
+    "browser-live-results.json": "5a733aaa38c768748cb29b53335f838106f8a0491041e5b25f5f1fc3c080c049",
+    "browser-final-results.json": "0a963485074f7358109e52fc1168781d20cc848d62a974117a2094542f59589a",
+    "history-manual-before.json": "3f08bae67fff36c28611308833efe860c4cc8663b7a6333278a2b134a215932a",
+    "live-history.json": "abd392077d7153ceec51358d1d97fa6a72e2b55e231814e5b9c89e84f4dc64d5",
+    "featured-manual-before.json": "8b148d74cffdb2e73ebf54d5a07cc47f7a73dbd8cac05286d729df417f8194f2",
+    "live-featured.json": "8b148d74cffdb2e73ebf54d5a07cc47f7a73dbd8cac05286d729df417f8194f2",
+    "zero-and-integrity-tests.log": "1c0dade7c5ab736aa242e3df71a1694cb1cc9b05dc380dc5f0170acf040803b0"
+  },
+  "cw06EvRepairScopeComplete": true,
+  "allLiveDataAvailableOrAllModelCalibrationCertified": false
+}

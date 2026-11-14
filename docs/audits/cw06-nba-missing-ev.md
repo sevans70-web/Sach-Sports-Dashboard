@@ -200,3 +200,61 @@ does not certify NBA model calibration or authorize new prediction models.
 blockers are resolved. A production build/configuration check and live smoke
 checks belong to the approved release procedure above and have not been claimed
 as completed. Approval is still required before production changes.
+
+
+## Approved production release — November 14, 2026
+
+The local CLI was unauthenticated, but the existing authenticated Cloudflare
+integration successfully started the existing manual Workers Build, pinned to
+commit **6a4db752bc57faa233805c9547f1ec059383f79f**. No credential was requested,
+read, copied or exposed, no new hosting service was introduced, and no build
+trigger, command, automatic-build branch filter or Worker binding was changed.
+The existing build pipeline compiled and deployed that exact source. This was
+an approved software release, with no dashboard redesign or model retraining.
+
+- Manual build: **6054438a-9c6f-46fb-b18f-a73313e63708**, successful.
+- Dashboard deployment: **b5705072-a97f-4794-b71b-8bbf73a1da60**.
+- Active version: **46f9dc62-01e2-407f-b1c3-845d10e613d9** at 100% traffic.
+- Released at **12:09 PM EST, November 14, 2026**.
+- Previous version **49db8837-1cce-425a-8ca8-d821e34ec62d** was verified
+  retrievable for rollback. No release regression requiring rollback was found.
+
+### Live verification
+
+Real-browser checks exercised all seven NBA market tabs and full ranking lists,
+without injecting fake responses. Every requested market displayed both positive
+and negative EV. API probabilities were normalized, and every available EV was
+independently recomputed from its exact line, selected direction and sportsbook
+price. Unavailable reasons appeared on cards, including tied projection/line and
+legacy component-only combination forecasts without joint probabilities.
+Compact and expanded EV values matched. No browser page errors were observed.
+
+No exact-zero EV occurred naturally in the sampled source data. Zero arithmetic
+and actual React rendering passed the controlled regression checks (7/7 with
+integrity checks). This is test evidence for zero behavior, not a claimed live
+zero-priced opportunity. No odds, probabilities or opportunities were invented.
+
+All four featured NBA original player/price selections remained unchanged and
+distinct, and appeared in the browser. First Basket rendered scorer cards with
+no invented O/U EV. All 576 checked historical records retained their original
+pick, line, projection, rank, game identity/time and saved timestamp.
+
+NBA/NFL/NHL game APIs and model forecast APIs remained available. The NFL page
+initially showed Saturday's empty day; Sunday Q1 passing rankings rendered ten
+cards, and NHL rendered five cards in the browser. Existing NFL full-game
+passing forecasts still fail their independent price-validation gate and do not
+become qualified picks; that unrelated guard was preserved. Preliminary browser
+harness timeouts on selectors and empty/unqualified slates were corrected to
+exercise the intended tabs; they were not application exceptions.
+
+CW08 retained its original Worker version and unchanged 15-minute schedule.
+Its status remained ready, with no pending evidence uploads or storage errors.
+Dashboard automatic builds remain paused using the existing manual-only branch
+filter. Only the approved dashboard Worker was deployed.
+
+The CW06 EV-repair scope is implemented, deployed and verified. This does not
+mean every legacy row has complete model evidence or that NBA models have been
+newly calibrated/certified. The expected explicit unavailable states remain.
+See `frontend/model-research/cw06-nba-ev/deployment.json` for counts, provenance,
+verification limits and evidence hashes. This release supersedes the earlier
+"not deployed" and "approval required" snapshots in this audit.
