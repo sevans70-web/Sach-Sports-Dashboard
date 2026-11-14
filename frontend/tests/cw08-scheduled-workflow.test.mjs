@@ -4,9 +4,9 @@ import {readFile,mkdtemp,rm,writeFile} from 'node:fs/promises';import {tmpdir} f
 import {Miniflare,convertV4MiniflareOptions} from 'miniflare';import {buildShadow} from '../shadow/cw08/build.mjs';import {decodeShadowArtifacts} from '../scripts/cw08-cloudflare-artifacts.mjs';import {verifyShadowReceipt,gradeNhlShadow,canonical,digest} from '../scripts/nhl-shadow-evidence.mjs';
 const root=resolve(import.meta.dirname,'..'),seed=JSON.parse(await readFile(resolve(root,'model-research/cw08-nhl-v3/cloudflare-shadow-manifests.json'))),pkg=seed.packages[0];
 const bytes=await readFile(resolve(root,'model-research/cw08-nhl-v3',pkg.file)),files=decodeShadowArtifacts({sha256:pkg.packageSha256,chunks:[bytes.toString('base64')]}),receipts=files.filter(f=>f.path.startsWith('receipts/')).map(f=>JSON.parse(f.content));
-const initial=Date.now()+5*60000,gameTime='2026-11-14T18:30:00.000Z',gameId='2026020999',playerId='999123',team='NJD',other='VGK',name='Shadow Testplayer';
+const initial=Date.now()+5*60000,gameTime=new Date(initial+2*3600000).toISOString(),gameId='2026020999',playerId='999123',team='NJD',other='VGK',name='Shadow Testplayer';
 const official={id:Number(gameId),season:20262027,gameType:2,startTimeUTC:gameTime,gameState:'FUT',awayTeam:{abbrev:team,name:{default:'New Jersey Devils'}},homeTeam:{abbrev:other,name:{default:'Vegas Golden Knights'}}};
-let final=false,missing=false,failFeed=0,feedCalls=0,historyCalls=0,finalGoals=1,redirectFeed=false;const outbound=[];
+let final=false,missing=false,failFeed=0,feedCalls=0,historyCalls=0,finalGoals=1,redirectFeed=false;const outbound=[];let rateLimitRemaining=0,historyRateRemaining=0;
 function answer(request){
  const u=new URL(request.url);outbound.push({url:request.url,method:request.method});assert.equal(request.method,'GET');assert.ok(['api-web.nhle.com','api.owlsinsight.com'].includes(u.hostname));
  if(u.hostname==='api.owlsinsight.com'){
@@ -19,11 +19,12 @@ function answer(request){
  if(u.pathname==='/v1/redirect-fixture/done')return Response.json({ok:true});
  if(u.pathname==='/v1/redirect-fixture/escape')return new Response(null,{status:307,headers:{Location:'https://example.test/leak'}});
  if(u.pathname==='/v1/redirect-fixture/loop')return new Response(null,{status:307,headers:{Location:u.pathname}});
+ if(u.pathname==='/v1/roster/'+team+'/current'&&rateLimitRemaining-->0)return new Response('{}',{status:429,headers:{'Retry-After':'120'}});
  if(u.pathname.includes('/roster/')&&u.pathname.endsWith('/current'))return new Response(null,{status:307,headers:{Location:u.pathname.replace('/current','/20262027')}});
  if(u.pathname.includes('/schedule/'))return Response.json({gameWeek:[{games:[official]}]});
  if(u.pathname.includes('/standings/'))return Response.json({standings:[{seasonId:20262027,teamAbbrev:{default:team},teamName:{default:'New Jersey Devils'},teamCommonName:{default:'Devils'}},{seasonId:20262027,teamAbbrev:{default:other},teamName:{default:'Vegas Golden Knights'},teamCommonName:{default:'Golden Knights'}}]});
  if(u.pathname.includes('/roster/'))return Response.json({forwards:u.pathname.includes('/'+team+'/')?[{id:Number(playerId),firstName:{default:'Shadow'},lastName:{default:'Testplayer'}}]:[],defensemen:[]});
- if(u.pathname.includes('/game-log/')){historyCalls++;const season=u.pathname.split('/').at(-2);return Response.json({gameLog:season==='20262027'?Array.from({length:8},(_,i)=>({gameId:2026000100+i,gameDate:'2026-11-0'+(i+1),teamAbbrev:team,opponentAbbrev:other,toi:'18:00',goals:i%2,assists:i%3,shots:2,points:i%2+i%3})):[]});}
+ if(u.pathname.includes('/game-log/')){historyCalls++;const season=u.pathname.split('/').at(-2);if(season==='20262027'&&historyRateRemaining-->0)return new Response('{}',{status:429,headers:{'Retry-After':'60'}});return Response.json({gameLog:season==='20262027'?Array.from({length:8},(_,i)=>({gameId:2026000100+i,gameDate:'2026-11-0'+(i+1),teamAbbrev:team,opponentAbbrev:other,toi:'18:00',goals:i%2,assists:i%3,shots:2,points:i%2+i%3})):[]});}
  if(u.pathname.endsWith('/landing'))return Response.json({...official,gameState:final?'OFF':'FUT'});
  if(u.pathname.endsWith('/boxscore'))return Response.json({...official,gameState:final?'OFF':'LIVE',playerByGameStats:{awayTeam:{forwards:missing?[]:[{playerId:Number(playerId),goals:finalGoals,assists:0}],defense:[]},homeTeam:{forwards:[],defense:[]}}});
  throw Error('Unexpected source '+request.url);
@@ -54,10 +55,26 @@ test('scheduled Cloudflare workflow preserves seeds, serializes, recovers upload
   await call('clock',initial);const worker=await mf.getWorker();await worker.scheduled({cron:'*/15 * * * *',scheduledTime:initial});await Promise.all([call('tick'),call('tick'),call('tick')]);assert.equal((await status()).active.length,1);
   // A held persisted lease fences concurrent alarm deliveries.
   await call('lease',{token:'other-owner',until:initial+120000});const before=await call('inspect');await call('step');assert.deepEqual((await call('inspect')).cycles,before.cycles);await call('clearLease');
+  // A real 429 in roster collection must retain its cursor and survive eviction.
+  rateLimitRemaining=1;
+  for(let i=0;i<10&&(await status()).active[0]?.lastError!=='source_http_429';i++)await call('step');
+  let limited=await status();assert.equal(limited.active[0].lastError,'source_http_429');assert.ok(limited.active[0].retryAt>=initial+120000);
+  let limitedJob=JSON.parse((await call('inspect')).cycles.find(c=>c.state==='active').data);assert.equal(limitedJob.cursor,0);
+  const requestsBeforePause=outbound.length;await call('step');assert.equal(outbound.length,requestsBeforePause);assert.equal((await status()).receipts,339);
+  const retryAt=limited.active[0].retryAt;await mf.dispose();runtime=await setup(dir);({mf,call,status}=runtime);
+  assert.equal((await status()).active[0].retryAt,retryAt);assert.ok((await call('inspect')).sourceCache.length>0);
+  await call('step');assert.equal(outbound.length,requestsBeforePause);await call('clock',retryAt+1);
   failFeed=1;
-  for(let i=0;i<20;i++){const s=await status();if(s.active[0]?.lastError)break;await call('step');}
+  for(let i=0;i<20;i++){const s=await status();if(s.active[0]?.lastError==='source_http_503')break;await call('step');}
   let s=await status();if(s.active[0].lastError!=='source_http_503')console.log((await call('inspect')).testError);assert.equal(s.active[0].lastError,'source_http_503');assert.equal(s.active[0].retries,1);const callsAtFailure=feedCalls;await call('step');assert.equal(feedCalls,callsAtFailure);
-  await call('clock',initial+31000);
+  await call('clock',s.active[0].retryAt+1);
+  historyRateRemaining=1;
+  for(let i=0;i<12;i++){const statusNow=await status();if(statusNow.active[0]?.lastError==='source_http_429')break;await call('step');}
+  const historyLimited=await status();assert.equal(historyLimited.active[0].lastError,'source_http_429');
+  const historyJob=JSON.parse((await call('inspect')).cycles.find(c=>c.state==='active').data);assert.equal(historyJob.phase,'history');assert.equal(historyJob.cursor,0);
+  assert.equal((await call('inspect')).sourceCache.filter(c=>c.url.includes('/game-log/')).length,3);
+  const historyAttempts=historyCalls;await call('step');assert.equal(historyCalls,historyAttempts);
+  await call('clock',historyLimited.active[0].retryAt+1);
   // Interrupt the first durable object upload, evict/restart, and recover its exact bytes.
   await call('fault','after_put');
   for(let i=0;i<25;i++){await call('step');if((await call('inspect')).storageError)break;}
@@ -67,7 +84,7 @@ test('scheduled Cloudflare workflow preserves seeds, serializes, recovers upload
   s=await status();if(s.receipts!==341)console.log((await call('inspect')).cycles.map(r=>JSON.parse(r.data)));assert.equal(s.completedCycles,1);assert.equal(s.receipts,341);assert.equal(s.pendingUploads,0);assert.equal(s.grades,0);assert.ok(s.manifestHead);assert.equal(s.latestCollectionHealth.state,'healthy');assert.equal(s.latestCollectionHealth.rosterFailures,0);
   inspected=await call('inspect');const newRows=inspected.receipts.filter(r=>r.game_id===gameId);assert.equal(newRows.length,2);const firstSha=newRows.map(r=>r.sha),firstRefs=newRows.map(r=>r.object_key),firstManifest=s.manifestHead;
   await call('clock',initial+SLOT_FOR_TEST);await call('tick');for(let i=0;i<45&&(await status()).active.length;i++)await call('step');
-  assert.equal((await status()).receipts,341);assert.deepEqual((await call('inspect')).receipts.filter(r=>r.game_id===gameId).map(r=>r.sha),firstSha);assert.equal(historyCalls,4,'same-day history is retained without refetch');
+  assert.equal((await status()).receipts,341);assert.deepEqual((await call('inspect')).receipts.filter(r=>r.game_id===gameId).map(r=>r.sha),firstSha);assert.equal(historyCalls,5,'three successful seasons survive a fourth-season 429; completed same-day history is not refetched');
   // Finality and participant checks stay pending without invented zeroes.
   await call('clock',Date.parse(gameTime)+4*3600000);await call('tick');for(let i=0;i<40&&(await status()).active.length;i++)await call('step');assert.equal((await status()).grades,0);
   final=true;missing=true;await call('clock',Date.parse(gameTime)+5*3600000);await call('tick');for(let i=0;i<40&&(await status()).active.length;i++)await call('step');assert.equal((await status()).grades,0);

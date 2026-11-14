@@ -5,13 +5,14 @@ import production from '../../shadow/cw08/entry.mjs';
 import {NhlShadowCoordinator as Coordinator} from '../../shadow/cw08/coordinator.mjs';
 export class NhlShadowCoordinator extends Coordinator {
  now(){return this.meta('testNow')||Date.now();}
+ async sourceWait(ms){if(this.meta('testNow'))this.setMeta('testNow',this.now()+ms);else await super.sourceWait(ms);}
  async test(action,value){
   if(action==='source')return readSource(value.url,value.key);
   if(action==='clock'){this.setMeta('testNow',value);return this.status();}
   if(action==='tick')return this.tick();
   if(action==='step'){await this.alarm();return this.status();}
   if(action==='fault'){this.setMeta('testFault',value);return this.status();}
-  if(action==='inspect')return {receipts:this.rows('SELECT * FROM receipts ORDER BY target'),objects:this.rows('SELECT key,hash,state,kind,anchor_status FROM objects ORDER BY key'),cycles:this.rows('SELECT * FROM cycles ORDER BY id'),storageError:this.meta('lastStorageError'),testError:this.meta('testError')};
+  if(action==='inspect')return {receipts:this.rows('SELECT * FROM receipts ORDER BY target'),objects:this.rows('SELECT key,hash,state,kind,anchor_status FROM objects ORDER BY key'),cycles:this.rows('SELECT * FROM cycles ORDER BY id'),sourceCache:this.rows('SELECT url,observed_at,expires_at FROM source_cache'),storageError:this.meta('lastStorageError'),testError:this.meta('testError')};
   if(action==='clearLease'){this.setMeta('lease',null);return this.status();}
   if(action==='lease'){this.setMeta('lease',value);return this.status();}
   if(action==='verify'){return {target:verifyForecast(value).target};}

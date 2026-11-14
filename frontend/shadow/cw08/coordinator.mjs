@@ -1,3 +1,4 @@
+import {sourceTransport,deferredSource} from './request-policy.mjs';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {DurableObject} from 'cloudflare:workers';
 import {evidence,seed,policy,study,targetKey,capture,verifyForecast,scoreRecords} from './domain.mjs';
@@ -14,6 +15,7 @@ export class NhlShadowCoordinator extends DurableObject {
    'CREATE TABLE IF NOT EXISTS objects (key TEXT PRIMARY KEY,hash TEXT NOT NULL,body TEXT,state TEXT NOT NULL,kind TEXT NOT NULL,created_at INTEGER NOT NULL,anchor_before INTEGER,uploaded_at INTEGER,anchor_status TEXT)',
    'CREATE TABLE IF NOT EXISTS receipts (target TEXT PRIMARY KEY,sha TEXT UNIQUE NOT NULL,object_key TEXT NOT NULL,game_id TEXT NOT NULL,game_time INTEGER NOT NULL,market TEXT NOT NULL,player_id TEXT NOT NULL,cycle TEXT NOT NULL,grade_sha TEXT,grade_key TEXT,next_grade_at INTEGER NOT NULL,pending_reason TEXT,score_body TEXT NOT NULL,score_grade TEXT)',
    'CREATE TABLE IF NOT EXISTS histories (player_id TEXT NOT NULL,day TEXT NOT NULL,object_key TEXT NOT NULL,PRIMARY KEY(player_id,day))',
+   'CREATE TABLE IF NOT EXISTS source_cache (url TEXT PRIMARY KEY,body TEXT NOT NULL,observed_at INTEGER NOT NULL,expires_at INTEGER NOT NULL)',
    'CREATE TABLE IF NOT EXISTS cycles (id TEXT PRIMARY KEY,state TEXT NOT NULL,data TEXT NOT NULL)',
    'CREATE INDEX IF NOT EXISTS receipt_cycles ON receipts(cycle)',
    'CREATE INDEX IF NOT EXISTS pending_grades ON receipts(next_grade_at,game_id)',
@@ -22,6 +24,16 @@ export class NhlShadowCoordinator extends DurableObject {
   const prior=this.meta('fingerprint');if(prior&&prior!==fingerprint)throw Error('study_fingerprint_changed');if(!prior)this.setMeta('fingerprint',fingerprint);
  });}
  now(){return Date.now();}
+ async sourceWait(ms){await new Promise(resolve=>setTimeout(resolve,ms));}
+ sourcePolicy(token){return sourceTransport({now:()=>this.now(),assertActive:()=>this.assertLease(token),
+  readGate:origin=>this.meta('provider_gate:'+origin),writeGate:(origin,state)=>{this.assertLease(token);this.setMeta('provider_gate:'+origin,state);},
+  wait:ms=>this.sourceWait(ms),
+  readCache:url=>{const row=this.rows('SELECT * FROM source_cache WHERE url=?',url)[0];if(!row)return null;try{return {value:JSON.parse(gunzipSync(Buffer.from(row.body,'base64')).toString('utf8')),observedAt:row.observed_at,expiresAt:row.expires_at};}catch{return null;}},
+  writeCache:(url,c)=>{this.assertLease(token);const body=gzipSync(JSON.stringify(c.value)).toString('base64');if(body.length>1000000)return;
+   this.sql('DELETE FROM source_cache WHERE expires_at<=?',this.now());
+   this.sql('INSERT OR REPLACE INTO source_cache(url,body,observed_at,expires_at) VALUES(?,?,?,?)',url,body,c.observedAt,c.expiresAt);
+   while(this.rows('SELECT count(*) AS n,coalesce(sum(length(body)),0) AS bytes FROM source_cache')[0].n>512||this.rows('SELECT coalesce(sum(length(body)),0) AS bytes FROM source_cache')[0].bytes>32*1024*1024)this.sql('DELETE FROM source_cache WHERE url=(SELECT url FROM source_cache ORDER BY observed_at,url LIMIT 1)');
+  }});}
  sql(q,...args){return this.ctx.storage.sql.exec(q,...args);}
  rows(q,...args){return this.sql(q,...args).toArray();}
  meta(key){const row=this.rows('SELECT value FROM meta WHERE key=?',key)[0];return row?JSON.parse(row.value):null;}
@@ -70,7 +82,7 @@ export class NhlShadowCoordinator extends DurableObject {
  scoreBody(r){return JSON.stringify({target:r.target,quote:{line:r.quote.line},forecast:{pricing:r.forecast.pricing},baseline:{pricing:r.baseline.pricing}});}
  score(){return scoreRecords(this.rows("SELECT r.score_body,r.score_grade,g.state AS grade_state FROM receipts r JOIN objects o ON o.key=r.object_key LEFT JOIN objects g ON g.key=r.grade_key WHERE o.state='stored' AND o.anchor_status='on_time' ORDER BY r.target").map(r=>({body:JSON.parse(r.score_body),grade:r.grade_state==='stored'?JSON.parse(r.score_grade):null})));}
  async status(){
-  return {study,production:false,modelCommit:'007c02b',releaseApproved:false,ready:this.ready(),seedRequired:seedTargets.size,receipts:this.rows('SELECT count(*) AS n FROM receipts')[0].n,grades:this.rows("SELECT count(*) AS n FROM receipts r JOIN objects o ON o.key=r.grade_key WHERE o.state='stored'")[0].n,pendingUploads:this.rows("SELECT count(*) AS n FROM objects WHERE state='pending'")[0].n,lateAnchors:this.rows("SELECT count(*) AS n FROM objects WHERE kind='receipts' AND anchor_status='late'")[0].n,active:this.rows("SELECT id,data FROM cycles WHERE state='active'").map(r=>{const d=JSON.parse(r.data);return {id:r.id,phase:d.phase,retries:d.retries,retryAt:d.retryAt,lastError:d.lastError||null};}),completedCycles:this.rows("SELECT count(*) AS n FROM cycles WHERE state='complete'")[0].n,manifestHead:this.meta('manifestHead'),lastStorageError:this.meta('lastStorageError'),latestSummary:this.meta('latestSummary'),latestCollectionHealth:this.meta('latestCollectionHealth'),collectionEndsAt:policy.gameTimeBefore};
+  return {study,production:false,modelCommit:'007c02b',releaseApproved:false,ready:this.ready(),seedRequired:seedTargets.size,receipts:this.rows('SELECT count(*) AS n FROM receipts')[0].n,grades:this.rows("SELECT count(*) AS n FROM receipts r JOIN objects o ON o.key=r.grade_key WHERE o.state='stored'")[0].n,pendingUploads:this.rows("SELECT count(*) AS n FROM objects WHERE state='pending'")[0].n,lateAnchors:this.rows("SELECT count(*) AS n FROM objects WHERE kind='receipts' AND anchor_status='late'")[0].n,active:this.rows("SELECT id,data FROM cycles WHERE state='active'").map(r=>{const d=JSON.parse(r.data);return {id:r.id,phase:d.phase,retries:d.retries,retryAt:d.retryAt,lastError:d.lastError||null};}),completedCycles:this.rows("SELECT count(*) AS n FROM cycles WHERE state='complete'")[0].n,manifestHead:this.meta('manifestHead'),lastStorageError:this.meta('lastStorageError'),latestSummary:this.meta('latestSummary'),latestCollectionHealth:this.meta('latestCollectionHealth'),sourceTransport:this.rows("SELECT key,value FROM meta WHERE key LIKE 'provider_gate:%'").map(r=>({origin:r.key.slice('provider_gate:'.length),...JSON.parse(r.value)})),collectionEndsAt:policy.gameTimeBefore};
  }
  saveJob(id,data,token){this.assertLease(token);this.sql("UPDATE cycles SET data=? WHERE id=? AND state='active'",JSON.stringify(data),id);}
  reserveReceipt(receipt,cycle,token){const r=verifyForecast(receipt),key=targetKey(r.target);this.assertLease(token);
@@ -78,11 +90,11 @@ export class NhlShadowCoordinator extends DurableObject {
    const object=this.reserveObject('receipts',receipt,Date.parse(r.target.gameTime));this.sql('INSERT INTO receipts(target,sha,object_key,game_id,game_time,market,player_id,cycle,next_grade_at,score_body) VALUES(?,?,?,?,?,?,?,?,?,?)',key,receipt.sha256,object.key,r.target.gameId,Date.parse(r.target.gameTime),r.target.market,r.target.playerId,cycle,Date.parse(r.target.gameTime)+3*3600000,this.scoreBody(r));return true;
   });
  }
- async gradeGame(job,id,token){
+ async gradeGame(job,id,token,transport){
   const due=this.rows("SELECT r.* FROM receipts r JOIN objects o ON o.key=r.object_key WHERE r.grade_sha IS NULL AND r.next_grade_at<=? AND o.state='stored' AND o.anchor_status='on_time' ORDER BY r.game_time,r.target",this.now());
   if(!due.length){job.phase='discover';this.saveJob(id,job,token);return;}
   const gameId=due[0].game_id,group=due.filter(r=>r.game_id===gameId);let official;
-  try{official=await sources.finalBoxscore(gameId);}catch(error){this.assertLease(token);for(const row of group)this.sql('UPDATE receipts SET next_grade_at=?,pending_reason=? WHERE target=?',this.now()+SLOT,safeError(error),row.target);return;}
+  try{official=await sources.finalBoxscore(gameId,transport);}catch(error){if(deferredSource(error))throw error;this.assertLease(token);for(const row of group)this.sql('UPDATE receipts SET next_grade_at=?,pending_reason=? WHERE target=?',this.now()+SLOT,safeError(error),row.target);return;}
   this.assertLease(token);
   for(const row of group){const receipt=await this.readObject(row.object_key);let grade;
    try{grade=evidence.gradeNhlShadow(receipt,official,this.now());}catch(error){this.assertLease(token);this.sql('UPDATE receipts SET next_grade_at=?,pending_reason=? WHERE target=?',this.now()+(['OFF','FINAL'].includes(official.gameState)?6*3600000:SLOT),'official_final_or_participant_pending',row.target);continue;}
@@ -90,31 +102,32 @@ export class NhlShadowCoordinator extends DurableObject {
   }
  }
  async step(job,id,token){
-  if(job.phase==='grade'){await this.gradeGame(job,id,token);return;}
+  const transport=this.sourcePolicy(token);
+  if(job.phase==='grade'){await this.gradeGame(job,id,token,transport);return;}
   if(job.phase==='discover'){
    if(this.now()>=Date.parse(policy.gameTimeBefore)){job.phase='finish';this.saveJob(id,job,token);return;}
-   const discovered=await sources.discover(this.now());this.assertLease(token);Object.assign(job,discovered,{phase:discovered.games.length?'roster':'finish',cursor:0,players:[]});this.saveJob(id,job,token);return;
+   const discovered=await sources.discover(this.now(),transport);this.assertLease(token);Object.assign(job,discovered,{phase:discovered.games.length?'roster':'finish',cursor:0,players:[]});this.saveJob(id,job,token);return;
   }
   if(job.phase==='roster'){
    if(job.cursor>=job.teams.length){job.phase='candidates';this.saveJob(id,job,token);return;}
-   const team=job.teams[job.cursor];try{const players=await sources.roster(team);job.players.push(...players);}catch(error){job.rejections.push({team,reason:safeError(error)});}
+   const team=job.teams[job.cursor];try{const players=await sources.roster(team,transport);job.players.push(...players);}catch(error){if(deferredSource(error))throw error;job.rejections.push({team,reason:safeError(error)});}
    job.cursor++;this.saveJob(id,job,token);return;
   }
   if(job.phase==='candidates'){
-   const payload=await sources.feed(this.env.OWLS_INSIGHT_API_KEY),players=new Map();
+   const payload=await sources.feed(this.env.OWLS_INSIGHT_API_KEY,transport),players=new Map();
    for(const market of ['goals','assists'])for(const q of sources.quoteRows(payload,market)){const m=sources.match(q,job.players,job.games);if(!m){job.rejections.push({market,playerName:q.playerName,reason:'unresolved_or_ambiguous_official_player'});continue;}if(!seedTargets.has(targetKey({market,gameId:m.game.gameId,playerId:m.player.playerId}))&&!this.rows('SELECT target FROM receipts WHERE target=?',targetKey({market,gameId:m.game.gameId,playerId:m.player.playerId})).length)players.set(m.player.playerId,m.player);}
    job.warmPlayers=[...players.values()];job.cursor=0;job.phase='history';this.saveJob(id,job,token);return;
   }
   if(job.phase==='history'){
    if(job.cursor>=job.warmPlayers.length){job.phase='capture';job.cursor=0;this.saveJob(id,job,token);return;}
-   const player=job.warmPlayers[job.cursor],day=new Date(this.now()).toISOString().slice(0,10);try{const cached=this.rows('SELECT object_key FROM histories WHERE player_id=? AND day=?',player.playerId,day)[0];if(cached)player.historyKey=cached.object_key;else{const history=await sources.history(player,this.now());this.assertLease(token);const object=this.reserveObject('histories',{player,history,retrievedAt:new Date(this.now()).toISOString()});player.historyKey=object.key;this.sql('INSERT OR IGNORE INTO histories(player_id,day,object_key) VALUES(?,?,?)',player.playerId,day,object.key);}}catch(error){job.rejections.push({playerId:player.playerId,reason:safeError(error)});}
+   const player=job.warmPlayers[job.cursor],day=new Date(this.now()).toISOString().slice(0,10);try{const cached=this.rows('SELECT object_key FROM histories WHERE player_id=? AND day=?',player.playerId,day)[0];if(cached)player.historyKey=cached.object_key;else{const history=await sources.history(player,this.now(),transport);this.assertLease(token);const object=this.reserveObject('histories',{player,history,retrievedAt:new Date(this.now()).toISOString()});player.historyKey=object.key;this.sql('INSERT OR IGNORE INTO histories(player_id,day,object_key) VALUES(?,?,?)',player.playerId,day,object.key);}}catch(error){if(deferredSource(error))throw error;job.rejections.push({playerId:player.playerId,reason:safeError(error)});}
    job.cursor++;this.saveJob(id,job,token);return;
   }
   if(job.phase==='capture'){
    if(job.cursor>=job.games.length){job.phase='finish';this.saveJob(id,job,token);return;}
    const game=job.games[job.cursor];if(Date.parse(game.tipoff)<=this.now()+120000){job.rejections.push({gameId:game.gameId,reason:'pregame_window_passed'});job.cursor++;this.saveJob(id,job,token);return;}
    const histories=new Map();for(const player of job.warmPlayers.filter(p=>p.historyKey&&[game.awayAbbr,game.homeAbbr].includes(p.team)))histories.set(player.playerId,(await this.readObject(player.historyKey)).history);
-   const fixture=await sources.landing(game.gameId),payload=await sources.feed(this.env.OWLS_INSIGHT_API_KEY),sourceFetchedAt=new Date(this.now()).toISOString();this.assertLease(token);
+   const fixture=await sources.landing(game.gameId,transport),payload=await sources.feed(this.env.OWLS_INSIGHT_API_KEY,transport),sourceFetchedAt=new Date(this.now()).toISOString();this.assertLease(token);
    const quotes=['goals','assists'].flatMap(market=>sources.quoteRows(payload,market).map(q=>({market,q}))).filter(({q})=>sources.quoteOnGame(q,game));
    const sourceRef=this.reserveObject('sources',{url:'https://api.owlsinsight.com/api/v1/nhl/props',sourceFetchedAt,payloadSha256:evidence.digest(payload),gameId:game.gameId,officialFixture:fixture,quotes});job.sourceRefs=[...(job.sourceRefs||[]),sourceRef];this.saveJob(id,job,token);
    for(const {market,q} of quotes){const match=sources.match(q,job.players,[game]);if(!match){job.rejections.push({market,playerName:q.playerName,gameId:game.gameId,reason:'unresolved_or_ambiguous_official_player'});continue;}const key=targetKey({market,gameId:game.gameId,playerId:match.player.playerId});if(seedTargets.has(key)||this.rows('SELECT target FROM receipts WHERE target=?',key).length)continue;
@@ -125,7 +138,7 @@ export class NhlShadowCoordinator extends DurableObject {
   }
   if(job.phase==='finish'){
    const references=this.rows('SELECT r.target,r.sha,r.object_key,o.hash,o.uploaded_at,o.anchor_status FROM receipts r JOIN objects o ON o.key=r.object_key WHERE r.cycle=? ORDER BY r.target',id),gradeReferences=this.rows("SELECT r.target,r.grade_sha,r.grade_key FROM receipts r JOIN objects o ON o.key=r.grade_key WHERE o.state='stored' ORDER BY r.target");
-   job.collectionHealth={rosterFailures:job.rejections.filter(r=>r.team&&r.reason.startsWith('source_')).length,historySourceFailures:job.rejections.filter(r=>r.playerId&&r.reason.startsWith('source_')).length,rejectionsByReason:job.rejections.reduce((counts,r)=>(counts[r.reason]=(counts[r.reason]||0)+1,counts),{}),warmedPlayers:(job.warmPlayers||[]).filter(p=>p.historyKey).length,newReceipts:references.length,sourceSnapshots:(job.sourceRefs||[]).length};job.collectionHealth.state=job.collectionHealth.rosterFailures||job.collectionHealth.historySourceFailures?'degraded':'healthy';
+   job.collectionHealth={sourceDeferrals:job.sourceDeferrals||0,rosterFailures:job.rejections.filter(r=>r.team&&r.reason.startsWith('source_')).length,historySourceFailures:job.rejections.filter(r=>r.playerId&&r.reason.startsWith('source_')).length,rejectionsByReason:job.rejections.reduce((counts,r)=>(counts[r.reason]=(counts[r.reason]||0)+1,counts),{}),warmedPlayers:(job.warmPlayers||[]).filter(p=>p.historyKey).length,newReceipts:references.length,sourceSnapshots:(job.sourceRefs||[]).length};job.collectionHealth.state=job.collectionHealth.rosterFailures||job.collectionHealth.historySourceFailures?'degraded':'healthy';
    const value={kind:'cw08_scheduled_run_manifest',study,production:false,releaseApproved:false,cycle:id,startedAt:new Date(job.startedAt).toISOString(),completedAt:new Date(this.now()).toISOString(),modelCommit:'007c02b',seedGitAnchor:'27324da',seedPackageSha256:seed.packages[0].packageSha256,previousManifest:this.meta('manifestHead'),receipts:references,grades:gradeReferences,sources:job.sourceRefs||[],histories:(job.warmPlayers||[]).filter(p=>p.historyKey).map(p=>({playerId:p.playerId,key:p.historyKey})),rejections:job.rejections,collectionHealth:job.collectionHealth,summary:this.score()};
    const object=this.reserveObject('runs',value);job.manifest=object;job.phase='manifest';this.saveJob(id,job,token);return;
   }
@@ -142,9 +155,9 @@ export class NhlShadowCoordinator extends DurableObject {
    const job=JSON.parse(row.data);if(job.retryAt>this.now()){next=job.retryAt;return;}
    if(await this.drain(token)){next=this.now()+1000;return;}
    try{await this.step(job,row.id,token);job.retries=0;job.retryAt=0;delete job.lastError;if(this.rows('SELECT state FROM cycles WHERE id=?',row.id)[0].state==='active')this.saveJob(row.id,job,token);}
-   catch(error){this.assertLease(token);job.retries=(job.retries||0)+1;job.retryAt=this.now()+Math.min(SLOT,30000*2**Math.min(5,job.retries-1));job.lastError=safeError(error);console.warn(JSON.stringify({event:'cw08_retry',cycle:row.id,code:job.lastError,retryAt:job.retryAt,production:false}));this.saveJob(row.id,job,token);next=job.retryAt;}
+   catch(error){this.assertLease(token);job.sourceDeferrals=(job.sourceDeferrals||0)+(deferredSource(error)?1:0);job.retries=(job.retries||0)+1;job.retryAt=Math.max(this.now()+Math.min(SLOT,30000*2**Math.min(5,job.retries-1)),deferredSource(error)?error.retryAt:0);job.lastError=safeError(error);console.warn(JSON.stringify({event:'cw08_retry',cycle:row.id,code:job.lastError,retryAt:job.retryAt,production:false}));this.saveJob(row.id,job,token);next=job.retryAt;}
    if(this.rows("SELECT id FROM cycles WHERE state='active' LIMIT 1").length)next=next||this.now()+1000;
-  }catch(error){if(this.meta('lease')?.token===token){this.setMeta('lastStorageError',{at:this.now(),code:safeError(error)});const current=this.rows("SELECT id,data FROM cycles WHERE state='active' LIMIT 1")[0];next=this.now()+30000;if(current){const job=JSON.parse(current.data);job.retries=(job.retries||0)+1;job.retryAt=this.now()+Math.min(SLOT,30000*2**Math.min(5,job.retries-1));job.lastError=safeError(error);this.saveJob(current.id,job,token);next=job.retryAt;}}}
+  }catch(error){if(this.meta('lease')?.token===token){this.setMeta('lastStorageError',{at:this.now(),code:safeError(error)});const current=this.rows("SELECT id,data FROM cycles WHERE state='active' LIMIT 1")[0];next=this.now()+30000;if(current){const job=JSON.parse(current.data);job.sourceDeferrals=(job.sourceDeferrals||0)+(deferredSource(error)?1:0);job.retries=(job.retries||0)+1;job.retryAt=Math.max(this.now()+Math.min(SLOT,30000*2**Math.min(5,job.retries-1)),deferredSource(error)?error.retryAt:0);job.lastError=safeError(error);this.saveJob(current.id,job,token);next=job.retryAt;}}}
   finally{if(this.meta('lease')?.token===token)this.setMeta('lease',null);if(next!=null)await this.ctx.storage.setAlarm(next);}
  }
 }

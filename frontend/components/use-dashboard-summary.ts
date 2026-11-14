@@ -31,8 +31,8 @@ export function fetchDashboardSummary(sport:DashboardSport,league="eng.1",scope=
 }
 export function useDashboardSummary(sport:DashboardSport,league="eng.1"){
  const key=`${sport}|${league}`;
- const [state,setState]=useState<{key:string,data:any,error:string;at:number}>(()=>({key,data:peekDashboardSummary(sport,league,"current"),error:"",at:Date.now()}));
- useEffect(()=>{let live=true,running=false;const run=async()=>{if(running)return;running=true;try{const data=await fetchDashboardSummary(sport,league);if(live)setState({key,data,error:"",at:Date.now()})}catch(e){if(live)setState(s=>({...s,key,data:s.key===key&&currentDashboardSnapshot(s)?s.data:null,error:"Live updates are temporarily unavailable. Retrying shortly…"}))}finally{running=false}};run();const stopPolling=visiblePolling(run,30_000);return()=>{live=false;stopPolling()}},[sport,league,key]);
+ const [state,setState]=useState<{key:string,data:any,error:string;at:number}>(()=>({key,data:null,error:"",at:0}));
+ useEffect(()=>{let live=true,running=false;const warm=peekDashboardSummary(sport,league,"current");if(warm)setState({key,data:warm,error:"",at:Math.min(Date.now(),Date.parse(warm.updatedAt)||Date.now())});const run=async()=>{if(running)return;running=true;try{const data=await fetchDashboardSummary(sport,league);if(live)setState({key,data,error:"",at:Date.now()})}catch(e){if(live)setState(s=>({...s,key,data:s.key===key&&currentDashboardSnapshot(s)?s.data:null,error:"Live updates are temporarily unavailable. Retrying shortly…"}))}finally{running=false}};run();const stopPolling=visiblePolling(run,30_000);return()=>{live=false;stopPolling()}},[sport,league,key]);
  return state.key===key?state:{key,data:peekDashboardSummary(sport,league,"current"),error:"",at:Date.now()};
 }
 export function useDashboardSchedule(sport:DashboardSport,league="eng.1"){

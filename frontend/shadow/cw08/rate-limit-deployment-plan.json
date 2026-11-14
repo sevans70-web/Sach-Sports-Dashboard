@@ -1,0 +1,37 @@
+{
+  "status": "prepared_not_authorized_or_deployed",
+  "worker": "sach-cw08-nhl-shadow",
+  "replaceVersion": "08e854d6-fcdb-404a-9820-c156d1485d98",
+  "durableObjectClass": "NhlShadowCoordinator",
+  "durableObjectNamespace": "24d604463d7f410f880ba8366769e853",
+  "evidenceKV": "94a4f6693e144aa1ae92d2939d563014",
+  "cron": "*/15 * * * *",
+  "changes": [
+    "Replace only research Worker code; retain the existing Durable Object instance, namespaces, bindings and secrets.",
+    "Add an operational source_cache table in the existing SQLite Durable Object, capped at 512 entries and 32 MiB of compressed serialized cache bodies.",
+    "Persist per-provider pacing/cooldown metadata and defer the same collection cursor on HTTP 429; respect the full Retry-After even when longer than the default backoff.",
+    "Allow at most one source request every two seconds per provider, including official same-origin redirect hops.",
+    "Cache public roster, standings and player-history reads for at most 15 minutes and schedules for at most 60 seconds; preserve their actual retrieval time.",
+    "Never cache authenticated odds, official pregame fixture reads, or official-final boxscores.",
+    "Keep first-receipt enrollment, all existing receipt/grade objects, frozen model/protocol and independent official-final grading rules unchanged."
+  ],
+  "productionDashboardChange": false,
+  "dashboardBuildsRemainPaused": true,
+  "newServicesOrPlanUpgrade": false,
+  "newResources": [],
+  "receiptImportOrRewrite": false,
+  "credentialReadCopyOrRotation": false,
+  "modelOrProtocolChange": false,
+  "approvalRequiredBeforeUpload": true,
+  "activationChecks": [
+    "Pin the approved source commit, verify frozen artifacts, and compare the tested bundle digest.",
+    "Verify the exact existing research version and resource bindings before upload; stop on unexpected changes.",
+    "Use the existing authenticated manual Cloudflare environment and preserve existing secret bindings without reading their values.",
+    "Leave the 15-minute cron active, reuse the existing Durable Object, and verify all pre-update receipt identities/counts remain present.",
+    "Observe a scheduled cycle, pacing/cooldown status, receipt durability and grading; roll back research code on integrity/storage regression."
+  ],
+  "testedBundle": {
+    "bytes": 151874,
+    "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+  }
+}

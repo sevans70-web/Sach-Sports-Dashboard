@@ -1,0 +1,150 @@
+{
+  "checkedAtUTC": "2026-11-14T18:45:33.745271+00:00",
+  "approvedDashboardCommit": "a7c91fac806cff156610d161a270ab3b43647ac5",
+  "manualBuild": "d14ea0db-2330-492b-94a1-fc474fb21a36",
+  "manualBuildOutcome": "success",
+  "attemptedDeployment": "aacb2553-c2cc-4a8d-9967-c23d41735e31",
+  "attemptedVersion": "4248b257-444b-46b0-9a6b-0bc37c8615d8",
+  "releaseAccepted": false,
+  "failedGate": "React hydration #418 on Home-to-NBA navigation with warmed summary cache; reproduced on version preview",
+  "rollbackDeployment": "49e8c749-aa41-4ed1-b68d-4936a0a0835b",
+  "activeDashboardVersion": "46f9dc62-01e2-407f-b1c3-845d10e613d9",
+  "automaticBuildsPaused": true,
+  "researchWorkerVersion": "08e854d6-fcdb-404a-9820-c156d1485d98",
+  "researchWorkerDeployed": false,
+  "researchScheduleChanged": false,
+  "researchCron": "*/15 * * * *",
+  "newModelOrProtocolDeployed": false,
+  "originalHistoryAndFrozenArtifactsUnchanged": true,
+  "preservation": {
+    "historicalOriginalsPreserved": 576,
+    "featuredOriginalsPreserved": 4
+  },
+  "liveApiChecks": {
+    "nba": {
+      "games": 14,
+      "picks": 0,
+      "complete": false,
+      "rankingsAvailable": true
+    },
+    "nfl": {
+      "games": 14,
+      "picks": 0,
+      "complete": false,
+      "rankingsAvailable": true
+    },
+    "nhl": {
+      "games": 19,
+      "picks": 21,
+      "complete": false,
+      "rankingsAvailable": true
+    },
+    "points": {
+      "rows": 22,
+      "records": 0
+    },
+    "pr": {
+      "rows": 24,
+      "records": 0
+    },
+    "nhl-today": {
+      "rows": 25,
+      "records": 0
+    },
+    "nhl-tomorrow": {
+      "rows": 25,
+      "records": 0
+    },
+    "featured-after": {
+      "rows": 0,
+      "records": 0
+    },
+    "history-after": {
+      "rows": 0,
+      "records": 576
+    }
+  },
+  "withdrawnVsRestoredBrowser": [
+    {
+      "base": "https://4248b257-sach-sports-cloudflare-test.sevans70.workers.dev",
+      "status": 200,
+      "errors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ],
+      "evMetrics": 5
+    },
+    {
+      "base": "https://sach-sports-cloudflare-test.sevans70.workers.dev",
+      "status": 200,
+      "errors": [],
+      "evMetrics": 5
+    }
+  ],
+  "localHydrationRepair": {
+    "environment": "local Vite/browser with retained real API fixtures",
+    "pageErrors": 0,
+    "evMetrics": 5,
+    "deployed": false
+  },
+  "tests": {
+    "full": {
+      "tests": 744,
+      "passed": 744,
+      "failed": 0
+    },
+    "focused": {
+      "tests": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "typecheckDiagnostics": 0,
+    "correctedProductionBuild": "passed",
+    "correctedPrebuiltDryRun": "passed",
+    "frozenResearchBuild": {
+      "bytes": 151874,
+      "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+    },
+    "gitDiffCheck": true
+  },
+  "cw08": {
+    "ready": true,
+    "receipts": 660,
+    "grades": 0,
+    "completedCycles": 53,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "active": [],
+    "latestCollectionHealth": {
+      "rosterFailures": 18,
+      "historySourceFailures": 21,
+      "rejectionsByReason": {
+        "source_http_429": 39,
+        "unresolved_or_ambiguous_official_player": 924,
+        "prior_history_unavailable": 27,
+        "fewer_than_three_same_season_team_appearances": 4
+      },
+      "warmedPlayers": 3,
+      "newReceipts": 0,
+      "sourceSnapshots": 18,
+      "state": "degraded"
+    }
+  },
+  "approvalRequired": [
+    "Corrected dashboard source commit: build/configuration verification and repeated live checks required before accepting release.",
+    "Separate research-only Worker transport update per frontend/shadow/cw08/rate-limit-deployment-plan.json; same SQLite DO/KV/cron/secrets, additive bounded operational cache, no receipt import or model changes."
+  ],
+  "verificationLimits": [
+    "Not all dashboard browser/count checks completed on a7c91fa because the failed gate triggered rollback.",
+    "Local fixtures and unit/workerd tests do not establish live research-rate-limit recovery; research code remains undeployed.",
+    "Latest live CW08 cycle is degraded by 39 upstream HTTP 429 rejections; storage is healthy and no receipts were rewritten."
+  ],
+  "logsSha256": {
+    "regression-verified.log": "a5c9b54c9857a953c15fec49615c7bc41460d2239fc21f5039f131f58f012653",
+    "focused-complete.log": "39a9aa89f64e61e253a8eabb7f9482720aae10f02410080a8fe282adb130a3b6",
+    "typecheck-verified.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "corrected-build.log": "c7b867533b6470a47529e2746df18f5efe587654d4799c2053b0fe8da8e489ec",
+    "corrected-dry-run.log": "944a217782becd966c1e7f6b2a21eedbceb7bd1fe273ef582f7790f0c394522a",
+    "preview-reproduction.json": "ebd419d23b92c08e36df93116286dbbaec1959efc9a8b716f29ea12af8a19d91",
+    "local-browser-results.json": "ee201751b6f485cb1fb834b8e56d0c565e6223152f55e1ba8860db396e239a20"
+  }
+}
