@@ -414,6 +414,7 @@ async function buildNbaMarketRankingsRaw(
 
  try{
   const overview=shared?.overview??await loadNbaOverview();
+  if(overview.scheduleAvailable===false)throw Error('NBA schedule unavailable; retaining verified originals');
 
   const slate=rankingSlateGames(overview);
   const slateDays:string[]=[

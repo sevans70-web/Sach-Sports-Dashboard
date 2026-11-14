@@ -1,0 +1,75 @@
+{
+  "checkedAtUTC": "2026-11-14T18:09:15.410385+00:00",
+  "branch": "cloudflare-compatibility-test",
+  "scope": "NBA/NFL/NHL recurring game availability and pick counts",
+  "cw06": {
+    "trackerMoved": true,
+    "sourceTab": "Repair checklist",
+    "destinationTab": "100% completed",
+    "destinationRow": 34,
+    "checkbox": true,
+    "status": "100% COMPLETE",
+    "deploymentId": "b5705072-a97f-4794-b71b-8bbf73a1da60",
+    "githubEvidenceCommit": "3d13350ebad5d2d2b86cf503e2fb603181d1adc0",
+    "originalNotesAndValidationPreserved": true
+  },
+  "tests": {
+    "fullSuite": {
+      "tests": 739,
+      "passed": 739,
+      "failed": 0
+    },
+    "focusedFinal": {
+      "tests": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "typecheckDiagnostics": 0,
+    "gitDiffCheck": true
+  },
+  "modelsAndFrozenProtocolsAndHistoryUnchanged": true,
+  "productionWrites": false,
+  "deployed": false,
+  "dashboardBuilt": false,
+  "automaticBuildsPaused": true,
+  "activeProductionDeployment": "b5705072-a97f-4794-b71b-8bbf73a1da60",
+  "activeProductionVersion": "46f9dc62-01e2-407f-b1c3-845d10e613d9",
+  "cw08Version": "08e854d6-fcdb-404a-9820-c156d1485d98",
+  "cw08Cron": "*/15 * * * *",
+  "cw08CronModifiedAtUTC": "2026-11-14T05:24:15.908994Z",
+  "cw08Status": {
+    "ready": true,
+    "receipts": 658,
+    "grades": 0,
+    "completedCycles": 51,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "active": [],
+    "latestCollectionHealth": {
+      "rosterFailures": 15,
+      "historySourceFailures": 24,
+      "rejectionsByReason": {
+        "source_http_429": 39,
+        "unresolved_or_ambiguous_official_player": 767,
+        "prior_history_unavailable": 31,
+        "fewer_than_three_same_season_team_appearances": 3
+      },
+      "warmedPlayers": 6,
+      "newReceipts": 3,
+      "sourceSnapshots": 18,
+      "state": "degraded"
+    }
+  },
+  "verificationLimits": [
+    "New repair code is not deployed. Live browser and cold Cloudflare performance checks require separate release approval.",
+    "External source outages without a recent verified snapshot remain explicit unavailability.",
+    "NHL goals/assists selection validation remains gated by CW08; no model or threshold promotion.",
+    "64-candidate NHL budget remains bounded and explicitly reports unevaluated candidates.",
+    "CW08 latest collection is degraded by upstream HTTP 429 (39 source rejections); schedule and storage remain operational, but complete source coverage is not claimed."
+  ],
+  "logsSha256": {
+    "regression-release.log": "3597920d1a5ae5b858eaa074f4182c13b29e5b13569eaf712ab45439adb15c92",
+    "focused-verified.log": "0efff9d924c5971ba46fb4425d49b4cff11a23b8e2bc1d8399041bbbc4ac843a",
+    "typecheck-verified.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

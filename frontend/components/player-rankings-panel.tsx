@@ -1,4 +1,5 @@
 "use client";
+import {rankingRowIsPick} from '@/lib/ranking-pick-count';
 import {NbaEvMetric} from './nba-ev-metric';
 import {nbaRankingEv,nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {NBA_DISPLAY_MARKETS} from "@/lib/nba";
@@ -1806,16 +1807,6 @@ export function PlayerRankingsPanel({
   const groupScroll = useHorizontalScroll();
   const marketScroll = useHorizontalScroll();
 
-  useEffect(()=>{
-    if(loading||error||cards.some(card=>card.market!==market.key))return;
-    onPickCount?.({market:market.key,count:cards.filter(card=>
-     !excludeUnavailableRanking(card.raw)&&card.raw?.withdrawnFromBoard!==true&&card.raw?.resultStatus!=='void'&&(
-      sport==='nba'?nbaCardEv(card)!=null:
-      card.market==='first_basket'?firstBasketQuote(card.raw)!=null:
-      Boolean(cardModelPick(card.raw)||(['nfl','cfb'].includes(sport)&&footballForecastDisplay(card.raw).side))
-     )).length});
-  },[cards,loading,error,market.key,onPickCount]);
-
   const viewCacheKey = (
     nextGroup: string,
     nextMarket: string,
@@ -2554,13 +2545,12 @@ export function PlayerRankingsPanel({
   const visible = full
     ? displayCards
     : displayCards.slice(0, 5);
-  const countsAsPick = (card:RankingCard) => {
-    if (qualifiedQuarterTarget(card.raw)) return true;
-    if (!cardModelPick(card.raw) || card.raw?.withdrawnFromBoard || card.raw?.resultStatus === 'void') return false;
-    const ev = estimatedEv(card.raw);
-    return ev.status === 'available' && ev.percent > 0;
-  };
-  const marketPickCount=displayCards.filter(countsAsPick).length;
+  const marketPickCount=displayCards.filter(card=>rankingRowIsPick(card.raw)).length;
+  useEffect(()=>{
+    if(loading||error||displayCards.some(card=>card.market!==market.key))return;
+    const count=market.key==='first_basket'?displayCards.filter(card=>firstBasketQuote(card.raw)!=null).length:marketPickCount;
+    onPickCount?.({market:market.key,count});
+  },[displayCards,loading,error,market.key,marketPickCount,onPickCount]);
 
   const cfbAllDayGroups = useMemo(() => {
     if (!((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))) return [];
@@ -2715,7 +2705,7 @@ export function PlayerRankingsPanel({
         </div>:null}
         {((sport === "cfb" && cfbSlate === "all")||(sport === "nfl" && nflSlate === "all"))
           ? cfbAllDayGroups.map((block) => {
-              const pickCount=block.rows.filter(countsAsPick).length;
+              const pickCount=block.rows.filter(card=>rankingRowIsPick(card.raw)).length;
               return <section key={block.key} style={{ marginBottom: 18, paddingTop: 4 }}>
                 <button type="button" aria-expanded={blockExpanded[`${market.key}|${block.key}`] ?? !block.completed}
                   aria-controls={`cfb-block-${block.key}`}

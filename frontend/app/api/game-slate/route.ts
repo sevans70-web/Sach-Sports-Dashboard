@@ -1,3 +1,4 @@
+import {schedulePayloads} from "@/lib/schedule-payloads";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { loadNbaGames } from "@/lib/nba";
@@ -236,10 +237,10 @@ async function espnFootball(sport:"nfl"|"cfb") {
   const path = sport === "nfl" ? "football/nfl" : "football/college-football";
   const now = new Date();
   const dates=Array.from({length:16},(_,i)=>localDay(new Date(now.getTime()+(i-1)*86400000)).replaceAll("-",""));
-  const boards=await Promise.allSettled(dates.map(date=>fetchJson(
+  const requests=dates.map(date=>fetchJson(
     `https://site.api.espn.com/apis/site/v2/sports/${path}/scoreboard?limit=300${sport==="cfb"?"&groups=80":""}&dates=${date}`
-  )));
-  const good=boards.flatMap(x=>x.status==="fulfilled"?[x.value]:[]);
+  ));
+  const good=sport==='nfl'?await schedulePayloads(requests,"NFL",p=>Array.isArray(p.events)):(await Promise.allSettled(requests)).flatMap(x=>x.status==='fulfilled'?[x.value]:[]);
   if(!good.length)throw new Error(`${sport} schedule providers unavailable`);
   const events=new Map<string,any>();
   for (const board of good) {
@@ -543,7 +544,7 @@ export async function GET(req:NextRequest) {
         error:error instanceof Error ? error.message : "Game slate unavailable",
         updatedAt:new Date().toISOString(),
       },
-      {status:500}
+      {status:503}
     );
   }
 }

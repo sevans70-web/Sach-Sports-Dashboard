@@ -15,7 +15,7 @@ export function SportsDashboard({sport}:{sport:DashboardSport}){
  const onPickCount=useCallback((value:{market:string;count:number})=>setBoardCount({...value,scope:`${sport}|${league}`}),[sport,league]);
  const currentBoard=boardCount?.scope===`${sport}|${league}`?boardCount:null;
  const data=summary||(schedule?{...dashboardCounts(schedule.games||[],[]),previewGames:schedule.games||[],weekNumber:schedule.weekNumber,market:DEFAULT_MARKETS[sport],updatedAt:schedule.updatedAt,scheduleAvailable:schedule.success!==false,rankingsAvailable:false}:null);
- const games:Array<ComponentProps<typeof GamesPreviewCard>["game"]> = schedule?.games?.length?schedule.games:data?.previewGames||[];
+ const games:Array<ComponentProps<typeof GamesPreviewCard>["game"]> = schedule?.success===true&&Array.isArray(schedule.games)?schedule.games:data?.previewGames||[];
  const previewGames=sport==="soccer"?games.slice(0,3):games;
  const ready=data?.scheduleAvailable,ranked=currentBoard!=null||data?.rankingsAvailable,market=String(currentBoard?.market||data?.market||"").replaceAll("_"," ");
 

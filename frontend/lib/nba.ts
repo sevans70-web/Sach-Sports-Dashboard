@@ -1,5 +1,5 @@
 import {providerFetch as fetch} from "@/lib/provider-fetch";
-import {successfulPayloads} from "@/lib/provider-batch";
+import {schedulePayloads} from "@/lib/schedule-payloads";
 import {statNumber} from "@/lib/provider-fetch";
 export const NBA_SEASON = "2026"; // 2025-26 completed regular-season baseline
 
@@ -19,7 +19,7 @@ export type NbaPlayer={
   stealsPerGame:number|null;blocksPerGame:number|null
 };
 export type NbaGame={gameId:string;tipoff:string|null;awayTeam:string;awayAbbr:string;awayLogo:string|null;awayScore:number|null;homeTeam:string;homeAbbr:string;homeLogo:string|null;homeScore:number|null;status:string;state:string;detail?:string};
-export type NbaOverview={season:string;updatedAt:string;players:NbaPlayer[];games:NbaGame[];warnings:string[]};
+export type NbaOverview={scheduleAvailable?:boolean;season:string;updatedAt:string;players:NbaPlayer[];games:NbaGame[];warnings:string[]};
 
 type JsonRecord=Record<string,unknown>;
 const STATS_URL="https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete";
@@ -52,7 +52,7 @@ export async function loadNbaGames(fullCalendar=true):Promise<NbaGame[]>{
  // remains the provider's supported unit. Current boards use the shorter span.
  const now=new Date();
  const dates=Array.from({length:fullCalendar?16:8},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
- const payloads=await successfulPayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,60)),"NBA");
+ const payloads=await schedulePayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,60)),"NBA",p=>Array.isArray(p.events));
  const seen=new Set<string>();const games:NbaGame[]=[];
  for(const payload of payloads)for(const v of list(payload.events)){
   const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;
@@ -63,7 +63,7 @@ export async function loadNbaGames(fullCalendar=true):Promise<NbaGame[]>{
  if(!fullCalendar&&!games.some(g=>g.state!=='post'&&Date.parse(g.tipoff||'')>Date.now()))return loadNbaGames(true);
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
-export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadNbaGames(false)]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
+export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadNbaGames(false)]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{scheduleAvailable:gr.status==='fulfilled',season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}
 export function nbaHeadshot(playerId:number|string):string{return `https://a.espncdn.com/i/headshots/nba/players/full/${playerId}.png`}
 export function cleanNbaName(v:string){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 export function playerBaseline(p:NbaPlayer|undefined,market:NbaMarketKey):number|null{

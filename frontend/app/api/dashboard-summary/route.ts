@@ -1,3 +1,4 @@
+import {rankingScopeSummary} from '@/lib/ranking-scope-summary';
 import {NextRequest,NextResponse} from "next/server";
 import {GET as gameSlate} from "../game-slate/route";
 import {GET as nflRankings} from "../nfl/rankings/route";
@@ -26,12 +27,36 @@ export async function GET(req:NextRequest){
  if(!DASHBOARD_SPORTS.includes(sport))return NextResponse.json({success:false,error:"Unsupported sport"},{status:400});
  const now=new Date(),day=dashboardDay(now);
  const todayOnly=req.nextUrl.searchParams.get("scope")==="today"&&VISIBLE_SPORTS.includes(sport);
- const key=`${sport}|${sport==="soccer"?league:""}${todayOnly?"|today":""}`,hit=cache.get(key);
+ const key=`${sport}|${sport==="soccer"?league:""}|${day}${todayOnly?"|today":""}`,hit=cache.get(key);
  if(hit&&hit.expires>Date.now()&&(!todayOnly||hit.payload.slateDay===day))return NextResponse.json(hit.payload,{headers:{"Cache-Control":"no-store"}});
  const pendingKey=todayOnly?`${key}|${day}`:key;
  let work=pending.get(pendingKey);
  if(!work){
   work=(async()=>{
+   if(VISIBLE_SPORTS.includes(sport)){
+    const response=await gameSlate(new NextRequest(`${req.nextUrl.origin}/api/game-slate?sport=${sport}`));
+    const slate=await response.json();
+    if(!response.ok||slate.success!==true||!Array.isArray(slate.games))return {success:false,sport,slateDay:day,scheduleAvailable:false,rankingsAvailable:false,games:null,live:null,playerProps:null,estimatedPicks:null,previewGames:[],warning:slate.error||'Schedule unavailable; counts unknown'};
+    const games=todayOnly?dashboardToday(slate.games,now):slate.games;
+    const markets=homeMarkets[sport as keyof typeof homeMarkets].map(([m])=>m);
+    const days=[...new Set<string>(games.map((g:any)=>dashboardDay(g.date)))];
+    const records=await Promise.all(days.map(async date=>{
+     const [saved,cached]=await Promise.allSettled([
+      readDurableHistoryBatch(sport,markets.map(m=>'featured_'+m),date,{requireComplete:true}),
+      readRankingMarketCoverage(workerRuntimeBinding('VINEXT_KV_CACHE'),sport,date,markets,now.getTime())
+     ]);
+     const coverage=cached.status==='fulfilled'?cached.value:[];
+     if(saved.status==='fulfilled')for(const doc of saved.value){
+      const board=doc.payload?.[0],at=Date.parse(board?.featuredCapturedAt||board?.updatedAt||'');
+      if(board?.success===false||!Array.isArray(board?.rows)||!markets.includes(board.market)||!Number.isFinite(at)||at>Date.now()||Date.now()-at>=15*60_000)continue;
+      coverage.push({...rankingMarketCoverage(sport,board.market,date,board.rows,now.getTime()),checkedAt:at});
+     }
+     return coverage;
+    }));
+    const totals=rankingScopeSummary(games,markets,records.flat(),now.getTime());
+    const payload={success:true,sport,league,market:DEFAULT_MARKETS[sport],slateDay:day,scope:todayOnly?'Today · available ranking markets':'Current slate · available ranking markets',...dashboardCounts(games,[]),...totals,previewGames:games,scheduleAvailable:true,weekNumber:slate.weekNumber,warning:totals.coverageComplete?null:'Partial market coverage: counts include observed markets only; missing markets are not zero.',updatedAt:new Date().toISOString()};
+    cache.set(key,{expires:Date.now()+30_000,payload});return payload;
+   }
    const market=DEFAULT_MARKETS[sport],origin=req.nextUrl.origin;
    const markets=todayOnly?homeMarkets[sport as keyof typeof homeMarkets].map(([market])=>market):[];
    const streams=markets.map(market=>"featured_"+market);
@@ -96,5 +121,6 @@ export async function GET(req:NextRequest){
    return payload;
   })().finally(()=>pending.delete(pendingKey));pending.set(pendingKey,work);
  }
- return NextResponse.json(await work,{headers:{"Cache-Control":"no-store"}});
+ const result=await work;
+ return NextResponse.json(result,{status:result.success===false?503:200,headers:{"Cache-Control":"no-store"}});
 }

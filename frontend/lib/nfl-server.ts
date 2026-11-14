@@ -1,3 +1,4 @@
+import {schedulePayloads} from "@/lib/schedule-payloads";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import { NFL_MARKETS, NFL_ACTIVE_MARKETS, type NflMarketKey, type NflRankingRow, type NflRosterPlayer, cleanName, safeNumber } from "@/lib/nfl";
 
@@ -172,12 +173,7 @@ export async function getEspnNflSchedule(){
   const toThursday=day===2||day===3?4-day:-(day>=4?day-4:day+3);
   const thursday=new Date(etCalendarDate.getTime()+toThursday*86400000);
   const dates=[0,1,2,3,4].map(offset=>dateKey(new Date(thursday.getTime()+offset*86400000)));
-  const payloads=await Promise.all(
-    dates.map(async date=>{
-      try{return await json(`${ESPN_SCOREBOARD}?limit=200&dates=${date}`)}
-      catch{return {events:[]}}
-    })
-  );
+  const payloads=await schedulePayloads(dates.map(date=>json(`${ESPN_SCOREBOARD}?limit=200&dates=${date}`)),"NFL",p=>Array.isArray(p.events));
   const seen=new Set<string>();
   const out:any[]=[];
   for(const payload of payloads){

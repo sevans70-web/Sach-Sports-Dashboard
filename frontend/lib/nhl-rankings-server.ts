@@ -13,7 +13,7 @@ import {uniqueRankingRows} from "@/lib/unique-ranking-rows";
 import {nbaPropMatchesGame as propMatchesGame} from "@/lib/nba-game-match";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
-import {cleanNhlName,loadNhlOverview,nhlHeadshot,playerBaseline,todaysNhlGames,type NhlMarketKey} from "@/lib/nhl";
+import {cleanNhlName,loadNhlOverview,nhlSlateDay,nhlHeadshot,playerBaseline,todaysNhlGames,type NhlMarketKey} from "@/lib/nhl";
 import {getNhlPredictions,nhlDay,saveNhlSlate} from "@/lib/nhl-history";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 const OWLS_URL="https://api.owlsinsight.com/api/v1/nhl/props";
@@ -28,9 +28,13 @@ async function owls(){
  return {data};
 }
 function board(payload:any,market:NhlMarketKey){return mainMarketQuotes(payload,market,p=>match(p.category??p.market??p.type,market))}
+function requireNhlSources(overview:any){
+ if(overview.scheduleAvailable===false||overview.playerSourceAvailable===false)throw Error('NHL official schedule or player source unavailable; counts cannot be verified');
+}
 async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="today"){
- const [overview,payload]=await Promise.all([loadNhlOverview(),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
- const tomorrowDay=nhlDay(new Date(Date.now()+86400000));
+ const [overview,payload]=await Promise.all([loadNhlOverview(slate),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
+ requireNhlSources(overview);
+ const tomorrowDay=nhlSlateDay("tomorrow");
  const todayGames=slate==="tomorrow"?overview.games.filter(g=>g.tipoff&&nhlDay(g.tipoff)===tomorrowDay):activeRankingSlate(overview.games,nhlDay),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
  for(const x of b){const p=byName.get(cleanNhlName(x.playerName));if(!p||!activeTeams.has(p.team)||(m==='goalie_saves'&&p.position!=='G'))continue;const game=uniqueQuoteFixture(x,todayGames,p.team,15*60_000);if(!game)continue;const base=playerBaseline(p,m),edge=base!=null&&x.line!=null?base-x.line:null,reliability=Math.min(1,(p.gamesPlayed||0)/30),gi=Math.round((55+Math.min(25,Math.abs(edge||0)*7)+reliability*15)*10)/10;rows.push({...footballQuoteFields(x),providerGameTime:x.gameTime,providerMatchup:x.matchup,playerId:p.playerId,playerName:p.playerName,teamId:p.team,season:game.season,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:x.line,bookmakerCount:x.bookmakerCount,modelProjection:base,modelProbability:edge==null?null:Math.max(50,Math.min(82,Math.round((55+Math.abs(edge)*5+reliability*5)*10)/10)),giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:`${overview.season} baseline ${base==null?"loading":base.toFixed(2)} vs verified line ${x.line}. GI adds recent-season sample reliability, role and active matchup context.`})}
  rows.splice(0,rows.length,...uniqueRankingRows(rows));
@@ -61,6 +65,7 @@ export async function buildNhlFirstGoalBoard(){
  return rankingResponse('nhl|first_goal',async()=>{
   const market='first_goal';
   const [overview,payload]=await Promise.all([loadNhlOverview(),owls()]);
+  requireNhlSources(overview);
   const players=new Map(overview.players.filter(player=>player.position!=='G')
     .map(player=>[cleanNhlName(player.playerName),player]));
   const games=activeRankingSlate(overview.games,nhlDay);
@@ -98,6 +103,16 @@ export async function captureAllNhlMarkets(){
 }
 
 export async function buildNhlRankings(...args:Parameters<typeof buildNhlRankingsRaw>){return rankingResponse('nhl|'+args[0]+'|'+(args[1]||"today"),async()=>{
- const payload=await attachFittedResearchForecasts(guardRankingPayload(limitAvailablePregameRankings(await buildNhlRankingsRaw(...args)),'nhl'),'nhl');
- return {...payload,rows:prioritizeModelPicks(payload.rows||[])};
+ const raw=await buildNhlRankingsRaw(...args);
+ // Evaluate a bounded wider pool BEFORE the 25-card public limit. The first
+ // 25 baseline-ranked players may have no eligible model/price evidence.
+ // Keep frozen ranks intact. Models, thresholds and saved history are unchanged.
+ const pool=limitAvailablePregameRankings(raw,64);
+ const payload=await attachFittedResearchForecasts(guardRankingPayload(pool,'nhl'),'nhl');
+ const rows=prioritizeModelPicks(payload.rows||[]).slice(0,25);
+ return {...payload,rows,modelSelectionCount:rows.filter((r:any)=>r.researchForecast?.modelSelection).length,
+  fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast?.status==='available').length,
+  candidateCoverage:{available:raw.rows.length,evaluated:pool.rows.length,publicRows:rows.length,
+   budgetLimited:raw.rows.length>pool.rows.length,modelPolicyUnchanged:true},
+ };
 })}

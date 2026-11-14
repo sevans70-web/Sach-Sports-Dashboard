@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 import { SportLink as Link } from "@/components/sport-link";
 import { fetchDashboardSummary, peekDashboardSummary } from "@/components/use-dashboard-summary";
 import { dashboardDay, VISIBLE_SPORTS, type DashboardSport } from "@/lib/dashboard-contract";
+import {currentDashboardSnapshot} from '@/lib/dashboard-response-state';
 import { visiblePolling } from "@/lib/visible-polling";
 import "./home-showcase.css";
 
 type Summary = {
   slateDay: string;
+  updatedAt: string;
   scheduleAvailable: boolean;
   rankingsAvailable: boolean;
+  coverageComplete?: boolean;
   games: number;
   live: number;
   playerProps: number;
@@ -69,7 +72,7 @@ export default function HomeShowcase() {
     setSummaries(previous=>{
       const next={...previous};
       for(const sport of VISIBLE_SPORTS){
-        const snapshot=peekDashboardSummary(sport,"eng.1","today");
+        const snapshot=peekDashboardSummary(sport,"eng.1","current");
         if(snapshot)next[sport]=snapshot;
       }
       return next;
@@ -82,10 +85,10 @@ export default function HomeShowcase() {
         void Promise.all([
           ...VISIBLE_SPORTS.map(async sport => {
             try {
-              const summary = await fetchDashboardSummary(sport, "eng.1", "today");
+              const summary = await fetchDashboardSummary(sport, "eng.1", "current");
               if (active) setSummaries(previous => ({ ...previous, [sport]: summary?.scheduleAvailable === false && previous[sport]?.scheduleAvailable ? previous[sport] : summary }));
             } catch {
-              if (active) setSummaries(previous => ({ ...previous, [sport]: previous[sport] ?? null }));
+              if (active) setSummaries(previous => ({ ...previous, [sport]: previous[sport]&&currentDashboardSnapshot({at:Date.parse(previous[sport]!.updatedAt),data:previous[sport]}) ? previous[sport] : null }));
             }
           }),
           ...VISIBLE_SPORTS.map(async sport => {
@@ -139,9 +142,9 @@ export default function HomeShowcase() {
         <section className="shIntel">
           <div className="shIntelTitle"><h2>Current Slate Intelligence</h2></div>
           <div className="shStats">
-            <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{schedulesReady ? total("games") : "—"}</strong><small>{schedulesReady ? `${total("live")} live today` : "Today · ET"}</small></div>
-            <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{rankingsReady ? total("playerProps") : "—"}</strong><small>Verified lines</small></div>
-            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{rankingsReady ? total("estimatedPicks") : "—"}</strong><small>Across ranking markets</small></div>
+            <div data-metric="games"><span className="shStatHead"><b aria-hidden="true">▦</b>Games</span><strong>{schedulesReady ? total("games") : "—"}</strong><small>{schedulesReady ? `${total("live")} live in current slate` : "Today · ET"}</small></div>
+            <div data-metric="props"><span className="shStatHead"><b aria-hidden="true">≋</b>Player Props</span><strong>{rankingsReady ? `${current.some(s=>s?.coverageComplete===false)?"≥ ":""}${total("playerProps")}` : "—"}</strong><small>Verified lines</small></div>
+            <div data-metric="picks"><span className="shStatHead"><b aria-hidden="true">◆</b>Sach Picks</span><strong>{rankingsReady ? `${current.some(s=>s?.coverageComplete===false)?"≥ ":""}${total("estimatedPicks")}` : "—"}</strong><small>Across available ranking markets</small></div>
             <div data-metric="results"><span className="shStatHead"><b aria-hidden="true">◎</b>Hit Rate</span><strong>{performance?.settled && typeof performance.hitRate === "number" ? performance.hitRate.toFixed(1) + "%" : "—"}</strong><small>{performance?.settled ? `${performance.hits} / ${performance.settled} graded decisions` : performance?.success ? "No graded results yet" : "Checking overall results"}</small></div>
           </div>
           <p className="ssScopeNote">Overall hit rate · All recorded results · NBA, NFL &amp; NHL</p>
@@ -155,7 +158,7 @@ export default function HomeShowcase() {
               return <Link href={`/${sport}`} key={sport} data-sport={sport}>
                 <strong className="shSnapshotSport">{sport.toUpperCase()}</strong>
                 <span>{summary?.scheduleAvailable ? `${summary.games} ${summary.games === 1 ? "game" : "games"}` : summary === undefined ? "Updating…" : "Games unavailable"}</span>
-                <span>{summary?.rankingsAvailable ? `${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "pick" : "picks"}` : summary === undefined ? "Updating…" : "Picks unavailable"}</span>
+                <span>{summary?.rankingsAvailable ? `${summary.coverageComplete===false?"≥ ":""}${summary.estimatedPicks} ${summary.estimatedPicks === 1 ? "pick" : "picks"}` : summary === undefined ? "Updating…" : "Picks unavailable"}</span>
                 <span className="shSnapshotArrow" aria-hidden="true">›</span>
               </Link>;
             })}
