@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {buildShadow} from './build.mjs';
+import {ensureFrozenHistory} from './frozen-history.mjs';
 const plan=JSON.parse(await readFile(new URL('./rate-limit-deployment-plan.json',import.meta.url),'utf8'));
 const account='d3d6d023ab7ab731cc3e191d0ea3c179';
 export function updateMetadata(settings,bundle){
@@ -31,6 +32,7 @@ export async function update(env=process.env){
  if(await version('sach-sports-cloudflare-test')!==dashboardVersion||await version(plan.worker)!==plan.replaceVersion)throw Error('Deployment version fence failed');
  const schedules=await api('GET',path+'/schedules');if(JSON.stringify(schedules.schedules.map(x=>x.cron))!==JSON.stringify([plan.cron]))throw Error('Unexpected research schedule');
  const settings=await api('GET',path+'/settings'),dir=await mkdtemp(resolve(tmpdir(),'cw08-transport-')),file=resolve(dir,'worker.mjs');
+ ensureFrozenHistory(repo);
  const bundle=await buildShadow(file),metadata=updateMetadata(settings,bundle),source=await readFile(file,'utf8');
  const keys=async()=>{let result=[],cursor;do{const url=new URL('https://api.cloudflare.com/client/v4/accounts/'+account+'/storage/kv/namespaces/'+plan.evidenceKV+'/keys');url.searchParams.set('prefix','receipts/');url.searchParams.set('limit','1000');if(cursor)url.searchParams.set('cursor',cursor);const r=await fetch(url,{headers:{Authorization:'Bearer '+env.CLOUDFLARE_API_TOKEN}});if(!r.ok)throw Error('Receipt inventory unavailable');const d=await r.json();if(!d.success)throw Error('Receipt inventory rejected');result.push(...d.result.map(x=>({name:x.name,sha:x.metadata?.sha256})));cursor=d.result_info?.cursor;}while(cursor);return result;};
  const before=await keys();if(before.length<339||before.some(x=>!x.name.endsWith('/'+x.sha+'.json')))throw Error('Receipt identity check failed');

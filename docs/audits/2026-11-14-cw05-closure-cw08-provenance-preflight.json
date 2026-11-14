@@ -1,0 +1,81 @@
+{
+  "tracker": {
+    "spreadsheet": "https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit",
+    "id": "CW05",
+    "from": "'Repair checklist'!A20:Z20",
+    "to": "'100% completed'!A35:Z35",
+    "fullRowMoved": true,
+    "notesFormattingValidationAndLinkPreserved": true,
+    "done": true,
+    "status": "100% COMPLETE",
+    "recordedDashboardDeployment": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+    "recordedBrowserVerification": true
+  },
+  "research": {
+    "newDeployment": null,
+    "manualBuild": "fe8750e7-ef75-4137-834b-dc84265cf2c2",
+    "sourceCommit": "ca30060bb3aa663d3334547264a0724570cc7499",
+    "outcome": "stopped_before_code_upload",
+    "error": "fatal: invalid object name 007c02b \u2014 shallow manual checkout",
+    "existingDeployment": "13a75869-0946-4318-aa1d-e62dea253444",
+    "existingVersionAndRollback": "08e854d6-fcdb-404a-9820-c156d1485d98",
+    "approvedBundle": {
+      "bytes": 151874,
+      "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+    },
+    "localBundleMatchesExactly": true,
+    "existingReceiptByteHashesCompared": 667,
+    "mismatches": 0,
+    "latestReceipts": 669,
+    "completedCycles": 56,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "grades": 0,
+    "cron": "*/15 * * * *",
+    "cronModifiedUTC": "2026-11-14T05:24:15.908994Z",
+    "observedOriginalCodeCycle": {
+      "cycle": "1994093",
+      "startedAt": "2026-11-14T19:15:23.428Z",
+      "completedAt": "2026-11-14T19:18:09.138Z",
+      "health": "healthy",
+      "rosterFailures": 0,
+      "historySourceFailures": 0,
+      "newReceipts": 2,
+      "manifestSha256": "0263b9f4ab68046c88609d451945266518c653837af7e3f4e08b386650429f1b",
+      "evidenceBytesHashVerified": true
+    },
+    "newTransportLiveVerified": false,
+    "failureRecoveryLiveVerified": false,
+    "reasonForNoRetry": "User explicitly required stopping on any unexpected release-check failure. Failed guard remained enforced; no upload or retry occurred.",
+    "correctionPrepared": "frozen-history.mjs fetches only exact full pinned commits when missing; no checkout, reset, model/protocol replacement, weakened artifact guard or skipped digest check.",
+    "correctionLiveVerified": false
+  },
+  "dashboard": {
+    "deploymentUnchanged": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+    "versionUnchanged": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
+    "automaticBuildsPaused": true,
+    "branchIncludes": [
+      "__cw08_manual_release_only__"
+    ],
+    "normalBuildCommandsRestored": true
+  },
+  "modelProtocolCredentialsNamespacesAndScheduleChanged": false,
+  "tests": {
+    "focusedRelease": {
+      "passed": 9,
+      "failed": 0
+    },
+    "scheduledWorkflow": {
+      "passed": 1,
+      "failed": 0
+    },
+    "fullSuite": {
+      "passed": 749,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typescript": {
+      "diagnostics": 0
+    }
+  }
+}
