@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-11-14",
+  "productionHosting": "Cloudflare Workers",
+  "branch": "cloudflare-compatibility-test",
+  "requestedCommitsPushed": [
+    "e00bd93",
+    "774f871",
+    "007c02b",
+    "396af74"
+  ],
+  "forcePush": false,
+  "activeDeployment": "e85e558a-5c4c-41fc-9e51-ac144759ca80",
+  "activeVersion": "49db8837-1cce-425a-8ca8-d821e34ec62d",
+  "dashboardBuilt": false,
+  "deployed": false,
+  "automaticBuildsPausedWithUserApproval": true,
+  "fullSuite": {
+    "tests": 708,
+    "passed": 699,
+    "failed": 9,
+    "failureLocations": [
+      "tests/dashboard-contract.test.mjs:58:1",
+      "tests/estimated-ev.test.mjs:7:1",
+      "tests/featured-loading.test.mjs:50:1",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/nba-slate-scope.test.mjs:19:1",
+      "tests/opportunity-backtest.test.mjs:24:1",
+      "tests/quarter-markets.test.mjs:11:1"
+    ],
+    "samePreviouslyRecordedFailures": true
+  },
+  "shadowAndArtifactTests": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "protectionTests": {
+    "tests": 63,
+    "passed": 63,
+    "failed": 0
+  },
+  "typecheck": {
+    "errors": 9,
+    "newDiagnostics": 0,
+    "samePreviouslyRecordedDiagnostics": true
+  },
+  "independentReplay": {
+    "modelsUnchangedSincePreEvaluationCommit": "007c02b",
+    "featureChecks": 368,
+    "causalityChecks": 368,
+    "independentPythonPriceProbabilityEvSideChecks": 221,
+    "productionArtifactsChanged": false,
+    "prospectiveAcceptedCaptures": 0,
+    "releaseApproved": false
+  },
+  "credentialValuesExported": false,
+  "productionPredictionsChanged": false,
+  "releaseApproved": false,
+  "originalHistory": {
+    "rows": 90,
+    "orderedDatabaseMd5": "c5943527f521dac178cd20bd680ff936",
+    "unchanged": true,
+    "databaseWrites": 0
+  },
+  "shadowCapture": {
+    "packageSha256": "1f6ef2385261a920bb87db79a418a238456818175e69cd9f3c0abf366500f669",
+    "cloudflareManifestTime": "2026-11-14T02:59:07.212Z",
+    "accepted": 339,
+    "markets": {
+      "goals": 242,
+      "assists": 97
+    },
+    "fixtures": 13,
+    "earliestGameTime": "2026-11-14T18:00:00Z",
+    "latestGameTime": "2026-11-15T03:00:00Z",
+    "receiptIndexSha256": "be094820565353223af67100cda502444d4acb974c7a86c5f584022beeb6ab91",
+    "modelFrozenCommit": "007c02b",
+    "production": false,
+    "releaseApproved": false,
+    "probabilitiesPricesEvSelectionsReproduced": 339,
+    "officialFinalGrades": 0,
+    "storage": "cloudflare-kv-and-git",
+    "buildUuid": "88ea3d67-0d81-4f07-9867-d1ea5965b746",
+    "automaticCollectorScheduled": false
+  }
+}

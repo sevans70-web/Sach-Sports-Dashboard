@@ -1,5 +1,9 @@
 # CW08 v3: persistent skill, actual quotes and executable shadow validation
 
+> Hosting/credential status below is the historical finding at `396af74`.
+> See [the November 14 Cloudflare status correction](cw08-cloudflare-status.md)
+> for current hosting, pushed commits, credential access and capture status.
+
 Previous work `e00bd93` and `774f871` is preserved. The v3 model and protocol
 were frozen in `007c02b` **before** new November outcomes were fetched. No
 coefficients or calibration policy changed after evaluation. The verification

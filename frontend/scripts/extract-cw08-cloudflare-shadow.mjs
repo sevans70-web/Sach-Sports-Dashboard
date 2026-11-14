@@ -1,6 +1,9 @@
 /** Verify a complete private Cloudflare job export before counting evidence. */
 import {readFile,writeFile,mkdir} from 'node:fs/promises';import {resolve,dirname} from 'node:path';
-import {decodeShadowArtifacts} from './cw08-cloudflare-artifacts.mjs';import {verifyShadowReceipt,digest} from './nhl-shadow-evidence.mjs';
+import {decodeShadowArtifacts} from './cw08-cloudflare-artifacts.mjs';import {verifyShadowReceipt,digest,canonical} from './nhl-shadow-evidence.mjs';
+import {loadTs} from '../tests/load-ts.mjs';
+const {nhlShadowForecast,priceNhlShadow}=await loadTs(new URL('../lib/nhl-shadow-model.ts',import.meta.url));
+const {forecastDistribution,evaluatePrice}=await loadTs(new URL('../lib/probability-forecast.ts',import.meta.url));
 const [file,expectedSha256,anchorTime,directory]=process.argv.slice(2);
 if(!file||!expectedSha256||!anchorTime||!directory)throw Error('Usage: node scripts/extract-cw08-cloudflare-shadow.mjs PACKAGE SHA256 CLOUDFLARE_MANIFEST_TIME OUTPUT_DIRECTORY');
 const bytes=await readFile(file),files=decodeShadowArtifacts({sha256:expectedSha256,chunks:[bytes.toString('base64')]}),anchor=Date.parse(anchorTime);
@@ -12,6 +15,12 @@ for(const entry of files.filter(f=>f.path.startsWith('receipts/'))){
  if(Date.parse(r.createdAt)>anchor||Date.parse(r.target.gameTime)<=anchor)throw Error('Export not anchored before puck drop');
  if(r.modelFreeze.commit!=='007c02b'||r.model.selectionApproved!==false||r.target.sport!=='nhl')throw Error('Unexpected shadow model or scope');
  if(r.history.some(g=>Date.parse(g.gameTime)>=Date.parse(r.createdAt)-48*3600000))throw Error('Noncausal shadow history');
+ const candidate=nhlShadowForecast(r.model,r.history,r.target,r.createdAt);if(!candidate.forecast)throw Error('Candidate forecast no longer reproduces');
+ const forecast={...candidate.forecast,pricing:priceNhlShadow(candidate.forecast,r.quote)};
+ if(canonical(forecast)!==canonical(r.forecast))throw Error('Captured candidate probabilities, price EV or selection do not reproduce');
+ const baseline=forecastDistribution(r.baselineModel,r.history,r.target,r.createdAt);if(!baseline.forecast)throw Error('Baseline forecast no longer reproduces');
+ const original={projection:baseline.forecast.projection,features:baseline.forecast.inputFeatures,pricing:evaluatePrice(baseline.forecast.values,r.quote)};
+ if(canonical(original)!==canonical(r.baseline))throw Error('Captured baseline does not reproduce');
  results.push({key,sha256:receipt.sha256,market:r.target.market,gameId:r.target.gameId,gameTime:r.target.gameTime,createdAt:r.createdAt});
 }
 const reportFile=files.find(f=>f.path==='job-result.json');if(!reportFile)throw Error('Missing job completion receipt');const job=JSON.parse(reportFile.content);

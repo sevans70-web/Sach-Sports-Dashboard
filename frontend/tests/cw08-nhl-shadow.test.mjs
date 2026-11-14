@@ -86,3 +86,23 @@ test('invalid model scope, coefficients, count prices and tampering never create
  assert.throws(()=>nhlShadowForecast({...i.model,scales:[0]},i.history,i.target,at));
  for(const patch of [{overPrice:0},{underPrice:NaN},{line:-.5},{line:.25},{mainLine:false}])assert.throws(()=>priceNhlShadow({eventProbability:.3,lambda:.5},{...i.quote,...patch}));
 });
+
+test('Cloudflare evidence extractor verifies a complete pregame package and refuses overwrite',async()=>{
+ const {encodeShadowArtifacts}=await import('../scripts/cw08-cloudflare-artifacts.mjs');
+ const dir=await mkdtemp(join(tmpdir(),'cw08-export-test-'));
+ try{
+  const input=fixture();input.modelFreeze.commit='007c02b';
+  const receipt=captureNhlShadow(input,now),job={accepted:1,production:false,deployed:false,dashboardBuilt:false};
+  const files=[{path:'receipts/test.json',content:JSON.stringify(receipt)+'\n'},{path:'job-result.json',content:JSON.stringify(job)+'\n'}],encoded=encodeShadowArtifacts(files),packagePath=join(dir,'package.br');
+  await writeFile(packagePath,Buffer.from(encoded.chunks.join(''),'base64'));
+  const script=fileURLToPath(new URL('../scripts/extract-cw08-cloudflare-shadow.mjs',import.meta.url)),args=[script,packagePath,encoded.sha256,'2026-11-14T12:00:01Z',join(dir,'verified')];
+  const {stdout}=await promisify(execFile)(process.execPath,args);const summary=JSON.parse(stdout);
+  assert.equal(summary.accepted,1);assert.deepEqual(summary.markets,{goals:1,assists:0});assert.equal(summary.releaseApproved,false);
+  assert.equal(await readFile(join(dir,'verified/receipts/test.json'),'utf8'),files[0].content);
+  await assert.rejects(promisify(execFile)(process.execPath,args),/EEXIST/);
+  await assert.rejects(promisify(execFile)(process.execPath,[script,packagePath,encoded.sha256,'2026-11-15T12:00:01Z',join(dir,'late')]),/before puck drop/);
+  const changed=structuredClone(receipt);changed.forecast.pricing.overEv+=.1;const {sha256,...body}=changed;changed.sha256=digest(body);
+  const corrupt=encodeShadowArtifacts([{path:'receipts/test.json',content:JSON.stringify(changed)},files[1]]),corruptPath=join(dir,'corrupt.br');await writeFile(corruptPath,Buffer.from(corrupt.chunks.join(''),'base64'));
+  await assert.rejects(promisify(execFile)(process.execPath,[script,corruptPath,corrupt.sha256,'2026-11-14T12:00:01Z',join(dir,'corrupt')]),/do not reproduce/);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
