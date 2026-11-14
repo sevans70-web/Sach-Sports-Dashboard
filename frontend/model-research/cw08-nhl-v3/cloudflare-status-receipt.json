@@ -32,8 +32,8 @@
     "samePreviouslyRecordedFailures": true
   },
   "shadowAndArtifactTests": {
-    "tests": 11,
-    "passed": 11,
+    "tests": 13,
+    "passed": 13,
     "failed": 0
   },
   "protectionTests": {
@@ -83,6 +83,13 @@
     "officialFinalGrades": 0,
     "storage": "cloudflare-kv-and-git",
     "buildUuid": "88ea3d67-0d81-4f07-9867-d1ea5965b746",
-    "automaticCollectorScheduled": false
+    "automaticCollectorScheduled": false,
+    "firstPregameGitAnchorCommit": "27324da",
+    "firstReceiptGuard": {
+      "realSourceEntries": 395,
+      "enrolledReceiptsSkipped": 339,
+      "remainingUnenrolledEntries": 56,
+      "passed": true
+    }
   }
 }

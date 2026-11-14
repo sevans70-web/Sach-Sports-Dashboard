@@ -139,11 +139,11 @@ trigger merely to run shadow collection.
 ## Regression results for this continuation
 
 - Focused NBA/NFL/NHL protection tests: 63/63 passed.
-- Shadow/export/extraction tests: 11/11 passed, including exact export bytes,
+- Shadow/export/extraction/enrollment tests: 13/13 passed, including exact export bytes,
   credential refusal, whole-package/receipt tampering, changed EV with a
   recomputed receipt hash, before-puck-drop anchoring and overwrite refusal.
 - Full frontend suite: 699 passed / 9 failed / 708 total. The nine failure
-  locations match the prior recorded baseline. The new extractor test was
+  locations match the prior recorded baseline. The new extractor and enrollment tests were
   additionally run after that full suite and passed.
 - TypeScript: the same nine previously recorded diagnostics; no new diagnostic.
 - Independent frozen-model replay repeated successfully: 368 feature and
@@ -154,3 +154,14 @@ trigger merely to run shadow collection.
 See `frontend/model-research/cw08-nhl-v3/cloudflare-status-receipt.json` for
 machine-readable results. The older readiness receipt is retained as historical
 provenance rather than rewritten to hide its original credential finding.
+
+The complete evidence and enrollment ledger were pushed in Git commit
+`27324da` before any target started. Later jobs now automatically filter the
+committed enrollment ledger without inspecting side, EV or outcomes. The real
+395-entry source replay skipped all 339 already-enrolled targets and retained
+only the 56 previously unenrolled entries. Original source and filtered capture
+bundles plus the exclusion report are preserved in subsequent packages. Run
+manual jobs serially and anchor each verified package/update its enrollment
+ledger before starting another; do not use concurrent snapshots to replace
+first receipts. Both goals (242) and assists (97) currently have zero settled
+records; the scorer correctly reports all 339 pending.
