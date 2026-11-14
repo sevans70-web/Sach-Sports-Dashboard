@@ -1,0 +1,52 @@
+{
+  "candidateFrozenCommit": "007c02b",
+  "targeted": {
+    "tests": 39,
+    "passed": 39,
+    "failed": 0
+  },
+  "finalShadowRetest": {
+    "tests": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "fullSuite": {
+    "tests": 706,
+    "passed": 697,
+    "failed": 9,
+    "failureLocations": [
+      "tests/dashboard-contract.test.mjs:58:1",
+      "tests/estimated-ev.test.mjs:7:1",
+      "tests/featured-loading.test.mjs:50:1",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/featured-outage-response.test.mjs:30:46",
+      "tests/nba-slate-scope.test.mjs:19:1",
+      "tests/opportunity-backtest.test.mjs:24:1",
+      "tests/quarter-markets.test.mjs:11:1"
+    ],
+    "identicalBaselineFailures": true
+  },
+  "typecheck": {
+    "errors": 9,
+    "newDiagnostics": 0,
+    "identicalBaselineDiagnostics": true
+  },
+  "originalHistory": {
+    "rows": 90,
+    "orderedDatabaseMd5": "c5943527f521dac178cd20bd680ff936",
+    "unchanged": true,
+    "databaseWrites": 0
+  },
+  "shadowCapture": {
+    "actualProspectiveAccepted": 0,
+    "archivedRowsRejectedAsProspective": 317,
+    "localFeedCredentialAvailable": false,
+    "existingRailwayCredentialConfigured": true,
+    "connectedOAuthValuesRedacted": true,
+    "productionVariablesChanged": false,
+    "independentPregameAnchoring": "pending"
+  },
+  "releaseApproved": false,
+  "deployed": false
+}

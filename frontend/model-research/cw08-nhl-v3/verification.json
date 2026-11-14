@@ -1,0 +1,9 @@
+{
+  "modelsUnchangedSincePreEvaluationCommit": "007c02b",
+  "featureChecks": 368,
+  "causalityChecks": 368,
+  "independentPythonPriceProbabilityEvSideChecks": 221,
+  "productionArtifactsChanged": false,
+  "prospectiveAcceptedCaptures": 0,
+  "releaseApproved": false
+}

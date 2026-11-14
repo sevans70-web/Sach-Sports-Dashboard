@@ -1,0 +1,14 @@
+{
+  "study": "cw08-nhl-v3-prospective-shadow",
+  "production": false,
+  "modelFrozenCommit": "007c02b",
+  "gameTimeFrom": "2026-11-14T12:00:00Z",
+  "gameTimeBefore": "2026-12-15T12:00:00Z",
+  "enrollment": "All directly fetched eligible main-line NHL goals/assists player-fixtures, including model abstentions. Never choose by side, EV, result, or membership of the original ten. At most one first receipt per market/game/player.",
+  "timing": "Official FUT/PRE fixture; fresh quote source read within 60 seconds; exact quote no older than 15 minutes; freeze before puck drop with two-minute safety buffer; model artifact frozen before source read. No capture backdating.",
+  "evidence": "Append-only exclusive-create pregame receipts with exact two-sided prices and line, fixture, source read time, frozen models/protocol, raw eligible player history, full input vector, unrounded projections, event/positive-count parameters, probabilities, EV, abstentions, baseline and content hash. Separate immutable final grades; no regeneration at settlement.",
+  "acceptance": "At least 100 finalized fixtures per market, 30 original-cohort fixtures, and 20 fixtures per observed supported line; paired fixture Brier difference upper95 <= 0 versus frozen baseline; selected unit-return lower95 > 0. These minimums do not guarantee statistical power. All are evidence gates, never automatic production authorization.",
+  "integrity": "Local files are exclusive-create, read-only and hash-verified, not third-party timestamped WORM storage. Anchor capture manifests in an independent append-only store or protected repository before games start before claiming externally immutable prospective evidence.",
+  "finality": "Only exact official FINAL/OFF player results. Missing player participation evidence remains pending; no invented zero or inferred DNP. Retain source response and grade linked to original receipt hash.",
+  "release": "No automated promotion or dashboard changes. Original picks, all production sports and existing production model artifacts remain untouched. A failed gate or insufficient evidence keeps CW08 blocked."
+}

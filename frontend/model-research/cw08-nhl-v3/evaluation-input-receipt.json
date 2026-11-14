@@ -1,0 +1,1986 @@
+{
+  "candidateFrozenCommit": "007c02b",
+  "modelsSha256": "636fa9dc04ce7b3e734a7b8bc8c4582628989124b293f9e0e2f81545e02f5194",
+  "inputSha256": "b678a1d70002cfb2ac762d7a116cb5ebb9f1a922c8d110c7ca48a53d7a183af7",
+  "kinds": {
+    "inspected_diagnostic": 86970,
+    "fresh": 3846,
+    "priced_diagnostic": 221
+  },
+  "rejections": [
+    {
+      "kind": "fresh",
+      "game": 2026020240,
+      "player": 8482666,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020240,
+      "player": 8482666,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020282,
+      "player": 8479638,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020282,
+      "player": 8479638,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020229,
+      "player": 8483436,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020229,
+      "player": 8483436,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020261,
+      "player": 8483524,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020261,
+      "player": 8483524,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020234,
+      "player": 8478233,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020234,
+      "player": 8478233,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020258,
+      "player": 8485468,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020258,
+      "player": 8485468,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020247,
+      "player": 8481577,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020247,
+      "player": 8481577,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8482160,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8482160,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8484421,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8484421,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8482666,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8482666,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020250,
+      "player": 8483497,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020250,
+      "player": 8483497,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020247,
+      "player": 8478104,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020247,
+      "player": 8478104,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020256,
+      "player": 8482460,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020256,
+      "player": 8482460,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020258,
+      "player": 8478500,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020258,
+      "player": 8478500,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020274,
+      "player": 8481077,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020274,
+      "player": 8481077,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020260,
+      "player": 8484201,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020260,
+      "player": 8484201,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020264,
+      "player": 8477810,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020264,
+      "player": 8477810,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8481525,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8481525,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020280,
+      "player": 8476826,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020280,
+      "player": 8476826,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020279,
+      "player": 8484287,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020279,
+      "player": 8484287,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020269,
+      "player": 8483436,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020269,
+      "player": 8483436,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020253,
+      "player": 8485554,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020253,
+      "player": 8485554,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8483497,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8483497,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020279,
+      "player": 8478057,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020279,
+      "player": 8478057,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020245,
+      "player": 8483524,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020245,
+      "player": 8483524,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020272,
+      "player": 8484421,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020272,
+      "player": 8484421,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020272,
+      "player": 8474102,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020272,
+      "player": 8474102,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8484241,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8484241,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020265,
+      "player": 8481133,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020265,
+      "player": 8481133,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020250,
+      "player": 8484241,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020250,
+      "player": 8484241,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020240,
+      "player": 8482460,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020240,
+      "player": 8482460,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020264,
+      "player": 8484201,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020264,
+      "player": 8484201,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020268,
+      "player": 8478057,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020268,
+      "player": 8478057,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020281,
+      "player": 8482766,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020281,
+      "player": 8482766,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020278,
+      "player": 8479982,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020278,
+      "player": 8479982,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020243,
+      "player": 8481030,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020243,
+      "player": 8481030,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020228,
+      "player": 8481030,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020228,
+      "player": 8481030,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020235,
+      "player": 8482766,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020235,
+      "player": 8482766,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8482460,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020267,
+      "player": 8482460,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020257,
+      "player": 8479638,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020257,
+      "player": 8479638,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8483428,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8483428,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020233,
+      "player": 8481077,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020233,
+      "player": 8481077,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020230,
+      "player": 8482666,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020230,
+      "player": 8482666,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020229,
+      "player": 8477070,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020229,
+      "player": 8477070,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020243,
+      "player": 8474102,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020243,
+      "player": 8474102,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8478904,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8478904,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020259,
+      "player": 8478465,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020259,
+      "player": 8478465,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020271,
+      "player": 8475791,
+      "market": "goals",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020271,
+      "player": 8475791,
+      "market": "assists",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020251,
+      "player": 8477070,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020251,
+      "player": 8477070,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020236,
+      "player": 8478057,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020236,
+      "player": 8478057,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020271,
+      "player": 8482100,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020271,
+      "player": 8482100,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020266,
+      "player": 8483524,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020266,
+      "player": 8483524,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020269,
+      "player": 8478104,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020269,
+      "player": 8478104,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8478500,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8478500,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020280,
+      "player": 8484242,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020280,
+      "player": 8484242,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020242,
+      "player": 8479638,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020242,
+      "player": 8479638,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020270,
+      "player": 8477018,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020270,
+      "player": 8477018,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020259,
+      "player": 8484242,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020259,
+      "player": 8484242,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020231,
+      "player": 8482673,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020231,
+      "player": 8482673,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8483675,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020249,
+      "player": 8483675,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020250,
+      "player": 8482766,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020250,
+      "player": 8482766,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020264,
+      "player": 8482766,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020264,
+      "player": 8482766,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020246,
+      "player": 8484201,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020246,
+      "player": 8484201,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020246,
+      "player": 8484901,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020246,
+      "player": 8484901,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020275,
+      "player": 8483675,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020275,
+      "player": 8483675,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020277,
+      "player": 8479591,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020277,
+      "player": 8479591,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020246,
+      "player": 8478465,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020246,
+      "player": 8478465,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020255,
+      "player": 8482476,
+      "market": "goals",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020255,
+      "player": 8482476,
+      "market": "assists",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020256,
+      "player": 8482666,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020256,
+      "player": 8482666,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8485469,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8485469,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020232,
+      "player": 8480007,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020232,
+      "player": 8480007,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020238,
+      "player": 8481077,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020238,
+      "player": 8481077,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020277,
+      "player": 8481133,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020277,
+      "player": 8481133,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020275,
+      "player": 8481532,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020275,
+      "player": 8481532,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020271,
+      "player": 8485554,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020271,
+      "player": 8485554,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020281,
+      "player": 8477810,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020281,
+      "player": 8477810,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020248,
+      "player": 8485554,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020248,
+      "player": 8485554,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020255,
+      "player": 8475791,
+      "market": "goals",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020255,
+      "player": 8475791,
+      "market": "assists",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020244,
+      "player": 8478500,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020244,
+      "player": 8478500,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020236,
+      "player": 8477070,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020236,
+      "player": 8477070,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020263,
+      "player": 8484421,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020263,
+      "player": 8484421,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8479982,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020262,
+      "player": 8479982,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020273,
+      "player": 8473422,
+      "market": "goals",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020273,
+      "player": 8473422,
+      "market": "assists",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020230,
+      "player": 8476822,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020230,
+      "player": 8476822,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020282,
+      "player": 8484201,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020282,
+      "player": 8484201,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020231,
+      "player": 8481577,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020231,
+      "player": 8481577,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020270,
+      "player": 8482476,
+      "market": "goals",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020270,
+      "player": 8482476,
+      "market": "assists",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020259,
+      "player": 8484901,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020259,
+      "player": 8484901,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020275,
+      "player": 8479638,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020275,
+      "player": 8479638,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020237,
+      "player": 8482459,
+      "market": "goals",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020237,
+      "player": 8482459,
+      "market": "assists",
+      "reason": "prior_workload_role_uncertain"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020258,
+      "player": 8474102,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020258,
+      "player": 8474102,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020272,
+      "player": 8485468,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020272,
+      "player": 8485468,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020235,
+      "player": 8483428,
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "fresh",
+      "game": 2026020235,
+      "player": 8483428,
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020296",
+      "player": "8482699",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020297",
+      "player": "8478873",
+      "market": "assists",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020303",
+      "player": "8477488",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8476459",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8476468",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8477416",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8478444",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8478498",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8478882",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8479323",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8479425",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481604",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481789",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482109",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482157",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8483476",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8483690",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8484210",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8484798",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8474564",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8474600",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8475158",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8475913",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8476881",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8476887",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8477447",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8477964",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478109",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478403",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478483",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8479353",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8481535",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8482145",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8483524",
+      "market": "assists",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020297",
+      "player": "8478873",
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020305",
+      "player": "8479982",
+      "market": "goals",
+      "reason": "fewer_than_three_same_season_team_appearances"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020307",
+      "player": "8480084",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020308",
+      "player": "8481237",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8475848",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8476459",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8476467",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8476468",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8477416",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8477969",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8478444",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8478498",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8479323",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8479425",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8480009",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481024",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481032",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481525",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481604",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8481789",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482055",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482073",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482079",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482109",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482157",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8482666",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8483476",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8483499",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8483690",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8484240",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020310",
+      "player": "8484798",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8474564",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8474600",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8475158",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8475188",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8475343",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8475913",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8476448",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8476869",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8476881",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8476887",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8477447",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8477964",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478109",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478403",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478450",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478468",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8478483",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8479353",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8479525",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8480246",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8480835",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8481535",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8481593",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8481726",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8482094",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8482145",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8482482",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8483513",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8483524",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8483553",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    },
+    {
+      "kind": "priced_diagnostic",
+      "game": "2026020311",
+      "player": "8483890",
+      "market": "goals",
+      "reason": "final_record_not_available"
+    }
+  ]
+}

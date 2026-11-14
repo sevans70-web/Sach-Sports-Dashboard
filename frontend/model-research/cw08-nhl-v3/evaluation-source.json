@@ -1,0 +1,16 @@
+{
+  "candidateFrozenCommit": "007c02b",
+  "source": "Official NHL Stats REST skater summary",
+  "rawSha256": "9cd8729e87e6d66fb211dec8443d14c3dd0802c026dee6338b6af94983ce8a10",
+  "rows": 2988,
+  "freshDates": [
+    "2026-11-01",
+    "2026-11-08"
+  ],
+  "diagnosticDates": [
+    "2026-11-09",
+    "2026-11-12"
+  ],
+  "excluded": "November 13 records excluded because games may not be final at retrieval; no use for grading",
+  "completeResponse": true
+}
