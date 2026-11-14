@@ -111,7 +111,7 @@ repository-wide failing tests and TypeScript diagnostics are reported rather tha
 hidden or repaired outside this task's scope. Production release requires those
 checks to pass and explicit user approval.
 
-## Final result
+## Initial CW06 result (superseded by the readiness follow-up below)
 
 All seven requested markets have the repaired EV display/API path. Focused
 checks: 18/18 passed. Full regression: 722 passed, eight existing failures, 730
@@ -125,3 +125,78 @@ modification timestamp was unchanged.
 CW06 is implemented and ready for review, but **not cleared for production
 deployment** while the existing repository test/type-check gates fail. No
 deployment or automatic-build reactivation is authorized or performed.
+
+
+## Deployment-readiness follow-up — November 14, 2026
+
+The user authorized resolving the eight repository failures and nine TypeScript
+errors before requesting release approval. No model or production behavior was
+changed in this follow-up. All three edited implementation files transpile to
+**identical JavaScript** compared with f343cf9; the fixes only supply type
+information. The frozen CW08 model, protocol, collector, schedule, namespaces,
+original data and shared probability calculations remain untouched.
+
+### Eight failing checks resolved
+
+| Failing cases | Actual cause and repair |
+| --- | --- |
+| Dashboard category coverage (1) | Both positive and negative exact-quote EVs are calculable; only one qualifies as a pick. Assert two EVs and one pick, preserving deduplication and market/date exclusions. |
+| Shared EV formatter (1) | Commit 276418a deliberately made the shared formatter positive-only. Test signed arithmetic separately from that presentation rule. The seven CW06 NBA markets use their own signed metric, already tested for negative and zero returns. No NFL/NHL or featured qualification policy changes. |
+| Featured heading (1) | The component already explicitly labels future cards “Upcoming Featured Picks”. Assert this heading, absence of “Today’s”, and the actual future date. |
+| Featured storage outages (3) | The route gained cache/binding/player-identity imports and guarded on-demand provider fetches. Complete isolated mocks without calling providers. Assert retryable 503/no-store, no replacement cards or cache updates, and exact hydrate/next-original/save failure boundaries across all eight stored sports. |
+| NHL historical goalie test (1) | The starter model requires an explicit gamesStarted=1 receipt. Supply a verified-start fixture and additionally assert missing/relief-start evidence is excluded. No goalie or frozen research model changes. |
+| Public sport list (1) | The dashboard intentionally exposes NBA/NFL/NHL, with other discovery paused. Assert the existing list without unhiding sports; retain NFL’s three yardage-quarter assertions. |
+
+### Nine TypeScript diagnostics resolved
+
+- CFB quoted-row metadata: declare its optional quoteVersion property at the read.
+- Shared ranking refresh (two diagnostics): give retainCardFinal its concrete
+  RankingCard generic type so Confirmed/Pending remains the literal union.
+- SGO cooldown (two diagnostics): explicitly retain the initialized shared-state
+  type, including optional cooldownReason.
+- Original-history helpers (two diagnostics): add a companion .d.mts declaration
+  for the existing read-only checksum/recovery module; no writer changes.
+- Workers env imports (two diagnostics): declare only the application-consumed
+  cloudflare:workers env surface as Record<string, unknown>. Values must still
+  be narrowed by runtime readers. This is neither a runtime polyfill nor a
+  blanket module-any suppression.
+
+### Release boundary
+
+The proposed release is limited to building the reviewed branch and manually
+replacing the **existing sach-sports-cloudflare-test dashboard Worker** with its
+CW06 code. Preserve its bindings, namespaces, secrets and paused automatic-build
+filter. Do not touch sach-cw08-nhl-shadow, its SQLite Durable Object, evidence KV,
+15-minute cron, frozen model or protocol; do not introduce services or plans.
+
+No dashboard build, upload, deployment or automatic-build reactivation has been
+performed. A production bundle build and deployment-diff review must succeed
+before any approved upload. After an approved release, smoke-check the seven NBA
+market displays and explicit missing-evidence messages, original ranking/order,
+featured cards, NBA/NFL/NHL routes and continued CW08 health. Keep automatic
+builds paused throughout. If build/config checks fail, stop before uploading;
+if live regressions occur, restore the recorded previous dashboard version
+49db8837-1cce-425a-8ca8-d821e34ec62d without changing CW08.
+
+Final check counts and observed read-only infrastructure status are recorded in
+frontend/model-research/cw06-nba-ev/verification.json. Passing research EV tests
+does not certify NBA model calibration or authorize new prediction models.
+
+### Verified readiness result
+
+- Full regression: **730/730 passed**, zero failures, no skipped tests.
+- CW06 + NBA scope + featured outage checks: **21/21 passed**; the strengthened
+  three outage-boundary checks were rerun after their final assertion changes.
+- TypeScript: **zero diagnostics**, exit 0, strict/noEmit, no incremental cache.
+- Emitted JavaScript parity: all three implementation files identical to f343cf9.
+- Read-only Cloudflare verification: existing production dashboard version and
+  paused build filter unchanged; NHL cron modification timestamp unchanged.
+  CW08 reported six completed cycles, 370 receipts, zero pending uploads, no
+  storage errors and healthy collection; grades remain pending official finals.
+- No stored picks, historical data, model artifacts, CW08 study/runtime/config,
+  provider credentials or Cloudflare resources were changed.
+
+**CW06 is ready for deployment approval.** The eight test and nine TypeScript
+blockers are resolved. A production build/configuration check and live smoke
+checks belong to the approved release procedure above and have not been claimed
+as completed. Approval is still required before production changes.

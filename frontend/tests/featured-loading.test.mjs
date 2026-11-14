@@ -47,10 +47,11 @@ test('a failed refresh continues to render the confirmed original player and sav
  assert.doesNotMatch(render('nfl',{live:{sport:'nba',plays:[{key:'play',title:'Play of the Day',pick}]}}),/Original player/);
 });
 
-test('the title stays consistent when the displayed selections are from the next slate',()=>{
+test('the title explicitly labels the next slate instead of calling it today',()=>{
  const live={sport:'nfl',slateDay:'2026-10-30',plays:topPlays.todayTopPlays([],'nfl')};
  const html=render('nfl',{live});
- assert.match(html,/Today’s Featured Picks/);
- assert.match(html,/Next slate · Fri, Oct 30/);
+ assert.match(html,/Upcoming Featured Picks/);
+ assert.doesNotMatch(html,/Today’s Featured Picks/);
+ assert.match(html,/Fri, Oct 30/);
  assert.match(html,/First Touchdown/);
 });

@@ -2291,7 +2291,7 @@ export function PlayerRankingsPanel({
          const current=staged.map(card=>{
           const old=previous.find(p=>p.playerId===card.playerId&&p.market===card.market&&String(p.raw?.gameId||'')===String(card.raw?.gameId||''));
           const raw=retainParticipation(card.raw,old?.raw);
-          const merged=retainCardFinal({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
+          const merged=retainCardFinal<RankingCard>({...card,raw,lineupStatus:playerAvailability({...raw,gameState:card.gameState}).confirmed?"Confirmed":"Pending"},old);
           const oldNhlState=old?.raw?.nhlBoxscoreState;
           if(sport==='nhl'&&old&&(oldNhlState==='post'||oldNhlState==='in'&&merged.gameState!=='post')){
            return {...merged,gameState:oldNhlState,gameStatus:merged.gameState===oldNhlState?merged.gameStatus:old.gameStatus,

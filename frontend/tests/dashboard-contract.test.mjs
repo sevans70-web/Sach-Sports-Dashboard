@@ -65,5 +65,5 @@ test('category counts match priced selections and exclude research comparisons a
  const future={...full,playerId:'3',gameTime:new Date(Date.now()+86400000).toISOString()};
  const other={...full,playerId:'4',market:'assists'};
  const coverage=rankingMarketCoverage('nba','points',dashboardDay(time),[full,full,negative,future,other]);
- assert.deepEqual(coverage.games,[{gameId:'a',rows:2,lines:2,projections:2,picks:1,ev:1}]);
+ assert.deepEqual(coverage.games,[{gameId:'a',rows:2,lines:2,projections:2,picks:1,ev:2}]);
 });

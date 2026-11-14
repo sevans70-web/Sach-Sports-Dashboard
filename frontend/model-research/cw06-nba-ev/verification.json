@@ -1,5 +1,5 @@
 {
-  "checkedAtUTC": "2026-11-14T06:38:41.207869+00:00",
+  "checkedAtUTC": "2026-11-14T06:57:57.440006+00:00",
   "task": "CW06 NBA missing EV repairs",
   "branch": "cloudflare-compatibility-test",
   "markets": [
@@ -19,23 +19,16 @@
   },
   "fullSuite": {
     "tests": 730,
-    "passed": 722,
-    "failed": 8,
+    "passed": 730,
+    "failed": 0,
     "newFailures": 0,
-    "remainingPreviouslyRecordedFailureLocations": [
-      "tests/dashboard-contract.test.mjs:58",
-      "tests/estimated-ev.test.mjs:7",
-      "tests/featured-loading.test.mjs:50",
-      "tests/featured-outage-response.test.mjs:30 (three cases)",
-      "tests/opportunity-backtest.test.mjs:24",
-      "tests/quarter-markets.test.mjs:11"
-    ],
-    "nbaScopeTestUpdatedForAdditiveDiagnosticsAndExistingFixtureDayContract": true
+    "previouslyRecordedFailuresResolved": 8
   },
   "typecheck": {
-    "diagnostics": 9,
-    "newDiagnostics": 0,
-    "sameBaselineDiagnostics": true
+    "command": "./node_modules/.bin/tsc --noEmit --incremental false",
+    "diagnostics": 0,
+    "exitCode": 0,
+    "previouslyRecordedDiagnosticsResolved": 9
   },
   "modelsAndNhlShadowAndOriginalDataUnchanged": true,
   "historicalRecordsWritten": false,
@@ -60,21 +53,164 @@
     "freshnessOrCompletenessClaimed": false
   },
   "cw08": {
+    "study": "cw08-nhl-v3-prospective-shadow",
+    "production": false,
+    "modelCommit": "007c02b",
+    "releaseApproved": false,
     "ready": true,
+    "seedRequired": 339,
     "receipts": 370,
     "grades": 0,
     "pendingUploads": 0,
-    "completedCycles": 4,
-    "active": [
-      {
-        "id": "1994042",
-        "phase": "roster",
-        "retries": 0,
-        "retryAt": 0,
-        "lastError": null
-      }
-    ],
+    "lateAnchors": 0,
+    "active": [],
+    "completedCycles": 6,
+    "manifestHead": {
+      "key": "runs/cb6a8dc25accad4155a479a0889e2fc6195e73df244caa7b949119fcbf9b5477.json",
+      "hash": "cb6a8dc25accad4155a479a0889e2fc6195e73df244caa7b949119fcbf9b5477"
+    },
     "lastStorageError": null,
+    "latestSummary": {
+      "kind": "cw08_nhl_shadow_summary",
+      "results": {
+        "goals": {
+          "all": {
+            "captured": 259,
+            "settled": 0,
+            "pending": 259,
+            "fixtures": 0,
+            "selected": 0,
+            "over": 0,
+            "under": 0,
+            "pushes": 0,
+            "brierDifferenceCluster95": null,
+            "unitRoiCluster95": null,
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 100,
+              "nonregressionUpper95": false,
+              "positiveReturnLower95": false
+            }
+          },
+          "originalTen": {
+            "captured": 8,
+            "settled": 0,
+            "pending": 8,
+            "fixtures": 0,
+            "selected": 0,
+            "over": 0,
+            "under": 0,
+            "pushes": 0,
+            "brierDifferenceCluster95": null,
+            "unitRoiCluster95": null,
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 30,
+              "nonregressionUpper95": false,
+              "positiveReturnLower95": false
+            }
+          },
+          "byLine": {
+            "0.5": {
+              "captured": 259,
+              "settled": 0,
+              "pending": 259,
+              "fixtures": 0,
+              "selected": 0,
+              "over": 0,
+              "under": 0,
+              "pushes": 0,
+              "brierDifferenceCluster95": null,
+              "unitRoiCluster95": null,
+              "evidenceGates": {
+                "minimumFinalFixtures": false,
+                "requiredFixtures": 20,
+                "nonregressionUpper95": false,
+                "positiveReturnLower95": false
+              }
+            }
+          }
+        },
+        "assists": {
+          "all": {
+            "captured": 111,
+            "settled": 0,
+            "pending": 111,
+            "fixtures": 0,
+            "selected": 0,
+            "over": 0,
+            "under": 0,
+            "pushes": 0,
+            "brierDifferenceCluster95": null,
+            "unitRoiCluster95": null,
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 100,
+              "nonregressionUpper95": false,
+              "positiveReturnLower95": false
+            }
+          },
+          "originalTen": {
+            "captured": 7,
+            "settled": 0,
+            "pending": 7,
+            "fixtures": 0,
+            "selected": 0,
+            "over": 0,
+            "under": 0,
+            "pushes": 0,
+            "brierDifferenceCluster95": null,
+            "unitRoiCluster95": null,
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 30,
+              "nonregressionUpper95": false,
+              "positiveReturnLower95": false
+            }
+          },
+          "byLine": {
+            "0.5": {
+              "captured": 110,
+              "settled": 0,
+              "pending": 110,
+              "fixtures": 0,
+              "selected": 0,
+              "over": 0,
+              "under": 0,
+              "pushes": 0,
+              "brierDifferenceCluster95": null,
+              "unitRoiCluster95": null,
+              "evidenceGates": {
+                "minimumFinalFixtures": false,
+                "requiredFixtures": 20,
+                "nonregressionUpper95": false,
+                "positiveReturnLower95": false
+              }
+            },
+            "1.5": {
+              "captured": 1,
+              "settled": 0,
+              "pending": 1,
+              "fixtures": 0,
+              "selected": 0,
+              "over": 0,
+              "under": 0,
+              "pushes": 0,
+              "brierDifferenceCluster95": null,
+              "unitRoiCluster95": null,
+              "evidenceGates": {
+                "minimumFinalFixtures": false,
+                "requiredFixtures": 20,
+                "nonregressionUpper95": false,
+                "positiveReturnLower95": false
+              }
+            }
+          }
+        }
+      },
+      "releaseApproved": false,
+      "reason": "Research evidence gates only; insufficient/missing groups fail closed. Independent pregame anchoring and application release checks remain mandatory. No automatic production promotion."
+    },
     "latestCollectionHealth": {
       "rosterFailures": 0,
       "historySourceFailures": 0,
@@ -82,13 +218,14 @@
         "unresolved_or_ambiguous_official_player": 8,
         "official_history_missing": 8,
         "prior_history_unavailable": 8,
-        "fewer_than_three_same_season_team_appearances": 2
+        "fewer_than_three_same_season_team_appearances": 3
       },
-      "warmedPlayers": 12,
-      "newReceipts": 10,
+      "warmedPlayers": 2,
+      "newReceipts": 0,
       "sourceSnapshots": 19,
       "state": "healthy"
-    }
+    },
+    "collectionEndsAt": "2026-12-15T12:00:00Z"
   },
   "cw08Schedule": "*/15 * * * *",
   "cloudflareWritesPerformed": false,
@@ -97,13 +234,80 @@
   "rankingPolicy": "retain authoritative API ranks and saved predictions for the seven markets",
   "deploymentReady": false,
   "releaseBlockers": [
-    "Eight existing repository regression failures",
-    "Nine existing TypeScript diagnostics",
-    "Explicit deployment approval required; live verification of changed dashboard follows an approved release"
+    "Explicit approval for manual dashboard release is required; automatic builds remain paused."
   ],
   "logsSha256": {
     "focused": "9b6eb2ecab3534cf55696fd20f87f766cb0bd50673747ff15f7ecadc4724d091",
     "fullSuite": "0101757aca613379ed5cc0f9fdeb33bb49f04ba946d4d5b74ee8dab4b5f14636",
     "typecheck": "ae051911567208cad137dd84dc43b7b33e0cb55e232274e9963e29dfcc5c35b7"
+  },
+  "initialVerification": {
+    "checkedAtUTC": "2026-11-14T06:38:41.207869+00:00",
+    "fullSuite": {
+      "tests": 730,
+      "passed": 722,
+      "failed": 8,
+      "newFailures": 0,
+      "remainingPreviouslyRecordedFailureLocations": [
+        "tests/dashboard-contract.test.mjs:58",
+        "tests/estimated-ev.test.mjs:7",
+        "tests/featured-loading.test.mjs:50",
+        "tests/featured-outage-response.test.mjs:30 (three cases)",
+        "tests/opportunity-backtest.test.mjs:24",
+        "tests/quarter-markets.test.mjs:11"
+      ],
+      "nbaScopeTestUpdatedForAdditiveDiagnosticsAndExistingFixtureDayContract": true
+    },
+    "typecheck": {
+      "diagnostics": 9,
+      "newDiagnostics": 0,
+      "sameBaselineDiagnostics": true
+    },
+    "deploymentReady": false,
+    "releaseBlockers": [
+      "Eight existing repository regression failures",
+      "Nine existing TypeScript diagnostics",
+      "Explicit deployment approval required; live verification of changed dashboard follows an approved release"
+    ]
+  },
+  "followupFocusedTests": {
+    "tests": 21,
+    "passed": 21,
+    "failed": 0,
+    "updatedOutageBoundaryAssertions": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0
+    }
+  },
+  "followupRuntimeParity": [
+    {
+      "file": "app/api/cfb/rankings/route.ts",
+      "identical": true
+    },
+    {
+      "file": "components/player-rankings-panel.tsx",
+      "identical": true
+    },
+    {
+      "file": "lib/sgo-supplement.ts",
+      "identical": true
+    }
+  ],
+  "readyForDeploymentApproval": true,
+  "releaseStageChecks": [
+    "After approval: build production bundle and review deployment configuration diff; abort before upload on failure.",
+    "After approved upload: live NBA seven-market/featured/NFL/NHL smoke verification and CW08 health verification; roll back dashboard on regression."
+  ],
+  "automaticBuildBranchIncludes": [
+    "__cw08_manual_release_only__"
+  ],
+  "cw08ScheduleModifiedAtUTC": "2026-11-14T05:24:15.908994Z",
+  "followupOnlyTypesTestsAndDocumentation": true,
+  "followupLogsSha256": {
+    "fullSuite": "fd51ae4e9438a0e6bc0ad7a9b5d8fb3e8a77474d084e7fa7be68fce0855bda22",
+    "typecheck": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused": "37313fad733c58fe9d0e1f781658e1abde8714597109267aef26352bc79ba29e",
+    "runtimeParity": "e599b7a18ca7226dd47418a1b331990faa9b46d7318d28d682641f8639447241"
   }
 }

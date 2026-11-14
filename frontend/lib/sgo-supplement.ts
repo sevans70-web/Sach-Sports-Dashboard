@@ -1,7 +1,7 @@
 import { workerRuntimeSecret } from "@/lib/worker-runtime-secret";
 import {providerFetch} from "@/lib/provider-fetch";
 const global=globalThis as typeof globalThis&{__sachSgoOdds?:{cache:Map<string,{at:number;data:any}>;pending:Map<string,Promise<any>>;cooldownUntil:number;cooldownReason?:string}};
-const state=global.__sachSgoOdds??(global.__sachSgoOdds={cache:new Map(),pending:new Map(),cooldownUntil:0});
+const state:NonNullable<typeof global.__sachSgoOdds>=global.__sachSgoOdds??(global.__sachSgoOdds={cache:new Map(),pending:new Map(),cooldownUntil:0});
 const {cache,pending}=state;
 /** Avoid repeated billable/failed provider requests while credentials are denied.
  * A rotated key can be retried automatically after the bounded cooldown. */

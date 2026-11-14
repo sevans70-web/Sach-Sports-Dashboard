@@ -23,8 +23,9 @@ test('reports never enable GI or certify betting validation, including empty inp
 });
 test('NHL goalie saves use observed shots minus goals, never skater goals as a goalie market',async()=>{
  const {nhlOpportunityGames}=await loadTs(new URL('../lib/opportunity-backtest.ts',import.meta.url));
- const rows=nhlOpportunityGames({gameLog:[{gameId:10,gameDate:'2025-10-01',teamAbbrev:'A',opponentAbbrev:'B',toi:'28:06',shotsAgainst:13,goalsAgainst:4,goals:0,assists:0}]},{...identity,sport:'nhl'});
+ const rows=nhlOpportunityGames({gameLog:[{gameId:10,gameDate:'2025-10-01',teamAbbrev:'A',opponentAbbrev:'B',gamesStarted:1,toi:'28:06',shotsAgainst:13,goalsAgainst:4,goals:0,assists:0}]},{...identity,sport:'nhl'});
  assert.equal(rows.length,1);assert.equal(rows[0].market,'goalie_saves');assert.equal(rows[0].actual,9);assert.equal(rows[0].workload,28.1);
+ for(const gamesStarted of [undefined,0])assert.deepEqual(nhlOpportunityGames({gameLog:[{gameId:11,gameDate:'2025-10-01',teamAbbrev:'A',opponentAbbrev:'B',gamesStarted,toi:'28:06',shotsAgainst:13,goalsAgainst:4}]},{...identity,sport:'nhl'}),[],'Unverified starts and relief appearances must not enter the starter model');
 });
 test('real fitting uses previous seasons; target relief appearances remain in held-out scores',()=>{
  const rows=[];

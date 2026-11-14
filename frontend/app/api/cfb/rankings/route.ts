@@ -221,7 +221,7 @@ async function build(market:CfbMarketKey):Promise<RankingPayload>{
   if(!market.startsWith("q1_")&&(earlyMode||raw.length<25)){
     // Resolve quoted teams first so the model-only fallback cannot exhaust
     // the roster budget before a real sportsbook row is checked.
-    if(onWorker)await prefetchRosters(raw.filter(row=>row.quoteVersion===1),schedule,loadRoster);
+    if(onWorker)await prefetchRosters(raw.filter(row=>(row as {quoteVersion?:number}).quoteVersion===1),schedule,loadRoster);
     const supplement=await timeout(rosterFallbackRows(market,schedule,raw,loadRoster),6500,[]);
     raw=[...raw,...supplement];
   }
