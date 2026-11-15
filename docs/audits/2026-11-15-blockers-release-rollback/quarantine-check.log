@@ -1,0 +1,12 @@
+file:///workspace/Sach-Sports-Dashboard/frontend/scripts/prepare-dashboard-retry-release.mjs:24
+ if(manifest.status!=='awaiting_user_approval'||sha(readFileSync(archive))!==manifest.archive.sha256)throw Error('release_manifest_or_archive_mismatch');
+                                                                                                           ^
+
+Error: release_manifest_or_archive_mismatch
+    at prepare (file:///workspace/Sach-Sports-Dashboard/frontend/scripts/prepare-dashboard-retry-release.mjs:24:108)
+    at file:///workspace/Sach-Sports-Dashboard/frontend/scripts/prepare-dashboard-retry-release.mjs:30:59
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.22.1

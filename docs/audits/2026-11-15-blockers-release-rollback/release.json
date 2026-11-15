@@ -1,0 +1,105 @@
+{
+  "status": "rolled_back_candidate_withdrawn",
+  "packageCommit": "debdd6288ef5ee7d40da00e5318b2e57cc452d1d",
+  "sourceCommit": "1167c46f5d77d73429d681be232c0bebdfa509ed",
+  "bundleDigest": "1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68",
+  "archiveSha256": "6b5562de7e6ba6ea8239c3da9edf9fc4f49cd3eadce5a471696e00ab47226b6a",
+  "manualBuild": {
+    "id": "279281f0-51c3-42ec-b1c0-48c070cdc751",
+    "outcome": "success",
+    "frozenDigestVerified": true,
+    "applicationCompiled": false,
+    "commandsRestored": true
+  },
+  "candidate": {
+    "deployment": "5f1e0a2b-ca18-4405-9775-50f24f447a67",
+    "version": "d3f4639d-29a7-4763-ab43-9a7bbfd5d5c8",
+    "createdAt": "2026-11-15T17:42:00.702132Z",
+    "torontoTime": "November 15, 12:42:00 PM"
+  },
+  "fallback": {
+    "deployment": "9b1c3dea-a683-4e0f-9f42-71236a095a9d",
+    "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "createdAt": "2026-11-15T20:14:05.897546Z",
+    "torontoTime": "November 15, 3:14:05 PM",
+    "confirmedActive": true
+  },
+  "criticalFailure": {
+    "sport": "nfl",
+    "reason": "rankings_unavailable",
+    "phase": "rank",
+    "stalledAttemptsObserved": 10,
+    "sourceCheckpoints": 0,
+    "lastCheckpointAt": null,
+    "needsAttention": true,
+    "denialHitsObserved": 57
+  },
+  "nhl": {
+    "shots": 0,
+    "points": 0,
+    "assists": 0,
+    "saves": 0,
+    "verifiedQuotes": 0,
+    "source": "NHL API model watch; sportsbook lines pending",
+    "scheduleAvailable": true,
+    "playerSourceAvailable": true,
+    "skaterHistoryReason": "player_team_history_unavailable",
+    "rootCauseBeyondMissingEvidence": "not_established"
+  },
+  "nba": {
+    "prHttpStatus": 200,
+    "prRows": 23,
+    "prSeconds": 0.312,
+    "combinationEvAvailable": 0,
+    "combinationEvExplanation": "A joint combination probability model is required; component projections alone cannot produce EV",
+    "browserFullAcceptance": "not_completed_after_critical_failure"
+  },
+  "history": {
+    "cutoff": "2026-11-15T17:40:00Z",
+    "checksumGroups": 18,
+    "unchangedGroups": 18,
+    "duplicates": 0,
+    "addedSinceCutoff": {
+      "nfl": {
+        "originals": 113,
+        "picks": 4,
+        "grades": 11
+      },
+      "nhl": {
+        "originals": 102,
+        "picks": 32,
+        "grades": 31
+      }
+    },
+    "newGradeMissingOriginal": 0,
+    "newGradeChecksumMismatches": 0
+  },
+  "runtimeLimitLogQuery": {
+    "from": "2026-11-15T17:42:00Z",
+    "to": "2026-11-15T20:14:05.898Z",
+    "candidateVersion": "d3f4639d-29a7-4763-ab43-9a7bbfd5d5c8",
+    "matchingMemoryOrSubrequestFailures": 0,
+    "limitation": "No matching retained log events; not a guarantee against all unobserved failures"
+  },
+  "cw08": {
+    "deployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+    "cron": "*/15 * * * *",
+    "ready": true,
+    "receiptsBefore": 899,
+    "receiptsAfter": 902,
+    "gradesAfter": 658,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "untouched": true
+  },
+  "automaticBuilds": {
+    "branchIncludes": [
+      "__cw08_manual_release_only__"
+    ],
+    "paused": true
+  },
+  "newNamespaces": false,
+  "migrations": false,
+  "completionTrackerRowsMoved": 0
+}

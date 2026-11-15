@@ -1,5 +1,7 @@
 # NFL denied-source and NBA PR memory repair — November 15, 2026
 
+**Subsequent live release failed and was rolled back. This predeployment evidence does not establish production completion. See [deployment and rollback](../2026-11-15-blockers-release-rollback/README.md). The candidate is quarantined.**
+
 This is a candidate repair, not a deployment or a completed live acceptance gate. Continue from 82c443b on cloudflare-compatibility-test. Both previously withdrawn candidate archives remain quarantined.
 
 ## Confirmed production evidence

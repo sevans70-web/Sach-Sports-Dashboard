@@ -1,4 +1,6 @@
-# Controlled dashboard release — approval required
+# Withdrawn dashboard release — do not deploy
+
+**Live acceptance failed. Fallback deployment `9b1c3dea-a683-4e0f-9f42-71236a095a9d` is active. The unchanged candidate archive is retained for audit and its preparation command now rejects it.**
 
 Candidate identity is pinned in manifest.json. Do not reuse either withdrawn candidate. The preparation command checks the frozen archive and canonical bundle digest and has no upload mode.
 

@@ -1,0 +1,2320 @@
+[
+  {
+    "lane": "capture:nba",
+    "jobs": [
+      {
+        "id": "capture:nba:q1_rebounds:14956445",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "q1_rebounds",
+        "created": 1794773455699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773525503,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "reservedAt": 1794773522433
+      },
+      {
+        "id": "capture:nba:q1_assists:14956445",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "q1_assists",
+        "created": 1794773455699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773464644,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794773459490,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nba:q1_points:14956444",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "q1_points",
+        "created": 1794773335699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773405231,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "reservedAt": 1794773402130
+      },
+      {
+        "id": "capture:nba:first_basket:14956444",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "first_basket",
+        "created": 1794773335699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773343824,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794773338795,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nba:rebs_asts:14956443",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "rebs_asts",
+        "created": 1794773215699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773285483,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "reservedAt": 1794773282398
+      },
+      {
+        "id": "capture:nba:pts_asts:14956443",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "pts_asts",
+        "created": 1794773215699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773224164,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794773219246,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nba:pts_rebs_asts:14956442",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "pts_rebs_asts",
+        "created": 1794773095699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773165520,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "reservedAt": 1794773162461
+      },
+      {
+        "id": "capture:nba:pts_rebs:14956442",
+        "kind": "capture",
+        "sport": "nba",
+        "market": "pts_rebs",
+        "created": 1794773095699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794773104388,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794773099485,
+        "retryAt": null
+      }
+    ],
+    "events": [
+      {
+        "job": "capture:nba:q1_rebounds:14956445",
+        "at": 1794773525503,
+        "phase": "publish",
+        "outcome": "done",
+        "detail": {
+          "reason": null,
+          "retryAt": null,
+          "usage": {
+            "used": 3,
+            "limit": 220,
+            "costs": {
+              "kv": 3
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794773525503,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nba:q1_rebounds:14956445",
+        "at": 1794773524433,
+        "phase": "picks",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794773525433,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794773524433,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nba:q1_rebounds:14956445",
+        "at": 1794773523433,
+        "phase": "originals",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794773524433,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794773523433,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nba:q1_rebounds:14956445",
+        "at": 1794773522433,
+        "phase": "rank",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794773522779,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794773522433,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nba:q1_assists:14956445",
+        "at": 1794773464644,
+        "phase": "publish",
+        "outcome": "done",
+        "detail": {
+          "reason": null,
+          "retryAt": null,
+          "usage": {
+            "used": 3,
+            "limit": 220,
+            "costs": {
+              "kv": 3
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794773464644,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lane": "capture:nfl",
+    "jobs": [
+      {
+        "id": "capture:nfl:rushing_receiving_yards:14956393",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "rushing_receiving_yards",
+        "created": 1794767215699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 10,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 8,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 4,
+            "history_http": 4
+          },
+          "cacheHits": 57,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 4,
+          "maxActive": 1,
+          "maxReserved": 3,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 57
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": null,
+          "stalledAttempts": 10,
+          "needsAttention": true
+        },
+        "retryAt": 1794774497639
+      },
+      {
+        "id": "capture:nfl:passing_rushing_yards:14956393",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "passing_rushing_yards",
+        "created": 1794767215699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 10,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": null,
+          "stalledAttempts": 10,
+          "needsAttention": true
+        },
+        "retryAt": 1794774495527
+      },
+      {
+        "id": "capture:nfl:first_td:14956392",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "first_td",
+        "created": 1794767095699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 10,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 8,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 4,
+            "history_http": 4
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 4,
+          "maxActive": 1,
+          "maxReserved": 3,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": null,
+          "stalledAttempts": 10,
+          "needsAttention": true
+        },
+        "retryAt": 1794774374493
+      },
+      {
+        "id": "capture:nfl:anytime_td:14956392",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "anytime_td",
+        "created": 1794767095699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 10,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 8,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 4,
+            "history_http": 4
+          },
+          "cacheHits": 60,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 4,
+          "maxActive": 1,
+          "maxReserved": 3,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 60
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": null,
+          "stalledAttempts": 10,
+          "needsAttention": true
+        },
+        "retryAt": 1794774372617
+      },
+      {
+        "id": "capture:nfl:qb_rushing_yards:14956390",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "qb_rushing_yards",
+        "created": 1794766855699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 13,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 10,
+          "checkpointBytes": 3786254,
+          "lastCheckpointAt": 1794768728022,
+          "stalledAttempts": 8,
+          "needsAttention": true
+        },
+        "retryAt": 1794774365145
+      },
+      {
+        "id": "capture:nfl:receptions:14956391",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "receptions",
+        "created": 1794766975699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 10,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 8,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 4,
+            "history_http": 4
+          },
+          "cacheHits": 60,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 4,
+          "maxActive": 1,
+          "maxReserved": 3,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 60
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": null,
+          "stalledAttempts": 10,
+          "needsAttention": true
+        },
+        "retryAt": 1794774256028
+      },
+      {
+        "id": "capture:nfl:receiving_yards:14956391",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "receiving_yards",
+        "created": 1794766975699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 10,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": null,
+          "stalledAttempts": 10,
+          "needsAttention": true
+        },
+        "retryAt": 1794774254025
+      },
+      {
+        "id": "capture:nfl:passing_tds:14956389",
+        "kind": "capture",
+        "sport": "nfl",
+        "market": "passing_tds",
+        "created": 1794766735699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 13,
+        "lastError": "rankings_unavailable",
+        "usage": {
+          "used": 8,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 4,
+            "history_http": 4
+          },
+          "cacheHits": 36,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 4,
+          "maxActive": 1,
+          "maxReserved": 3,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 36
+        },
+        "progress": {
+          "sourceCheckpoints": 10,
+          "checkpointBytes": 3786254,
+          "lastCheckpointAt": 1794767705298,
+          "stalledAttempts": 9,
+          "needsAttention": true
+        },
+        "retryAt": 1794774141316
+      }
+    ],
+    "events": [
+      {
+        "job": "capture:nfl:rushing_receiving_yards:14956393",
+        "at": 1794773597639,
+        "phase": "rank",
+        "outcome": "deferred",
+        "detail": {
+          "reason": "rankings_unavailable",
+          "retryAt": 1794774497639,
+          "usage": {
+            "used": 8,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 4,
+              "history_http": 4
+            },
+            "cacheHits": 57,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 4,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 57
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": null,
+            "stalledAttempts": 10,
+            "needsAttention": true
+          }
+        }
+      },
+      {
+        "job": "capture:nfl:passing_rushing_yards:14956393",
+        "at": 1794773595527,
+        "phase": "rank",
+        "outcome": "deferred",
+        "detail": {
+          "reason": "rankings_unavailable",
+          "retryAt": 1794774495527,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": null,
+            "stalledAttempts": 10,
+            "needsAttention": true
+          }
+        }
+      },
+      {
+        "job": "capture:nfl:first_td:14956392",
+        "at": 1794773474493,
+        "phase": "rank",
+        "outcome": "deferred",
+        "detail": {
+          "reason": "rankings_unavailable",
+          "retryAt": 1794774374493,
+          "usage": {
+            "used": 8,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 4,
+              "history_http": 4
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 4,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": null,
+            "stalledAttempts": 10,
+            "needsAttention": true
+          }
+        }
+      },
+      {
+        "job": "capture:nfl:anytime_td:14956392",
+        "at": 1794773472617,
+        "phase": "rank",
+        "outcome": "deferred",
+        "detail": {
+          "reason": "rankings_unavailable",
+          "retryAt": 1794774372617,
+          "usage": {
+            "used": 8,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 4,
+              "history_http": 4
+            },
+            "cacheHits": 60,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 4,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 60
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": null,
+            "stalledAttempts": 10,
+            "needsAttention": true
+          }
+        }
+      },
+      {
+        "job": "capture:nfl:qb_rushing_yards:14956390",
+        "at": 1794773465145,
+        "phase": "rank",
+        "outcome": "deferred",
+        "detail": {
+          "reason": "rankings_unavailable",
+          "retryAt": 1794774365145,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 10,
+            "checkpointBytes": 3786254,
+            "lastCheckpointAt": 1794768728022,
+            "stalledAttempts": 8,
+            "needsAttention": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lane": "capture:nhl",
+    "jobs": [
+      {
+        "id": "capture:nhl:first_goal:14956381",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "first_goal",
+        "created": 1794765775699,
+        "state": "active",
+        "phase": "rank",
+        "cursor": 0,
+        "attempts": 14,
+        "lastError": "rankings_http_503",
+        "usage": {
+          "used": 27,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 14,
+            "official_http": 12,
+            "odds_or_other_http": 1
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 10,
+          "maxActive": 4,
+          "maxReserved": 12,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 31,
+          "checkpointBytes": 4662180,
+          "lastCheckpointAt": 1794771890618,
+          "stalledAttempts": 1,
+          "needsAttention": false
+        },
+        "retryAt": 1794773692587
+      },
+      {
+        "id": "capture:nhl:goalie_saves:14956438",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "goalie_saves",
+        "created": 1794772615699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794772622960,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794772619571,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nhl:blocked_shots:14956437",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "blocked_shots",
+        "created": 1794772495699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794772506763,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794772500038,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nhl:assists:14956437",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "assists",
+        "created": 1794772495699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794772505379,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794772499038,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nhl:points:14956436",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "points",
+        "created": 1794772375699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794772386333,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794772379656,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nhl:goals:14956436",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "goals",
+        "created": 1794772375699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794772384980,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794772378649,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nhl:shots_on_goal:14956435",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "created": 1794772255699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 8,
+          "checkpointBytes": 83105,
+          "lastCheckpointAt": 1794772262854,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794772259358,
+        "retryAt": null
+      },
+      {
+        "id": "capture:nhl:goalie_saves:14956419",
+        "kind": "capture",
+        "sport": "nhl",
+        "market": "goalie_saves",
+        "created": 1794770335699,
+        "state": "done",
+        "phase": "done",
+        "cursor": 0,
+        "attempts": 0,
+        "eligible": 0,
+        "stored": 0,
+        "picksStored": 0,
+        "expired": 0,
+        "lastError": null,
+        "usage": {
+          "used": 3,
+          "limit": 220,
+          "costs": {
+            "kv": 3
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794770341967,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "reservedAt": 1794770338665,
+        "retryAt": null
+      }
+    ],
+    "events": [
+      {
+        "job": "capture:nhl:first_goal:14956381",
+        "at": 1794772792587,
+        "phase": "rank",
+        "outcome": "deferred",
+        "detail": {
+          "reason": "rankings_http_503",
+          "retryAt": 1794773692587,
+          "usage": {
+            "used": 27,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 14,
+              "official_http": 12,
+              "odds_or_other_http": 1
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 10,
+            "maxActive": 4,
+            "maxReserved": 12,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 31,
+            "checkpointBytes": 4662180,
+            "lastCheckpointAt": 1794771890618,
+            "stalledAttempts": 1,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nhl:goalie_saves:14956438",
+        "at": 1794772622960,
+        "phase": "publish",
+        "outcome": "done",
+        "detail": {
+          "reason": null,
+          "retryAt": null,
+          "usage": {
+            "used": 3,
+            "limit": 220,
+            "costs": {
+              "kv": 3
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772622960,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nhl:goalie_saves:14956438",
+        "at": 1794772621571,
+        "phase": "picks",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772622571,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772621571,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nhl:goalie_saves:14956438",
+        "at": 1794772620571,
+        "phase": "originals",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772621571,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772620571,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "capture:nhl:goalie_saves:14956438",
+        "at": 1794772619571,
+        "phase": "rank",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772619775,
+          "usage": {
+            "used": 20,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 10,
+              "official_http": 9,
+              "odds_or_other_http": 1
+            },
+            "cacheHits": 1,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 10,
+            "maxActive": 4,
+            "maxReserved": 12,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "eligible": 0,
+          "expired": 0,
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772619571,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lane": "grade:nba",
+    "jobs": [
+      {
+        "id": "grade:nba:14956425",
+        "kind": "grade",
+        "sport": "nba",
+        "created": 1794771050771,
+        "state": "done",
+        "phase": "done",
+        "cursor": 1079,
+        "attempts": 0,
+        "gameCursor": 1,
+        "lastError": null,
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794771269048,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "gradeCursor": 29,
+        "pending": 0,
+        "verified": 1023
+      },
+      {
+        "id": "grade:nba:14956380",
+        "kind": "grade",
+        "sport": "nba",
+        "created": 1794765650771,
+        "state": "done",
+        "phase": "done",
+        "cursor": 1079,
+        "attempts": 0,
+        "gameCursor": 1,
+        "lastError": null,
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794765819956,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "unavailable": 39,
+        "gradeCursor": 3,
+        "pending": 0,
+        "verified": 332
+      },
+      {
+        "id": "grade:nba:14955975",
+        "kind": "grade",
+        "sport": "nba",
+        "created": 1794717050771,
+        "state": "done",
+        "phase": "done",
+        "cursor": 1079,
+        "attempts": 0,
+        "gameCursor": 1,
+        "lastError": null,
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0
+        },
+        "retryAt": null,
+        "gradeCursor": 29,
+        "pending": 0,
+        "verified": 1023,
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794758138688,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        }
+      }
+    ],
+    "events": [
+      {
+        "job": "grade:nba:14956425",
+        "at": 1794771269048,
+        "phase": "game",
+        "outcome": "done",
+        "detail": {
+          "reason": null,
+          "retryAt": null,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794771269048,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nba:14956425",
+        "at": 1794771268048,
+        "phase": "write",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794771268679,
+          "usage": {
+            "used": 4,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 2,
+              "history_http": 2
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 2,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794771268048,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nba:14956425",
+        "at": 1794771266679,
+        "phase": "game",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794771267679,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794771266679,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nba:14956425",
+        "at": 1794771265679,
+        "phase": "scan",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794771266511,
+          "usage": {
+            "used": 2,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 1,
+              "history_http": 1
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 1,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794771265679,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nba:14956425",
+        "at": 1794771264511,
+        "phase": "game",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794771265511,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794771264511,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lane": "grade:nfl",
+    "jobs": [
+      {
+        "id": "grade:nfl:14956410",
+        "kind": "grade",
+        "sport": "nfl",
+        "created": 1794769250771,
+        "state": "done",
+        "phase": "done",
+        "cursor": 97,
+        "attempts": 0,
+        "gameCursor": 6,
+        "lastError": null,
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794769285577,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "gradeCursor": 0,
+        "pending": 8,
+        "verified": 35
+      }
+    ],
+    "events": [
+      {
+        "job": "grade:nfl:14956410",
+        "at": 1794769285577,
+        "phase": "game",
+        "outcome": "done",
+        "detail": {
+          "reason": null,
+          "retryAt": null,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794769285577,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nfl:14956410",
+        "at": 1794769284577,
+        "phase": "write",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794769285577,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794769284577,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nfl:14956410",
+        "at": 1794769283577,
+        "phase": "game",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794769284356,
+          "usage": {
+            "used": 2,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 1,
+              "official_http": 1
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 1,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794769283577,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nfl:14956410",
+        "at": 1794769282356,
+        "phase": "write",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794769283356,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794769282356,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nfl:14956410",
+        "at": 1794769281356,
+        "phase": "game",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794769282151,
+          "usage": {
+            "used": 2,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 1,
+              "official_http": 1
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 1,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794769281356,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lane": "grade:nhl",
+    "jobs": [
+      {
+        "id": "grade:nhl:14956440",
+        "kind": "grade",
+        "sport": "nhl",
+        "created": 1794772850771,
+        "state": "done",
+        "phase": "done",
+        "cursor": 213,
+        "attempts": 0,
+        "gameCursor": 7,
+        "lastError": null,
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794772990541,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "gradeCursor": 1,
+        "pending": 0,
+        "verified": 211
+      },
+      {
+        "id": "grade:nhl:14956395",
+        "kind": "grade",
+        "sport": "nhl",
+        "created": 1794767450771,
+        "state": "done",
+        "phase": "done",
+        "cursor": 213,
+        "attempts": 0,
+        "gameCursor": 7,
+        "lastError": null,
+        "usage": {
+          "used": 0,
+          "limit": 220,
+          "costs": {},
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 0,
+          "maxActive": 0,
+          "maxReserved": 0,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "progress": {
+          "sourceCheckpoints": 0,
+          "checkpointBytes": 0,
+          "lastCheckpointAt": 1794767594003,
+          "stalledAttempts": 0,
+          "needsAttention": false
+        },
+        "retryAt": null,
+        "gradeCursor": 1,
+        "pending": 0,
+        "verified": 211
+      }
+    ],
+    "events": [
+      {
+        "job": "grade:nhl:14956440",
+        "at": 1794772990541,
+        "phase": "game",
+        "outcome": "done",
+        "detail": {
+          "reason": null,
+          "retryAt": null,
+          "usage": {
+            "used": 0,
+            "limit": 220,
+            "costs": {},
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 0,
+            "maxActive": 0,
+            "maxReserved": 0,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772990541,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nhl:14956440",
+        "at": 1794772989541,
+        "phase": "write",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772989902,
+          "usage": {
+            "used": 4,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 2,
+              "history_http": 2
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 2,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772989541,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nhl:14956440",
+        "at": 1794772987902,
+        "phase": "game",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772988728,
+          "usage": {
+            "used": 2,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 1,
+              "official_http": 1
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 1,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772987902,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nhl:14956440",
+        "at": 1794772986728,
+        "phase": "write",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772987110,
+          "usage": {
+            "used": 4,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 2,
+              "history_http": 2
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 2,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772986728,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      },
+      {
+        "job": "grade:nhl:14956440",
+        "at": 1794772985110,
+        "phase": "game",
+        "outcome": "checkpoint",
+        "detail": {
+          "reason": null,
+          "retryAt": 1794772985932,
+          "usage": {
+            "used": 2,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 1,
+              "official_http": 1
+            },
+            "cacheHits": 0,
+            "cacheWrites": 0,
+            "checkpointBytes": 0,
+            "completedRequests": 1,
+            "maxActive": 1,
+            "maxReserved": 3,
+            "coalesced": 0,
+            "queuedCancelled": 0,
+            "aborted": 0,
+            "sourceDenials": [],
+            "denialHits": 0
+          },
+          "progress": {
+            "sourceCheckpoints": 0,
+            "checkpointBytes": 0,
+            "lastCheckpointAt": 1794772985110,
+            "stalledAttempts": 0,
+            "needsAttention": false
+          }
+        }
+      }
+    ]
+  }
+]

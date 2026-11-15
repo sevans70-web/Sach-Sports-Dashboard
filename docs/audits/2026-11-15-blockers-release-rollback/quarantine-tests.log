@@ -1,0 +1,12 @@
+✔ frozen retry repair reproduces the tested artifact; altered code cannot pass its digest (474.354998ms)
+✔ new preparation command rejects deployment and old failed candidate remains quarantined (82.725853ms)
+✔ combined NFL and capture artifact has a separate frozen identity and still cannot upload (1.97233ms)
+✔ denied-source and NBA memory candidate is independently frozen and requires fresh approval (0.564875ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 685.949018

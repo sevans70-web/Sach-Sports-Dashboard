@@ -1,0 +1,25 @@
+{
+  "ready": true,
+  "production": false,
+  "modelCommit": "007c02b",
+  "receipts": 899,
+  "grades": 658,
+  "completedCycles": 145,
+  "lastStorageError": null,
+  "pendingUploads": 0,
+  "latestCollectionHealth": {
+    "sourceDeferrals": 0,
+    "rosterFailures": 0,
+    "historySourceFailures": 0,
+    "rejectionsByReason": {
+      "unresolved_or_ambiguous_official_player": 14,
+      "official_history_missing": 36,
+      "prior_history_unavailable": 51,
+      "fewer_than_three_same_season_team_appearances": 2
+    },
+    "warmedPlayers": 4,
+    "newReceipts": 3,
+    "sourceSnapshots": 7,
+    "state": "healthy"
+  }
+}

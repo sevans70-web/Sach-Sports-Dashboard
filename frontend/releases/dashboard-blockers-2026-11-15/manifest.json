@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_user_approval",
+  "status": "withdrawn_after_failed_live_gates",
   "sourceCommit": "1167c46f5d77d73429d681be232c0bebdfa509ed",
   "worker": "sach-sports-cloudflare-test",
   "bundleDigest": "1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68",
@@ -20,6 +20,13 @@
   "execution": "node scripts/prepare-dashboard-retry-release.mjs --dry-run --blockers. Preparation only; fresh explicit approval required before upload.",
   "supersedesWithdrawnDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
   "scope": "NFL optional-source denial recovery, NBA PR memory/admission/cache repair, plus all previously verified combined ranking/capture repairs; no model replacement",
-  "liveAcceptance": "pending approval and deployment; recorded browser counts are not production quotas",
-  "supersedesUnreleasedDigest": "22b6129a67698b0b468c6076f8c450541a4876b5d210f1073418d960e71f2166"
+  "liveAcceptance": "failed; compatible fallback restored; do not redeploy this frozen candidate",
+  "supersedesUnreleasedDigest": "22b6129a67698b0b468c6076f8c450541a4876b5d210f1073418d960e71f2166",
+  "approvedPackageCommit": "debdd6288ef5ee7d40da00e5318b2e57cc452d1d",
+  "manualBuild": "279281f0-51c3-42ec-b1c0-48c070cdc751",
+  "candidateDeployment": "5f1e0a2b-ca18-4405-9775-50f24f447a67",
+  "candidateVersion": "d3f4639d-29a7-4763-ab43-9a7bbfd5d5c8",
+  "rollbackDeployment": "9b1c3dea-a683-4e0f-9f42-71236a095a9d",
+  "withdrawalReason": "Live cold NFL jobs repeatedly returned rankings_unavailable without checkpoint progress (needsAttention; up to 10 stalled attempts). NHL markets had zero eligible displayed rows and no verified sportsbook quotes. Candidate failed required live acceptance.",
+  "nextReleaseRequires": "Exercise the real NFL cold rankings route with denied sources and unavailable responses, resolve missing NHL sportsbook/model evidence, verify NBA combination EV availability and fresh scheduled capture progress, then obtain new approval for a corrected artifact."
 }

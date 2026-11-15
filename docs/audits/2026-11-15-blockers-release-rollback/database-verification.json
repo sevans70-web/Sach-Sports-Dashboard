@@ -1,0 +1,225 @@
+{
+  "before": [
+    {
+      "source": "grades",
+      "sport": "nba",
+      "records": 1023,
+      "inventory": "ab6fcd75b9292171d2f424e5e266d53a"
+    },
+    {
+      "source": "grades",
+      "sport": "nfl",
+      "records": 24,
+      "inventory": "f95096ecbb8191dd18f1710300dd2af4"
+    },
+    {
+      "source": "grades",
+      "sport": "nhl",
+      "records": 180,
+      "inventory": "a4f797ade2c47433fae79b65b228bbfa"
+    },
+    {
+      "source": "originals",
+      "sport": "cfb",
+      "records": 29,
+      "inventory": "2f6885119652bb672b460000a46f31e4"
+    },
+    {
+      "source": "originals",
+      "sport": "nba",
+      "records": 3045,
+      "inventory": "44640afe5e4f85446022add7da8d8f6e"
+    },
+    {
+      "source": "originals",
+      "sport": "nfl",
+      "records": 1046,
+      "inventory": "4c7e2b51e5ca6418c2a9e5560d38d496"
+    },
+    {
+      "source": "originals",
+      "sport": "nhl",
+      "records": 1724,
+      "inventory": "f6fce84b68f86426301a60fb74634606"
+    },
+    {
+      "source": "picks",
+      "sport": "nba",
+      "records": 1079,
+      "inventory": "1038b3c961859034a640e664900552fb"
+    },
+    {
+      "source": "picks",
+      "sport": "nfl",
+      "records": 145,
+      "inventory": "3f2d1d60fef9717bb1373b6454e4b690"
+    },
+    {
+      "source": "picks",
+      "sport": "nhl",
+      "records": 213,
+      "inventory": "347994a3f6752e3c1dc4f10d4a4531ad"
+    },
+    {
+      "source": "protected_history",
+      "sport": "cbb",
+      "records": 3655,
+      "inventory": "a863fbe07423d3fecdbdb8600b526e12"
+    },
+    {
+      "source": "protected_history",
+      "sport": "cfb",
+      "records": 1428,
+      "inventory": "48230c0eedf3ef6a87cc32bfaf5cd5fd"
+    },
+    {
+      "source": "protected_history",
+      "sport": "mlb",
+      "records": 209,
+      "inventory": "10441e99b6ebd0aa5dc3c33ac1b2f9a1"
+    },
+    {
+      "source": "protected_history",
+      "sport": "nba",
+      "records": 3081,
+      "inventory": "e296045593359928b5a95cf004ef34b9"
+    },
+    {
+      "source": "protected_history",
+      "sport": "nfl",
+      "records": 1328,
+      "inventory": "36b9478df62d52b44351f8948623714f"
+    },
+    {
+      "source": "protected_history",
+      "sport": "nhl",
+      "records": 1184,
+      "inventory": "3c45a9693d8c68b1849ffa950235517b"
+    },
+    {
+      "source": "protected_history",
+      "sport": "soccer",
+      "records": 469,
+      "inventory": "0f16f38bfb8dc3968ef41192f4bbea5b"
+    },
+    {
+      "source": "protected_history",
+      "sport": "wnba",
+      "records": 261,
+      "inventory": "ac63a7b6a313792721c3966d3a196fd9"
+    }
+  ],
+  "after": [
+    {
+      "source": "grades",
+      "sport": "nba",
+      "records": 1023,
+      "inventory": "ab6fcd75b9292171d2f424e5e266d53a"
+    },
+    {
+      "source": "grades",
+      "sport": "nfl",
+      "records": 24,
+      "inventory": "f95096ecbb8191dd18f1710300dd2af4"
+    },
+    {
+      "source": "grades",
+      "sport": "nhl",
+      "records": 180,
+      "inventory": "a4f797ade2c47433fae79b65b228bbfa"
+    },
+    {
+      "source": "originals",
+      "sport": "cfb",
+      "records": 29,
+      "inventory": "2f6885119652bb672b460000a46f31e4"
+    },
+    {
+      "source": "originals",
+      "sport": "nba",
+      "records": 3045,
+      "inventory": "44640afe5e4f85446022add7da8d8f6e"
+    },
+    {
+      "source": "originals",
+      "sport": "nfl",
+      "records": 1046,
+      "inventory": "4c7e2b51e5ca6418c2a9e5560d38d496"
+    },
+    {
+      "source": "originals",
+      "sport": "nhl",
+      "records": 1724,
+      "inventory": "f6fce84b68f86426301a60fb74634606"
+    },
+    {
+      "source": "picks",
+      "sport": "nba",
+      "records": 1079,
+      "inventory": "1038b3c961859034a640e664900552fb"
+    },
+    {
+      "source": "picks",
+      "sport": "nfl",
+      "records": 145,
+      "inventory": "3f2d1d60fef9717bb1373b6454e4b690"
+    },
+    {
+      "source": "picks",
+      "sport": "nhl",
+      "records": 213,
+      "inventory": "347994a3f6752e3c1dc4f10d4a4531ad"
+    },
+    {
+      "source": "protected_history",
+      "sport": "cbb",
+      "records": 3655,
+      "inventory": "a863fbe07423d3fecdbdb8600b526e12"
+    },
+    {
+      "source": "protected_history",
+      "sport": "cfb",
+      "records": 1428,
+      "inventory": "48230c0eedf3ef6a87cc32bfaf5cd5fd"
+    },
+    {
+      "source": "protected_history",
+      "sport": "mlb",
+      "records": 209,
+      "inventory": "10441e99b6ebd0aa5dc3c33ac1b2f9a1"
+    },
+    {
+      "source": "protected_history",
+      "sport": "nba",
+      "records": 3081,
+      "inventory": "e296045593359928b5a95cf004ef34b9"
+    },
+    {
+      "source": "protected_history",
+      "sport": "nfl",
+      "records": 1328,
+      "inventory": "36b9478df62d52b44351f8948623714f"
+    },
+    {
+      "source": "protected_history",
+      "sport": "nhl",
+      "records": 1184,
+      "inventory": "3c45a9693d8c68b1849ffa950235517b"
+    },
+    {
+      "source": "protected_history",
+      "sport": "soccer",
+      "records": 469,
+      "inventory": "0f16f38bfb8dc3968ef41192f4bbea5b"
+    },
+    {
+      "source": "protected_history",
+      "sport": "wnba",
+      "records": 261,
+      "inventory": "ac63a7b6a313792721c3966d3a196fd9"
+    }
+  ],
+  "diffs": [],
+  "groups": 18,
+  "unchanged": 18
+}
