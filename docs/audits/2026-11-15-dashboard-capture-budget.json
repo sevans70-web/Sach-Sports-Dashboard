@@ -1,0 +1,324 @@
+{
+  "status": "verified_source_and_artifacts_awaiting_deployment_approval",
+  "sourceCommit": "bb2601b0d04b3e55b1ec73215356a0392cdca3bb",
+  "sourceBase": "b57701899900cd0c50cbbe6238ca478befbef644",
+  "branch": "cloudflare-compatibility-test",
+  "testedAtUTC": "2026-11-15T03:14:56.376205+00:00",
+  "deploymentAttempted": false,
+  "newDeploymentId": null,
+  "rootCause": {
+    "sharedInvocation": [
+      "two ranking builds",
+      "continuing quarter source refresh",
+      "recent final replay"
+    ],
+    "observedAtToronto": "2026-11-14 21:05:11 EST",
+    "configuredSubrequests": 350,
+    "worstQuarterSourceReads": {
+      "playerLogs": 150,
+      "distinctGameSummaries": 64,
+      "additionalCachesSchedulesOddsAndHistory": true
+    }
+  },
+  "repair": {
+    "newNamespace": "DashboardJobQueue SQLite, dashboard-only; not created yet",
+    "lanes": 9,
+    "onePhasePerAlarm": true,
+    "accountedPhaseCap": 220,
+    "wallDeadlineMs": 25000,
+    "cacheTtlMs": 900000,
+    "cacheLimitBytesPerLane": 33554432,
+    "cacheEntriesPerLane": 512,
+    "captureChunk": 30,
+    "gradePage": 50,
+    "gradeChunk": 30,
+    "replayPage": 150,
+    "insertOnlyEvidence": true,
+    "lateNewWritesAbstain": true,
+    "duplicateTicksCoalesced": true,
+    "modelChanges": false,
+    "historicalRecordChanges": false,
+    "cronChanges": false
+  },
+  "tests": {
+    "fullRegression": {
+      "passed": 763,
+      "failed": 0,
+      "command": "node --test --test-concurrency=4 tests/*.test.mjs"
+    },
+    "typeScriptDiagnostics": 0,
+    "cloudflareRuntime": {
+      "durableWorkflowTestsPassed": 5,
+      "boundaryTestsPassed": 6,
+      "overBudgetFirstPhase": {
+        "accountedRequests": 218,
+        "cachedHistories": 108
+      },
+      "resumedTotalOfficialHistories": 125,
+      "nhlMarkets": [
+        "shots_on_goal",
+        "points",
+        "assists",
+        "goalie_saves"
+      ],
+      "syntheticEligibleRowsPerMarket": 81,
+      "syntheticUniquePicksStored": 324,
+      "invalidAndDuplicateQuotesExcluded": true,
+      "gradingPicksVisited": 271,
+      "unrelatedExistingGrades": 1001,
+      "replayDocumentsCheckpointed": 1001,
+      "restartAckLossAnd429Tests": "passed",
+      "foregroundConcurrencyAndCacheIsolation": "passed"
+    },
+    "productionCompile": "passed",
+    "fallbackCompile": "passed",
+    "candidateDryRun": "passed_without_upload",
+    "fallbackDryRun": "passed_without_upload",
+    "warnings": "Existing Vinext/rolldown sourcemap, timing and route-classification warnings; no compile errors."
+  },
+  "actualEvidenceReplay": {
+    "runtime": "production bundle in local workerd",
+    "inputs": "Recorded November 14 official schedule and original saved receipts; all external writes prohibited",
+    "foregroundStatus": 200,
+    "restoredShotsOnGoal": 11,
+    "newEligiblePregameCaptures": 0,
+    "scope": "Replay with the current clock, not a live production/feed count."
+  },
+  "candidateArtifact": {
+    "sha256": "0d0c8d0e6d6856187587c9468c6c8a89bc49664913ee8382349580d572aad44a",
+    "fileCount": 749,
+    "bytes": 29962465,
+    "mainModuleSha256": "d7181496ca5afc004bc72f43e7d5707b7e59ec2c7df7c9f00fe91121d4f21ab4",
+    "configuration": {
+      "name": "sach-sports-cloudflare-test",
+      "compatibilityDate": "2026-11-06",
+      "compatibilityFlags": [
+        "nodejs_compat"
+      ],
+      "assets": {
+        "htmlHandling": "none",
+        "notFoundHandling": "none",
+        "runWorkerFirst": [
+          "/*",
+          "!/_next/static/*",
+          "!/*/_next/static/*"
+        ]
+      },
+      "limits": {
+        "subrequests": 350
+      },
+      "observability": {
+        "enabled": true,
+        "headSamplingRate": 1,
+        "redactQueryString": true,
+        "logs": {
+          "enabled": true,
+          "headSamplingRate": 1,
+          "invocationLogs": true
+        },
+        "traces": {
+          "enabled": true,
+          "headSamplingRate": 0.1
+        }
+      },
+      "env": {
+        "ASSETS": {
+          "type": "assets"
+        },
+        "DASHBOARD_JOBS": {
+          "type": "durable-object",
+          "worker": "sach-sports-cloudflare-test",
+          "exportName": "DashboardJobQueue"
+        },
+        "VINEXT_KV_CACHE": {
+          "type": "kv",
+          "id": "644df6a469e84dba90c8f7dac410f895"
+        },
+        "OWLS_INSIGHT_API_KEY": {
+          "type": "secret"
+        },
+        "SPORTSGAMEODDS_API_KEY": {
+          "type": "secret"
+        },
+        "SUPABASE_URL": {
+          "type": "secret"
+        },
+        "SUPABASE_SECRET_KEY": {
+          "type": "secret"
+        },
+        "GOOGLE_OAUTH_CLIENT_ID": {
+          "type": "secret"
+        },
+        "GOOGLE_OAUTH_CLIENT_SECRET": {
+          "type": "secret"
+        },
+        "GOOGLE_OAUTH_REFRESH_TOKEN": {
+          "type": "secret"
+        },
+        "BACKUP_DRIVE_FOLDER_ID": {
+          "type": "secret"
+        }
+      },
+      "exports": {
+        "DashboardJobQueue": {
+          "type": "durable-object",
+          "storage": "sqlite"
+        }
+      },
+      "manifest": {
+        "type": "partial",
+        "mainModule": "index.js",
+        "modules": {}
+      }
+    }
+  },
+  "compatibleFallbackArtifact": {
+    "sha256": "120c58afc70cf488d52bcb6be148886ab52f614b725e9e0d200583455e0f28ab",
+    "fileCount": 749,
+    "bytes": 29957273,
+    "mainModuleSha256": "de5e9a1be457226b1bd6b4e980a5199a7309b8e016a9b74aa5de0d283d251f17",
+    "configuration": {
+      "name": "sach-sports-cloudflare-test",
+      "compatibilityDate": "2026-11-06",
+      "compatibilityFlags": [
+        "nodejs_compat"
+      ],
+      "assets": {
+        "htmlHandling": "none",
+        "notFoundHandling": "none",
+        "runWorkerFirst": [
+          "/*",
+          "!/_next/static/*",
+          "!/*/_next/static/*"
+        ]
+      },
+      "limits": {
+        "subrequests": 350
+      },
+      "observability": {
+        "enabled": true,
+        "headSamplingRate": 1,
+        "redactQueryString": true,
+        "logs": {
+          "enabled": true,
+          "headSamplingRate": 1,
+          "invocationLogs": true
+        },
+        "traces": {
+          "enabled": true,
+          "headSamplingRate": 0.1
+        }
+      },
+      "env": {
+        "ASSETS": {
+          "type": "assets"
+        },
+        "DASHBOARD_JOBS": {
+          "type": "durable-object",
+          "worker": "sach-sports-cloudflare-test",
+          "exportName": "DashboardJobQueue"
+        },
+        "VINEXT_KV_CACHE": {
+          "type": "kv",
+          "id": "644df6a469e84dba90c8f7dac410f895"
+        },
+        "OWLS_INSIGHT_API_KEY": {
+          "type": "secret"
+        },
+        "SPORTSGAMEODDS_API_KEY": {
+          "type": "secret"
+        },
+        "SUPABASE_URL": {
+          "type": "secret"
+        },
+        "SUPABASE_SECRET_KEY": {
+          "type": "secret"
+        },
+        "GOOGLE_OAUTH_CLIENT_ID": {
+          "type": "secret"
+        },
+        "GOOGLE_OAUTH_CLIENT_SECRET": {
+          "type": "secret"
+        },
+        "GOOGLE_OAUTH_REFRESH_TOKEN": {
+          "type": "secret"
+        },
+        "BACKUP_DRIVE_FOLDER_ID": {
+          "type": "secret"
+        }
+      },
+      "exports": {
+        "DashboardJobQueue": {
+          "type": "durable-object",
+          "storage": "sqlite"
+        }
+      },
+      "manifest": {
+        "type": "partial",
+        "mainModule": "index.js",
+        "modules": {}
+      }
+    }
+  },
+  "cloudflareReadOnlyChecks": {
+    "checkedAtUTC": "2026-11-15T03:14:12.974Z",
+    "automaticBuilds": {
+      "triggerId": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+      "branchIncludes": [
+        "__cw08_manual_release_only__"
+      ],
+      "buildCommand": "cd frontend && npm ci && npm run build:vinext",
+      "deployCommand": "cd frontend && npm run deploy:vinext"
+    },
+    "workers": {
+      "sach-sports-cloudflare-test": {
+        "deploymentId": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+        "versions": [
+          {
+            "version_id": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
+            "percentage": 100
+          }
+        ],
+        "schedules": [
+          "0,30 * * * *",
+          "10-17 9 * * *",
+          "*/2 * * * *"
+        ]
+      },
+      "sach-cw08-nhl-shadow": {
+        "deploymentId": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+        "versions": [
+          {
+            "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+            "percentage": 100
+          }
+        ],
+        "schedules": [
+          "*/15 * * * *"
+        ]
+      }
+    },
+    "researchLastCompletedCycle": {
+      "atUTC": "2026-11-15T03:07:51.053Z",
+      "event": "cw08_cycle_complete",
+      "cycle": "1994124",
+      "production": false,
+      "manifest": {
+        "key": "runs/a48a829a8462742d6fc78aecbb3543a4178d627329b754a6c03126a5656f3ce0.json",
+        "hash": "a48a829a8462742d6fc78aecbb3543a4178d627329b754a6c03126a5656f3ce0"
+      }
+    }
+  },
+  "cw08Bundle": {
+    "bytes": 151874,
+    "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4",
+    "unchanged": true,
+    "researchRuntimeFilesModified": false
+  },
+  "remainingRequirements": [
+    "Explicit approval for the new dashboard-only namespace and two-stage controlled deployment.",
+    "Establish and verify the compatible safety baseline version before candidate rollout; old version rollback cannot cross the new namespace lifecycle.",
+    "After approval, verify real browser/API behavior and actual scheduled capture/grading telemetry before declaring the live repair complete.",
+    "Past missing pregame evidence remains unavailable; no retrospective picks may be fabricated."
+  ]
+}

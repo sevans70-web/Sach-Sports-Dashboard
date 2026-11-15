@@ -1,0 +1,41 @@
+{
+  "status": "prepared_not_approved_not_uploaded",
+  "sourceCommit": "bb2601b0d04b3e55b1ec73215356a0392cdca3bb",
+  "targetWorker": "sach-sports-cloudflare-test",
+  "accountId": "d3d6d023ab7ab731cc3e191d0ea3c179",
+  "candidateArtifactSha256": "0d0c8d0e6d6856187587c9468c6c8a89bc49664913ee8382349580d572aad44a",
+  "fallbackArtifactSha256": "120c58afc70cf488d52bcb6be148886ab52f614b725e9e0d200583455e0f28ab",
+  "fallbackDashboardSource": "f93184a2a421f75018c0262c7b820b5ce9d95b76",
+  "currentlyDeployedVersion": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
+  "newResource": {
+    "type": "SQLite Durable Object namespace",
+    "class": "DashboardJobQueue",
+    "binding": "DASHBOARD_JOBS",
+    "owner": "sach-sports-cloudflare-test"
+  },
+  "steps": [
+    "Reproduce and match both artifact hashes, source commit, existing settings, paused builds and CW08 health.",
+    "After explicit approval, deploy the compatible safety baseline: existing dashboard interface plus bounded job infrastructure. This provisions the namespace.",
+    "Verify the safety baseline in a real browser/API and observe scheduled job progress. Record its version as the compatible rollback target. Stop candidate deployment if any critical check fails.",
+    "Deploy the NHL candidate only once the compatible rollback target exists and passes its checks.",
+    "Verify browser hydration, performance, schedules/game/pick counts, eligible NHL rankings and saved starts, seven NBA EV markets, featured picks, history and NBA/NFL; observe independent capture and grading/replay alarms and budget telemetry.",
+    "On candidate live failure restore the recorded compatible baseline version, keeping the namespace, queued evidence and original records."
+  ],
+  "initialMigrationFailure": "Stop candidate rollout; retain the new namespace and restore the known dashboard source with its namespace export retained. A pre-namespace version rollback is not supported.",
+  "protected": {
+    "automaticBuilds": "remain paused",
+    "cronExpressions": [
+      "0,30 * * * *",
+      "10-17 9 * * *",
+      "*/2 * * * *"
+    ],
+    "subrequestLimit": 350,
+    "existingKV": "644df6a469e84dba90c8f7dac410f895",
+    "existingSecretBindings": "unchanged; never copied",
+    "cw08Worker": "untouched",
+    "modelsAndThresholds": "unchanged",
+    "historicalRecords": "insert-only; no overwrites/deletions",
+    "paidServices": "No plan upgrade, R2, Queues product or new Worker"
+  },
+  "approvalRequired": true
+}
