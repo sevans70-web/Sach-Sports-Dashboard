@@ -1,0 +1,46 @@
+{
+  "status": "awaiting_user_approval_not_deployed",
+  "worker": "sach-sports-cloudflare-test",
+  "sourceCommit": "15d1479743e8ee51de6ff45b452c79e44624f52d",
+  "bundleDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
+  "archiveSha256": "4fb9f923d2f6aad814b10fcd61c6e0bf908bdea817d69e99d37cc672f78f5544",
+  "prebuiltArtifact": "frontend/releases/dashboard-nfl-capture-2026-11-15/candidate.tar.gz",
+  "prepareCommand": "cd frontend && node scripts/prepare-dashboard-retry-release.mjs --dry-run --combined",
+  "uploadAfterApprovalOnly": "cd frontend && node scripts/deploy-cloudflare.mjs --tag dashboard-nfl-capture-repair --message \"Approved combined NFL display and capture repair; source 15d1479743e8ee51de6ff45b452c79e44624f52d; CW08 unchanged\"",
+  "newNamespaces": false,
+  "migrations": false,
+  "existingDashboardNamespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "rollbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "fallbackArtifact": "../dashboard-capture-2026-11-14/fallback.tar.gz",
+  "withdrawnCandidateMustNotBeRestored": "a5375cd8-b10b-497f-8355-08e48357cbad",
+  "automaticBuildsRemainPaused": true,
+  "cw08Changes": false,
+  "preflight": [
+    "Reconfirm exact remote branch/source commit, archive SHA and bundle digest. Stop on mismatch.",
+    "Reconfirm current compatible fallback version is retrievable, namespace/KV/secrets/schedules unchanged and branch auto-build filter still paused.",
+    "Record immutable original/pick/grade fingerprints and durable queue state before upload; retain namespace and documents.",
+    "Reconfirm CW08 version, 15-minute schedule and storage health.",
+    "Require explicit approval of this replacement candidate before any upload."
+  ],
+  "liveGates": [
+    "Use a real browser to verify Passing Yards, Passing TDs, QB rushing, pass+rush, rushing, receiving, receptions, TD and all active Q1/defense tabs; compare eligible cards with API coverage and do not impose fixed counts.",
+    "Verify current/frozen quote labels, fitted projections vs historical baselines, honest missing-model/confidence/EV explanations, and signed EV only when exact independent probability evidence passes existing checks.",
+    "Verify Q1 main-line projection direction versus its exact line, while keeping model-absent, milestone and scorer semantics distinct. No new model, pick or market is enabled.",
+    "Observe an actual scheduled cold NFL source run making persisted input/phase/cursor progress; confirm fresh later blocks published to KV appear alongside unchanged early originals.",
+    "Observe real scheduled enqueue and alarm cycles for NFL receiving/receptions/anytime-TD, NBA and NHL; all must advance phase/cursor or persist completed source inputs.",
+    "Require per-phase used<=220, concurrency<=4, no Cloudflare subrequest/timeout error, no repeated zero-progress retry; stalled upstream outage must be explicit, backed off and isolated.",
+    "Verify current legitimate NHL Shots, Points, Assists and Saves rankings with coverage explanations; no forced counts.",
+    "Use a real browser alongside active capture: no repeated stalls, hydration errors or missing started-game selections.",
+    "Verify all seven NBA EV markets, schedules/counts, featured picks, NFL predictions, history and original fingerprints.",
+    "Recheck CW08 unchanged and progressing; automatic dashboard builds stay paused."
+  ],
+  "rollback": [
+    "On any critical failure stop verification and immediately activate compatible version a48c431a-5c3e-4491-8529-38cb20dfa898 at 100%.",
+    "Retain dashboard Durable Object namespace and KV; never remove or recreate bindings or restore the withdrawn candidate.",
+    "Verify dashboard recovered, queue alarms/enqueue held, old and newly saved immutable evidence intact, CW08 unaffected."
+  ],
+  "releaseCompleteOnlyAfter": "All live gates pass and evidence is committed/pushed. Local tests alone do not close the repair.",
+  "supersedesCaptureOnlyDigest": "47a06ce00cc11f54577557071c365f49feb6fb2ffa21405faf44daf831f7d99f",
+  "noModelReplacement": true,
+  "noAdditionalPaidServices": true
+}

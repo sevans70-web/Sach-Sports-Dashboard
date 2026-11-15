@@ -1,0 +1,1386 @@
+{
+  "status": "not_deployed_awaiting_combined_approval",
+  "capturedAt": "2026-11-15T15:00:00Z",
+  "liveBrowserBefore": {
+    "errors": [],
+    "rankings": "PLAYER RANKINGS\nToday\nMon, Nov 16\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards rankings with a verified line, projection, prediction and EV are available for this slate.",
+    "cards": 0
+  },
+  "candidateBrowser": {
+    "environment": "LOCAL compiled production candidate; captured actual live November 15 API responses; no outbound database or provider writes",
+    "markets": [
+      {
+        "market": "passing_yards",
+        "displayed": 16,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "passing_tds",
+        "displayed": 16,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "passing_interceptions",
+        "displayed": 16,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "qb_rushing_yards",
+        "displayed": 16,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "passing_rushing_yards",
+        "displayed": 16,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "rushing_yards",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "receiving_yards",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "receptions",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "rushing_receiving_yards",
+        "displayed": 21,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "anytime_td",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "first_td",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "sacks",
+        "displayed": 24,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "tackles",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "tackles_assists",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "q1_passing_yards",
+        "displayed": 16,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "q1_receiving_yards",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      },
+      {
+        "market": "q1_rushing_yards",
+        "displayed": 25,
+        "picks": 0,
+        "explained": true
+      }
+    ],
+    "pageErrors": []
+  },
+  "candidateCoverage": [
+    {
+      "market": "passing_tds",
+      "sourceRows": 16,
+      "displayableRows": 16,
+      "fittedProjections": 0,
+      "baselineOnly": 15,
+      "savedQuoteRows": 16,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 16
+      }
+    },
+    {
+      "market": "q1_rush_attempts",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "passing_rushing_yards",
+      "sourceRows": 16,
+      "displayableRows": 16,
+      "fittedProjections": 0,
+      "baselineOnly": 15,
+      "savedQuoteRows": 16,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 16
+      }
+    },
+    {
+      "market": "q1_rushing_yards",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 15,
+      "baselineOnly": 0,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "Complete model probabilities needed": 15,
+        "At least five verified quarter-history games are needed": 10
+      }
+    },
+    {
+      "market": "passing_interceptions",
+      "sourceRows": 16,
+      "displayableRows": 16,
+      "fittedProjections": 0,
+      "baselineOnly": 15,
+      "savedQuoteRows": 16,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 16
+      }
+    },
+    {
+      "market": "q1_rushing_receiving_yards",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "receiving_yards",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 21,
+      "baselineOnly": 4,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "Model probability accuracy checks not met; confidence and EV are unavailable": 21,
+        "Independent model probability needed": 3,
+        "Verified player/team history is unavailable": 1
+      }
+    },
+    {
+      "market": "rushing_yards",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 24,
+      "baselineOnly": 1,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "Model probability accuracy checks not met; confidence and EV are unavailable": 24,
+        "Independent model probability needed": 1
+      }
+    },
+    {
+      "market": "first_td",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 25
+      }
+    },
+    {
+      "market": "q1_receiving_yards",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 16,
+      "baselineOnly": 0,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "Complete model probabilities needed": 16,
+        "At least five verified quarter-history games are needed": 8,
+        "Independent model probability needed": 1
+      }
+    },
+    {
+      "market": "passing_yards",
+      "sourceRows": 16,
+      "displayableRows": 16,
+      "fittedProjections": 14,
+      "baselineOnly": 1,
+      "savedQuoteRows": 16,
+      "evAvailable": 0,
+      "reasons": {
+        "Model probability accuracy checks not met; confidence and EV are unavailable": 14,
+        "Verified player/team history is unavailable": 2
+      }
+    },
+    {
+      "market": "q1_passing_yards",
+      "sourceRows": 16,
+      "displayableRows": 16,
+      "fittedProjections": 9,
+      "baselineOnly": 0,
+      "savedQuoteRows": 16,
+      "evAvailable": 0,
+      "reasons": {
+        "At least five verified quarter-history games are needed": 7,
+        "Complete model probabilities needed": 9
+      }
+    },
+    {
+      "market": "q1_qb_rushing_yards",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "rushing_receiving_yards",
+      "sourceRows": 21,
+      "displayableRows": 21,
+      "fittedProjections": 0,
+      "baselineOnly": 21,
+      "savedQuoteRows": 21,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 21
+      }
+    },
+    {
+      "market": "q1_pass_completions",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "anytime_td",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 0,
+      "baselineOnly": 23,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 25
+      }
+    },
+    {
+      "market": "q1_receptions",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "qb_rushing_yards",
+      "sourceRows": 16,
+      "displayableRows": 16,
+      "fittedProjections": 0,
+      "baselineOnly": 15,
+      "savedQuoteRows": 16,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 16
+      }
+    },
+    {
+      "market": "receptions",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 19,
+      "baselineOnly": 6,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "Model probability accuracy checks not met; confidence and EV are unavailable": 19,
+        "Independent model probability needed": 5,
+        "Verified player/team history is unavailable": 1
+      }
+    },
+    {
+      "market": "q1_anytime_td",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "q1_pass_attempts",
+      "sourceRows": 0,
+      "displayableRows": 0,
+      "fittedProjections": 0,
+      "baselineOnly": 0,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {}
+    },
+    {
+      "market": "sacks",
+      "sourceRows": 24,
+      "displayableRows": 24,
+      "fittedProjections": 0,
+      "baselineOnly": 24,
+      "savedQuoteRows": 24,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 24
+      }
+    },
+    {
+      "market": "tackles",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 0,
+      "baselineOnly": 25,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 25
+      }
+    },
+    {
+      "market": "tackles_assists",
+      "sourceRows": 25,
+      "displayableRows": 25,
+      "fittedProjections": 0,
+      "baselineOnly": 25,
+      "savedQuoteRows": 25,
+      "evAvailable": 0,
+      "reasons": {
+        "A fitted forecast is not available for this market": 25
+      }
+    }
+  ],
+  "candidateCompiledKvApi": {
+    "scope": "LOCAL frozen production bundle, dedicated ephemeral KV, unchanged actual recorded NFL passing rows; all outbound disabled",
+    "status": 200,
+    "coverage": {
+      "sourceRows": 14,
+      "displayableRows": 14,
+      "fittedProjections": 12,
+      "baselineOnly": 1,
+      "savedQuoteRows": 14,
+      "evAvailable": 0,
+      "reasons": {
+        "Model probability accuracy checks not met; confidence and EV are unavailable": 12,
+        "Verified player/team history is unavailable": 2
+      }
+    },
+    "originalRowsUnchanged": true
+  },
+  "primaryFeed": {
+    "games": 14,
+    "error": null,
+    "categoryCounts": {
+      "pinnacle|rushing_yards|game": 69,
+      "pinnacle|receptions|game": 145,
+      "pinnacle|pass_completions|game": 24,
+      "pinnacle|receiving_yards|game": 145,
+      "pinnacle|touchdowns|game": 57,
+      "pinnacle|passing_tds|game": 24,
+      "pinnacle|pass_attempts|game": 24,
+      "pinnacle|interceptions|game": 24,
+      "pinnacle|field_goals_made|game": 23,
+      "pinnacle|rush_attempts|game": 42,
+      "pinnacle|passing_yards|game": 24,
+      "fanduel|touchdowns|game": 344,
+      "fanduel|defense_touchdowns|game": 25,
+      "fanduel|rushing_yards|game": 79,
+      "fanduel|receptions|game": 166,
+      "fanduel|passing_yards|game": 26,
+      "fanduel|receiving_yards|game": 166,
+      "fanduel|passing_tds|game": 26,
+      "fanduel|rush_rec_yards|game": 39,
+      "draftkings|touchdowns|game": 930,
+      "draftkings|first_touchdown_scorer|game": 357,
+      "draftkings|touchdowns_1q|game": 356,
+      "draftkings|receptions|game": 167,
+      "draftkings|rush_attempts|game": 46,
+      "draftkings|pass_attempts|game": 26,
+      "draftkings|pass_completions|game": 26,
+      "draftkings|interceptions|game": 44,
+      "draftkings|pass_rush_yards|game": 26,
+      "draftkings|longest_rush|game": 57,
+      "draftkings|longest_reception|game": 156,
+      "draftkings|sacks|game": 132,
+      "draftkings|field_goals_made|game": 25,
+      "draftkings|extra_points_made|game": 25,
+      "draftkings|kicking_points|game": 25,
+      "draftkings|passing_yards|game": 26,
+      "draftkings|receiving_yards|game": 167,
+      "draftkings|rushing_yards|game": 79,
+      "draftkings|rush_rec_yards|game": 41,
+      "draftkings|passing_tds|game": 26,
+      "draftkings|longest_completion|game": 26,
+      "draftkings|most_receiving_yards|game": 110,
+      "draftkings|most_rushing_yards|game": 53,
+      "draftkings|tackles_assists|game": 119,
+      "draftkings|tackles|game": 119,
+      "draftkings|assisted_tackles|game": 119,
+      "draftkings|combos|game": 79,
+      "draftkings|touchdowns_1h|game": 189,
+      "draftkings|touchdowns_2h|game": 219,
+      "caesars|first_touchdown_scorer|game": 327,
+      "caesars|touchdowns|game": 675,
+      "caesars|passing_tds|game": 50,
+      "caesars|passing_yards|game": 50,
+      "caesars|receiving_yards|game": 321,
+      "caesars|receptions|game": 323,
+      "caesars|rushing_yards|game": 144,
+      "caesars|pass_completions|game": 44,
+      "caesars|pass_attempts|game": 44,
+      "caesars|interceptions|game": 44,
+      "caesars|pass_rush_yards|game": 22,
+      "caesars|longest_completion|game": 22,
+      "caesars|passing_yards_1q|game": 21,
+      "caesars|receiving_yards_1q|game": 58,
+      "caesars|longest_reception|game": 126,
+      "caesars|rushing_yards_1q|game": 23,
+      "caesars|rush_attempts|game": 39,
+      "caesars|longest_rush|game": 48,
+      "caesars|field_goals_made|game": 21,
+      "caesars|extra_points_made|game": 20,
+      "caesars|kicking_points|game": 17,
+      "betmgm|touchdowns|game": 950,
+      "betmgm|passing_tds|game": 146,
+      "betmgm|pass_rush_yards|game": 136,
+      "betmgm|rushing_yards|game": 420,
+      "betmgm|passing_yards|game": 142,
+      "betmgm|pass_completions|game": 109,
+      "betmgm|interceptions|game": 20,
+      "betmgm|first_touchdown_scorer|game": 260,
+      "betmgm|receiving_yards|game": 965,
+      "betmgm|receptions|game": 140,
+      "betmgm|pass_attempts|game": 117,
+      "betmgm|rush_rec_yards|game": 213,
+      "betmgm|rush_attempts|game": 149,
+      "betmgm|longest_completion|game": 58,
+      "betmgm|field_goals_made|game": 21,
+      "betmgm|kicking_points|game": 7,
+      "betmgm|longest_reception|game": 52,
+      "betmgm|rushing_yards_1h|game": 205,
+      "betmgm|receiving_yards_1h|game": 555,
+      "betmgm|rushing_yards_1q|game": 164,
+      "betmgm|receiving_yards_1q|game": 444,
+      "betmgm|passing_yards_1h|game": 96,
+      "betmgm|passing_tds_1q|game": 75,
+      "betmgm|passing_tds_1h|game": 88,
+      "betmgm|passing_yards_1q|game": 110,
+      "kalshi|passing_yards|game": 26,
+      "kalshi|rushing_yards|game": 76,
+      "kalshi|receiving_yards|game": 160,
+      "kalshi|receptions|game": 158,
+      "kalshi|passing_tds|game": 26,
+      "kalshi|rush_rec_yards|game": 38,
+      "kalshi|pass_attempts|game": 26,
+      "kalshi|pass_completions|game": 26,
+      "kalshi|interceptions|game": 26,
+      "kalshi|rush_attempts|game": 45,
+      "kalshi|longest_reception|game": 147,
+      "kalshi|longest_rush|game": 55,
+      "kalshi|touchdowns|game": 570,
+      "kalshi|defense_touchdowns|game": 28,
+      "kalshi|first_touchdown_scorer|game": 292,
+      "novig|first_touchdown_scorer|game": 363,
+      "novig|interceptions|game": 24,
+      "novig|pass_rush_yards|game": 23,
+      "novig|pass_attempts|game": 24,
+      "novig|pass_completions|game": 24,
+      "novig|passing_tds|game": 26,
+      "novig|passing_yards|game": 26,
+      "novig|receiving_yards|game": 166,
+      "novig|receptions|game": 167,
+      "novig|rush_rec_yards|game": 39,
+      "novig|rush_attempts|game": 43,
+      "novig|rushing_yards|game": 79,
+      "novig|touchdowns|game": 371,
+      "betmgm|extra_points_made|game": 6,
+      "draftkings|touchdowns_2q|game": 25
+    }
+  },
+  "supplement": {
+    "warning": "Supplemental odds returned 401",
+    "events": 0,
+    "categories": {},
+    "namedBookQuotes": 0,
+    "qualifyingQuarter": {
+      "q1_passing_yards": [],
+      "q1_receiving_yards": [],
+      "q1_rushing_yards": []
+    }
+  },
+  "officialSchedule": {
+    "week": 10,
+    "currentWeekGames": 14,
+    "todayTorontoGames": 12,
+    "liveAtCapture": "New England Patriots at Detroit Lions, international 09:30 kickoff"
+  },
+  "availabilityCheck": "Official summaries checked for all 14 weekly fixtures. No matched unavailable player among the captured Passing Yards, Rushing Yards, Receiving Yards, Receptions and Anytime TD boards; matched Questionable reports remain eligible. Missing reports do not certify availability.",
+  "featuredAtCapture": {
+    "play": null,
+    "value": null,
+    "first": "Jonathan Mingo",
+    "long": "Jahmyr Gibbs",
+    "note": "Existing quote/research qualification policies remain intact; no replacement probabilities or picks."
+  },
+  "research": {
+    "ready": true,
+    "receipts": 884,
+    "grades": 658,
+    "completedCycles": 134,
+    "lastStorageError": null
+  },
+  "cw08Bundle": {
+    "bytes": 151874,
+    "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+  },
+  "tests": {
+    "fullSuite": {
+      "passed": 793,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --test --test-concurrency=4 tests/*.test.mjs"
+    },
+    "typeScriptDiagnostics": 0,
+    "focused": 13,
+    "browserMarkets": 17,
+    "browserPageErrors": 0,
+    "productionBuild": "passed",
+    "combinedFrozenDryRun": "passed",
+    "cw08ByteIdentity": "passed"
+  },
+  "remaining": [
+    "Live candidate source-fetch/queue/browser verification requires approved deployment. Candidate counts are actual recorded live data replayed through the candidate, not newly served production counts.",
+    "Supplemental odds returns HTTP 401; healthy primary feed remains available. No credentials were read, changed or requested.",
+    "Model validation failures and unavailable fitted markets/quarter history remain limitations. Restoring rankings does not validate probabilities or create betting selections.",
+    "Additional quarter catalog categories remain hidden under the existing active-market policy; no new market/model was released. NFL-only Q1 QB rushing/scorer alias parsing is covered by causal tests; full new provider-population counts await authorized live deployment."
+  ],
+  "sourceCommit": "15d1479743e8ee51de6ff45b452c79e44624f52d",
+  "bundleDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
+  "archiveSha256": "4fb9f923d2f6aad814b10fcd61c6e0bf908bdea817d69e99d37cc672f78f5544",
+  "nhlCompiledReplay": {
+    "scope": "LOCAL production-bundle replay of recorded November 14 official schedule and original saved picks; empty current rosters/odds; fixed 2026-11-15T03:05Z clock; no live writes",
+    "boards": [
+      {
+        "market": "shots_on_goal",
+        "rows": 11,
+        "ms": 1154,
+        "coverage": {
+          "status": "complete",
+          "restored": 11,
+          "added": 11
+        }
+      },
+      {
+        "market": "points",
+        "rows": 5,
+        "ms": 256,
+        "coverage": {
+          "status": "complete",
+          "restored": 5,
+          "added": 5
+        }
+      },
+      {
+        "market": "assists",
+        "rows": 14,
+        "ms": 204,
+        "coverage": {
+          "status": "complete",
+          "restored": 14,
+          "added": 14
+        }
+      },
+      {
+        "market": "goalie_saves",
+        "rows": 11,
+        "ms": 208,
+        "coverage": {
+          "status": "complete",
+          "restored": 11,
+          "added": 11
+        }
+      }
+    ],
+    "job": {
+      "status": 200,
+      "body": {
+        "jobs": [
+          {
+            "id": "actual-bundle",
+            "kind": "capture",
+            "sport": "nhl",
+            "market": "shots_on_goal",
+            "created": 1794711900000,
+            "state": "active",
+            "phase": "originals",
+            "cursor": 0,
+            "attempts": 0,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0,
+            "expired": 0,
+            "lastError": null,
+            "usage": {
+              "used": 0,
+              "limit": 220,
+              "costs": {},
+              "cacheHits": 0,
+              "cacheWrites": 0,
+              "checkpointBytes": 0,
+              "completedRequests": 0,
+              "maxActive": 0,
+              "maxReserved": 0,
+              "coalesced": 0,
+              "queuedCancelled": 0,
+              "aborted": 0
+            },
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": 1794756338103,
+              "stalledAttempts": 0,
+              "needsAttention": false
+            },
+            "reservedAt": 1794756338103,
+            "retryAt": 1794756337928
+          }
+        ],
+        "lease": null,
+        "cooldown": null
+      }
+    },
+    "outbound": [
+      {
+        "host": "api.nhle.com",
+        "path": "/stats/rest/en/skater/summary"
+      },
+      {
+        "host": "api.nhle.com",
+        "path": "/stats/rest/en/skater/realtime"
+      },
+      {
+        "host": "api.nhle.com",
+        "path": "/stats/rest/en/goalie/summary"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-13"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-14"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-15"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-16"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-17"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-18"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-19"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-20"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-21"
+      },
+      {
+        "host": "api.owlsinsight.com",
+        "path": "/api/v1/nhl/props"
+      },
+      {
+        "host": "api.nhle.com",
+        "path": "/stats/rest/en/skater/summary"
+      },
+      {
+        "host": "api.nhle.com",
+        "path": "/stats/rest/en/skater/realtime"
+      },
+      {
+        "host": "api.nhle.com",
+        "path": "/stats/rest/en/goalie/summary"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-13"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-14"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-15"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-16"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-17"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-18"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/standings/2026-11-14"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-19"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-20"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/score/2026-11-21"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/SEA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/CAR/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/WPG/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/CHI/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/MIN/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/BOS/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/BOS/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/EDM/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/TOR/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/COL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/MTL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/DET/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/TBL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/EDM/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/TOR/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/COL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/MTL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/DET/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/TBL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/CBJ/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/PHI/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/WSH/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/NJD/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/PIT/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/OTT/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/OTT/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/PIT/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/NJD/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/WSH/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/PHI/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/CBJ/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/FLA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/STL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/BUF/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/DAL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/SJS/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/UTA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/FLA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/STL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/BUF/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/DAL/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/SJS/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/UTA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/NYI/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/ANA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/CGY/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/LAK/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/NYI/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/ANA/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/CGY/current"
+      },
+      {
+        "host": "api-web.nhle.com",
+        "path": "/v1/roster/LAK/current"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_originals"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_picks"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_originals"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_picks"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_originals"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_picks"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_originals"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_picks"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_originals"
+      },
+      {
+        "host": "db.supabase.co",
+        "path": "/rest/v1/worker_pregame_picks"
+      }
+    ]
+  },
+  "logSha256": {
+    "browser-candidate.log": "9e3af20c0de9d3c5b6c0717a4851b80f0aeb54e3c513e38139f0632df7867029",
+    "focused-final.log": "e2fd6eabd240f0cb32759c474375cfab3a77614c81028890a0a8abed39212197",
+    "typecheck-final.log": "509db3e3576a5ddeede99380db64011156c8602eb204903675e7cb44eae64ef7",
+    "build-final.log": "000646cba924d2d848de55c936b1fd44f1165d4a26ee353efe7ed0285a50bdb9",
+    "combined-dry-run.log": "17ce1068c40e18118553582c3c780437056ce770b0e889952d8d3f81f2c1f616",
+    "route-cache.log": "61f40589f2d2231554b7057c5b99233b4f41c466a47f65b0e01da2004d5f3f8e",
+    "nhl-production-replay.log": "e2cd0c9bd348097b637b528a310e255ec81db69f4ccca49d015737599edab497",
+    "full-regression-final.log": "abd6ca264647cdc66f9f0ce642594c09fa718d5fa0f58a5077eea0a100b30dae"
+  },
+  "recordedFixtureSha256": "2bd66ccc6afcccf8b7965654f4a6aa1d9edd17b6244d5e1e5f3d9239ba161d70",
+  "researchFinalHealth": {
+    "ready": true,
+    "receipts": 886,
+    "grades": 658,
+    "pendingUploads": 0,
+    "completedCycles": 136,
+    "lastStorageError": null
+  },
+  "liveApiSummary": [
+    {
+      "market": "passing_yards",
+      "seconds": 1.37,
+      "rows": 16,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 15,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 16
+      }
+    },
+    {
+      "market": "passing_tds",
+      "seconds": 1.3,
+      "rows": 16,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 15,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 16
+      }
+    },
+    {
+      "market": "passing_interceptions",
+      "seconds": 0.48,
+      "rows": 16,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 15,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 16
+      }
+    },
+    {
+      "market": "qb_rushing_yards",
+      "seconds": 0.46,
+      "rows": 16,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 15,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 16
+      }
+    },
+    {
+      "market": "passing_rushing_yards",
+      "seconds": 0.5,
+      "rows": 16,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 15,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 16
+      }
+    },
+    {
+      "market": "rushing_yards",
+      "seconds": 1.13,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 25,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "rushing_tds",
+      "seconds": 3.25,
+      "rows": 54,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 54,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 54
+      }
+    },
+    {
+      "market": "receiving_yards",
+      "seconds": 1.16,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 25,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "receptions",
+      "seconds": 0.52,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 25,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "rushing_receiving_yards",
+      "seconds": 0.79,
+      "rows": 21,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 21,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 21
+      }
+    },
+    {
+      "market": "anytime_td",
+      "seconds": 0.74,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 23,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "first_td",
+      "seconds": 0.62,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "q1_passing_yards",
+      "seconds": 0.41,
+      "rows": 16,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 16
+      }
+    },
+    {
+      "market": "q1_receiving_yards",
+      "seconds": 1.12,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "q1_receptions",
+      "seconds": 0.51,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "q1_qb_rushing_yards",
+      "seconds": 2.26,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "q1_rushing_yards",
+      "seconds": 0.64,
+      "rows": 25,
+      "success": true,
+      "error": null,
+      "source": "Saved pregame NFL slate boards",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {
+        "null": 25
+      }
+    },
+    {
+      "market": "q1_pass_attempts",
+      "seconds": 0.63,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "q1_pass_completions",
+      "seconds": 1.22,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "q1_rushing_receiving_yards",
+      "seconds": 2.47,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "q1_anytime_td",
+      "seconds": 0.87,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "q1_rush_attempts",
+      "seconds": 2.08,
+      "rows": 0,
+      "success": true,
+      "error": null,
+      "source": "Owls Insight + frozen daily slate",
+      "projection": 0,
+      "confidence": 0,
+      "pick": 0,
+      "forecast": {}
+    },
+    {
+      "market": "sacks",
+      "rows": 24,
+      "source": "Saved pregame NFL slate boards",
+      "seconds": 1.45
+    },
+    {
+      "market": "tackles",
+      "rows": 25,
+      "source": "Saved pregame NFL slate boards",
+      "seconds": 0.76
+    },
+    {
+      "market": "tackles_assists",
+      "rows": 25,
+      "source": "Saved pregame NFL slate boards",
+      "seconds": 0.86
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+full-regression-final.log
+✔ walk-forward reports coverage and grouped errors without promoting a model; duplicate records rejected (84.077738ms)
+ℹ tests 793
+ℹ suites 0
+ℹ pass 793
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 165533.332961
+
+focused-final.log
+✔ a fresh job-published KV board fills later blocks while preserving the original early row (15.18439ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2861.782174
+
+npx tsc --noEmit: exit 0, no diagnostics.
+
+npm run build:vinext: exit 0.
+
+node scripts/prepare-dashboard-retry-release.mjs --dry-run --combined: exit 0; no upload.
+
+Production candidate browser: 17 active NFL tabs, zero page errors, original rows retained; captured live API replay only.
+
+CW08 bundle: unchanged 151874 bytes, SHA256 c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4.

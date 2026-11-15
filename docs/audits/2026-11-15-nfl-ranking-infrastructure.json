@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-15T15:16:25.251Z",
+  "dashboardDeployment": "1eae6b6f-78f4-4ad6-8f25-f43e6053465a",
+  "dashboardVersion": [
+    {
+      "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "percentage": 100
+    }
+  ],
+  "fallbackAvailable": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "buildFilters": [
+    [
+      "__cw08_manual_release_only__"
+    ]
+  ],
+  "researchDeployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "researchSchedules": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  }
+}
