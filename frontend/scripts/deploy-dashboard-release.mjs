@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {resolve,dirname,join,relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 export const APPROVED_SOURCE='a949453dac8d3ae08a3feeca99dc55fe1991d267';
-export const APPROVED_DIGESTS=Object.freeze({candidate:'e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead',fallback:'81ed89014b81e2acc7aeebe0494d04d27fbbb3db14381c5c6560d3270be352a8'});
+export const APPROVED_DIGESTS=Object.freeze({candidate:'e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead',fallback:'86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f'});
 const app=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const release=join(app,'releases/dashboard-capture-2026-11-14');
 export const sha=value=>createHash('sha256').update(value).digest('hex');
