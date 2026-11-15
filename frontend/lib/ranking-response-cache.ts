@@ -1,3 +1,4 @@
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 /** Reuse completed boards across cards and summaries; refresh without blocking
  * navigation. Never carry a pregame response through a tipoff or calendar day. */
 const memory=globalThis as typeof globalThis&{__rankingResponses?:Map<string,{at:number;value:any;boundary:number}>,__rankingRequests?:Map<string,Promise<any>>,__nhlRankingStarted?:Map<string,number>};
@@ -5,6 +6,8 @@ const cache=memory.__rankingResponses??=new Map();
 const pending=memory.__rankingRequests??=new Map();
 const starts=memory.__nhlRankingStarted??=new Map<string,number>();
 export async function rankingResponse(key:string,build:()=>Promise<any>,force=false,options:{keepAlive?:(work:Promise<any>)=>void;timeoutMs?:number}={}){
+ const job=dashboardJobContext();
+ if(job){const value=await build();job.assertActive();return value;}
  const hockey=key.startsWith("nhl|"),timeout=options.timeoutMs??25000;
  const now=Date.now(),day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto'}).format(now),id=day+'|'+key;
  const hit=cache.get(id);

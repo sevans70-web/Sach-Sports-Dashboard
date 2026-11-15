@@ -5,7 +5,7 @@
 // Only active professional sports receive new scheduled API requests.
 // Archived college records remain available for historical display and backup.
 const SPORTS=['nba','nhl','nfl'];
-const ROUTES={
+export const ROUTES={
  nba:'/api/basketball/live-player-stats?sport=nba&gameId=',
  cbb:'/api/basketball/live-player-stats?sport=cbb&gameId=',
  nfl:'/api/football/live-player-stats?sport=nfl&gameId=',
@@ -18,13 +18,13 @@ function credentials(env){
  if(!key||!/^https:\/\//.test(base))throw Error('Protected grading database unavailable');
  return {base,headers:{apikey:key,...(key.startsWith('sb_secret_')?{}:{Authorization:'Bearer '+key}),Accept:'application/json','Content-Type':'application/json'}};
 }
-async function readDb(env,path,fetchImpl){
+export async function readDb(env,path,fetchImpl){
  const {base,headers}=credentials(env);
  const response=await fetchImpl(base+'/rest/v1/'+path,{headers,cache:'no-store',signal:AbortSignal.timeout(18000)});
  if(!response.ok)throw Error('Official grading read HTTP '+response.status);
  return response.json();
 }
-async function writeDb(env,path,items,fetchImpl){
+export async function writeDb(env,path,items,fetchImpl){
  const {base,headers}=credentials(env);
  const response=await fetchImpl(base+'/rest/v1/'+path,{method:'POST',headers:{...headers,Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify(items),cache:'no-store',signal:AbortSignal.timeout(18000)});
  if(!response.ok)throw Error('Official grading save HTTP '+response.status);

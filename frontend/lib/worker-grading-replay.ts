@@ -52,7 +52,8 @@ export function createWorkerGradingReplay(sport:string){
     }
    }
   },
-  async verify(fetchRoute:(path:string)=>Promise<Response>,saveCorrections?:(finals:any[])=>Promise<void>,batchIndex=0){
+  gameIds(){return [...finals.keys()].sort();},
+  async verify(fetchRoute:(path:string)=>Promise<Response>,saveCorrections?:(finals:any[])=>Promise<void>,batchIndex=0,onlyGame?:string){
    // Check every archived authenticated FINAL, not only games that happen
    // to include a qualified research pick in protected_pregame documents.
    // Immutable worker-model picks are saved separately and may be omitted
@@ -69,7 +70,7 @@ export function createWorkerGradingReplay(sport:string){
    const ordered=[...games].sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0]));
    const index=Number.isFinite(batchIndex)?Math.max(0,Math.floor(batchIndex)):0;
    const start=ordered.length?(index*2)%ordered.length:0;
-   const candidates=Array.from({length:Math.min(2,ordered.length)},(_,i)=>ordered[(start+i)%ordered.length]);
+   const candidates=onlyGame?ordered.filter(([game])=>game===onlyGame):Array.from({length:Math.min(2,ordered.length)},(_,i)=>ordered[(start+i)%ordered.length]);
    let checked=0,matched=0,differences=0,unavailable=0;
    const corrections=[];
    for(const [game,rows] of candidates){

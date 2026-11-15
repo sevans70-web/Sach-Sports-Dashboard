@@ -100,16 +100,17 @@ async function db(env,path,init={},read=globalThis.fetch){
 }
 /** Every capture and selection is an immutable insert. Database primary keys
  * and insert-only grants make overlapping Cron ticks safe. */
-export async function saveImmutablePregameRows(env,table,quotes,reader=globalThis.fetch){
+export async function saveImmutablePregameRows(env,table,quotes,reader=globalThis.fetch,options={}){
  if(!['worker_pregame_originals','worker_pregame_picks'].includes(table))throw Error('Invalid pregame storage table');
  let stored=0;
  for(const day of [...new Set(quotes.map(q=>q.game_date))]){
   const input=quotes.filter(q=>q.game_date===day);
   const sport=input[0].sport,market=input[0].market;
-  const params=new URLSearchParams({select:'game_id,player_id,checksum',sport:'eq.'+sport,market:'eq.'+market,game_date:'eq.'+day,limit:'2000'});
+  const params=new URLSearchParams({select:'game_id,player_id,checksum',sport:'eq.'+sport,market:'eq.'+market,game_date:'eq.'+day,limit:'2000',...(options.requirePregame?{game_id:'in.('+[...new Set(input.map(q=>q.game_id))].join(',')+')',player_id:'in.('+[...new Set(input.map(q=>q.player_id))].join(',')+')'}:{})});
   const existing=await db(env,table+'?'+params.toString(),{},reader);
   const seen=new Set((Array.isArray(existing)?existing:[]).map(r=>r.game_id+'|'+r.player_id));
-  const fresh=input.filter(q=>!seen.has(q.game_id+'|'+q.player_id));
+  const fresh=input.filter(q=>{if(seen.has(q.game_id+'|'+q.player_id))return false;
+   if(options.requirePregame&&Date.parse(q.game_time)<=Date.now()+30000){options.onExpired?.(q);return false;}return true;});
   if(!fresh.length)continue;
   await db(env,table+'?on_conflict=sport,market,game_id,player_id',
    {method:'POST',prefer:'resolution=ignore-duplicates,return=minimal',body:JSON.stringify(fresh)},reader);

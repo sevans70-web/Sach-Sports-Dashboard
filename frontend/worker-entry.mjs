@@ -1,32 +1,16 @@
 import dashboard from 'vinext/server/fetch-handler';
 import {cachePregameBoard,readPregameBoard} from './lib/ranking-board-cache';
 import {recordRankingMarket} from './lib/ranking-market-coverage';
-import {PREGAME_MARKETS,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON,scheduledPregameCapture} from './scripts/worker-pregame-capture.mjs';
-import {gradeSavedWorkerPicks} from './scripts/worker-pregame-grade.mjs';
+import {PREGAME_MARKETS,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from './scripts/worker-pregame-capture.mjs';
+import {dashboardJobClass,enqueueDashboardTick} from './jobs/coordinator.mjs';
 import {createWorkerGradingReplay} from './lib/worker-grading-replay';
 import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
-import {archiveWorkerHistoryDay,workerHistoryBackupScope,readWorkerRecentReplayDay} from './scripts/worker-history-backup.mjs';
+import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker-history-backup.mjs';
 import {archiveWorkerPregameDay} from './scripts/worker-pregame-backup.mjs';
 
-/** Run bounded official FINAL replay after the existing pregame cron.
- * The 2-minute cron belongs to PREGAME_CAPTURE_CRON, so routing recent
- * replay only in the 'unknown cron' fallback meant it NEVER executed. */
-async function recentReplayTick(env,ctx,scheduledTime){
- const scope=workerHistoryBackupScope(scheduledTime,true);
- const replay=createWorkerGradingReplay(scope.sport);
- try{
-  const source=await readWorkerRecentReplayDay(env,scope,replay.consume);
-  console.info('[sach-staging-grading-source]',JSON.stringify(source));
-  const comparison=await replay.verify(
-   path=>dashboard.fetch(new Request('https://sach-staging.internal'+path),env,ctx),
-   finals=>saveWorkerFinalCorrections(env.VINEXT_KV_CACHE,scope.sport,scope.day,finals),
-   Math.floor(scheduledTime/(6*60_000)),
-  );
-  console.info('[sach-staging-grading-replay]',JSON.stringify({...scope,...comparison}));
- }catch(error){
-  console.error('[sach-staging-grading-replay-failed]',error instanceof Error?error.message:'replay failed');
- }
-}
+export const DashboardJobQueue=dashboardJobClass({dashboard,createReplay:createWorkerGradingReplay,saveCorrections:saveWorkerFinalCorrections,
+ publish:(env,sport,market,body)=>Promise.all([cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body)]),
+});
 
 export * from 'vinext/server/fetch-handler';
 
@@ -52,29 +36,9 @@ export default {
   return response;
  },
  async scheduled(controller,env,ctx){
-  if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *'){
-   try{
-    const report=await scheduledPregameCapture(env,dashboard,ctx,controller.scheduledTime,controller.cron!==PREGAME_CAPTURE_CRON,
-     (sport,market,body)=>Promise.all([
-      cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),
-      recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body),
-     ]));
-    console.info('[sach-staging-pregame-capture]',JSON.stringify(report));
-   }catch(error){
-    console.error('[sach-staging-pregame-capture-failed]',error instanceof Error?error.message:'capture failed');
-   }
-   // Use the EXISTING two-minute Cron for independent correction checks.
-   // Do not add a second paid Cron, or let a capture error suppress grading.
-   if(controller.cron===PREGAME_CAPTURE_CRON)await recentReplayTick(env,ctx,controller.scheduledTime);
-   return;
-  }
-  if(controller.cron===PREGAME_GRADE_CRON){
-   try{
-    const settled=await gradeSavedWorkerPicks(env,dashboard,ctx,controller.scheduledTime);
-    console.info('[sach-staging-original-grades]',JSON.stringify(settled));
-   }catch(error){
-    console.error('[sach-staging-original-grades-failed]',error instanceof Error?error.message:'grading failed');
-   }
+  if([PREGAME_CAPTURE_CRON,'*/5 * * * *',PREGAME_GRADE_CRON].includes(controller.cron)){
+   const queued=await enqueueDashboardTick(controller,env);
+   console.info('[dashboard-job-enqueued]',JSON.stringify(queued));
    return;
   }
   // The other configured cron handles DAILY archive of the oldest

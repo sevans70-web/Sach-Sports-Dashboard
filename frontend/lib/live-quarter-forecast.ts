@@ -1,3 +1,4 @@
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 import {readFileSync} from 'node:fs';import {join} from 'node:path';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';
 import {quarterFeatureIndex,quarterPoint,quarterResidualProbabilities,type QuarterModel,type QuarterObservation} from '@/lib/quarter-forecast';
 import {workerModelRuntime} from '@/lib/worker-model-runtime';
@@ -54,7 +55,12 @@ export function fittedQuarterForecast(row:any,sport:string,market:string,data:Bu
 export async function attachQuarterForecasts(payload:any,sport:'nba'|'nfl',now=Date.now()){
  let data:Bundle;try{data=quarterRuntimeBundle(sport,payload.market||payload.rows[0]?.market)}catch{return {...payload,rows:payload.rows.map((r:any)=>(r.frozen||r.boardFrozen||r.lockedAtKickoff||['in','post'].includes(r.gameState)||Date.parse(r.gameTime)<=now)?r:({...r,researchForecast:unavailable('quarter_snapshot_unavailable')}))}}
  data={...data,observations:data.observations.filter(g=>g.sport===sport&&g.market===(payload.market||payload.rows[0]?.market))};
- const refresh=await Promise.race([refreshQuarterObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),sport,now).catch(()=>({observations:[],unavailablePlayers:[]})),new Promise<{observations:QuarterObservation[];unavailablePlayers:string[]}>(resolve=>setTimeout(()=>resolve({observations:[],unavailablePlayers:[]}),sport==='nfl'?5000:2500))]);
+ const job=dashboardJobContext();
+ const work=refreshQuarterObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),sport,now);
+ // Persistent capture must finish or checkpoint its source refresh. A soft
+ // foreground timeout must never reserve a fallback as the first model pick.
+ const refresh=job?await work:await Promise.race([work.catch(()=>({observations:[],unavailablePlayers:[]})),new Promise<{observations:QuarterObservation[];unavailablePlayers:string[]}>(resolve=>setTimeout(()=>resolve({observations:[],unavailablePlayers:[]}),sport==='nfl'?5000:2500))]);
+ job?.assertActive();
  const key=(g:QuarterObservation)=>[g.sport,g.market,g.gameId,g.playerId].join('|'),merged=new Map(data.observations.map(g=>[key(g),g]));for(const g of refresh.observations)if(g.market===(payload.market||payload.rows[0]?.market))merged.set(key(g),g);
  data={...data,observations:[...merged.values()]};
  const index=quarterFeatureIndex(data.observations);

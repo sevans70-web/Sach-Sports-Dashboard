@@ -1,3 +1,4 @@
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 import {providerFetch} from '@/lib/provider-fetch';
 import {basketballQuarterObservations} from '@/lib/basketball-quarter-observations';
 import {footballModelObservations} from '@/lib/football-model-observations';
@@ -6,9 +7,10 @@ import type {QuarterObservation} from '@/lib/quarter-forecast';
 type Source=(url:string)=>Promise<any>;
 const sources=new Map<string,{until:number;data:any}>(),pending=new Map<string,Promise<any>>();
 async function official(url:string){
+ const job=dashboardJobContext(),pendingKey=(job?.id||'foreground')+'|'+url;job?.assertActive();
  const hit=sources.get(url);if(hit&&hit.until>Date.now())return hit.data;
- if(pending.has(url))return pending.get(url)!;
- const task=(async()=>{const r=await providerFetch(url);if(!r.ok)throw Error('Official quarter source unavailable');const data=await r.json();if(sources.size>=256)sources.delete(sources.keys().next().value!);sources.set(url,{until:Date.now()+15*60000,data});return data})().finally(()=>pending.delete(url));pending.set(url,task);return task;
+ if(pending.has(pendingKey))return pending.get(pendingKey)!;
+ const task=(async()=>{const r=await providerFetch(url);if(!r.ok)throw Error('Official quarter source unavailable');const data=await r.json();if(sources.size>=256)sources.delete(sources.keys().next().value!);sources.set(url,{until:Date.now()+15*60000,data});return data})().finally(()=>pending.delete(pendingKey));pending.set(pendingKey,task);return task;
 }
 /** Share official fixture reads across markets. Only completed prior fixtures
  * older than 48h may refresh inputs. No current/future result is a feature. */

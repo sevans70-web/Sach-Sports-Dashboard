@@ -33,18 +33,16 @@ export function workerHistoryBackupScope(scheduledTime, recent=false){
  * PREGAME receipts. Never run a multipart Google Drive backup every 2 minutes;
  * that is the DAILY job and its failure must not suppress final grading.
  * Verify source checksums before delivering a receipt to the replay. */
-export async function readWorkerRecentReplayDay(env,{sport,day},visit,fetchImpl=fetch){
- if(!SPORTS.has(sport)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day)||typeof visit!=='function')throw Error('Invalid grading replay scope');
+export async function readWorkerRecentReplayPage(env,{sport,day},cursor='',fetchImpl=fetch){
+ if(!SPORTS.has(sport)||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day))throw Error('Invalid grading replay scope');
  const base=String(env?.SUPABASE_URL||'').replace(/\/$/,'');
  const key=String(env?.SUPABASE_SECRET_KEY||'');
  if(!/^https:\/\//.test(base)||!key)throw Error('Protected grading history unavailable');
  const headers={apikey:key,Accept:'application/json',...(key.startsWith('sb_secret_')?{}:{Authorization:'Bearer '+key})};
- let documents=0,finals=0,pregame=0;
  const limit=150;
- for(let offset=0;offset<900;offset+=limit){
   const params=new URLSearchParams({select:'stream,game_date,payload,checksum',sport:'eq.'+sport,game_date:'eq.'+day,
     or:'(stream.like.protected_final_*,stream.like.protected_pregame_*)',
-    order:'stream.asc',limit:String(limit),offset:String(offset)});
+    order:'stream.asc',limit:String(limit),...(cursor?{stream:'gt.'+cursor}:{})});
   const response=await fetchImpl(base+'/rest/v1/history_documents?'+params,{headers,cache:'no-store',signal:AbortSignal.timeout(18000)});
   if(!response.ok)throw Error('Protected grading history read HTTP '+response.status);
   const batch=await response.json();
@@ -53,12 +51,14 @@ export async function readWorkerRecentReplayDay(env,{sport,day},visit,fetchImpl=
   for(const row of batch)if(row.game_date!==day||typeof row.stream!=='string'||
      !/^protected_(?:final|pregame)_[a-z0-9_-]+$/.test(row.stream)||checksum(row.payload)!==row.checksum)
       throw Error('Protected grading history checksum mismatch');
-  for(const row of batch){
-   visit({stream:row.stream,payload:row.payload});
-   documents++;
-   if(row.stream.startsWith('protected_final_'))finals++;else pregame++;
-  }
-  if(batch.length<limit)return {sport,day,documents,finals,pregame};
+ return {rows:batch,cursor:batch.at(-1)?.stream||cursor,done:batch.length<limit};
+}
+export async function readWorkerRecentReplayDay(env,scope,visit,fetchImpl=fetch){
+ let cursor='',documents=0,finals=0,pregame=0;
+ for(let page=0;page<6;page++){
+  const result=await readWorkerRecentReplayPage(env,scope,cursor,fetchImpl);
+  for(const row of result.rows){visit({stream:row.stream,payload:row.payload});documents++;if(row.stream.startsWith('protected_final_'))finals++;else pregame++;}
+  if(result.done)return {...scope,documents,finals,pregame};cursor=result.cursor;
  }
  throw Error('Protected grading history exceeded bounded replay pagination');
 }

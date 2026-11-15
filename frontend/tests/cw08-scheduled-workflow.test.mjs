@@ -57,7 +57,9 @@ test('scheduled Cloudflare workflow preserves seeds, serializes, recovers upload
   await call('lease',{token:'other-owner',until:initial+120000});const before=await call('inspect');await call('step');assert.deepEqual((await call('inspect')).cycles,before.cycles);await call('clearLease');
   // A real 429 in roster collection must retain its cursor and survive eviction.
   rateLimitRemaining=1;
-  for(let i=0;i<10&&(await status()).active[0]?.lastError!=='source_http_429';i++)await call('step');
+  // As the real day advances, more immutable seed fixtures reach grading
+  // before collection. Wait for the asserted phase outcome, not ten alarms.
+  for(let i=0;i<80&&(await status()).active[0]?.lastError!=='source_http_429';i++)await call('step');
   let limited=await status();assert.equal(limited.active[0].lastError,'source_http_429');assert.ok(limited.active[0].retryAt>=initial+120000);
   let limitedJob=JSON.parse((await call('inspect')).cycles.find(c=>c.state==='active').data);assert.equal(limitedJob.cursor,0);
   const requestsBeforePause=outbound.length;await call('step');assert.equal(outbound.length,requestsBeforePause);assert.equal((await status()).receipts,339);
