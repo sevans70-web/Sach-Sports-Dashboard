@@ -86,7 +86,7 @@ export async function readSavedNhlCardRows(market:string,players:any[],now=Date.
 }
 
 export async function attachRecordedProgressLines(payload:any,sport:string,now=Date.now()){
- if(!Array.isArray(payload?.rows))return payload;
+ if(!Array.isArray(payload?.rows)||sport==='nhl'&&payload.nhlSavedEvidenceChecked===true)return payload;
  const rows=payload.rows,needed=rows.filter((r:any)=>(sport==='nhl'||r.sportsbookLine==null)&&r.gameId&&r.playerId&&Date.parse(r.gameTime)<=now);
  if(!needed.length)return payload;
  const quotes=new Map<any,any>(),restored=new Map<any,any>();
@@ -113,4 +113,37 @@ export async function attachRecordedProgressLines(payload:any,sport:string,now=D
   if(sport==='nhl'&&quote)return {...row,...quote,quoteVerified:true,boardFrozen:true,boardCapturedAt:quote.capturedAt};
   return row.sportsbookLine!=null?row:{...row,progressQuote:quote||null};
  })};
+}
+
+/** Restore exact started-game evidence across the slate BEFORE any new top-N
+ * selection. A moved live book or a new baseline rank cannot elect history. */
+export function mergeSavedNhlSlateRows(rows:any[],market:string,games:any[],originals:any[],picks:any[],now=Date.now()){
+ const fixtures=new Map(games.filter(g=>Date.parse(g.tipoff)<=now).map(g=>[String(g.gameId),g]));
+ const current=new Map(rows.map(r=>[`${r.playerId}|${r.gameId}`,r]));
+ const original=new Map(originals.map(r=>[`${r.player_id}|${r.game_id}`,r]));
+ const selected=new Map(picks.map(r=>[`${r.player_id}|${r.game_id}`,r]));
+ let restored=0,added=0;
+ for(const [key,record] of new Map([...original,...selected])){
+  const game=fixtures.get(String(record.game_id)),receipt=record.payload;if(!game||!receipt||record.market!==market)continue;
+  if(![game.awayAbbr,game.homeAbbr].includes(receipt.teamName))continue;
+  const existing=current.get(key),row=existing||{sport:'nhl',market,playerId:String(record.player_id),playerName:receipt.playerName,
+   gameId:String(game.gameId),gameTime:game.tipoff,teamId:receipt.teamName,teamName:receipt.teamName,
+   matchup:receipt.matchup,gameState:game.state,gameStatus:game.status,rank:rows.length+added+1};
+  const saved=savedNhlCardRow(row,original.get(key),selected.get(key),now);if(!saved)continue;
+  current.set(key,{...saved,marketBacked:true,savedEvidenceSource:'immutable_pregame'});restored++;if(!existing)added++;
+ }
+ return {rows:[...current.values()],restored,added};
+}
+
+export async function restoreSavedNhlSlate(payload:any,games:any[],now=Date.now()){
+ const ids=[...new Set<string>(games.filter(g=>Date.parse(g.tipoff)<=now).map(g=>String(g.gameId)).filter(id=>/^\d{1,24}$/.test(id)))];
+ if(!ids.length)return {...payload,nhlSavedEvidenceChecked:true,savedEvidenceCoverage:{status:'not_needed',restored:0,added:0}};
+ if(!cloudConfigured())return {...payload,nhlSavedEvidenceChecked:true,savedEvidenceCoverage:{status:'unavailable',reason:'Saved pregame storage is not configured',restored:0,added:0}};
+ const query=new URLSearchParams({select:'sport,market,game_id,player_id,game_time,quote_updated_at,sportsbook_line,prediction_side,checksum,payload',sport:'eq.nhl',market:'eq.'+payload.market,game_id:`in.(${ids.join(',')})`,limit:'1000'});
+ const sources=await Promise.allSettled(['worker_pregame_originals','worker_pregame_picks'].map(table=>cloudRequest(table+'?'+query,{signal:AbortSignal.timeout(3500)})));
+ const data=sources.map(r=>r.status==='fulfilled'&&Array.isArray(r.value)?r.value:[]);
+ const merged=mergeSavedNhlSlateRows(payload.rows,payload.market,games,data[0],data[1],now);
+ const complete=sources.every(r=>r.status==='fulfilled')&&data.every(r=>r.length<1000);
+ return {...payload,rows:merged.rows,nhlSavedEvidenceChecked:true,savedEvidenceCoverage:{status:complete?'complete':'partial',restored:merged.restored,added:merged.added,
+  ...(!complete?{reason:'Some saved pregame evidence could not be verified'}:{})}};
 }

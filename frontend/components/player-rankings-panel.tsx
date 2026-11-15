@@ -1791,6 +1791,7 @@ export function PlayerRankingsPanel({
   const [pendingHeight,setPendingHeight]=useState(0);
   const cardsRegionRef=useRef<HTMLDivElement|null>(null);
   const [error, setError] = useState("");
+  const [nhlCoverage,setNhlCoverage]=useState<{market:string;slate:string;message:string}|null>(null);
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
   const [nbaSlate,setNbaSlate]=useState("active");
@@ -2138,6 +2139,7 @@ export function PlayerRankingsPanel({
           }
 
           if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
+          if(sport==='nhl')setNhlCoverage({market:requestedMarket,slate:nhlSlate,message:rankingPayload.coverageNotice||''});
           const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
           const scoped=sport==='nba'?scopedNbaBoard(rankingPayload,requestedMarket,requestedDay||rankingPayload?.boardDay||nbaFixtureDay(new Date())):rankingPayload;
           rawRows = scoped?.rows || [];
@@ -2699,6 +2701,7 @@ export function PlayerRankingsPanel({
         <div className={styles.state}>{error}</div>
       ) : null}
 
+      {sport==='nhl'&&!loading&&!error&&nhlCoverage?.market===market.key&&nhlCoverage.slate===nhlSlate&&nhlCoverage.message?<p role="status">{nhlCoverage.message}</p>:null}
       <div className={styles.cards} ref={cardsRegionRef} style={loading&&pendingHeight?{minHeight:pendingHeight}:undefined} aria-busy={loading}>
         {loading&&!displayCards.length?<div className={styles.skeletonStack} aria-label={`Loading ${market.label} rankings`}>
           {[0,1,2].map(item=><div className={styles.skeletonCard} key={item}><i/><span/><b/><em/></div>)}

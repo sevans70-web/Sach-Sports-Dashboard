@@ -1,3 +1,4 @@
+import {refreshNhlObservations} from '@/lib/live-nhl-observations';
 import {nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {workerModelRuntime} from "@/lib/worker-model-runtime";
 import {attachQuarterForecasts} from '@/lib/live-quarter-forecast';
@@ -154,13 +155,19 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   forecastBlockers:{market_model_not_fitted:payload.rows.length},fittedResearchForecastCount:0,modelSelectionCount:0};
  // Reuse the same official gamelog URL/cache as the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
- if((sport==='nfl'||sport==='nhl')&&payload.market!=='sacks'){
-  const pricedGoalies=sport==='nhl'&&payload.market==='goalie_saves';
+ let hockeyRefreshUnavailable=new Set<string>();
+ if(sport==='nhl'&&!options.offlineOnly){
+  const refresh=await refreshNhlObservations(payload.rows,now);hockeyRefreshUnavailable=new Set(refresh.unavailablePlayers);
+  const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]};
+  payload={...payload,officialHistoryCoverage:{requested:refresh.requestedPlayers,unavailable:refresh.unavailablePlayers.length,budgetExceeded:refresh.budgetExceeded}};
+ }
+ if(sport==='nfl'&&payload.market!=='sacks'){
+  const pricedGoalies=false;
   const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
-   const season=String(row.season),url=sport==='nhl'?`https://api-web.nhle.com/v1/player/${encodeURIComponent(row.playerId)}/game-log/${encodeURIComponent(season)}/2`:`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
-   try{const r=await providerFetch(url);if(!r.ok)return;const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()};const payload=await r.json();updates.push(...(sport==='nhl'?nhlOpportunityGames(payload,identity):espnOpportunityGames(payload,identity)))}catch{}
+   const season=String(row.season),url=`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
+   try{const r=await providerFetch(url);if(!r.ok)return;const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()};const payload=await r.json();updates.push(...espnOpportunityGames(payload,identity))}catch{}
   }));
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
@@ -181,7 +188,7 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){
   const preserveNba=keepNbaOriginal(r,sport,String(payload.market||r.market||''),now);
-  const row={...r,researchForecast:preserveNba?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:basketballRefreshUnavailable.has(String(r.playerId))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  const row={...r,researchForecast:preserveNba?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:(basketballRefreshUnavailable.has(String(r.playerId))||hockeyRefreshUnavailable.has(String(r.playerId)))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
   // Record the actual pregame decision/capture time for a fresh selection
   // or an NBA comparison. A comparison must not inherit an older board
   // timestamp merely because it did not qualify as a betting selection.

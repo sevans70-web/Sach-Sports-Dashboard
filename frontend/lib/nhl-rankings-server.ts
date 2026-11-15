@@ -1,3 +1,6 @@
+import {after} from 'next/server';
+import {restoreSavedNhlSlate} from '@/lib/recorded-progress';
+import {completeRankingProp} from '@/lib/public-card-metrics';
 import {limitAvailablePregameRankings} from '@/lib/ranking-availability';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
@@ -28,12 +31,13 @@ async function owls(){
  return {data};
 }
 function board(payload:any,market:NhlMarketKey){return mainMarketQuotes(payload,market,p=>match(p.category??p.market??p.type,market))}
-function requireNhlSources(overview:any){
- if(overview.scheduleAvailable===false||overview.playerSourceAvailable===false)throw Error('NHL official schedule or player source unavailable; counts cannot be verified');
+function requireNhlSources(overview:any,allowPartialPlayers=false){
+ if(overview.scheduleAvailable===false||!allowPartialPlayers&&overview.playerSourceAvailable===false)throw Error('NHL official schedule or player source unavailable; counts cannot be verified');
 }
 async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="today"){
  const [overview,payload]=await Promise.all([loadNhlOverview(slate),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
- requireNhlSources(overview);
+ requireNhlSources(overview,true);
+ const sourceCoverage={scheduleAvailable:true,playerSourceAvailable:overview.playerSourceAvailable!==false,warnings:overview.warnings||[]};
  const tomorrowDay=nhlSlateDay("tomorrow");
  const todayGames=slate==="tomorrow"?overview.games.filter(g=>g.tipoff&&nhlDay(g.tipoff)===tomorrowDay):activeRankingSlate(overview.games,nhlDay),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
  for(const x of b){const p=byName.get(cleanNhlName(x.playerName));if(!p||!activeTeams.has(p.team)||(m==='goalie_saves'&&p.position!=='G'))continue;const game=uniqueQuoteFixture(x,todayGames,p.team,15*60_000);if(!game)continue;const base=playerBaseline(p,m),edge=base!=null&&x.line!=null?base-x.line:null,reliability=Math.min(1,(p.gamesPlayed||0)/30),gi=Math.round((55+Math.min(25,Math.abs(edge||0)*7)+reliability*15)*10)/10;rows.push({...footballQuoteFields(x),providerGameTime:x.gameTime,providerMatchup:x.matchup,playerId:p.playerId,playerName:p.playerName,teamId:p.team,season:game.season,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:x.line,bookmakerCount:x.bookmakerCount,modelProjection:base,modelProbability:edge==null?null:Math.max(50,Math.min(82,Math.round((55+Math.abs(edge)*5+reliability*5)*10)/10)),giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:`${overview.season} baseline ${base==null?"loading":base.toFixed(2)} vs verified line ${x.line}. GI adds recent-season sample reliability, role and active matchup context.`})}
@@ -47,9 +51,9 @@ async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="toda
  const pregamePool=started?pool:pool.map(row=>({row,priced:verifiedPropQuote({...row,market:m},now)}))
   .sort((a,b)=>Number(b.priced)-Number(a.priced))
   .map(({row})=>row);
- const ranked=(started?pregamePool.slice(0,25):pregamePool).map((x,i)=>({...x,rank:i+1}));
+ const ranked=pregamePool.map((x,i)=>({...x,rank:i+1}));
  // A tomorrow preview must not be written into today's settled/locked history.
- if(slate==="tomorrow")return {success:true,market:m,slate:"tomorrow",boardDay:tomorrowDay,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"NHL upcoming sportsbook markets":"NHL upcoming schedule; quotes pending"};
+ if(slate==="tomorrow")return {success:true,market:m,sourceCoverage,slateGames:todayGames,slate:"tomorrow",boardDay:tomorrowDay,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"NHL upcoming sportsbook markets":"NHL upcoming schedule; quotes pending"};
  const saved=await saveNhlSlate(m,ranked,false);
  const byKey=new Map(saved.predictions.map(p=>[String(p.playerId)+"|"+p.gameId,p]));
  const frozen=ranked.map(row=>{
@@ -58,7 +62,7 @@ async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="toda
    const started=row.gameState==="in"||row.gameState==="post"||Boolean(p.gameTime&&Date.parse(p.gameTime)<=Date.now());
    return {...row,...recordNoteFields(p),rank:row.rank,sportsbookLine:p.sportsbookLine,bookmakerCount:p.bookmakerCount,modelProjection:p.modelProjection,modelProbability:p.modelProbability,prediction:p.pickSide,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",marketBacked:p.sportsbookLine!=null,frozen:started,lockedAtPuckDrop:started,summary:started?"Frozen pregame prediction · live game status.":row.summary};
  });
- return {success:true,market:m,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
+ return {success:true,market:m,sourceCoverage,slateGames:todayGames,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
 }
 
 export async function buildNhlFirstGoalBoard(){
@@ -107,12 +111,23 @@ export async function buildNhlRankings(...args:Parameters<typeof buildNhlRanking
  // Evaluate a bounded wider pool BEFORE the 25-card public limit. The first
  // 25 baseline-ranked players may have no eligible model/price evidence.
  // Keep frozen ranks intact. Models, thresholds and saved history are unchanged.
- const pool=limitAvailablePregameRankings(raw,64);
- const payload=await attachFittedResearchForecasts(guardRankingPayload(pool,'nhl'),'nhl');
- const rows=prioritizeModelPicks(payload.rows||[]).slice(0,25);
- return {...payload,rows,modelSelectionCount:rows.filter((r:any)=>r.researchForecast?.modelSelection).length,
+ const restored=await restoreSavedNhlSlate(guardRankingPayload(raw,'nhl'),raw.slateGames||[]);
+ if(['partial','unavailable'].includes(restored.savedEvidenceCoverage?.status))throw Error('Saved NHL pregame evidence is temporarily unavailable; retaining the previous verified board');
+ if(raw.sourceCoverage?.playerSourceAvailable===false&&!restored.rows.some((r:any)=>r.boardFrozen))throw Error('NHL player source unavailable; coverage cannot be verified');
+ const saved=restored.rows.filter((r:any)=>r.boardFrozen===true);
+ const upcoming=restored.rows.filter((r:any)=>r.boardFrozen!==true&&Date.parse(r.gameTime)>Date.now()).sort((a:any,b:any)=>Number(verifiedPropQuote(b))-Number(verifiedPropQuote(a)));
+ const future=limitAvailablePregameRankings({...restored,rows:upcoming},64).rows;
+ const pool={...restored,rows:[...saved,...future]};
+ const payload=await attachFittedResearchForecasts(pool,'nhl');
+ const ordered=prioritizeModelPicks(payload.rows||[]);
+ const rows=[...ordered.filter((r:any)=>completeRankingProp(r)!=null),...ordered.filter((r:any)=>completeRankingProp(r)==null)].slice(0,25);
+ const {slateGames,...result}=payload;
+ const displayable=rows.filter((r:any)=>completeRankingProp(r)!=null).length;
+ const blockers=payload.forecastBlockers||{};
+ const coverageNotice=raw.sourceCoverage?.playerSourceAvailable===false?'Some current NHL rosters are unavailable; unverified players are withheld.':blockers.market_model_not_fitted?'No independently fitted model is available for this market.':!displayable&&blockers.price_validation_failed?'New predictions are withheld while model accuracy is being validated.':!displayable?'No complete pregame prediction and sportsbook evidence is available for this slate.':'';
+ return {...result,rows,coverageNotice,displayableRows:displayable,verifiedQuoteCount:rows.filter((r:any)=>verifiedPropQuote(r,Date.now(),r.boardFrozen===true)).length,modelSelectionCount:rows.filter((r:any)=>r.researchForecast?.modelSelection).length,
   fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast?.status==='available').length,
   candidateCoverage:{available:raw.rows.length,evaluated:pool.rows.length,publicRows:rows.length,
-   budgetLimited:raw.rows.length>pool.rows.length,modelPolicyUnchanged:true},
+   budgetLimited:upcoming.length>future.length,startedWithoutSavedEvidence:restored.rows.filter((r:any)=>Date.parse(r.gameTime)<=Date.now()&&!r.boardFrozen).length,modelPolicyUnchanged:true},
  };
-})}
+},false,{keepAlive:work=>after(()=>work.catch(()=>{})),timeoutMs:25000})}

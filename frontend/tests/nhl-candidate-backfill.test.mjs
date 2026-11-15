@@ -5,6 +5,9 @@ test('NHL applies saved availability before pregame Top25, rejects skaters for g
  const game={gameId:'g',tipoff:new Date(Date.now()+3600000).toISOString(),state:'pre',awayAbbr:'A',homeAbbr:'B',awayTeam:'Away',homeTeam:'Home',season:'20262027'};
  const players=Array.from({length:40},(_,i)=>({playerId:String(i+1),playerName:'Player '+i,team:'A',position:'G',gamesPlayed:30}));let quotes=[],unavailable=true,backfill=false,evaluated=0,sourceFlags={};
  const mocks={
+  'next/server':{after:()=>{}},
+  '@/lib/recorded-progress':{restoreSavedNhlSlate:async p=>({...p,rows:p.rows.filter(r=>Date.parse(r.gameTime)>Date.now()),savedEvidenceCoverage:{status:'complete'}})},
+  '@/lib/public-card-metrics':{completeRankingProp:r=>r.researchForecast?.modelSelection?{}:null},
   '@/lib/ranking-availability':eligibility,'@/lib/live-model-forecast':{attachFittedResearchForecasts:p=>{evaluated=p.rows.length;return {...p,rows:p.rows.map(r=>({...r,researchForecast:backfill&&Number(r.playerId)>=26&&Number(r.playerId)<=30?{modelSelection:{side:'OVER'}}:undefined}))}}},
   '@/lib/sgo-supplement':{getSgoSupplement:async()=>null,sgoBookGames:()=>[]},
   '@/lib/saved-model-pick':{prioritizeModelPicks:r=>[...r].sort((a,b)=>Number(Boolean(b.researchForecast?.modelSelection))-Number(Boolean(a.researchForecast?.modelSelection)))},'@/lib/ranking-response-cache':{rankingResponse:async(k,f)=>f()},
@@ -23,7 +26,7 @@ test('NHL applies saved availability before pregame Top25, rejects skaters for g
  unavailable=false;players[0].position='D';quotes=[{playerName:players[0].playerName,line:20.5}];
  board=await module.exports.buildNhlRankings('goalie_saves');assert.equal(board.rows.length,25);assert.ok(board.rows.every(r=>r.playerId!=='1'));
  backfill=true;board=await module.exports.buildNhlRankings('goalie_saves');assert.ok(evaluated>25);assert.equal(board.rows.length,25);assert.equal(board.modelSelectionCount,5);assert.equal(board.rows[0].playerId,'26');assert.equal(board.candidateCoverage.publicRows,25);backfill=false;
- game.state='in';game.tipoff=new Date(Date.now()-3600000).toISOString();board=await module.exports.buildNhlRankings('goalie_saves');assert.equal(board.rows.length,25);
+ game.state='in';game.tipoff=new Date(Date.now()-3600000).toISOString();board=await module.exports.buildNhlRankings('goalie_saves');assert.equal(board.rows.length,0,'never regenerate started cards without saved pregame evidence');
  sourceFlags={scheduleAvailable:false};await assert.rejects(module.exports.buildNhlRankings('goalie_saves'),/source unavailable/);
  sourceFlags={playerSourceAvailable:false};await assert.rejects(module.exports.buildNhlRankings('goalie_saves'),/source unavailable/);
 });

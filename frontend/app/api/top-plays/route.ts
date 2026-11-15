@@ -61,11 +61,16 @@ async function featuredResponse(req:NextRequest){
  const scorerMarket=sport==='nhl'?'first_goal':sport==='nfl'?'first_td':null;
  if(scorerMarket&&!topPlayMarketRows(sport).some(row=>row.market===scorerMarket&&Date.parse(row.gameTime)>Date.now())){
   try{
-   const board=sport==='nhl'
-    ?await (await import('@/lib/nhl-rankings-server')).buildNhlFirstGoalBoard()
-    :await (await (await import('../nfl/rankings/route')).GET(
-      new NextRequest('https://sach-capture.internal/api/nfl/rankings?market=first_td'))).json();
-   if(board?.rows?.length)updateTopPlayMarket(sport,board);
+   if(sport==='nhl'){
+    // Saved featured selections must not wait on an optional scorer feed.
+    const work=(async()=>{const board=await (await import('@/lib/nhl-rankings-server')).buildNhlFirstGoalBoard();if(board?.rows?.length)updateTopPlayMarket(sport,board);})().catch(()=>{});
+    let timer:ReturnType<typeof setTimeout>|undefined;
+    try{await Promise.race([work,new Promise(resolve=>{timer=setTimeout(resolve,1500);})]);}finally{if(timer)clearTimeout(timer);}
+    after(()=>work);
+   }else{
+    const board=await (await (await import('../nfl/rankings/route')).GET(new NextRequest('https://sach-capture.internal/api/nfl/rankings?market=first_td'))).json();
+    if(board?.rows?.length)updateTopPlayMarket(sport,board);
+   }
   }catch{ /* Saved selections remain available during a provider failure. */ }
  }
  // NBA featured selections stay on the current slate until every scheduled game is final.
