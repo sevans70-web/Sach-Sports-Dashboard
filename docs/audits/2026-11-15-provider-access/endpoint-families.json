@@ -1,0 +1,60 @@
+{
+  "matchingEvents": 957,
+  "returnedEvents": 957,
+  "endpointFamilies": [
+    {
+      "endpoint": "https://api.owlsinsight.com/api/v1/nhl/props",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 403,
+      "first": 1794775899634,
+      "last": 1794782201576,
+      "observedSpans": 3,
+      "trace": "b384795a9cecbb017456168ea0530ba2"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "first": 1794632579108,
+      "last": 1794773632090,
+      "observedSpans": 904,
+      "trace": "060f842457d30653c6627ae52b36c9a5"
+    },
+    {
+      "endpoint": "https://api.owlsinsight.com/api/v1/nhl/props",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "first": 1794772258478,
+      "last": 1794772258478,
+      "observedSpans": 1,
+      "trace": "b7add865fbe091604cff275c4c8cd676"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/search/v2",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "first": 1794632579155,
+      "last": 1794758164857,
+      "observedSpans": 47,
+      "trace": "b407e3563a84e1abcfad4fc9ce305b64"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/summary",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "first": 1794754580990,
+      "last": 1794754580990,
+      "observedSpans": 1,
+      "trace": "d6449248598051a856e4790f02829a56"
+    },
+    {
+      "endpoint": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "first": 1794754580979,
+      "last": 1794754580979,
+      "observedSpans": 1,
+      "trace": "d6449248598051a856e4790f02829a56"
+    }
+  ]
+}

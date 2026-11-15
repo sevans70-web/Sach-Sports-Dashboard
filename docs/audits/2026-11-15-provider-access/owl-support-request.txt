@@ -1,0 +1,11 @@
+Subject: Existing account access check — NFL/NHL merged player props return 403
+
+Please confirm our current plan, paid/trial status, API key activation and entitlement to:
+GET https://api.owlsinsight.com/api/v1/nfl/props
+GET https://api.owlsinsight.com/api/v1/nhl/props
+
+Our application runs on Cloudflare Workers and uses your documented Authorization: Bearer header. We are not requesting a new subscription or upgrade. Please distinguish required-tier denial, ended/unpaid subscription, deactivated key and any Cloudflare egress/WAF restriction, and explain the no-upgrade correction if our existing plan includes these routes.
+
+A reviewed NHL failure occurred November 15, 2026, 5:36:41 PM America/Toronto (22:36:41 UTC). Cloudflare trace: b384795a9cecbb017456168ea0530ba2. The dashboard and a separate NHL research collector both observe 403 at the NHL route. Earlier dashboard NHL requests succeeded that day.
+
+Please state the required tier/error code and whether your account portal shows the key linked to our active subscription. No API key is included in this message. Please do not request keys through unsecured chat/email; use your authenticated account support workflow.

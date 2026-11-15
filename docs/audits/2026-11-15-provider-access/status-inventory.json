@@ -1,0 +1,159 @@
+{
+  "matchingEvents": 169,
+  "returnedEvents": 169,
+  "groups": [
+    {
+      "endpoint": "https://api.owlsinsight.com/api/v1/nfl/props",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 3,
+      "first": 1794767042894,
+      "last": 1794773628996,
+      "trace": "63fb910c00095943d7de489931d912a6"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 78,
+      "first": 1794632579109,
+      "last": 1794773623277,
+      "trace": "8dc16a51654c2e938580a826cc97f069"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 6,
+      "first": 1794643377485,
+      "last": 1794768300015,
+      "trace": "ee37eb72b8ec261d73bd460e10e6a142"
+    },
+    {
+      "endpoint": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 3,
+      "first": 1794681524091,
+      "last": 1794765814000,
+      "trace": "865fe33261ea68022c3d9789eb771c56"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 45,
+      "first": 1794643378754,
+      "last": 1794758130494,
+      "trace": "fcf16e0e3a667881a3241d5b5065eee3"
+    },
+    {
+      "endpoint": "https://api.sportsgameodds.com/v2/events",
+      "service": "sach-sports-cloudflare-test",
+      "status": 401,
+      "observedSpans": 15,
+      "first": 1794643976633,
+      "last": 1794754324499,
+      "trace": "1993c0921ac2ff57bbfedffc903f93c5"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/search/v2",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 6,
+      "first": 1794645897243,
+      "last": 1794716940276,
+      "trace": "91f94471cea3eb99e68f107b03ca40ea"
+    },
+    {
+      "endpoint": "https://api-web.nhle.com/v1/roster/ANA/current",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 429,
+      "observedSpans": 2,
+      "first": 1794637852966,
+      "last": 1794704441557,
+      "trace": "da5c5a5edaa247081b4c99cb0aa9fbb4"
+    },
+    {
+      "endpoint": "https://api-web.nhle.com/v1/roster/DAL/current",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 429,
+      "observedSpans": 1,
+      "first": 1794693821929,
+      "last": 1794693821929,
+      "trace": "5a79db3eed3c2dd1176d50fd0ad2d8df"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/site/v2/sports/basketball/nba/teams/16/roster",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 1,
+      "first": 1794681578543,
+      "last": 1794681578543,
+      "trace": "6bbf6b918b72e5f720f4f8e438b0dc85"
+    },
+    {
+      "endpoint": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/6/roster",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 1,
+      "first": 1794681578480,
+      "last": 1794681578480,
+      "trace": "6bbf6b918b72e5f720f4f8e438b0dc85"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/site/v2/sports/basketball/nba/summary",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 1,
+      "first": 1794681578144,
+      "last": 1794681578144,
+      "trace": "6bbf6b918b72e5f720f4f8e438b0dc85"
+    },
+    {
+      "endpoint": "https://site.web.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+      "service": "sach-sports-cloudflare-test",
+      "status": 403,
+      "observedSpans": 1,
+      "first": 1794681577444,
+      "last": 1794681577444,
+      "trace": "6bbf6b918b72e5f720f4f8e438b0dc85"
+    },
+    {
+      "endpoint": "https://api-web.nhle.com/v1/player/:id/game-log/20232024/2",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 429,
+      "observedSpans": 3,
+      "first": 1794654062467,
+      "last": 1794679289274,
+      "trace": "86664b9c0e962f204a63f2a7d02acca0"
+    },
+    {
+      "endpoint": "https://api-web.nhle.com/v1/roster/UTA/current",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 429,
+      "observedSpans": 1,
+      "first": 1794675651597,
+      "last": 1794675651597,
+      "trace": "728db00ec977e3dca7e3016fc0136e64"
+    },
+    {
+      "endpoint": "https://api-web.nhle.com/v1/roster/FLA/current",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 429,
+      "observedSpans": 1,
+      "first": 1794639646252,
+      "last": 1794639646252,
+      "trace": "6c69ddf6cda5ef5a426ee57317e6b76a"
+    },
+    {
+      "endpoint": "https://api-web.nhle.com/v1/roster/PIT/current",
+      "service": "sach-cw08-nhl-shadow",
+      "status": 429,
+      "observedSpans": 1,
+      "first": 1794637840779,
+      "last": 1794637840779,
+      "trace": "8b5e399a3f69eec9237253e0e4247e65"
+    }
+  ]
+}

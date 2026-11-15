@@ -1,0 +1,17 @@
+{
+  "scope": "Observed retained November 14\u201315 Cloudflare telemetry, sampled traces; endpoint families, not proof every request or every unobserved endpoint failed",
+  "checkedAtToronto": "2026-11-15T18:04:04.545715-05:00",
+  "endpoints": [
+    "https://api.owlsinsight.com/api/v1/nfl/props",
+    "https://api.owlsinsight.com/api/v1/nhl/props",
+    "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog",
+    "https://site.web.api.espn.com/apis/search/v2",
+    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary",
+    "https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/summary"
+  ],
+  "additionalFailure": {
+    "endpoint": "https://api.sportsgameodds.com/v2/events",
+    "status": 401
+  },
+  "nhlPublicApi": "429 rate limits observed; no 403 found in reviewed data"
+}

@@ -1,0 +1,26 @@
+{
+  "count": 3,
+  "events": [
+    {
+      "at": 1794782201576,
+      "endpoint": "https://api.owlsinsight.com/api/v1/nhl/props",
+      "status": 403,
+      "trace": "b384795a9cecbb017456168ea0530ba2",
+      "service": "sach-cw08-nhl-shadow"
+    },
+    {
+      "at": 1794781301321,
+      "endpoint": "https://api.owlsinsight.com/api/v1/nhl/props",
+      "status": 403,
+      "trace": "49097aa1d7aa2b453c8b479e06b6420c",
+      "service": "sach-cw08-nhl-shadow"
+    },
+    {
+      "at": 1794775899634,
+      "endpoint": "https://api.owlsinsight.com/api/v1/nhl/props",
+      "status": 403,
+      "trace": "af2bcab09364a4fb343f33d0b58e0644",
+      "service": "sach-cw08-nhl-shadow"
+    }
+  ]
+}
