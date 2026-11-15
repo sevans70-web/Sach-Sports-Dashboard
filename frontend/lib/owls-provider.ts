@@ -1,9 +1,11 @@
+import {getDashboardBookFeed} from '@/lib/dashboard-book-feed';
 import { workerRuntimeSecret } from "@/lib/worker-runtime-secret";
 import {providerFetch} from "@/lib/provider-fetch";
 import {nativeBasketballCoverage} from '@/lib/native-basketball-coverage';
 type Sport="nfl"|"ncaaf"|"nba"|"wnba"|"nhl"|"soccer"|"cbb";
 /** Safe failure category; never return provider credentials or response bodies. */
 export function owlsFailureCategory(error: unknown): string {
+ const diagnosticCode=(error as any)?.diagnostic?.code;if(typeof diagnosticCode==='string'&&/^(provider_http_\d{3}|worker_secret_missing|provider_invalid_schema|request_timeout|provider_request_failed)$/.test(diagnosticCode))return diagnosticCode;
  const message=error instanceof Error?error.message:String(error);
  if (/key is missing|not configured|missing from Railway/i.test(message)) return "worker_secret_missing";
  const status=/^Owls Insight returned (\d{3})$/.exec(message);
@@ -109,6 +111,7 @@ export async function getOwlsBet365Payload(sport:'nfl'|'nba'){
 }
 /** One short-lived feed snapshot per sport, shared across markets and leagues. */
 export async function getOwlsPayload(sport:Sport){
+ if(sport==='nfl'||sport==='nhl')return getDashboardBookFeed(sport);
  const hit=cache.get(sport);
  if(hit&&hit.expires>Date.now()){if(hit.error)throw new Error(hit.error);return hit.payload}
  const running=pending.get(sport);if(running)return running;

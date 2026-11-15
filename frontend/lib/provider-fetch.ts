@@ -36,8 +36,8 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
     headers.set("User-Agent","Mozilla/5.0 (compatible; SachSports/1.0)");
     const options={...init,headers,cache:"no-store" as RequestCache,signal:init?.signal ?? AbortSignal.timeout(8_000)};
     let response=await globalThis.fetch(input,options);
-    // ESPN serves the same public site/common APIs on both official hosts.
-    if([403,429,502,503,504].includes(response.status) && host.endsWith(".espn.com")) {
+    // Alternate official hosts may recover service errors, never access denials or rate limits.
+    if([502,503,504].includes(response.status) && host.endsWith(".espn.com")) {
       const alternate=new URL(url);
       alternate.hostname=host==="site.api.espn.com"?"site.web.api.espn.com":"site.api.espn.com";
       const retry=await globalThis.fetch(alternate,{...options,signal:init?.signal ?? AbortSignal.timeout(8_000)});

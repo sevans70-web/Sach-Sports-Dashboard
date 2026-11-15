@@ -1,0 +1,32 @@
+{
+  "fullRegression": {
+    "passed": 816,
+    "failed": 0,
+    "skipped": 1,
+    "skipReason": "opt-in withdrawn production bundle diagnostic; executed separately and passed"
+  },
+  "compiledWorkerEndToEnd": {
+    "passed": 6,
+    "failed": 0
+  },
+  "sourceRouteEndToEnd": {
+    "passed": 6,
+    "failed": 0
+  },
+  "withdrawnBundleReproduction": {
+    "passed": 1,
+    "failed": 0
+  },
+  "typescriptDiagnostics": 0,
+  "productionBuild": "passed",
+  "prebuiltDryRun": "passed; no upload",
+  "browser": {
+    "nflTabs": 17,
+    "nbaMarkets": 7,
+    "nhlMarkets": 4,
+    "pageOrHydrationErrors": 0,
+    "forcedPrFailureRetainedCards": 20
+  },
+  "deploymentReady": false,
+  "releaseBlocker": "Authorized real NFL/NHL feed access and supported fresh forecast evidence remain unverified"
+}

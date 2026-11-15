@@ -1,3 +1,4 @@
+import {bookFeedDiagnostic} from '@/lib/dashboard-book-feed';
 import {after} from 'next/server';
 import {restoreSavedNhlSlate} from '@/lib/recorded-progress';
 import {completeRankingProp} from '@/lib/public-card-metrics';
@@ -27,20 +28,21 @@ function match(v:any,m:NhlMarketKey){const x=norm(v);const a:Record<NhlMarketKey
 async function owls(){
  const [primary,supplement]=await Promise.allSettled([getOwlsPayload('nhl'),getSgoSupplement('NHL')]);
  const data=[...(primary.status==='fulfilled'?primary.value?.data||[]:[]),...sgoBookGames(supplement.status==='fulfilled'?supplement.value:null)];
- if(!data.length&&primary.status==='rejected')throw primary.reason;
- return {data};
+ return {data,bookFeedCoverage:{primary:primary.status==='fulfilled'?{code:'available',status:null}:bookFeedDiagnostic(primary.reason,'nhl'),supplemental:{available:Boolean(supplement.status==='fulfilled'&&supplement.value?.data?.length),reason:supplement.status==='fulfilled'?supplement.value?.warning||null:'supplemental_request_failed'}}};
 }
 function board(payload:any,market:NhlMarketKey){return mainMarketQuotes(payload,market,p=>match(p.category??p.market??p.type,market))}
 function requireNhlSources(overview:any,allowPartialPlayers=false){
  if(overview.scheduleAvailable===false||!allowPartialPlayers&&overview.playerSourceAvailable===false)throw Error('NHL official schedule or player source unavailable; counts cannot be verified');
 }
 async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="today"){
- const [overview,payload]=await Promise.all([loadNhlOverview(slate),owls().catch(()=>null)]),b=payload?board(payload,m):[],byName=new Map(overview.players.map(p=>[cleanNhlName(p.playerName),p]));
+ const [overview,payload]=await Promise.all([loadNhlOverview(slate),owls()]),b=payload?board(payload,m):[],byName=new Map<string,typeof overview.players>();
+ for(const player of overview.players){const key=cleanNhlName(player.playerName);byName.set(key,[...(byName.get(key)||[]),player]);}
  requireNhlSources(overview,true);
- const sourceCoverage={scheduleAvailable:true,playerSourceAvailable:overview.playerSourceAvailable!==false,warnings:overview.warnings||[]};
+ const quoteRejections={unmatchedPlayer:0,ambiguousPlayer:0,teamNotOnSlate:0,wrongPosition:0,fixtureMismatch:0};
+ const sourceCoverage={quoteRejections,scheduleAvailable:true,playerSourceAvailable:overview.playerSourceAvailable!==false,warnings:overview.warnings||[],bookFeedCoverage:payload.bookFeedCoverage,parsedMarketQuotes:b.length};
  const tomorrowDay=nhlSlateDay("tomorrow");
  const todayGames=slate==="tomorrow"?overview.games.filter(g=>g.tipoff&&nhlDay(g.tipoff)===tomorrowDay):activeRankingSlate(overview.games,nhlDay),activeTeams=new Set(todayGames.flatMap(g=>[g.awayAbbr,g.homeAbbr])),rows:any[]=[];
- for(const x of b){const p=byName.get(cleanNhlName(x.playerName));if(!p||!activeTeams.has(p.team)||(m==='goalie_saves'&&p.position!=='G'))continue;const game=uniqueQuoteFixture(x,todayGames,p.team,15*60_000);if(!game)continue;const base=playerBaseline(p,m),edge=base!=null&&x.line!=null?base-x.line:null,reliability=Math.min(1,(p.gamesPlayed||0)/30),gi=Math.round((55+Math.min(25,Math.abs(edge||0)*7)+reliability*15)*10)/10;rows.push({...footballQuoteFields(x),providerGameTime:x.gameTime,providerMatchup:x.matchup,playerId:p.playerId,playerName:p.playerName,teamId:p.team,season:game.season,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:x.line,bookmakerCount:x.bookmakerCount,modelProjection:base,modelProbability:edge==null?null:Math.max(50,Math.min(82,Math.round((55+Math.abs(edge)*5+reliability*5)*10)/10)),giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:`${overview.season} baseline ${base==null?"loading":base.toFixed(2)} vs verified line ${x.line}. GI adds recent-season sample reliability, role and active matchup context.`})}
+ for(const x of b){const candidates=byName.get(cleanNhlName(x.playerName))||[];if(!candidates.length){quoteRejections.unmatchedPlayer++;continue;}const onSlate=candidates.filter(p=>activeTeams.has(p.team));if(!onSlate.length){quoteRejections.teamNotOnSlate++;continue;}const role=onSlate.filter(p=>m!=='goalie_saves'||p.position==='G');if(!role.length){quoteRejections.wrongPosition++;continue;}const bound=role.map(p=>({p,game:uniqueQuoteFixture(x,todayGames,p.team,15*60_000)})).filter(v=>v.game);if(!bound.length){quoteRejections.fixtureMismatch++;continue;}if(new Set(bound.map(v=>v.p.playerId)).size!==1){quoteRejections.ambiguousPlayer++;continue;}const {p,game}=bound[0];if(!game)continue;const base=playerBaseline(p,m),edge=base!=null&&x.line!=null?base-x.line:null,reliability=Math.min(1,(p.gamesPlayed||0)/30),gi=Math.round((55+Math.min(25,Math.abs(edge||0)*7)+reliability*15)*10)/10;rows.push({...footballQuoteFields(x),providerGameTime:x.gameTime,providerMatchup:x.matchup,playerId:p.playerId,playerName:p.playerName,teamId:p.team,season:game.season,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:x.line,bookmakerCount:x.bookmakerCount,modelProjection:base,modelProbability:edge==null?null:Math.max(50,Math.min(82,Math.round((55+Math.abs(edge)*5+reliability*5)*10)/10)),giScore:gi,prediction:edge==null?null:edge>=0?"OVER":"UNDER",marketBacked:true,summary:`${overview.season} baseline ${base==null?"loading":base.toFixed(2)} vs verified line ${x.line}. GI adds recent-season sample reliability, role and active matchup context.`})}
  rows.splice(0,rows.length,...uniqueRankingRows(rows));
  const used=new Set(rows.map(x=>cleanNhlName(x.playerName)));
  for(const p of [...overview.players].sort((a,b)=>(playerBaseline(b,m)??-1)-(playerBaseline(a,m)??-1))){if(used.has(cleanNhlName(p.playerName))||!activeTeams.has(p.team)||(m==='goalie_saves'&&p.position!=='G'))continue;const base=playerBaseline(p,m);if(base==null)continue;const game=todayGames.find(g=>[g.awayAbbr,g.homeAbbr].includes(p.team));if(!game)continue;rows.push({playerId:p.playerId,playerName:p.playerName,teamId:p.team,season:game.season,teamName:p.team,teamLogo:p.team===game.awayAbbr?game.awayLogo:game.homeLogo,matchup:`${game.awayTeam} @ ${game.homeTeam}`,gameTime:game.tipoff||"",gameId:game.gameId,gameState:game.state,gameStatus:game.status,headshot:nhlHeadshot(p.playerId,p.team),sportsbookLine:null,bookmakerCount:0,modelProjection:base,modelProbability:null,giScore:Math.round((55+Math.min(1,(p.gamesPlayed||0)/30)*15+Math.min(20,base*3))*10)/10,prediction:null,marketBacked:false,summary:`${overview.season} statistical baseline ${base.toFixed(2)}. No verified sportsbook line is currently available, so this is a model-only active-slate ranking and is not graded.`})}
@@ -53,7 +55,7 @@ async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="toda
   .map(({row})=>row);
  const ranked=pregamePool.map((x,i)=>({...x,rank:i+1}));
  // A tomorrow preview must not be written into today's settled/locked history.
- if(slate==="tomorrow")return {success:true,market:m,sourceCoverage,slateGames:todayGames,slate:"tomorrow",boardDay:tomorrowDay,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"NHL upcoming sportsbook markets":"NHL upcoming schedule; quotes pending"};
+ if(slate==="tomorrow")return {success:true,market:m,sourceCoverage:{...sourceCoverage,slateGamesCount:todayGames.length},slateGames:todayGames,slate:"tomorrow",boardDay:tomorrowDay,rows:ranked,locked:false,updatedAt:new Date().toISOString(),source:payload?"NHL upcoming sportsbook markets":"NHL upcoming schedule; quotes pending"};
  const saved=await saveNhlSlate(m,ranked,false);
  const byKey=new Map(saved.predictions.map(p=>[String(p.playerId)+"|"+p.gameId,p]));
  const frozen=ranked.map(row=>{
@@ -62,7 +64,7 @@ async function buildNhlRankingsRaw(m:NhlMarketKey,slate:"today"|"tomorrow"="toda
    const started=row.gameState==="in"||row.gameState==="post"||Boolean(p.gameTime&&Date.parse(p.gameTime)<=Date.now());
    return {...row,...recordNoteFields(p),rank:row.rank,sportsbookLine:p.sportsbookLine,bookmakerCount:p.bookmakerCount,modelProjection:p.modelProjection,modelProbability:p.modelProbability,prediction:p.pickSide,resultStatus:p.status,actualResult:p.actual,resultSymbol:p.status==="hit"?"✅ HIT":p.status==="miss"?"❌ MISS":p.status==="push"?"➖ PUSH":p.status==="void"?"VOID":"",marketBacked:p.sportsbookLine!=null,frozen:started,lockedAtPuckDrop:started,summary:started?"Frozen pregame prediction · live game status.":row.summary};
  });
- return {success:true,market:m,sourceCoverage,slateGames:todayGames,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
+ return {success:true,market:m,sourceCoverage:{...sourceCoverage,slateGamesCount:todayGames.length},slateGames:todayGames,rows:frozen,locked:frozen.some(r=>r.frozen),updatedAt:new Date().toISOString(),source:payload?"Owls Insight NHL props + NHL API":"NHL API model watch · sportsbook lines pending"};
 }
 
 export async function buildNhlFirstGoalBoard(){
@@ -84,7 +86,9 @@ export async function buildNhlFirstGoalBoard(){
       teamName:player.team,teamId:player.team,gameId:game.gameId,gameTime:game.tipoff,gameState:game.state,
       matchup:`${game.awayTeam} @ ${game.homeTeam}`,sportsbookLine:null,marketBacked:true}];
   });
-  return guardRankingPayload({success:true,market,rows,updatedAt:new Date().toISOString()},'nhl');
+  const unavailable=games.length>0&&!rows.length&&payload.bookFeedCoverage?.primary?.code!=='available';
+  const coverageNotice=unavailable?'No current verified NHL first-goal odds are available; the sportsbook feed is unavailable.':'';
+  return guardRankingPayload({success:!unavailable,market,rows,dataState:unavailable?'unavailable':'fresh',coverageNotice,...(unavailable?{reason:'book_feed_unavailable',error:coverageNotice}:{}),sourceCoverage:{bookFeedCoverage:payload.bookFeedCoverage},updatedAt:new Date().toISOString()},'nhl');
  });
 }
 
@@ -124,8 +128,11 @@ export async function buildNhlRankings(...args:Parameters<typeof buildNhlRanking
  const {slateGames,...result}=payload;
  const displayable=rows.filter((r:any)=>completeRankingProp(r)!=null).length;
  const blockers=payload.forecastBlockers||{};
- const coverageNotice=raw.sourceCoverage?.playerSourceAvailable===false?'Some current NHL rosters are unavailable; unverified players are withheld.':blockers.market_model_not_fitted?'No independently fitted model is available for this market.':!displayable&&blockers.price_validation_failed?'New predictions are withheld while model accuracy is being validated.':!displayable?'No complete pregame prediction and sportsbook evidence is available for this slate.':'';
- return {...result,rows,coverageNotice,displayableRows:displayable,verifiedQuoteCount:rows.filter((r:any)=>verifiedPropQuote(r,Date.now(),r.boardFrozen===true)).length,modelSelectionCount:rows.filter((r:any)=>r.researchForecast?.modelSelection).length,
+ const feed=raw.sourceCoverage?.bookFeedCoverage;
+ const denied=feed?.primary?.code==='provider_http_403'||feed?.primary?.code==='provider_http_401';
+ const coverageNotice=raw.sourceCoverage?.slateGamesCount===0?'No games are scheduled for the selected NHL slate.':!displayable&&raw.sourceCoverage?.parsedMarketQuotes===0&&denied?'The NHL sportsbook feed denied access ('+feed.primary.status+'). No current verified odds are available; model-watch rows are not predictions.':!displayable&&raw.sourceCoverage?.parsedMarketQuotes===0?'No current verified sportsbook quotes are available for this market. Model-watch rows are not predictions.':raw.sourceCoverage?.playerSourceAvailable===false?'Some current NHL rosters are unavailable; unverified players are withheld.':blockers.market_model_not_fitted?'No independently fitted model is available for this market.':!displayable&&blockers.price_validation_failed?'New predictions are withheld while model accuracy is being validated.':!displayable?'No complete pregame prediction and sportsbook evidence is available for this slate.':'';
+ const feedUnavailable=raw.sourceCoverage?.slateGamesCount!==0&&raw.sourceCoverage?.parsedMarketQuotes===0&&feed?.primary?.code!=='available';
+ return {...result,rows,coverageNotice,...(feedUnavailable&&!displayable?{success:false,dataState:'unavailable',reason:'book_feed_unavailable',error:coverageNotice}:{dataState:feedUnavailable?'partial':'fresh'}),displayableRows:displayable,verifiedQuoteCount:rows.filter((r:any)=>verifiedPropQuote(r,Date.now(),r.boardFrozen===true)).length,modelSelectionCount:rows.filter((r:any)=>r.researchForecast?.modelSelection).length,
   fittedResearchForecastCount:rows.filter((r:any)=>r.researchForecast?.status==='available').length,
   candidateCoverage:{available:raw.rows.length,evaluated:pool.rows.length,publicRows:rows.length,
    budgetLimited:upcoming.length>future.length,startedWithoutSavedEvidence:restored.rows.filter((r:any)=>Date.parse(r.gameTime)<=Date.now()&&!r.boardFrozen).length,modelPolicyUnchanged:true},

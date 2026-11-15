@@ -18,6 +18,7 @@ export function nbaRankingEv(row:any,now=Date.now()){
  if(typeof row.sportsbookLine!=='number'||!Number.isFinite(row.sportsbookLine)||row.sportsbookLine<0||!Number.isInteger(row.sportsbookLine*2)||![row.overPrice,row.underPrice].every(v=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)>=100))return missing('quote_unavailable','A verified numeric line and complete two-sided American odds are needed');
  if(!verifiedPropQuote(row,now,saved))return missing('quote_unavailable',saved?'Verified original pregame sportsbook odds needed':'Current, complete sportsbook odds needed (maximum age 15 minutes)');
  const p=f.priceComparison;
+ if(!p&&f.modelId==='sum_of_fitted_component_expectations'&&saved)return missing('saved_joint_probabilities_missing','This saved pregame forecast contains component means, not joint probabilities. Historical EV cannot be reconstructed.');
  if(!p)return missing('probability_unavailable',f.modelId==='sum_of_fitted_component_expectations'?'A joint combination probability model is required; component projections alone cannot produce EV':'Independent model probabilities needed');
  if(![p.overProbability,p.underProbability,p.pushProbability].every(v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=1)||Math.abs(p.overProbability+p.underProbability+p.pushProbability-1)>1e-6)return missing('invalid_probabilities','Complete, normalized model probabilities needed');
  const selected=estimatedEv(row,now);

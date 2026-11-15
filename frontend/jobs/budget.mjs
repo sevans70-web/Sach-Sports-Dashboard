@@ -14,7 +14,7 @@ export function cacheTtl(url){const u=new URL(url);if(!official.has(u.hostname))
 export function retryTime(value,now=Date.now()){const n=Number(value),date=Date.parse(value||'');return Math.max(now+60000,value!=null&&String(value).trim()!==''&&Number.isFinite(n)&&n>=0?now+n*1000:Number.isFinite(date)?date:0);}
 function active(scope){if(scope.closed||scope.abort.signal.aborted)throw scope.abort.signal.reason||new JobDeferred('job_phase_closed');}
 function pause(scope,code,at){scope.paused??=new JobDeferred(code,at);for(const wait of scope.waiters.splice(0)){wait.clean();scope.queueCancelled++;wait.reject(scope.paused);}return scope.paused;}
-function cancel(scope,error){pause(scope,error.message,error.retryAt);if(!scope.abort.signal.aborted)scope.abort.abort(error);}
+function cancel(scope,error){const paused=pause(scope,error.message,error.retryAt);if(error.details&&paused.message===error.message&&!paused.details)paused.details=error.details;if(!scope.abort.signal.aborted)scope.abort.abort(error);}
 function charge(scope,kind,n=1,ticket){
  active(scope);
  if(ticket){if(ticket.remaining<n)throw Error('job_request_reservation_exhausted');ticket.remaining-=n;scope.reserved-=n;}
@@ -49,7 +49,7 @@ export function budgetBinding(binding,scope,kind='kv'){
  return new Proxy(binding,{get(target,key){const value=Reflect.get(target,key,target);if(typeof value!=='function')return value;return (...args)=>{charge(scope,kind,Array.isArray(args[0])?Math.max(1,args[0].length):1);return value.apply(target,args);};}});
 }
 export function installJobFetch(){
- globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;}}:undefined;};
+ globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;},readInput:key=>scope.store.cacheRead(key),checkpointInput:(key,value,progress)=>{active(scope);if(scope.store.cacheWrite(key,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');if(progress){scope.cacheWrites++;scope.checkpointBytes+=JSON.stringify(value).length;}}}:undefined;};
  if(globalThis.fetch===globalThis[nativeKey])return;
  const native=globalThis.fetch.bind(globalThis);
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};

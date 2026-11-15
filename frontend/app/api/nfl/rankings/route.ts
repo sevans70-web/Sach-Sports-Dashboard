@@ -1,3 +1,4 @@
+import {bookFeedDiagnostic} from '@/lib/dashboard-book-feed';
 import {nflOfficialFetch} from '@/lib/official-history-source';
 import {nflBookRows} from '@/lib/nfl-book-rows';
 import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
@@ -96,11 +97,11 @@ async function sharedOwlsGames(){
 async function fetchOwlsRows(market:NflMarketKey){
  const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),getSgoSupplement('NFL')]);
  const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
- if(!primary&&!extra?.data?.length){const reason=owls.status==='rejected'?owlsFailureCategory(owls.reason):'provider_empty_feed';throw Error('NFL book feeds are unavailable: '+reason);}
+ if(!primary&&!extra?.data?.length){const reason=owls.status==='rejected'?owlsFailureCategory(owls.reason):'provider_empty_feed';const error=Error('NFL book feeds are unavailable: '+reason);(error as any).bookFeedCoverage={primary:owls.status==='rejected'?bookFeedDiagnostic(owls.reason,'nfl'):{code:'provider_empty_feed'},supplemental:{available:false,reason:extra?.warning||'no_supplemental_quotes'}};throw error;}
  const quotes=nflBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now());
   if(market==='anytime_td'||market==='first_td')console.info('[N04 quote audit]',JSON.stringify({market,quotes:quotes.length,events:new Set(quotes.map(r=>r.eventId)).size,verifiedSourceFields:quotes.filter(r=>r.quoteVersion===1&&r.lineType==='scorer'&&r.sportsbookKey&&r.quoteUpdatedAt).length}));
   if(market.startsWith('q1_'))console.info('[N05 quarter quote audit]',JSON.stringify({sport:'nfl',market,quotes:quotes.length,events:new Set(quotes.map(q=>q.eventId)).size,validPeriod:quotes.filter(q=>q.quoteVersion===1&&q.quoteUpdatedAt&&q.sportsbookKey).length,owlStatus:owls.status,sgoStatus:sgo.status,owlEvents:primary?.data?.length||0,sgoEvents:extra?.data?.length||0,sgoWarning:extra?.warning||null,rawQ1Props:[...(primary?.data||[]),...sgoBookGames(extra)].flatMap((g:any)=>g.books||[]).flatMap((b:any)=>b.props||[]).filter((p:any)=>/^(1q|q1|1stquarter|firstquarter|1)$/i.test(String(p.periodID||p.periodId||p.period||''))).length}));
-  return quotes;
+  return Object.assign(quotes,{bookFeedCoverage:{primary:owls.status==='fulfilled'?{code:'available'}:bookFeedDiagnostic(owls.reason,'nfl'),supplemental:{available:Boolean(extra?.data?.length),reason:extra?.warning||null},parsedQuotes:quotes.length}});
 }
 
 async function resolvePlayer(name:string,teamName:string,matchup:string,schedule:any[]){
@@ -323,13 +324,15 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
      return NextResponse.json(nflRankingPayload({...retained,rows}),{headers:{'Cache-Control':'no-store'}});
    }
   }
-  let providerError:string|null=null;
+  let providerError:string|null=null,bookFeedCoverage:any=null;
   const [owlsRows,schedule]=await Promise.all([fetchOwlsRows(market).catch(async(e)=>{
-    providerError=e instanceof Error?e.message:String(e);
+    providerError=e instanceof Error?e.message:String(e);bookFeedCoverage=(e as any).bookFeedCoverage||{primary:bookFeedDiagnostic(e,'nfl')};
     // Legacy fallback rows have already lost per-book prices and market structure.
     // They cannot establish a verified O/U quote; fall back to model watch instead.
     return [];
   }),getEspnNflSchedule()]),today=requestedDay||activeFootballBoardDay(lockSchedule);
+  bookFeedCoverage=(owlsRows as any).bookFeedCoverage||bookFeedCoverage;
+  if(providerError&&!owlsRows.length){const retry=Date.parse(bookFeedCoverage?.primary?.retryAt||'');return NextResponse.json({success:false,market,rows:[],bookFeedCoverage,reason:bookFeedCoverage?.primary?.code||'provider_request_failed',error:'Current sportsbook inputs are unavailable; no quotes have been fabricated.'},{status:503,headers:{'Cache-Control':'no-store','Retry-After':String(Math.max(30,Number.isFinite(retry)?Math.ceil((retry-Date.now())/1000):30))}});}
   const scopedSchedule=requestedDay?schedule.filter(game=>easternDayKey(game.date)===requestedDay):schedule;
   const quoted=owlsRows.filter(row=>!requestedDay||easternDayKey(rowGameTime(row,schedule))===requestedDay);
   const candidates=quoted.length?quoted:await modelOnlyRows(market,scopedSchedule);
@@ -438,7 +441,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   const future=futureCurrent.filter((r:any)=>!lockedKeys.has(`${r.playerId}|${r.gameId||cleanName(r.matchup)}`));
   for(let slot=1;slot<=75&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
   merged.sort((a:any,b:any)=>Number(a.rank)-Number(b.rank));
-  return await rankingJson({...rankingSourceState(merged.length,providerError),providerError,degraded:Boolean(providerError),source:providerError?"Sach model watch + available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:independentFootballRankings(merged,25,boardDay),boardDay,sportsbookOnly:merged.every(r=>r.marketBacked),validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}},locked);
+  return await rankingJson({...rankingSourceState(merged.length,providerError),providerError,bookFeedCoverage,degraded:Boolean(providerError),source:providerError?"Sach model watch + available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:independentFootballRankings(merged,25,boardDay),boardDay,sportsbookOnly:merged.every(r=>r.marketBacked),validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}},locked);
  }catch(e){if(locked?.rows?.length)return NextResponse.json(nflRankingPayload(locked),{headers:{'Cache-Control':'no-store'}});console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
 

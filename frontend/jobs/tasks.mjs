@@ -9,13 +9,18 @@ export async function capturePhase(job,services){
  const {env,route,publish,now}=services;
  if(job.phase==='rank'){
   const response=await route('/api/'+job.sport+'/rankings?market='+encodeURIComponent(job.market));
-  if(!response.ok)throw new JobDeferred('rankings_http_'+response.status);
-  const board=await response.json();
-  if(board?.success===false||!Array.isArray(board?.rows))throw new JobDeferred('rankings_unavailable');
+  const board=await response.json().catch(()=>null);
   const unique=new Map();
-  for(const row of board.rows){const quote=originalPregameQuote(row,job.sport,job.market,now());if(quote&&!unique.has(key(quote)))unique.set(key(quote),quote);}
+  for(const row of Array.isArray(board?.rows)?board.rows:[]){const quote=originalPregameQuote(row,job.sport,job.market,now());if(quote&&!unique.has(key(quote)))unique.set(key(quote),quote);}
   const quotes=[...unique.values()];
-  return {...job,phase:'originals',board,quotes,cursor:0,eligible:quotes.length,stored:0,picksStored:0,expired:0};
+  const failed=!response.ok||board?.success===false||!Array.isArray(board?.rows);
+  if(failed&&!quotes.length){
+   const source=board?.bookFeedCoverage?.primary||board?.sourceCoverage?.bookFeedCoverage?.primary;
+   const code=typeof source?.code==='string'&&/^(provider_http_\d{3}|provider_empty_feed|provider_invalid_schema|worker_secret_missing|request_timeout|provider_request_failed)$/.test(source.code)?source.code:null;
+   const failure=new JobDeferred(code?'rankings_'+code:!response.ok?'rankings_http_'+response.status:'rankings_unavailable',Math.max(now()+30000,Date.parse(source?.retryAt||'')||0));
+   failure.details={stage:'rank',httpStatus:response.status,code:code||'rankings_unavailable',...(code?{provider:'owls',endpoint:/^\/api\/v1\/(nfl|nhl)\/props$/.test(source.endpoint)?source.endpoint:null,status:source.status}:{}),verifiedQuotes:0};throw failure;
+  }
+  return {...job,phase:'originals',board,partialSourceFailure:failed,quotes,cursor:0,eligible:quotes.length,stored:0,picksStored:0,expired:0};
  }
  if(job.phase==='originals'||job.phase==='picks'){
   const input=job.phase==='picks'?job.quotes.filter(q=>['OVER','UNDER'].includes(q.prediction_side)):job.quotes;
@@ -27,7 +32,7 @@ export async function capturePhase(job,services){
  }
  if(job.phase==='publish'){
   // Do not refresh stale reserved boards into a current-market cache.
-  if(now()-job.reservedAt<120000)await publish?.(env,job.sport,job.market,job.board);
+  if(!job.partialSourceFailure&&now()-job.reservedAt<120000)await publish?.(env,job.sport,job.market,job.board);
   const {board,quotes,...receipt}=job;
   return {...receipt,phase:'done',state:'done'};
  }

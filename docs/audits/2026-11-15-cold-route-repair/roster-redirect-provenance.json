@@ -1,0 +1,22 @@
+[
+  {
+    "name": "VGK",
+    "source": "https://api-web.nhle.com/v1/roster/VGK/current",
+    "result": "200 https://api-web.nhle.com/v1/roster/VGK/20262027"
+  },
+  {
+    "name": "VAN",
+    "source": "https://api-web.nhle.com/v1/roster/VAN/current",
+    "result": "200 https://api-web.nhle.com/v1/roster/VAN/20262027"
+  },
+  {
+    "name": "ANA",
+    "source": "https://api-web.nhle.com/v1/roster/ANA/current",
+    "result": "200 https://api-web.nhle.com/v1/roster/ANA/20262027"
+  },
+  {
+    "name": "CGY",
+    "source": "https://api-web.nhle.com/v1/roster/CGY/current",
+    "result": "200 https://api-web.nhle.com/v1/roster/CGY/20262027"
+  }
+]

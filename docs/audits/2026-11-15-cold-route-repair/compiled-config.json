@@ -1,0 +1,54 @@
+{
+  "name": "sach-sports-cloudflare-test",
+  "compatibilityDate": "2026-11-06",
+  "compatibilityFlags": [
+    "nodejs_compat"
+  ],
+  "limits": {
+    "subrequests": 350
+  },
+  "exports": {
+    "DashboardJobQueue": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  },
+  "bindings": {
+    "ASSETS": {
+      "type": "assets"
+    },
+    "DASHBOARD_JOBS": {
+      "type": "durable-object",
+      "worker": "sach-sports-cloudflare-test",
+      "exportName": "DashboardJobQueue"
+    },
+    "VINEXT_KV_CACHE": {
+      "type": "kv",
+      "id": "644df6a469e84dba90c8f7dac410f895"
+    },
+    "OWLS_INSIGHT_API_KEY": {
+      "type": "secret"
+    },
+    "SPORTSGAMEODDS_API_KEY": {
+      "type": "secret"
+    },
+    "SUPABASE_URL": {
+      "type": "secret"
+    },
+    "SUPABASE_SECRET_KEY": {
+      "type": "secret"
+    },
+    "GOOGLE_OAUTH_CLIENT_ID": {
+      "type": "secret"
+    },
+    "GOOGLE_OAUTH_CLIENT_SECRET": {
+      "type": "secret"
+    },
+    "GOOGLE_OAUTH_REFRESH_TOKEN": {
+      "type": "secret"
+    },
+    "BACKUP_DRIVE_FOLDER_ID": {
+      "type": "secret"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import {ensureFetchPatch} from 'vinext/shims/fetch-cache';
 import {nflRankingPayload} from './lib/nfl-ranking-display';
 import dashboard from 'vinext/server/fetch-handler';
 import {cachePregameBoard,readPregameBoard} from './lib/ranking-board-cache';
@@ -8,6 +9,10 @@ import {createWorkerGradingReplay} from './lib/worker-grading-replay';
 import {saveWorkerFinalCorrections} from './lib/worker-final-observations';
 import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker-history-backup.mjs';
 import {archiveWorkerPregameDay} from './scripts/worker-pregame-backup.mjs';
+
+// Install framework transport before request-local job accounting wraps it.
+// Lazy installation during the first ranking request would replace the guard.
+ensureFetchPatch();
 
 export const DashboardJobQueue=dashboardJobClass({dashboard,createReplay:createWorkerGradingReplay,saveCorrections:saveWorkerFinalCorrections,
  publish:(env,sport,market,body)=>Promise.all([cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body)]),

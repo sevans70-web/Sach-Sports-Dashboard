@@ -20,9 +20,9 @@ test('public feed requests collapse and cached bodies remain independently reada
   assert.deepEqual(await (await providerFetch(url)).json(),{events:[{id:1}]});assert.equal(calls,1);
  }finally{globalThis.fetch=original}
 });
-test('ESPN failure retries the official alternate host; failed responses are never cached',async()=>{
+test('ESPN service failure retries the official alternate host; failed responses are never cached',async()=>{
  const original=globalThis.fetch;const calls=[];
- globalThis.fetch=async(input)=>{calls.push(String(input));return String(input).includes('site.web.api')?Response.json({events:[]}):new Response('Forbidden',{status:403})};
+ globalThis.fetch=async(input)=>{calls.push(String(input));return String(input).includes('site.web.api')?Response.json({events:[]}):new Response('unavailable',{status:503})};
  try{
   const r=await providerFetch('https://site.api.espn.com/apis/site/v2/test/fallback');
   assert.equal(r.status,200);assert.equal(calls.length,2);assert.match(calls[1],/site.web.api.espn.com/);
@@ -36,3 +36,5 @@ test('authenticated sportsbook requests are not cached or sent to alternate host
  globalThis.fetch=async(input,init)=>{calls++;assert.equal(new URL(String(input)).hostname,'api.owlsinsight.com');assert.equal(init.headers.Authorization,'Bearer test');assert.ok(init.signal);return new Response('Forbidden',{status:403})};
  try{for(let i=0;i<2;i++)assert.equal((await providerFetch('https://api.owlsinsight.com/test',{headers:{Authorization:'Bearer test'}})).status,403);assert.equal(calls,2)}finally{globalThis.fetch=original}
 });
+
+test('ESPN access denials and rate limits never switch hosts',async()=>{const original=globalThis.fetch;try{for(const status of [401,403,429]){let calls=0;globalThis.fetch=async()=>{calls++;return new Response('{}',{status,headers:{'Retry-After':'3600'}})};const response=await providerFetch('https://site.api.espn.com/test/access-denied/'+status);assert.equal(response.status,status);assert.equal(response.headers.get('Retry-After'),'3600');assert.equal(calls,1);}}finally{globalThis.fetch=original}});

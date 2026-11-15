@@ -2324,7 +2324,7 @@ export function PlayerRankingsPanel({
         // Keep the last good board on screen. A background refresh failure
         // should never turn the ranking section into a blank panel.
         setError(
-          sport==='nba' ? 'NBA refresh is unavailable. Any retained rankings may be stale. Retrying…' : cause instanceof Error
+          sport==='nhl'&&cause instanceof Error&&/^(The NHL sportsbook feed denied access|No current verified sportsbook quotes)/.test(cause.message)?cause.message+' Retained rankings may be out of date.':sport==='nba' ? 'NBA refresh is unavailable. Any retained rankings may be stale. Retrying…' : cause instanceof Error
             ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : "Player rankings are temporarily unavailable. Retrying…"
             : "Player rankings are temporarily unavailable."
         );

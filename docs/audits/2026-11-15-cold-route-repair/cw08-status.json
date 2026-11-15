@@ -1,0 +1,19 @@
+{
+  "study": "cw08-nhl-v3-prospective-shadow",
+  "production": false,
+  "ready": true,
+  "receipts": 902,
+  "grades": 658,
+  "pendingUploads": 0,
+  "active": [
+    {
+      "id": "1994184",
+      "phase": "capture",
+      "retries": 19,
+      "retryAt": 1794779500583,
+      "lastError": "source_http_403"
+    }
+  ],
+  "completedCycles": 146,
+  "lastStorageError": null
+}

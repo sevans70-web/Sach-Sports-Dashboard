@@ -1,0 +1,56 @@
+[
+  {
+    "name": "nhl-roster-VGK",
+    "url": "https://api-web.nhle.com/v1/roster/VGK/current",
+    "status": "307",
+    "bytes": 0
+  },
+  {
+    "name": "nhl-roster-VAN",
+    "url": "https://api-web.nhle.com/v1/roster/VAN/current",
+    "status": "307",
+    "bytes": 0
+  },
+  {
+    "name": "nhl-roster-ANA",
+    "url": "https://api-web.nhle.com/v1/roster/ANA/current",
+    "status": "307",
+    "bytes": 0
+  },
+  {
+    "name": "nhl-roster-CGY",
+    "url": "https://api-web.nhle.com/v1/roster/CGY/current",
+    "status": "307",
+    "bytes": 0
+  },
+  {
+    "name": "nhl-log-8478403",
+    "url": "https://api-web.nhle.com/v1/player/8478403/game-log/20262027/2",
+    "status": "200",
+    "bytes": 8900
+  },
+  {
+    "name": "nhl-log-8482445",
+    "url": "https://api-web.nhle.com/v1/player/8482445/game-log/20262027/2",
+    "status": "200",
+    "bytes": 3136
+  },
+  {
+    "name": "nhl-log-8478024",
+    "url": "https://api-web.nhle.com/v1/player/8478024/game-log/20262027/2",
+    "status": "200",
+    "bytes": 2268
+  },
+  {
+    "name": "nfl-roster-9",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/9/roster",
+    "status": "200",
+    "bytes": 381632
+  },
+  {
+    "name": "nfl-roster-16",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/16/roster",
+    "status": "200",
+    "bytes": 375679
+  }
+]

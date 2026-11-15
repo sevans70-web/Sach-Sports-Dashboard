@@ -1,7 +1,7 @@
 import {DurableObject,withEnv} from 'cloudflare:workers';
 import {encode,decode,runJobBudget,JobDeferred} from './budget.mjs';
 import {runPhase} from './tasks.mjs';
-import {PREGAME_MARKETS,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
+import {PREGAME_MARKETS,torontoCaptureDay,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
 const sports=['nba','nfl','nhl'];
@@ -47,9 +47,10 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   const id=job.id;const value={...job,state:'active',phase:job.kind==='capture'?'rank':'scan',cursor:job.kind==='replay'?'':0,attempts:0};
   // Coalesce ticks while the same market/day is already pending. Original reserved
   // picks retain their exact first bytes; no tick replaces them with fresh quotes.
-  const pending=this.rows('SELECT data FROM jobs WHERE state=?','active').map(r=>decode(r.data));
-  if(!pending.some(p=>p.kind===job.kind&&(job.kind==='capture'?p.market===job.market:job.kind==='replay'?p.day===job.day:true)))
-   this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?,?,?,?,?,?)',id,job.kind,job.sport,'active',this.now(),0,encode(value));
+  const pending=this.rows("SELECT data FROM jobs WHERE state IN ('active','blocked')").map(r=>decode(r.data)).filter(p=>p.state==='active'||(p.retryAt||0)>this.now());
+  const existing=pending.find(p=>p.kind===job.kind&&(job.kind==='capture'?p.market===job.market&&torontoCaptureDay(p.created)===torontoCaptureDay(job.created):job.kind==='replay'?p.day===job.day:true));
+  if(existing)return {id:existing.id,queued:false,state:existing.state,retryAt:existing.retryAt||null};
+  this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?,?,?,?,?,?)',id,job.kind,job.sport,'active',this.now(),0,encode(value));
   await this.arm();return {id,queued:true};
  }
  async arm(){
@@ -83,14 +84,16 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
    const measured=progress(job,error.usage,false,this.now());
    if(error.message==='job_subrequest_budget'&&error.usage?.cacheWrites>0)due=this.now()+1000;
+   const blocked=job.kind==='capture'&&(measured.stalledAttempts>=3||attempts>=8);
    if(measured.stalledAttempts>=3)due=Math.max(due,this.now()+15*60000);
-   next={...job,attempts,lastError:safeError(error),usage:error.usage||null,progress:measured};
-   console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:due,usage:next.usage}));
+   if(blocked){due=Math.max(due,this.now()+30*60000);measured.needsAttention=true;}
+   next={...job,attempts,state:blocked?'blocked':job.state,lastError:safeError(error),failureDetails:error.details||null,usage:error.usage||null,progress:measured};
+   console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:due,usage:next.usage,failureDetails:next.failureDetails}));
   }finally{
    if(owns()){
     const touched=this.now();next.retryAt=next.state==='done'?null:due;
     this.sql.exec('UPDATE jobs SET state=?,due=?,touched=?,data=? WHERE id=?',next.state||'active',due,touched,encode(next),job.id);
-    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired,progress:next.progress}));
+    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,failureDetails:next.failureDetails,eligible:next.eligible,expired:next.expired,progress:next.progress}));
     this.setMeta('lease',null);
    }
    await this.arm();

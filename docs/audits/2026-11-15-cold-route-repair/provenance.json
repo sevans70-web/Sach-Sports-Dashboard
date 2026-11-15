@@ -1,0 +1,38 @@
+[
+  {
+    "name": "nhl-score",
+    "url": "https://api-web.nhle.com/v1/score/2026-11-15",
+    "status": "200",
+    "bytes": 18790
+  },
+  {
+    "name": "nhl-standings",
+    "url": "https://api-web.nhle.com/v1/standings/2026-11-15",
+    "status": "200",
+    "bytes": 58381
+  },
+  {
+    "name": "nfl-score",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261115&limit=200",
+    "status": "200",
+    "bytes": 140347
+  },
+  {
+    "name": "nhl-skater-summary",
+    "url": "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&start=0&limit=-1&sort=%5B%7B%22property%22%3A+%22points%22%2C+%22direction%22%3A+%22DESC%22%7D%5D&cayenneExp=seasonId%3D20262027+and+gameTypeId%3D2",
+    "status": "200",
+    "bytes": 352305
+  },
+  {
+    "name": "nhl-skater-realtime",
+    "url": "https://api.nhle.com/stats/rest/en/skater/realtime?isAggregate=false&isGame=false&start=0&limit=-1&sort=%5B%7B%22property%22%3A+%22blockedShots%22%2C+%22direction%22%3A+%22DESC%22%7D%5D&cayenneExp=seasonId%3D20262027+and+gameTypeId%3D2",
+    "status": "200",
+    "bytes": 490637
+  },
+  {
+    "name": "nhl-goalie-summary",
+    "url": "https://api.nhle.com/stats/rest/en/goalie/summary?isAggregate=false&isGame=false&start=0&limit=-1&sort=%5B%7B%22property%22%3A+%22saves%22%2C+%22direction%22%3A+%22DESC%22%7D%5D&cayenneExp=seasonId%3D20262027+and+gameTypeId%3D2",
+    "status": "200",
+    "bytes": 29963
+  }
+]

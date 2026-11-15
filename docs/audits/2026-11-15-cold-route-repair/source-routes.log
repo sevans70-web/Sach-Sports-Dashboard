@@ -1,0 +1,75 @@
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":22,"limit":220,"costs":{"provider_gate":11,"official_http":8,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":381771,"completedRequests":11,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+[dashboard-job-deferred] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"originals","reason":"Cloudflare pregame storage HTTP 503","retryAt":1794740552002,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ actual NFL route captures authentic quotes with ESPN 403 and resumes after lost acknowledgement/restart (10538.777693ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[dashboard-job-deferred] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"rank","reason":"rankings_provider_http_403","retryAt":1794742321001,"usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":{"stage":"rank","httpStatus":503,"code":"provider_http_403","provider":"owls","endpoint":"/api/v1/nfl/props","status":403,"verifiedQuotes":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"rank","state":"active","usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"rank","reason":"rankings_provider_http_403","retryAt":1794744121002,"usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":{"stage":"rank","httpStatus":503,"code":"provider_http_403","provider":"owls","endpoint":"/api/v1/nfl/props","status":403,"verifiedQuotes":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"rank","state":"active","usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"rank","reason":"rankings_provider_http_403","retryAt":1794745921003,"usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":{"stage":"rank","httpStatus":503,"code":"provider_http_403","provider":"owls","endpoint":"/api/v1/nfl/props","status":403,"verifiedQuotes":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"rank","state":"blocked","usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ actual NFL denied-book route stops before ESPN and persists a bounded blocked state across restart (7060.181994ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[P01 coverage audit] {"sport":"nhl","market":"shots_on_goal","rows":64,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1,"player_team_history_unavailable":63}}
+ACTUAL_NHL shots_on_goal {"displayable":1,"quotes":1,"history":{"requested":1,"unavailable":0,"budgetExceeded":false},"blockers":{"selected":1,"player_team_history_unavailable":63}}
+[P01 coverage audit] {"sport":"nhl","market":"points","rows":64,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1,"player_team_history_unavailable":63}}
+ACTUAL_NHL points {"displayable":1,"quotes":1,"history":{"requested":1,"unavailable":0,"budgetExceeded":false},"blockers":{"selected":1,"player_team_history_unavailable":63}}
+[P01 coverage audit] {"sport":"nhl","market":"goalie_saves","rows":9,"verifiedQuotes":2,"modelAvailable":true,"fittedForecasts":9,"blockers":{"selected":2,"verified_quote_unavailable":7}}
+ACTUAL_NHL goalie_saves {"displayable":2,"quotes":2,"history":{"requested":2,"unavailable":0,"budgetExceeded":false},"blockers":{"selected":2,"verified_quote_unavailable":7}}
+✔ actual NHL routes use current-season official sources and retain legitimately quoted candidates (6334.263584ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":24,"limit":220,"costs":{"provider_gate":12,"official_http":9,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":756663,"completedRequests":12,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ actual NFL route uses the already configured authorized supplemental feed when primary and ESPN history are denied (3588.320491ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+FOREGROUND_STAGE source entered
+FOREGROUND_RESPONSE 200 16 {
+  sourceRows: 16,
+  displayableRows: 16,
+  fittedProjections: 14,
+  baselineOnly: 1,
+  savedQuoteRows: 16,
+  evAvailable: 0,
+  reasons: {
+    'Model probability accuracy checks not met; confidence and EV are unavailable': 14,
+    'Verified player/team history is unavailable': 2
+  }
+}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"concurrent-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":22,"limit":220,"costs":{"provider_gate":11,"official_http":8,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":381771,"completedRequests":11,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+✔ actual foreground NFL rankings across all 17 tabs remain responsive while cold capture owns an in-flight source (4869.031564ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[P01 coverage audit] {"sport":"nhl","market":"shots_on_goal","rows":64,"verifiedQuotes":0,"modelAvailable":true,"fittedForecasts":0,"blockers":{"player_team_history_unavailable":64}}
+[P01 coverage audit] {"sport":"nhl","market":"points","rows":64,"verifiedQuotes":0,"modelAvailable":true,"fittedForecasts":0,"blockers":{"player_team_history_unavailable":64}}
+[P01 coverage audit] {"sport":"nhl","market":"goalie_saves","rows":9,"verifiedQuotes":0,"modelAvailable":true,"fittedForecasts":9,"blockers":{"verified_quote_unavailable":9}}
+✔ actual NHL denied feed reports unavailable rather than a healthy empty ranking board (3132.249065ms)
+﹣ withdrawn production bundle reproduces opaque retry starvation under the same denied feed (0.265589ms) # SKIP
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 36281.706073

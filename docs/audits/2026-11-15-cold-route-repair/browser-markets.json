@@ -1,0 +1,76 @@
+{
+  "scope": "LOCAL compiled candidate; recorded real November 15 responses, frozen 15:52 UTC; API replay, no live writes",
+  "markets": [
+    {
+      "sport": "nba",
+      "market": "points",
+      "cards": 23,
+      "evLabels": 23
+    },
+    {
+      "sport": "nba",
+      "market": "rebounds",
+      "cards": 23,
+      "evLabels": 23
+    },
+    {
+      "sport": "nba",
+      "market": "assists",
+      "cards": 22,
+      "evLabels": 22
+    },
+    {
+      "sport": "nba",
+      "market": "threes_made",
+      "cards": 25,
+      "evLabels": 25
+    },
+    {
+      "sport": "nba",
+      "market": "pts_rebs_asts",
+      "cards": 17,
+      "evLabels": 17
+    },
+    {
+      "sport": "nba",
+      "market": "pts_asts",
+      "cards": 17,
+      "evLabels": 17
+    },
+    {
+      "sport": "nba",
+      "market": "pts_rebs",
+      "cards": 20,
+      "evLabels": 20
+    },
+    {
+      "sport": "nhl",
+      "market": "shots_on_goal",
+      "cards": 25,
+      "evLabels": 0
+    },
+    {
+      "sport": "nhl",
+      "market": "points",
+      "cards": 25,
+      "evLabels": 0
+    },
+    {
+      "sport": "nhl",
+      "market": "assists",
+      "cards": 0,
+      "evLabels": 0
+    },
+    {
+      "sport": "nhl",
+      "market": "goalie_saves",
+      "cards": 7,
+      "evLabels": 0
+    }
+  ],
+  "errors": [],
+  "prFailureRecovery": {
+    "retained": 20,
+    "staleExplained": true
+  }
+}

@@ -1,0 +1,21 @@
+✔ durable sportsbook input snapshots exclude credentials and account metadata (5.254308ms)
+✔ capture preserves denied-source stage diagnostics and provider retry window (93.706614ms)
+✔ historical combination EV cannot be manufactured from saved component means (2.346368ms)
+✔ missing values are not fabricated zeroes (0.917835ms)
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/401 401 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/403 403 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/429 429 text/plain;charset=UTF-8
+✔ public feed requests collapse and cached bodies remain independently readable (32.070432ms)
+✔ ESPN service failure retries the official alternate host; failed responses are never cached (3.674928ms)
+✔ authenticated sportsbook requests are not cached or sent to alternate hosts (0.585227ms)
+✔ ESPN access denials and rate limits never switch hosts (2.222159ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2188.171657
