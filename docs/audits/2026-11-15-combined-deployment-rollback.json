@@ -1,0 +1,2523 @@
+{
+  "status": "rolled_back_candidate_withdrawn",
+  "approvedPackageCommit": "6f8980b5a570327f2adb45617d91f33104f87e27",
+  "frozenSourceCommit": "15d1479743e8ee51de6ff45b452c79e44624f52d",
+  "bundleDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
+  "archiveSha256": "4fb9f923d2f6aad814b10fcd61c6e0bf908bdea817d69e99d37cc672f78f5544",
+  "manualBuild": {
+    "buildId": "b3b40d2e-e4f2-4d87-9e25-1336d25d06e0",
+    "status": "queued",
+    "commandsRestored": true,
+    "branchIncludes": [
+      "__cw08_manual_release_only__"
+    ],
+    "sourceCommit": "6f8980b5a570327f2adb45617d91f33104f87e27"
+  },
+  "deployment": {
+    "id": "bbd2debf-481e-4f79-87c7-7f15b5b843a6",
+    "version": "e42686ba-f801-4b26-b95f-d22ded3030a3",
+    "atUTC": "2026-11-15T15:52:02.394701Z"
+  },
+  "rollback": {
+    "id": "6e6fab80-41c8-433c-bcf9-79a2e4dd5aee",
+    "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "atUTC": "2026-11-15T15:56:50.988812Z"
+  },
+  "failedGates": [
+    {
+      "kind": "cold_nfl_capture",
+      "reason": "Repeated official-source HTTP 403; no newly checkpointed inputs; three attempts trigger needsAttention and 15-minute backoff",
+      "markets": [
+        "anytime_td",
+        "first_td",
+        "passing_rushing_yards",
+        "rushing_receiving_yards"
+      ],
+      "maximumObservedCaptureRequests": 26,
+      "maximumConcurrentSources": 4,
+      "sourceCheckpoints": 0,
+      "hardSubrequestEventsFound": 0,
+      "specificFailingUrl": "Not logged; requires safe source-level diagnosis before another release."
+    },
+    {
+      "kind": "nba_pr_browser",
+      "atUTC": "2026-11-15T15:56:17.854836Z",
+      "status": 503,
+      "reason": "Points + Rebounds browser request returned 503 and rendered zero rows; independent API request had returned 20 rows with valid EV. Underlying 503 cause is not established."
+    }
+  ],
+  "liveCandidateRankings": {
+    "nfl": {
+      "passing_yards": {
+        "status": 200,
+        "seconds": 1.582,
+        "rows": 16,
+        "displayable": 16,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 14,
+          "baselineOnly": 1,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 14,
+            "Verified player/team history is unavailable": 2
+          }
+        },
+        "notice": null,
+        "frozen": 16
+      },
+      "passing_tds": {
+        "status": 200,
+        "seconds": 0.736,
+        "rows": 16,
+        "displayable": 16,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "notice": null,
+        "frozen": 16
+      },
+      "passing_interceptions": {
+        "status": 200,
+        "seconds": 1.202,
+        "rows": 16,
+        "displayable": 16,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "notice": null,
+        "frozen": 16
+      },
+      "qb_rushing_yards": {
+        "status": 200,
+        "seconds": 0.694,
+        "rows": 16,
+        "displayable": 16,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "notice": null,
+        "frozen": 16
+      },
+      "passing_rushing_yards": {
+        "status": 200,
+        "seconds": 0.77,
+        "rows": 16,
+        "displayable": 16,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "notice": null,
+        "frozen": 16
+      },
+      "anytime_td": {
+        "status": 200,
+        "seconds": 1.315,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 23,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "first_td": {
+        "status": 200,
+        "seconds": 1.262,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "receiving_yards": {
+        "status": 200,
+        "seconds": 0.824,
+        "rows": 62,
+        "displayable": 62,
+        "coverage": {
+          "sourceRows": 62,
+          "displayableRows": 62,
+          "fittedProjections": 50,
+          "baselineOnly": 12,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 50,
+            "Independent model probability needed": 10,
+            "Verified player/team history is unavailable": 2
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "receptions": {
+        "status": 200,
+        "seconds": 0.202,
+        "rows": 62,
+        "displayable": 62,
+        "coverage": {
+          "sourceRows": 62,
+          "displayableRows": 62,
+          "fittedProjections": 46,
+          "baselineOnly": 16,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 46,
+            "Independent model probability needed": 14,
+            "Verified player/team history is unavailable": 2
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "rushing_yards": {
+        "status": 200,
+        "seconds": 0.708,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 24,
+          "baselineOnly": 1,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 24,
+            "Independent model probability needed": 1
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "rushing_receiving_yards": {
+        "status": 200,
+        "seconds": 0.819,
+        "rows": 21,
+        "displayable": 21,
+        "coverage": {
+          "sourceRows": 21,
+          "displayableRows": 21,
+          "fittedProjections": 0,
+          "baselineOnly": 21,
+          "savedQuoteRows": 21,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 21
+          }
+        },
+        "notice": null,
+        "frozen": 21
+      },
+      "sacks": {
+        "status": 200,
+        "seconds": 0.8,
+        "rows": 24,
+        "displayable": 24,
+        "coverage": {
+          "sourceRows": 24,
+          "displayableRows": 24,
+          "fittedProjections": 0,
+          "baselineOnly": 24,
+          "savedQuoteRows": 24,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 24
+          }
+        },
+        "notice": null,
+        "frozen": 24
+      },
+      "tackles": {
+        "status": 200,
+        "seconds": 0.807,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 25,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "tackles_assists": {
+        "status": 200,
+        "seconds": 1.002,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 25,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "q1_passing_yards": {
+        "status": 200,
+        "seconds": 0.662,
+        "rows": 16,
+        "displayable": 16,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 9,
+          "baselineOnly": 0,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "At least five verified quarter-history games are needed": 7,
+            "Complete model probabilities needed": 9
+          }
+        },
+        "notice": null,
+        "frozen": 16
+      },
+      "q1_receiving_yards": {
+        "status": 200,
+        "seconds": 1.558,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 16,
+          "baselineOnly": 0,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Complete model probabilities needed": 16,
+            "At least five verified quarter-history games are needed": 8,
+            "Independent model probability needed": 1
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      },
+      "q1_rushing_yards": {
+        "status": 200,
+        "seconds": 1.358,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 15,
+          "baselineOnly": 0,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Complete model probabilities needed": 15,
+            "At least five verified quarter-history games are needed": 10
+          }
+        },
+        "notice": null,
+        "frozen": 25
+      }
+    },
+    "nhl": {
+      "shots_on_goal": {
+        "status": 200,
+        "seconds": 4.572,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "status": "not_needed",
+          "restored": 0,
+          "added": 0
+        },
+        "notice": "",
+        "frozen": 0
+      },
+      "points": {
+        "status": 200,
+        "seconds": 1.65,
+        "rows": 25,
+        "displayable": 25,
+        "coverage": {
+          "status": "not_needed",
+          "restored": 0,
+          "added": 0
+        },
+        "notice": "",
+        "frozen": 0
+      },
+      "assists": {
+        "status": 200,
+        "seconds": 0.804,
+        "rows": 25,
+        "displayable": 0,
+        "coverage": {
+          "status": "not_needed",
+          "restored": 0,
+          "added": 0
+        },
+        "notice": "New predictions are withheld while model accuracy is being validated.",
+        "frozen": 0
+      },
+      "goalie_saves": {
+        "status": 200,
+        "seconds": 1.298,
+        "rows": 23,
+        "displayable": 7,
+        "coverage": {
+          "status": "not_needed",
+          "restored": 0,
+          "added": 0
+        },
+        "notice": "",
+        "frozen": 0
+      },
+      "goals": {
+        "status": 200,
+        "seconds": 3.245,
+        "rows": 25,
+        "displayable": 0,
+        "coverage": {
+          "status": "not_needed",
+          "restored": 0,
+          "added": 0
+        },
+        "notice": "New predictions are withheld while model accuracy is being validated.",
+        "frozen": 0
+      },
+      "blocked_shots": {
+        "status": 200,
+        "seconds": 0.386,
+        "rows": 25,
+        "displayable": 0,
+        "coverage": {
+          "status": "not_needed",
+          "restored": 0,
+          "added": 0
+        },
+        "notice": "No independently fitted model is available for this market.",
+        "frozen": 0
+      }
+    },
+    "nba": {
+      "points": {
+        "status": 200,
+        "seconds": 9.537,
+        "rows": 23,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 23,
+        "positive": 18,
+        "negative": 5,
+        "zero": 0,
+        "unavailableReasons": {}
+      },
+      "rebounds": {
+        "status": 200,
+        "seconds": 8.872,
+        "rows": 23,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 23,
+        "positive": 18,
+        "negative": 5,
+        "zero": 0,
+        "unavailableReasons": {}
+      },
+      "assists": {
+        "status": 200,
+        "seconds": 9.137,
+        "rows": 22,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 20,
+        "positive": 14,
+        "negative": 6,
+        "zero": 0,
+        "unavailableReasons": {
+          "Projection equals the line; no OVER/UNDER direction is displayed": 2
+        }
+      },
+      "threes_made": {
+        "status": 200,
+        "seconds": 8.936,
+        "rows": 25,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 24,
+        "positive": 18,
+        "negative": 6,
+        "zero": 0,
+        "unavailableReasons": {
+          "Projection equals the line; no OVER/UNDER direction is displayed": 1
+        }
+      },
+      "pts_rebs_asts": {
+        "status": 200,
+        "seconds": 8.937,
+        "rows": 17,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 17,
+        "positive": 16,
+        "negative": 1,
+        "zero": 0,
+        "unavailableReasons": {}
+      },
+      "pts_rebs": {
+        "status": 200,
+        "seconds": 10.05,
+        "rows": 20,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 20,
+        "positive": 9,
+        "negative": 11,
+        "zero": 0,
+        "unavailableReasons": {}
+      },
+      "pts_asts": {
+        "status": 200,
+        "seconds": 7.176,
+        "rows": 17,
+        "displayable": null,
+        "coverage": null,
+        "notice": null,
+        "frozen": 0,
+        "validEV": 17,
+        "positive": 13,
+        "negative": 4,
+        "zero": 0,
+        "unavailableReasons": {}
+      }
+    }
+  },
+  "candidateBrowser": {
+    "errors": [],
+    "hydrationErrors": [],
+    "nfl": {
+      "passing_yards": {
+        "cards": 16,
+        "seconds": 1.437,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 14,
+          "baselineOnly": 1,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 14,
+            "Verified player/team history is unavailable": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "passing_tds": {
+        "cards": 16,
+        "seconds": 0.832,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "explanationVisible": true
+      },
+      "passing_interceptions": {
+        "cards": 16,
+        "seconds": 0.71,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "explanationVisible": true
+      },
+      "qb_rushing_yards": {
+        "cards": 16,
+        "seconds": 0.406,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "explanationVisible": true
+      },
+      "passing_rushing_yards": {
+        "cards": 16,
+        "seconds": 0.714,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 0,
+          "baselineOnly": 15,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 16
+          }
+        },
+        "explanationVisible": true
+      },
+      "anytime_td": {
+        "cards": 25,
+        "seconds": 0.345,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 23,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "explanationVisible": true
+      },
+      "first_td": {
+        "cards": 25,
+        "seconds": 0.335,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "explanationVisible": true
+      },
+      "receiving_yards": {
+        "cards": 62,
+        "seconds": 1.184,
+        "coverage": {
+          "sourceRows": 62,
+          "displayableRows": 62,
+          "fittedProjections": 50,
+          "baselineOnly": 12,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 50,
+            "Independent model probability needed": 10,
+            "Verified player/team history is unavailable": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "receptions": {
+        "cards": 62,
+        "seconds": 1.224,
+        "coverage": {
+          "sourceRows": 62,
+          "displayableRows": 62,
+          "fittedProjections": 46,
+          "baselineOnly": 16,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 46,
+            "Independent model probability needed": 14,
+            "Verified player/team history is unavailable": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "rushing_yards": {
+        "cards": 25,
+        "seconds": 1.041,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 24,
+          "baselineOnly": 1,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Model probability accuracy checks not met; confidence and EV are unavailable": 24,
+            "Independent model probability needed": 1
+          }
+        },
+        "explanationVisible": true
+      },
+      "rushing_receiving_yards": {
+        "cards": 21,
+        "seconds": 0.236,
+        "coverage": {
+          "sourceRows": 21,
+          "displayableRows": 21,
+          "fittedProjections": 0,
+          "baselineOnly": 21,
+          "savedQuoteRows": 21,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 21
+          }
+        },
+        "explanationVisible": true
+      },
+      "sacks": {
+        "cards": 24,
+        "seconds": 0.853,
+        "coverage": {
+          "sourceRows": 24,
+          "displayableRows": 24,
+          "fittedProjections": 0,
+          "baselineOnly": 24,
+          "savedQuoteRows": 24,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 24
+          }
+        },
+        "explanationVisible": true
+      },
+      "tackles": {
+        "cards": 25,
+        "seconds": 0.318,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 25,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "explanationVisible": true
+      },
+      "tackles_assists": {
+        "cards": 25,
+        "seconds": 2.88,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 25,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "explanationVisible": true
+      },
+      "q1_passing_yards": {
+        "cards": 16,
+        "seconds": 0.227,
+        "coverage": {
+          "sourceRows": 16,
+          "displayableRows": 16,
+          "fittedProjections": 9,
+          "baselineOnly": 0,
+          "savedQuoteRows": 16,
+          "evAvailable": 0,
+          "reasons": {
+            "At least five verified quarter-history games are needed": 7,
+            "Complete model probabilities needed": 9
+          }
+        },
+        "explanationVisible": true
+      },
+      "q1_receiving_yards": {
+        "cards": 25,
+        "seconds": 1.047,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 16,
+          "baselineOnly": 0,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Complete model probabilities needed": 16,
+            "At least five verified quarter-history games are needed": 8,
+            "Independent model probability needed": 1
+          }
+        },
+        "explanationVisible": true
+      },
+      "q1_rushing_yards": {
+        "cards": 25,
+        "seconds": 0.898,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 15,
+          "baselineOnly": 0,
+          "savedQuoteRows": 25,
+          "evAvailable": 0,
+          "reasons": {
+            "Complete model probabilities needed": 15,
+            "At least five verified quarter-history games are needed": 10
+          }
+        },
+        "explanationVisible": true
+      }
+    },
+    "nhl": {
+      "shots_on_goal": {
+        "cards": 25,
+        "seconds": 4.106,
+        "coverage": null,
+        "explanationVisible": false
+      },
+      "points": {
+        "cards": 25,
+        "seconds": 0.597,
+        "coverage": null,
+        "explanationVisible": false
+      },
+      "assists": {
+        "cards": 0,
+        "seconds": 2.085,
+        "coverage": null,
+        "explanationVisible": true
+      },
+      "goalie_saves": {
+        "cards": 7,
+        "seconds": 0.879,
+        "coverage": null,
+        "explanationVisible": false
+      }
+    },
+    "nba": {
+      "points": {
+        "cards": 23,
+        "seconds": 8.022,
+        "coverage": null,
+        "explanationVisible": false,
+        "ev": [
+          {
+            "status": "available",
+            "value": "+3.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+15.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+32.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+7.0%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+4.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+17.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+3.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+35.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+21.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+10.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+25.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+6.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+5.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+4.0%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-3.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+2.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+0.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+0.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-0.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-8.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-2.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+1.0%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-3.8%",
+            "reason": "Research EV"
+          }
+        ]
+      },
+      "rebounds": {
+        "cards": 25,
+        "seconds": 0.602,
+        "coverage": null,
+        "explanationVisible": false,
+        "ev": [
+          {
+            "status": "available",
+            "value": "+27.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+11.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+12.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+33.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+14.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+12.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+3.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+6.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+6.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+11.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+16.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-8.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+0.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-17.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-5.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-1.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+1.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+0.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-0.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-9.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-3.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-0.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+5.0%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+8.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+0.2%",
+            "reason": "Research EV"
+          }
+        ]
+      },
+      "assists": {
+        "cards": 22,
+        "seconds": 6.801,
+        "coverage": null,
+        "explanationVisible": false,
+        "ev": [
+          {
+            "status": "available",
+            "value": "+9.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+20.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+32.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+11.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+26.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+39.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+18.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+13.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+48.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+32.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+14.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+23.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "unavailable",
+            "value": "\u2014",
+            "reason": "Projection equals the line; no OVER/UNDER direction is displayed"
+          },
+          {
+            "status": "available",
+            "value": "-11.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-3.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "unavailable",
+            "value": "\u2014",
+            "reason": "Projection equals the line; no OVER/UNDER direction is displayed"
+          },
+          {
+            "status": "available",
+            "value": "-10.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-19.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-4.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-4.2%",
+            "reason": "Research EV"
+          }
+        ]
+      },
+      "threes_made": {
+        "cards": 25,
+        "seconds": 1.872,
+        "coverage": null,
+        "explanationVisible": false,
+        "ev": [
+          {
+            "status": "available",
+            "value": "+23.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+39.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+13.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+30.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+32.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+8.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+5.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+10.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+24.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+68.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+18.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+5.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+3.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+16.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+15.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+15.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+27.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+13.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-18.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-16.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-12.6%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-14.7%",
+            "reason": "Research EV"
+          }
+        ]
+      },
+      "pts_rebs_asts": {
+        "cards": 17,
+        "seconds": 7.629,
+        "coverage": null,
+        "explanationVisible": false,
+        "ev": [
+          {
+            "status": "available",
+            "value": "+5.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+11.4%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+13.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+19.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+30.0%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+9.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+19.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+30.8%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+20.9%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+21.3%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+21.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+13.1%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+1.2%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+1.5%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "+2.7%",
+            "reason": "Research EV"
+          },
+          {
+            "status": "available",
+            "value": "-4.5%",
+            "reason": "Research EV"
+          }
+        ]
+      }
+    },
+    "responses": [
+      {
+        "sport": "nfl",
+        "market": "passing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "passing_tds",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "passing_interceptions",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "qb_rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "anytime_td",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "passing_rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "first_td",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "receptions",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "receiving_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "rushing_receiving_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "sacks",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "tackles",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "tackles_assists",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "q1_passing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "q1_receiving_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "q1_rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "points",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "blocked_shots",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "assists",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "goalie_saves",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "points",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "rebounds",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "points",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "assists",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "threes_made",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "q1_points",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "pts_rebs_asts",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "pts_asts",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "pts_rebs",
+        "status": 503
+      }
+    ],
+    "nhlReloadSeconds": [
+      1.69,
+      0.565
+    ]
+  },
+  "browserFailure": {
+    "error": "('live browser/API mismatch', 'nba', 'pts_rebs', 0, 'PLAYER RANKINGS\\nToday\\nPrevious Slate\\nTomorrow\\n\ud83c\udfc0Points\\n\ud83d\udcaaRebounds\\n\ud83c\udfafAssists\\n3\ufe0f\u20e33-Pointers Made\\n\u23f1\ufe0fQ1 Points\\n\u23f1\ufe0fQ1 Rebounds\\n\u23f1\ufe0fQ1 Assists\\n\ud83d\udccaPoints + Rebounds + Assists\\n\u2795Points + Rebounds\\n\u2795Points + Assists\\n\u2795Rebounds + Assists\\n\ud83d\udd90\ufe0fSteals\\n\ud83e\uddf1Blocks\\n1\ufe0f\u20e3First Basket\\n\u203a\\n\u2795 Points + Rebounds\\n\\n0 rankings \u00b7 0 picks\\n\\nNo Points + Rebounds rankings with a verified line, projection, prediction and EV are available for this slate.')",
+    "at": 1794758177.8548357
+  },
+  "background": {
+    "at": "2026-11-15T15:56:05.485Z",
+    "lanes": [
+      {
+        "name": "capture:nba",
+        "jobs": [
+          {
+            "id": "capture:nba:q1_rebounds:14955970",
+            "market": "q1_rebounds",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 2,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794716467279
+          },
+          {
+            "id": "capture:nba:q1_assists:14955970",
+            "market": "q1_assists",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 2,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794716466237
+          },
+          {
+            "id": "capture:nba:q1_points:14955969",
+            "market": "q1_points",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 2,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794716351867
+          },
+          {
+            "id": "capture:nba:first_basket:14955969",
+            "market": "first_basket",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 2,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794716350813
+          }
+        ],
+        "metrics": [
+          [
+            0,
+            null,
+            null,
+            null
+          ]
+        ],
+        "sources": [
+          [
+            5
+          ]
+        ]
+      },
+      {
+        "name": "capture:nfl",
+        "jobs": [
+          {
+            "id": "capture:nfl:passing_rushing_yards:14956317",
+            "market": "passing_rushing_yards",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 2,
+            "used": 16,
+            "maxActive": 4,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": null,
+              "stalledAttempts": 2,
+              "needsAttention": false
+            },
+            "lastError": "job_source_http_403",
+            "retryAt": 1794758222395,
+            "touched": 1794758162402
+          },
+          {
+            "id": "capture:nfl:anytime_td:14955974",
+            "market": "anytime_td",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 8,
+            "used": 24,
+            "maxActive": 4,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": null,
+              "stalledAttempts": 3,
+              "needsAttention": true
+            },
+            "lastError": "job_source_http_403",
+            "retryAt": 1794759034260,
+            "touched": 1794758134260
+          },
+          {
+            "id": "capture:nfl:first_td:14956316",
+            "market": "first_td",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 3,
+            "used": 14,
+            "maxActive": 4,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": null,
+              "stalledAttempts": 3,
+              "needsAttention": true
+            },
+            "lastError": "job_source_http_403",
+            "retryAt": 1794759004849,
+            "touched": 1794758104849
+          },
+          {
+            "id": "capture:nfl:rushing_receiving_yards:14956317",
+            "market": "rushing_receiving_yards",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 1,
+            "used": 14,
+            "maxActive": 4,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": null,
+              "stalledAttempts": 1,
+              "needsAttention": false
+            },
+            "lastError": "job_source_http_403",
+            "retryAt": 1794758162492,
+            "touched": 1794758102597
+          },
+          {
+            "id": "capture:nfl:receptions:14955973",
+            "market": "receptions",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 3,
+            "maxActive": 0,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": 1794757954717,
+              "stalledAttempts": 0,
+              "needsAttention": false
+            },
+            "lastError": null,
+            "eligible": 37,
+            "stored": 1,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794757954717
+          },
+          {
+            "id": "capture:nfl:receiving_yards:14955973",
+            "market": "receiving_yards",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 3,
+            "maxActive": 0,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": 1794757953351,
+              "stalledAttempts": 0,
+              "needsAttention": false
+            },
+            "lastError": null,
+            "eligible": 37,
+            "stored": 2,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794757953351
+          },
+          {
+            "id": "capture:nfl:rushing_receiving_yards:14955975",
+            "market": "rushing_receiving_yards",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 0,
+            "maxActive": 0,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": 1794757950002,
+              "stalledAttempts": 0,
+              "needsAttention": false
+            },
+            "lastError": null,
+            "eligible": 34,
+            "stored": 0,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794757950002
+          },
+          {
+            "id": "capture:nfl:passing_rushing_yards:14955975",
+            "market": "passing_rushing_yards",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "used": 0,
+            "maxActive": 0,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": 1794757944658,
+              "stalledAttempts": 0,
+              "needsAttention": false
+            },
+            "lastError": null,
+            "eligible": 24,
+            "stored": 0,
+            "picksStored": 0,
+            "retryAt": null,
+            "touched": 1794757944658
+          }
+        ],
+        "metrics": [
+          [
+            24,
+            26,
+            4,
+            0
+          ]
+        ],
+        "sources": [
+          [
+            91
+          ]
+        ]
+      },
+      {
+        "name": "capture:nhl",
+        "jobs": [],
+        "metrics": [
+          [
+            0,
+            null,
+            null,
+            null
+          ]
+        ],
+        "sources": [
+          [
+            0
+          ]
+        ]
+      },
+      {
+        "name": "grade:nba",
+        "jobs": [
+          {
+            "id": "grade:nba:14955975",
+            "state": "done",
+            "phase": "done",
+            "cursor": 1079,
+            "attempts": 0,
+            "used": 0,
+            "maxActive": 0,
+            "progress": {
+              "sourceCheckpoints": 0,
+              "checkpointBytes": 0,
+              "lastCheckpointAt": 1794758138688,
+              "stalledAttempts": 0,
+              "needsAttention": false
+            },
+            "lastError": null,
+            "retryAt": null,
+            "touched": 1794758138688
+          }
+        ],
+        "metrics": [
+          [
+            162,
+            6,
+            2,
+            0
+          ]
+        ],
+        "sources": [
+          [
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  "originalPreservation": {
+    "cutoff": "2026-11-15 15:49:50.975+00",
+    "matchedFingerprintGroups": 17,
+    "before": [
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "grades",
+        "sport": "nba",
+        "records": 45,
+        "inventory": "9d99f93bceb003b1878a85d59c56f1ac"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "grades",
+        "sport": "nfl",
+        "records": 24,
+        "inventory": "72b0e40413720ea3d6a85a3afcc06ee4"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "grades",
+        "sport": "nhl",
+        "records": 180,
+        "inventory": "491cfa22de4b90846483f5be2ec82f0b"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "cfb",
+        "records": 29,
+        "inventory": "13f11339bacd8694cdf876b8f0a0cc62"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "nba",
+        "records": 3045,
+        "inventory": "44e97460c8bf1634be8d983668d85dc8"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "nfl",
+        "records": 1043,
+        "inventory": "807820906fafd5d7ca2a1b25ce0ee7e2"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "nhl",
+        "records": 1724,
+        "inventory": "98f09a5381c16073b87a93625dca170b"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "picks",
+        "sport": "nba",
+        "records": 1079,
+        "inventory": "8debc6cf36b5aff1d41ea51f9625b3ba"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "picks",
+        "sport": "nfl",
+        "records": 145,
+        "inventory": "524a65ed063aba7357f4c72fdb6a2879"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "picks",
+        "sport": "nhl",
+        "records": 213,
+        "inventory": "c35b9ccafc63d28e0a2590872a4c7016"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "cbb",
+        "records": 3406,
+        "inventory": "c4c01043e7b1b03a81ab980e200b2b4b"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "cfb",
+        "records": 1142,
+        "inventory": "d76fdaf81533f5fc04b409fc8dc3504a"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "nba",
+        "records": 1920,
+        "inventory": "ada8889c5d331bf7fed80606a95fe7f4"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "nfl",
+        "records": 578,
+        "inventory": "5e047d6115cba8d065ee592ab456cb55"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "nhl",
+        "records": 950,
+        "inventory": "4b03ded82e0a7f5c35a4df38843d0b90"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "soccer",
+        "records": 130,
+        "inventory": "35ca30e6ea6b144840ea38dd2e9a965a"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "wnba",
+        "records": 38,
+        "inventory": "0250a88f2cd7f2f263b74f0b94115f65"
+      }
+    ],
+    "after": [
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "grades",
+        "sport": "nba",
+        "records": 45,
+        "inventory": "9d99f93bceb003b1878a85d59c56f1ac"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "grades",
+        "sport": "nfl",
+        "records": 24,
+        "inventory": "72b0e40413720ea3d6a85a3afcc06ee4"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "grades",
+        "sport": "nhl",
+        "records": 180,
+        "inventory": "491cfa22de4b90846483f5be2ec82f0b"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "cfb",
+        "records": 29,
+        "inventory": "13f11339bacd8694cdf876b8f0a0cc62"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "nba",
+        "records": 3045,
+        "inventory": "44e97460c8bf1634be8d983668d85dc8"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "nfl",
+        "records": 1043,
+        "inventory": "807820906fafd5d7ca2a1b25ce0ee7e2"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "originals",
+        "sport": "nhl",
+        "records": 1724,
+        "inventory": "98f09a5381c16073b87a93625dca170b"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "picks",
+        "sport": "nba",
+        "records": 1079,
+        "inventory": "8debc6cf36b5aff1d41ea51f9625b3ba"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "picks",
+        "sport": "nfl",
+        "records": 145,
+        "inventory": "524a65ed063aba7357f4c72fdb6a2879"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "picks",
+        "sport": "nhl",
+        "records": 213,
+        "inventory": "c35b9ccafc63d28e0a2590872a4c7016"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "cbb",
+        "records": 3406,
+        "inventory": "c4c01043e7b1b03a81ab980e200b2b4b"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "cfb",
+        "records": 1142,
+        "inventory": "d76fdaf81533f5fc04b409fc8dc3504a"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "nba",
+        "records": 1920,
+        "inventory": "ada8889c5d331bf7fed80606a95fe7f4"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "nfl",
+        "records": 578,
+        "inventory": "5e047d6115cba8d065ee592ab456cb55"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "nhl",
+        "records": 950,
+        "inventory": "4b03ded82e0a7f5c35a4df38843d0b90"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "soccer",
+        "records": 130,
+        "inventory": "35ca30e6ea6b144840ea38dd2e9a965a"
+      },
+      {
+        "cutoff": "2026-11-15 15:49:50.975+00",
+        "source": "protected_history",
+        "sport": "wnba",
+        "records": 38,
+        "inventory": "0250a88f2cd7f2f263b74f0b94115f65"
+      }
+    ],
+    "duplicates": [
+      {
+        "source": "originals",
+        "duplicate_groups": 0
+      },
+      {
+        "source": "picks",
+        "duplicate_groups": 0
+      },
+      {
+        "source": "grades",
+        "duplicate_groups": 0
+      }
+    ],
+    "newRecords": [
+      {
+        "source": "originals",
+        "sport": "nfl",
+        "new_rows": 3
+      },
+      {
+        "source": "grades",
+        "sport": "nba",
+        "new_rows": 978
+      }
+    ]
+  },
+  "newGradeVerification": {
+    "checked": 978,
+    "officialFinalFixtures": 37,
+    "matched": 978,
+    "failures": []
+  },
+  "rollbackHeldQueue": {
+    "firstObservation": "2026-11-15T15:59:30.425Z",
+    "secondObservation": "2026-11-15T16:03:23.425Z",
+    "unchanged": true
+  },
+  "restoredFallback": {
+    "browser": {
+      "pages": {
+        "nba": {
+          "status": 200,
+          "seconds": 19.561,
+          "cards": 5,
+          "text": "SACH SPORTS\n\u2315\n\u2630\nHOME\nNBA\nNFL\nNHL\nNBA Intelligence Center\n\nSee who stands to gain when rotations shift. Compare minutes, usage and pace against the sportsbook line.\n\nLast updated Nov 15 at 11:00 AM ET\nPrediction Performance \u203a\nToday\u2019s Featured Picks\n\u2b50 Play of the Day\nLeBron James\nPHI\n\nUNDER 6.5 \u00b7 assists\n\nFanDuel -122\n\nEV +21.3%\n\nView Intelligence \u203a\n\ud83d\udc8e Best Value\nImmanuel Quickley\nTOR\n\nUNDER 4.5 \u00b7 assists\n\nFanDuel +102\n\nEV +20.6%\n\nView Intelligence \u203a\n\ud83c\udfc0 First Basket\nJalen Brunson\nNY\n\nFirst Basket\n\nFanDuel +460\n\nView Intelligence \u203a\n\ud83d\ude80 Long Shot\nJaylen Brown\nPHI\n\nFirst Basket\n\nFanDuel +500\n\nView Intelligence \u203a\nNBA Games\nView All \u203a\nIND\n@\nPHI\nSun, Nov 15\n1:00 PM ET\nIndiana Pacers visit Philadelphia 76ers.\nLAL\n@\nPHX\nSun, Nov 15\n4:00 PM ET\nLos Angeles Lakers visit Phoenix Suns.\nCHA\n@\nLAC\nSun, Nov 15\n4:30 PM ET\nCharlotte Hornets visit LA Clippers.\nSA\n@\nUTA\nSun, Nov 15\n5:00 PM ET\nSan Antonio Spurs visit Utah Jazz.\nDAL\n@\nBOS\nSun, Nov 15\n6:00 PM ET\nDallas Mavericks visit Boston Celtics.\nNY\n@\nTOR\nSun, Nov 15\n6:00 PM ET\nNew York Knicks visit Toronto Raptors.\nHOU\n@\nWSH\nSun, Nov 15\n7:00 PM ET\nHouston Rockets visit Washington Wizards.\nATL\n@\nMIL\nSun, Nov 15\n8:00 PM ET\nAtlanta Hawks visit Milwaukee Bucks.\nOKC\n@\nSAC\nSun, Nov 15\n9:00 PM ET\nOklahoma City Thunder visit Sacramento Kings.\nORL\n@\nBOS\nMon, Nov 16\n7:00 PM ET\nOrlando Magic visit Boston Celtics.\nCHI\n@\nCLE\nMon, Nov 16\n7:00 PM ET\nChicago Bulls visit Cleveland Cavaliers.\nMEM\n@\nWSH\nMon, Nov 16\n7:00 PM ET\nMemphis Grizzlies visit Washington Wizards.\nPHI\n@\nBKN\nMon, Nov 16\n7:30 PM ET\nPhiladelphia 76ers visit Brooklyn Nets.\nHOU\n@\nMIA\nMon, Nov 16\n7:30 PM ET\nHouston Rockets visit Miami Heat.\nPOR\n@\nMIN\nMon, Nov 16\n8:00 PM ET\nPortland Trail Blazers visit Minnesota Timberwolves.\nGS\n@\nNO\nMon, Nov 16\n8:00 PM ET\nGolden State Warriors visit New Orleans Pelicans.\nPHX\n@\nDEN\nMon, Nov 16\n9:00 PM ET\nPhoenix Suns visit Denver Nuggets.\nPLAYER RANKINGS\nToday\nPrevious Slate\nTomorrow\n\ud83c\udfc0Points\n\ud83d\udcaaRebounds\n\ud83c\udfafAssists\n3\ufe0f\u20e33-Pointers Made\n\u23f1\ufe0fQ1 Points\n\u23f1\ufe0fQ1 Rebounds\n\u23f1\ufe0fQ1 Assists\n\ud83d\udccaPoints + Rebounds + Assists\n\u2795Points + Rebounds\n\u2795Points + Assists\n\u2795Rebounds + Assists\n\ud83d\udd90\ufe0fSteals\n\ud83e\uddf1Blocks\n1\ufe0f\u20e3First Basket\n\u203a\n\ud83c\udfc0 Points\n\n23 rankings \u00b7 14 picks\n\n1\nRR\nRyan Rollins\nG \u00b7 MIL \u00b7 Atlanta Hawks @ Milwaukee Bucks\nSun, Nov 15, 8:00 PM EST\nLineup pending\nEV\n+3.1%\nResearch EV\nPoints\nO/U 10.5\nSach Prediction\nOVER 10.5\nSach Projection\n11.7\n\nBook: Pinnacle \u00b7 Over -120 / Under -110\n\nLast 5: 10, 7, 14, 8, 8 points. 1 of the last 5 finished above 10.5; 4 below.\n\nPinnacle \u00b7 -120 \u00b7 22.4 expected minutes \u00b7 range 5\u201319.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n2\nAS\nAlex Sarr\nC \u00b7 WSH \u00b7 Houston Rockets @ Washington Wizards\nSun, Nov 15, 7:00 PM EST\nLineup pending\nReported Day-To-Day \u00b7 Illness\nEV\n+15.4%\nResearch EV\nPoints\nO/U 10.5\nSach Prediction\nOVER 10.5\nSach Projection\n12.2\n\nBook: Pinnacle \u00b7 Over +100 / Under -132\n\nLast 5: 13, 15, 4, 5, 30 points. 3 of the last 5 finished above 10.5; 2 below.\n\nPinnacle \u00b7 +100 \u00b7 30.4 expected minutes \u00b7 range 4\u201322.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n3\nNM\nNaji Marshall\nF \u00b7 DAL \u00b7 Dallas Mavericks @ Boston Celtics\nSun, Nov 15, 6:00 PM EST\nLineup pending\nEV\n+32.3%\nResearch EV\nPoints\nO/U 10.5\nSach Prediction\nUNDER 10.5\nSach Projection\n7.5\n\nBook: Pinnacle \u00b7 Over -110 / Under -120\n\nLast 5: 7, 8, 6, 13, 12 points. 2 of the last 5 finished above 10.5; 3 below.\n\nPinnacle \u00b7 -120 \u00b7 18.8 expected minutes \u00b7 range 2\u201314.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n4\nJG\nJalen Green\nG \u00b7 PHX \u00b7 Los Angeles Lakers @ Phoenix Suns\nSun, Nov 15, 4:00 PM EST\nLineup pending\nEV\n+7.0%\nResearch EV\nPoints\nO/U 12.5\nSach Prediction\nUNDER 12.5\nSach Projection\n11.3\n\nBook: Pinnacle \u00b7 Over -113 / Under -117\n\nLast 5: 6, 16, 6, 13, 12 points. 2 of the last 5 finished above 12.5; 3 below.\n\nPinnacle \u00b7 -117 \u00b7 24 expected minutes \u00b7 range 4\u201319.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n5\nCG\nCollin Gillespie\nG \u00b7 PHX \u00b7 Los Angeles Lakers @ Phoenix Suns\nSun, Nov 15, 4:00 PM EST\nLineup pending\nEV\n+4.9%\nResearch EV\nPoints\nO/U 9.5\nSach Prediction\nUNDER 9.5\nSach Projection\n8.2\n\nBook: Pinnacle \u00b7 Over +100 / Under -132\n\nLast 5: 6, 7, 6, 12, 13 points. 2 of the last 5 finished above 9.5; 3 below.\n\nPinnacle \u00b7 -132 \u00b7 23.1 expected minutes \u00b7 range 1\u201315.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\nView All Rankings"
+        },
+        "nfl": {
+          "status": 200,
+          "seconds": 18.472,
+          "cards": 0,
+          "text": "SACH SPORTS\n\u2315\n\u2630\nHOME\nNBA\nNFL\nNHL\nNFL Intelligence Center\n\nFollow the touches that matter. Track carries, targets and red-zone roles to see who has the most opportunity in each matchup.\n\nLast updated Nov 15 at 11:00 AM ET\nPrediction Performance \u203a\nToday\u2019s Featured Picks\n\u2b50 Play of the Day\n\nNo Qualified Pick\n\n\ud83d\udc8e Best Value\n\nNo Qualified Pick\n\n\ud83c\udfc8 First Touchdown\nJonathan Mingo\nDallas Cowboys\n\nFirst Touchdown\n\nNovig +150 \u00b7 Saved pregame\n\nView Intelligence \u203a\n\ud83d\ude80 Long Shot\nJahmyr Gibbs\nDetroit Lions\n\nFirst Touchdown\n\nDraftKings +340\n\nView Intelligence \u203a\nWEEK 10 NFL GAMES\nView All \u203a\nNE\n@\nDET\nSun, Nov 15\n9:30 AM ET\nLive 3 \u2013 21\nDET leads by 18; 24 combined points so far.\nBUF\n@\nNYJ\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: BUF 7-1; NYJ 2-7.\nCAR\n@\nNO\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: CAR 3-5; NO 3-5.\nHOU\n@\nCLE\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: HOU 3-5; CLE 5-4.\nJAX\n@\nTEN\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: JAX 6-2; TEN 1-7.\nKC\n@\nATL\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: KC 6-2; ATL 3-6.\nMIA\n@\nIND\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: MIA 1-7; IND 2-7.\nMIN\n@\nGB\nSun, Nov 15\n1:00 PM ET\nRecords entering this matchup: MIN 6-2; GB 6-3.\nLAR\n@\nARI\nSun, Nov 15\n4:05 PM ET\nRecords entering this matchup: LAR 5-4; ARI 3-6.\nSEA\n@\nLV\nSun, Nov 15\n4:05 PM ET\nRecords entering this matchup: SEA 5-4; LV 4-5.\nSF\n@\nDAL\nSun, Nov 15\n4:25 PM ET\nRecords entering this matchup: SF 7-1; DAL 4-5.\nPIT\n@\nCIN\nSun, Nov 15\n8:20 PM ET\nRecords entering this matchup: PIT 6-2; CIN 6-2.\nLAC\n@\nBAL\nMon, Nov 16\n8:15 PM ET\nRecords entering this matchup: LAC 0-8; BAL 4-5.\nWSH\n@\nNYG\nThu, Nov 12\n8:15 PM ET\nFinal 24 \u2013 21\nWSH won by 3; 45 combined points at final.\nPLAYER RANKINGS\nToday\nMon, Nov 16\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards rankings with a verified line, projection, prediction and EV are available for this slate."
+        },
+        "nhl": {
+          "status": 200,
+          "seconds": 18.488,
+          "cards": 5,
+          "text": "SACH SPORTS\n\u2315\n\u2630\nHOME\nNBA\nNFL\nNHL\nNHL Intelligence Center\n\nRead the ice shift by shift. Use line combinations, power-play time, shot volume and goalie matchups to evaluate each prop.\n\nLast updated Nov 15 at 11:01 AM ET\nPrediction Performance \u203a\nToday\u2019s Featured Picks\n\u2b50 Play of the Day\nConnor McDavid\nEDM\n\nUNDER 1.5 \u00b7 assists\n\nCaesars -235\n\nEV +21.4%\n\nView Intelligence \u203a\n\ud83d\udc8e Best Value\nJack Eichel\nVGK\n\nUNDER 0.5 \u00b7 assists\n\nCaesars +158\n\nEV +62.4%\n\nView Intelligence \u203a\n\ud83c\udfd2 First Goal\nCutter Gauthier\nANA\n\nFirst Goal\n\nFanDuel +800\n\nView Intelligence \u203a\n\ud83d\ude80 Long Shot\nLeon Draisaitl\nEDM\n\nFirst Goal\n\nFanDuel +850\n\nView Intelligence \u203a\nNHL Games\nView All \u203a\nEDM\n@\nPHI\nSun, Nov 15\n7:30 PM ET\nOilers visit Flyers.\nFLA\n@\nDAL\nSun, Nov 15\n8:00 PM ET\nPanthers visit Stars.\nCGY\n@\nANA\nSun, Nov 15\n8:00 PM ET\nFlames visit Ducks.\nVAN\n@\nVGK\nSun, Nov 15\n9:00 PM ET\nCanucks visit Golden Knights.\nNSH\n@\nSJS\nSun, Nov 15\n9:00 PM ET\nPredators visit Sharks.\nMTL\n@\nNYR\nMon, Nov 16\n7:30 PM ET\nCanadiens visit Rangers.\nVAN\n@\nUTA\nMon, Nov 16\n9:30 PM ET\nCanucks visit Mammoth.\nPLAYER RANKINGS\nToday\nTomorrow\n\ud83c\udfd2Shots on Goal\n\u2b50Points\n\ud83e\udd45Goals\n\ud83c\udfafAssists\n\ud83d\udee1\ufe0fBlocked Shots\n\ud83e\udde4Goalie Saves\n\u203a\n\ud83c\udfd2 Shots on Goal\n\n25 rankings \u00b7 22 picks\n\n1\nJE\nJack Eichel\nVGK \u00b7 Canucks @ Golden Knights\nSun, Nov 15, 9:00 PM EST\nLineup pending\nEV\n+24.4%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.6\n\nBook: Pinnacle \u00b7 Over -150 / Under +110\n\nLast 5: 1, 4, 5, 1, 6 shots on goal. 3 of the last 5 finished above 2.5; 2 below.\n\nPinnacle \u00b7 +110 \u00b7 21 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n2\nEP\nElias Pettersson\nVAN \u00b7 Canucks @ Golden Knights\nSun, Nov 15, 9:00 PM EST\nLineup pending\nEV\n+18.6%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.1\n\nBook: BetMGM \u00b7 Over +105 / Under -140\n\nLast 5: 1, 0, 0, 1, 3 shots on goal. 1 of the last 5 finished above 1.5; 4 below.\n\nBetMGM \u00b7 +105 \u00b7 18.9 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n3\nCG\nCutter Gauthier\nANA \u00b7 Flames @ Ducks\nSun, Nov 15, 8:00 PM EST\nLineup pending\nEV\n+15.2%\nShots on Goal\nO/U 4.5\nSach Prediction\nUNDER 4.5\nSach Projection\n3.5\n\nBook: Pinnacle \u00b7 Over +128 / Under -171\n\nLast 5: 3, 4, 6, 7, 3 shots on goal. 2 of the last 5 finished above 4.5; 3 below.\n\nPinnacle \u00b7 -171 \u00b7 19.3 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n4\nBB\nBrock Boeser\nVAN \u00b7 Canucks @ Golden Knights\nSun, Nov 15, 9:00 PM EST\nLineup pending\nEV\n+19.2%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.6\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nLast 5: 3, 3, 2, 1, 1 shots on goal. 3 of the last 5 finished above 1.5; 2 below.\n\nPinnacle \u00b7 -125 \u00b7 20.6 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n5\nTK\nTravis Konecny\nPHI \u00b7 Oilers @ Flyers\nSun, Nov 15, 7:30 PM EST\nLineup pending\nEV\n+4.0%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.2\n\nBook: Pinnacle \u00b7 Over -135 / Under +100\n\nLast 5: 2, 3, 1, 5, 2 shots on goal. 4 of the last 5 finished above 1.5; 1 below.\n\nPinnacle \u00b7 -135 \u00b7 17.8 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\nView All Rankings"
+        }
+      },
+      "errors": [],
+      "browserTLS": "ephemeral proxy-compatible context; independent curl verifies inherited CA trust"
+    },
+    "apis": {
+      "nba": {
+        "games": 17,
+        "gameIds": [
+          "401909985",
+          "401909986",
+          "401909987",
+          "401909988",
+          "401909989",
+          "401909990",
+          "401909991",
+          "401909992",
+          "401909993",
+          "401909994",
+          "401909995",
+          "401909996",
+          "401909997",
+          "401909998",
+          "401909999",
+          "401910000",
+          "401910001"
+        ],
+        "picks": 104,
+        "coverageComplete": false,
+        "rankingsAvailable": true,
+        "summarySeconds": 1.512,
+        "slateSeconds": 0.476,
+        "featured": {
+          "plays": 4,
+          "seconds": 0.321
+        },
+        "history": {
+          "records": 429,
+          "seconds": 8.391
+        }
+      },
+      "nfl": {
+        "games": 14,
+        "gameIds": [
+          "401873053",
+          "401873054",
+          "401873055",
+          "401873056",
+          "401873057",
+          "401873058",
+          "401873059",
+          "401873060",
+          "401873061",
+          "401873062",
+          "401873063",
+          "401873064",
+          "401873065",
+          "401873052"
+        ],
+        "picks": 0,
+        "coverageComplete": false,
+        "rankingsAvailable": true,
+        "summarySeconds": 0.797,
+        "slateSeconds": 0.085,
+        "featured": {
+          "plays": 4,
+          "seconds": 0.781
+        },
+        "history": {
+          "records": 0,
+          "seconds": 3.717
+        }
+      },
+      "nhl": {
+        "games": 7,
+        "gameIds": [
+          "2026020326",
+          "2026020327",
+          "2026020328",
+          "2026020329",
+          "2026020330",
+          "2026020331",
+          "2026020332"
+        ],
+        "picks": 37,
+        "coverageComplete": false,
+        "rankingsAvailable": true,
+        "summarySeconds": 0.441,
+        "slateSeconds": 0.173,
+        "featured": {
+          "plays": 4,
+          "seconds": 1.57
+        },
+        "history": {
+          "records": 86,
+          "seconds": 1.87
+        }
+      }
+    }
+  },
+  "infrastructureAfter": {
+    "at": "2026-11-15T15:57:22.869Z",
+    "dashboard": {
+      "id": "6e6fab80-41c8-433c-bcf9-79a2e4dd5aee",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Restore verified compatible fallback: combined candidate failed cold NFL source collection gate (HTTP 403; zero source checkpoints across repeated attempts). Preserve namespace, all original/new evidence and CW08.",
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-15T15:56:50.988812Z"
+    },
+    "builds": [
+      {
+        "build_command": "cd frontend && npm ci && npm run build:vinext",
+        "deploy_command": "cd frontend && npm run deploy:vinext",
+        "branch_includes": [
+          "__cw08_manual_release_only__"
+        ]
+      }
+    ],
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "BACKUP_DRIVE_FOLDER_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "DASHBOARD_JOBS",
+        "type": "durable_object_namespace",
+        "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+        "class_name": "DashboardJobQueue"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_REFRESH_TOKEN",
+        "type": "secret_text"
+      },
+      {
+        "name": "OWLS_INSIGHT_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SPORTSGAMEODDS_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_SECRET_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_URL",
+        "type": "secret_text"
+      },
+      {
+        "name": "VINEXT_KV_CACHE",
+        "type": "kv_namespace",
+        "namespace_id": "644df6a469e84dba90c8f7dac410f895"
+      }
+    ],
+    "research": {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Approved CW08 transport-only update; frozen mod...",
+        "workers/triggered_by": "upload"
+      },
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-14T19:54:01.859122Z"
+    }
+  },
+  "research": {
+    "study": "cw08-nhl-v3-prospective-shadow",
+    "ready": true,
+    "receipts": 889,
+    "grades": 658,
+    "pendingUploads": 0,
+    "completedCycles": 139,
+    "lastStorageError": null
+  },
+  "tests": {
+    "preReleasePassed": 793,
+    "postRollbackPassed": 793,
+    "postRollbackFailed": 0,
+    "quarantine": "withdrawn combined archive preparation is rejected"
+  },
+  "completionTracker": {
+    "changed": false,
+    "rowsMoved": 0,
+    "reason": "Release failed and was rolled back. No repair certified complete."
+  },
+  "notVerified": [
+    "Fresh NHL and NBA scheduled capture cycles: rollout ended before their next scheduled slots.",
+    "All seven NBA markets in browser: PR failed; PA browser verification was not reached. All seven passed API EV arithmetic.",
+    "Future fresh NFL source collection and later-block publication with a cold input cache."
+  ],
+  "logSha256": {
+    "preflight-dry-run.log": "17ce1068c40e18118553582c3c780437056ce770b0e889952d8d3f81f2c1f616",
+    "live-rankings.log": "033c0773a96c8a1aab493ec88e68272be3ea9254ef3aa335fcdbbff4c33292ba",
+    "browser-live.log": "518115564874bf9c9ae68770ae51d381a3d684cd36d65e6a07eca78e7466469b",
+    "post-rollback-regression.log": "a3bae6045c4e173dd731b6cd3941cc1e8034f4b2483c0af300a4ad64b2a1db58",
+    "fallback-browser.log": "84d882e9577a92bb508bf98c13dbe72a4071caec56284a26faef37495d65698a",
+    "fallback-apis.log": "570beff316120fe3ef655520386f70371b49fd5a30e2325c28c0db097f5a33b2"
+  },
+  "newGradeBindingCheck": {
+    "wrongOriginalOrSideOrLine": 0,
+    "resultArithmeticMismatch": 0
+  }
+}

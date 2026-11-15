@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_user_approval_not_deployed",
+  "status": "rolled_back_withdrawn",
   "worker": "sach-sports-cloudflare-test",
   "sourceCommit": "15d1479743e8ee51de6ff45b452c79e44624f52d",
   "bundleDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
@@ -42,5 +42,40 @@
   "releaseCompleteOnlyAfter": "All live gates pass and evidence is committed/pushed. Local tests alone do not close the repair.",
   "supersedesCaptureOnlyDigest": "47a06ce00cc11f54577557071c365f49feb6fb2ffa21405faf44daf831f7d99f",
   "noModelReplacement": true,
-  "noAdditionalPaidServices": true
+  "noAdditionalPaidServices": true,
+  "approvalConsumed": true,
+  "candidateDeployment": {
+    "id": "bbd2debf-481e-4f79-87c7-7f15b5b843a6",
+    "version": "e42686ba-f801-4b26-b95f-d22ded3030a3",
+    "atUTC": "2026-11-15T15:52:02.394701Z"
+  },
+  "rollbackDeployment": {
+    "id": "6e6fab80-41c8-433c-bcf9-79a2e4dd5aee",
+    "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "atUTC": "2026-11-15T15:56:50.988812Z"
+  },
+  "newApprovalRequired": true,
+  "releaseBlockers": [
+    {
+      "kind": "cold_nfl_capture",
+      "reason": "Repeated official-source HTTP 403; no newly checkpointed inputs; three attempts trigger needsAttention and 15-minute backoff",
+      "markets": [
+        "anytime_td",
+        "first_td",
+        "passing_rushing_yards",
+        "rushing_receiving_yards"
+      ],
+      "maximumObservedCaptureRequests": 26,
+      "maximumConcurrentSources": 4,
+      "sourceCheckpoints": 0,
+      "hardSubrequestEventsFound": 0,
+      "specificFailingUrl": "Not logged; requires safe source-level diagnosis before another release."
+    },
+    {
+      "kind": "nba_pr_browser",
+      "atUTC": "2026-11-15T15:56:17.854836Z",
+      "status": 503,
+      "reason": "Points + Rebounds browser request returned 503 and rendered zero rows; independent API request had returned 20 rows with valid EV. Underlying 503 cause is not established."
+    }
+  ]
 }

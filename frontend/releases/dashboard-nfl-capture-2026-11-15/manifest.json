@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_user_approval",
+  "status": "withdrawn_after_failed_live_gates",
   "sourceCommit": "15d1479743e8ee51de6ff45b452c79e44624f52d",
   "worker": "sach-sports-cloudflare-test",
   "bundleDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
@@ -19,5 +19,10 @@
   "cw08": "untouched",
   "execution": "node scripts/prepare-dashboard-retry-release.mjs --dry-run --combined. Preparation only; separate explicit approval required before upload.",
   "supersedesCandidateDigest": "47a06ce00cc11f54577557071c365f49feb6fb2ffa21405faf44daf831f7d99f",
-  "scope": "Combined verified capture retry-starvation and NFL ranking-display repairs; no prediction model replacement"
+  "scope": "Combined verified capture retry-starvation and NFL ranking-display repairs; no prediction model replacement",
+  "candidateDeployment": "bbd2debf-481e-4f79-87c7-7f15b5b843a6",
+  "candidateVersion": "e42686ba-f801-4b26-b95f-d22ded3030a3",
+  "rollbackDeployment": "6e6fab80-41c8-433c-bcf9-79a2e4dd5aee",
+  "withdrawalReason": "Live cold NFL official-source HTTP 403 caused repeated rank deferrals without source checkpoints; NBA PR browser request returned HTTP 503. Required live release gates failed.",
+  "nextReleaseRequires": "Fix and verify cold-source unavailable handling and NBA PR transient failure path; rerun regression/runtime checks; obtain fresh deployment approval."
 }
