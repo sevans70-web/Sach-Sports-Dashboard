@@ -1,0 +1,432 @@
+{
+  "status": "implemented_tested_pushed_not_deployed",
+  "repairCommit": "b2e9357ff5bcf9ec1a6f3db9b89f52c7d5ed0373",
+  "branch": "cloudflare-compatibility-test",
+  "productionDashboardUnchanged": {
+    "deployment": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+    "version": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f"
+  },
+  "automaticBuildsPaused": true,
+  "normalBuildCommandsRestored": true,
+  "liveReproduction": {
+    "dateToronto": "2026-11-14",
+    "shotsVisibleRankings": 3,
+    "shotsApiRows": 25,
+    "observedRankingRequestSample": 122,
+    "canceledInSample": 78,
+    "http200InSample": 44,
+    "maximumObservedWallTimeMs": 64909,
+    "individualGoalsProbeTimeoutSeconds": 65,
+    "sourceOfSample": "Read-only Cloudflare telemetry filtered to dashboard Worker /api/nhl/rankings; includes diagnostic requests, not a traffic percentile estimate",
+    "browserPageErrors": []
+  },
+  "liveMarketResponses": [
+    {
+      "market": "shots_on_goal",
+      "seconds": 0.58,
+      "success": true,
+      "rows": 25,
+      "quotes": 0,
+      "forecasts": 8,
+      "blockers": {
+        "pregame_only": 17,
+        "selected": 3,
+        "forecast_without_selection": 4,
+        "verified_quote_unavailable": 1
+      },
+      "coverage": {
+        "available": 25,
+        "evaluated": 25,
+        "publicRows": 25,
+        "budgetLimited": false,
+        "modelPolicyUnchanged": true
+      },
+      "error": null
+    },
+    {
+      "market": "points",
+      "seconds": 0.11,
+      "success": true,
+      "rows": 25,
+      "quotes": 1,
+      "forecasts": 23,
+      "blockers": {
+        "forecast_without_selection": 19,
+        "pregame_only": 2,
+        "selected": 3,
+        "price_threshold_not_met": 1
+      },
+      "coverage": {
+        "available": 25,
+        "evaluated": 25,
+        "publicRows": 25,
+        "budgetLimited": false,
+        "modelPolicyUnchanged": true
+      },
+      "error": null
+    },
+    {
+      "market": "goals",
+      "seconds": 65.02,
+      "error": "no valid response",
+      "exit": 28
+    },
+    {
+      "market": "assists",
+      "seconds": 1.22,
+      "success": true,
+      "rows": 25,
+      "quotes": 7,
+      "forecasts": 23,
+      "blockers": {
+        "selected": 11,
+        "pregame_only": 2,
+        "price_validation_failed": 7,
+        "forecast_without_selection": 5
+      },
+      "coverage": {
+        "available": 25,
+        "evaluated": 25,
+        "publicRows": 25,
+        "budgetLimited": false,
+        "modelPolicyUnchanged": true
+      },
+      "error": null
+    },
+    {
+      "market": "blocked_shots",
+      "seconds": 1.31,
+      "success": true,
+      "rows": 25,
+      "quotes": 0,
+      "forecasts": 0,
+      "blockers": {
+        "market_model_not_fitted": 25
+      },
+      "coverage": {
+        "available": 25,
+        "evaluated": 25,
+        "publicRows": 25,
+        "budgetLimited": false,
+        "modelPolicyUnchanged": true
+      },
+      "error": null
+    },
+    {
+      "market": "goalie_saves",
+      "seconds": 2.13,
+      "success": true,
+      "rows": 25,
+      "quotes": 0,
+      "forecasts": 12,
+      "blockers": {
+        "selected": 4,
+        "forecast_without_selection": 4,
+        "verified_quote_unavailable": 4,
+        "pregame_only": 13
+      },
+      "coverage": {
+        "available": 25,
+        "evaluated": 25,
+        "publicRows": 25,
+        "budgetLimited": false,
+        "modelPolicyUnchanged": true
+      },
+      "error": null
+    }
+  ],
+  "readOnlyAuthenticatedProbe": {
+    "job": "504b8098-652e-46ac-82e9-d987c693b389",
+    "completed": true,
+    "workerUploadCommand": false,
+    "kind": "nhl_readonly_feed_probe",
+    "at": "2026-11-15T01:34:20.793Z",
+    "day": "2026-11-14",
+    "primaryFeedStatus": 200,
+    "officialScoreStatus": 200,
+    "games": 14,
+    "rosters": [
+      {
+        "team": "SEA",
+        "status": 200,
+        "players": 27
+      },
+      {
+        "team": "CAR",
+        "status": 200,
+        "players": 23
+      },
+      {
+        "team": "WPG",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "CHI",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "MIN",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "BOS",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "EDM",
+        "status": 200,
+        "players": 28
+      },
+      {
+        "team": "TOR",
+        "status": 200,
+        "players": 30
+      },
+      {
+        "team": "COL",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "MTL",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "DET",
+        "status": 200,
+        "players": 23
+      },
+      {
+        "team": "TBL",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "OTT",
+        "status": 200,
+        "players": 23
+      },
+      {
+        "team": "PIT",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "NJD",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "WSH",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "PHI",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "CBJ",
+        "status": 200,
+        "players": 23
+      },
+      {
+        "team": "FLA",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "STL",
+        "status": 200,
+        "players": 24
+      },
+      {
+        "team": "BUF",
+        "status": 200,
+        "players": 26
+      },
+      {
+        "team": "DAL",
+        "status": 200,
+        "players": 26
+      },
+      {
+        "team": "SJS",
+        "status": 200,
+        "players": 23
+      },
+      {
+        "team": "UTA",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "NYI",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "ANA",
+        "status": 200,
+        "players": 26
+      },
+      {
+        "team": "CGY",
+        "status": 200,
+        "players": 25
+      },
+      {
+        "team": "LAK",
+        "status": 200,
+        "players": 23
+      }
+    ],
+    "markets": {
+      "shots_on_goal": {
+        "normalizedQuotes": 119,
+        "rosterMatched": 114,
+        "todayMatched": 114,
+        "freshTodayQuotes": 114
+      },
+      "points": {
+        "normalizedQuotes": 143,
+        "rosterMatched": 142,
+        "todayMatched": 141,
+        "freshTodayQuotes": 141
+      },
+      "goals": {
+        "normalizedQuotes": 269,
+        "rosterMatched": 260,
+        "todayMatched": 220,
+        "freshTodayQuotes": 220
+      },
+      "assists": {
+        "normalizedQuotes": 137,
+        "rosterMatched": 135,
+        "todayMatched": 132,
+        "freshTodayQuotes": 132
+      },
+      "blocked_shots": {
+        "normalizedQuotes": 11,
+        "rosterMatched": 10,
+        "todayMatched": 10,
+        "freshTodayQuotes": 10
+      },
+      "goalie_saves": {
+        "normalizedQuotes": 16,
+        "rosterMatched": 16,
+        "todayMatched": 15,
+        "freshTodayQuotes": 15
+      }
+    },
+    "productionWrites": false,
+    "workerDeployments": false,
+    "credentialsExposed": false
+  },
+  "realSavedEvidenceReplay": [
+    {
+      "market": "shots_on_goal",
+      "savedPicks": 11,
+      "eligibleBefore": 3,
+      "eligibleAfter": 8,
+      "restored": 8,
+      "added": 5
+    },
+    {
+      "market": "points",
+      "savedPicks": 6,
+      "eligibleBefore": 4,
+      "eligibleAfter": 5,
+      "restored": 4,
+      "added": 1
+    },
+    {
+      "market": "assists",
+      "savedPicks": 15,
+      "eligibleBefore": 11,
+      "eligibleAfter": 14,
+      "restored": 14,
+      "added": 3
+    },
+    {
+      "market": "blocked_shots",
+      "savedPicks": 0,
+      "eligibleBefore": 0,
+      "eligibleAfter": 0,
+      "restored": 0,
+      "added": 0
+    },
+    {
+      "market": "goalie_saves",
+      "savedPicks": 11,
+      "eligibleBefore": 4,
+      "eligibleAfter": 11,
+      "restored": 11,
+      "added": 7
+    }
+  ],
+  "candidateBrowser": {
+    "restoredCardsRendered": 8,
+    "pageErrors": [],
+    "text": "PLAYER RANKINGS\nToday\nTomorrow\n\ud83c\udfd2Shots on Goal\n\u2b50Points\n\ud83e\udd45Goals\n\ud83c\udfafAssists\n\ud83d\udee1\ufe0fBlocked Shots\n\ud83e\udde4Goalie Saves\n\u203a\n\ud83c\udfd2 Shots on Goal\n\n8 rankings \u00b7 8 picks\n\n3\nAD\nAlex DeBrincat\nDET \u00b7 Red Wings @ Lightning\nLIVE\nLIVE\nPlaying\nEV\n+22.2%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.7\n\nSaved pregame book: Pinnacle \u00b7 Over -165 / Under +120\n\nCurrently at 2 shots on goal; 0.5 below the 2.5 line. Last 5: 4, 5, 2, 1, 2 shots on goal.\n\nundefined \u00b7 +120.",
+    "source": "Recorded actual production rows + checksum-verified original picks + official fixture snapshot; no generated replacements"
+  },
+  "confirmedDefects": [
+    "Started NHL boards truncated the new historical-baseline ranking pool before reading saved original picks; saved players outside that pool could never be restored",
+    "Stale NHL ranking refreshes were detached from Worker request lifetime, with no bound on awaiting a retained in-flight promise",
+    "Pregame history refresh loop had an eight-second limit per player batch instead of one cumulative budget; it requested unpriced players that cannot produce eligible cards",
+    "Optional NHL scorer hydration could block access to already saved featured selections",
+    "Saved pregame quote counts were not recomputed after restoring records",
+    "A single unverified roster could reject the whole slate even when checksum-verified started-game receipts were available"
+  ],
+  "fixes": [
+    "Read at most two bounded exact-market/game immutable receipt queries before public limits; verify checksum, scope, game time and price, preserve original pick/forecast",
+    "Restore saved started games and prioritize complete genuine cards before unchanged 25-card display cap; never fit a started game",
+    "Register NHL refresh work with after() lifetime; recover expired pending entries and enforce 25-second NHL build limit",
+    "Share one eight-second official-history refresh budget, refresh only priced upcoming players with concurrency four; expose missing-history coverage and withhold failed refreshes",
+    "Cache official NHL player game logs for 15 minutes; bound NHL waits on orphaned provider in-flight promises",
+    "Give optional NHL first-goal featured hydration a 1.5-second foreground allowance and retain remaining work in request lifetime",
+    "Add visible market coverage reasons and preserve verified originals during roster-source gaps"
+  ],
+  "unresolved": [
+    "Production performance improvement requires approved deployment and live release verification",
+    "Dashboard capture cron can exceed its shared 350-subrequest invocation budget when an expensive NFL Q1 receiving capture precedes NHL shots; confirmed logs at 22:56 and 23:34 UTC, no scheduler changes made",
+    "Missing original pregame probability/quote evidence cannot be recreated after puck drop",
+    "Goals calibration safeguard remains active; no November14 saved goals model-selection rows were present",
+    "Blocked Shots has no fitted runtime model; five quote-only originals do not establish a forecast",
+    "Baseline player census remains the existing 2025-26 statistical baseline reconciled to current rosters; no new model/population certification claimed"
+  ],
+  "tests": {
+    "fullSuite": {
+      "passed": 752,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typescriptDiagnostics": 0,
+    "productionCompile": "passed",
+    "prebuiltDryRun": "passed_no_upload",
+    "candidateBrowserRestoredCards": 8,
+    "candidateBrowserPageErrors": []
+  },
+  "cw08Protected": {
+    "deploymentUnchanged": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "versionUnchanged": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+    "bundleBytes": 151874,
+    "bundleSha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4",
+    "frozenArtifactsChanged": false,
+    "observedStatus": {
+      "receipts": 707,
+      "grades": 94,
+      "completedCycles": 80,
+      "pendingUploads": 0,
+      "lastStorageError": null
+    }
+  },
+  "databaseWritesOrHistoricalRecordChanges": false
+}
