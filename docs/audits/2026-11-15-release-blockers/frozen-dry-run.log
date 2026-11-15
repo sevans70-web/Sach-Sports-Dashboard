@@ -1,0 +1,11 @@
+[dashboard-retry-artifact] {"digest":"22b6129a67698b0b468c6076f8c450541a4876b5d210f1073418d960e71f2166","files":423,"worker":"sach-sports-cloudflare-test","sourceCommit":"056cdecd19b49cdd6711f9dd7584e9411c4c23f2","approvalRequired":true}
+├  Deploy
+│  ✨ Read 78 files from the assets directory /workspace/Sach-Sports-Dashboard/frontend/.cloudflare/output/v0/workers/default/assets
+│  Total Upload: 14264.10 KiB / gzip: 7567.04 KiB
+│  Your Worker has access to the following bindings:
+│  Binding                                                                              Resource            
+│  env.DASHBOARD_JOBS (DashboardJobQueue, defined in sach-sports-cloudflare-test)       Durable Object      
+│  env.VINEXT_KV_CACHE (644df6a469e84dba90c8f7dac410f895)                               KV Namespace        
+│  env.ASSETS                                                                           Assets              
+│
+│  --dry-run: exiting now.

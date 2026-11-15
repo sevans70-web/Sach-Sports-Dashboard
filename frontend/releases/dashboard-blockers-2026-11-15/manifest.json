@@ -1,0 +1,24 @@
+{
+  "status": "awaiting_user_approval",
+  "sourceCommit": "056cdecd19b49cdd6711f9dd7584e9411c4c23f2",
+  "worker": "sach-sports-cloudflare-test",
+  "bundleDigest": "22b6129a67698b0b468c6076f8c450541a4876b5d210f1073418d960e71f2166",
+  "files": 423,
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 13186770,
+    "sha256": "f72ecd8fba40e10337a4b247d601197af7c614cff1919b5062e69e19989ddae4"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "currentFallbackDeployment": "6e6fab80-41c8-433c-bcf9-79a2e4dd5aee",
+  "fallbackArtifact": "../dashboard-capture-2026-11-14/fallback.tar.gz",
+  "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "newNamespaces": false,
+  "migrations": false,
+  "automaticBuilds": "paused",
+  "cw08": "untouched",
+  "execution": "node scripts/prepare-dashboard-retry-release.mjs --dry-run --blockers. Preparation only; fresh explicit approval required before upload.",
+  "supersedesWithdrawnDigest": "f555a37ec10e58436fd9a88f1013d934adb53eaf0b003c0590a9f2bdf4dc82f0",
+  "scope": "NFL optional-source denial recovery, NBA PR memory/admission/cache repair, plus all previously verified combined ranking/capture repairs; no model replacement",
+  "liveAcceptance": "pending approval and deployment; recorded browser counts are not production quotas"
+}

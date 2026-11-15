@@ -1,0 +1,8 @@
+[approved-dashboard-artifact] {"stage":"fallback","source":"a949453dac8d3ae08a3feeca99dc55fe1991d267","worker":"sach-sports-cloudflare-test","digest":"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f","files":422}
+{
+  stage: 'fallback',
+  source: 'a949453dac8d3ae08a3feeca99dc55fe1991d267',
+  worker: 'sach-sports-cloudflare-test',
+  digest: '86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f',
+  files: 422
+}
