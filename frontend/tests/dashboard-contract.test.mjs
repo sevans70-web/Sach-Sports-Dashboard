@@ -62,8 +62,18 @@ test('category counts match priced selections and exclude research comparisons a
   researchForecast:{status:'available',projection:12,calculatedAt:stamp,priceComparison:{overProbability:.7,underProbability:.3,pushProbability:0},
    modelSelection:{side:'OVER',line:10.5,price:-110,quoteId:'q',sportsbookKey:'fanduel',calculatedAt:stamp}}};
  const negative={...full,playerId:'2',researchForecast:{...full.researchForecast,priceComparison:{overProbability:.3,underProbability:.7,pushProbability:0}}};
- const future={...full,playerId:'3',gameTime:new Date(Date.now()+86400000).toISOString()};
+ const future={...full,playerId:'3',gameTime:new Date(Date.parse(time)+48*3600000).toISOString()};
+ assert.notEqual(dashboardDay(future.gameTime),dashboardDay(time),'the excluded fixture must be on a different Toronto slate');
  const other={...full,playerId:'4',market:'assists'};
  const coverage=rankingMarketCoverage('nba','points',dashboardDay(time),[full,full,negative,future,other]);
  assert.deepEqual(coverage.games,[{gameId:'a',rows:2,lines:2,projections:2,picks:1,ev:2}]);
+});
+test('category date fixtures remain distinct at Toronto midnight and daylight-saving changes',async()=>{
+ const {rankingMarketCoverage}=await loadTs(new URL('../lib/ranking-market-coverage.ts',import.meta.url)),{dashboardDay}=await loadTs(new URL('../lib/dashboard-contract.ts',import.meta.url));
+ for(const instant of ['2026-11-15T04:30:00Z','2026-11-15T05:30:00Z','2026-11-01T03:30:00Z','2026-03-08T04:30:00Z']){
+  const now=Date.parse(instant),at=new Date(now).toISOString(),gameTime=new Date(now+3600000).toISOString();
+  const full={...row,market:'points',sport:'nba',gameTime,quoteId:'q',quoteUpdatedAt:at,capturedAt:at,researchForecast:{status:'available',projection:12,calculatedAt:at,priceComparison:{overProbability:.7,underProbability:.3,pushProbability:0},modelSelection:{side:'OVER',line:10.5,price:-110,quoteId:'q',sportsbookKey:'fanduel',calculatedAt:at}}};
+  const other={...full,playerId:'another-date',gameTime:new Date(Date.parse(gameTime)+48*3600000).toISOString()};
+  assert.notEqual(dashboardDay(other.gameTime),dashboardDay(gameTime));assert.deepEqual(rankingMarketCoverage('nba','points',dashboardDay(gameTime),[full,other],now).games,[{gameId:'a',rows:1,lines:1,projections:1,picks:1,ev:1}]);
+ }
 });
