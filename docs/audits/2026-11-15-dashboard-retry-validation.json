@@ -1,0 +1,192 @@
+{
+  "status": "awaiting_user_approval_not_deployed",
+  "sourceCommit": "f4f5d2dd62cdfd0c495f16a8566661277d9c3d81",
+  "bundleDigest": "47a06ce00cc11f54577557071c365f49feb6fb2ffa21405faf44daf831f7d99f",
+  "oldReproduction": [
+    {
+      "attempt": 1,
+      "state": "deferred",
+      "reason": "job_subrequest_budget",
+      "usage": {
+        "used": 220,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 180,
+          "official_http": 40
+        },
+        "cacheHits": 0
+      },
+      "cached": 0,
+      "httpCalls": 40
+    },
+    {
+      "attempt": 2,
+      "state": "deferred",
+      "reason": "job_subrequest_budget",
+      "usage": {
+        "used": 220,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 180,
+          "official_http": 40
+        },
+        "cacheHits": 0
+      },
+      "cached": 0,
+      "httpCalls": 40
+    },
+    {
+      "attempt": 3,
+      "state": "deferred",
+      "reason": "job_subrequest_budget",
+      "usage": {
+        "used": 220,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 180,
+          "official_http": 40
+        },
+        "cacheHits": 0
+      },
+      "cached": 0,
+      "httpCalls": 40
+    }
+  ],
+  "correctedPureReproduction": [
+    {
+      "attempt": 1,
+      "state": "deferred",
+      "reason": "job_subrequest_budget",
+      "usage": {
+        "used": 216,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 108,
+          "official_http": 108
+        },
+        "cacheHits": 0,
+        "cacheWrites": 108,
+        "checkpointBytes": 1512,
+        "completedRequests": 108,
+        "maxActive": 4,
+        "maxReserved": 12,
+        "coalesced": 0,
+        "queuedCancelled": 71,
+        "aborted": 0
+      },
+      "cached": 108,
+      "httpCalls": 108
+    },
+    {
+      "attempt": 2,
+      "state": "completed",
+      "cached": 180
+    },
+    {
+      "attempt": 3,
+      "state": "completed",
+      "cached": 180
+    }
+  ],
+  "persistedRuntime": {
+    "coldConcurrentInputs": 180,
+    "firstCheckpointed": 107,
+    "afterRestartCheckpointed": 180,
+    "maximumConcurrentSources": 4,
+    "maximumReservedSubrequests": 12,
+    "allSportReceiptsStoredExactlyOnce": 3,
+    "completeNhlFourMarketFixture": 324,
+    "gradingFixturePicks": 271,
+    "unrelatedGradesPreserved": 1001,
+    "stalledFailureBackoffMinutes": 15
+  },
+  "recordedNovember14Replay": {
+    "scope": "LOCAL production-bundle replay of recorded November 14 official schedule and original saved picks; empty current rosters/odds; fixed 2026-11-15T03:05Z clock; no live writes",
+    "boards": [
+      {
+        "market": "shots_on_goal",
+        "rows": 11,
+        "ms": 214,
+        "coverage": {
+          "status": "complete",
+          "restored": 11,
+          "added": 11
+        }
+      },
+      {
+        "market": "points",
+        "rows": 5,
+        "ms": 26,
+        "coverage": {
+          "status": "complete",
+          "restored": 5,
+          "added": 5
+        }
+      },
+      {
+        "market": "assists",
+        "rows": 14,
+        "ms": 40,
+        "coverage": {
+          "status": "complete",
+          "restored": 14,
+          "added": 14
+        }
+      },
+      {
+        "market": "goalie_saves",
+        "rows": 11,
+        "ms": 38,
+        "coverage": {
+          "status": "complete",
+          "restored": 11,
+          "added": 11
+        }
+      }
+    ],
+    "allStartedCaptureEligible": 0
+  },
+  "researchHealth": {
+    "study": "cw08-nhl-v3-prospective-shadow",
+    "production": false,
+    "modelCommit": "007c02b",
+    "ready": true,
+    "receipts": 884,
+    "grades": 658,
+    "pendingUploads": 0,
+    "completedCycles": 133,
+    "lastStorageError": null
+  },
+  "tests": {
+    "fullSuite": {
+      "passed": 781,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --test --test-concurrency=4 tests/*.test.mjs"
+    },
+    "typescriptDiagnostics": 0,
+    "admissionTests": 7,
+    "durableRuntimeTests": 7,
+    "productionBuild": "passed",
+    "frozenArtifactDryRun": "passed"
+  },
+  "limitations": [
+    "Local workerd quota-accounting assertions do not prove the live Cloudflare 350-subrequest enforcement path. A scheduled production canary and telemetry check remain required after approval.",
+    "Recorded-data replay timings and rankings are not current live production counts.",
+    "The current compatible fallback intentionally holds dashboard capture, grading and replay; CW08 remains independently scheduled.",
+    "No new forecast, backdated quote or historical pick was synthesized. Already-started selections remain displayable but cannot be newly captured as pregame evidence."
+  ],
+  "testLogSha256": {
+    "full-regression-final.log": "835cdfc8b5922acb36663805f59329999ed8c5ca40ca30f25896aa264960882a",
+    "runtime-concurrent.log": "6861b9d137c41e6b9d84b176f1dea3a19b9c4a5ad560ad6ba337e1008d0fc7cd",
+    "admission-final.log": "9c98a8a5375b56292ae9115e6da7039d94db7093fc386eec21f5920404b6c8b1",
+    "typescript.log": "509db3e3576a5ddeede99380db64011156c8602eb204903675e7cb44eae64ef7",
+    "production-build.log": "be5f164a60136c54e1451f7063e969d570e865bc1a1262eaeab7652acfe75f9f",
+    "frozen-dry-run.log": "9a90f97eccbc97b9335669efc3dda4526d2f9fa7d1d3eec1a503e7d9a1ac21ac",
+    "production-runtime.log": "3bc8623b675f8181c63e54a7ded71be67b74c53b6ad8a3bf95a198c69f403ef9"
+  },
+  "recordedFixtureSha256": {
+    "official-score.json": "7f056a2e885b105305b9535c6d5fccc9ebd8c9b1115008fb233d8199fa7bedc7",
+    "all-saved-picks-rest.json": "cceb733c0cad5a40becbf82bf830a9c26dbcd4434e7264ab8c02662ba1716f01"
+  }
+}

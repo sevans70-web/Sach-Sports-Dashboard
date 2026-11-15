@@ -1,0 +1,104 @@
+{
+  "checkedAt": "2026-11-15T14:39:18.394Z",
+  "dashboard": {
+    "id": "1eae6b6f-78f4-4ad6-8f25-f43e6053465a",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Restore verified compatible fallback: live NFL capture retry starvation failed release gate. Hold job alarms/enqueue; preserve namespace, original picks and queued evidence. CW08 untouched.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-15T04:31:06.437496Z"
+  },
+  "fallbackAvailable": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "buildFilters": [
+    {
+      "id": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+      "branchIncludes": [
+        "__cw08_manual_release_only__"
+      ]
+    }
+  ],
+  "dashboardBindings": [
+    {
+      "name": "ASSETS",
+      "type": "assets"
+    },
+    {
+      "name": "BACKUP_DRIVE_FOLDER_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "DASHBOARD_JOBS",
+      "type": "durable_object_namespace",
+      "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+      "class_name": "DashboardJobQueue"
+    },
+    {
+      "name": "GOOGLE_OAUTH_CLIENT_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "GOOGLE_OAUTH_REFRESH_TOKEN",
+      "type": "secret_text"
+    },
+    {
+      "name": "OWLS_INSIGHT_API_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "SPORTSGAMEODDS_API_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "SUPABASE_SECRET_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "SUPABASE_URL",
+      "type": "secret_text"
+    },
+    {
+      "name": "VINEXT_KV_CACHE",
+      "type": "kv_namespace",
+      "namespace_id": "644df6a469e84dba90c8f7dac410f895"
+    }
+  ],
+  "research": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  },
+  "researchSchedules": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  }
+}

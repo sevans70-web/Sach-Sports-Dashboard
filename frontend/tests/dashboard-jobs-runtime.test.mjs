@@ -69,11 +69,11 @@ test('scheduled delivery is idempotent and does no ranking or grading work in th
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });
 test('180 concurrent cold NFL inputs checkpoint before a budget pause, resume after eviction, and cannot starve NBA/NHL',async()=>{
- const dir=await mkdtemp(join(tmpdir(),'dashboard-parallel-'));let runtime,active=0,peak=0,histories=0;const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
+ const dir=await mkdtemp(join(tmpdir(),'dashboard-parallel-'));let runtime,active=0,peak=0,histories=0,entered;const sourceEntered=new Promise(r=>entered=r);const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
  const answer=async req=>{const u=new URL(req.url);
   if(u.hostname==='fixture.test')return Response.json({parallel:u.searchParams.get('sport')==='nfl'?180:0,rows:[row()]});
   if(u.hostname==='site.web.api.espn.com'){
-   histories++;active++;peak=Math.max(peak,active);let ended=false,timer;const end=()=>{if(!ended){ended=true;active--;}};
+   histories++;entered?.();entered=null;active++;peak=Math.max(peak,active);let ended=false,timer;const end=()=>{if(!ended){ended=true;active--;}};
    return new Response(new ReadableStream({start(c){timer=setTimeout(()=>{c.enqueue(new TextEncoder().encode(JSON.stringify({gameLog:[{fixture:u.pathname}]})));c.close();end();},20);},cancel(){clearTimeout(timer);end();}}),{headers:{'Content-Type':'application/json'}});
   }
   if(u.hostname==='db.supabase.co'){const table=tables[u.pathname.split('/').at(-1)];if(req.method==='POST'){for(const r of await req.json())if(!table.has(key(r)))table.set(key(r),r);return new Response(null,{status:201});}return Response.json([...table.values()].filter(r=>r.sport===u.searchParams.get('sport')?.slice(3)&&r.market===u.searchParams.get('market')?.slice(3)));}
@@ -81,7 +81,7 @@ test('180 concurrent cold NFL inputs checkpoint before a budget pause, resume af
  };
  try{runtime=await setup(dir,answer);let {mf,call}=runtime;
   for(const [sport,market] of [['nfl','receiving_yards'],['nba','points'],['nhl','shots_on_goal']]){await call('clock',now+300000,'capture:'+sport);await call('enqueue',{kind:'capture',sport,market,id:sport+'-parallel',created:now},'capture:'+sport);}
-  let first=await call('step',null,'capture:nfl');let job=first.jobs[0];assert.equal(job.phase,'rank');assert.equal(job.lastError,'job_subrequest_budget');assert.ok(job.usage.used<=220);assert.equal(job.usage.maxActive,4);assert.ok(job.usage.maxReserved<=12);assert.ok(job.progress.sourceCheckpoints>=100);assert.equal(job.progress.needsAttention,false);assert.equal(active,0);assert.ok(peak<=4);
+  const running=call('step',null,'capture:nfl');await sourceEntered;const concurrentForeground=await mf.dispatchFetch('https://test.local/foreground');assert.equal(concurrentForeground.status,200);let first=await running;let job=first.jobs[0];assert.equal(job.phase,'rank');assert.equal(job.lastError,'job_subrequest_budget');assert.ok(job.usage.used<=220);assert.equal(job.usage.maxActive,4);assert.ok(job.usage.maxReserved<=12);assert.ok(job.progress.sourceCheckpoints>=100);assert.equal(job.progress.needsAttention,false);assert.equal(active,0);assert.ok(peak<=4);
   const saved=(await call('inspect',null,'capture:nfl')).cache.length,networkAtPause=histories;assert.equal(saved,networkAtPause);await new Promise(r=>setTimeout(r,60));assert.equal(histories,networkAtPause,'cancelled queue cannot launch HTTP work after return');
   const foreground=await mf.dispatchFetch('https://test.local/foreground');assert.equal(foreground.status,200);
   for(const sport of ['nba','nhl']){let state;for(let i=0;i<4;i++)state=await call('step',null,'capture:'+sport);assert.equal(state.jobs[0].state,'done');}

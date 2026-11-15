@@ -1,0 +1,21 @@
+{
+  "status": "awaiting_user_approval",
+  "sourceCommit": "f4f5d2dd62cdfd0c495f16a8566661277d9c3d81",
+  "worker": "sach-sports-cloudflare-test",
+  "bundleDigest": "47a06ce00cc11f54577557071c365f49feb6fb2ffa21405faf44daf831f7d99f",
+  "files": 421,
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 8575327,
+    "sha256": "0f4f3eb527cb3a6bacf041a2735032a6c807785042b4df2225f33e0d48f44de8"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "fallbackDeployment": "1eae6b6f-78f4-4ad6-8f25-f43e6053465a",
+  "fallbackArtifact": "../dashboard-capture-2026-11-14/fallback.tar.gz",
+  "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "newNamespaces": false,
+  "migrations": false,
+  "automaticBuilds": "paused",
+  "cw08": "untouched",
+  "execution": "Prepare frozen prebuilt candidate; verify digest and live fallback; obtain explicit user approval before separate manual upload. No compilation on release host."
+}

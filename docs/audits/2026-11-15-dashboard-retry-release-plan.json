@@ -1,0 +1,39 @@
+{
+  "status": "awaiting_user_approval",
+  "worker": "sach-sports-cloudflare-test",
+  "sourceCommit": "f4f5d2dd62cdfd0c495f16a8566661277d9c3d81",
+  "bundleDigest": "47a06ce00cc11f54577557071c365f49feb6fb2ffa21405faf44daf831f7d99f",
+  "archiveSha256": "0f4f3eb527cb3a6bacf041a2735032a6c807785042b4df2225f33e0d48f44de8",
+  "prebuiltArtifact": "frontend/releases/dashboard-retry-2026-11-15/candidate.tar.gz",
+  "prepareCommand": "cd frontend && node scripts/prepare-dashboard-retry-release.mjs --dry-run",
+  "uploadAfterApprovalOnly": "cd frontend && node scripts/deploy-cloudflare.mjs --tag dashboard-retry-repair --message \"Controlled dashboard retry-starvation repair; source f4f5d2dd62cdfd0c495f16a8566661277d9c3d81; CW08 untouched\"",
+  "newNamespaces": false,
+  "migrations": false,
+  "existingDashboardNamespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "rollbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "fallbackArtifact": "../dashboard-capture-2026-11-14/fallback.tar.gz",
+  "withdrawnCandidateMustNotBeRestored": "a5375cd8-b10b-497f-8355-08e48357cbad",
+  "automaticBuildsRemainPaused": true,
+  "cw08Changes": false,
+  "preflight": [
+    "Reconfirm exact remote branch/source commit, archive SHA and bundle digest. Stop on mismatch.",
+    "Reconfirm current compatible fallback version is retrievable, namespace/KV/secrets/schedules unchanged and branch auto-build filter still paused.",
+    "Record immutable original/pick/grade fingerprints and durable queue state before upload; retain namespace and documents.",
+    "Reconfirm CW08 version, 15-minute schedule and storage health.",
+    "Require explicit approval of this replacement candidate before any upload."
+  ],
+  "liveGates": [
+    "Observe real scheduled enqueue and alarm cycles for NFL receiving/receptions/anytime-TD, NBA and NHL; all must advance phase/cursor or persist completed source inputs.",
+    "Require per-phase used<=220, concurrency<=4, no Cloudflare subrequest/timeout error, no repeated zero-progress retry; stalled upstream outage must be explicit, backed off and isolated.",
+    "Verify current legitimate NHL Shots, Points, Assists and Saves rankings with coverage explanations; no forced counts.",
+    "Use a real browser alongside active capture: no repeated stalls, hydration errors or missing started-game selections.",
+    "Verify all seven NBA EV markets, schedules/counts, featured picks, NFL predictions, history and original fingerprints.",
+    "Recheck CW08 unchanged and progressing; automatic dashboard builds stay paused."
+  ],
+  "rollback": [
+    "On any critical failure stop verification and immediately activate compatible version a48c431a-5c3e-4491-8529-38cb20dfa898 at 100%.",
+    "Retain dashboard Durable Object namespace and KV; never remove or recreate bindings or restore the withdrawn candidate.",
+    "Verify dashboard recovered, queue alarms/enqueue held, old and newly saved immutable evidence intact, CW08 unaffected."
+  ],
+  "releaseCompleteOnlyAfter": "All live gates pass and evidence is committed/pushed. Local tests alone do not close the repair."
+}

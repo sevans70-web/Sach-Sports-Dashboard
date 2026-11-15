@@ -1,0 +1,40 @@
+full-regression-final.log
+✔ walk-forward reports coverage and grouped errors without promoting a model; duplicate records rejected (96.03306ms)
+ℹ tests 781
+ℹ suites 0
+ℹ pass 781
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 141291.395875
+
+runtime-concurrent.log
+✔ repeated unavailable NFL inputs are flagged and backed off without starving other markets or grading (4405.062518ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34563.811823
+
+admission-final.log
+✔ each redirect hop is metered and cancellation reaches a streaming private database response (18.960348ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 984.025734
+
+TypeScript: npx tsc --noEmit exited 0; no diagnostics.
+
+Production: npm run build:vinext exited 0.
+
+Frozen artifact: node scripts/prepare-dashboard-retry-release.mjs --dry-run exited 0; no upload.
+
+CW08 bundle: 151874 bytes; SHA256 c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4 (unchanged).
