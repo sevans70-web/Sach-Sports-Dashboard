@@ -1,72 +1,150 @@
-/** Request-local accounting for dashboard jobs. Never changes foreground fetches. */
+/** Request-local admission, accounting and cancellation. Foreground fetches pass through. */
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {gzipSync,gunzipSync} from 'node:zlib';
 const context=new AsyncLocalStorage();
 const nativeKey=Symbol.for('sach.dashboard-job.fetch.v1');
+export const JOB_CONCURRENCY=4;
+const REQUEST_RESERVATION=3; // provider check, HTTP, and a possible durable Retry-After update
 export class JobDeferred extends Error{constructor(code,retryAt=Date.now()+30000){super(code);this.retryAt=retryAt;this.deferred=true;}}
 const official=new Set(['api-web.nhle.com','api.nhle.com','site.api.espn.com','site.web.api.espn.com']);
 export function cacheTtl(url){const u=new URL(url);if(!official.has(u.hostname))return 0;
  if(/\/gamecenter\/|\/score\//.test(u.pathname))return 0;
+ if(u.pathname==='/apis/search/v2')return 60000;
  return /\/roster|\/game-log\/|\/gamelog|\/statistics|\/stats\/|\/standings\/|\/summary$/.test(u.pathname)?15*60000:0;}
 export function retryTime(value,now=Date.now()){const n=Number(value),date=Date.parse(value||'');return Math.max(now+60000,value!=null&&String(value).trim()!==''&&Number.isFinite(n)&&n>=0?now+n*1000:Number.isFinite(date)?date:0);}
-function fail(scope,code,at){scope.paused??=new JobDeferred(code,at);scope.abort.abort(scope.paused);throw scope.paused;}
-function charge(scope,kind,n=1){if(scope.closed)throw new JobDeferred('job_phase_closed');if(scope.paused)throw scope.paused;if(scope.used+n>scope.limit)fail(scope,'job_subrequest_budget');scope.used+=n;scope.costs[kind]=(scope.costs[kind]||0)+n;}
+function active(scope){if(scope.closed||scope.abort.signal.aborted)throw scope.abort.signal.reason||new JobDeferred('job_phase_closed');}
+function pause(scope,code,at){scope.paused??=new JobDeferred(code,at);for(const wait of scope.waiters.splice(0)){wait.clean();scope.queueCancelled++;wait.reject(scope.paused);}return scope.paused;}
+function cancel(scope,error){pause(scope,error.message,error.retryAt);if(!scope.abort.signal.aborted)scope.abort.abort(error);}
+function charge(scope,kind,n=1,ticket){
+ active(scope);
+ if(ticket){if(ticket.remaining<n)throw Error('job_request_reservation_exhausted');ticket.remaining-=n;scope.reserved-=n;}
+ else{if(scope.paused)throw scope.paused;if(scope.used+scope.reserved+n>scope.limit)throw pause(scope,'job_subrequest_budget',scope.now()+1000);}
+ scope.used+=n;scope.costs[kind]=(scope.costs[kind]||0)+n;
+}
+function checkSignal(signal){if(signal.aborted)throw signal.reason||new JobDeferred('job_source_cancelled');}
+/** End the caller's wait and detach its continuation even if an RPC cannot accept a signal. */
+function abortable(promise,signal){
+ if(signal.aborted)return Promise.reject(signal.reason);
+ return new Promise((resolve,reject)=>{const stop=()=>{clean();reject(signal.reason);},clean=()=>signal.removeEventListener('abort',stop);signal.addEventListener('abort',stop,{once:true});Promise.resolve(promise).then(v=>{clean();if(signal.aborted){void v?.body?.cancel?.().catch(()=>{});return;}resolve(v);},e=>{clean();reject(e);});});
+}
+function admit(scope){
+ active(scope);if(scope.paused)throw scope.paused;
+ // Reserve BEFORE any provider RPC. Do not cancel requests already admitted:
+ // their completed bodies must reach SQLite before the phase can retry.
+ if(scope.used+scope.reserved+REQUEST_RESERVATION>scope.limit)throw pause(scope,'job_subrequest_budget',scope.now()+1000);
+ let settle;const ticket={remaining:REQUEST_RESERVATION,done:new Promise(r=>settle=r),settle,released:false};
+ scope.reserved+=REQUEST_RESERVATION;scope.active.add(ticket);scope.maxActive=Math.max(scope.maxActive,scope.active.size);scope.maxReserved=Math.max(scope.maxReserved,scope.reserved);scope.admitted++;return ticket;
+}
+function acquire(scope,signal){
+ active(scope);checkSignal(signal);if(scope.paused)return Promise.reject(scope.paused);
+ if(scope.active.size<scope.concurrency){try{return Promise.resolve(admit(scope));}catch(e){return Promise.reject(e);}}
+ return new Promise((resolve,reject)=>{const wait={resolve,reject,clean:()=>signal.removeEventListener('abort',stop)},stop=()=>{const i=scope.waiters.indexOf(wait);if(i>=0)scope.waiters.splice(i,1);wait.clean();scope.queueCancelled++;reject(signal.reason);};signal.addEventListener('abort',stop,{once:true});scope.waiters.push(wait);});
+}
+function release(scope,ticket){
+ if(ticket.released)return;ticket.released=true;scope.reserved-=ticket.remaining;ticket.remaining=0;scope.active.delete(ticket);ticket.settle();
+ while(scope.waiters.length&&scope.active.size<scope.concurrency&&!scope.paused&&!scope.closed&&!scope.abort.signal.aborted){const wait=scope.waiters.shift();wait.clean();try{wait.resolve(admit(scope));}catch(e){wait.reject(e);break;}}
+}
 export function budgetBinding(binding,scope,kind='kv'){
  if(!binding)return binding;
  return new Proxy(binding,{get(target,key){const value=Reflect.get(target,key,target);if(typeof value!=='function')return value;return (...args)=>{charge(scope,kind,Array.isArray(args[0])?Math.max(1,args[0].length):1);return value.apply(target,args);};}});
 }
 export function installJobFetch(){
- globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{if(scope.paused||scope.closed)charge(scope,'blocked',0);}}:undefined;};
+ globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;}}:undefined;};
  if(globalThis.fetch===globalThis[nativeKey])return;
  const native=globalThis.fetch.bind(globalThis);
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};
  globalThis[nativeKey]=wrapped;globalThis.fetch=wrapped;
 }
+function cachedResponse(scope,c){scope.cacheHits++;const h=new Headers(c.headers);h.set('x-sach-observed-at',new Date(c.observed).toISOString());return new Response(c.body,{status:c.status,headers:h});}
+async function readBody(response,signal,limit){
+ if(!response.body)return '';
+ const reader=response.body.getReader(),parts=[];let size=0;
+ try{for(;;){const {done,value}=await abortable(reader.read(),signal);if(done)break;size+=value.length;if(size>limit)throw Error('job_source_too_large');parts.push(value);}}
+ catch(e){void reader.cancel(e).catch(()=>{});throw e;}
+ finally{try{reader.releaseLock();}catch{}}
+ const bytes=new Uint8Array(size);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.length;}return new TextDecoder().decode(bytes);
+}
+function headersForBody(response){const h=new Headers(response.headers);h.delete('content-encoding');h.delete('content-length');return h;}
+function responseFor(body,response){return new Response([204,205,304].includes(response.status)?null:body,{status:response.status,headers:headersForBody(response)});}
 async function jobFetch(scope,native,input,init={}){
  const url=input instanceof Request?input.url:String(input),u=new URL(url),method=String(init.method||(input instanceof Request?input.method:'GET')).toUpperCase();
  const headers=new Headers(init.headers||(input instanceof Request?input.headers:undefined));
- const cacheable=method==='GET'&&!headers.has('Authorization')&&!headers.has('x-api-key')&&!headers.has('cookie')&&!/key|token|auth/i.test(u.search)&&cacheTtl(url)>0&&scope.cacheSources;
- if(scope.paused||scope.closed)charge(scope,'blocked',0);
- if(cacheable){const c=scope.store.cacheRead(url);if(c&&c.expires>scope.now()){scope.cacheHits++;const h=new Headers(c.headers);h.set('x-sach-observed-at',new Date(c.observed).toISOString());return new Response(c.body,{status:c.status,headers:h});}}
+ const source=method==='GET'&&!headers.has('Authorization')&&!headers.has('x-api-key')&&!headers.has('cookie')&&!headers.has('range')&&!/key|token|auth/i.test(u.search)&&cacheTtl(url)>0&&scope.cacheSources;
+ const caller=init.signal||(input instanceof Request?input.signal:undefined),queuedSignal=AbortSignal.any([scope.abort.signal,...(caller?[caller]:[])]);
+ active(scope);checkSignal(queuedSignal);if(scope.paused)throw scope.paused;
+ if(source){const c=scope.store.cacheRead(url);if(c&&c.expires>scope.now())return cachedResponse(scope,c);const other=scope.sources.get(url);if(other){scope.coalesced++;return (await abortable(other,queuedSignal)).clone();}}
  const work=(async()=>{
-  let current=url,response;
-  for(let redirects=0;;redirects++){
-   // Leave one accounted RPC available to persist a last-request 429 cooldown.
-   if(scope.used+3>scope.limit)fail(scope,'job_subrequest_budget');
-   charge(scope,'provider_gate');const gate=await scope.gate(new URL(current).origin);if(gate>scope.now())fail(scope,'provider_cooldown',gate);
-   charge(scope,official.has(new URL(current).hostname)?'official_http':new URL(current).hostname.endsWith('.supabase.co')?'history_http':'odds_or_other_http');
-   const signal=AbortSignal.any([scope.abort.signal,...(init.signal?[init.signal]:input instanceof Request?[input.signal]:[])]);
-   response=await native(input instanceof Request&&current===url?new Request(input,{...init,method,headers,signal,redirect:'manual'}):current,{...init,method,headers,signal,redirect:'manual'});
-   if(response.status===429){const until=retryTime(response.headers.get('Retry-After'),scope.now());await response.body?.cancel();charge(scope,'provider_gate');await scope.gate(new URL(current).origin,until);fail(scope,'provider_http_429',until);}
-   if([301,302,303,307,308].includes(response.status)){
-    const location=response.headers.get('Location');await response.body?.cancel();
-    if(!cacheable||!location||redirects>=3)throw Error('job_source_redirect_rejected');
-    const next=new URL(location,current);if(!official.has(next.hostname)||next.username||next.password)throw Error('job_source_redirect_rejected');current=next.href;continue;
+  const ticket=await acquire(scope,queuedSignal);let timer,finished=false,streamOwned=false;
+  const requestAbort=new AbortController(),signal=AbortSignal.any([queuedSignal,requestAbort.signal]);
+  const finish=()=>{if(finished)return;finished=true;clearTimeout(timer);release(scope,ticket);};
+  timer=setTimeout(()=>requestAbort.abort(new JobDeferred('job_source_timeout',scope.now()+30000)),scope.requestTimeoutMs);
+  try{
+   // Another queued request may have completed the same source meanwhile.
+   if(source){const c=scope.store.cacheRead(url);if(c&&c.expires>scope.now()){finish();return cachedResponse(scope,c);}}
+   let current=url,response;
+   for(let redirects=0;;redirects++){
+    active(scope);checkSignal(signal);if(scope.paused&&scope.paused.message!=='job_subrequest_budget')throw scope.paused;
+    // Redirects need a fresh reservation in the same slot; each hop is metered.
+    if(ticket.remaining<REQUEST_RESERVATION){const extra=REQUEST_RESERVATION-ticket.remaining;if(scope.paused||scope.used+scope.reserved+extra>scope.limit)throw pause(scope,'job_subrequest_budget',scope.now()+1000);ticket.remaining+=extra;scope.reserved+=extra;scope.maxReserved=Math.max(scope.maxReserved,scope.reserved);}
+    charge(scope,'provider_gate',1,ticket);const gate=await abortable(scope.gate(new URL(current).origin),signal);active(scope);checkSignal(signal);
+    if(gate>scope.now())throw pause(scope,'provider_cooldown',gate);
+    if(scope.paused&&scope.paused.message!=='job_subrequest_budget')throw scope.paused;
+    charge(scope,official.has(new URL(current).hostname)?'official_http':new URL(current).hostname.endsWith('.supabase.co')?'history_http':'odds_or_other_http',1,ticket);
+    response=await abortable(native(input instanceof Request&&current===url?new Request(input,{...init,method,headers,signal,redirect:'manual'}):current,{...init,method,headers,signal,redirect:'manual'}),signal);
+    active(scope);checkSignal(signal);
+    if(response.status===429){const until=retryTime(response.headers.get('Retry-After'),scope.now());await response.body?.cancel();charge(scope,'provider_gate',1,ticket);await abortable(scope.gate(new URL(current).origin,until),signal);throw pause(scope,'provider_http_429',until);}
+    if([301,302,303,307,308].includes(response.status)){
+     const location=response.headers.get('Location');await response.body?.cancel();if(!source||!location||redirects>=3)throw Error('job_source_redirect_rejected');const next=new URL(location,current);if(!official.has(next.hostname)||next.username||next.password)throw Error('job_source_redirect_rejected');current=next.href;continue;
+    }
+    break;
    }
-   break;
-  }
-  if(!cacheable||!response.ok)return response;
-  const reader=response.body.getReader(),parts=[];let size=0;
-  for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>8*1024*1024){await reader.cancel();throw Error('job_source_too_large');}parts.push(value);}
-  const bytes=new Uint8Array(size);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.length;}
-  const body=new TextDecoder().decode(bytes);JSON.parse(body);const at=scope.now();const h=new Headers(response.headers);h.delete('content-encoding');h.delete('content-length');h.set('x-sach-observed-at',new Date(at).toISOString());
-  scope.store.cacheWrite(url,{body,status:response.status,headers:[...h],observed:at,expires:at+cacheTtl(url)});return new Response(body,{status:response.status,headers:h});
+   // Public sources are bounded and fully drained inside their admission slot.
+   // A successful header alone is never a checkpoint.
+   if(official.has(u.hostname)||!response.ok){
+    const body=await readBody(response,signal,response.ok?8*1024*1024:1024*1024);active(scope);checkSignal(signal);scope.completed++;
+    if(source&&(response.ok||[404,410].includes(response.status))){
+     if(response.ok)JSON.parse(body);
+     const at=scope.now(),h=headersForBody(response);h.set('x-sach-observed-at',new Date(at).toISOString());
+     const value={body,status:response.status,headers:[...h],observed:at,expires:at+(response.ok?cacheTtl(url):60000)};
+     if(scope.store.cacheWrite(url,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');scope.cacheWrites++;scope.checkpointBytes+=body.length;
+     return responseFor(body,{status:response.status,headers:h});
+    }
+    if(source&&[401,403,408,500,502,503,504].includes(response.status))throw pause(scope,'job_source_http_'+response.status,retryTime(response.headers.get('Retry-After'),scope.now()));
+    return responseFor(body,response);
+   }
+   if(!response.body){scope.completed++;return response;}
+   // Private/large database responses remain streaming. Keep their slot and
+   // cancellation signal until the caller consumes or cancels the entire body.
+   const reader=response.body.getReader();let controller,ended=false;
+   const end=()=>{if(ended)return;ended=true;signal.removeEventListener('abort',stop);scope.readers.delete(stop);try{reader.releaseLock();}catch{}finish();};
+   const stop=()=>{void reader.cancel(signal.reason).catch(()=>{});controller?.error(signal.reason);end();};
+   const stream=new ReadableStream({start(c){controller=c;},async pull(c){try{const chunk=await abortable(reader.read(),signal);if(ended)return;if(chunk.done){scope.completed++;c.close();end();}else c.enqueue(chunk.value);}catch(e){if(!ended){c.error(e);end();}}},async cancel(reason){await reader.cancel(reason);end();}});
+   signal.addEventListener('abort',stop,{once:true});scope.readers.add(stop);streamOwned=true;
+   // end() uses finish; leave the active ticket owned by this stream.
+   return new Response(stream,{status:response.status,headers:response.headers});
+  }catch(e){if(signal.aborted&&!scope.abort.signal.aborted){scope.aborted++;throw pause(scope,e instanceof JobDeferred?e.message:'job_source_timeout',scope.now()+30000);}throw e;}
+  finally{if(!streamOwned)finish();}
  })();
- scope.inflight.add(work);try{return await work;}finally{scope.inflight.delete(work);}
+ scope.inflight.add(work);if(source)scope.sources.set(url,work);
+ try{const result=await work;return source?result.clone():result;}finally{scope.inflight.delete(work);if(source&&scope.sources.get(url)===work)scope.sources.delete(url);}
 }
-export async function runJobBudget({env,store,gate,limit=220,deadlineMs=25000,cacheSources=false,now=()=>Date.now()},operation,withEnvironment=(_env,f)=>f()){
- installJobFetch();const scope={id:crypto.randomUUID(),store,gate,limit,cacheSources,now,used:0,costs:{},cacheHits:0,inflight:new Set(),abort:new AbortController(),paused:null,closed:false};
+function usage(scope){return {used:scope.used,limit:scope.limit,costs:scope.costs,cacheHits:scope.cacheHits,cacheWrites:scope.cacheWrites,checkpointBytes:scope.checkpointBytes,completedRequests:scope.completed,maxActive:scope.maxActive,maxReserved:scope.maxReserved,coalesced:scope.coalesced,queuedCancelled:scope.queueCancelled,aborted:scope.aborted};}
+async function drain(scope,deadline){while(scope.active.size)await Promise.race([Promise.allSettled([...scope.active].map(t=>t.done)),deadline]);}
+export async function runJobBudget({env,store,gate,limit=220,deadlineMs=25000,requestTimeoutMs=10000,concurrency=JOB_CONCURRENCY,cacheSources=false,now=()=>Date.now()},operation,withEnvironment=(_env,f)=>f()){
+ if(!Number.isInteger(concurrency)||concurrency<1||concurrency>JOB_CONCURRENCY||limit<REQUEST_RESERVATION)throw Error('invalid_job_limits');
+ installJobFetch();const scope={id:crypto.randomUUID(),store,gate,limit,concurrency,cacheSources,now,requestTimeoutMs,used:0,reserved:0,costs:{},cacheHits:0,cacheWrites:0,checkpointBytes:0,completed:0,admitted:0,maxActive:0,maxReserved:0,coalesced:0,queueCancelled:0,aborted:0,active:new Set(),waiters:[],readers:new Set(),sources:new Map(),inflight:new Set(),abort:new AbortController(),paused:null,closed:false};
  const scopedEnv={...env,VINEXT_KV_CACHE:budgetBinding(env.VINEXT_KV_CACHE,scope)};
- let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{try{fail(scope,'job_wall_deadline');}catch(e){reject(e);}},deadlineMs);});
+ let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{const e=new JobDeferred('job_wall_deadline');cancel(scope,e);reject(e);},deadlineMs);});
  try{
   const result=await context.run(scope,()=>withEnvironment(scopedEnv,()=>Promise.race([operation(scopedEnv,scope),deadline])));
   if(scope.paused)throw scope.paused;
-  // A Promise.race in a model route may leave official refreshes running.
-  // Warm those public inputs, then retry the ranking build, not its fallback.
-  if(scope.inflight.size){await Promise.race([Promise.allSettled([...scope.inflight]),deadline]);throw new JobDeferred('source_warmup_retry',Date.now()+1000);}
-  return {result,usage:{used:scope.used,limit,costs:scope.costs,cacheHits:scope.cacheHits}};
- }catch(e){const error=scope.paused||e;error.usage={used:scope.used,limit,costs:scope.costs,cacheHits:scope.cacheHits};throw error;}
- finally{clearTimeout(timer);scope.closed=true;scope.abort.abort(new JobDeferred('job_phase_closed'));}
+  if(scope.inflight.size||scope.active.size){pause(scope,'source_warmup_retry',scope.now()+1000);await drain(scope,deadline);throw scope.paused;}
+  return {result,usage:usage(scope)};
+ }catch(e){
+  if(!scope.paused)cancel(scope,e);
+  try{await drain(scope,deadline);}catch(timeout){e=timeout;}
+  const error=scope.abort.signal.aborted&&scope.abort.signal.reason?.message==='job_wall_deadline'?scope.abort.signal.reason:scope.paused||e;error.usage=usage(scope);throw error;
+ }finally{clearTimeout(timer);scope.closed=true;cancel(scope,new JobDeferred('job_phase_closed'));}
 }
 export function encode(value){return gzipSync(JSON.stringify(value)).toString('base64');}
 export function decode(value){return JSON.parse(gunzipSync(Buffer.from(value,'base64')).toString('utf8'));}

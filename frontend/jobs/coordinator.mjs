@@ -6,6 +6,11 @@ import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
 const sports=['nba','nfl','nhl'];
 const safeError=e=>/^[a-z0-9_ .:-]{1,160}$/i.test(e?.message||'')?e.message:'dashboard_job_failed';
+function progress(job,usage,advanced,now){
+ const previous=job.progress||{},writes=usage?.cacheWrites||0;
+ const stalledAttempts=advanced||writes>0?0:(previous.stalledAttempts||0)+1;
+ return {sourceCheckpoints:(previous.sourceCheckpoints||0)+writes,checkpointBytes:(previous.checkpointBytes||0)+(usage?.checkpointBytes||0),lastCheckpointAt:advanced||writes>0?now:previous.lastCheckpointAt||null,stalledAttempts,needsAttention:stalledAttempts>=3};
+}
 /** Independent objects provide independent invocation budgets, persistent cursors,
  * and serial phases. Only the dashboard owns this namespace; CW08 is unrelated. */
 export function dashboardJobClass(services){return class DashboardJobQueue extends DurableObject{
@@ -22,12 +27,13 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
  setMeta(key,value){this.sql.exec('INSERT OR REPLACE INTO metadata VALUES(?,?)',key,JSON.stringify(value));}
  cacheRead(url){const row=this.rows('SELECT body FROM source_cache WHERE url=? AND expires>?',url,this.now())[0];return row?decode(row.body):null;}
  cacheWrite(url,value){
-  const body=encode(value),bytes=body.length;if(bytes>1536*1024)return;
+  const body=encode(value),bytes=body.length;if(bytes>1536*1024)return false;
   this.sql.exec('DELETE FROM source_cache WHERE expires<=?',this.now());
   this.sql.exec('INSERT OR REPLACE INTO source_cache VALUES(?,?,?,?)',url,value.expires,body,bytes);
   // Operational input cache only. No pick, grade or evidence is evicted here.
   while(this.rows('SELECT COUNT(*) AS n,COALESCE(SUM(bytes),0) AS bytes FROM source_cache')[0].bytes>32*1024*1024||this.rows('SELECT COUNT(*) AS n FROM source_cache')[0].n>512)
    this.sql.exec('DELETE FROM source_cache WHERE url=(SELECT url FROM source_cache ORDER BY expires,url LIMIT 1)');
+  return true;
  }
  document(job,stream,value){this.sql.exec('INSERT OR IGNORE INTO documents VALUES(?,?,?)',job,stream,encode(value));}
  documents(job){return this.rows('SELECT body FROM documents WHERE job=? ORDER BY stream',job).map(r=>decode(r.body));}
@@ -57,7 +63,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   if(!row){await this.arm();return;}
   const job=decode(row.data),token=crypto.randomUUID();this.setMeta('lease',{token,until:this.now()+90000});
   const owns=()=>this.meta('lease')?.token===token;
-  const fencedStore={cacheRead:u=>this.cacheRead(u),cacheWrite:(u,v)=>{if(!owns())throw Error('job_lease_lost');this.cacheWrite(u,v);},document:(...args)=>{if(!owns())throw Error('job_lease_lost');this.document(...args);},documents:id=>this.documents(id)};
+  const fencedStore={cacheRead:u=>this.cacheRead(u),cacheWrite:(u,v)=>{if(!owns())throw Error('job_lease_lost');return this.cacheWrite(u,v);},document:(...args)=>{if(!owns())throw Error('job_lease_lost');this.document(...args);},documents:id=>this.documents(id)};
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{
@@ -68,19 +74,23 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
     return value;
    },withEnv);
    next={...execution.result,attempts:0,lastError:null,usage:execution.usage};
+   next.progress=progress(job,execution.usage,['phase','state','cursor','gameCursor','gradeCursor','verified','stored','picksStored','checked'].some(key=>next[key]!==job[key]),this.now());
    if(job.kind==='capture'&&job.phase==='rank'){
     next.reservedAt=this.now();
     fencedStore.document(job.id,'original_reservation',{capturedAt:next.reservedAt,quotes:next.quotes});
    }
   }catch(error){
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
-   next={...job,attempts,lastError:safeError(error),usage:error.usage||null};
+   const measured=progress(job,error.usage,false,this.now());
+   if(error.message==='job_subrequest_budget'&&error.usage?.cacheWrites>0)due=this.now()+1000;
+   if(measured.stalledAttempts>=3)due=Math.max(due,this.now()+15*60000);
+   next={...job,attempts,lastError:safeError(error),usage:error.usage||null,progress:measured};
    console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:due,usage:next.usage}));
   }finally{
    if(owns()){
     const touched=this.now();next.retryAt=next.state==='done'?null:due;
     this.sql.exec('UPDATE jobs SET state=?,due=?,touched=?,data=? WHERE id=?',next.state||'active',due,touched,encode(next),job.id);
-    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired}));
+    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired,progress:next.progress}));
     this.setMeta('lease',null);
    }
    await this.arm();

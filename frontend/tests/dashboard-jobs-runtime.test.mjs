@@ -5,7 +5,7 @@ const now=Date.now(),start=new Date(now+7200000).toISOString();
 const row=(id=123)=>({gameId:'2026020999',playerId:String(id),playerName:'Fixture Player '+id,gameTime:start,quoteVerified:true,quoteVersion:1,marketBacked:true,quoteUpdatedAt:new Date(now-1000).toISOString(),quoteId:'quote-'+id,sportsbookKey:'fixture',sportsbook:'Fixture',sportsbookLine:2.5,overPrice:100,underPrice:-120,lineType:'total',prediction:'OVER',researchForecast:{modelSelection:{side:'OVER',line:2.5,price:100,quoteId:'quote-'+id,sportsbookKey:'fixture',calculatedAt:new Date(now).toISOString()}}});
 const key=r=>[r.sport,r.market,r.game_id,r.player_id].join('|');
 async function setup(dir,answer){const file=join(dir,'worker.mjs');const b=await rolldown({input:resolve('tests/fixtures/dashboard-jobs-runtime.mjs'),external:['cloudflare:workers',/^node:/],platform:'neutral'});await b.write({file,format:'esm'});await b.close();
- const mf=new Miniflare(convertV4MiniflareOptions({name:'dashboard-test',modules:true,modulesRoot:dir,scriptPath:file,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],durableObjects:{DASHBOARD_JOBS:{className:'DashboardJobQueue',useSQLite:true}},kvNamespaces:['VINEXT_KV_CACHE'],resourcePersistencePath:join(dir,'storage'),bindings:{SUPABASE_URL:'https://db.supabase.co',SUPABASE_SECRET_KEY:'synthetic-fixture-only'},outboundService:answer}));
+ const options=convertV4MiniflareOptions({name:'dashboard-test',modules:true,modulesRoot:dir,scriptPath:file,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],durableObjects:{DASHBOARD_JOBS:{className:'DashboardJobQueue',useSQLite:true}},kvNamespaces:['VINEXT_KV_CACHE'],resourcePersistencePath:join(dir,'storage'),bindings:{SUPABASE_URL:'https://db.supabase.co',SUPABASE_SECRET_KEY:'synthetic-fixture-only'},outboundService:answer});options.workers[0].config.limits={subrequests:350,cpuMs:30000};const mf=new Miniflare(options);
  const call=async(action,value,lane='capture:nhl')=>{const r=await mf.dispatchFetch('https://test.local/control',{method:'POST',body:JSON.stringify({action,value,lane})});assert.equal(r.status,200,await r.clone().text());return r.json();};return {mf,call};}
 test('independent durable lanes resume over-budget capture, survive restart and preserve original receipts after lost acknowledgements',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'dashboard-runtime-'));let runtime;let histories=0,ackLoss=true;const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
@@ -66,5 +66,37 @@ test('scheduled delivery is idempotent and does no ranking or grading work in th
   await worker.scheduled({cron:'*/2 * * * *',scheduledTime:time});await worker.scheduled({cron:'*/2 * * * *',scheduledTime:time});assert.equal(hits,0);
   const {CAPTURE_MARKETS,marketsForCaptureTick}=await import('../scripts/worker-pregame-capture.mjs');const markets=marketsForCaptureTick(time);assert.equal(markets.length,2);
   for(const {sport,market} of markets){const s=await runtime.call('inspect',null,'capture:'+sport);assert.equal(s.status.jobs.filter(j=>j.market===market).length,1);}
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});
+test('180 concurrent cold NFL inputs checkpoint before a budget pause, resume after eviction, and cannot starve NBA/NHL',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'dashboard-parallel-'));let runtime,active=0,peak=0,histories=0;const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
+ const answer=async req=>{const u=new URL(req.url);
+  if(u.hostname==='fixture.test')return Response.json({parallel:u.searchParams.get('sport')==='nfl'?180:0,rows:[row()]});
+  if(u.hostname==='site.web.api.espn.com'){
+   histories++;active++;peak=Math.max(peak,active);let ended=false,timer;const end=()=>{if(!ended){ended=true;active--;}};
+   return new Response(new ReadableStream({start(c){timer=setTimeout(()=>{c.enqueue(new TextEncoder().encode(JSON.stringify({gameLog:[{fixture:u.pathname}]})));c.close();end();},20);},cancel(){clearTimeout(timer);end();}}),{headers:{'Content-Type':'application/json'}});
+  }
+  if(u.hostname==='db.supabase.co'){const table=tables[u.pathname.split('/').at(-1)];if(req.method==='POST'){for(const r of await req.json())if(!table.has(key(r)))table.set(key(r),r);return new Response(null,{status:201});}return Response.json([...table.values()].filter(r=>r.sport===u.searchParams.get('sport')?.slice(3)&&r.market===u.searchParams.get('market')?.slice(3)));}
+  throw Error('unexpected source '+u.hostname);
+ };
+ try{runtime=await setup(dir,answer);let {mf,call}=runtime;
+  for(const [sport,market] of [['nfl','receiving_yards'],['nba','points'],['nhl','shots_on_goal']]){await call('clock',now+300000,'capture:'+sport);await call('enqueue',{kind:'capture',sport,market,id:sport+'-parallel',created:now},'capture:'+sport);}
+  let first=await call('step',null,'capture:nfl');let job=first.jobs[0];assert.equal(job.phase,'rank');assert.equal(job.lastError,'job_subrequest_budget');assert.ok(job.usage.used<=220);assert.equal(job.usage.maxActive,4);assert.ok(job.usage.maxReserved<=12);assert.ok(job.progress.sourceCheckpoints>=100);assert.equal(job.progress.needsAttention,false);assert.equal(active,0);assert.ok(peak<=4);
+  const saved=(await call('inspect',null,'capture:nfl')).cache.length,networkAtPause=histories;assert.equal(saved,networkAtPause);await new Promise(r=>setTimeout(r,60));assert.equal(histories,networkAtPause,'cancelled queue cannot launch HTTP work after return');
+  const foreground=await mf.dispatchFetch('https://test.local/foreground');assert.equal(foreground.status,200);
+  for(const sport of ['nba','nhl']){let state;for(let i=0;i<4;i++)state=await call('step',null,'capture:'+sport);assert.equal(state.jobs[0].state,'done');}
+  await mf.dispose();runtime=await setup(dir,answer);({mf,call}=runtime);assert.equal((await call('inspect',null,'capture:nfl')).cache.length,saved);
+  job=(await call('step',null,'capture:nfl')).jobs[0];assert.equal(job.phase,'originals');assert.ok(job.usage.cacheHits>=saved);assert.equal(job.progress.sourceCheckpoints,180);assert.equal(histories,180,'completed inputs are not requested again after eviction');assert.equal(active,0);
+  for(let i=0;i<4;i++)job=(await call('step',null,'capture:nfl')).jobs[0];assert.equal(job.state,'done');assert.equal(tables.worker_pregame_picks.size,3);assert.equal(tables.worker_pregame_originals.size,3);
+  const events=(await call('inspect',null,'capture:nfl')).events;assert.ok(events.every(e=>JSON.parse(e.detail).usage.used<=220));console.log(JSON.stringify({proof:'cold_parallel_forward_progress',firstCheckpointed:saved,totalInputs:histories,maxConcurrentSources:peak,sourceCheckpoints:job.progress.sourceCheckpoints,allThreeSportsStoredOnce:tables.worker_pregame_picks.size}));
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});
+test('repeated unavailable NFL inputs are flagged and backed off without starving other markets or grading',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'dashboard-stalled-'));let runtime;
+ const answer=async req=>{const u=new URL(req.url);if(u.hostname==='fixture.test')return Response.json({histories:u.searchParams.get('market')==='receiving_yards'?1:0,rows:[row()]});if(u.hostname==='api-web.nhle.com')return new Response('{}',{status:503});if(u.pathname.endsWith('worker_pregame_picks'))return Response.json([]);throw Error('unexpected source');};
+ try{runtime=await setup(dir,answer);const {call}=runtime;await call('clock',now+300000,'capture:nfl');await call('enqueue',{kind:'capture',sport:'nfl',market:'receiving_yards',id:'blocked',created:now},'capture:nfl');
+ let job;for(let i=0;i<3;i++)job=(await call('step',null,'capture:nfl')).jobs.find(j=>j.id==='blocked');assert.equal(job.progress.stalledAttempts,3);assert.equal(job.progress.needsAttention,true);assert.equal(job.progress.sourceCheckpoints,0);assert.equal(job.lastError,'job_source_http_503');assert.ok(job.retryAt>=job.created+15*60000);
+ await call('enqueue',{kind:'capture',sport:'nfl',market:'passing_yards',id:'other-market',created:now},'capture:nfl');const other=(await call('step',null,'capture:nfl')).jobs.find(j=>j.id==='other-market');assert.equal(other.phase,'originals');assert.equal(other.progress.stalledAttempts,0);
+ await call('clock',now+300000,'grade:nfl');await call('enqueue',{kind:'grade',sport:'nfl',id:'grade-independent',created:now},'grade:nfl');assert.equal((await call('step',null,'grade:nfl')).jobs[0].state,'done');assert.equal((await call('inspect',null,'capture:nfl')).cache.length,0);
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });

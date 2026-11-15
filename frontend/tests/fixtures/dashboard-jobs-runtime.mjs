@@ -5,6 +5,7 @@ const dashboard={async fetch(request,env,ctx){const u=new URL(request.url);
  if(u.pathname.endsWith('/rankings')){
   const market=u.searchParams.get('market'),sport=u.pathname.split('/')[2];
   const source=await fetch('https://fixture.test/config?market='+market+'&sport='+sport).then(r=>r.json());
+  if(source.parallel)await Promise.all(Array.from({length:source.parallel},(_,i)=>fetch('https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/'+(10000+i)+'/gamelog?season=2026').then(r=>r.json())));
   for(let i=0;i<(source.histories||0);i++)await fetch('https://api-web.nhle.com/v1/player/'+(1000+i)+'/game-log/20262027/2').then(r=>r.json());
   await importedEnv.VINEXT_KV_CACHE.get('probe');
   if(source.defer)ctx.waitUntil(fetch('https://api-web.nhle.com/v1/player/9999/game-log/20262027/2').then(r=>r.json()));
