@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "a949453dac8d3ae08a3feeca99dc55fe1991d267",
+  "candidateDigest": "e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead",
+  "fallbackDigest": "81ed89014b81e2acc7aeebe0494d04d27fbbb3db14381c5c6560d3270be352a8",
+  "archives": {
+    "candidate": {
+      "file": "candidate.tar.gz",
+      "bytes": 11264095,
+      "sha256": "1a0ad196034b24a055c257b399089015b63c45db060421c6e7919b1d182a812e"
+    },
+    "fallback": {
+      "file": "fallback.tar.gz",
+      "bytes": 11256436,
+      "sha256": "4473eee3d8bd7ff2c79c727969a097ecd82cf8e7b25ad8aac771ca4445603dc5"
+    }
+  },
+  "execution": "Cloudflare authenticated manual environment; prebuilt only; dashboard crons paused until fallback is verified; CW08 untouched"
+}
