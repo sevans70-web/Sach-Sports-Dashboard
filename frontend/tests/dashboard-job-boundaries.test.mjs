@@ -40,3 +40,10 @@ test('background ranking results and pending builds cannot poison a concurrent f
  await entered;const foreground=await rankingResponse(key,async()=>({success:true,rows:[{gameTime:new Date(Date.now()+3600000).toISOString(),origin:'foreground'}]}));assert.equal(foreground.rows[0].origin,'foreground');release();await background;
  const cached=await rankingResponse(key,()=>assert.fail('foreground board should remain cached'));assert.equal(cached.rows[0].origin,'foreground');
 });
+test('foreground provider reads do not join a cancelled job-owned pending source request',async()=>{
+ const {providerFetch}=await loadTs(new URL('../lib/provider-fetch.ts',import.meta.url));const native=globalThis.fetch,url='https://api-web.nhle.com/v1/score/job-isolation-'+Date.now();let start;const entered=new Promise(resolve=>start=resolve);let requests=0;
+ globalThis.fetch=async(_url,init)=>{requests++;if(requests===1){start();return new Promise((resolve,reject)=>init.signal.addEventListener('abort',()=>reject(init.signal.reason),{once:true}));}return Response.json({foreground:true});};
+ try{const background=runJobBudget({env:{},store:{cacheRead:()=>null},gate:async()=>0,deadlineMs:100},()=>providerFetch(url));const failed=assert.rejects(background,/job_wall_deadline/);await entered;
+  const response=await providerFetch(url);assert.equal((await response.json()).foreground,true);await failed;assert.equal(requests,2);
+ }finally{globalThis.fetch=native;}
+});

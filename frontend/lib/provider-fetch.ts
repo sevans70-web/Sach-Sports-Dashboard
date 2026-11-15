@@ -9,7 +9,8 @@ function removeCached(key:string){const old=cache.get(key);if(old){state.bytes-=
 function responseFrom(value:ProviderPayload){return new Response([204,205,304].includes(value.status)?null:value.body,{status:value.status,headers:value.headers});}
 export function providerCacheStatus(){return {entries:cache.size,bytes:state.bytes,maxBytes:MAX_CACHE_BYTES,pending:pending.size};}
 export async function providerFetch(input:string | URL | Request, init?:RequestInit):Promise<Response> {
-  const url = String(input);
+  const job=(globalThis as typeof globalThis&{__sachDashboardJobContext?:()=>{id:string;assertActive:()=>void}|undefined}).__sachDashboardJobContext?.();job?.assertActive();
+  const url = String(input),pendingKey=(job?'dashboard-job:'+job.id+'|':'')+url;
   const host = new URL(url).hostname;
   const nhlStarted=state.nhlStarted??=new Map<string,number>();
   const publicProvider = ["site.api.espn.com", "site.web.api.espn.com", "api-web.nhle.com", "api.nhle.com"].includes(host);
@@ -20,13 +21,13 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
   const hit=cache.get(url);
   if(hit && hit.expires>Date.now()) return responseFrom(hit);
   const hockey=host==='api-web.nhle.com'||host==='api.nhle.com';
-  if(hockey&&pending.has(url)&&Date.now()-(nhlStarted.get(url)||0)>=8500){pending.delete(url);nhlStarted.delete(url);}
-  const running=pending.get(url);
+  if(hockey&&pending.has(pendingKey)&&Date.now()-(nhlStarted.get(pendingKey)||0)>=8500){pending.delete(pendingKey);nhlStarted.delete(pendingKey);}
+  const running=pending.get(pendingKey);
   if(running){
     if(!hockey)return responseFrom(await running);
     let timer:ReturnType<typeof setTimeout>|undefined;
     try{return responseFrom(await Promise.race([running,new Promise<ProviderPayload>((_,reject)=>{timer=setTimeout(()=>reject(Error('NHL provider read timed out')),8000);})]));}
-    finally{if(timer)clearTimeout(timer);if(pending.get(url)===running){pending.delete(url);nhlStarted.delete(url);}}
+    finally{if(timer)clearTimeout(timer);if(pending.get(pendingKey)===running){pending.delete(pendingKey);nhlStarted.delete(pendingKey);}}
   }
   let work!:Promise<ProviderPayload>;
   work=(async()=>{
@@ -44,7 +45,7 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
     }
     const body=await response.text();
     const value={body,status:response.status,headers:response.headers};
-    if(response.ok&&(!hockey||pending.get(url)===work)){
+    if(response.ok&&(!hockey||pending.get(pendingKey)===work)){
       const ttl=/statistics|\/stats[/?]|\/roster|byathlete/.test(url)||host==='api-web.nhle.com'&&/\/player\/\d+\/game-log\//.test(url)?15*60_000:30_000;
       // Bound disposable response memory, not the durable prediction store.
       const bytes=body.length*2;
@@ -56,8 +57,8 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
     }else console.warn("[provider unavailable]",host,new URL(url).pathname,response.status,response.headers.get("content-type"));
     return value;
   })();
-  pending.set(url,work);if(hockey)nhlStarted.set(url,Date.now());
-  try{return responseFrom(await work)}finally{if(pending.get(url)===work){pending.delete(url);nhlStarted.delete(url);}}
+  pending.set(pendingKey,work);if(hockey)nhlStarted.set(pendingKey,Date.now());
+  try{return responseFrom(await work)}finally{if(pending.get(pendingKey)===work){pending.delete(pendingKey);nhlStarted.delete(pendingKey);}}
 }
 export function nullableNumber(value:unknown):number|null {
   if(value==null || typeof value==="boolean" || (typeof value==="string" && !value.trim()))return null;
