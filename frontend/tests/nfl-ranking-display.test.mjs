@@ -38,3 +38,7 @@ test('quarter sportsbook category aliases remain exact to period and do not borr
  assert.equal(footballBookRows(feed,'anytime_td',['touchdowns'],now).length,0);
  for(const prop of props)prop.period='game';assert.equal(footballBookRows(feed,'q1_anytime_td',['touchdowns_1q'],now,true).length,0,'conflicting full-game period must be rejected');
 });
+test('two-sided NFL quarter forecasts retain their projection direction without being promoted to betting picks',()=>{
+ const row=data.q1_passing_yards.rows.find(r=>r.lineType==='main'&&nflRankingDisplay(r,now)?.projection!=null);assert.ok(row);
+ const e=nflRankingDisplay(row,now);assert.equal(e.direction,e.projection>row.sportsbookLine?'OVER':e.projection<row.sportsbookLine?'UNDER':'AT LINE');assert.equal(e.confidence,null);assert.equal(e.ev.status,'unavailable');assert.equal(rankingRowIsPick(row,now),false);
+});

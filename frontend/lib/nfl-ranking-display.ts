@@ -20,7 +20,9 @@ export function nflRankingDisplay(row:any,now=Date.now()){
  const confidence=ev.status==='available'?100*(ev.side==='OVER'?forecast.priceComparison.overProbability:forecast.priceComparison.underProbability):null;
  const reasons:Record<string,string>={market_model_not_fitted:'A fitted forecast is not available for this market',fewer_than_five_quarter_history_games:'At least five verified quarter-history games are needed',recent_official_history_unavailable:'Recent official player history is unavailable',player_team_history_unavailable:'Verified player/team history is unavailable',reported_unavailable:'Player is reported unavailable',missing_exact_pregame_context:'Exact pregame matchup evidence is missing'};
  const reason=ev.status==='available'?null:forecast?.giReason==='price_validation_failed'||forecast?.selectionReason==='price_validation_failed'?'Model probability accuracy checks not met; confidence and EV are unavailable':reasons[forecast?.reason]||ev.reason;
- return {projection:fitted,baseline,confidence,projectionLabel:fitted!=null?'Sach Projection':'Historical baseline',quoteBasis:saved?'saved_pregame':'current',reason,ev};
+ const line=row.sportsbookLine;
+ const direction=ev.status==='available'?ev.side:fitted!=null&&row.lineType==='main'&&typeof line==='number'&&Number.isFinite(line)&&recorded?(fitted>line?'OVER':fitted<line?'UNDER':'AT LINE'):null;
+ return {projection:fitted,baseline,confidence,direction,projectionLabel:fitted!=null?'Sach Projection':'Historical baseline',quoteBasis:saved?'saved_pregame':'current',reason,ev};
 }
 /** Add diagnostics without rewriting a row, its rank, forecast, selection or receipt. */
 export function nflRankingPayload(payload:any,now=Date.now()){

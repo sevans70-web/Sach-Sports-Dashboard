@@ -992,7 +992,7 @@ function PlayerCard({
   const complete=completeRankingProp(card.raw);
   const nbaPositiveEv=sport!=='nba'||(complete?.percent??0)>0;
   const projectionComparison=!complete&&!modelSelection&&footballForecast.side!=null;
-  const displayedPick=complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
+  const displayedPick=sport==='nfl'?nflEvidence?.direction||null:complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
   const nbaDisplayEv=sport==='nba'&&nbaEvMarket(card.market)?nbaRankingEv(card.raw):null;
   const evPercent=nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
@@ -1093,7 +1093,7 @@ function PlayerCard({
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
           <div><span>{card.marketLabel}</span><strong>{(complete||card.raw?.quoteVerified)&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
-          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetPick?`${propLineText(targetPick.target)}+`:targetForecast?(targetForecast.direction==='REACHES'?'Reaches target':'Below target'):'—'):displayedPick||'—'}</strong>{quarterTarget?<small>{targetPick?'Sportsbook target':targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:null}</div>
+          <div><span>Sach Prediction</span><strong className={displayedPick==='OVER'?styles.over:displayedPick==='UNDER'?styles.under:undefined}>{quarterTarget?(targetPick?`${propLineText(targetPick.target)}+`:targetForecast?(targetForecast.direction==='REACHES'?'Reaches target':'Below target'):'—'):displayedPick||'—'}</strong>{quarterTarget?<small>{targetPick?'Sportsbook target':targetForecast?'Model projection vs threshold':'Prediction unavailable'}</small>:sport==='nfl'&&displayedPick&&!modelSelection?<small>Projection direction · not a betting pick</small>:null}</div>
           <div><span>Sach Projection</span><strong>{displayedAverage==null?'—':shortNumber(displayedAverage)}</strong>{displayedAverage==null?<small>Not available</small>:null}</div>
         </>:firstBasket?<>
 
