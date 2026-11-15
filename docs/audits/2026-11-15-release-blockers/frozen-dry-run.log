@@ -1,7 +1,7 @@
-[dashboard-retry-artifact] {"digest":"22b6129a67698b0b468c6076f8c450541a4876b5d210f1073418d960e71f2166","files":423,"worker":"sach-sports-cloudflare-test","sourceCommit":"056cdecd19b49cdd6711f9dd7584e9411c4c23f2","approvalRequired":true}
+[dashboard-retry-artifact] {"digest":"1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68","files":423,"worker":"sach-sports-cloudflare-test","sourceCommit":"1167c46f5d77d73429d681be232c0bebdfa509ed","approvalRequired":true}
 ├  Deploy
 │  ✨ Read 78 files from the assets directory /workspace/Sach-Sports-Dashboard/frontend/.cloudflare/output/v0/workers/default/assets
-│  Total Upload: 14264.10 KiB / gzip: 7567.04 KiB
+│  Total Upload: 14264.60 KiB / gzip: 7568.71 KiB
 │  Your Worker has access to the following bindings:
 │  Binding                                                                              Resource            
 │  env.DASHBOARD_JOBS (DashboardJobQueue, defined in sach-sports-cloudflare-test)       Durable Object      

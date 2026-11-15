@@ -1,7 +1,7 @@
 {
   "fullSuite": {
     "command": "node --test --test-concurrency=4 tests/*.test.mjs",
-    "passed": 803,
+    "passed": 805,
     "failed": 0,
     "skipped": 0
   },
@@ -33,28 +33,25 @@
     "pageErrors": [],
     "productionVerified": false,
     "frozenArtifactVerified": true,
-    "hydrationErrors": []
+    "hydrationErrors": [],
+    "verifiedBundleDigest": "1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68"
   },
   "evidenceLogs": {
-    "regression-release.log": "15051bc3b5139facea470c38f9ca4c70e5f2240096e3a5f539172e2f292872c3",
-    "runtime.log": "530bb65913e02a67817a25188de2999d2fd0e53643ff8041291b2231b539a53d",
-    "memory-runtime.log": "d201526faaaa351d9e4d2bc4e2651ce38e065b406fa2b731eb5327077ea18352",
-    "recheck.log": "9a47f484f111313a9ad65cd0d7e43eb9f6ee9c3142ce5bbaf1e6ae864d334373",
-    "build-release.log": "0b5e520d12e802d03fee9949cc5608c501a557c27204d0a15be656ec37b80491",
-    "types-final.log": "509db3e3576a5ddeede99380db64011156c8602eb204903675e7cb44eae64ef7",
-    "frozen-build.log": "dd433b1a7a88ef9620981ca3b56866b4e5cb90bf80cad605de35855bdebf4dc9",
-    "frozen-dry-run.log": "1cfa91269f56dc2291273f80b94d002f3965aff95d97fa5048df5295e9670e3f",
-    "artifact-checks.log": "8a77b6834d14aa8291f17ff1da80f33fcf7191adb0a3da0f6bd2578663129256",
+    "regression-approved-candidate.log": "1531b4dddf20fd823a75f3c291ab7f4bf5c9adb0d4fadfd4866b6f19fc4586da",
+    "cooldown-final-check.log": "43ab2edc2ae84f889a43b2fa621604b593a117b2f2a847cb5a169cf992282511",
+    "cooldown-frozen-build.log": "c9f3d3439101395ac699e21387e5764c9876fb7876778448ace5328a7be36bc3",
+    "cooldown-dry-run.log": "5214fd813e53b7e6c9b1e8f13453537fc5092b4979de240efb0ad949438112bf",
+    "cooldown-artifact-checks.log": "e1115558278ca7dc0bde23a20ddd59744070929e5a8dd800cf868b9637740c61",
+    "cooldown-types.log": "509db3e3576a5ddeede99380db64011156c8602eb204903675e7cb44eae64ef7",
     "fallback-check.log": "9efdda13957318c9c3a654261f99a404bfcfbb77ede70a2bf56cee6bb87bdd78",
-    "focused-passed.log": "cb2cdf244547d6186b952d621664b5444011d8ed27709c33cd1a9dba8cdc5fd7",
-    "browser-final-nfl.log": "9e3af20c0de9d3c5b6c0717a4851b80f0aeb54e3c513e38139f0632df7867029",
-    "browser-final-markets.log": "bb6f9f3cdb9160b5cfedc6041dc6cff8b46c56ef20a848d133073fbf931b42d1"
+    "approved-browser-nfl.log": "9e3af20c0de9d3c5b6c0717a4851b80f0aeb54e3c513e38139f0632df7867029",
+    "approved-browser-markets.log": "bb6f9f3cdb9160b5cfedc6041dc6cff8b46c56ef20a848d133073fbf931b42d1"
   },
   "deployment": "not_performed",
   "approvalRequired": true,
-  "sourceCommit": "056cdecd19b49cdd6711f9dd7584e9411c4c23f2",
+  "sourceCommit": "1167c46f5d77d73429d681be232c0bebdfa509ed",
   "releaseManifest": "frontend/releases/dashboard-blockers-2026-11-15/manifest.json",
-  "bundleDigest": "22b6129a67698b0b468c6076f8c450541a4876b5d210f1073418d960e71f2166",
+  "bundleDigest": "1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68",
   "artifactChecks": {
     "passed": 4,
     "failed": 0,

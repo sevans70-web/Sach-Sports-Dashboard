@@ -4,7 +4,7 @@ Candidate identity is pinned in manifest.json. Do not reuse either withdrawn can
 
 ## Approved scope to request
 
-Upload and manually activate only the new frozen candidate for `sach-sports-cloudflare-test`, built from source commit `056cdecd19b49cdd6711f9dd7584e9411c4c23f2`. Preserve existing dashboard KV, credentials, schedules and SQLite Durable Object namespace `fc70a55e49c84d28bacc562a8d5cfb62`. There are no new namespaces, migrations, hosting changes or model replacements. Keep the Cloudflare automatic-build branch filter paused. Do not upload or modify `sach-cw08-nhl-shadow`.
+Upload and manually activate only the new frozen candidate for `sach-sports-cloudflare-test`, built from source commit `1167c46f5d77d73429d681be232c0bebdfa509ed`. Preserve existing dashboard KV, credentials, schedules and SQLite Durable Object namespace `fc70a55e49c84d28bacc562a8d5cfb62`. There are no new namespaces, migrations, hosting changes or model replacements. Keep the Cloudflare automatic-build branch filter paused. Do not upload or modify `sach-cw08-nhl-shadow`.
 
 User approval of earlier releases does not authorize this artifact. Request fresh approval after preparing and checking it.
 

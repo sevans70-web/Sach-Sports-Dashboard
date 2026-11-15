@@ -1,7 +1,7 @@
-✔ frozen retry repair reproduces the tested artifact; altered code cannot pass its digest (494.507296ms)
-✔ new preparation command rejects deployment and old failed candidate remains quarantined (87.633195ms)
-✔ combined NFL and capture artifact has a separate frozen identity and still cannot upload (0.749759ms)
-✔ denied-source and NBA memory candidate is independently frozen and requires fresh approval (607.395004ms)
+✔ frozen retry repair reproduces the tested artifact; altered code cannot pass its digest (562.796098ms)
+✔ new preparation command rejects deployment and old failed candidate remains quarantined (61.60999ms)
+✔ combined NFL and capture artifact has a separate frozen identity and still cannot upload (1.047275ms)
+✔ denied-source and NBA memory candidate is independently frozen and requires fresh approval (867.704097ms)
 ℹ tests 4
 ℹ suites 0
 ℹ pass 4
@@ -9,4 +9,4 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 1316.874419
+ℹ duration_ms 1595.322127
