@@ -1,10 +1,10 @@
 {
   "status": "prepared_not_approved_not_uploaded",
-  "sourceCommit": "bb2601b0d04b3e55b1ec73215356a0392cdca3bb",
+  "sourceCommit": "a949453dac8d3ae08a3feeca99dc55fe1991d267",
   "targetWorker": "sach-sports-cloudflare-test",
   "accountId": "d3d6d023ab7ab731cc3e191d0ea3c179",
-  "candidateArtifactSha256": "0d0c8d0e6d6856187587c9468c6c8a89bc49664913ee8382349580d572aad44a",
-  "fallbackArtifactSha256": "120c58afc70cf488d52bcb6be148886ab52f614b725e9e0d200583455e0f28ab",
+  "candidateArtifactSha256": "e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead",
+  "fallbackArtifactSha256": "81ed89014b81e2acc7aeebe0494d04d27fbbb3db14381c5c6560d3270be352a8",
   "fallbackDashboardSource": "f93184a2a421f75018c0262c7b820b5ce9d95b76",
   "currentlyDeployedVersion": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
   "newResource": {
@@ -37,5 +37,7 @@
     "historicalRecords": "insert-only; no overwrites/deletions",
     "paidServices": "No plan upgrade, R2, Queues product or new Worker"
   },
-  "approvalRequired": true
+  "approvalRequired": true,
+  "artifactDigestDefinition": "SHA-256 of canonical sorted-key JSON containing generated Worker config and sorted non-source-map file paths, byte lengths and SHA-256 hashes. Build-path-dependent source maps are excluded.",
+  "fallbackPreparationCommand": "node frontend/scripts/prepare-dashboard-fallback.mjs <local-output-directory>"
 }

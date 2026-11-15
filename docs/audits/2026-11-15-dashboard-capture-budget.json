@@ -1,9 +1,9 @@
 {
   "status": "verified_source_and_artifacts_awaiting_deployment_approval",
-  "sourceCommit": "bb2601b0d04b3e55b1ec73215356a0392cdca3bb",
+  "sourceCommit": "a949453dac8d3ae08a3feeca99dc55fe1991d267",
   "sourceBase": "b57701899900cd0c50cbbe6238ca478befbef644",
   "branch": "cloudflare-compatibility-test",
-  "testedAtUTC": "2026-11-15T03:14:56.376205+00:00",
+  "testedAtUTC": "2026-11-15T03:20:11.135053+00:00",
   "deploymentAttempted": false,
   "newDeploymentId": null,
   "rootCause": {
@@ -38,18 +38,19 @@
     "duplicateTicksCoalesced": true,
     "modelChanges": false,
     "historicalRecordChanges": false,
-    "cronChanges": false
+    "cronChanges": false,
+    "providerPendingReads": "Job-scoped pending requests cannot be borrowed by foreground or another phase; valid completed public caches remain reusable."
   },
   "tests": {
     "fullRegression": {
-      "passed": 763,
+      "passed": 764,
       "failed": 0,
       "command": "node --test --test-concurrency=4 tests/*.test.mjs"
     },
     "typeScriptDiagnostics": 0,
     "cloudflareRuntime": {
       "durableWorkflowTestsPassed": 5,
-      "boundaryTestsPassed": 6,
+      "boundaryTestsPassed": 7,
       "overBudgetFirstPhase": {
         "accountedRequests": 218,
         "cachedHistories": 108
@@ -85,10 +86,12 @@
     "scope": "Replay with the current clock, not a live production/feed count."
   },
   "candidateArtifact": {
-    "sha256": "0d0c8d0e6d6856187587c9468c6c8a89bc49664913ee8382349580d572aad44a",
-    "fileCount": 749,
-    "bytes": 29962465,
-    "mainModuleSha256": "d7181496ca5afc004bc72f43e7d5707b7e59ec2c7df7c9f00fe91121d4f21ab4",
+    "sha256": "e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead",
+    "digestDefinition": "SHA-256 of canonical sorted-key JSON containing generated Worker config and sorted non-source-map file paths, byte lengths and SHA-256 hashes. Build-path-dependent source maps are excluded.",
+    "sourceMapsExcluded": 328,
+    "fileCount": 421,
+    "bytes": 15660395,
+    "mainModuleSha256": "b5788c2bde11c723e3d19b757145068aebaacce38e8a066327f78c1826d6cd94",
     "configuration": {
       "name": "sach-sports-cloudflare-test",
       "compatibilityDate": "2026-11-06",
@@ -173,10 +176,12 @@
     }
   },
   "compatibleFallbackArtifact": {
-    "sha256": "120c58afc70cf488d52bcb6be148886ab52f614b725e9e0d200583455e0f28ab",
-    "fileCount": 749,
-    "bytes": 29957273,
-    "mainModuleSha256": "de5e9a1be457226b1bd6b4e980a5199a7309b8e016a9b74aa5de0d283d251f17",
+    "sha256": "81ed89014b81e2acc7aeebe0494d04d27fbbb3db14381c5c6560d3270be352a8",
+    "digestDefinition": "SHA-256 of canonical sorted-key JSON containing generated Worker config and sorted non-source-map file paths, byte lengths and SHA-256 hashes. Build-path-dependent source maps are excluded.",
+    "sourceMapsExcluded": 328,
+    "fileCount": 421,
+    "bytes": 15656039,
+    "mainModuleSha256": "1c53213d263b89b6572b7450f9156de2157044406ce793bb6787a7e6ef3e1547",
     "configuration": {
       "name": "sach-sports-cloudflare-test",
       "compatibilityDate": "2026-11-06",
@@ -320,5 +325,9 @@
     "Establish and verify the compatible safety baseline version before candidate rollout; old version rollback cannot cross the new namespace lifecycle.",
     "After approval, verify real browser/API behavior and actual scheduled capture/grading telemetry before declaring the live repair complete.",
     "Past missing pregame evidence remains unavailable; no retrospective picks may be fabricated."
+  ],
+  "implementationCommits": [
+    "bb2601b0d04b3e55b1ec73215356a0392cdca3bb",
+    "a949453dac8d3ae08a3feeca99dc55fe1991d267"
   ]
 }
