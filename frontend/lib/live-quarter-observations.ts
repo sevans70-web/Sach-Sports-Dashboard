@@ -1,3 +1,5 @@
+import {nflOfficialFetch} from '@/lib/official-history-source';
+import {nbaSourceFetch} from '@/lib/nba-source-fetch';
 import {dashboardJobContext} from '@/lib/dashboard-job-context';
 import {providerFetch} from '@/lib/provider-fetch';
 import {basketballQuarterObservations} from '@/lib/basketball-quarter-observations';
@@ -10,7 +12,7 @@ async function official(url:string){
  const job=dashboardJobContext(),pendingKey=(job?.id||'foreground')+'|'+url;job?.assertActive();
  const hit=sources.get(url);if(hit&&hit.until>Date.now())return hit.data;
  if(pending.has(pendingKey))return pending.get(pendingKey)!;
- const task=(async()=>{const r=await providerFetch(url);if(!r.ok)throw Error('Official quarter source unavailable');const data=await r.json();if(sources.size>=256)sources.delete(sources.keys().next().value!);sources.set(url,{until:Date.now()+15*60000,data});return data})().finally(()=>pending.delete(pendingKey));pending.set(pendingKey,task);return task;
+ const task=(async()=>{const r=await (url.includes('/football/nfl/')?nflOfficialFetch:url.includes('/basketball/nba/')?nbaSourceFetch:providerFetch)(url);if(!r.ok)throw Error('Official quarter source unavailable');const data=await r.json();if(sources.size>=256)sources.delete(sources.keys().next().value!);sources.set(url,{until:Date.now()+15*60000,data});return data})().finally(()=>pending.delete(pendingKey));pending.set(pendingKey,task);return task;
 }
 /** Share official fixture reads across markets. Only completed prior fixtures
  * older than 48h may refresh inputs. No current/future result is a feature. */

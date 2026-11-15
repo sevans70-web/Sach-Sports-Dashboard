@@ -1,4 +1,5 @@
 "use client";
+import {rankingRequest} from '@/lib/ranking-request';
 import {nflRankingDisplay} from '@/lib/nfl-ranking-display';
 import {rankingRowIsPick} from '@/lib/ranking-pick-count';
 import {NbaEvMetric} from './nba-ev-metric';
@@ -1443,10 +1444,7 @@ const JSON_FRESH_MS = 45_000;
 const JSON_STALE_MS = 5 * 60_000;
 
 async function networkJson(url: string) {
-  const response = await fetch(url, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(45000),
-  });
+  const response = await rankingRequest(url);
 
   if (!response.ok) {
     throw new Error(`Ranking request failed: ${response.status}`);
@@ -1478,7 +1476,7 @@ async function fetchJson(url: string, signal: AbortSignal) {
         .finally(() => rankingJsonInflight.delete(url));
       rankingJsonInflight.set(url, refresh);
     }
-    return cached.payload;
+    return {...cached.payload,dataState:'stale',observedAt:new Date(cached.at).toISOString()};
   }
 
   let running = rankingJsonInflight.get(url);
@@ -2143,6 +2141,7 @@ export function PlayerRankingsPanel({
           }
 
           if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
+          if(rankingPayload.dataState==='stale')setError('Showing retained rankings from '+new Date(rankingPayload.observedAt).toLocaleTimeString()+'. Refresh pending; prices may have changed.');
           if(sport==='nhl')setNhlCoverage({market:requestedMarket,slate:nhlSlate,message:rankingPayload.coverageNotice||''});
           const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
           const scoped=sport==='nba'?scopedNbaBoard(rankingPayload,requestedMarket,requestedDay||rankingPayload?.boardDay||nbaFixtureDay(new Date())):rankingPayload;
@@ -2325,7 +2324,7 @@ export function PlayerRankingsPanel({
         // Keep the last good board on screen. A background refresh failure
         // should never turn the ranking section into a blank panel.
         setError(
-          cause instanceof Error
+          sport==='nba' ? 'NBA refresh is unavailable. Any retained rankings may be stale. Retrying…' : cause instanceof Error
             ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : "Player rankings are temporarily unavailable. Retrying…"
             : "Player rankings are temporarily unavailable."
         );

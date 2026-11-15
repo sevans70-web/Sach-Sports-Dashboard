@@ -1,3 +1,4 @@
+import {runNbaRankingWork} from '@/lib/nba-ranking-work';
 import {scopedNbaBoard,nbaSlateRows} from '@/lib/nba-slate-scope';
 import {currentNbaPregameSnapshot,readNbaSlateBoard} from '@/lib/nba-slate-board';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
@@ -17,6 +18,10 @@ export const revalidate=0;
 const allowed=new Set<string>(NBA_MARKETS.map(x=>x[0]));
 
 export async function GET(req:NextRequest){
+ try{return await runNbaRankingWork(()=>getRankings(req));}
+ catch(error){const reason=error instanceof Error&&['nba_ranking_deadline','work_queue_busy'].includes(error.message)?error.message:'nba_rankings_temporarily_unavailable';return NextResponse.json({success:false,rows:[],dataState:'unavailable',reason,error:'NBA rankings are temporarily unavailable. Retained rankings may be out of date; retry shortly.'},{status:503,headers:{'Cache-Control':'no-store','Retry-After':'5'}});}
+}
+async function getRankings(req:NextRequest){
  const market=(req.nextUrl.searchParams.get("market")||"points") as NbaMarketKey;
  if(!allowed.has(market))return NextResponse.json({success:false,rows:[],error:"Unsupported NBA market"},{status:400});
  const dates=nbaBoardDates(),requested=req.nextUrl.searchParams.get('day')||undefined;
@@ -71,13 +76,13 @@ export async function GET(req:NextRequest){
    // The capture Worker already rotates this market on its own schedule.
    // A second refresh would consume the same scheduled invocation's budget.
    if(req.nextUrl.hostname!=='sach-capture.internal'&&!(combination&&cloudHistoryReadOnly())){
-    after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});
+    after(async()=>{try{await runNbaRankingWork(()=>buildNbaMarketRankings(market,undefined,{day}))}catch(e){console.error('[nba background refresh]',e)}});
    }
    return NextResponse.json(scopedNbaBoard(visible,market,cachedDay),{headers:{'Cache-Control':'no-store'}});
   }
  }
- let result,timer:ReturnType<typeof setTimeout>|undefined;
- try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})]);}
+ let result;
+ try{result=await buildNbaMarketRankings(market,undefined,{day,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})});}
  catch{
   const fallbackDay=day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]));
   if(market==='first_basket'){
@@ -87,9 +92,9 @@ export async function GET(req:NextRequest){
   }
   const saved=(await readDurableHistory<any>('nba','slate_board_'+market,fallbackDay,true))[0];
   const captured=Date.parse(saved?.capturedAt||''),lock=Date.parse(saved?.lockAt||'');
-  if(saved?.day!==(fallbackDay)||saved?.market!==market||!saved?.rows?.length||captured>Date.now()||!Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock||Date.now()<lock)return NextResponse.json({success:false,rows:[],error:'Player props are temporarily unavailable. Please retry.'},{status:503,headers:{'Cache-Control':'no-store'}});
+  if(saved?.day!==(fallbackDay)||saved?.market!==market||!saved?.rows?.length||captured>Date.now()||!Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock||Date.now()<lock)return NextResponse.json({success:false,rows:[],error:'Player props are temporarily unavailable. Please retry.'},{status:503,headers:{'Cache-Control':'no-store','Retry-After':'5'}});
   result={success:true,market,boardFrozen:true,boardDay:fallbackDay,boardCapturedAt:saved.capturedAt,source:'saved_pregame_board',warning:'Live updates are temporarily unavailable. Showing the saved pregame board.',rows:saved.rows.map((row:any)=>({...row,boardFrozen:true,boardCapturedAt:saved.capturedAt,boardDay:fallbackDay,gameStatus:'Live status unavailable'}))};
  }
- finally{if(timer)clearTimeout(timer);}
+
  return NextResponse.json(scopedNbaBoard(result,market,day||result?.boardDay||dates.today),{status:200,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }

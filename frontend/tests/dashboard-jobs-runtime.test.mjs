@@ -100,3 +100,16 @@ test('repeated unavailable NFL inputs are flagged and backed off without starvin
  await call('clock',now+300000,'grade:nfl');await call('enqueue',{kind:'grade',sport:'nfl',id:'grade-independent',created:now},'grade:nfl');assert.equal((await call('step',null,'grade:nfl')).jobs[0].state,'done');assert.equal((await call('inspect',null,'capture:nfl')).cache.length,0);
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });
+test('cold NFL denied-history circuit survives restart and allows quote-only capture alongside NHL',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'dashboard-denied-history-'));let runtime,hits=0;const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
+ const quote={...row(),researchForecast:{status:'unavailable',reason:'recent_official_history_unavailable'},prediction:'NO PICK'};
+ const answer=async req=>{const u=new URL(req.url);if(u.hostname==='fixture.test')return Response.json({parallel:u.searchParams.get('sport')==='nfl'?100:0,rows:[quote]});
+  if(u.hostname==='site.web.api.espn.com'){hits++;return new Response('{"error":"access denied"}',{status:403});}
+  if(u.hostname==='db.supabase.co'){const table=tables[u.pathname.split('/').at(-1)];if(req.method==='POST'){for(const r of await req.json())if(!table.has(key(r)))table.set(key(r),r);return new Response(null,{status:201});}return Response.json([...table.values()].filter(r=>r.sport===u.searchParams.get('sport')?.slice(3)&&r.market===u.searchParams.get('market')?.slice(3)));}throw Error('unexpected host '+u.hostname);};
+ try{runtime=await setup(dir,answer);let {call}=runtime;for(const sport of ['nfl','nhl'])await call('enqueue',{kind:'capture',sport,market:sport==='nfl'?'passing_yards':'shots_on_goal',id:'denied-'+sport,created:now},'capture:'+sport);
+  let s=await call('step',null,'capture:nfl');assert.equal(s.jobs[0].phase,'originals');assert.equal(s.jobs[0].lastError,null);assert.ok(hits<=4);assert.ok(s.jobs[0].usage.denialHits>=96);const before=hits;
+  await runtime.mf.dispose();runtime=await setup(dir,answer);({call}=runtime);for(let i=0;i<8;i++)s=await call('step',null,'capture:nfl');assert.equal(s.jobs[0].state,'done');assert.equal(hits,before);assert.equal(tables.worker_pregame_originals.size,1);assert.equal(tables.worker_pregame_picks.size,0);
+  for(let i=0;i<8;i++)s=await call('step',null,'capture:nhl');assert.equal(s.jobs[0].state,'done');assert.equal(tables.worker_pregame_originals.size,2);assert.equal(tables.worker_pregame_picks.size,0);
+  const evidence=await call('inspect',null,'capture:nfl');assert.ok(evidence.cache.some(c=>c.url.startsWith('denied:')));assert.ok(evidence.events.some(e=>JSON.parse(e.detail).usage?.denialHits>0));
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});

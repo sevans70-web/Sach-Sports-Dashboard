@@ -9,7 +9,7 @@ const code=workerModelRuntimePlugin().transform('',resolve(import.meta.dirname,'
 const markets=['points','rebounds','assists','threes_made','pts_rebs_asts','pts_rebs','pts_asts'];
 for(const market of markets)test('CW06 shipped Node/Cloudflare '+market+' joint distribution reaches API EV without retraining',async()=>{
  const inputs={...snapshot,models:[...snapshot.models,...combos.models],digest:manifest.sha256,asOf:manifest.asOf,gi:{},giStatus:{}},embedded={...worker.workerModelRuntime('nba',market)};
- if(market.startsWith('pts_')){inputs.observations=nbaCombinationHistory(inputs.observations,market);embedded.observations=nbaCombinationHistory(embedded.observations,market);}
+ if(market.startsWith('pts_')){inputs.observations=nbaCombinationHistory(inputs.observations,market);if(!embedded.combinationPrebuilt)embedded.observations=nbaCombinationHistory(embedded.observations,market);}
  const now=Math.max(Date.parse(manifest.asOf),...inputs.observations.filter(g=>g.sport==='nba').map(g=>Date.parse(g.gameTime)))+3*86400000;
  const latest=new Map();for(const g of inputs.observations.filter(g=>g.sport==='nba'&&g.market===market))if(!latest.has(g.playerId)||g.gameTime>latest.get(g.playerId).gameTime)latest.set(g.playerId,g);
  let matched=null;for(const g of latest.values()){

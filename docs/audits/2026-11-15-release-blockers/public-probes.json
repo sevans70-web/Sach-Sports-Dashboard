@@ -1,0 +1,17 @@
+[
+  {
+    "endpoint": "https://site.web.api.espn.com/apis/search/v2?query=Jahmyr%20Gibbs&limit=30&sport=football",
+    "status": "200",
+    "bodyPrefix": "{\"totalFound\":3,\"resultTypes\":[{\"totalFound\":1,\"type\":\"player\",\"displayName\":\"Players\"},{\"totalFound\":12392,\"type\":\"article\",\"displayName\":\"Articles\"},{\"totalFound\":16,\"type\":\"clip"
+  },
+  {
+    "endpoint": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/8/roster",
+    "status": "200",
+    "bodyPrefix": "{\"timestamp\":\"2026-11-15T16:14:11Z\",\"status\":\"success\",\"season\":{\"year\":2026,\"displayName\":\"2026\",\"type\":2,\"name\":\"Regular Season\"},\"athletes\":[{\"position\":\"offense\",\"items\":[{\"id\""
+  },
+  {
+    "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/4429795/gamelog?season=2026",
+    "status": "200",
+    "bodyPrefix": "{\"categories\":[{\"name\":\"rushing\",\"displayName\":\"Rushing\",\"count\":5},{\"name\":\"receiving\",\"displayName\":\"Receiving\",\"count\":6},{\"name\":\"fumbles\",\"displayName\":\"Fumbles\",\"count\":4}],\""
+  }
+]

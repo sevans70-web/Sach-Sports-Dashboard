@@ -1,3 +1,7 @@
+import {assertNbaRankingActive} from '@/lib/nba-ranking-work';
+import {boundedWork} from '@/lib/bounded-work';
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
+import {nflOfficialFetch} from '@/lib/official-history-source';
 import {refreshNhlObservations} from '@/lib/live-nhl-observations';
 import {nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {workerModelRuntime} from "@/lib/worker-model-runtime";
@@ -21,7 +25,7 @@ import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
 import {nbaCombinationHistory,NBA_COMBINATION_MARKETS} from '@/lib/nba-combination-history';
 import {firstBasketBookOnly} from '@/lib/nba-slate-scope';
 import {NHL_COUNT_POLICY,nhlCountMarket,nhlCountDistribution,evaluateNhlCountPrice} from '@/lib/nhl-count-model';
-export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>};
+export type RuntimeBundle={models:DistributionModel[];observations:OpportunityGame[];digest:string;asOf:string;gi:Partial<Record<string,GiArtifact>>;giStatus?:Partial<Record<string,{reason:string}>>;combinationPrebuilt?:boolean};
 const BASKETBALL_COMBINATIONS:Record<string,string[]>={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
 export function runtimeSupportsMarket(data:Pick<RuntimeBundle,'models'>,sport:string,market:string){
  if(data.models.some(m=>m.group===sport+'|'+market))return true;
@@ -140,7 +144,13 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   validatedForBetting:false,reason:null,
  };
 }
+const nbaForecastWork=boundedWork(1,8,15000);
+export const nbaForecastWorkStatus=()=>nbaForecastWork.status();
 export async function attachFittedResearchForecasts(payload:any,sport:string,now=Date.now(),options:{offlineOnly?:boolean}={}){
+ const run=()=>{if(sport==='nba')assertNbaRankingActive();dashboardJobContext()?.assertActive();return attachForecasts(payload,sport,now,options);};
+ return sport==='nba'?nbaForecastWork.run(run):run();
+}
+async function attachForecasts(payload:any,sport:string,now=Date.now(),options:{offlineOnly?:boolean}={}){
  if(!Array.isArray(payload?.rows)||!payload.rows.length)return payload;
  // First Basket is a ONE-SIDED scorer-odds market, not a fitted OVER/UNDER
  // distribution. Preserve the verified book quote and book-implied chance,
@@ -161,13 +171,14 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
   const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]};
   payload={...payload,officialHistoryCoverage:{requested:refresh.requestedPlayers,unavailable:refresh.unavailablePlayers.length,budgetExceeded:refresh.budgetExceeded}};
  }
+ let nflRefreshUnavailable=new Set<string>();
  if(sport==='nfl'&&payload.market!=='sacks'){
   const pricedGoalies=false;
   const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
    const season=String(row.season),url=`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
-   try{const r=await providerFetch(url);if(!r.ok)return;const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()};const payload=await r.json();updates.push(...espnOpportunityGames(payload,identity))}catch{}
+   try{const r=await nflOfficialFetch(url);if(!r.ok){nflRefreshUnavailable.add(String(row.playerId));return;}const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()};const payload=await r.json();updates.push(...espnOpportunityGames(payload,identity))}catch{nflRefreshUnavailable.add(String(row.playerId))}
   }));
   if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
  }
@@ -183,12 +194,16 @@ export async function attachFittedResearchForecasts(payload:any,sport:string,now
  }
  const market=String(payload.market||payload.rows[0]?.market||'');
  if(sport==='nba'&&NBA_COMBINATION_MARKETS[market]&&data.models.some(model=>model.group===sport+'|'+market)){
-  data={...data,observations:nbaCombinationHistory(data.observations,market)};
+  const computed=nbaCombinationHistory(data.observations,market);
+  const histories=new Map((data.combinationPrebuilt?data.observations.filter(r=>r.market===market):[]).map(r=>[[r.playerId,r.gameId,r.teamId,r.season,r.gameTime].join('|'),r]));
+  for(const row of computed)histories.set([row.playerId,row.gameId,row.teamId,row.season,row.gameTime].join('|'),row);
+  data={...data,observations:[...histories.values()]};
  }
  const index=createRuntimeForecastIndex(data.observations),rows:any[]=[];
  for(const r of payload.rows){
+  dashboardJobContext()?.assertActive();if(sport==='nba')assertNbaRankingActive();
   const preserveNba=keepNbaOriginal(r,sport,String(payload.market||r.market||''),now);
-  const row={...r,researchForecast:preserveNba?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:(basketballRefreshUnavailable.has(String(r.playerId))||hockeyRefreshUnavailable.has(String(r.playerId)))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  const row={...r,researchForecast:preserveNba?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:(basketballRefreshUnavailable.has(String(r.playerId))||hockeyRefreshUnavailable.has(String(r.playerId))||nflRefreshUnavailable.has(String(r.playerId)))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
   // Record the actual pregame decision/capture time for a fresh selection
   // or an NBA comparison. A comparison must not inherit an older board
   // timestamp merely because it did not qualify as a betting selection.

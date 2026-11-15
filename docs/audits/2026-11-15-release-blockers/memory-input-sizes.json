@@ -1,0 +1,14 @@
+{
+  "pts_rebs": {
+    "previousComponentDecodedBytes": 15728174,
+    "precombinedDecodedBytes": 8070655
+  },
+  "pts_asts": {
+    "previousComponentDecodedBytes": 15715208,
+    "precombinedDecodedBytes": 8070144
+  },
+  "pts_rebs_asts": {
+    "previousComponentDecodedBytes": 23590158,
+    "precombinedDecodedBytes": 8197751
+  }
+}

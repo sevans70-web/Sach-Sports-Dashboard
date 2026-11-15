@@ -1,4 +1,4 @@
-import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {nbaSourceFetch as fetch} from "@/lib/nba-source-fetch";
 import {schedulePayloads} from "@/lib/schedule-payloads";
 import {statNumber} from "@/lib/provider-fetch";
 export const NBA_SEASON = "2026"; // 2025-26 completed regular-season baseline

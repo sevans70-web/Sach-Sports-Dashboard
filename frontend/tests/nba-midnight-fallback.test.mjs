@@ -7,6 +7,7 @@ for(const at of ['2026-11-01T04:30Z','2026-03-08T06:30Z','2026-11-01T07:30Z'])te
  const rows=[{playerId:'1',gameId:'old',market:'points',gameTime:dates.previous+'T23:00Z',rank:1,sportsbookLine:20.5,overPrice:-110,underPrice:-115,quoteId:'original',researchForecast:{projection:24.2}}, {playerId:'2',gameId:'late',market:'points',gameTime:dates.previous+'T23:00Z',rank:2,sportsbookLine:12.5,overPrice:120}];
  const board={market:'points',day:dates.previous,capturedAt:dates.previous+'T22:00Z',lockAt:dates.previous+'T23:00Z',rows};
  const mocks={
+  '@/lib/nba-ranking-work':await loadTs(new URL('../lib/nba-ranking-work.ts',import.meta.url)),
   '@/lib/nba-slate-scope':scope,'@/lib/nba-board-window':{...window,nbaBoardDates:()=>dates,activeNbaBoardDay:g=>window.activeNbaBoardDay(g,new Date(now))},
   '@/lib/nba-slate-board':{currentNbaPregameSnapshot:()=>null,readNbaSlateBoard:async()=>null},
   '@/lib/basketball-pregame-context':{},'@/lib/prop-integrity':{},

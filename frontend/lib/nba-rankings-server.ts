@@ -24,7 +24,7 @@ import {getOwlsPayload} from "@/lib/owls-provider";
 import {nbaQuoteMatchesGame,nbaQuoteMatchesRosterTeam} from "@/lib/nba-game-match";
 import {dedupeNbaFixtureQuotes,nbaOfficialPlayerFixtureKey} from "@/lib/nba-fixture-identity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
-import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {nbaSourceFetch as fetch} from "@/lib/nba-source-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
 import {
   cleanNbaName,

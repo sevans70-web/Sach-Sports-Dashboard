@@ -55,6 +55,7 @@ export function installJobFetch(){
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};
  globalThis[nativeKey]=wrapped;globalThis.fetch=wrapped;
 }
+function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web.api.espn.com','site.api.espn.com'].includes(u.hostname))return null;const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;return path?'denied:'+u.origin+path:null;}
 function cachedResponse(scope,c){scope.cacheHits++;const h=new Headers(c.headers);h.set('x-sach-observed-at',new Date(c.observed).toISOString());return new Response(c.body,{status:c.status,headers:h});}
 async function readBody(response,signal,limit){
  if(!response.body)return '';
@@ -72,6 +73,9 @@ async function jobFetch(scope,native,input,init={}){
  const source=method==='GET'&&!headers.has('Authorization')&&!headers.has('x-api-key')&&!headers.has('cookie')&&!headers.has('range')&&!/key|token|auth/i.test(u.search)&&cacheTtl(url)>0&&scope.cacheSources;
  const caller=init.signal||(input instanceof Request?input.signal:undefined),queuedSignal=AbortSignal.any([scope.abort.signal,...(caller?[caller]:[])]);
  active(scope);checkSignal(queuedSignal);if(scope.paused)throw scope.paused;
+ if(source){const saved=scope.store.cacheRead(url);if(saved&&saved.expires>scope.now()&&saved.status>=200&&saved.status<300)return cachedResponse(scope,saved);}
+ const deniedKey=source&&(scope.allowNflSourceDenials||scope.allowNbaSourceDenials)?optionalHistoryDenialKey(url,scope):null;
+ if(deniedKey){const denial=scope.store.cacheRead(deniedKey);if(denial&&denial.expires>scope.now()){scope.denialHits++;return cachedResponse(scope,denial);}}
  if(source){const c=scope.store.cacheRead(url);if(c&&c.expires>scope.now())return cachedResponse(scope,c);const other=scope.sources.get(url);if(other){scope.coalesced++;return (await abortable(other,queuedSignal)).clone();}}
  const work=(async()=>{
   const ticket=await acquire(scope,queuedSignal);let timer,finished=false,streamOwned=false;
@@ -79,6 +83,8 @@ async function jobFetch(scope,native,input,init={}){
   const finish=()=>{if(finished)return;finished=true;clearTimeout(timer);release(scope,ticket);};
   timer=setTimeout(()=>requestAbort.abort(new JobDeferred('job_source_timeout',scope.now()+30000)),scope.requestTimeoutMs);
   try{
+   // A denied optional source is not retried by already-queued players.
+   if(deniedKey){const d=scope.store.cacheRead(deniedKey);if(d&&d.expires>scope.now()){scope.denialHits++;finish();return cachedResponse(scope,d);}}
    // Another queued request may have completed the same source meanwhile.
    if(source){const c=scope.store.cacheRead(url);if(c&&c.expires>scope.now()){finish();return cachedResponse(scope,c);}}
    let current=url,response;
@@ -109,6 +115,7 @@ async function jobFetch(scope,native,input,init={}){
      if(scope.store.cacheWrite(url,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');scope.cacheWrites++;scope.checkpointBytes+=body.length;
      return responseFor(body,{status:response.status,headers:h});
     }
+    if(deniedKey&&response.status===403){const at=scope.now(),expires=Math.max(at+3600000,retryTime(response.headers.get('Retry-After'),at));const endpoint=deniedKey.slice(7);const value={status:403,body:JSON.stringify({error:'official_source_access_denied',endpoint,retryAt:new Date(expires).toISOString()}),headers:[['Content-Type','application/json'],['x-sach-source-state','recorded_access_denial']],observed:at,expires};if(scope.store.cacheWrite(deniedKey,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');scope.sourceDenials.push({endpoint,status:403,retryAt:expires});return responseFor(value.body,{status:403,headers:value.headers});}
     if(source&&[401,403,408,500,502,503,504].includes(response.status))throw pause(scope,'job_source_http_'+response.status,retryTime(response.headers.get('Retry-After'),scope.now()));
     return responseFor(body,response);
    }
@@ -128,11 +135,11 @@ async function jobFetch(scope,native,input,init={}){
  scope.inflight.add(work);if(source)scope.sources.set(url,work);
  try{const result=await work;return source?result.clone():result;}finally{scope.inflight.delete(work);if(source&&scope.sources.get(url)===work)scope.sources.delete(url);}
 }
-function usage(scope){return {used:scope.used,limit:scope.limit,costs:scope.costs,cacheHits:scope.cacheHits,cacheWrites:scope.cacheWrites,checkpointBytes:scope.checkpointBytes,completedRequests:scope.completed,maxActive:scope.maxActive,maxReserved:scope.maxReserved,coalesced:scope.coalesced,queuedCancelled:scope.queueCancelled,aborted:scope.aborted};}
+function usage(scope){return {used:scope.used,limit:scope.limit,costs:scope.costs,cacheHits:scope.cacheHits,cacheWrites:scope.cacheWrites,checkpointBytes:scope.checkpointBytes,completedRequests:scope.completed,maxActive:scope.maxActive,maxReserved:scope.maxReserved,coalesced:scope.coalesced,queuedCancelled:scope.queueCancelled,aborted:scope.aborted,sourceDenials:scope.sourceDenials,denialHits:scope.denialHits};}
 async function drain(scope,deadline){while(scope.active.size)await Promise.race([Promise.allSettled([...scope.active].map(t=>t.done)),deadline]);}
-export async function runJobBudget({env,store,gate,limit=220,deadlineMs=25000,requestTimeoutMs=10000,concurrency=JOB_CONCURRENCY,cacheSources=false,now=()=>Date.now()},operation,withEnvironment=(_env,f)=>f()){
+export async function runJobBudget({env,store,gate,limit=220,deadlineMs=25000,requestTimeoutMs=10000,concurrency=JOB_CONCURRENCY,cacheSources=false,allowNflSourceDenials=false,allowNbaSourceDenials=false,now=()=>Date.now()},operation,withEnvironment=(_env,f)=>f()){
  if(!Number.isInteger(concurrency)||concurrency<1||concurrency>JOB_CONCURRENCY||limit<REQUEST_RESERVATION)throw Error('invalid_job_limits');
- installJobFetch();const scope={id:crypto.randomUUID(),store,gate,limit,concurrency,cacheSources,now,requestTimeoutMs,used:0,reserved:0,costs:{},cacheHits:0,cacheWrites:0,checkpointBytes:0,completed:0,admitted:0,maxActive:0,maxReserved:0,coalesced:0,queueCancelled:0,aborted:0,active:new Set(),waiters:[],readers:new Set(),sources:new Map(),inflight:new Set(),abort:new AbortController(),paused:null,closed:false};
+ installJobFetch();const scope={id:crypto.randomUUID(),store,gate,limit,concurrency,cacheSources,allowNflSourceDenials,allowNbaSourceDenials,sourceDenials:[],denialHits:0,now,requestTimeoutMs,used:0,reserved:0,costs:{},cacheHits:0,cacheWrites:0,checkpointBytes:0,completed:0,admitted:0,maxActive:0,maxReserved:0,coalesced:0,queueCancelled:0,aborted:0,active:new Set(),waiters:[],readers:new Set(),sources:new Map(),inflight:new Set(),abort:new AbortController(),paused:null,closed:false};
  const scopedEnv={...env,VINEXT_KV_CACHE:budgetBinding(env.VINEXT_KV_CACHE,scope)};
  let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{const e=new JobDeferred('job_wall_deadline');cancel(scope,e);reject(e);},deadlineMs);});
  try{

@@ -1,0 +1,58 @@
+[
+  {
+    "at": 1794758102458,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/4429096/gamelog",
+    "status": 403,
+    "trace": "d42970afea8478a4a116ac4cdd1af2a9",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758102456,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/4426385/gamelog",
+    "status": 403,
+    "trace": "d42970afea8478a4a116ac4cdd1af2a9",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758102456,
+    "url": "https://site.web.api.espn.com/apis/search/v2",
+    "status": 403,
+    "trace": "d42970afea8478a4a116ac4cdd1af2a9",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758102455,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/4430737/gamelog",
+    "status": 403,
+    "trace": "d42970afea8478a4a116ac4cdd1af2a9",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758100177,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/4837248/gamelog",
+    "status": 403,
+    "trace": "5097212bc07fea106575dfffc7ec2151",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758100177,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/12483/gamelog",
+    "status": 403,
+    "trace": "5097212bc07fea106575dfffc7ec2151",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758100176,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/3924327/gamelog",
+    "status": 403,
+    "trace": "5097212bc07fea106575dfffc7ec2151",
+    "span": "fetch"
+  },
+  {
+    "at": 1794758100176,
+    "url": "https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/4430841/gamelog",
+    "status": 403,
+    "trace": "5097212bc07fea106575dfffc7ec2151",
+    "span": "fetch"
+  }
+]

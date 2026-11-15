@@ -1,3 +1,4 @@
+import {nbaCombinationHistory} from '../lib/nba-combination-history.ts';
 import {readFileSync} from 'node:fs';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
@@ -21,6 +22,15 @@ export function partitionModelRuntime(root){
    const bytes=gzipSync(JSON.stringify(value));
    partitions[sport+'|'+market]={bytes:bytes.toString('base64'),sha256:hash(bytes)};
   }
+ }
+ // Pre-aggregate the exact existing combination histories at build time.
+ // PR no longer decodes two full component partitions per request.
+ const combinations=JSON.parse(readFileSync(resolve(root,'nba-combination-models.json'),'utf8'));
+ if(combinations.sourceSha256!==manifest.sha256)throw Error('NBA combination model source mismatch');
+ for(const market of ['pts_rebs_asts','pts_rebs','pts_asts','rebs_asts']){
+  if(!combinations.models.some(m=>m.group==='nba|'+market))continue;
+  const value={models:combinations.models.filter(m=>m.group==='nba|'+market),observations:nbaCombinationHistory(data.observations,market),digest:manifest.sha256,asOf:manifest.asOf,gi,giStatus,combinationPrebuilt:true};
+  const bytes=gzipSync(JSON.stringify(value));partitions['nba|'+market]={bytes:bytes.toString('base64'),sha256:hash(bytes)};
  }
  const supplementalFiles={'nhl|goalie_saves':'nhl-goalie-saves.json.gz','nfl|sacks':'nfl-sacks.json.gz','nfl|passing_tds':'nfl-passing-tds.json.gz'};
  for(const [key,file] of Object.entries(supplementalFiles)){
@@ -58,6 +68,6 @@ export function workerModelRuntimePlugin(){return {
   return `import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';import {Buffer} from 'node:buffer';
 const partitions=${JSON.stringify(partitions)};const combinationModels=${JSON.stringify(combinations.models)};const combinations={pts_rebs_asts:['points','rebounds','assists'],pts_rebs:['points','rebounds'],pts_asts:['points','assists'],rebs_asts:['rebounds','assists']};
 let cachedKey=null,cachedValue=null;
-export function workerModelRuntime(sport,market){const key=sport+'|'+market;if(key===cachedKey)return cachedValue;const part=partitions[key];if(!part){const parts=combinations[market]?.map(key=>workerModelRuntime(sport,key));if(!parts||parts.some(p=>!p))return null;return {...parts[0],models:[...parts.flatMap(p=>p.models),...combinationModels.filter(model=>model.group===key)],observations:parts.flatMap(p=>p.observations)};}const bytes=Buffer.from(part.bytes,'base64');if(createHash('sha256').update(bytes).digest('hex')!==part.sha256)throw Error('Worker model partition checksum mismatch');const decoded=gunzipSync(bytes);const value=JSON.parse(decoded.toString());cachedKey=null;cachedValue=null;if(decoded.byteLength<=8*1024*1024){cachedKey=key;cachedValue=value;}return value;}`;
+export function workerModelRuntime(sport,market){const key=sport+'|'+market;if(key===cachedKey)return cachedValue;const part=partitions[key];if(!part){const parts=combinations[market]?.map(key=>workerModelRuntime(sport,key));if(!parts||parts.some(p=>!p))return null;return {...parts[0],models:[...parts.flatMap(p=>p.models),...combinationModels.filter(model=>model.group===key)],observations:parts.flatMap(p=>p.observations)};}const bytes=Buffer.from(part.bytes,'base64');if(createHash('sha256').update(bytes).digest('hex')!==part.sha256)throw Error('Worker model partition checksum mismatch');cachedKey=null;cachedValue=null;const decoded=gunzipSync(bytes);const value=JSON.parse(decoded.toString());if(decoded.byteLength<=8*1024*1024){cachedKey=key;cachedValue=value;}return value;}`;
  }
 }}

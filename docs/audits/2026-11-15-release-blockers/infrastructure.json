@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-11-15T16:43:56.563533+00:00",
+  "dashboard": {
+    "deployment": "6e6fab80-41c8-433c-bcf9-79a2e4dd5aee",
+    "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "automaticBuildBranchIncludes": [
+      "__cw08_manual_release_only__"
+    ],
+    "unchanged": true
+  },
+  "cw08": {
+    "ready": true,
+    "production": false,
+    "modelCommit": "007c02b",
+    "receipts": 889,
+    "grades": 658,
+    "completedCycles": 141,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "latestCollectionHealth": {
+      "sourceDeferrals": 0,
+      "rosterFailures": 0,
+      "historySourceFailures": 0,
+      "rejectionsByReason": {
+        "unresolved_or_ambiguous_official_player": 12,
+        "official_history_missing": 34,
+        "prior_history_unavailable": 49,
+        "fewer_than_three_same_season_team_appearances": 2
+      },
+      "warmedPlayers": 1,
+      "newReceipts": 0,
+      "sourceSnapshots": 7,
+      "state": "healthy"
+    }
+  },
+  "cw08Schedule": "*/15 * * * *",
+  "cw08Bundle": {
+    "bytes": 151874,
+    "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+  },
+  "fallbackVersionReadback": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "externalMutationsThisRepair": []
+}

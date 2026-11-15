@@ -1,0 +1,151 @@
+[
+  {
+    "at": 1794758166634,
+    "message": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/nba/rankings",
+    "outcome": "exceededMemory",
+    "error": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/nba/rankings"
+  },
+  {
+    "at": 1794758166634,
+    "message": "Worker exceeded memory limit.",
+    "error": "Worker exceeded memory limit."
+  },
+  {
+    "at": 1794758130930,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4278580/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130930,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4432848/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130849,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4065663/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130849,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4432639/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130849,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4711272/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130782,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4396909/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130494,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4433192/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130203,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4397014/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758130203,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4278355/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129632,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/5238230/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129632,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129530,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4397183/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129530,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/3138160/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129530,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4592479/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129232,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/2581018/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129232,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/5211175/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129134,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4395723/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129134,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/5160992/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129007,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4065804/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129007,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/6585/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758129007,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4683778/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758128889,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4278585/gamelog",
+    "error": "403"
+  },
+  {
+    "at": 1794758128889,
+    "span": "fetch",
+    "url": "/apis/common/v3/sports/basketball/nba/athletes/4278594/gamelog",
+    "error": "403"
+  }
+]

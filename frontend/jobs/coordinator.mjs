@@ -67,7 +67,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{
-   const execution=await runJobBudget({env:this.env,store:fencedStore,now:()=>this.now(),cacheSources:job.kind==='capture',gate:(origin,until)=>this.env.DASHBOARD_JOBS.getByName('provider:'+origin).gate(origin,until)},async env=>{
+   const execution=await runJobBudget({env:this.env,store:fencedStore,now:()=>this.now(),cacheSources:job.kind==='capture',allowNflSourceDenials:job.sport==='nfl',allowNbaSourceDenials:job.sport==='nba',gate:(origin,until)=>this.env.DASHBOARD_JOBS.getByName('provider:'+origin).gate(origin,until)},async env=>{
     const value=await runPhase(job,{...services,env,store:fencedStore,now:()=>this.now(),route:path=>services.dashboard.fetch(new Request((job.kind==='capture'?'https://sach-capture.internal':'https://sach-grading.internal')+path,{headers:{Accept:'application/json'}}),env,ctx)});
     // Drain framework after()/waitUntil work before closing this request's budget.
     while(pending.size)await Promise.allSettled([...pending]);

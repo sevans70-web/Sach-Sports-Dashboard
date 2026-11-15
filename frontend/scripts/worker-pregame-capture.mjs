@@ -76,6 +76,7 @@ export function originalPregameQuote(row,sport,market,now=Date.now()){
    line:scorer?null:line,overPrice:row.overPrice,underPrice:scorer?null:row.underPrice,
    lineType:str(row.lineType),quoteUpdatedAt:new Date(updated).toISOString(),quotePeriod:str(row.quotePeriod),quoteMarket:str(row.quoteMarket)},
   modelValidation:row?.researchForecast?.validatedForBetting===true,
+  ...(sport==='nfl'&&row?.researchForecast?.status==='unavailable'?{forecastUnavailable:{reason:str(row.researchForecast.reason),officialHistoryUnavailable:row.officialHistoryUnavailable===true}}:{}),
   dataType:'original_pregame_quote_not_graded',
  };
  const checksum=createHash('sha256').update(JSON.stringify(payload)).digest('hex');

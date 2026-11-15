@@ -1,15 +1,17 @@
+import {boundedValueCache} from '@/lib/bounded-value-cache';
+import {nbaSourceFetch} from '@/lib/nba-source-fetch';
 import {providerFetch} from '@/lib/provider-fetch';
 import {basketballRegularSeasonGroups} from '@/lib/basketball-history-window';
 import {basketballModelObservations} from '@/lib/basketball-model-observations';
 import type {OpportunityGame} from '@/lib/opportunity-backtest';
 type Refresh={observations:OpportunityGame[];unavailablePlayers:string[];checkedAt:string};
 type JsonSource=(url:string)=>Promise<any>;
-const cache=new Map<string,{expires:number;value:Refresh}>();
+const cache=boundedValueCache<Refresh>(4*1024*1024,4);
 const pending=new Map<string,Promise<Refresh>>();
-const sourceCache=new Map<string,{at:number;value:any}>(),sourcePending=new Map<string,Promise<any>>();
+const sourceCache=boundedValueCache<any>(8*1024*1024,96),sourcePending=new Map<string,Promise<any>>();
 async function officialJson(url:string){
- const hit=sourceCache.get(url);if(hit&&Date.now()-hit.at<15*60000)return hit.value;
- let work=sourcePending.get(url);if(!work){work=(async()=>{const r=await providerFetch(url);if(!r.ok)throw Error('Official basketball source unavailable');const value=await r.json();if(sourceCache.size>=1024)sourceCache.delete(sourceCache.keys().next().value!);sourceCache.set(url,{at:Date.now(),value});return value;})().finally(()=>sourcePending.delete(url));sourcePending.set(url,work)}return work;
+ const hit=sourceCache.get(url);if(hit)return hit;
+ let work=sourcePending.get(url);if(!work){work=(async()=>{const r=await (url.includes('/basketball/nba/')?nbaSourceFetch(url):providerFetch(url));if(!r.ok)throw Error('Official basketball source unavailable');const value=await r.json();const retained=url.includes('/summary?')?{header:value.header,boxscore:{players:value.boxscore?.players}}:value;sourceCache.set(url,retained,15*60000);return retained;})().finally(()=>sourcePending.delete(url));sourcePending.set(url,work)}return work;
 }
 /** Refresh the complete two-team census for recent fixtures discovered in each
  * ranked player's official log. Never infer usage from a player's points mean.
@@ -21,7 +23,7 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
  const key=sport+'|'+players.map(r=>r.playerId+'|'+seasonFor(r)).sort().join(',');
  if(!players.length)return {observations:[],unavailablePlayers:[],checkedAt:new Date(now).toISOString()};
  // Injected source readers are used by deterministic tests; never share their cache.
- if(get===officialJson){const hit=cache.get(key);if(hit&&hit.expires>now)return hit.value;if(pending.has(key))return pending.get(key)!}
+ if(get===officialJson){const hit=cache.get(key);if(hit)return hit;if(pending.has(key))return pending.get(key)!}
  const task=(async()=>{
   const unavailable=new Set<string>(),fixtures=new Map<string,{season:string;players:Set<string>}>();
   let gamelogFailures=0,fixtureFailures=0;
@@ -55,7 +57,7 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
   }));
   console.info('[basketball refresh audit]',JSON.stringify({sport,players:players.length,discoveredFixtures:jobs.length,omittedFixtures:Math.max(0,jobs.length-64),gamelogFailures,fixtureFailures,unavailablePlayers:unavailable.size,observations:observations.length}));
   const value={observations,unavailablePlayers:[...unavailable].sort(),checkedAt:new Date(now).toISOString()};
-  if(get===officialJson){if(cache.size>=32)cache.delete(cache.keys().next().value!);cache.set(key,{expires:now+(unavailable.size?30_000:15*60_000),value})}
+  if(get===officialJson){cache.set(key,value,unavailable.size?30_000:15*60_000,now)}
   return value;
  })();
  if(get===officialJson)pending.set(key,task);

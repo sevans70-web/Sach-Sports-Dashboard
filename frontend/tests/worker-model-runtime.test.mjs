@@ -1,3 +1,4 @@
+import {nbaCombinationHistory} from '../lib/nba-combination-history.ts';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {resolve} from 'node:path';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';
 import {partitionModelRuntime,workerModelRuntimePlugin} from '../build/worker-model-runtime.mjs';
@@ -25,16 +26,18 @@ test('Vite replacement runs without filesystem access in the runtime module',()=
  assert.ok(!code.includes('readFileSync'));assert.ok(code.includes('checksum mismatch'));
  assert.equal(workerModelRuntimePlugin().transform('',resolve('lib/other.ts')),undefined);
 });
-test('embedded loader executes without disk reads and combines the original component models',async()=>{
+test('embedded loader executes without disk reads and preserves exact precombined histories',async()=>{
  const code=workerModelRuntimePlugin().transform('',resolve('lib/worker-model-runtime.ts'));
  const runtime=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
  const points=runtime.workerModelRuntime('nba','points');
  assert.equal(points.models[0].group,'nba|points');assert.ok(points.observations.length>1000);
  assert.equal(runtime.workerModelRuntime('nba','points'),points,'repeat requests reuse the checked partition');
  const combo=runtime.workerModelRuntime('nba','pts_rebs');
- assert.deepEqual(combo.models.map(m=>m.group),['nba|points','nba|rebounds','nba|pts_rebs']);
+ assert.deepEqual(combo.models.map(m=>m.group),['nba|pts_rebs']);
  assert.equal(combo.digest,points.digest);
- assert.deepEqual(combo.observations.filter(g=>g.market==='points'),points.observations);
+ const rebounds=runtime.workerModelRuntime('nba','rebounds');
+ assert.deepEqual(combo.observations,nbaCombinationHistory([...points.observations,...rebounds.observations],'pts_rebs'));
+ assert.equal(combo.combinationPrebuilt,true);
  assert.equal(runtime.workerModelRuntime('cbb','points').models[0].group,'cbb|points');
  const reloaded=runtime.workerModelRuntime('nba','points');
  assert.notEqual(reloaded,points,'switching markets evicts the previous decoded partition');

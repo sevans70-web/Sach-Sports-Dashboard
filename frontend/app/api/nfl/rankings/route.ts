@@ -1,3 +1,4 @@
+import {nflOfficialFetch} from '@/lib/official-history-source';
 import {nflBookRows} from '@/lib/nfl-book-rows';
 import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
 import {readPregameBoard} from '@/lib/ranking-board-cache';
@@ -131,7 +132,7 @@ async function resolvePlayer(name:string,teamName:string,matchup:string,schedule
  }
  // Search is only a fallback. We require an athlete-shaped result, not merely any search node with the same name.
  try{
-   const r=await fetch(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(name)}&limit=30&sport=football`,{cache:"no-store"});
+   const r=await nflOfficialFetch(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(name)}&limit=30&sport=football`,{cache:"no-store"});
    if(r.ok){
      const payload=await r.json(),nodes:any[]=[];
      const walk=(v:any)=>{if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==="object"){nodes.push(v);Object.values(v).forEach(walk)}};walk(payload);
@@ -159,7 +160,7 @@ async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
   }));
  }))).flat();
 }
-async function fetchLog(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0","Accept":"application/json, text/plain, */*","Origin":"https://www.espn.com","Referer":"https://www.espn.com/"}});if(!r.ok)throw 0;return r.json()}
+async function fetchLog(id:string,season:number){const r=await nflOfficialFetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store"});if(!r.ok)throw Error('official_history_http_'+r.status);return r.json()}
 async function model(id:string,market:NflMarketKey,asOf:string){
  if(!id||market==="first_td"||market.startsWith("q1_"))return {projection:null,games:0};
  const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
@@ -168,7 +169,7 @@ async function model(id:string,market:NflMarketKey,asOf:string){
   const payload=await fetchLog(id,season);
   const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
   return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
- }catch{return {projection:null,games:0}}
+ }catch(error){return {projection:null,games:0,sourceUnavailable:true,sourceReason:error instanceof Error?error.message:"official_history_unavailable"}}
 }
 
 function teamLogo(profile:any,row:any,schedule:any[]){
@@ -353,7 +354,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
    const game=quoteGame||matchupGame(schedule,row.matchup);
-   return {...footballQuoteFields(row),market,rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
+   return {...footballQuoteFields(row),market,rank:0,playerId:profile.id||cleanName(row.playerName),playerName:row.playerName,teamName:profile.teamName||row.teamName||"NFL",teamId:profile.teamId,position:profile.position,headshot:profile.headshot,teamLogo:profile.teamLogo||teamLogo(profile,row,schedule),matchup:row.matchup,gameTime:row.gameTime||game?.date||"",gameId:String(game?.id||""),giScore:row.earlyModel?Math.round((50+Math.min(20,m.games)+Math.min(20,(m.projection||0)/(market=== "passing_yards"?15:market.endsWith("yards")?5:1)))*10)/10:nflGiScore(rankingProbability,row.bookmakerCount,m.games),modelProbability:probability,sportsbookLine:row.line,sportsbookProbability:row.prob,bookmakerCount:row.bookmakerCount,perGame:m.projection,modelProjection:m.projection,projectionGames:m.games,researchCohort:m,officialHistoryUnavailable:(m as any).sourceUnavailable===true,officialHistoryReason:(m as any).sourceReason||null,seasonTotal:null,gamesPlayed:m.games,season:2026,summary:(()=>{
      const label=NFL_MARKETS.find(x=>x[0]===market)?.[2]||market;
      const edge=row.line!=null&&m.projection!=null?Number(m.projection)-Number(row.line):null;
      const edgeText=edge==null?"":` The model sits ${Math.abs(edge).toFixed(1)} ${edge>=0?"above":"below"} the current line.`;
