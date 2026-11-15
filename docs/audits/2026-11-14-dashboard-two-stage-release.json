@@ -1,0 +1,924 @@
+{
+  "status": "stage_one_passed_candidate_rolled_back",
+  "recordedAtUTC": "2026-11-15T04:48:42.491508+00:00",
+  "recordedAtToronto": "2026-11-14T23:48:42.491813-05:00",
+  "worker": "sach-sports-cloudflare-test",
+  "branch": "cloudflare-compatibility-test",
+  "applicationSource": "a949453dac8d3ae08a3feeca99dc55fe1991d267",
+  "manualReleasePackageCommit": "241b73a0d5d156031505275c5a519cefa3c2bb0e",
+  "prebuiltArtifactsUsed": true,
+  "dashboardCompilationOrRedesignPerformedThisRelease": false,
+  "hostingProviderChanged": false,
+  "stageOne": {
+    "stage": 1,
+    "status": "passed",
+    "deploymentId": "a0aec52b-f12d-4fc3-b311-7bede10469d0",
+    "rollbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "captureHeld": true,
+    "heldCronObservedAtUTC": "2026-11-15T04:12:56.707Z",
+    "namespaceObjectsBeforeActivation": 0,
+    "browserHydrationErrors": 0,
+    "apiSports": [
+      "nba",
+      "nfl",
+      "nhl"
+    ],
+    "apiSchedulesCountsFeaturedHistory": "passed",
+    "existingRecordFingerprintGroupsMatched": 17,
+    "researchDeploymentUnchanged": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174"
+  },
+  "stageTwo": {
+    "buildId": "95a2515a-b7eb-4c8b-84bb-ae18eb95929b",
+    "deploymentId": "ea3d889a-177b-4bb5-bd29-4ca0f6d11ab1",
+    "versionId": "a5375cd8-b10b-497f-8355-08e48357cbad",
+    "atUTC": "2026-11-15T04:17:46.558663Z",
+    "atToronto": "2026-11-14T23:17:46.558663-05:00",
+    "browserHydrationErrors": 0,
+    "browserErrors": 0,
+    "candidateVisibleNhlCounts": {
+      "shots_on_goal": 12,
+      "points": 6,
+      "assists": 15,
+      "goalie_saves": 11,
+      "goals": 0,
+      "blocked_shots": 0
+    },
+    "nhlRepeatedLoadSeconds": [
+      2.828,
+      1.298
+    ],
+    "firstNhlApiSeconds": 5.303787,
+    "warmNhlRankingApiSecondsRange": [
+      0.274,
+      0.377
+    ],
+    "schedulesCountsFeaturedHistory": {
+      "nba": {
+        "games": 14,
+        "gameIds": [
+          "401909985",
+          "401909986",
+          "401909987",
+          "401909988",
+          "401909989",
+          "401909990",
+          "401909991",
+          "401909992",
+          "401909993",
+          "401909980",
+          "401909981",
+          "401909982",
+          "401909983",
+          "401909984"
+        ],
+        "picks": 14,
+        "coverageComplete": false,
+        "rankingsAvailable": true,
+        "summarySeconds": 1.494,
+        "slateSeconds": 0.163,
+        "featured": {
+          "plays": 4,
+          "seconds": 0.694
+        },
+        "history": {
+          "records": 576,
+          "seconds": 8.158
+        }
+      },
+      "nfl": {
+        "games": 14,
+        "gameIds": [
+          "401873053",
+          "401873054",
+          "401873055",
+          "401873056",
+          "401873057",
+          "401873058",
+          "401873059",
+          "401873060",
+          "401873061",
+          "401873062",
+          "401873063",
+          "401873064",
+          "401873065",
+          "401873052"
+        ],
+        "picks": 0,
+        "coverageComplete": false,
+        "rankingsAvailable": true,
+        "summarySeconds": 0.579,
+        "slateSeconds": 0.139,
+        "featured": {
+          "plays": 4,
+          "seconds": 2.233
+        },
+        "history": {
+          "records": 0,
+          "seconds": 2.578
+        }
+      },
+      "nhl": {
+        "games": 19,
+        "gameIds": [
+          "2026020323",
+          "2026020324",
+          "2026020325",
+          "2026020326",
+          "2026020327",
+          "2026020328",
+          "2026020329",
+          "2026020330",
+          "2026020321",
+          "2026020312",
+          "2026020313",
+          "2026020314",
+          "2026020315",
+          "2026020316",
+          "2026020317",
+          "2026020318",
+          "2026020319",
+          "2026020320",
+          "2026020322"
+        ],
+        "picks": 4,
+        "coverageComplete": false,
+        "rankingsAvailable": true,
+        "summarySeconds": 0.932,
+        "slateSeconds": 0.096,
+        "featured": {
+          "plays": 4,
+          "seconds": 0.508
+        },
+        "history": {
+          "records": 57,
+          "seconds": 1.733
+        }
+      }
+    },
+    "nbaEV": {
+      "points": {
+        "status": 200,
+        "seconds": 1.209,
+        "rows": 24,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 24,
+        "validEV": 23,
+        "positive": 13,
+        "negative": 10,
+        "zero": 0,
+        "unavailableReasons": {
+          "Projection equals the line; no OVER/UNDER direction is displayed": 1
+        },
+        "diagnostics": {
+          "available": 23,
+          "unavailable": 1,
+          "reasons": {
+            "direction_unavailable": 1
+          }
+        }
+      },
+      "rebounds": {
+        "status": 200,
+        "seconds": 0.635,
+        "rows": 25,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 25,
+        "validEV": 24,
+        "positive": 11,
+        "negative": 13,
+        "zero": 0,
+        "unavailableReasons": {
+          "Projection equals the line; no OVER/UNDER direction is displayed": 1
+        },
+        "diagnostics": {
+          "available": 24,
+          "unavailable": 1,
+          "reasons": {
+            "direction_unavailable": 1
+          }
+        }
+      },
+      "assists": {
+        "status": 200,
+        "seconds": 0.458,
+        "rows": 22,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 22,
+        "validEV": 20,
+        "positive": 10,
+        "negative": 9,
+        "zero": 1,
+        "unavailableReasons": {
+          "Projection equals the line; no OVER/UNDER direction is displayed": 2
+        },
+        "diagnostics": {
+          "available": 20,
+          "unavailable": 2,
+          "reasons": {
+            "direction_unavailable": 2
+          }
+        }
+      },
+      "threes_made": {
+        "status": 200,
+        "seconds": 0.966,
+        "rows": 21,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 21,
+        "validEV": 21,
+        "positive": 14,
+        "negative": 7,
+        "zero": 0,
+        "unavailableReasons": {},
+        "diagnostics": {
+          "available": 21,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      "pts_rebs_asts": {
+        "status": 200,
+        "seconds": 0.462,
+        "rows": 25,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 25,
+        "validEV": 0,
+        "positive": 0,
+        "negative": 0,
+        "zero": 0,
+        "unavailableReasons": {
+          "A joint combination probability model is required; component projections alone cannot produce EV": 25
+        },
+        "diagnostics": {
+          "available": 0,
+          "unavailable": 25,
+          "reasons": {
+            "probability_unavailable": 25
+          }
+        }
+      },
+      "pts_rebs": {
+        "status": 200,
+        "seconds": 0.37,
+        "rows": 23,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 23,
+        "validEV": 0,
+        "positive": 0,
+        "negative": 0,
+        "zero": 0,
+        "unavailableReasons": {
+          "A joint combination probability model is required; component projections alone cannot produce EV": 23
+        },
+        "diagnostics": {
+          "available": 0,
+          "unavailable": 23,
+          "reasons": {
+            "probability_unavailable": 23
+          }
+        }
+      },
+      "pts_asts": {
+        "status": 200,
+        "seconds": 0.406,
+        "rows": 24,
+        "displayable": null,
+        "savedEvidence": null,
+        "notice": null,
+        "frozen": 24,
+        "validEV": 0,
+        "positive": 0,
+        "negative": 0,
+        "zero": 0,
+        "unavailableReasons": {
+          "A joint combination probability model is required; component projections alone cannot produce EV": 24
+        },
+        "diagnostics": {
+          "available": 0,
+          "unavailable": 24,
+          "reasons": {
+            "probability_unavailable": 24
+          }
+        }
+      }
+    },
+    "tomorrowNhl": {
+      "httpStatus": 200,
+      "seconds": 1.237523,
+      "verifiedScheduleAndPlayerSources": true,
+      "visiblePredictions": 3,
+      "evaluatedPlayers": 64,
+      "budgetLimited": true
+    }
+  },
+  "failedReleaseGate": {
+    "requirement": "Interrupted capture must make durable forward progress and complete without duplicate or overwritten picks.",
+    "finding": "Unbounded Promise.all enrichment of up to 150 NFL rows starts provider-coordination RPCs concurrently. The 220-request guard can fill before HTTP bodies finish; aborting the whole phase discards unfinished source progress. Repeating the rank phase recreates the same burst.",
+    "sourceLocation": "frontend/app/api/nfl/rankings/route.ts:333 and frontend/jobs/budget.mjs",
+    "liveAffectedMarkets": {
+      "receiving_yards": 7,
+      "receptions": 7,
+      "anytime_td": 5
+    },
+    "liveAccountedRequestRange": [
+      218,
+      220
+    ],
+    "platform350LimitFailuresObserved": 0,
+    "localParallelReproduction": {
+      "localOnly": true,
+      "externalRequests": 0,
+      "attempts": [
+        {
+          "attempt": 1,
+          "state": "deferred",
+          "reason": "job_subrequest_budget",
+          "usage": {
+            "used": 220,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 180,
+              "official_http": 40
+            },
+            "cacheHits": 0
+          },
+          "cached": 0,
+          "httpCalls": 40
+        },
+        {
+          "attempt": 2,
+          "state": "deferred",
+          "reason": "job_subrequest_budget",
+          "usage": {
+            "used": 220,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 180,
+              "official_http": 40
+            },
+            "cacheHits": 0
+          },
+          "cached": 0,
+          "httpCalls": 40
+        },
+        {
+          "attempt": 3,
+          "state": "deferred",
+          "reason": "job_subrequest_budget",
+          "usage": {
+            "used": 220,
+            "limit": 220,
+            "costs": {
+              "provider_gate": 180,
+              "official_http": 40
+            },
+            "cacheHits": 0
+          },
+          "cached": 0,
+          "httpCalls": 40
+        }
+      ]
+    },
+    "existingSuiteGap": "The resumability stress test used sequential source reads; it did not cover this concurrent cold-source fan-out."
+  },
+  "rollback": {
+    "deploymentId": "1eae6b6f-78f4-4ad6-8f25-f43e6053465a",
+    "atUTC": "2026-11-15T04:31:06.437496Z",
+    "atToronto": "2026-11-14T23:31:06.437496-05:00",
+    "versionId": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "namespaceId": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "captureAndGradingHeld": true,
+    "namespaceAndQueuedEvidencePreserved": true,
+    "restoredBrowserErrors": 0,
+    "restoredNhlApiCounts": {
+      "shots_on_goal": {
+        "success": true,
+        "rawRows": 25,
+        "displayable": 3
+      },
+      "points": {
+        "success": true,
+        "rawRows": 25,
+        "displayable": 1
+      },
+      "assists": {
+        "success": true,
+        "rawRows": 25,
+        "displayable": 15
+      },
+      "goalie_saves": {
+        "success": true,
+        "rawRows": 25,
+        "displayable": 5
+      }
+    },
+    "knownLimitation": "The held fallback retains the former NHL ranking/loading behavior; candidate ranking improvements are no longer live.",
+    "automaticDashboardBuildsPaused": true,
+    "originalCronExpressionsRetained": [
+      "*/2 * * * *",
+      "0,30 * * * *",
+      "10-17 9 * * *"
+    ],
+    "countsRechecked": true
+  },
+  "captureAndGradingResults": {
+    "lanes": [
+      {
+        "name": "capture:nba",
+        "stats": [
+          16,
+          20,
+          0
+        ],
+        "stateDigest": "e3a1d64e3b5d1b5b0113f6567ef07667474fd416b09c36803ae75520951deec0",
+        "reservationDigest": "8c41bd363e4498cc0896ec3dd6a8999266447ef4d7e6d3903ed9f089afeda936",
+        "reservedCaptureBatches": 4,
+        "documents": 4,
+        "jobs": [
+          {
+            "id": "capture:nba:first_basket:14955969",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nba:q1_assists:14955970",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nba:q1_points:14955969",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nba:q1_rebounds:14955970",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 0,
+            "stored": 0,
+            "picksStored": 0
+          }
+        ]
+      },
+      {
+        "name": "capture:nfl",
+        "stats": [
+          44,
+          220,
+          19
+        ],
+        "stateDigest": "d29692c65f605bb4bccd0191769bbebc3bcb4b69641b24a3aa428f3092852ff6",
+        "reservationDigest": "9d9240340e6e4bfbbd5d414af8dbf893be165a92a2ab6c3495919219b167df31",
+        "reservedCaptureBatches": 7,
+        "documents": 7,
+        "jobs": [
+          {
+            "id": "capture:nfl:anytime_td:14955974",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 5,
+            "lastError": "job_subrequest_budget"
+          },
+          {
+            "id": "capture:nfl:first_td:14955974",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 25,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nfl:passing_rushing_yards:14955975",
+            "state": "active",
+            "phase": "picks",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 24,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nfl:passing_tds:14955971",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 24,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nfl:passing_yards:14955971",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 24,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nfl:qb_rushing_yards:14955972",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 24,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nfl:receiving_yards:14955973",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 7,
+            "lastError": "job_subrequest_budget"
+          },
+          {
+            "id": "capture:nfl:receptions:14955973",
+            "state": "active",
+            "phase": "rank",
+            "cursor": 0,
+            "attempts": 7,
+            "lastError": "job_subrequest_budget"
+          },
+          {
+            "id": "capture:nfl:rushing_receiving_yards:14955975",
+            "state": "active",
+            "phase": "originals",
+            "cursor": 30,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 34,
+            "stored": 0,
+            "picksStored": 0
+          },
+          {
+            "id": "capture:nfl:rushing_yards:14955972",
+            "state": "done",
+            "phase": "done",
+            "cursor": 0,
+            "attempts": 0,
+            "lastError": null,
+            "eligible": 41,
+            "stored": 0,
+            "picksStored": 0
+          }
+        ]
+      },
+      {
+        "name": "grade:nba",
+        "stats": [
+          11,
+          6,
+          0
+        ],
+        "stateDigest": "fcd6d3e6b3ceedc54feff5bc0e2c00381bf6e4dd67ebd7de77482147c60e530c",
+        "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "reservedCaptureBatches": 0,
+        "documents": 0,
+        "jobs": [
+          {
+            "id": "grade:nba:14955975",
+            "state": "active",
+            "phase": "game",
+            "cursor": 50,
+            "attempts": 0,
+            "lastError": null,
+            "verified": 45
+          }
+        ]
+      },
+      {
+        "name": "replay:nba",
+        "stats": [
+          27,
+          4,
+          0
+        ],
+        "stateDigest": "f9ffcdf68093ad48e6daee805750b2ecdd2f7e2c0d3ebe182030b239728772ab",
+        "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "reservedCaptureBatches": 0,
+        "documents": 306,
+        "jobs": [
+          {
+            "id": "replay:nba:14955969",
+            "state": "done",
+            "phase": "done",
+            "cursor": "protected_pregame_401909303_steals",
+            "attempts": 0,
+            "lastError": null
+          },
+          {
+            "id": "replay:nba:14955972",
+            "state": "done",
+            "phase": "done",
+            "cursor": "protected_pregame_401909303_steals",
+            "attempts": 0,
+            "lastError": null
+          },
+          {
+            "id": "replay:nba:14955975",
+            "state": "active",
+            "phase": "game",
+            "cursor": "protected_pregame_401909303_steals",
+            "attempts": 0,
+            "lastError": null
+          }
+        ]
+      },
+      {
+        "name": "replay:nfl",
+        "stats": [
+          4,
+          2,
+          0
+        ],
+        "stateDigest": "350b1a143db8c51fd329c2ed3b6c999fce57eb2234e516afb3ead33fbdd0fc5f",
+        "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "reservedCaptureBatches": 0,
+        "documents": 0,
+        "jobs": [
+          {
+            "id": "replay:nfl:14955970",
+            "state": "done",
+            "phase": "done",
+            "cursor": "",
+            "attempts": 0,
+            "lastError": null
+          },
+          {
+            "id": "replay:nfl:14955973",
+            "state": "done",
+            "phase": "done",
+            "cursor": "",
+            "attempts": 0,
+            "lastError": null
+          }
+        ]
+      },
+      {
+        "name": "replay:nhl",
+        "stats": [
+          8,
+          4,
+          0
+        ],
+        "stateDigest": "5d78ff28a650b422d14da986974be88152753857bb2031686c96e2c1ec2d5ed8",
+        "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "reservedCaptureBatches": 0,
+        "documents": 28,
+        "jobs": [
+          {
+            "id": "replay:nhl:14955971",
+            "state": "done",
+            "phase": "done",
+            "cursor": "protected_pregame_2026020311_shots_on_goal",
+            "attempts": 0,
+            "lastError": null
+          },
+          {
+            "id": "replay:nhl:14955974",
+            "state": "done",
+            "phase": "done",
+            "cursor": "protected_pregame_2026020311_shots_on_goal",
+            "attempts": 0,
+            "lastError": null
+          }
+        ]
+      }
+    ],
+    "nhlCaptureLiveVerification": "Not reached: rollout stopped before the 04:38 UTC NHL capture slot. NHL replay completed, and candidate ranking browser/API verification passed.",
+    "newOriginalQuotes": 0,
+    "newModelPicks": 0,
+    "newOfficialGrades": 2,
+    "newGradeProof": {
+      "gameId": "401909955",
+      "state": "post",
+      "players": {
+        "3134908": {
+          "market": "blocks",
+          "line": 1.5,
+          "side": "UNDER",
+          "actual": 4,
+          "result": "miss"
+        },
+        "4600663": {
+          "market": "blocks",
+          "line": 2.5,
+          "side": "UNDER",
+          "actual": 1,
+          "result": "hit"
+        }
+      },
+      "originalChecksumsAndLinesMatch": true
+    }
+  },
+  "preservation": {
+    "originalRecordFingerprintGroups": 17,
+    "allOriginalFingerprintsMatched": true,
+    "duplicateIdentityGroups": {
+      "originals": 0,
+      "picks": 0,
+      "grades": 0
+    },
+    "heldQueueProof": {
+      "beforeAtUTC": "2026-11-15T04:42:38.201Z",
+      "afterAtUTC": "2026-11-15T04:47:10.713Z",
+      "allJobStatesAndReservationsUnchanged": true,
+      "lanes": [
+        {
+          "name": "capture:nba",
+          "stateDigest": "e3a1d64e3b5d1b5b0113f6567ef07667474fd416b09c36803ae75520951deec0",
+          "reservationDigest": "8c41bd363e4498cc0896ec3dd6a8999266447ef4d7e6d3903ed9f089afeda936",
+          "jobs": 4,
+          "reservedBatches": 4
+        },
+        {
+          "name": "capture:nfl",
+          "stateDigest": "d29692c65f605bb4bccd0191769bbebc3bcb4b69641b24a3aa428f3092852ff6",
+          "reservationDigest": "9d9240340e6e4bfbbd5d414af8dbf893be165a92a2ab6c3495919219b167df31",
+          "jobs": 10,
+          "reservedBatches": 7
+        },
+        {
+          "name": "grade:nba",
+          "stateDigest": "fcd6d3e6b3ceedc54feff5bc0e2c00381bf6e4dd67ebd7de77482147c60e530c",
+          "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "jobs": 1,
+          "reservedBatches": 0
+        },
+        {
+          "name": "replay:nba",
+          "stateDigest": "f9ffcdf68093ad48e6daee805750b2ecdd2f7e2c0d3ebe182030b239728772ab",
+          "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "jobs": 3,
+          "reservedBatches": 0
+        },
+        {
+          "name": "replay:nfl",
+          "stateDigest": "350b1a143db8c51fd329c2ed3b6c999fce57eb2234e516afb3ead33fbdd0fc5f",
+          "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "jobs": 2,
+          "reservedBatches": 0
+        },
+        {
+          "name": "replay:nhl",
+          "stateDigest": "5d78ff28a650b422d14da986974be88152753857bb2031686c96e2c1ec2d5ed8",
+          "reservationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "jobs": 2,
+          "reservedBatches": 0
+        }
+      ]
+    },
+    "newRecords": [
+      {
+        "source": "originals",
+        "sport": "nfl",
+        "total": 1043,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "originals",
+        "sport": "nba",
+        "total": 3045,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "originals",
+        "sport": "nhl",
+        "total": 1724,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "originals",
+        "sport": "cfb",
+        "total": 29,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "picks",
+        "sport": "nfl",
+        "total": 145,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "picks",
+        "sport": "nba",
+        "total": 1079,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "picks",
+        "sport": "nhl",
+        "total": 213,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "grades",
+        "sport": "nfl",
+        "total": 24,
+        "added_since_snapshot": 0
+      },
+      {
+        "source": "grades",
+        "sport": "nba",
+        "total": 45,
+        "added_since_snapshot": 2
+      },
+      {
+        "source": "grades",
+        "sport": "nhl",
+        "total": 180,
+        "added_since_snapshot": 0
+      }
+    ]
+  },
+  "tests": {
+    "preflightPassed": 769,
+    "postRollbackRegressionPassed": 770,
+    "postRollbackRegressionFailed": 0,
+    "archiveAndHoldAndWithdrawalChecksPassed": 5,
+    "liveRecoveryGate": "FAILED; passing unit/runtime tests do not complete the repair.",
+    "temporaryBrowserSetting": "Public browser verification used an ephemeral proxy-compatible TLS context; independent curl checks used the configured CA trust. Persistent trust-store modification was rejected and was not performed."
+  },
+  "cw08": {
+    "worker": "sach-cw08-nhl-shadow",
+    "deploymentId": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "versionId": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+    "schedule": "*/15 * * * *",
+    "ready": true,
+    "receipts": 742,
+    "grades": 528,
+    "completedCycles": 93,
+    "pendingUploads": 0,
+    "storageError": null,
+    "health": {
+      "sourceDeferrals": 0,
+      "rosterFailures": 0,
+      "historySourceFailures": 0,
+      "rejectionsByReason": {
+        "unresolved_or_ambiguous_official_player": 64,
+        "official_history_missing": 6,
+        "prior_history_unavailable": 6
+      },
+      "warmedPlayers": 0,
+      "newReceipts": 0,
+      "sourceSnapshots": 7,
+      "state": "healthy"
+    },
+    "bundleBytes": 151874,
+    "bundleSha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4",
+    "modelProtocolCredentialsNamespacesScheduleUnchanged": true
+  },
+  "nextRequirements": [
+    "Bound in-flight provider/source work before charging and dispatching it. Prevent a concurrent burst from spending the budget before responses can checkpoint.",
+    "Prove source progress survives budget pause, cancellation and restart under the real concurrent NFL enrichment path; include cold cache, repeated/aliased inputs and delayed responses.",
+    "Repeat regression, production artifact/configuration and compatible rollback checks. Preserve all current namespace data and original receipts.",
+    "Obtain fresh deployment approval for a corrected artifact; do not retry the withdrawn candidate.",
+    "After that approval, repeat live NFL/NHL mixed-slot capture and complete official grading observation."
+  ]
+}

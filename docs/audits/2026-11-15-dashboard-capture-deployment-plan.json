@@ -1,10 +1,10 @@
 {
-  "status": "prepared_not_approved_not_uploaded",
+  "status": "rolled_back_live_recovery_gate_failed",
   "sourceCommit": "a949453dac8d3ae08a3feeca99dc55fe1991d267",
   "targetWorker": "sach-sports-cloudflare-test",
   "accountId": "d3d6d023ab7ab731cc3e191d0ea3c179",
   "candidateArtifactSha256": "e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead",
-  "fallbackArtifactSha256": "81ed89014b81e2acc7aeebe0494d04d27fbbb3db14381c5c6560d3270be352a8",
+  "fallbackArtifactSha256": "86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f",
   "fallbackDashboardSource": "f93184a2a421f75018c0262c7b820b5ce9d95b76",
   "currentlyDeployedVersion": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
   "newResource": {
@@ -15,8 +15,8 @@
   },
   "steps": [
     "Reproduce and match both artifact hashes, source commit, existing settings, paused builds and CW08 health.",
-    "After explicit approval, deploy the compatible safety baseline: existing dashboard interface plus bounded job infrastructure. This provisions the namespace.",
-    "Verify the safety baseline in a real browser/API and observe scheduled job progress. Record its version as the compatible rollback target. Stop candidate deployment if any critical check fails.",
+    "Deploy the held compatible fallback with existing dashboard interface and the new namespace. Capture remains inactive.",
+    "Verify live browser/API, exact settings, empty/nonadvancing job state, original-record fingerprints and successful held cron. Record the compatible rollback version before deploying candidate.",
     "Deploy the NHL candidate only once the compatible rollback target exists and passes its checks.",
     "Verify browser hydration, performance, schedules/game/pick counts, eligible NHL rankings and saved starts, seven NBA EV markets, featured picks, history and NBA/NFL; observe independent capture and grading/replay alarms and budget telemetry.",
     "On candidate live failure restore the recorded compatible baseline version, keeping the namespace, queued evidence and original records."
@@ -39,5 +39,24 @@
   },
   "approvalRequired": true,
   "artifactDigestDefinition": "SHA-256 of canonical sorted-key JSON containing generated Worker config and sorted non-source-map file paths, byte lengths and SHA-256 hashes. Build-path-dependent source maps are excluded.",
-  "fallbackPreparationCommand": "node frontend/scripts/prepare-dashboard-fallback.mjs <local-output-directory>"
+  "fallbackPreparationCommand": "node frontend/scripts/prepare-dashboard-fallback.mjs <local-output-directory>",
+  "approval": "User explicitly approved two-stage release; fallback must be verified before capture activation.",
+  "releasePackageCommit": "241b73a0d5d156031505275c5a519cefa3c2bb0e",
+  "previousFallbackArtifactSha256": "81ed89014b81e2acc7aeebe0494d04d27fbbb3db14381c5c6560d3270be352a8",
+  "fallbackSafetyHold": "Stage-only wrapper suppresses capture/grading/replay cron work and holds alarms without advancing job cursors or replacing evidence; candidate artifact unchanged.",
+  "preflight": {
+    "testsPassed": 769,
+    "testsFailed": 0,
+    "newTests": "Archive/digest guards, real prebuilt namespace hold, and clock-independent Toronto category fixtures."
+  },
+  "manualBuild": "a4dea404-29fc-43eb-a20f-7f06d989d5c3",
+  "candidateReleaseWithdrawn": true,
+  "stageOneDeployment": "a0aec52b-f12d-4fc3-b311-7bede10469d0",
+  "stageTwoDeployment": "ea3d889a-177b-4bb5-bd29-4ca0f6d11ab1",
+  "currentRollbackDeployment": "1eae6b6f-78f4-4ad6-8f25-f43e6053465a",
+  "compatibleFallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "namespaceId": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "liveGateFailure": "Concurrent NFL enrichment fills the request allowance before response bodies finish; rank retries lack durable forward progress. Receiving/receptions each retried seven times and anytime_td five times.",
+  "dashboardCaptureAndGrading": "held by verified fallback; stored cursors and evidence retained",
+  "nextAction": "Bound concurrent source/RPC fan-out before request charging, persist completed input progress across the budget pause, and validate the realistic cold concurrent workload before requesting a new release approval."
 }

@@ -15,5 +15,10 @@
     }
   },
   "execution": "Cloudflare authenticated manual environment; prebuilt only; Stage-1 fallback holds enqueue and alarms; candidate activates only after fallback passes; schedules unchanged; CW08 untouched",
-  "fallbackSafetyChange": "A stage-only wrapper holds capture/grading/replay while retaining the approved fallback interface, queue class/schema and stored state."
+  "fallbackSafetyChange": "A stage-only wrapper holds capture/grading/replay while retaining the approved fallback interface, queue class/schema and stored state.",
+  "candidateStatus": "withdrawn",
+  "withdrawalReason": "Live NFL receiving_yards/receptions/anytime_td requests repeatedly exhausted the 220-request guard without rank progress. Candidate rolled back to held compatible fallback.",
+  "currentDeployment": "1eae6b6f-78f4-4ad6-8f25-f43e6053465a",
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "nextReleaseRequires": "Bound concurrent source/provider-gate fan-out, prove durable forward progress under a concurrent cold-source workload, rerun all release checks, and obtain fresh deployment approval."
 }

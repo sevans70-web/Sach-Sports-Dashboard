@@ -27,6 +27,11 @@ export function verifyOutput(stage,output){
  const build=JSON.parse(readFileSync(join(output,'config.json')));if(build.buildContext?.isPreview!==false||build.buildContext?.mode!=='production')throw Error('release_build_context_mismatch');
  return {stage,source:APPROVED_SOURCE,worker:config.name,digest,files:files.length};
 }
+export function assertReleaseDeploymentAllowed(stage){
+ if(!Object.hasOwn(APPROVED_DIGESTS,stage))throw Error('unknown_release_stage');
+ const manifest=JSON.parse(readFileSync(join(release,'manifest.json')));
+ if(stage==='candidate'&&manifest.candidateStatus!=='approved')throw Error('candidate_release_withdrawn_after_failed_live_recovery_gate');
+}
 export function prepareRelease(stage,output=join(app,'.cloudflare/output/v0')){
  if(!Object.hasOwn(APPROVED_DIGESTS,stage))throw Error('unknown_release_stage');
  const manifest=JSON.parse(readFileSync(join(release,'manifest.json'))),archive=join(release,stage+'.tar.gz');
@@ -38,6 +43,7 @@ export function prepareRelease(stage,output=join(app,'.cloudflare/output/v0')){
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const args=process.argv.slice(2),stage=args[0],mode=args[1];if(args.length!==2||!['--prepare-only','--dry-run','--deploy'].includes(mode))throw Error('Use: deploy-dashboard-release.mjs fallback|candidate --prepare-only|--dry-run|--deploy');
+ if(mode==='--deploy')assertReleaseDeploymentAllowed(stage);
  prepareRelease(stage);
  if(mode!=='--prepare-only')execFileSync(process.execPath,[join(app,'scripts/deploy-cloudflare.mjs'),...(mode==='--dry-run'?['--dry-run']:[]),'--tag','dashboard-capture-'+stage,'--message','Approved '+stage+'; source '+APPROVED_SOURCE+'; CW08 unchanged'],{cwd:app,stdio:'inherit'});
 }
