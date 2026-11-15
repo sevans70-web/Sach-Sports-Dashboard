@@ -1,0 +1,91 @@
+{
+  "status": "blocked_before_deployment",
+  "checkedAtUTC": "2026-11-15T02:28:48.419Z",
+  "checkedAtToronto": "2026-11-14 21:28:48 EST",
+  "candidateRepairCommit": "b2e9357ff5bcf9ec1a6f3db9b89f52c7d5ed0373",
+  "candidateAuditCommit": "59829028300b5f13cd462523684115eeef35dfbd",
+  "releaseGateFailed": "Shared dashboard capture cron remains exposed to the per-invocation 350-subrequest limit; no budget isolation or scheduling fix is included in the candidate.",
+  "newDeploymentId": null,
+  "deploymentAttempted": false,
+  "dashboard": {
+    "existingDeployment": "dcad8c9c-ca52-4578-887c-1a6f4a0659b0",
+    "version": "bdd010c7-ab1d-41a1-83fb-bcabab45b86f",
+    "versionRetrievableForRollback": true,
+    "subrequestsPerInvocation": 350,
+    "compatibilityDate": "2026-11-06",
+    "automaticBuildsPaused": true,
+    "branchIncludes": [
+      "__cw08_manual_release_only__"
+    ],
+    "buildCommandsUnchanged": true
+  },
+  "captureFailures": [
+    {
+      "atUTC": "2026-11-15T02:05:11.055Z",
+      "atToronto": "2026-11-14 21:05:11 EST",
+      "checked": "NFL q1_passing_yards, eligible14",
+      "failed": "NFL q1_rushing_yards",
+      "reason": "Too many subrequests by single Worker invocation"
+    },
+    {
+      "atUTC": "2026-11-14T23:35:05.439Z",
+      "checked": "NFL q1_receiving_yards",
+      "failed": "NHL shots_on_goal",
+      "reason": "rankings_http_503"
+    },
+    {
+      "atUTC": "2026-11-14T22:57:05.326Z",
+      "checked": "NFL q1_receiving_yards",
+      "failed": "NHL shots_on_goal",
+      "reason": "Too many subrequests by single Worker invocation"
+    },
+    {
+      "atUTC": "2026-11-14T22:19:04.016Z",
+      "failed": [
+        "NFL q1_receiving_yards",
+        "NHL shots_on_goal"
+      ],
+      "reason": "subrequest exhaustion, followed by rankings_http_503"
+    }
+  ],
+  "telemetrySample": {
+    "hours": 6,
+    "captureEvents": 180
+  },
+  "candidateSchedulerOrConfigurationChanges": false,
+  "previousCandidateValidation": {
+    "testsPassed": 752,
+    "testsFailed": 0,
+    "typescriptDiagnostics": 0,
+    "productionCompile": "passed in prior task",
+    "prebuiltDryRun": "passed in prior task; no upload"
+  },
+  "freshProductionCompileAfterFailedGate": false,
+  "postDeploymentBrowserAndApiVerification": false,
+  "research": {
+    "deploymentUnchanged": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "versionUnchanged": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+    "receipts": 708,
+    "grades": 94,
+    "completedCycles": 84,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "active": [],
+    "latestCollectionHealth": {
+      "sourceDeferrals": 0,
+      "rosterFailures": 0,
+      "historySourceFailures": 0,
+      "rejectionsByReason": {
+        "unresolved_or_ambiguous_official_player": 235,
+        "official_history_missing": 12,
+        "fewer_than_three_same_season_team_appearances": 4,
+        "prior_history_unavailable": 15
+      },
+      "warmedPlayers": 2,
+      "newReceipts": 0,
+      "sourceSnapshots": 8,
+      "state": "healthy"
+    }
+  },
+  "nextRequirement": "Bound or isolate capture/grade execution without reducing market coverage or changing predictions; test cold and failed-source paths, then repeat release checks before deployment."
+}
