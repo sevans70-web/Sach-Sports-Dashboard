@@ -49,6 +49,8 @@ export function footballBookRows(payload: any, market: string, aliases: string[]
         const q1Period = ["1q", "q1", "1", "1stquarter", "firstquarter"].includes(period);
         const baseAliases:Record<string,string[]> = {
           passing_yards:["passingyards","passyards","playerpassingyards"],
+          qb_rushing_yards:["rushingyards","rushyards","qbrushingyards"],
+          anytime_td:["anytimetd","anytimetouchdown","touchdownscorer","touchdowns"],
           rushing_yards:["rushingyards","rushyards","playerrushingyards"],
           receiving_yards:["receivingyards","receptionyards","playerreceivingyards"],
         };

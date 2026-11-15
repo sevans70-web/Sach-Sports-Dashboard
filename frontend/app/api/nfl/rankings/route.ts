@@ -1,3 +1,4 @@
+import {nflRankingPayload} from '@/lib/nfl-ranking-display';
 import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
@@ -53,12 +54,12 @@ const OWLS_MARKETS:Record<NflMarketKey,string[]>={
  q1_passing_yards:["passing_yards_1q","passing_1q_yards","1q_passing_yards","first_quarter_passing_yards"],
  q1_receiving_yards:["receiving_yards_1q","receiving_1q_yards","1q_receiving_yards","first_quarter_receiving_yards"],
  q1_receptions:["receptions_1q","receiving_receptions_1q","1q_receptions","first_quarter_receptions"],
- q1_qb_rushing_yards:["qb_rushing_yards_1q","qb_rushing_1q_yards","1q_qb_rushing_yards","first_quarter_qb_rushing_yards"],
+ q1_qb_rushing_yards:["rushing_yards_1q","rushing_1q_yards","1q_rushing_yards","qb_rushing_yards_1q","qb_rushing_1q_yards","1q_qb_rushing_yards","first_quarter_qb_rushing_yards"],
  q1_rushing_yards:["rushing_yards_1q","rushing_1q_yards","1q_rushing_yards","first_quarter_rushing_yards"],
  q1_pass_attempts:["pass_attempts_1q","passing_attempts_1q","1q_pass_attempts","first_quarter_pass_attempts"],
  q1_pass_completions:["pass_completions_1q","passing_completions_1q","1q_pass_completions","first_quarter_pass_completions"],
  q1_rushing_receiving_yards:["rushing_receiving_yards_1q","rush_receiving_yards_1q","1q_rushing_receiving_yards","first_quarter_rushing_receiving_yards"],
- q1_anytime_td:["anytime_td_1q","touchdown_scorer_1q","1q_anytime_td","first_quarter_anytime_td"],
+ q1_anytime_td:["touchdowns_1q","anytime_td_1q","touchdown_scorer_1q","1q_anytime_td","first_quarter_anytime_td"],
  q1_rush_attempts:["rush_attempts_1q","rushing_attempts_1q","1q_rush_attempts","first_quarter_rush_attempts"],
 };
 const HISTORY_KEYS:Partial<Record<NflMarketKey,string[]>>={
@@ -311,7 +312,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
     const key=market+'|'+day;
     if(req.nextUrl.hostname!=='sach-capture.internal'&&!refreshes.has(key)){refreshes.add(key);after(async()=>{try{await rankings(req,true)}catch(e){console.error('[NFL background refresh]',market,e)}finally{refreshes.delete(key)}})}
     const rows=(market==='first_td'||market==='anytime_td')&&retained.rows.some((r:any)=>Date.parse(r.gameTime)<=Date.now())?await liveContext(retained.rows,lockSchedule,market):retained.rows;
-     return NextResponse.json({...retained,rows},{headers:{'Cache-Control':'no-store'}});
+     return NextResponse.json(nflRankingPayload({...retained,rows}),{headers:{'Cache-Control':'no-store'}});
    }
   }
   let providerError:string|null=null;
@@ -430,8 +431,8 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   for(let slot=1;slot<=75&&futureIndex<future.length;slot++){if(lockedRanks.has(slot))continue;merged.push({...future[futureIndex++],rank:slot});}
   merged.sort((a:any,b:any)=>Number(a.rank)-Number(b.rank));
   return await rankingJson({...rankingSourceState(merged.length,providerError),providerError,degraded:Boolean(providerError),source:providerError?"Sach model watch + available sportsbook feeds + saved daily slate":"Owls Insight + frozen daily slate",market,rows:independentFootballRankings(merged,25,boardDay),boardDay,sportsbookOnly:merged.every(r=>r.marketBacked),validRankingCount:merged.length,recoveredPredictions:savedToday.predictions.length,recoveredSnapshots:Number(savedToday.snapshotCount||0),historySaved,historyConnected:savedToday.connected,historyWritable:savedToday.writable,updatedAt:new Date().toISOString()},{headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}},locked);
- }catch(e){if(locked?.rows?.length)return NextResponse.json(locked,{headers:{'Cache-Control':'no-store'}});console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
+ }catch(e){if(locked?.rows?.length)return NextResponse.json(nflRankingPayload(locked),{headers:{'Cache-Control':'no-store'}});console.error("[NFL RANKINGS API]",market,e instanceof Error?e.message:String(e));return rankingJson({success:false,source:"Owls Insight",market,rows:[],sportsbookOnly:true,error:e instanceof Error?e.message:"NFL rankings unavailable"},{status:500,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0","Pragma":"no-cache"}})}
 }
 
-async function rankingJson(payload:any,init?:ResponseInit,locked?:any){let source=guardRankingPayload(payload,"nfl");if(locked?.rows?.length){const frozen=new Set(locked.lockedSlates);source={...source,rows:source.rows.filter((r:any)=>!frozen.has(r.slateKey))};}let board=await attachFittedResearchForecasts(source,"nfl");if(locked?.rows?.length){const slates=new Set(locked.lockedSlates);board={...board,lockedSlates:locked.lockedSlates,rows:[...locked.rows,...board.rows.filter((r:any)=>!slates.has(r.slateKey))]};}board={...board,validRankingCount:board.rows.length,publicRankingCount:board.rows.length};after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(board,init)}
+async function rankingJson(payload:any,init?:ResponseInit,locked?:any){let source=guardRankingPayload(payload,"nfl");if(locked?.rows?.length){const frozen=new Set(locked.lockedSlates);source={...source,rows:source.rows.filter((r:any)=>!frozen.has(r.slateKey))};}let board=await attachFittedResearchForecasts(source,"nfl");if(locked?.rows?.length){const slates=new Set(locked.lockedSlates);board={...board,lockedSlates:locked.lockedSlates,rows:[...locked.rows,...board.rows.filter((r:any)=>!slates.has(r.slateKey))]};}board={...board,validRankingCount:board.rows.length,publicRankingCount:board.rows.length};after(async()=>{try{await publishFeaturedBoards("nfl",[board])}catch(e){console.error("[featured publication]",e)}});return NextResponse.json(nflRankingPayload(board),init)}
 

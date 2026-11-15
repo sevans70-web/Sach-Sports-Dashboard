@@ -6,6 +6,7 @@ import {resolve,dirname,join,relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const app=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const release=join(app,'releases/dashboard-retry-2026-11-15');
+export const combinedRelease=join(app,'releases/dashboard-nfl-capture-2026-11-15');
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const ordered=v=>Array.isArray(v)?v.map(ordered):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,ordered(v[k])])):v;
 export function fingerprint(output){
@@ -16,13 +17,14 @@ export function fingerprint(output){
  const build=JSON.parse(readFileSync(join(output,'config.json')));if(build.buildContext?.isPreview!==false||build.buildContext?.mode!=='production')throw Error('release_build_context_mismatch');
  return {digest:sha(JSON.stringify(ordered({config,files}))),files:files.length,worker:config.name};
 }
-export function prepare(output=join(app,'.cloudflare/output/v0')){
- const manifest=JSON.parse(readFileSync(join(release,'manifest.json'))),archive=join(release,'candidate.tar.gz');
+export function prepare(output=join(app,'.cloudflare/output/v0'),selectedRelease=release){
+ if(![release,combinedRelease].includes(selectedRelease))throw Error('unknown_release');
+ const manifest=JSON.parse(readFileSync(join(selectedRelease,'manifest.json'))),archive=join(selectedRelease,'candidate.tar.gz');
  if(manifest.status!=='awaiting_user_approval'||sha(readFileSync(archive))!==manifest.archive.sha256)throw Error('release_manifest_or_archive_mismatch');
  const names=execFileSync('tar',['-tzf',archive],{encoding:'utf8'}).trim().split('\n');if(names.some(n=>n.startsWith('/')||n.split('/').includes('..')))throw Error('unsafe_archive');
  rmSync(output,{recursive:true,force:true});mkdirSync(output,{recursive:true});execFileSync('tar',['-xzf',archive,'-C',output]);const result=fingerprint(output);if(result.digest!==manifest.bundleDigest)throw Error('release_digest_mismatch');return {...result,sourceCommit:manifest.sourceCommit,approvalRequired:true};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- const mode=process.argv[2];if(process.argv.length!==3||!['--prepare-only','--dry-run'].includes(mode))throw Error('Use --prepare-only or --dry-run. Upload requires separate user approval.');
- console.info('[dashboard-retry-artifact]',JSON.stringify(prepare()));if(mode==='--dry-run')execFileSync(process.execPath,[join(app,'scripts/deploy-cloudflare.mjs'),'--dry-run'],{cwd:app,stdio:'inherit'});
+ const mode=process.argv[2];if(![3,4].includes(process.argv.length)||(process.argv[3]&&process.argv[3]!=='--combined')||!['--prepare-only','--dry-run'].includes(mode))throw Error('Use --prepare-only or --dry-run. Upload requires separate user approval.');
+ console.info('[dashboard-retry-artifact]',JSON.stringify(prepare(undefined,process.argv[3]==='--combined'?combinedRelease:release)));if(mode==='--dry-run')execFileSync(process.execPath,[join(app,'scripts/deploy-cloudflare.mjs'),'--dry-run'],{cwd:app,stdio:'inherit'});
 }
