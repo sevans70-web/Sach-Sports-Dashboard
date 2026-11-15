@@ -16,3 +16,9 @@ test('stale, wrong-day, already-started and unverified fresh rows cannot replace
  assert.equal(retainedNflRankingPayload(null,null,market,'2026-10-25',now),null);
  assert.equal(retainedNflRankingPayload(locked,published,market,'2026-10-26',now),null);
 });
+test('a fresh job-published KV board fills later blocks while preserving the original early row',async()=>{
+ const {cachePregameBoard,readPregameBoard}=await loadTs(new URL('../lib/ranking-board-cache.ts',import.meta.url));const cache=new Map(),binding={put:async(k,v)=>cache.set(k,JSON.parse(v)),get:async k=>cache.get(k)||null};
+ await cachePregameBoard(binding,'nfl',market,{success:true,market,boardDay:'2026-10-25',updatedAt:new Date(now).toISOString(),rows:[frozen,upcoming]},now);
+ const hit=await readPregameBoard(binding,'nfl',market,'2026-10-25',now);assert.equal(hit.pregameOnly,false);assert.equal(hit.board.rows.length,1);
+ const merged=retainedNflRankingPayload(locked,hit.board,market,'2026-10-25',now);assert.equal(merged.rows.length,2);assert.equal(merged.rows[0],frozen);assert.equal(merged.rows[1].playerId,'future');assert.equal(merged.rows[1].sportsbookLine,50.5);
+});

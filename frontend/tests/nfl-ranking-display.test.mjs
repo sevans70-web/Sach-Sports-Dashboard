@@ -30,7 +30,7 @@ test('negative and zero exact-price NFL comparisons remain signed and never acqu
  p.underProbability=2;assert.equal(nflRankingDisplay(row,now).ev.status,'unavailable');
 });
 test('quarter sportsbook category aliases remain exact to period and do not borrow full-game offers',async()=>{
- const {footballBookRows}=await loadTs(new URL('../lib/football-book-quotes.ts',import.meta.url));
+ const {nflBookRows:footballBookRows}=await loadTs(new URL('../lib/nfl-book-rows.ts',import.meta.url));
  const props=[{playerName:'Fixture QB',category:'rushing_yards_1q',line:3.5,overPrice:-110,underPrice:-110,propId:'q1-rush'},{playerName:'Fixture Scorer',category:'touchdowns_1q',line:.5,overPrice:750,propId:'q1-td'}];
  const feed={data:[{homeTeam:'Home',awayTeam:'Away',commenceTime:'2026-11-15T18:00Z',books:[{key:'draftkings',lastUpdate:new Date(now).toISOString(),props}]}]};
  const qb=footballBookRows(feed,'q1_qb_rushing_yards',['rushing_yards_1q'],now,true);assert.equal(qb.length,1);assert.equal(qb[0].quotePeriod,'q1');assert.equal(qb[0].line,3.5);

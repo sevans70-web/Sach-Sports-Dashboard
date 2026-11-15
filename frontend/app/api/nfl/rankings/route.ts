@@ -1,3 +1,6 @@
+import {nflBookRows} from '@/lib/nfl-book-rows';
+import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
+import {readPregameBoard} from '@/lib/ranking-board-cache';
 import {nflRankingPayload} from '@/lib/nfl-ranking-display';
 import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
@@ -14,7 +17,7 @@ import {footballResearchSample} from "@/lib/football-history";
 import {guardRankingPayload,verifiedPropQuote} from "@/lib/prop-integrity";
 import {getOwlsPayload,owlsFailureCategory} from "@/lib/owls-provider";
 import {getSgoSupplement,sgoBookGames} from '@/lib/sgo-supplement';
-import {footballBookRows,footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
+import {footballQuoteFields,footballQuoteGame} from "@/lib/football-book-quotes";
 import {providerFetch as fetch} from "@/lib/provider-fetch";
 import {after,NextRequest,NextResponse} from "next/server";
 import {NFL_MARKETS,type NflMarketKey,cleanName,safeNumber} from "@/lib/nfl";
@@ -93,7 +96,7 @@ async function fetchOwlsRows(market:NflMarketKey){
  const [owls,sgo]=await Promise.allSettled([getOwlsPayload('nfl'),getSgoSupplement('NFL')]);
  const primary=owls.status==='fulfilled'?owls.value:null,extra=sgo.status==='fulfilled'?sgo.value:null;
  if(!primary&&!extra?.data?.length){const reason=owls.status==='rejected'?owlsFailureCategory(owls.reason):'provider_empty_feed';throw Error('NFL book feeds are unavailable: '+reason);}
- const quotes=footballBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now(),market.startsWith('q1_'));
+ const quotes=nflBookRows({data:[...(primary?.data||[]),...sgoBookGames(extra)]},market,OWLS_MARKETS[market],Date.now());
   if(market==='anytime_td'||market==='first_td')console.info('[N04 quote audit]',JSON.stringify({market,quotes:quotes.length,events:new Set(quotes.map(r=>r.eventId)).size,verifiedSourceFields:quotes.filter(r=>r.quoteVersion===1&&r.lineType==='scorer'&&r.sportsbookKey&&r.quoteUpdatedAt).length}));
   if(market.startsWith('q1_'))console.info('[N05 quarter quote audit]',JSON.stringify({sport:'nfl',market,quotes:quotes.length,events:new Set(quotes.map(q=>q.eventId)).size,validPeriod:quotes.filter(q=>q.quoteVersion===1&&q.quoteUpdatedAt&&q.sportsbookKey).length,owlStatus:owls.status,sgoStatus:sgo.status,owlEvents:primary?.data?.length||0,sgoEvents:extra?.data?.length||0,sgoWarning:extra?.warning||null,rawQ1Props:[...(primary?.data||[]),...sgoBookGames(extra)].flatMap((g:any)=>g.books||[]).flatMap((b:any)=>b.props||[]).filter((p:any)=>/^(1q|q1|1stquarter|firstquarter|1)$/i.test(String(p.periodID||p.periodId||p.period||''))).length}));
   return quotes;
@@ -305,9 +308,13 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
  try{
   const lockSchedule=await getEspnNflSchedule();
   locked=!requestedDay||requestedDay===todayKey?await lockedNflBoard(market,lockSchedule):null;
-  if(!refresh){
+  if(!refresh&&req.nextUrl.hostname!=='sach-capture.internal'){
    const day=requestedDay||activeFootballBoardDay(lockSchedule),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
-   const retained=retainedNflRankingPayload(locked,published,market,day);
+   // Dashboard jobs publish to KV while legacy shared history stays read-only.
+   // Merge current unstarted blocks with immutable originals instead of losing
+   // afternoon/evening coverage behind the first frozen early block.
+   const cached=await readPregameBoard(workerRuntimeBinding('VINEXT_KV_CACHE'), 'nfl',market,day).catch(()=>null);
+   const retained=retainedNflRankingPayload(locked,cached?.board||published,market,day);
    if(retained){
     const key=market+'|'+day;
     if(req.nextUrl.hostname!=='sach-capture.internal'&&!refreshes.has(key)){refreshes.add(key);after(async()=>{try{await rankings(req,true)}catch(e){console.error('[NFL background refresh]',market,e)}finally{refreshes.delete(key)}})}

@@ -1,3 +1,4 @@
+import {nflRankingPayload} from './lib/nfl-ranking-display';
 import dashboard from 'vinext/server/fetch-handler';
 import {cachePregameBoard,readPregameBoard} from './lib/ranking-board-cache';
 import {recordRankingMarket} from './lib/ranking-market-coverage';
@@ -24,7 +25,7 @@ export default {
   const publicBoard=request.method==='GET'&&sport&&market&&!['tomorrow','previous'].includes(slate);
   if(publicBoard&&sport==='nfl'&&/^\d{4}-\d{2}-\d{2}$/.test(day||'')&&day>=today){
    const cached=await readPregameBoard(env.VINEXT_KV_CACHE,sport,market,day);
-   if(cached?.pregameOnly)return Response.json(cached.board,{headers:{'Cache-Control':'no-store'}});
+   if(cached?.pregameOnly)return Response.json(nflRankingPayload(cached.board),{headers:{'Cache-Control':'no-store'}});
   }
   const response=await dashboard.fetch(request,env,ctx);
   if(publicBoard&&response.ok){
