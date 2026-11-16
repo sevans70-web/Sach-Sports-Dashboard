@@ -1,0 +1,25 @@
+✔ budget pause drains admitted bodies; resumed attempt requests only unfinished inputs (127.873406ms)
+✔ duplicate public inputs coalesce without sharing consumed response bodies (10.422445ms)
+✔ request timeout cancels bodies and queued work without late HTTP or checkpoints (48.726435ms)
+✔ late provider RPC after phase cancellation cannot launch HTTP (38.132274ms)
+✔ 429 persistence has reserved RPC capacity at budget edge and retries respect cooldown (1.620752ms)
+✔ genuine 404 status is briefly cached; transient errors cannot become empty player histories (2.850094ms)
+✔ each redirect hop is metered and cancellation reaches a streaming private database response (17.324516ms)
+✔ explicit manual/error redirect policies remain authoritative inside capture accounting (1.317819ms)
+✔ NBA and NFL official fetches use manual redirects and reject every redirect without forwarding credentials (26.435323ms)
+✔ official fetch preserves authentication failures and responds to caller cancellation without poisoning later reads (3.260885ms)
+✔ live scoreboards never enter the historical 15-minute cache (1.136822ms)
+✔ NBA/NFL/NHL date failures and malformed payloads cannot publish partial schedules or false empty dates (2.746206ms)
+✔ failed polls retain bounded same-sport schedules; confirmed empty dates replace them and expired dates cannot leak (0.552018ms)
+✔ scope counts bind market, date and official fixture; unknown coverage is not zero and kickoff invalidates aggregate caches (3.249295ms)
+✔ seven NBA diagnostic rows, scorer candidates and true picks remain separate in coverage (1.597663ms)
+✔ coverage caches use actual future fixture dates and reject expired/future-dated counters (1.57201ms)
+✔ NHL tomorrow roster enrichment uses tomorrow teams, not only today teams, across Toronto DST (50.365999ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1812.025542

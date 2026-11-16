@@ -1,0 +1,65 @@
+{
+  "sourceCommit": "600bd5d22811ddf17be9684b0cab2a86ed22d7ed",
+  "parent": "eaa6cf9bc9a6693908742e11ae943ee9576a7cf8",
+  "compiledBundleDigest": "ce7c248d2f422d03808379f89ff70dd48d55e448692100f2775f6103ecb4152d",
+  "configuration": "existing production compatibility date 2026-11-06; nodejs_compat; 350 subrequests; existing SQLite DO and KV; no migrations",
+  "exactFailureReplay": {
+    "artifact": "withdrawn fe2f058 package",
+    "artifactDigest": "31302af418fa34c141220edbd9b73f0c4c7015fc7284c68e0eeb9c89de415c03",
+    "request": "/api/dashboard-summary?sport=nba&scope=current",
+    "clock": "2026-11-16T04:33:39.624Z",
+    "status": 503,
+    "games": null,
+    "unsupportedRedirectAttempts": 24,
+    "officialScoreboardRequests": 0
+  },
+  "correctedColdSummary": {
+    "status": 200,
+    "games": 17,
+    "unsupportedRedirectAttempts": 0,
+    "officialScoreboardRequests": 8,
+    "missingPickCounts": null
+  },
+  "concurrentColdRequests": {
+    "summaryRequests": 2,
+    "slateRequests": 1,
+    "games": 17,
+    "scoreboardRequests": 8,
+    "databaseWrites": 0
+  },
+  "fullRegression": {
+    "passed": 830,
+    "failed": 0,
+    "skipped": 11,
+    "total": 841,
+    "skipReason": "ten separately executed compiled-summary cases plus one opt-in withdrawn-artifact diagnostic",
+    "durationMs": 281726.722524
+  },
+  "compiledRuntime": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 1,
+    "scope": "ten real compiled summary cases plus seven real compiled capture/ranking cases"
+  },
+  "instrumentedSummaryRerun": {
+    "passed": 10,
+    "failed": 0,
+    "unsupportedRedirectAttempts": 0,
+    "timeoutsAndRecovery": true
+  },
+  "focused": {
+    "passed": 17,
+    "failed": 0,
+    "scope": "redirect policies, request budget, schedule retention and counts"
+  },
+  "typescriptDiagnostics": 0,
+  "productionBuild": true,
+  "dryRun": true,
+  "network": "All compiled provider/database traffic intercepted; synthetic binding values only. Recorded public NBA scoreboards used for schedule replay. No production records read by the test runtime or written.",
+  "productionDeployed": false,
+  "automaticBuilds": "paused",
+  "cw08Changed": false,
+  "readyForControlledReleasePreparation": true,
+  "complete": false,
+  "remaining": "Freeze a fresh artifact from the verified code and obtain approval; then complete real production browser and scheduled capture/grading acceptance with immediate compatible fallback on critical failure."
+}
