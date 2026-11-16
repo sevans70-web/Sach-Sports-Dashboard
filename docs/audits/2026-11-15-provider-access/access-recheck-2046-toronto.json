@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-11-16T01:46:04.880Z",
+  "torontoDate": "2026-11-15",
+  "method": "read-only Cloudflare telemetry and research status; one dashboard request per sport stopped at edge, no retry",
+  "research": {
+    "receipts": 930,
+    "previousReceipts": 902,
+    "grades": 658,
+    "pendingUploads": 0,
+    "lastStorageError": null,
+    "activePhase": "roster",
+    "activeRetries": 0,
+    "activeError": null,
+    "owlSuccesses": [
+      {
+        "at": 1794792782730,
+        "toronto": "2026-11-15 20:33:02 EST",
+        "status": 200,
+        "trace": "fcf44a3bd8213ac436da9788d91b7545"
+      },
+      {
+        "at": 1794792094625,
+        "toronto": "2026-11-15 20:21:34 EST",
+        "status": 200,
+        "trace": "dc89591d6a8475c7455adf39c60ee8c5"
+      },
+      {
+        "at": 1794792091635,
+        "toronto": "2026-11-15 20:21:31 EST",
+        "status": 200,
+        "trace": "1fd153eaf62411f95097bfe8e8531a79"
+      }
+    ],
+    "endpoint": "https://api.owlsinsight.com/api/v1/nhl/props"
+  },
+  "dashboardLastObserved": {
+    "toronto": "2026-11-15 20:01:48 EST",
+    "trace": "0b778bd73b9de0373a8afacbaff6fb38",
+    "owlNhlStatus": 403,
+    "sportsGameOddsStatus": 401
+  },
+  "directDashboardCheck": {
+    "nflMarket": "passing_yards",
+    "nhlMarket": "shots_on_goal",
+    "httpStatus": 403,
+    "cloudflareError": 1010,
+    "category": "browser_signature_banned",
+    "retryable": false,
+    "meaning": "Edge access rejection, not evidence of an application or upstream provider response; no alternate identity, host or proxy attempted"
+  },
+  "billing": "Still unverified; broader connected email search returned no provider correspondence",
+  "configurationMutations": 0,
+  "deployments": 0,
+  "recommendation": "Spend nothing yet; research access has recovered for observed reads, dashboard recovery and subscription status still require verification"
+}
