@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "startedAt": "2026-11-15T07:01:00.431Z",
+  "completedAt": "2026-11-15T07:31:06.876Z",
+  "driveFolderId": "1kJ7JJu3moVnfUkNuDNvbfb8VpDYxHJ-r",
+  "unverifiedSourcePaths": [],
+  "excludedOperationalFiles": [
+    "sach-history/_system/last-backup.json",
+    "sach-history/_system/backup-manifest.json"
+  ],
+  "excludedOperationalPrefixes": [
+    "sach-history/_system/protected-outbox/"
+  ],
+  "errors": [],
+  "files": 100442,
+  "sourcePaths": 100268,
+  "bytes": 1689879773,
+  "manifestId": "1qSjJJmD1OUEeqCYDDtxrPigmLiLGbsuY",
+  "manifestBytes": 34526740,
+  "manifestSha256": "116d90a60c34c802dffc170cce88705de57f3ff4129f4dae1cd1dafb97b4e2ed",
+  "sourcePathReconciliationPassed": true,
+  "uniquePaths": true,
+  "sourceReportedComplete": true,
+  "allReferencedFilesIndependentlyDownloaded": false,
+  "fullVolumeRestorePassed": false,
+  "scope": "Legacy full-volume manifest, not a backup of newer Cloudflare database tables"
+}

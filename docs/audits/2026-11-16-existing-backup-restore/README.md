@@ -35,6 +35,12 @@ The root listing is bounded to the 100 most recent returned objects; this is not
 
 `restore-result.json` records every selected manifest and referenced part ID, expected digest, bytes, source fingerprint and result. `source-coverage.json` and `coverage-comparison.json` retain the actual day/table counts. There are 9,346 current source rows across the checked history/original/pick/grade tables dated November11–16 that are outside these selected archive scopes. That number includes shared college history; it is not a count of betting picks. The29 CFB originals on November10 are also outside the current separate NBA/NFL/NHL pregame archive scope; the CFB history restore does not certify those independent original rows. Legacy full-volume files are preserved but were not treated as a proven current complete snapshot.
 
+## Existing full-volume backup also identified
+
+The existing legacy child contains a completed full-volume manifest `1qSjJJmD1OUEeqCYDDtxrPigmLiLGbsuY` (`backup-manifest-2026-11-15T07-01-00-431Z.json`). It completed November15 at02:31:06 Toronto, with100,442file receipts /1,689,879,773bytes and100,268source paths. Its34,526,740byte manifest was downloaded locally without inline payload output. It reports zero errors/unverified source paths; independent inventory checks confirm unique file paths, every initial source path covered, and well-formed per-file IDs/hashes/sizes. `legacy-full-manifest-summary.json` pins the downloaded manifest SHA-256.
+
+This identifies a completed legacy backup; it is not a claim that all100,442remote files have been independently re-downloaded or fully restored in this task. The manifest predates the newest Cloudflare database receipts, and does not replace the separate Worker pregame-table backup. No request to share another folder is justified.
+
 ## Integrity and isolated restore
 
 Files were grounded by Drive metadata before authenticated streamed download. No provider/Google API credentials were requested, copied or placed in evidence. Raw payloads and the restored SQLite database remain local under `/workspace/work/r1-backup-restore-2026-11-16`; they are not uploaded to GitHub or Drive.
