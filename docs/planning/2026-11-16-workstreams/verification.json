@@ -1,0 +1,145 @@
+{
+  "originalPopulatedCellsPreserved": 1032,
+  "originalValueChanges": 0,
+  "classifiedPhysicalRows": 71,
+  "classifiedPlanningCellsVerified": 568,
+  "uniqueOutstandingIDs": 66,
+  "activeRepairs": 27,
+  "pausedRepairs": 19,
+  "futureIdeas": 20,
+  "completedIDsPreserved": 35,
+  "mirroredRowsDeduplicated": 5,
+  "reviewSubchecksLinked": 8,
+  "countFormulaReadback": true,
+  "classificationValidationReadback": true,
+  "filterLinksVerified": 4,
+  "newCellsWrapped": true,
+  "nativeRenderedSheetInspection": "unavailable; native values/formulas/validation/wrapping verified without changing original formatting",
+  "deployed": false,
+  "date": "2026-11-16",
+  "sourceCommits": [
+    "600bd5d22811ddf17be9684b0cab2a86ed22d7ed",
+    "fe353dcad99fcfe65a3c66a6a290ad3aabac277e"
+  ],
+  "workstreamCounts": {
+    "A": {
+      "Active repair": 7,
+      "Paused repair": 5,
+      "Future idea \u2014 not approved repair": 1
+    },
+    "B": {
+      "Active repair": 4,
+      "Paused repair": 5,
+      "Future idea \u2014 not approved repair": 3
+    },
+    "C": {
+      "Active repair": 11,
+      "Paused repair": 5,
+      "Future idea \u2014 not approved repair": 10
+    },
+    "D": {
+      "Active repair": 5,
+      "Paused repair": 4,
+      "Future idea \u2014 not approved repair": 6
+    }
+  },
+  "activeItemIDs": {
+    "A": [
+      "S02",
+      "A01",
+      "L10",
+      "L11",
+      "CW11",
+      "CW13",
+      "CW14"
+    ],
+    "B": [
+      "Q01",
+      "L04",
+      "L05",
+      "CW10"
+    ],
+    "C": [
+      "P01",
+      "N05",
+      "F01",
+      "F02",
+      "F03",
+      "F04",
+      "CW04",
+      "CW07",
+      "CW08",
+      "CW09",
+      "CW15"
+    ],
+    "D": [
+      "C03",
+      "U03",
+      "CW02",
+      "CW03",
+      "CW12"
+    ]
+  },
+  "tracker": "https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit",
+  "overviewSheetId": 2026111601,
+  "filterViews": [
+    {
+      "id": 1661544225,
+      "title": "A \u2014 Infrastructure & Stability"
+    },
+    {
+      "id": 345502092,
+      "title": "B \u2014 Data Sources & Collection"
+    },
+    {
+      "id": 1207426006,
+      "title": "C \u2014 Predictions & Analytics"
+    },
+    {
+      "id": 760982607,
+      "title": "D \u2014 Dashboard Presentation"
+    }
+  ],
+  "automaticBuilds": [
+    {
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext"
+    }
+  ],
+  "dashboardDeployment": [
+    {
+      "id": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+      "versions": [
+        {
+          "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-16T04:34:08.794804Z"
+    }
+  ],
+  "researchDeployment": [
+    {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-14T19:54:01.859122Z"
+    }
+  ],
+  "researchSchedule": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  }
+}
