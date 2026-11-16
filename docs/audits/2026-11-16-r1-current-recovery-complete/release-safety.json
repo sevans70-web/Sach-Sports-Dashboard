@@ -1,0 +1,106 @@
+{
+  "dashboard": {
+    "id": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Immediate compatible fallback: approved recovered candidate failed live NBA dashboard-summary HTTP 503 under foreground browser and scheduled capture. Preserve all namespace state, original/new receipts and grades. CW08 unchanged.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-16T04:34:08.794804Z"
+  },
+  "compatibilityDate": "2026-11-06",
+  "limits": {
+    "subrequests": 350
+  },
+  "bindings": [
+    {
+      "name": "ASSETS",
+      "type": "assets"
+    },
+    {
+      "name": "BACKUP_DRIVE_FOLDER_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "DASHBOARD_JOBS",
+      "type": "durable_object_namespace",
+      "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+      "class_name": "DashboardJobQueue"
+    },
+    {
+      "name": "GOOGLE_OAUTH_CLIENT_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "GOOGLE_OAUTH_REFRESH_TOKEN",
+      "type": "secret_text"
+    },
+    {
+      "name": "OWLS_INSIGHT_API_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "SPORTSGAMEODDS_API_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "SUPABASE_SECRET_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "SUPABASE_URL",
+      "type": "secret_text"
+    },
+    {
+      "name": "VINEXT_KV_CACHE",
+      "type": "kv_namespace",
+      "namespace_id": "644df6a469e84dba90c8f7dac410f895"
+    }
+  ],
+  "automaticBuildFilters": [
+    {
+      "includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "excludes": []
+    }
+  ],
+  "research": {
+    "dashboardDeployment": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+    "researchDeployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "automaticBuildFilters": [
+      {
+        "includes": [
+          "__cw08_manual_release_only__"
+        ],
+        "excludes": []
+      }
+    ],
+    "researchSchedules": {
+      "schedules": [
+        {
+          "cron": "*/15 * * * *",
+          "created_on": "2026-11-14T05:24:15.908994Z",
+          "modified_on": "2026-11-14T05:24:15.908994Z"
+        }
+      ]
+    }
+  },
+  "productionDeployed": false,
+  "productionWrites": 0,
+  "credentialsChanged": false,
+  "sharingChanged": false,
+  "researchTablesRead": false
+}

@@ -1,5 +1,7 @@
 # Existing dashboard backup discovery and isolated restore
 
+**Latest status:** [explicitly authorized current backup and real Drive restore passed](../2026-11-16-r1-current-recovery-complete/README.md) for all20,466records. The earlier access/export/current-coverage blockers below are preserved historical evidence and are superseded. Frozen R1 is ready for controlled deployment approval, not deployed or production-complete.
+
 ## Result
 
 **No Drive access change or new backup folder is needed.** The existing folder is [Sach Sports - Railway Backup](https://drive.google.com/drive/folders/1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe). Direct folder metadata confirms `sachsportsplatform@gmail.com` is its owner and the existing backup service account is a writer. The legacy name is not the dashboard hosting platform; production remains Cloudflare.

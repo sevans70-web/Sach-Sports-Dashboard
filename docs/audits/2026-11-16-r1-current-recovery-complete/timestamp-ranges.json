@@ -1,0 +1,34 @@
+[
+  {
+    "table_name": "history_documents",
+    "records": 11615,
+    "first_game_day": "2026-10-16",
+    "last_game_day": "2026-11-15",
+    "earliest_receipt": "2026-10-24T20:14:30.258+00:00",
+    "latest_receipt": "2026-11-15T11:02:27.360774+00:00"
+  },
+  {
+    "table_name": "worker_pregame_grades",
+    "records": 1269,
+    "first_game_day": "2026-11-09",
+    "last_game_day": "2026-11-15",
+    "earliest_receipt": "2026-11-10T03:00:54.832853+00:00",
+    "latest_receipt": "2026-11-15T19:01:04.091106+00:00"
+  },
+  {
+    "table_name": "worker_pregame_originals",
+    "records": 6109,
+    "first_game_day": "2026-11-09",
+    "last_game_day": "2026-11-16",
+    "earliest_receipt": "2026-11-09T06:20:59.675528+00:00",
+    "latest_receipt": "2026-11-16T04:32:51.705561+00:00"
+  },
+  {
+    "table_name": "worker_pregame_picks",
+    "records": 1473,
+    "first_game_day": "2026-11-09",
+    "last_game_day": "2026-11-15",
+    "earliest_receipt": "2026-11-09T06:41:01.761302+00:00",
+    "latest_receipt": "2026-11-15T17:59:12.898012+00:00"
+  }
+]

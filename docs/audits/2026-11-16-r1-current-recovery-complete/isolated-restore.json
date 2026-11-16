@@ -1,0 +1,26 @@
+{
+  "schema": "sach-dashboard-recovery-restore/v1",
+  "passed": true,
+  "productionModified": false,
+  "duplicatesPrevented": true,
+  "sourceRecoveryPoint": "2026-11-16 15:31:31.088141+00",
+  "tables": {
+    "history_documents": {
+      "records": 11615,
+      "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    "worker_pregame_originals": {
+      "records": 6109,
+      "inventory": "818aaa5e07e8e6a79ef98a1fbbc880f9"
+    },
+    "worker_pregame_picks": {
+      "records": 1473,
+      "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+    },
+    "worker_pregame_grades": {
+      "records": 1269,
+      "inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  },
+  "totalRecords": 20466
+}

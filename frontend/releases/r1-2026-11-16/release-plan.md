@@ -1,6 +1,6 @@
 # R1 — Stability and Existing-Ranking Recovery
 
-**Development/rehearsal authorized. Upload not authorized. Rehearsal is blocked pending the complete backup/restore gate.** The completion tracker remains the source of truth; CW11/V62 remain open. No completed row is reopened or moved.
+**Pre-deployment rehearsal and current-backup gates passed. Ready for controlled deployment approval; upload is NOT authorized.** The completion tracker remains the source of truth; CW11/V62 remain open. No completed row is reopened or moved.
 
 ## Frozen identity and included fixes
 
@@ -18,17 +18,19 @@ Source `2bf33d6f9bfc0a57aaa42b7346ebcce65422680a`; application repairs through `
 
 No frozen research model, protocol, historical pick, selection or grade is rewritten. No nflverse production adoption, provider switch, additional subscription or dashboard redesign.
 
-## Backup follow-up
+## Verified current backup
 
-The existing folder `1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe` is owned by the connected Sach Sports account. Eight scheduled manifests/11parts passed an actual isolated restore (489history documents/1008pregame records). Earlier access assumptions are superseded. These archives cover November10 (NFL pregame November9), not all newer production records; the broader complete-current recovery-point gate remains unverified. Use the same location and preserve every existing file. See `docs/audits/2026-11-16-existing-backup-restore/README.md`.
+The existing folder `1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe` remains the destination and is owned by `sachsportsplatform@gmail.com`. Explicitly authorized current export and authenticated Drive readback/isolated restore passed for all20,466records:11615history,6109originals,1473picks,1269grades. Full source counts and ordered row fingerprints remained unchanged through November16 11:07:38AM Toronto. All11615history payload SHA256 checksums also match; duplicate insertion is rejected.
+
+The immutable completion manifest is `1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf`, SHA256 `80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b`. Three data objects hold132unique internal parts; no previous backup, production row, credential, sharing grant or CW08 table was changed/accessed. See `docs/audits/2026-11-16-r1-current-recovery-complete/README.md`. This supersedes the earlier missing-access/current-coverage blocker; it does not claim production dashboard acceptance.
 
 ## Before any approval request
 
 Use `node scripts/prepare-r1-release.mjs --prepare-only` or `--dry-run`; neither supports upload. Tests must use the extracted archive, not a subsequently rebuilt directory. See the audit README for exact commands and the distinction between synthetic faults, authentic recorded input and current production reads.
 
-Required gate still open: locate the latest complete history AND pregame backup manifests, verify every part's bytes/checksum, restore into an isolated sink and compare full inventory/counts/checksums. Current daily archive success logs have `restored:null`, and do not establish this gate. Do not substitute old legacy archive segments, an empty sink, a successful job log or a unit fixture for the complete backup.
+The complete current-backup/restore gate is passed by the real four-table Drive round trip above. The earlier832-regression/19-compiled-check rehearsal remains tied to this exact frozen artifact;22focused backup/artifact checks pass after the offline verifier's source-order correction. No application/model rebuild or code change was introduced into the candidate.
 
-Confirm current bindings, fallback, fixed-cutoff inventories, fresh dashboard-bound OWL access, paused automatic-build filter and unchanged CW08 before requesting approval. Keep earlier withdrawn candidates quarantined.
+Separate deployment approval is still required. Immediately before an approved upload, recheck artifact/config identity, existing bindings/schedules, compatible fallback availability, source inventories/new receipts, dashboard-bound provider access and paused builds. Authentication evidence is timestamped and is not a perpetual availability guarantee. Stop on any failed critical preflight; keep earlier withdrawn candidates quarantined.
 
 ## Controlled acceptance after separate approval
 

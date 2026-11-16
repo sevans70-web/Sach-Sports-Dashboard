@@ -1,5 +1,7 @@
 # R1 current recovery point — export blocked by automatic approval review
 
+**Latest status:** [explicitly authorized current backup and real Drive restore passed](../2026-11-16-r1-current-recovery-complete/README.md) for all20,466records. The earlier access/export/current-coverage blockers below are preserved historical evidence and are superseded. Frozen R1 is ready for controlled deployment approval, not deployed or production-complete.
+
 Source branch starts at8721fa7. No R1 deployment, production record change, backup overwrite, Drive sharing change or research Worker operation is performed.
 
 ## Verified current source and gap

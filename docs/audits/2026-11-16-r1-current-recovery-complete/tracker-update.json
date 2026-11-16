@@ -1,0 +1,12 @@
+{
+  "spreadsheet": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+  "workstreamSheet": 2026111601,
+  "cw11Row": 24,
+  "cw11Status": "Needs verification",
+  "currentBackupGate": "PASSED",
+  "r1Readiness": "Ready for controlled deployment approval; not deployed; real production acceptance pending",
+  "v62HistoricalFailurePreserved": true,
+  "completedRowsMoved": 0,
+  "completedItemsReopened": 0,
+  "sourceTablesOnly": true
+}

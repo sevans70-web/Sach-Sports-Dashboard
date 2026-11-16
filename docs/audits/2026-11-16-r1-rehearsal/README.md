@@ -1,5 +1,7 @@
 # R1 rehearsal — frozen, not deployed; backup restore gate open
 
+**Latest status:** [explicitly authorized current backup and real Drive restore passed](../2026-11-16-r1-current-recovery-complete/README.md) for all20,466records. The earlier access/export/current-coverage blockers below are preserved historical evidence and are superseded. Frozen R1 is ready for controlled deployment approval, not deployed or production-complete.
+
 Follow-up: [existing-folder discovery and real archive restore](../2026-11-16-existing-backup-restore/README.md) supersedes the access-blocker assessment below. The owner account already has access; eight scheduled manifests restore successfully. Full-current recovery coverage remains a separate unverified gate. No new folder/sharing is needed.
 
 The tracker authorizes R1 development and verification. It does not authorize a deployment. The production dashboard still runs compatible fallback `a48c431a-5c3e-4491-8529-38cb20dfa898`, deployment `4e8f8721-6e0a-4836-b877-9446a0f360d0`. CW11 and failed production verification V62 remain open. No item moved to 100% completed.

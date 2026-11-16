@@ -1,0 +1,30 @@
+✔ full current backup verifies every table and losslessly restores all fields with duplicate prevention (29.704296ms)
+✔ missing pages and changed source inventory cannot produce a completed snapshot (3.818251ms)
+✔ tampered remote bytes, source row hash and duplicated parts are rejected before restore (3.730854ms)
+✔ database source order survives page completion order and SQLite readback without assuming binary collation (9.972698ms)
+✔ offline restoration reads every field back from new SQLite storage and refuses to overwrite it (15.852148ms)
+✔ offline restore rejects missing archive evidence and rolls back all inserted records (4.36869ms)
+✔ offline restore rejects tampered archive evidence and rolls back all inserted records (6.03455ms)
+✔ offline restore rejects duplicate archive evidence and rolls back all inserted records (5.536069ms)
+✔ R1 extracts its frozen production artifact and detects changed code or bindings (1279.049038ms)
+✔ R1 preparation cannot upload or accept deployment flags (317.761865ms)
+✔ archives every stream, verifies byte-for-byte restores, and reuses a retried archive (123.784624ms)
+✔ never publishes a manifest for a changed or corrupt source document (0.504949ms)
+✔ the daily schedule rotates each sport and selects Toronto history dates (23.89746ms)
+✔ two-minute recent grading cycles only NBA NFL NHL, preserving other sports for daily archive (2.816406ms)
+✔ successive checks of the same sport advance independent replay batches (0.875723ms)
+✔ recent replay reads checksum-protected finals without uploading to Drive (1.764548ms)
+✔ a tampered protected receipt stops read-only grading replay (1.134117ms)
+✔ Cloudflare staging routes the existing pregame cron to independent postgame replay (14.618927ms)
+✔ independently backs up quote originals, picks and grades, then verifies exact restoration (39.092067ms)
+✔ no manifest is published if source inventory changes while archiving (1.872671ms)
+✔ missing active sport records need no Drive authentication or writes (0.425592ms)
+✔ rejects a source capture that was made after official kickoff (0.407429ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2418.702606
