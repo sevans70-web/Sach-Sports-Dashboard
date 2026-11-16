@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "timestamp": 1794826440168,
+      "worker": "sach-sports-cloudflare-test",
+      "path": "/api/v1/nfl/props",
+      "status": 200,
+      "durationMS": 574
+    },
+    {
+      "timestamp": 1794826440168,
+      "worker": "sach-sports-cloudflare-test",
+      "durationMS": 575
+    }
+  ]
+}

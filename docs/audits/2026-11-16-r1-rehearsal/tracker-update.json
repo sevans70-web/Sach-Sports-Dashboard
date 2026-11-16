@@ -1,0 +1,21 @@
+{
+  "spreadsheet": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+  "sourceOfTruth": true,
+  "updatedRanges": [
+    "'Workstreams & release plan'!B21",
+    "'Workstreams & release plan'!B30:B33",
+    "'Workstreams & release plan'!B50",
+    "'Workstreams & release plan'!A90:H97",
+    "'Repair checklist'!N24:P24",
+    "'Repair checklist'!S24",
+    "'Verification log'!E63:G63"
+  ],
+  "readBackVerified": true,
+  "cw11Status": "Blocked",
+  "v62OriginalFailurePreserved": true,
+  "completedRowsMoved": 0,
+  "completedItemsReopened": 0,
+  "nativeSheetRenderVerified": false,
+  "preapprovalGate": "Complete latest history and pregame archive isolated restore remains unverified",
+  "deploymentApprovalRequested": false
+}

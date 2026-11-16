@@ -1,0 +1,108 @@
+{
+  "environment": "LOCAL compiled production candidate; captured actual live November 15 API responses; no outbound database or provider writes",
+  "markets": [
+    {
+      "market": "passing_yards",
+      "displayed": 16,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "passing_tds",
+      "displayed": 16,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "passing_interceptions",
+      "displayed": 16,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "qb_rushing_yards",
+      "displayed": 16,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "passing_rushing_yards",
+      "displayed": 16,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "rushing_yards",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "receiving_yards",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "receptions",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "rushing_receiving_yards",
+      "displayed": 21,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "anytime_td",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "first_td",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "sacks",
+      "displayed": 24,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "tackles",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "tackles_assists",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "q1_passing_yards",
+      "displayed": 16,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "q1_receiving_yards",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    },
+    {
+      "market": "q1_rushing_yards",
+      "displayed": 25,
+      "picks": 0,
+      "explained": true
+    }
+  ],
+  "pageErrors": []
+}

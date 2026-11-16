@@ -1,0 +1,35 @@
+{
+  "worker": "sach-sports-cloudflare-test",
+  "userAgent": "SachSports-ReleaseAudit/1.0",
+  "method": "existing public dashboard route and actual Worker binding; no provider key in audit client",
+  "checks": [
+    {
+      "path": "/api/nfl/rankings?market=passing_yards&day=2026-11-16",
+      "status": 200,
+      "ray": "a5b6015e9eb6e895-MSP",
+      "observedAt": "2026-11-16T11:02:46.944Z",
+      "milliseconds": 376,
+      "success": true,
+      "source": "Owls Insight + frozen daily slate",
+      "boardDay": "2026-11-16",
+      "rows": 2,
+      "freshVerifiedQuotes": 2,
+      "latestQuoteAt": "2026-11-16T10:53:54.260Z",
+      "accessEvidence": "fresh_dashboard_bound_quotes"
+    },
+    {
+      "path": "/api/nhl/rankings?market=shots_on_goal&slate=tomorrow",
+      "status": 200,
+      "ray": "a5b601600d40a1cf-MSP",
+      "observedAt": "2026-11-16T11:02:50.160Z",
+      "milliseconds": 3215,
+      "success": true,
+      "source": "NHL upcoming sportsbook markets",
+      "boardDay": "2026-11-17",
+      "rows": 25,
+      "freshVerifiedQuotes": 0,
+      "latestQuoteAt": null,
+      "accessEvidence": "retained_or_unpriced_rows_only"
+    }
+  ]
+}

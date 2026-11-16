@@ -1,0 +1,3 @@
+{"digest":"d7714dc0cac2f05950a0eed9b7bd7a9aebd82893465c25635f4dbe8907f4f71b","files":424,"worker":"sach-sports-cloudflare-test","sourceCommit":"2bf33d6f9bfc0a57aaa42b7346ebcce65422680a","archiveSha256":"f6bf43437e726879c89cf1ef274d061d0e0736d2e918e8cd1410b92c426f9b54","approvalRequired":true,"productionDeployed":false,"rehearsal":"rehearsal_blocked"}
+Local compiled candidate http://127.0.0.1:3027; outbound disabled
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled

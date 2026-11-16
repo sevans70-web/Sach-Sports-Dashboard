@@ -1,0 +1,46 @@
+{
+  "scope": "Read-only production logs; archived retention day only, not a full restore rehearsal",
+  "events": [
+    {
+      "timestamp": 1794820669236,
+      "message": "[sach-staging-history-archive] {\"sport\":\"nfl\",\"day\":\"2026-11-10\",\"documents\":17,\"parts\":1,\"restored\":null,\"bytes\":323748}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820619728,
+      "message": "[sach-staging-history-archive] {\"sport\":\"nba\",\"day\":\"2026-11-10\",\"documents\":127,\"parts\":4,\"restored\":null,\"bytes\":6539446}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820554542,
+      "message": "[sach-staging-history-archive] {\"sport\":\"cbb\",\"day\":\"2026-11-10\",\"documents\":254,\"parts\":1,\"restored\":null,\"bytes\":1605849}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820484228,
+      "message": "[sach-staging-history-archive] {\"sport\":\"soccer\",\"day\":\"2026-11-10\",\"documents\":0,\"parts\":0,\"bytes\":0}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820425420,
+      "message": "[sach-staging-history-archive] {\"sport\":\"wnba\",\"day\":\"2026-11-10\",\"documents\":0,\"parts\":0,\"bytes\":0}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820364749,
+      "message": "[sach-staging-history-archive] {\"sport\":\"mlb\",\"day\":\"2026-11-10\",\"documents\":0,\"parts\":0,\"bytes\":0}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820311603,
+      "message": "[sach-staging-history-archive] {\"sport\":\"nhl\",\"day\":\"2026-11-10\",\"documents\":55,\"parts\":1,\"restored\":null,\"bytes\":764561}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    },
+    {
+      "timestamp": 1794820252286,
+      "message": "[sach-staging-history-archive] {\"sport\":\"cfb\",\"day\":\"2026-11-10\",\"documents\":36,\"parts\":1,\"restored\":null,\"bytes\":1179509}",
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+    }
+  ],
+  "restoreRehearsalPassed": false
+}

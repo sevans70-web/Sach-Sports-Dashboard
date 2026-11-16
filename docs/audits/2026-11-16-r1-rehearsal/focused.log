@@ -1,0 +1,13 @@
+✔ foreground retained NFL board exposes diagnostics without calling sportsbook feeds or changing originals (39.256845ms)
+✔ background capture bypasses retained-board shortcut and actually reaches source collection (2.363911ms)
+✔ foreground merges a job-published later block with frozen early evidence even when legacy publication is absent (2.640058ms)
+✔ R1 extracts its frozen production artifact and detects changed code or bindings (671.285295ms)
+✔ R1 preparation cannot upload or accept deployment flags (140.155222ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1917.265728

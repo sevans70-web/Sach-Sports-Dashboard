@@ -1,0 +1,1235 @@
+✔ an idle day uses the next game day for both rankings and capture (2.296073ms)
+✔ live games remain on the slate across midnight alongside current-day games (0.250756ms)
+✔ entire live slate survives Toronto midnight, month rollover and both DST weekends (17.47951ms)
+✔ completed early games remain between kickoff windows; an entirely finished prior slate may advance (0.48402ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 4.4s of this 4.6s build (95%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin sach-worker-model-runtime transform (95%, 4.4s, 118 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":22,"limit":220,"costs":{"provider_gate":11,"official_http":8,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":381771,"completedRequests":11,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+[dashboard-job-deferred] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"originals","reason":"Cloudflare pregame storage HTTP 503","retryAt":1794740552002,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"actual-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ actual NFL route captures authentic quotes with ESPN 403 and resumes after lost acknowledgement/restart (10082.637875ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[dashboard-job-deferred] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"rank","reason":"rankings_provider_http_403","retryAt":1794742321001,"usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":{"stage":"rank","httpStatus":503,"code":"provider_http_403","provider":"owls","endpoint":"/api/v1/nfl/props","status":403,"verifiedQuotes":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"rank","state":"active","usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"rank","reason":"rankings_provider_http_403","retryAt":1794744121002,"usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":{"stage":"rank","httpStatus":503,"code":"provider_http_403","provider":"owls","endpoint":"/api/v1/nfl/props","status":403,"verifiedQuotes":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"rank","state":"active","usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"rank","reason":"rankings_provider_http_403","retryAt":1794745921003,"usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":{"stage":"rank","httpStatus":503,"code":"provider_http_403","provider":"owls","endpoint":"/api/v1/nfl/props","status":403,"verifiedQuotes":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"rank","state":"blocked","usage":{"used":14,"limit":220,"costs":{"provider_gate":7,"official_http":5,"odds_or_other_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":7,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ actual NFL denied-book route stops before ESPN and persists a bounded blocked state across restart (6927.488357ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[P01 coverage audit] {"sport":"nhl","market":"shots_on_goal","rows":64,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1,"player_team_history_unavailable":63}}
+ACTUAL_NHL shots_on_goal {"displayable":1,"quotes":1,"history":{"requested":1,"unavailable":0,"budgetExceeded":false},"blockers":{"selected":1,"player_team_history_unavailable":63}}
+[P01 coverage audit] {"sport":"nhl","market":"points","rows":64,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1,"player_team_history_unavailable":63}}
+ACTUAL_NHL points {"displayable":1,"quotes":1,"history":{"requested":1,"unavailable":0,"budgetExceeded":false},"blockers":{"selected":1,"player_team_history_unavailable":63}}
+[P01 coverage audit] {"sport":"nhl","market":"goalie_saves","rows":9,"verifiedQuotes":2,"modelAvailable":true,"fittedForecasts":9,"blockers":{"selected":2,"verified_quote_unavailable":7}}
+ACTUAL_NHL goalie_saves {"displayable":2,"quotes":2,"history":{"requested":2,"unavailable":0,"budgetExceeded":false},"blockers":{"selected":2,"verified_quote_unavailable":7}}
+✔ actual NHL routes use current-season official sources and retain legitimately quoted candidates (6151.306932ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":24,"limit":220,"costs":{"provider_gate":12,"official_http":9,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":756663,"completedRequests":12,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"alternate-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ actual NFL route uses the already configured authorized supplemental feed when primary and ESPN history are denied (3195.914315ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+FOREGROUND_STAGE source entered
+FOREGROUND_RESPONSE 200 16 {
+  sourceRows: 16,
+  displayableRows: 16,
+  fittedProjections: 14,
+  baselineOnly: 1,
+  savedQuoteRows: 16,
+  evAvailable: 0,
+  reasons: {
+    'Model probability accuracy checks not met; confidence and EV are unavailable': 14,
+    'Verified player/team history is unavailable': 2
+  }
+}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"concurrent-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":22,"limit":220,"costs":{"provider_gate":11,"official_http":8,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":381771,"completedRequests":11,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+✔ actual foreground NFL rankings across all 17 tabs remain responsive while cold capture owns an in-flight source (3927.368853ms)
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 3.4s of this 3.5s build (97%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin sach-worker-model-runtime transform (97%, 3.4s, 118 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+[P01 coverage audit] {"sport":"nhl","market":"shots_on_goal","rows":64,"verifiedQuotes":0,"modelAvailable":true,"fittedForecasts":0,"blockers":{"player_team_history_unavailable":64}}
+[P01 coverage audit] {"sport":"nhl","market":"points","rows":64,"verifiedQuotes":0,"modelAvailable":true,"fittedForecasts":0,"blockers":{"player_team_history_unavailable":64}}
+[P01 coverage audit] {"sport":"nhl","market":"goalie_saves","rows":9,"verifiedQuotes":0,"modelAvailable":true,"fittedForecasts":9,"blockers":{"verified_quote_unavailable":9}}
+✔ actual NHL denied feed reports unavailable rather than a healthy empty ranking board (4162.786585ms)
+﹣ withdrawn production bundle reproduces opaque retry starvation under the same denied feed (0.428631ms) # SKIP
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mlib/nhl.ts is dynamically imported by lib/nhl-rankings-server.ts but also statically imported by app/api/nhl/rankings/route.ts, lib/nhl-history.ts, lib/nhl-rankings-server.ts, dynamic import will not move module into another chunk.
+
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:00.000Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+COLD_FOREGROUND_NFL {"displayable":1,"officialDenials":1}
+✔ cold foreground NFL route reaches real official-source handling without a background redirect override (4325.251406ms)
+﹣ frozen candidate -> compatible fallback -> candidate retains pending evidence and resumes after lost ACK (0.215043ms) # SKIP
+﹣ frozen shipping NBA/NFL/NHL official-final grading lanes complete and recover lost grade ACK independently (3.280338ms) # SKIP
+✔ email returns support implicit fragments and query-based token hashes (3.08921ms)
+✔ pasted provider links are verified directly and cannot trigger arbitrary URL fetches or redirects (1.114581ms)
+✔ missing and incomplete credentials cannot become authenticated callbacks (0.233548ms)
+✔ callback forwarding uses a fragment and never copies arbitrary destinations or provider error text (0.198737ms)
+✔ admin identity needs exact dashboard email and verified email, never user metadata or a tester flag (1.382046ms)
+✔ authentication mutations reject absent, foreign and cross-site origins (0.293011ms)
+✔ result inspection retains the saved side and line without inventing a pick from a baseline (1.176911ms)
+✔ the listed research decisions account for settled totals and exclude pushes from hit rate (1.403918ms)
+✔ every dashboard has three core categories and preserves captured choices without a page view (138.229313ms)
+✔ no games today uses next available slate while existing today games retain today scope (0.694084ms)
+BACKUP_FOLDER backup RESUMING
+RETENTION_GATE {"fullArchiveVerified":false,"enabled":false}
+BACKUP_SOURCE_INVENTORY 8
+RETENTION_CUTOFF 2026-11-10
+STORAGE_BEFORE {"totalBytes":8417406976,"freeBytes":5633626112}
+BACKUP_SKIP b.json 5
+BACKUP_OK d.json 1
+BACKUP_OK c.json 1
+BACKUP_OK a.json 3
+BACKUP_OK e.json 1
+BACKUP_OK f.json 1
+BACKUP_OK g.json 1
+BACKUP_OK sach-history/nba/protected_pregame_test_2026-10-26.json 19
+BACKUP_MANIFEST_VERIFIED {"driveFileId":"upload8","md5":"a0d070c0d3521ea9c56a9223dd85e619","files":8,"sourceFiles":8,"unverifiedSourceFiles":0}
+STORAGE_AFTER {"totalBytes":8417406976,"freeBytes":5633622016}
+{"status":"COMPLETE","driveFolderId":"backup","scope":"full-volume","files":8,"bytes":32,"deleted":0,"freedBytes":0,"manifest":{"driveFileId":"upload8","md5":"a0d070c0d3521ea9c56a9223dd85e619","files":8,"sourceFiles":8,"unverifiedSourceFiles":0},"errors":[]}
+BACKUP_FOLDER backup RESUMING
+RETENTION_GATE {"fullArchiveVerified":true,"enabled":false}
+BACKUP_SOURCE_INVENTORY 8
+RETENTION_CUTOFF 2026-11-10
+STORAGE_BEFORE {"totalBytes":8417406976,"freeBytes":5633622016}
+BACKUP_FAILED Error: Drive API 503: listing failed
+BACKUP_MANIFEST_VERIFIED {"driveFileId":"upload9","md5":"d2d9b6b4cf7788fe8550d40356bdabb0","files":0,"sourceFiles":8,"unverifiedSourceFiles":8}
+STORAGE_AFTER {"totalBytes":8417406976,"freeBytes":5633622016}
+{"status":"INCOMPLETE","driveFolderId":"backup","scope":"full-volume","files":0,"bytes":0,"deleted":0,"freedBytes":0,"manifest":{"driveFileId":"upload9","md5":"d2d9b6b4cf7788fe8550d40356bdabb0","files":0,"sourceFiles":8,"unverifiedSourceFiles":8},"errors":[{"file":".","error":"Error: Drive API 503: listing failed"},{"file":"source-inventory","error":"Unverified source paths: 8"}]}
+✔ actual backup cycle records verified uploads and skips, and never completes a failed walk (381.855182ms)
+✔ period observations reconcile Q1 and distinguish first score from first field goal (6.666706ms)
+✔ wrong identity, nonfinal, preseason and recent games cannot produce historical labels (3.593839ms)
+✔ truncated Q1 tape cannot create zero outcomes, and ambiguous player names are rejected (36.603773ms)
+✔ fall NBA and CBB use the new ending-year season while WNBA stays in its calendar year (1.917653ms)
+✔ rollover fixture includes current season game before selecting the last five (1.119133ms)
+✔ later games, undated rows, duplicates and missing values cannot contaminate pregame Last 20 (0.469645ms)
+✔ preseason and playoff groups cannot contaminate regular-season recent form (0.4296ms)
+✔ coverage distinguishes period markets and excludes full-game or first-field-goal substitutions (9.488768ms)
+✔ completed fixture observations reconcile minutes, usage and all team market totals; explicit DNPs remain outcomes (46.347146ms)
+✔ wrong fixtures, preseason, unfinished or incomplete boxes cannot enter model fitting (7.421339ms)
+✔ minutes/usage/opponent features use only earlier official games; target realized roles and outcomes do not leak (119.281551ms)
+✔ opening-season history can carry on the same team; transfers and absent opponents abstain (89.835868ms)
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/basketball/nba/summary 500 text/plain;charset=UTF-8
+✔ locked NBA availability refresh preserves the original projection and pregame evidence (94.048871ms)
+✔ pregame evidence retains exact source, season, starter flag and team-scoped reports (1.843524ms)
+✔ post-start, live, completed and wrong-fixture summaries cannot become pregame evidence (0.281811ms)
+✔ missing injury sections and unlisted players stay unknown; false starter flags do not establish a role (0.61054ms)
+✔ player joins reject another fixture, team or scheduled time; source digest tracks evidence revisions (2.06967ms)
+✔ concurrent markets share one official read; failures preserve cards with unknown context (6.613523ms)
+✔ bench full-game participants receive certified Q1 zeros; DNPs stay excluded and later actions stay out (2.515262ms)
+✔ each market reconciles full-game totals, so missing non-scoring tape cannot masquerade as a zero (1.349506ms)
+✔ team Q1/full-game score mismatch, truncated period, duplicate conflicts, wrong identity or recent game fail closed (1.937617ms)
+✔ identical duplicate plays are counted once and duplicate display names are withheld (0.708142ms)
+✔ box score grading uses authoritative player IDs and parses made threes from ESPN made-attempted cells (6.650812ms)
+✔ game log fallback never selects missing dates or a different game and preserves missing vs zero (0.596895ms)
+✔ full-game settlement requires the exact completed fixture, including fallback grading (0.42388ms)
+✔ candidate pool exhausts past old 90-row cutoff with at most eight concurrent enrichments (3.853954ms)
+✔ started originals retain rank and evidence without consuming rolling pregame slots (4.302939ms)
+✔ unavailable status variants are gated pregame across active sports without changing frozen originals (1.052ms)
+✔ capture publishes a durable local snapshot before slow or failed featured replication and grading (665.363173ms)
+✔ player research facts use dated included pregame observations, not future or excluded relief outcomes (3.40375ms)
+✔ missing quotes and quarter forecasts never produce line comparisons or scaled predictions (0.43199ms)
+✔ game context describes tied zeroes, score margins, actual records and supplied availability without picking a side (0.993353ms)
+✔ movement tracks rises, falls, entry, reload persistence and isolated board scopes (1.463026ms)
+✔ verified pending remains independent of unvalidated historical records and withdrawn snapshots (2.352466ms)
+✔ all active sports expose disjoint historical research decisions without certifying a model (0.889916ms)
+✔ game intelligence never resurrects suppressed quotes, Q1 scaling, heuristic GI or probability from aliases (0.640019ms)
+✔ game ranking joins reject blank-team and shared-substring leaks and repeated fixtures (1.03465ms)
+✔ matchup compares prior results for the selected market and omits unsupported injury effects (2.777219ms)
+✔ form distinguishes changes in opportunity from changes in production rate (1.664478ms)
+✔ head-to-head keeps the five latest verified appearances, including zero, before the selected fixture (582.185299ms)
+✔ Spears regression: live football feed supplies explicit receiving yards and catches, including reported zero (2.976918ms)
+✔ football stats preserve unknown categories, negative rushing and separate passing TDs from scorer TDs (0.962052ms)
+✔ zero missing-category totals require a participating player and a fully reconciled official table (0.795761ms)
+✔ Hutchinson original saved research OVER gets a research X, without inventing a validated betting pick (0.979929ms)
+✔ anytime TD displays a decimal threshold and preserves count-based progress (0.796738ms)
+✔ every sport puts final games below live and upcoming games, preserving final cards rather than deleting them (1.407569ms)
+✔ first board establishes a baseline; only entrants into a previously observed board are NEW (2.92101ms)
+✔ rushing TDs leaves the active catalog while its historical market definition is preserved (60.896277ms)
+✔ archived cards request their exact official boxscores even when the current slate omits yesterday (11.428729ms)
+✔ observation discovery keeps current authoritative status and never guesses IDs or results (0.239808ms)
+✔ CBB forecast identity binds official home/away team IDs and upcoming fixture season (5.116252ms)
+✔ missing, mismatched and ambiguous fixture evidence cannot become an invented model identity (0.286989ms)
+✔ both quoted and unpriced CBB ranking paths pass fixture identity into the forecast layer (512.042269ms)
+✔ official neutral venue permits provider side reversal with both exact school identities and time (1.169436ms)
+✔ unknown/nonneutral venues, wrong schools/dates and ambiguous neutral fixtures remain excluded (0.375205ms)
+✔ official scoreboard loader preserves neutral flag and school aliases for quote matching (205.483301ms)
+✔ book school tags are removed from name matching, retained as evidence and checked against the current team (5.245263ms)
+✔ roster loading is restricted to exact provider fixtures while rejecting other dates and schools (6.968303ms)
+✔ current roster identity includes newcomers without inventing baseline statistics or retaining alumni (3.992593ms)
+✔ CFB local board recovery does not turn a missing local record into a failing remote history request (1221.995482ms)
+✔ CFB restart at 2026-11-01T04:30Z reads the prior live slate immediately without rebuilding originals (82.213792ms)
+✔ CFB restart at 2026-03-08T06:30Z reads the prior live slate immediately without rebuilding originals (4.172194ms)
+✔ CFB restart at 2026-11-01T07:30Z reads the prior live slate immediately without rebuilding originals (1.697824ms)
+✔ scheduled CFB capture builds one current board without reading retained time-block boards (9.409336ms)
+✔ an executable CFB primary quote does not wait for or call the optional exhausted provider (1.938848ms)
+✔ missing primary coverage may use the supplement, never invent a main line (0.511479ms)
+✔ completed cards restore original values and actuals after the book removes the game (2.172805ms)
+✔ retention stops on the next game day and never borrows another opponent or time block (0.438496ms)
+✔ a late saved snapshot stays research instead of becoming a retrospectively successful pregame pick (0.472411ms)
+✔ retained scorer quotes and genuine zero results keep their recorded values (0.340508ms)
+✔ all-day hides empty blocks and identifies finished blocks for default collapse (1.157352ms)
+✔ time blocks use Toronto time, including games after UTC midnight (0.49637ms)
+✔ single-record history reads and verified writes never scan the sport archive (155.477451ms)
+▶ real cloud writer preserves concurrent history and verifies every distinct version
+  ✔ all eight sports use implicit timestamp coalescing through the real TS caller (31.375494ms)
+  ✔ distinct simultaneous versions serialize through checksum readback (3.653547ms)
+  ✔ different documents cannot flood the cloud with more than four saves (5.767261ms)
+  ✔ separate route module instances share one verification queue (2.845391ms)
+  ✔ interleaved A B A preserves the final request (1.019526ms)
+  ✔ caller mutation cannot change an in-flight payload (1.108468ms)
+  ✔ explicit source versions stay independent and successes are not cached (0.884266ms)
+  ✔ one transient readback timeout retries the same immutable source and verifies it (520.672227ms)
+  ✔ failure and corruption reject; later calls retry (507.460817ms)
+✔ real cloud writer preserves concurrent history and verifies every distinct version (1221.417174ms)
+✔ deployment compatibility skips only API provenance while retaining strict config checks (14.363804ms)
+✔ current CBB reads eight daily boards; the explicit calendar retains all 48 (37.547127ms)
+✔ current CBB fallback discovers a later slate without repeating the first eight provider reads (5.518795ms)
+✔ NBA and CBB schedule enrichment fetches only live games in the selected window (8.484899ms)
+✔ durable sportsbook input snapshots exclude credentials and account metadata (1.211846ms)
+✔ capture preserves denied-source stage diagnostics and provider retry window (26.719271ms)
+✔ historical combination EV cannot be manufactured from saved component means (1.14746ms)
+﹣ shipping cold NBA summary reproduces withdrawn 503 or succeeds with the same official fixtures (0.892591ms) # SKIP
+﹣ shipping cold concurrent summary and slate requests agree without duplicate scoreboard fan-out (0.118507ms) # SKIP
+﹣ shipping cold summary reports unknown counts for redirectSame without crashing or following a redirect (0.068121ms) # SKIP
+﹣ shipping cold summary reports unknown counts for redirectOther without crashing or following a redirect (0.095263ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http401 without crashing or following a redirect (0.074824ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http403 without crashing or following a redirect (0.097081ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http429 without crashing or following a redirect (0.055359ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http503 without crashing or following a redirect (0.067485ms) # SKIP
+﹣ shipping cold summary reports unknown counts for malformed without crashing or following a redirect (0.143914ms) # SKIP
+﹣ shipping cold summary times out safely, preserves unknown counts and recovers with valid data (0.343363ms) # SKIP
+✔ a historical team cannot override a verified current roster or attach an unlisted player (2.023827ms)
+✔ conflicting membership and failed or empty rosters abstain per team (0.312007ms)
+✔ official roster adapters use athlete IDs across grouped and flat formats (0.400753ms)
+✔ CW06 all seven NBA markets retain signed and zero EV without manufacturing a pick (4.300814ms)
+✔ CW06 invalid or unavailable evidence has an explicit reason; no bookmaker-implied fallback (0.412614ms)
+✔ CW06 cannot reprice or flip an invalid saved selection; saved EV survives results (0.63693ms)
+✔ CW06 API enrichment preserves ranks, predictions, original objects and unrelated markets (0.625018ms)
+✔ CW06 unavailable Worker runtime cannot erase frozen NBA forecasts (1096.303073ms)
+✔ CW06 actual card component renders signed negative, zero and positive research EV (7.051822ms)
+✔ CW06 unavailable reasons are visible text, and saved EV is explicitly labelled (0.975414ms)
+✔ CW06 shipped Node/Cloudflare points joint distribution reaches API EV without retraining (688.318614ms)
+✔ CW06 shipped Node/Cloudflare rebounds joint distribution reaches API EV without retraining (209.643874ms)
+✔ CW06 shipped Node/Cloudflare assists joint distribution reaches API EV without retraining (225.824904ms)
+✔ CW06 shipped Node/Cloudflare threes_made joint distribution reaches API EV without retraining (242.34265ms)
+✔ CW06 shipped Node/Cloudflare pts_rebs_asts joint distribution reaches API EV without retraining (275.034842ms)
+✔ CW06 shipped Node/Cloudflare pts_rebs joint distribution reaches API EV without retraining (241.071013ms)
+✔ CW06 shipped Node/Cloudflare pts_asts joint distribution reaches API EV without retraining (243.642458ms)
+✔ Cloudflare shadow export roundtrips public evidence and detects tampering (7.200346ms)
+✔ Cloudflare shadow export refuses credentials and path traversal (0.316259ms)
+✔ shallow manual checkout fetches only pinned historical objects without moving HEAD or replacing current files (142.541813ms)
+✔ historic fetch refuses abbreviated or arbitrary refs and pins all actual frozen provenance commits (0.502754ms)
+✔ hurdle probability normalization, mean and exact integer pushes (3.133586ms)
+✔ exact-price EV permits either side and abstains at negative value without a direction quota (0.394163ms)
+✔ capture binds exact quote, fixture, frozen models and unrounded reproducible input history (12.07311ms)
+✔ capture rejects stale, backdated, mismatched and after-start evidence (1.127939ms)
+✔ target outcomes and future games cannot alter captured features or probabilities (1.661525ms)
+✔ append-only storage preserves the first receipt and rejects a replacement (533.422822ms)
+✔ grading uses saved line, side and prices only after exact official final; pushes refund (1.991469ms)
+✔ invalid model scope, coefficients, count prices and tampering never create shadow predictions (0.646069ms)
+✔ Cloudflare evidence extractor verifies a complete pregame package and refuses overwrite (2281.073883ms)
+✔ Retry-After seconds and dates are never shortened; absent headers use exponential backoff (0.890859ms)
+✔ durable origin cooldown prevents new requests across URLs and recreated clients (1.765595ms)
+✔ redirect and cross-endpoint requests share pacing; an expired lease stops further requests (1.231329ms)
+✔ bounded public-data cache preserves original retrieval time and never caches odds, pregame fixtures or finals (0.748281ms)
+{"event":"cw08_retry","cycle":"1994252","code":"source_http_429","retryAt":1794827265241,"production":false}
+{"event":"cw08_retry","cycle":"1994252","code":"source_http_503","retryAt":1794827301242,"production":false}
+{"event":"cw08_retry","cycle":"1994252","code":"source_http_429","retryAt":1794827367243,"production":false}
+{"event":"cw08_cycle_complete","cycle":"1994252","manifest":{"key":"runs/b92722057af9684c9ccc4445e4cfad75d9c85b17223adc7e486582b1659f4d83.json","hash":"b92722057af9684c9ccc4445e4cfad75d9c85b17223adc7e486582b1659f4d83"},"production":false}
+{"event":"cw08_cycle_complete","cycle":"1994253","manifest":{"key":"runs/2f2575c4662873a841e6d4b5af04d75d190153584f8241f790de3ce244acac85.json","hash":"2f2575c4662873a841e6d4b5af04d75d190153584f8241f790de3ce244acac85"},"production":false}
+{"event":"cw08_cycle_complete","cycle":"1994276","manifest":{"key":"runs/b1f2ef51b7fff1583ad98d772c203c3b2a6163a7195cb9e5f000552492739674.json","hash":"b1f2ef51b7fff1583ad98d772c203c3b2a6163a7195cb9e5f000552492739674"},"production":false}
+{"event":"cw08_cycle_complete","cycle":"1994280","manifest":{"key":"runs/503c9461b3faa2c5ee365e23548cbbc897d21509f5a5ebc00e7fd91f8fa7e9be.json","hash":"503c9461b3faa2c5ee365e23548cbbc897d21509f5a5ebc00e7fd91f8fa7e9be"},"production":false}
+{"event":"cw08_cycle_complete","cycle":"1994308","manifest":{"key":"runs/d89b98ee1b767499430f60d8cf7df42be994efee53c9bf14f6d7f69d81156430.json","hash":"d89b98ee1b767499430f60d8cf7df42be994efee53c9bf14f6d7f69d81156430"},"production":false}
+{"event":"cw08_cycle_complete","cycle":"1994312","manifest":{"key":"runs/75b777aae593a98ef83b01ad4047bdab91b648e09007fa72885a2f6d5374abcb.json","hash":"75b777aae593a98ef83b01ad4047bdab91b648e09007fa72885a2f6d5374abcb"},"production":false}
+{"event":"cw08_cycle_complete","cycle":"1997040","manifest":{"key":"runs/c20b08e58c97a643be90cab6e1204f78f749c7d15e8e154cc0be0f2355e32cc8.json","hash":"c20b08e58c97a643be90cab6e1204f78f749c7d15e8e154cc0be0f2355e32cc8"},"production":false}
+✔ scheduled Cloudflare workflow preserves seeds, serializes, recovers uploads and auto-grades exact finals (22174.379768ms)
+✔ activation requires explicit approval for the exact commit and Cloudflare-only credentials (1.119427ms)
+✔ research deployment has only its own DO/namespace and two narrowly used secrets (0.870506ms)
+✔ production research bundle excludes local test controls and production writers (65.220908ms)
+✔ research replacement is limited to the observed managed bundle and keeps namespace scope (0.648764ms)
+✔ later quotes cannot replace enrolled receipts; new enrollment ignores direction and EV (1.689759ms)
+✔ invalid or duplicated enrollment fails closed (0.544426ms)
+✔ code-only research update retains secret bindings without copying secret values and reuses existing resources (1.402993ms)
+✔ research updater rejects unknown namespaces, secrets, source bundles and versions before mutation (4.963152ms)
+✔ research bundle is byte-identical from repository and application working directories (260.467736ms)
+✔ dashboard counts distinguish traceable quotes from validated predictions (2.032713ms)
+✔ saved model selections have a separate snapshot count from validated predictions (0.335391ms)
+✔ frozen pregame picks remain counted after tipoff and void or withdrawn picks do not (0.363906ms)
+✔ a genuine zero quote is retained but a missing threshold cannot become zero (0.369729ms)
+✔ legacy low thresholds never inflate homepage prop or prediction counts (0.219189ms)
+✔ current slate retains overnight live games, today finals and the next complete day without duplicates (0.500224ms)
+✔ the full calendar keeps later published games beyond the dashboard preview (0.405208ms)
+✔ shared Toronto date formatter preserves midnight and daylight-saving boundaries (0.416473ms)
+✔ homepage counts one Eastern date and keeps different markets for the same player and game (0.644352ms)
+✔ category counts match priced selections and exclude research comparisons and other dates (299.017871ms)
+✔ category date fixtures remain distinct at Toronto midnight and daylight-saving changes (1.899412ms)
+✔ budget pause drains admitted bodies; resumed attempt requests only unfinished inputs (212.750153ms)
+✔ duplicate public inputs coalesce without sharing consumed response bodies (13.18528ms)
+✔ request timeout cancels bodies and queued work without late HTTP or checkpoints (49.000719ms)
+✔ late provider RPC after phase cancellation cannot launch HTTP (37.684359ms)
+✔ 429 persistence has reserved RPC capacity at budget edge and retries respect cooldown (2.148579ms)
+✔ genuine 404 status is briefly cached; transient errors cannot become empty player histories (2.094168ms)
+✔ each redirect hop is metered and cancellation reaches a streaming private database response (17.002586ms)
+✔ explicit manual/error redirect policies remain authoritative inside capture accounting (1.455892ms)
+✔ capture accepts neither stale/post-start quotes nor a route failure as a successful reservation (25.773777ms)
+✔ budget deadline cancels orphan requests, while ordinary foreground fetch remains usable (31.838658ms)
+✔ Retry-After never shortens provider limits; only public historical inputs are eligible for cache (0.677281ms)
+✔ recent replay checkpoints complete verified pages beyond 900 documents and targets one official game (383.164442ms)
+✔ unavailable official game is recorded and cannot starve later games on the same page (0.723766ms)
+✔ background ranking results and pending builds cannot poison a concurrent foreground board (9.92497ms)
+✔ foreground provider reads do not join a cancelled job-owned pending source request (100.794528ms)
+[dashboard-job-deferred] {"id":"nfl-budget","kind":"capture","sport":"nfl","market":"q1_passing_yards","phase":"rank","reason":"job_subrequest_budget","retryAt":1794827142502,"usage":{"used":218,"limit":220,"costs":{"provider_gate":109,"odds_or_other_http":1,"official_http":108},"cacheHits":0,"cacheWrites":108,"checkpointBytes":1512,"completedRequests":109,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"nfl-budget","kind":"capture","sport":"nfl","market":"q1_passing_yards","from":"rank","to":"rank","state":"active","usage":{"used":218,"limit":220,"costs":{"provider_gate":109,"odds_or_other_http":1,"official_http":108},"cacheHits":0,"cacheWrites":108,"checkpointBytes":1512,"completedRequests":109,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-shot","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"nhl-shot","kind":"capture","sport":"nhl","market":"shots_on_goal","phase":"originals","reason":"Cloudflare pregame storage HTTP 503","retryAt":1794827144503,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"nhl-shot","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nba-points","kind":"capture","sport":"nba","market":"points","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-shot","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"picks","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-shot","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"picks","to":"publish","state":"active","eligible":1,"stored":0,"picksStored":1,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-shot","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"publish","to":"done","state":"done","eligible":1,"stored":0,"picksStored":1,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nfl-budget","kind":"capture","sport":"nfl","market":"q1_passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":37,"limit":220,"costs":{"provider_gate":18,"odds_or_other_http":1,"official_http":17,"kv":1},"cacheHits":108,"cacheWrites":17,"checkpointBytes":238,"completedRequests":18,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ independent durable lanes resume over-budget capture, survive restart and preserve original receipts after lost acknowledgements (7319.324891ms)
+[dashboard-job-deferred] {"id":"nhl-cooldown","kind":"capture","sport":"nhl","market":"shots_on_goal","phase":"rank","reason":"provider_http_429","retryAt":1794827261502,"usage":{"used":5,"limit":220,"costs":{"provider_gate":3,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"nhl-cooldown","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"rank","to":"rank","state":"active","usage":{"used":5,"limit":220,"costs":{"provider_gate":3,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"nfl-cooldown","kind":"capture","sport":"nfl","market":"q1_passing_yards","phase":"rank","reason":"provider_cooldown","retryAt":1794827261502,"usage":{"used":3,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"nfl-cooldown","kind":"capture","sport":"nfl","market":"q1_passing_yards","from":"rank","to":"rank","state":"active","usage":{"used":3,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-cooldown","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":5,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1,"kv":1},"cacheHits":0,"cacheWrites":1,"checkpointBytes":14,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ persistent provider cooldown prevents retries across sports until Retry-After expires (490.497868ms)
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"rank","to":"originals","state":"active","eligible":81,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"originals","state":"active","eligible":81,"stored":30,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"originals","state":"active","eligible":81,"stored":60,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":30,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":60,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"picks","to":"publish","state":"active","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"shots_on_goal","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"publish","to":"done","state":"done","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"rank","to":"originals","state":"active","eligible":81,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"originals","to":"originals","state":"active","eligible":81,"stored":30,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"originals","to":"originals","state":"active","eligible":81,"stored":60,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"originals","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":30,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":60,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"picks","to":"publish","state":"active","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"points","kind":"capture","sport":"nhl","market":"points","from":"publish","to":"done","state":"done","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"rank","to":"originals","state":"active","eligible":81,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"originals","to":"originals","state":"active","eligible":81,"stored":30,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"originals","to":"originals","state":"active","eligible":81,"stored":60,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"originals","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":30,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":60,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"picks","to":"publish","state":"active","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"assists","kind":"capture","sport":"nhl","market":"assists","from":"publish","to":"done","state":"done","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"rank","to":"originals","state":"active","eligible":81,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"originals","to":"originals","state":"active","eligible":81,"stored":30,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"originals","to":"originals","state":"active","eligible":81,"stored":60,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"originals","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":30,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"picks","to":"picks","state":"active","eligible":81,"stored":81,"picksStored":60,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"picks","to":"publish","state":"active","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"goalie_saves","kind":"capture","sport":"nhl","market":"goalie_saves","from":"publish","to":"done","state":"done","eligible":81,"stored":81,"picksStored":81,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ all eligible NHL shots, points, assists and saves survive chunked capture without the former 75-row truncation (805.458484ms)
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"scan","to":"game","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"write","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"grade-all","kind":"grade","sport":"nhl","phase":"write","reason":"Official grading save HTTP 503","retryAt":1794827145504,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"write","state":"active","usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"write","state":"active","usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"game","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"scan","state":"active","usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"scan","to":"game","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"write","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"write","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"game","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"scan","state":"active","usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"scan","to":"game","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"write","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"write","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"game","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"scan","state":"active","usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"scan","to":"game","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"write","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"write","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"game","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"scan","state":"active","usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"scan","to":"game","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"write","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"write","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"game","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"scan","state":"active","usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"scan","to":"game","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"write","state":"active","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"write","to":"game","state":"active","usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":2,"maxReserved":4,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-all","kind":"grade","sport":"nhl","from":"game","to":"done","state":"done","usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ grading scans beyond 250 picks and ignores unrelated grades without starving later pages (4043.843223ms)
+✔ scheduled delivery is idempotent and does no ranking or grading work in the cron invocation (409.461192ms)
+[dashboard-job-deferred] {"id":"nfl-parallel","kind":"capture","sport":"nfl","market":"receiving_yards","phase":"rank","reason":"job_subrequest_budget","retryAt":1794827142502,"usage":{"used":216,"limit":220,"costs":{"provider_gate":108,"odds_or_other_http":1,"official_http":107},"cacheHits":0,"cacheWrites":107,"checkpointBytes":9202,"completedRequests":108,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":72,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"nfl-parallel","kind":"capture","sport":"nfl","market":"receiving_yards","from":"rank","to":"rank","state":"active","usage":{"used":216,"limit":220,"costs":{"provider_gate":108,"odds_or_other_http":1,"official_http":107},"cacheHits":0,"cacheWrites":107,"checkpointBytes":9202,"completedRequests":108,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":72,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nba-parallel","kind":"capture","sport":"nba","market":"points","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nba-parallel","kind":"capture","sport":"nba","market":"points","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nba-parallel","kind":"capture","sport":"nba","market":"points","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":1,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nba-parallel","kind":"capture","sport":"nba","market":"points","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":1,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-parallel","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-parallel","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-parallel","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":1,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nhl-parallel","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":1,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nfl-parallel","kind":"capture","sport":"nfl","market":"receiving_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":149,"limit":220,"costs":{"provider_gate":74,"odds_or_other_http":1,"official_http":73,"kv":1},"cacheHits":107,"cacheWrites":73,"checkpointBytes":6278,"completedRequests":74,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nfl-parallel","kind":"capture","sport":"nfl","market":"receiving_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nfl-parallel","kind":"capture","sport":"nfl","market":"receiving_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":1,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"nfl-parallel","kind":"capture","sport":"nfl","market":"receiving_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":1,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+{"proof":"cold_parallel_forward_progress","firstCheckpointed":107,"totalInputs":180,"maxConcurrentSources":4,"sourceCheckpoints":180,"allThreeSportsStoredOnce":3}
+✔ 180 concurrent cold NFL inputs checkpoint before a budget pause, resume after eviction, and cannot starve NBA/NHL (4894.109636ms)
+[dashboard-job-deferred] {"id":"blocked","kind":"capture","sport":"nfl","market":"receiving_yards","phase":"rank","reason":"job_source_http_503","retryAt":1794827201502,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"blocked","kind":"capture","sport":"nfl","market":"receiving_yards","from":"rank","to":"rank","state":"active","usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"blocked","kind":"capture","sport":"nfl","market":"receiving_yards","phase":"rank","reason":"job_source_http_503","retryAt":1794827261503,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"blocked","kind":"capture","sport":"nfl","market":"receiving_yards","from":"rank","to":"rank","state":"active","usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-deferred] {"id":"blocked","kind":"capture","sport":"nfl","market":"receiving_yards","phase":"rank","reason":"job_source_http_503","retryAt":1794829061504,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"blocked","kind":"capture","sport":"nfl","market":"receiving_yards","from":"rank","to":"rank","state":"blocked","usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"odds_or_other_http":1,"official_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"other-market","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"grade-independent","kind":"grade","sport":"nfl","from":"scan","to":"done","state":"done","usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ repeated unavailable NFL inputs are flagged and backed off without starving other markets or grading (325.875165ms)
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":11,"limit":220,"costs":{"provider_gate":5,"odds_or_other_http":1,"official_http":4,"kv":1},"cacheHits":96,"cacheWrites":0,"checkpointBytes":0,"completedRequests":5,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794830460255},{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794830460255},{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794830460255},{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794830460255}],"denialHits":96}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"denied-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"denied-nhl","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"provider_gate":1,"odds_or_other_http":1,"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"denied-nhl","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"originals","to":"picks","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":6,"limit":220,"costs":{"provider_gate":3,"history_http":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":3,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"denied-nhl","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"picks","to":"publish","state":"active","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"denied-nhl","kind":"capture","sport":"nhl","market":"shots_on_goal","from":"publish","to":"done","state":"done","eligible":1,"stored":1,"picksStored":0,"expired":0,"usage":{"used":1,"limit":220,"costs":{"kv":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+✔ cold NFL denied-history circuit survives restart and allows quote-only capture alongside NHL (1473.378418ms)
+✔ saved, expired or unpriced ranking responses cannot clear the fresh authentication gate (1.2966ms)
+✔ authorized audit identifies itself truthfully, uses fixed public routes, and never retries a denial (26.754322ms)
+[approved-dashboard-artifact] {"stage":"fallback","source":"a949453dac8d3ae08a3feeca99dc55fe1991d267","worker":"sach-sports-cloudflare-test","digest":"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f","files":422}
+[approved-dashboard-artifact] {"stage":"candidate","source":"a949453dac8d3ae08a3feeca99dc55fe1991d267","worker":"sach-sports-cloudflare-test","digest":"e2021f2e35c8ec04882fa43265537d0c17d48369d4b1dd6e7233cbbff3644ead","files":421}
+✔ approved fallback archive reproduces the exact tested Worker without compilation (586.881236ms)
+✔ approved candidate archive reproduces the exact tested Worker without compilation (490.28475ms)
+✔ unknown release stage cannot prepare or upload a Worker (0.24257ms)
+✔ the candidate that failed live recovery is blocked from deployment while the held fallback remains usable (0.534024ms)
+[approved-dashboard-artifact] {"stage":"fallback","source":"a949453dac8d3ae08a3feeca99dc55fe1991d267","worker":"sach-sports-cloudflare-test","digest":"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f","files":422}
+[dashboard-release-hold] {"kind":"scheduled","cron":"*/2 * * * *","reason":"fallback_verified_before_capture_activation"}
+[dashboard-release-hold] {"kind":"scheduled","cron":"0,30 * * * *","reason":"fallback_verified_before_capture_activation"}
+[dashboard-release-hold] {"kind":"alarm","reason":"fallback_verified_before_capture_activation"}
+✔ real prebuilt fallback creates compatible storage but scheduled and alarm handlers cannot activate capture (5762.447077ms)
+✔ frozen retry repair reproduces the tested artifact; altered code cannot pass its digest (450.800571ms)
+✔ new preparation command rejects deployment and old failed candidate remains quarantined (54.614517ms)
+✔ combined NFL and capture artifact has a separate frozen identity and still cannot upload (0.942384ms)
+✔ denied-source and NBA memory candidate is independently frozen and requires fresh approval (0.689456ms)
+✔ recovered candidate withdrawn after live summary failure cannot be prepared again (0.890433ms)
+✔ server and initial client renders remain identical even with a populated browser summary cache (10.459502ms)
+✔ current scope includes Sunday games on Saturday, reports observed picks and incomplete markets without generating models (6.8753ms)
+✔ explicit Today remains a verified zero on an idle day, separate from current scope (0.880659ms)
+✔ schedule outage returns retryable unavailability with unknown counts, never a successful zero (1.283942ms)
+✔ a response saves original local evidence before scheduling cloud replication and recent misses do not query cloud (123.764908ms)
+✔ long backups renew expiring tokens and replay one rejected upload with identical bytes (33.256376ms)
+✔ invalid refresh credentials stop writes instead of hiding authentication failure (0.677558ms)
+✔ cold archive reads stream exact bytes, verify the saved MD5 and fail on an altered copy without writing local files (174.505777ms)
+✔ Drive receipts restore all sports through the actual performance reader while Supabase is offline, without writing originals (752.033399ms)
+✔ all eight sports recover older exact daily copies without Supabase, choose latest versions and reject altered bytes (49.354038ms)
+✔ bounded jobs resume from verified copies and inventory failures retain earlier records (3.575791ms)
+✔ parallel archive reads retain source order and the two-download limit (14.598968ms)
+✔ overlapping Worker reads keep provider promises request scoped while reusing completed results (2.411304ms)
+✔ snapshot archives stream UTF-8 records, deduplicate repeated observations and discard all staged rows if the full checksum fails (11.07032ms)
+✔ server continuation finishes bounded recovery without another browser request and does not fast-loop on failed reads (3.068529ms)
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'featured_receiving_yards',
+  day: '2026-10-25',
+  error: 'cloud unavailable'
+}
+✔ concurrent local writes remain valid while cloud replication is blocked (262.622246ms)
+✔ estimated EV uses selected side, American payout and zero-profit pushes (1.678149ms)
+✔ stale/mismatched quotes, failed validation and book-implied scorer chances cannot create EV (0.49954ms)
+✔ saved pregame EV survives kickoff and final results without using outcomes (1.333967ms)
+✔ shared EV arithmetic applies to all eight sports without a GI dependency (0.363046ms)
+✔ saved probability evidence is deterministic across file order and exact fixture/quote constraints (23.479907ms)
+✔ all eight sports reject failed, retimed and quote-spliced selection evidence (0.673205ms)
+✔ new quote-bound probability evidence remains usable and rejects every altered identity field (0.388483ms)
+✔ NBA comparison EV uses both exact prices without manufacturing a saved selection (0.725092ms)
+✔ one NBA research EV follows displayed projection direction, never the most attractive side (0.377885ms)
+✔ reported Waller correction keeps original odds and timestamp unknown and distinguishes the official touchdown (0.852599ms)
+✔ correction affects only the disputed NFL category and day, preserving all other sports and future slates (0.147461ms)
+✔ cold featured history recovers immutable category receipts with five bounded stream-range reads (3.658316ms)
+✔ failed protected-original range is explicitly incomplete and never creates a replacement (1.269632ms)
+✔ history outages never authorize replacement featured originals in any sport (58.876444ms)
+✔ season featured history reads only the indexed sport stream and date range, preserving checksums (23.695461ms)
+✔ featured hydration queries only requested sport, day and streams (29.211985ms)
+✔ all sports wait for originals instead of flashing a different ranking-summary pick (21.418894ms)
+✔ failed first load is distinguished from a confirmed board with no qualifying selections (4.237701ms)
+✔ a failed refresh continues to render the confirmed original player and saved price (3.200737ms)
+✔ the title explicitly labels the next slate instead of calling it today (2.560379ms)
+✔ exact official finals settle original OVER UNDER and event selections, preserving zero and pushes (1.308868ms)
+✔ wrong fixture, live, missing stats and post-start selections never become historical wins (0.220172ms)
+✔ scorer markets settle occurrence, never a numeric push at the legacy line (0.493021ms)
+✔ First TD requires verified event ordering rather than player touchdown totals (0.303853ms)
+✔ protected featured originals survive missing and replaced summaries across all eight sports (49.923494ms)
+✔ recovery rejects wrong-day and wrong-category receipts without inventing missing categories (0.444008ms)
+✔ nba: reserve all original identities before filling earlier/later categories from the full pool (1.589776ms)
+✔ nfl: reserve all original identities before filling earlier/later categories from the full pool (0.214ms)
+✔ cfb: reserve all original identities before filling earlier/later categories from the full pool (0.419428ms)
+✔ nhl: reserve all original identities before filling earlier/later categories from the full pool (0.214556ms)
+✔ cbb: reserve all original identities before filling earlier/later categories from the full pool (0.281807ms)
+✔ soccer: reserve all original identities before filling earlier/later categories from the full pool (0.097169ms)
+✔ wnba: reserve all original identities before filling earlier/later categories from the full pool (0.100158ms)
+✔ mlb: reserve all original identities before filling earlier/later categories from the full pool (0.072486ms)
+✔ locked first basket identity cannot become a new Play of the Day; another authentic scorer remains available for Long Shot (0.376417ms)
+✔ hydrate storage failure returns retryable unavailability rather than confirmed empty or replacement cards (9.93777ms)
+✔ next storage failure returns retryable unavailability rather than confirmed empty or replacement cards (9.700256ms)
+✔ save storage failure returns retryable unavailability rather than confirmed empty or replacement cards (7.442221ms)
+✔ featured grades require the exact original decision and line across every sport (0.999971ms)
+✔ disputed October 25 NFL Long Shot is excluded without substituting an unverified Waller pick (0.351884ms)
+✔ First TD saved result matches only verified scoring order with identical original scorer quote (0.172686ms)
+✔ queued dashboard refresh reserves the latest original before selecting alternatives in every sport (82.425128ms)
+✔ all eight sports retain the first saved featured player and original pregame price through later recalculations (499.043016ms)
+✔ official final corrections survive stale ranking/performance refreshes across all six active sports (2.467383ms)
+✔ a final observation cannot cross a player, fixture, market or sport and later official revisions win (0.221016ms)
+✔ a newly unreconciled quarter cannot regain an older final from the cache (0.109653ms)
+✔ Huntley and McKee official finals correctly miss their frozen UNDER calls; an exact line is a push (0.940045ms)
+✔ finished card facts foreground the actual result, retain history for expansion and do not call an on-line result above it (0.806976ms)
+✔ first TD uses earliest official touchdown, not a passer mentioned in the play (1.049101ms)
+✔ missing order, no scores and unparseable first scorer remain unverified (0.231157ms)
+✔ official first-TD settlement requires one exact athlete ID (0.299312ms)
+✔ live observed first TD is a verified 1/0, otherwise remains unavailable (0.330902ms)
+✔ quote fixture must match official teams and kickoff, never a feed-update timestamp (3.116614ms)
+✔ Drew regression: reject DraftKings 170 milestone and retain real two-sided 289.5 with exact prices (0.685095ms)
+✔ never invent the median of two different book thresholds or mix their prices (0.285879ms)
+✔ nested alternates are never walked; explicit alternate and milestone props are excluded (0.329051ms)
+✔ both sides and valid prices are required for standard O/U; no fabricated generic-book provenance (0.22613ms)
+✔ freshness, suspension, date and category validation fail closed (0.25429ms)
+✔ NFL and Q1 use the same validation without treating a legitimate low main line as an error (0.232089ms)
+✔ scorer markets stay available with a one-sided YES price (0.545594ms)
+✔ same player in another game/day is never collapsed into one quote (1.292743ms)
+✔ provider rush_rec_yards alias qualifies only as the same full-game combined market (0.692433ms)
+✔ observed BetMGM Q1 milestone feed is never relabeled as a two-way main O/U (0.271268ms)
+✔ equivalent kickoff timestamp formats from two feeds select one exact quote (0.142535ms)
+✔ Q01 rejects two distinct official fixture IDs even when matchup and kickoff are identical (0.116779ms)
+✔ defense markets retain exact two-way book quotes and official fractional or zero sacks (2.842916ms)
+✔ forecast direction remains visible without claiming model validation; final actual never changes the side (1.184902ms)
+✔ missing evidence cannot manufacture a forecast, probability or GI (0.234501ms)
+✔ football projections receive oldest-to-newest games regardless of provider order (9.117417ms)
+✔ football history keeps actual zero, skips absent statistics and deduplicates games (0.293508ms)
+✔ quarterback passing and rushing yards grade from their own categories; completions parse C/ATT (0.62296ms)
+✔ anytime scorer grading and history sum rushing and receiving TDs, excluding passing TDs (0.327231ms)
+✔ matchup context excludes target outcomes, future games, other seasons and the 48-hour availability window (9.646786ms)
+✔ opponent totals include relief players while the starting QB history remains role filtered (0.690754ms)
+✔ partial, missing, conflicting and duplicated source evidence cannot silently manufacture a matchup (1.192573ms)
+✔ completed game population preserves historical membership, backup zeros and target workload (2.784793ms)
+✔ wrong game, season, preseason, unfinished or not-yet-available results cannot enter training (0.259766ms)
+✔ missing target count stays unknown rather than substituting catches or zero (0.361906ms)
+✔ official reports bind exact fixture, start time, team and player; frozen evidence stays untouched (1.537955ms)
+✔ NFL and CFB fetch official reports before selecting the next 25; provider failures do not invent status (37.049714ms)
+✔ touchdown-count projections are not mistaken for percentages or first-scorer probabilities (1.10265ms)
+✔ CFB confidence describes the selected under or over pick consistently (0.176398ms)
+✔ Q1 milestones retain their exact target and single price without becoming O/U or a validated pick (2.314238ms)
+✔ each football quarter yardage market prefers a main pair over a preferred-book milestone (1.039201ms)
+✔ milestone fallback chooses lowest target before timestamp; main contract counts exclude milestones (0.351758ms)
+✔ invalid main pairs never displace a valid milestone or manufacture under prices (0.538057ms)
+✔ Q1 yards identify passer and receiver separately, preserve negative rush yards and exclude later periods (3.36178ms)
+✔ quarter workloads reconcile independently: targets include incompletions while receptions do not (0.939598ms)
+✔ quarter model observations retain native quarter outcomes/workload and keep full-game role volume separately (2.070949ms)
+✔ truncated tape, incomplete Q1 and mismatched attempt totals stay unknown (0.763352ms)
+✔ ambiguous same-team initials cannot attribute passing yards to either athlete (0.365639ms)
+✔ duplicate drive copies and nullified plays do not double-count Q1 results (0.436171ms)
+✔ a reconciled official quarter corrects an old grade while retaining its audit trail (0.812798ms)
+✔ each slate selects from its whole pool before capping; all day can exceed 25 (15.856407ms)
+✔ each slate locks its own original pregame evidence and ignores later results (0.965074ms)
+✔ all day never mixes tomorrow evening into the current calendar day (1.617714ms)
+✔ N04 uses next day that actually has eligible scorer quotes (0.845438ms)
+✔ S02 retains original slate windows across Toronto midnight until the last live game finishes (1.570043ms)
+✔ CFB keeps a late live slate before considering today or the next available Saturday (0.322222ms)
+✔ PRA and other combined model cards render without a nonexistent uncertainty range or workload (0.74994ms)
+✔ a genuine zero and a supplied complete interval remain visible beside the exact saved price (0.139105ms)
+✔ refreshed features change their own fingerprint even when model snapshot stays the same (2.500069ms)
+✔ the retained feature vector reproduces the fitted point forecast after serialization (101.661575ms)
+✔ nba: full card keeps the market grid and sections when evidence is missing (30.05449ms)
+✔ nfl: full card keeps the market grid and sections when evidence is missing (3.520225ms)
+✔ cfb: full card keeps the market grid and sections when evidence is missing (3.735763ms)
+✔ nhl: full card keeps the market grid and sections when evidence is missing (3.943299ms)
+✔ cbb: full card keeps the market grid and sections when evidence is missing (4.259371ms)
+✔ soccer: full card keeps the market grid and sections when evidence is missing (4.92161ms)
+✔ wnba: full card keeps the market grid and sections when evidence is missing (4.1526ms)
+✔ mlb: full card keeps the market grid and sections when evidence is missing (4.089181ms)
+✔ full-card history request binds the selected fixture cutoff and drops target/unknown statistics (16.354281ms)
+✔ the full card displays a verified final appearance and stat even when the link has no game status (3.439703ms)
+✔ nba: full card recovers the existing original projection using the saved selection timestamp (1.712395ms)
+✔ nfl: full card recovers the existing original projection using the saved selection timestamp (0.166823ms)
+✔ cfb: full card recovers the existing original projection using the saved selection timestamp (0.13425ms)
+✔ nhl: full card recovers the existing original projection using the saved selection timestamp (0.089564ms)
+✔ cbb: full card recovers the existing original projection using the saved selection timestamp (0.133687ms)
+✔ soccer: full card recovers the existing original projection using the saved selection timestamp (0.139707ms)
+✔ wnba: full card recovers the existing original projection using the saved selection timestamp (0.075598ms)
+✔ mlb: full card recovers the existing original projection using the saved selection timestamp (0.06306ms)
+✔ late, conflicting, missing and future timestamps never manufacture a full-card projection (0.330182ms)
+✔ request-start timestamp cannot hide a forecast calculated later in the same pregame capture (0.313949ms)
+✔ full card takes the exact saved line, side and odds only from matched server evidence (1.478391ms)
+✔ URL pick and odds cannot verify a selection; incomplete and mismatched server evidence is withheld (0.245683ms)
+✔ full-card projection comes from a matched saved forecast, never query projection flags (0.259581ms)
+✔ nba game detail uses official sides, current-game starters, and exact roster teams (7.447622ms)
+✔ nfl game detail uses official sides, current-game starters, and exact roster teams (3.359788ms)
+✔ cbb game detail uses official sides, current-game starters, and exact roster teams (3.798605ms)
+✔ cfb game detail uses official sides, current-game starters, and exact roster teams (2.960568ms)
+✔ roster player navigation retains the selected fixture and rejects a same-name different player ID (61.08306ms)
+✔ game watch fallback retains fixture identity and opens a profile without inventing a forecast (36.257025ms)
+✔ basketball season series excludes selected, future, unrelated and unfinished fixtures (2.207018ms)
+✔ football head to head supports tied games and records the actual home and away scores once (0.321139ms)
+✔ NBA live comparison uses confirmed fixture teams and distinguishes missing attempts from a reported zero (0.503651ms)
+✔ NHL meetings require the same two club IDs and a completed prior regular season or playoff game (0.413065ms)
+✔ all active game details bind rosters to exact teams regardless of response order (1.144446ms)
+✔ only an explicit current-game starter flag confirms a starter (0.174099ms)
+✔ NFL and CFB official corrections flip an incorrect hit and preserve the original result (3.38393ms)
+✔ exact fixture, exact player, final status and explicit saved side are required (1.058915ms)
+✔ basketball corrections use the saved side across NBA, WNBA and CBB (0.490272ms)
+✔ NHL corrections require the exact final NHL fixture (0.653153ms)
+✔ all eight sports preserve incomplete legacy grades without counting them as verified decisions (0.957516ms)
+✔ MLB finals require exact fixture and participation; retain zero and convert baseball innings to outs (0.813188ms)
+✔ soccer missing, live, or mismatched official evidence never fabricates a final (0.619175ms)
+✔ soccer explicit appearance and explicit zero settle; omitted metrics and unused roster players stay unknown (0.953548ms)
+✔ soccer final identity uses player IDs even when teammates have identical names (0.343497ms)
+✔ hidden sports remain available only in admin navigation (0.910988ms)
+✔ legacy MLB target-hit labels do not manufacture sportsbook grades or saved sides (0.807487ms)
+✔ original saved projections and score values remain accessible without marking them validated (0.291364ms)
+✔ MLB inspector preserves first-seen timestamps and legacy projections without inventing verified probabilities (0.464398ms)
+✔ bundled August MLB records retain pitcher identity, original zero statistics and legacy labels without inventing betting grades (26.245395ms)
+✔ cumulative MLB archives keep each original history date instead of assigning every entry the backup date (0.499134ms)
+✔ hidden WNBA final-game capture records all finals without dashboard visits, picks or grade writes (424.430184ms)
+✔ new snapshots are immutable segments and legacy UTF-8/escaped JSON archives remain byte-for-byte unchanged (202.27979ms)
+✔ a stalled history provider settles at its deadline rather than leaving the page loading (16.697582ms)
+✔ history fetch retains successful payloads without changing recorded values (18.8443ms)
+✔ cold saved records arrive before provider reconciliation and complete in the deferred job (12.824737ms)
+✔ fixture identity reconciles early captures and grades the locked original line rather than a replacement (1.135334ms)
+✔ archived-only locked forecasts and checksum-verified final observations recover without a live provider request (28.274557ms)
+✔ official result cache rejects tampering and cannot retain old full records beyond seven Toronto days (3.777274ms)
+✔ cloud errors retain the actionable provider code without printing body details or secrets (1.572439ms)
+✔ all sports read their existing immutable pregame/final receipts without calling external providers or changing originals (27.623506ms)
+✔ an older duplicated final cannot reverse a more recent official correction (0.283276ms)
+✔ first history response remains local when cloud is configured but unresponsive (4.349667ms)
+✔ failed cloud coverage backs off while preserving saved records and retries after a minute (6.526352ms)
+✔ reconciliation preserves scorer occurrence semantics on the original legacy line (0.421409ms)
+✔ pregame protection retains exact evidence and rejects late or future captures (1.231354ms)
+✔ all sports use five-minute pregame window and delayed-final retries (0.300695ms)
+✔ official final requires exact game, final state and populated boxscore (0.167292ms)
+✔ hidden MLB and Soccer also require authenticated full final evidence (0.372407ms)
+✔ All combines 25 independently ranked players per block without a global cap or changed evidence (2.241042ms)
+✔ timed-out or failed blocks retain their saved board and original odds while smaller healthy blocks retain all players (0.572684ms)
+✔ healthy empty blocks count as zero; missing blocks remain unknown and cannot be reported complete (0.380601ms)
+✔ production and local capture requests use the configured instance port rather than a proxy origin (0.839493ms)
+✔ C01 all five sports use the fitted projection without replacing the original baseline (1.05578ms)
+✔ L03 saved windows use Toronto time and retain pending, void and unverified result states (12.976576ms)
+✔ L03 uses a single saved read and cancels obsolete period requests (14.256914ms)
+✔ L07 both CFB routes omit invented confidence and explain early historical context (7.336514ms)
+✔ L03 recovers persisted board originals without grading calls and preserves zeroes (100.351913ms)
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":60}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"fixtureFailures":0,"unavailablePlayers":1,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":60}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0}
+✔ new-season log supplies complete two-team context, with no preseason, duplicate or <48h result leakage (4.602472ms)
+✔ failed discovery, incomplete totals and mismatched fixtures withhold affected players (1.465247ms)
+✔ locked and started cards never refresh or replace historical inputs (0.202307ms)
+✔ college refresh uses current college season and complete official census, with no NBA endpoint or prior-season substitution (1.289702ms)
+✔ college history errors abstain; a mismatched fixture season cannot supply usable observations (0.685768ms)
+✔ a Worker market without a fitted model retains the sportsbook quote and reports the missing model (1.744731ms)
+✔ unsupported markets cannot trigger unused observation refresh; combinations require every fitted component (0.329559ms)
+✔ fitted workload and rate produce a projection distinct from the unchanged historical mean (3.947177ms)
+✔ target outcomes, book line and archived heuristic scores cannot alter the forecast (1.346711ms)
+✔ missing histories, future snapshots, after-start and unsupported markets abstain (0.265191ms)
+✔ an exact official context supplies a missing season; another fixture cannot do so (0.335108ms)
+✔ WNBA workload models accept playoff fixture identity without borrowing the NBA regular-season context restriction (0.310875ms)
+✔ GI requires exact fresh quote evidence and a prior calibration artifact (1.49956ms)
+✔ a model selection can exist without GI while failed, stale and after-start decisions abstain (0.715001ms)
+✔ combination forecasts sum fitted component expectations without inventing joint probability or GI (0.697192ms)
+✔ local recovery reaches immutable segments when legacy file is missing and cloud is unavailable (182.559442ms)
+✔ backup and previous-season games are audited, not blended into passing research; full-workload zero remains (10.201708ms)
+✔ missing workload, unknown dates and sparse comparable samples abstain (0.725086ms)
+✔ combined stat research requires every component, not a partial invented total (0.248566ms)
+✔ NFL Q1 accepts explicit Q1 base categories, rejects full-game, half and contradictory periods (1.939195ms)
+✔ actual model selections appear ahead of unsupported rows in the five-card preview (2.06078ms)
+✔ unverified, stale and mismatched quote selections cannot be promoted or displayed (0.357199ms)
+✔ locked rankings retain their recorded order, and saved selections survive current quote freshness (0.159899ms)
+✔ unsupported cards explain why they have no pick without manufacturing a direction (0.223642ms)
+✔ the projection slot never substitutes last-five averages or a legacy season baseline (0.190493ms)
+✔ a supported projection can coexist with a pass at the offered price; its average cannot create a pick (0.200565ms)
+✔ missing forecast and failed accuracy checks have distinct public explanations (2.435565ms)
+✔ CFB exposes the three supported quarter yardage markets and accepts real period-specific prices (79.61234ms)
+✔ CFB quarter feed rejects full-game, half, other-quarter, suspended, stale and incomplete quotes (1.688502ms)
+✔ NBA period-matched quotes retain original source category and period without borrowing a full-game quote (0.683089ms)
+✔ NBA Q1 results bind to exact official player identity and reject ambiguous names or DNP (1.508211ms)
+✔ official CFB formation/jersey text yields actual Q1 values, never full-game yardage (26.762541ms)
+✔ NCAA sack attempts and negative rushing yards stay separate from NFL rules (0.544333ms)
+✔ native discovery deduplicates market IDs, identifies period types, and forwards only explicit public quote fields (8.010809ms)
+✔ native first basket preserves exact runner price and maps only the unique future fixture and roster identity (1.864615ms)
+✔ stale, missing freshness, suspended and team-first-basket markets never enter game-first-basket results (0.211953ms)
+✔ native NBA Q1 main quote preserves exact pair and unique official fixture/player (3.597344ms)
+✔ stale, missing-age, suspended, mismatched line/name, full-game and other-period quotes fail closed (0.753634ms)
+✔ quarter milestones keep N+ target and one-sided price for each supported statistic (1.763978ms)
+✔ main pair wins stable preference over milestones and duplicate native copies do not duplicate a player (1.189164ms)
+✔ milestone history treats the exact target as reached, without calling it an O/U push (1.192883ms)
+✔ authentic quarter quote cards remain public with no model or selection; invalid evidence stays hidden (1.464088ms)
+✔ large unrelated runner trees do not exhaust discovery before another fixture market (4.82617ms)
+✔ archive retains exact source prices and timestamp with retrospective provenance (1.451754ms)
+✔ wrong identities, post-start timestamps, alternates and ambiguous book prices abstain (1.080463ms)
+✔ midnight keeps previous slate when one or four games remain live (1.039069ms)
+✔ next slate remains independently addressable while older games are live (0.859409ms)
+✔ after final the default can advance but previous board date remains available (0.412136ms)
+✔ live games retain their slate beyond an arbitrary early-morning cutoff and month rollover (0.144742ms)
+✔ only unpriced quarter boards bypass archival; one verified quote preserves normal capture (1.106614ms)
+✔ absent rows on a healthy feed do not start failure recovery or invent picks; feed failures remain failures (1.139656ms)
+✔ NBA ranked cards show ONLY positive verified EV, from highest to lowest (3.090051ms)
+✔ no model selection or unverified/mismatched original quote means no NBA EV card (0.266994ms)
+✔ negative OVER cannot be flipped to UNDER merely to rank (0.419731ms)
+✔ NBA same-player back-to-back quotes remain distinct while same-game books dedupe (0.954994ms)
+✔ Official roster selection never collapses two separate fixtures for the same player (0.143784ms)
+✔ Sportsbooks with different court tip times for the same official game cannot duplicate the NBA card (0.78187ms)
+✔ workerd isolate serves concurrent cold NBA combination forecasts with exact original histories (6397.341629ms)
+✔ NBA failed refresh at 2026-11-01T04:30Z retains the original live slate and respects explicit calendar requests (26.214987ms)
+✔ NBA failed refresh at 2026-03-08T06:30Z retains the original live slate and respects explicit calendar requests (2.266236ms)
+✔ NBA failed refresh at 2026-11-01T07:30Z retains the original live slate and respects explicit calendar requests (1.876135ms)
+✔ a current saved NBA pregame board displays the original forecast without waiting for regeneration (2.415555ms)
+✔ saved pregame display rejects expired prices, wrong dates, late captures, started slates and reported-out players (0.736075ms)
+✔ saved NBA Q1 Points stays in the tab after its book quote ages, only with genuine original receipt (1.073821ms)
+✔ Q1 rebounds and assists share the saved-quote visibility safeguard (0.190952ms)
+✔ First Basket scorer receipts retain only saved authentic pregame odds (0.222819ms)
+✔ NBA advertised-start and court-tip differences retain the exact teams and date (1.773067ms)
+✔ provider full team names and known abbreviations bind to the official roster (0.305941ms)
+✔ Top 25 is selected after eligibility over the entire candidate pool (4.36676ms)
+✔ locked recovery uses only recorded pre-lock decisions and respects latest abstentions (13.882735ms)
+✔ one daily 25 freezes before the first game and retains ranks, quotes and picks after earlier games finish (16.597671ms)
+✔ late snapshots cannot create pregame boards, and recovery never invents a missing pick (2.227441ms)
+✔ tomorrow can be prepared and counted pending without replacing today or grading future results (12.705076ms)
+✔ actual pick grades require the exact official final fixture and athlete; missing stats remain pending (0.807118ms)
+✔ WNBA boards and actual pick grades stay isolated from NBA history and freeze their original selections (6.115438ms)
+✔ pick ledger counts only selections saved pregame and retains settled grades through provider failures (12.894088ms)
+✔ frozen NBA and hidden WNBA displays isolate dates and markets while retaining the exact source board (11.811718ms)
+[N05 NBA Q1 live card audit] {"market":"q1_points","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_rebounds","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_assists","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_threes_made","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_pts_rebs_asts","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+✔ relative date requests resolve Toronto dates across midnight, DST and year boundaries (3.174121ms)
+✔ scope handles UTC rollover and filters wrong date, market, missing and invalid fixture times without changing originals (3.481408ms)
+✔ every NBA market and combination is independently scoped (3.462295ms)
+✔ cached First Basket boards retain sportsbook prices and suppress old stat-model fields (0.475353ms)
+✔ NFL research refresh cannot withdraw, reactivate or overwrite existing historical picks (572.539116ms)
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'slate_locked_v2_passing_yards_early',
+  day: '2026-10-25',
+  error: 'unavailable optional cloud'
+}
+[cloud-history] write failed {
+  sport: 'nfl',
+  market: 'slate_locked_v2_q1_passing_yards_afternoon',
+  day: '2026-10-25',
+  error: 'unavailable optional cloud'
+}
+✔ slate migration retains original 1 PM evidence captured after an international kickoff; optional progress misses never query cloud (395.525188ms)
+✔ kickoff feed shrink cannot remove unvalidated pregame research rows in any NFL market (13.253415ms)
+✔ NFL passing interceptions are listed and read from passing only; defensive stats keep their separate units (1.602201ms)
+✔ combined history requires every component, preserves a real zero and never treats missing receiving yards as zero (1.52562ms)
+✔ passing interception baseline excludes low-attempt roles and future games using the existing passing cohort policy (7.344819ms)
+✔ full-game progress preserves official defense and offense totals without requiring a quarter tape (249.617188ms)
+✔ recorded live NFL QB disappearance is reproduced and quote-backed coverage restored without manufacturing selections (14.750516ms)
+✔ model validation failures remain unavailable confidence/EV; baselines and unmodelled quarters stay distinct (0.403024ms)
+✔ exact normalized probabilities can price signed NFL research EV without generating a betting selection (4.094972ms)
+✔ wrong sport, invalid quote, after-start recovery, unavailable player and tampered capture remain excluded (0.379856ms)
+✔ negative and zero exact-price NFL comparisons remain signed and never acquire selections (0.320566ms)
+✔ quarter sportsbook category aliases remain exact to period and do not borrow full-game offers (33.893915ms)
+✔ two-sided NFL quarter forecasts retain their projection direction without being promoted to betting picks (0.416141ms)
+✔ foreground retained NFL board exposes diagnostics without calling sportsbook feeds or changing originals (34.503661ms)
+✔ background capture bypasses retained-board shortcut and actually reaches source collection (2.699168ms)
+✔ foreground merges a job-published later block with frozen early evidence even when legacy publication is absent (7.019853ms)
+✔ NHL applies saved availability before pregame Top25, rejects skaters for goalie saves, and retains started limits (48.344994ms)
+✔ count mass responds to mean, retains zero/multiple outcomes and integer pushes (5.159352ms)
+✔ same EV requirement permits long-odds OVER and favorite UNDER without quotas (0.613371ms)
+✔ NHL runtime exposes count diagnostics but withholds unvalidated selections and old GI (6.074927ms)
+[P01 coverage audit] {"sport":"nhl","market":"goals","rows":1,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1}}
+[P01 coverage audit] {"sport":"nhl","market":"assists","rows":1,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1}}
+✔ frozen saved NHL forecasts retain original side and probabilities byte for byte (710.652706ms)
+✔ NHL coverage retains eight eligible UNDERs without relabeling or mutating them (2.913866ms)
+✔ goalie history derives saves from shots minus goals and excludes explicit unused appearances (1.079904ms)
+✔ missing hockey values never become zero or a partial combined total (1.470444ms)
+✔ date-only hockey history excludes the target Eastern game day and target fixture (12.811411ms)
+✔ NHL restores saved picks outside a new baseline top25 without altering receipt fields or refitting a started game (16.436128ms)
+✔ NHL refresh bounds all player batches by one deadline, rejects failed evidence and skips unpriced/frozen cards (25.955189ms)
+✔ NHL cache joins concurrent builds, attaches stale refresh lifetime and recovers after an unresolved build deadline (16.936843ms)
+✔ NHL rejected feed cannot overwrite a last verified response or renew its receipt timestamp (2.034913ms)
+✔ NHL rejected research capture and later grading preserve unrelated original history (487.877793ms)
+✔ official full names, common names and abbreviations resolve the same unique NHL fixture (1.718088ms)
+✔ aliases cannot rescue wrong opponent, reversed teams, wrong time or duplicate fixtures (0.282127ms)
+✔ different-season, incomplete or conflicting official identities do not become aliases (0.295237ms)
+✔ accented official Montréal identity matches the unaccented book spelling (0.385282ms)
+✔ NHL puck-drop offset requires an explicit bounded tolerance and keeps fixture uniqueness (0.251278ms)
+✔ Trevor regression: a research card tracks 49 actual yards toward 228.5 without a pick or probability (0.901365ms)
+✔ official NHL awayTeam/homeTeam stats, zeroes and goalie save fractions are read consistently (0.728143ms)
+✔ basketball observations include independent full-game stats but never divide them to make Q1 values (0.908603ms)
+✔ live/final statuses cannot leak from another fixture with the same teams (0.335489ms)
+✔ NBA and NFL official fetches use manual redirects and reject every redirect without forwarding credentials (25.496571ms)
+✔ official fetch preserves authentication failures and responds to caller cancellation without poisoning later reads (4.218389ms)
+✔ live scoreboards never enter the historical 15-minute cache (0.81073ms)
+✔ dated official passing logs retain low-volume zero appearances, skip missing data and preseason (1.856081ms)
+✔ features ignore target outcome/workload, future games, earlier seasons and previous teams (8.921477ms)
+✔ prior role uncertainty abstains while low workload in the future target does not disappear from evaluation (0.542832ms)
+✔ reports never enable GI or certify betting validation, including empty input (0.613414ms)
+✔ NHL goalie saves use observed shots minus goals, never skater goals as a goalie market (0.615907ms)
+✔ real fitting uses previous seasons; target relief appearances remain in held-out scores (10.329625ms)
+✔ GI learns opportunity return order separately from probability, using earlier fixture-weighted outcomes (4.80488ms)
+✔ few fixtures, insufficient exact-price samples and unavailable results cannot fit GI (2.903681ms)
+✔ tied edges stay together and nonmonotone observed returns are pooled (8.888434ms)
+✔ GI calibration derives actual payouts from the same quote, not saved hit flags or supplied ROI (0.934596ms)
+✔ the decision engine requires both forecast value and earlier GI calibration from the same exact quote (3.914508ms)
+✔ a single positive calibration level cannot manufacture midpoint GI rankings (0.183354ms)
+✔ counts real market coverage without leaking provider metadata or raw records (1.801203ms)
+✔ empty and malformed feeds cannot imply available markets (0.191681ms)
+✔ included results and a single book history use fixed queries, collapse requests and cache the sample (25.008774ms)
+✔ permission denial stops the route, never escalates to another endpoint, and cools down (1.188161ms)
+✔ markets share one successful feed request; billing failures enter cooldown without stale lines (33.587454ms)
+✔ model archive probe is fixed and bounded; concurrent calls share cache and provider denial is not an empty dataset (1.923798ms)
+✔ official fallback uses exact UTC fixture dates and identities without outcomes (7.946481ms)
+✔ research sampling uses identities, including losing, zero and provisional results (0.590574ms)
+✔ fixed window rejects arbitrary dates before any network request (0.57402ms)
+✔ source requests use included prop routes and retain named quote fields only (20.976335ms)
+✔ graded evidence distinguishes pregame capture from end-of-game prices and rejects unknown structure (0.893775ms)
+✔ provisional, ungradable, missing-price and missing-player rows cannot supply priced evidence; reported zero remains real (0.249733ms)
+✔ CFB frozen forecasts replay and scorer preserves zero/missing/pending with exact kickoff checks (2946.916496ms)
+✔ confidence audit scores UNDER confidence on its own side and excludes pushes, missing and tied calls (1.625472ms)
+✔ empty confidence cohorts report unknown accuracy rather than zero (0.208609ms)
+✔ flipping more UNDER calls to OVER can produce no net accuracy gain (7.974178ms)
+✔ pushes and missing directions are excluded; contradictory paired grades fail (0.943166ms)
+✔ P01 retains strongest five UNDERs without relabeling or mutating rows (121.901236ms)
+✔ N05 quarter point expectation never yields impossible negative yards (115.044412ms)
+✔ N05 NBA Q1 residual probabilities are normalized and never fabricated from insufficient data (0.444253ms)
+✔ N05 NBA Q1 integer-result milestone 1+ is equivalent to OVER 0.5, with no fabricated UNDER quote (0.305632ms)
+✔ N05 genuine model projections remain available for all five active sports without substituting averages (0.299742ms)
+✔ L07 early CFB ranking uses evidence depth, not an invented 84% confidence (8.675723ms)
+✔ offline official results reject corrupted bytes, conflicting IDs and changed payloads (16.88018ms)
+✔ all sports enumerate metadata, coalesce reads and isolate corrupt source documents (59.754471ms)
+✔ Workers read many saved documents in bounded day batches and isolate a corrupt checksum (9.680813ms)
+✔ staging Workers reject shared history writes before making a network request (1.190305ms)
+✔ persistent recovery is detached and a stalled provider cannot hold request completion (3.120461ms)
+✔ all eight integrations reconcile duplicates, original grading terms, withdrawals and every period before counts/filtering (16.380392ms)
+✔ Toronto calendar scopes remain consecutive across both daylight-saving transitions (1.817712ms)
+✔ market/group and soccer league scopes do not leak into neighboring categories (0.729192ms)
+✔ saved result views coalesce cold loads and serve verified records immediately while stale results refresh (13.33273ms)
+[performance refresh] nba Today provider down
+✔ a failed background refresh retains the verified saved view (5.912855ms)
+✔ Workers return the saved cloud view without writing a local snapshot (0.77242ms)
+✔ nba: prior numeric history, evidence labels and completed ordering stay consistent (14.224198ms)
+✔ nfl: prior numeric history, evidence labels and completed ordering stay consistent (0.543628ms)
+✔ cfb: prior numeric history, evidence labels and completed ordering stay consistent (0.297935ms)
+✔ nhl: prior numeric history, evidence labels and completed ordering stay consistent (0.314463ms)
+✔ cbb: prior numeric history, evidence labels and completed ordering stay consistent (0.301617ms)
+✔ soccer: prior numeric history, evidence labels and completed ordering stay consistent (0.237883ms)
+✔ wnba: prior numeric history, evidence labels and completed ordering stay consistent (0.473872ms)
+✔ mlb: prior numeric history, evidence labels and completed ordering stay consistent (0.272576ms)
+✔ quarter history never substitutes full-game values and selected windows average their actual sample (0.492851ms)
+✔ clock labels distinguish quarters, college halves, hockey periods and supplied overtime (0.368311ms)
+✔ NFL charts span seasons, keep missed games blank, and distinguish a recorded zero (0.622586ms)
+✔ cloud player history retains exact games and zero values; excludes undated averages, projections and missing values (1.923519ms)
+✔ MLB final observations retain zeros, exact innings-outs conversion and never infer absent stats (158.888155ms)
+✔ all eight sports return official history after local archival without waiting for failed cloud replication (67.077633ms)
+✔ empty history recovery has a bounded cloud read and preserves the before-date filter (17.257417ms)
+✔ local historical preservation remains enabled when cloud configuration is absent (10.984804ms)
+✔ NFL and CFB zero-yard relief attempts confirm participation; unused backups and game clocks do not (4.757497ms)
+✔ receiving targets confirm participation without requiring catches or yards (0.340903ms)
+✔ NBA, WNBA and CBB use observed minutes, distinguishing starter confirmation from an appearance (0.23664ms)
+✔ NHL confirms zero-stat skaters and relief goalies by ice time, excluding unused goalies (0.185426ms)
+✔ cross-dashboard labels and expanded detail reflect participation without inventing starting status (1.361372ms)
+✔ ranking refresh preserves confirmed participation only for the exact player and fixture (0.557571ms)
+✔ one face badge progresses pending, confirmed, LIVE, FINAL across every active sport (4.230479ms)
+✔ official appearance overrides injury notices only for the same fixture and retains the dated report (0.993374ms)
+✔ a reported OUT player never gets a confirmed lineup badge from an earlier starter flag (0.416986ms)
+✔ directory finds players outside prop boards across all supported leagues and uses stable athlete IDs (4.513109ms)
+✔ matching handles accents, apostrophes, hyphens and partial names without creating athletes (0.374155ms)
+✔ MLB results link using MLBAM IDs and distinguish same-name athletes (0.523232ms)
+✔ empty full-name queries retry surname; failures stay distinct from no matches; duplicates collapse (24.137037ms)
+✔ ESPN hockey identity gets exact dated results, keeping zero and excluding missing stats/preseason/future games (1.26303ms)
+✔ official corrections survive durable writes and stale settled snapshots (20.966804ms)
+✔ a stale capture cannot erase a settled result or original locked projection (1.039103ms)
+✔ concurrent capture and grading writes preserve all records and final grades on disk (3.652386ms)
+✔ probability follows original UNDER side, preserves push mass and excludes unsupported evidence (2.657373ms)
+✔ accuracy separates sport market and side, uses conditional Brier and excludes duplicates and pending (1.131205ms)
+✔ all eight sport integrations enforce evidence and reject failed validation, future decisions and mismatched grades (0.633366ms)
+✔ a player result cannot leak onto another game, day, or market (1.123519ms)
+✔ box scores preserve zero and comma-formatted totals while refusing missing and compound values (0.196562ms)
+✔ every active sport refuses unvalidated new picks, even with a valid quote or spoofed validation flag (1243.685696ms)
+✔ rejected research captures do not overwrite original saved basketball values or grades (12.037446ms)
+✔ serializable train-only fit survives JSON roundtrip and nonfinite inputs fail (2.909729ms)
+✔ empirical distributions preserve negative yards, integer pushes and correct price payouts (0.631973ms)
+✔ CRPS matches brute force and cannot be improved merely by widening forecasts (0.408716ms)
+✔ exact quote identity, period, provenance and frozen pregame timing are mandatory (0.445465ms)
+✔ QB backup appearances cannot create a false low starting expectation, including Nelson-like zero/two attempts (7.603512ms)
+✔ calibration outcomes change uncertainty but never fitted coefficients; later outcomes change neither (308.811341ms)
+✔ forecast artifacts cannot be used before calibration was available or on another market (68.786299ms)
+✔ fixture-cluster uncertainty cannot treat many player rows in one game as independent games (0.820421ms)
+✔ quote evaluation uses archived decision-time features and reports actual price calibration only on exact joins (64.903186ms)
+✔ native quarter workload fitting retains zero-opportunity outcomes while efficiency avoids division by zero (113.91857ms)
+✔ direct candidate fits on training only and remains research-only under later outcome changes (207.879953ms)
+✔ research participation condition excludes nonparticipants without discarding real zero production (287.869715ms)
+✔ an exact book quote does not validate a history-average prediction or heuristic GI (1.139644ms)
+✔ legacy low lines are archived, not actionable; old data are never mutated (0.8977ms)
+✔ same safeguards apply to every active sport and every Q1 baseline (0.433316ms)
+✔ pregame evidence survives final whistle, but stale, missing-timing and late captures fail closed (0.352772ms)
+✔ legacy results remain inspectable but never count as verified wins or pending picks (0.580909ms)
+✔ basketball and hockey select one real book quote, never a median or 8.8 points (2.016482ms)
+✔ basketball and hockey reject wrong fixture, wrong period, milestones, stale and one-sided O/U (1.187293ms)
+✔ exact quote thresholds never round quarter lines or turn missing evidence into zero (0.741614ms)
+✔ live sack context retains both quarter-line threshold and exact distance from the line (291.510626ms)
+✔ original survives replacement attempts and cloud failure until verified retry (14.145865ms)
+✔ all eight sports retain separate pregame and final receipts (18.566872ms)
+✔ Worker receipts use a verified insert-only write with concurrent publishers (27.261181ms)
+✔ a failed schedule provider cannot masquerade as a successful zero-game slate (1.18205ms)
+✔ partial schedule coverage retains valid payloads including a genuinely empty day (0.766088ms)
+✔ missing values are not fabricated zeroes (0.867052ms)
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/401 401 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/403 403 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/429 429 text/plain;charset=UTF-8
+✔ public feed requests collapse and cached bodies remain independently readable (36.910753ms)
+✔ ESPN service failure retries the official alternate host; failed responses are never cached (3.979883ms)
+✔ authenticated sportsbook requests are not cached or sent to alternate hosts (0.718863ms)
+✔ ESPN access denials and rate limits never switch hosts (2.231558ms)
+✔ authorized real nflverse histories match by ESPN/GSIS identity and exact fixture, never by name (10.137456ms)
+✔ real prior-season and target-game outcomes cannot enter a pregame NFL history (0.761202ms)
+✔ quarter-specific and scoring-order evidence cannot be manufactured from full-game totals (0.227059ms)
+✔ actual zero interceptions and zero rushing yards survive; missing combination components never become zero (3.067846ms)
+✔ duplicate, wrong-team, ambiguous fixture and malformed schedule evidence fail safely without mutating source (4.717579ms)
+✔ fresh recovered NHL receipt retains original odds and reproduces frozen research probabilities (19.249606ms)
+✔ first basket uses an exact scorer price as a labelled book-implied chance, never an O/U line or independent forecast (1.396217ms)
+✔ Tre Jones final result cannot replace or fabricate the saved pregame projection (0.585861ms)
+✔ active rankings require a verified prop, projection, prediction and exact-price EV across all three sports (1.200658ms)
+✔ passing history excludes low-volume backups, prior seasons and post-kickoff data (16.229444ms)
+✔ descriptive sample average and line counts use dated observations and never become a pick or GI (0.838504ms)
+✔ live facts use the latest live stat, even when the ranking snapshot has an older actual field (0.17347ms)
+✔ chart points retain exact dates, opponents and zero values without leaking the current game (0.923671ms)
+✔ quarter inputs retain certified zero quarters, same-team prior season and exact evidence; target/future/48h data excluded (10.300272ms)
+✔ fitted Q1 expectation creates exact saved direction without claiming probabilities, EV or betting validation (1.910707ms)
+✔ milestones retain one-sided contract; target comparison never invents an UNDER wager (1.275292ms)
+✔ wrong fixture context, unavailability, future artifact and started row fail closed (0.808518ms)
+✔ frozen forecasts are preserved by refresh; new Q1 expectations remain nonnegative (145.566952ms)
+✔ provider names with college suffixes collapse by roster ID without losing other games (1.158303ms)
+✔ public discovery retains only NBA/NFL/NHL; active NFL Q1 has exactly the three yardage markets (0.717422ms)
+✔ basketball period matching never leaks a full game, half or team total into Q1 (0.362601ms)
+✔ book-implied first basket and scaled Q1 estimates are not validated predictions (0.285386ms)
+✔ Q1 grading counts only a complete first quarter, including FTs, rebounds, assists and threes (1.483248ms)
+✔ official displayValue quarter totals reconcile without substituting full-game results or missing zeroes (0.973174ms)
+✔ first basket counts the first score including free throws, not the assister or a truncated later score (0.633137ms)
+✔ the saved target forecast distinguishes below, reaches, and exact-target without inventing an under quote (1.141215ms)
+✔ frozen target forecast survives start; unlocked post-start and stale quotes do not (0.194551ms)
+✔ mismatched quote/player/target/time or contradictory comparison is withheld (0.305737ms)
+✔ named periods cannot leak into full-game basketball or hockey quotes (2.79123ms)
+✔ football accepts named Q1 evidence only for the matching period (0.345967ms)
+✔ alternate scorer contracts cannot masquerade as anytime TD or first basket quotes (0.897333ms)
+✔ blank or conflicting period aliases cannot authorize the wrong contract (0.373568ms)
+✔ fixture validation rejects absent or indistinguishable teams even at the same kickoff (0.620473ms)
+✔ R1 extracts its frozen production artifact and detects changed code or bindings (625.077754ms)
+✔ R1 preparation cannot upload or accept deployment flags (195.930104ms)
+✔ nfl: movement survives refresh/storage and an empty provider interval; kickoff is never NEW (1.321744ms)
+✔ cfb: movement survives refresh/storage and an empty provider interval; kickoff is never NEW (0.256306ms)
+✔ mlb: movement survives refresh/storage and an empty provider interval; kickoff is never NEW (0.108424ms)
+✔ DROPPED admits only distinct same-fixture same-day future replacements and rejects started/stale/wrong market rows (1.053323ms)
+✔ a void research capture cannot make a live or upcoming game look final (0.719802ms)
+✔ category publication waits for decoded photos; cached visits avoid another image request (3.719142ms)
+✔ failed or stalled photos become stable fallback avatars without blocking the category indefinitely (15.769468ms)
+✔ exact official Out reports remove pregame candidates; questionable reports and another fixture do not (3.04653ms)
+✔ participation, lineup confirmation and locked history take precedence over older reports (0.891675ms)
+✔ Reed Sheppard: a daily lock does not keep a reported-out nonparticipant in public rankings (0.986269ms)
+✔ homepage gives NBA, WNBA and NHL separate slots even when NBA has all the earliest games (1.743603ms)
+✔ homepage exposes supported model picks and their real prices while validated counts remain separate (1.358279ms)
+✔ concurrent ranking requests share one build; force refresh and crossing tipoff bypass the saved response (2.114915ms)
+✔ all sports keep explicit OUT/DNP ahead of starter flags; only exact participation overrides (4.19142ms)
+✔ an empty available Q1 board is a successful no-picks result, while provider failures remain failures (1.574742ms)
+✔ void reasons distinguish board withdrawal, late capture, missing line and unknown legacy causes (0.811826ms)
+✔ explicit official DNP and injury statuses use exact fixture and player IDs, never a missing row (1.959953ms)
+✔ injury-only evidence reaches cards even without stats or participation and never crosses fixtures (1.203521ms)
+✔ void cards cannot acquire a checkmark from actuals; admin shows separate availability and void reasons (0.81517ms)
+✔ unlisted final IDs can explain missing evidence but never establish an injury or DNP (0.65047ms)
+✔ live NBA progress uses a verified archived pregame threshold without restoring a pick or changing current quotes (1.286716ms)
+✔ live, late, stale, unverified, cross-player, cross-fixture and other-market archive rows cannot become progress lines (0.27904ms)
+✔ NHL progress recovers an immutable pregame quote for the exact player, game and market (17.55582ms)
+✔ started NHL cards prefer the original saved pick, or show the quote and projection alone (2.989572ms)
+✔ NBA deadline retains memory admission until cancelled work settles (26.953963ms)
+✔ memory queue bounds concurrency and removes timed-out queued work (11.230566ms)
+✔ source cache bounds bytes and entries and expires (1.829786ms)
+✔ NBA retries honor cooldown, are bounded, and exclude authorization errors (23.396645ms)
+✔ NFL denied history persists cooldown, permits checkpoint, then recovers (77.54862ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T12:02:44.001Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T13:02:44.008Z"}
+✔ NFL public-source denial never switches host or invents a successful history (27.252637ms)
+✔ optional NFL policy does not soften basketball authorization or NFL rate limiting (1.584311ms)
+✔ NBA optional gamelog denial is a recorded unavailable source, without converting schedule denials into history cooldowns (2.230608ms)
+✔ foreground official history honors long denial and rate-limit cooldowns across queued URLs (1.306798ms)
+✔ official DNP is void; absent stats remain unresolved and true zero is observed (1.45716ms)
+✔ wrong fixture, mismatched time and unfinished games cannot settle (0.206411ms)
+✔ research capture uses existing daily archive, keeps original evidence, and never creates a wager file (728.923784ms)
+✔ scheduler extracts exact market rows from football, baseball and soccer payloads (2.309016ms)
+✔ a failed featured publication cannot prevent immutable research snapshots being saved (31.28697ms)
+✔ football research settles explicit real zero, preserves missing stat and voids only explicit DNP (1.576918ms)
+✔ football research rejects wrong final, kickoff or team identities (0.238748ms)
+✔ small samples abstain and invalid or future-unresolved labels cannot fit (0.92551ms)
+✔ fixed calibration learns overconfidence from training only and remains bounded and monotone (16.146253ms)
+✔ public provider cache is byte-bounded, expires old bodies, and never requires response stream cloning (367.202148ms)
+✔ hidden dashboard polling makes zero requests and visibility resumes immediately with full cleanup (7.280034ms)
+✔ NFL immediately returns unchanged original early decisions alongside genuine current pregame rows (2.038405ms)
+✔ stale, wrong-day, already-started and unverified fresh rows cannot replace or remove the original locked board (0.512146ms)
+✔ a fresh job-published KV board fills later blocks while preserving the original early row (15.433331ms)
+✔ pregame first-basket and long-shot evidence stays visible after final tipoff, without using the outcome (3.565561ms)
+✔ saved pregame pool fills value and long shot with the next distinct qualifying players on all sports (3.159903ms)
+✔ seven Toronto calendar days include today and survive midnight and DST (18.064942ms)
+✔ deletion requires a fresh remote match, readable searchable migration and catalog receipt; changing files survive (21.034869ms)
+✔ JSONB roundtrip hashing ignores key order and optional undefined fields, retaining exact zero actuals (0.811557ms)
+✔ compressed immutable snapshot segments use their parent capture date for retention (0.935626ms)
+✔ a verified crash-left archive temporary file is removed only during quiescent recovery, never during normal capture (5.665388ms)
+✔ storage inventory measures historical, protected and temporary files without modifying them (7.882021ms)
+✔ all-sport retention preview preserves boundaries; completed manifest required; dry run never deletes (58.033902ms)
+✔ CPU diagnostics aggregate sample weights and expose no profile variables or URL parameters (1.68604ms)
+✔ batch indexing preserves complete fitted outputs on the shipped basketball artifact (1986.083363ms)
+ℹ {"players":36,"available":30,"baselineMs":969,"indexedMs":156}
+✔ saved CFB HTTP response retains board quote, projection, rank and observed final zero (3.798991ms)
+✔ read-only saved history preserves zero actuals, voids, pushes, original call and grades without approval filtering (16.25235ms)
+✔ periods use Toronto days at midnight and retain a full year rollover (1.121093ms)
+✔ late saves are visible and disclosed, not silently discarded or relabelled validated (0.271389ms)
+✔ periods follow the fixture day rather than the earlier day the forecast was first captured (4.42615ms)
+✔ failed cloud history cannot erase genuine local graded records or masquerade as complete coverage (22.066669ms)
+✔ all eight sports retain original projection independently of live/final actuals and later forecasts (2.66666ms)
+✔ a frozen board preserves its recorded fitted projection; missing projections never become actuals (0.367891ms)
+✔ saved fitted forecast wins over season baseline and remains separate from final actual (0.152344ms)
+✔ a saved NFL featured record can prove its original projection with boardCapturedAt (0.222651ms)
+✔ all sports recover original fitted research forecasts without certifying betting picks or recalculating projections (1.107402ms)
+✔ research grades use exact official finals without altering the stored original forecast (23.0121ms)
+✔ official final observations remain cached across the one-minute UI refresh and still allow later corrections (1.575579ms)
+✔ NBA/NFL/NHL date failures and malformed payloads cannot publish partial schedules or false empty dates (2.169436ms)
+✔ failed polls retain bounded same-sport schedules; confirmed empty dates replace them and expired dates cannot leak (0.536694ms)
+✔ scope counts bind market, date and official fixture; unknown coverage is not zero and kickoff invalidates aggregate caches (2.937032ms)
+✔ seven NBA diagnostic rows, scorer candidates and true picks remain separate in coverage (1.390841ms)
+✔ coverage caches use actual future fixture dates and reject expired/future-dated counters (0.930624ms)
+✔ NHL tomorrow roster enrichment uses tomorrow teams, not only today teams, across Toronto DST (44.886537ms)
+✔ all football markets share one authenticated league request and honor rate-limit cooldown (88.586581ms)
+✔ consensus-only odds cannot become named-book quotes (0.872868ms)
+✔ book adapter preserves exact quarter, named book, threshold and both prices; ignores alt rungs (2.109406ms)
+✔ opposing side must match player, quarter, book and line and be available (0.376464ms)
+✔ first basket retains the actual named-book scorer price without manufacturing an Under (0.324223ms)
+✔ NBA props require the correct opponent and day, never the nearest scheduled game (1.076843ms)
+✔ unauthorized SGO keys get a bounded cooldown without blocking valid retries forever (0.187649ms)
+✔ a failed prefetch cannot become a successful empty board for foreground navigation; retry remains possible (1.535877ms)
+✔ simultaneous consumers share only their exact market/date URL across all eight sports (1.205976ms)
+✔ ESPN goalkeeper objects and aliases enter the saves candidate pool (1.107845ms)
+✔ named ESPN roster stats retain real production and genuine zeroes, not missing fields (1.936471ms)
+✔ unused substitutes do not become zero-stat historical appearances (1.090795ms)
+✔ only verified pregame props with usable history become saved picks (13.702964ms)
+✔ kickoff locks, settled results and unrelated history survive refreshes (0.458692ms)
+✔ soccer settlement handles both sides, pushes, missing stats and actual zero (0.539325ms)
+✔ durable capture can be read and graded without losing another prediction (158.408903ms)
+✔ captures aggregate markets, replace empty boards and expire without approving an unvalidated model (3.589694ms)
+✔ a client eligibility flag, high score or bookmaker probability cannot promote an unvalidated model (2.239373ms)
+✔ active sports feature their own first-scorer market and a distinct long-shot player (2.026256ms)
+✔ featured cards reuse an exact saved pregame model selection and its side-specific probability/EV (0.631016ms)
+✔ first basket and price-qualified scorer long shots display book-implied chances without inventing model value (0.343767ms)
+✔ every dashboard gives each featured category a different player across multiple markets (2.333431ms)
+✔ nba filters unavailable players before ranking without excluding pending lineups or rewriting history (2.56481ms)
+✔ nfl filters unavailable players before ranking without excluding pending lineups or rewriting history (0.473726ms)
+✔ cfb filters unavailable players before ranking without excluding pending lineups or rewriting history (0.213508ms)
+✔ nhl filters unavailable players before ranking without excluding pending lineups or rewriting history (0.214488ms)
+✔ cbb filters unavailable players before ranking without excluding pending lineups or rewriting history (0.239213ms)
+✔ soccer filters unavailable players before ranking without excluding pending lineups or rewriting history (0.369023ms)
+✔ wnba filters unavailable players before ranking without excluding pending lineups or rewriting history (0.184166ms)
+✔ mlb filters unavailable players before ranking without excluding pending lineups or rewriting history (0.152353ms)
+✔ eligibility examines the full pool before limiting and preserves frozen history (2.143611ms)
+✔ nhl: exact quote matching rejects ambiguous fixtures and never chooses a nearby opponent (1.610276ms)
+✔ cbb: exact quote matching rejects ambiguous fixtures and never chooses a nearby opponent (0.250604ms)
+✔ wnba: exact quote matching rejects ambiguous fixtures and never chooses a nearby opponent (0.105446ms)
+✔ fixture resolution precedes player deduplication and preserves exact per-game quote evidence (0.989965ms)
+✔ WNBA checks all candidates before selecting 25 and retains the original frozen board (149.180233ms)
+✔ WNBA points preserves empty and populated frozen boards without next-slate substitution or forecast recalculation (3.963966ms)
+✔ WNBA rebounds preserves empty and populated frozen boards without next-slate substitution or forecast recalculation (1.47783ms)
+✔ WNBA assists preserves empty and populated frozen boards without next-slate substitution or forecast recalculation (1.604717ms)
+✔ an unfrozen empty WNBA response still attempts its normal next-slate fallback (12.649273ms)
+✔ replays only protected pregame decisions against the same official final fixture (22.690918ms)
+✔ staging stores verified corrections separately and keeps the newer official observation (1.581956ms)
+✔ rotates each official final game in bounded two-fixture scheduled batches (3.50091ms)
+✔ detects later official FINAL player-stat corrections even without a protected research pick (0.985101ms)
+✔ never treats missing official stat rows as revisions or saves non-final data (0.962379ms)
+✔ archives every stream, verifies byte-for-byte restores, and reuses a retried archive (36.220048ms)
+✔ never publishes a manifest for a changed or corrupt source document (0.642562ms)
+✔ the daily schedule rotates each sport and selects Toronto history dates (15.254431ms)
+✔ two-minute recent grading cycles only NBA NFL NHL, preserving other sports for daily archive (2.31859ms)
+✔ successive checks of the same sport advance independent replay batches (0.906308ms)
+✔ recent replay reads checksum-protected finals without uploading to Drive (1.648896ms)
+✔ a tampered protected receipt stops read-only grading replay (0.7575ms)
+✔ Cloudflare staging routes the existing pregame cron to independent postgame replay (11.386478ms)
+✔ Worker model partitions preserve digest and contain only required sport/markets (653.2415ms)
+✔ Vite replacement runs without filesystem access in the runtime module (1810.504207ms)
+✔ embedded loader executes without disk reads and preserves exact precombined histories (2416.31718ms)
+✔ independently backs up quote originals, picks and grades, then verifies exact restoration (38.712825ms)
+✔ no manifest is published if source inventory changes while archiving (1.89936ms)
+✔ missing active sport records need no Drive authentication or writes (0.519157ms)
+✔ rejects a source capture that was made after official kickoff (3.7543ms)
+✔ capture rotation covers NBA, NFL and NHL, never paused or archived sports (1.706488ms)
+✔ capture requires a fresh, verified official pregame quote and never invents a model selection (15.715014ms)
+✔ saved model pick must bind to exact quote and pricing; research baseline alone is not a model pick (3.104993ms)
+✔ server-backed storage uses insert-only dedup; later quote refresh never replaces the original (27.354117ms)
+✔ Toronto game dates are DST-aware (0.378586ms)
+✔ a later legitimate pregame model pick is saved once even when the original quote was captured earlier (5.424787ms)
+✔ grades saved line and side, not later live book prices (1.352539ms)
+✔ rejects wrong game, player, live game, late receipt and modified original quote (0.424268ms)
+✔ grade scheduling is bounded, UTC-based, and one sport per 30 minutes (0.901836ms)
+✔ one official final writes only first grade; subsequent runs never modify originals or grades (35.510479ms)
+✔ v1 checksum survives Postgres JSONB object key reordering (17.213515ms)
+✔ separate official final grade never changes stored original line (2.240416ms)
+✔ missing-only merge preserves existing saved line and historical grade (1.051141ms)
+✔ tampered quote, model receipt and late captured record are excluded (0.528033ms)
+✔ calibration follows predicted workload, with deterministic ties and JSON persistence (1.985653ms)
+✔ sparse, negative or nonfinite workload calibration cannot emit probabilities (0.508733ms)
+✔ conditional calibration keeps frozen fits and never uses later target outcomes or realized minutes (286.938822ms)
+✔ every active sport requires its own pregame context; Q1 cannot inherit full-game workload (3.390829ms)
+✔ new roles, first scorers, incomplete context and unavailable goalies abstain (1.956323ms)
+✔ future results, concurrent results and target outcome never affect a pregame forecast (6.863934ms)
+✔ walk-forward reports coverage and grouped errors without promoting a model; duplicate records rejected (26.697336ms)
+ℹ tests 845
+ℹ suites 0
+ℹ pass 832
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 13
+ℹ todo 0
+ℹ duration_ms 262862.258208

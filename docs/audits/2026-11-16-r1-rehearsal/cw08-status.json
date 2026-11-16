@@ -1,0 +1,21 @@
+{
+  "production": false,
+  "modelCommit": "007c02b",
+  "releaseApproved": false,
+  "ready": true,
+  "receipts": 953,
+  "grades": 871,
+  "pendingUploads": 0,
+  "lateAnchors": 0,
+  "active": [],
+  "completedCycles": 186,
+  "manifestHead": {
+    "key": "runs/444312efc3bc54787c50962589715a31225672d44b3abd8e8e790d2622df7fe0.json",
+    "hash": "444312efc3bc54787c50962589715a31225672d44b3abd8e8e790d2622df7fe0"
+  },
+  "lastStorageError": null,
+  "workerDeployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "workerVersion": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+  "cron": "*/15 * * * *",
+  "scope": "Read-only existing research system, unchanged by R1 rehearsal"
+}

@@ -1,0 +1,20 @@
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+COLD_SUMMARY {"status":503,"games":null,"warning":"NBA schedule incomplete (16/16 dates unavailable); retrying","officialRequests":0,"baseline":true,"unsupportedRedirects":24}
+✔ shipping cold NBA summary reproduces withdrawn 503 or succeeds with the same official fixtures (5422.295384ms)
+﹣ shipping cold concurrent summary and slate requests agree without duplicate scoreboard fan-out (0.922425ms) # SKIP
+﹣ shipping cold summary reports unknown counts for redirectSame without crashing or following a redirect (0.133134ms) # SKIP
+﹣ shipping cold summary reports unknown counts for redirectOther without crashing or following a redirect (0.149692ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http401 without crashing or following a redirect (0.114549ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http403 without crashing or following a redirect (0.134053ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http429 without crashing or following a redirect (0.09929ms) # SKIP
+﹣ shipping cold summary reports unknown counts for http503 without crashing or following a redirect (3.881572ms) # SKIP
+﹣ shipping cold summary reports unknown counts for malformed without crashing or following a redirect (0.104429ms) # SKIP
+﹣ shipping cold summary times out safely, preserves unknown counts and recovers with valid data (1.793914ms) # SKIP
+ℹ tests 10
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 9
+ℹ todo 0
+ℹ duration_ms 6625.851709

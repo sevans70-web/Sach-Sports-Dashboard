@@ -1,0 +1,11 @@
+/** Isolated frozen-artifact UI rehearsal. All outbound calls are denied. No deployment. */
+import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
+import {readdir,readFile,stat} from 'node:fs/promises';import {createServer} from 'node:http';import {join,resolve} from 'node:path';
+import {mkdtempSync,rmSync} from 'node:fs';import {tmpdir} from 'node:os';import {prepareR1} from './prepare-r1-release.mjs';
+const frozen=mkdtempSync(join(tmpdir(),'r1-browser-'));console.info(JSON.stringify(prepareR1(frozen)));
+const base=join(frozen,'workers/default'),bundle=base+'/bundle',files=[];
+async function walk(d){for(const f of await readdir(d,{withFileTypes:true})){const path=join(d,f.name);if(f.isDirectory())await walk(path);else if(path.endsWith('.js'))files.push({type:'ESModule',path});}}await walk(bundle);files.sort((a,b)=>a.path===bundle+'/index.js'?-1:b.path===bundle+'/index.js'?1:0);
+const mf=new Miniflare(convertV4MiniflareOptions({name:'local-nfl-candidate',modules:files,modulesRoot:bundle,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],kvNamespaces:['VINEXT_KV_CACHE'],durableObjects:{DASHBOARD_JOBS:{className:'DashboardJobQueue',useSQLite:true}},serviceBindings:{ASSETS:()=>new Response(null,{status:404})},outboundService:()=>new Response('{"error":"Live outbound is disabled in local browser replay"}',{status:503})}));
+const server=createServer(async(req,res)=>{try{const path=resolve(base+'/assets','.'+new URL(req.url,'http://local').pathname);if(path.startsWith(base+'/assets/')){try{if((await stat(path)).isFile()){const ext=path.split('.').at(-1),mime={js:'text/javascript',css:'text/css',svg:'image/svg+xml',webp:'image/webp',png:'image/png',woff2:'font/woff2'};res.writeHead(200,{'Content-Type':mime[ext]||'application/octet-stream'});res.end(await readFile(path));return;}}catch{}}
+ const response=await mf.dispatchFetch('https://local-candidate.test'+req.url);res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));}catch(e){res.writeHead(500);res.end('Local replay failed');console.error(e.message);}});server.listen(3027,'127.0.0.1',()=>console.log('Local compiled candidate http://127.0.0.1:3027; outbound disabled'));
+process.on('SIGTERM',async()=>{server.close();await mf.dispose();rmSync(frozen,{recursive:true,force:true});process.exit();});

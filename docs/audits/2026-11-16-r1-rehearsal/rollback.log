@@ -1,0 +1,22 @@
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/summary 404 text/plain;charset=UTF-8
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T12:02:01.001Z"}
+[dashboard-job-phase] {"id":"rollback-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"rank","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":22,"limit":220,"costs":{"provider_gate":11,"official_http":8,"odds_or_other_http":2,"history_http":1},"cacheHits":1,"cacheWrites":3,"checkpointBytes":381771,"completedRequests":11,"maxActive":4,"maxReserved":12,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[{"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":1794744121001}],"denialHits":1}}
+[dashboard-job-deferred] {"id":"rollback-nfl","kind":"capture","sport":"nfl","market":"passing_yards","phase":"originals","reason":"Cloudflare pregame storage HTTP 503","retryAt":1794740552002,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"failureDetails":null}
+[dashboard-job-phase] {"id":"rollback-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"originals","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":4,"limit":220,"costs":{"provider_gate":2,"history_http":2},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":2,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+ROLLBACK_STAGE candidate checkpoint saved
+ROLLBACK_STAGE fallback constructed
+[dashboard-job-phase] {"id":"rollback-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"originals","to":"picks","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":2,"limit":220,"costs":{"provider_gate":1,"history_http":1},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":1,"maxActive":1,"maxReserved":3,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"rollback-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"picks","to":"publish","state":"active","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":0,"limit":220,"costs":{},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+[dashboard-job-phase] {"id":"rollback-nfl","kind":"capture","sport":"nfl","market":"passing_yards","from":"publish","to":"done","state":"done","eligible":1,"stored":0,"picksStored":0,"expired":0,"usage":{"used":3,"limit":220,"costs":{"kv":3},"cacheHits":0,"cacheWrites":0,"checkpointBytes":0,"completedRequests":0,"maxActive":0,"maxReserved":0,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0}}
+FROZEN_ROLLBACK {"state":"done","originals":1,"evidenceDocuments":1}
+✔ frozen candidate -> compatible fallback -> candidate retains pending evidence and resumes after lost ACK (15965.03606ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16572.015018

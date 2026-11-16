@@ -1,0 +1,41 @@
+{
+  "schema": "r1-dashboard-release/v1",
+  "status": "rehearsal_blocked",
+  "sourceCommit": "2bf33d6f9bfc0a57aaa42b7346ebcce65422680a",
+  "applicationRepairCommit": "600bd5d22811ddf17be9684b0cab2a86ed22d7ed",
+  "worker": "sach-sports-cloudflare-test",
+  "bundleDigest": "d7714dc0cac2f05950a0eed9b7bd7a9aebd82893465c25635f4dbe8907f4f71b",
+  "files": 424,
+  "archive": {
+    "file": "candidate.tar.gz",
+    "sha256": "f6bf43437e726879c89cf1ef274d061d0e0736d2e918e8cd1410b92c426f9b54",
+    "bytes": 13200854
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "currentFallbackDeployment": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+  "dashboardNamespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "dashboardKV": "644df6a469e84dba90c8f7dac410f895",
+  "limits": {
+    "job": 220,
+    "worker": 350,
+    "sourceConcurrency": 4
+  },
+  "newNamespaces": false,
+  "migrations": false,
+  "credentialChanges": false,
+  "automaticBuilds": "paused",
+  "CW08": "unchanged",
+  "productionDeployed": false,
+  "approvalRequired": true,
+  "uploadSupportedByPreparationTool": false,
+  "scope": [
+    "NBA redirect/cache/schema and preserved EV/PR memory repairs",
+    "Existing NFL quote-backed ranking visibility",
+    "Existing NHL loading/season/identity and retained ranking recovery",
+    "Bounded per-sport capture/grading/checkpoint and retry recovery"
+  ],
+  "liveProductionAcceptance": "Not performed for this candidate; mandatory after an approved deployment",
+  "remainingPreapprovalGates": [
+    "Locate and verify the latest complete history and pregame backup manifests and every referenced part; perform a non-destructive restore with exact counts/checksums. Archive-job success logs alone are insufficient."
+  ]
+}

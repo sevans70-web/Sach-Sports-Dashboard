@@ -1,0 +1,13 @@
+{
+  "scope": "Read-only current fallback, not R1 candidate production acceptance",
+  "path": "/api/nhl/rankings?market=shots_on_goal",
+  "status": 200,
+  "observedAt": "2026-11-16T11:03:46.976Z",
+  "success": true,
+  "source": "Owls Insight NHL props + NHL API",
+  "boardDay": null,
+  "rows": 25,
+  "freshVerifiedQuotes": 25,
+  "latestQuoteAt": "2026-11-16T11:02:43.545Z",
+  "accessEvidence": "fresh_dashboard_bound_quotes"
+}
