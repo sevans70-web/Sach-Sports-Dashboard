@@ -1,0 +1,239 @@
+[
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/dashboard-summary",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker-event",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "outcome": "ok",
+    "cpuMs": 28,
+    "wallMs": 30,
+    "path": "/api/dashboard-summary",
+    "response": {
+      "status": 503
+    },
+    "source": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/dashboard-summary"
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:39.624Z",
+    "message": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code).",
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "type": "cf-worker",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "source": "Invalid redirect value, must be one of \"follow\" or \"manual\" (\"error\" won't be implemented since it does not make sense at the edge; use \"manual\" and check the response status code)."
+  },
+  {
+    "at": "2026-11-16T04:33:10.564Z",
+    "message": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/dashboard-summary",
+    "requestId": "0baa77d97d1810eeeb38ae42a3417d4b",
+    "type": "cf-worker-event",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "outcome": "ok",
+    "cpuMs": 233,
+    "wallMs": 835,
+    "path": "/api/dashboard-summary",
+    "response": {
+      "status": 200
+    },
+    "source": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/dashboard-summary"
+  },
+  {
+    "at": "2026-11-16T04:31:45.057Z",
+    "message": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/dashboard-summary",
+    "requestId": "517a5b52c0ca9d5a77de4993999e91c0",
+    "type": "cf-worker-event",
+    "version": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+    "outcome": "ok",
+    "cpuMs": 306,
+    "wallMs": 831,
+    "path": "/api/dashboard-summary",
+    "response": {
+      "status": 200
+    },
+    "source": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/dashboard-summary"
+  }
+]

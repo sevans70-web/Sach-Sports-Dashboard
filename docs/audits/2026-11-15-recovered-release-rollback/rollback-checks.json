@@ -1,0 +1,23 @@
+[
+  {
+    "name": "cw08",
+    "status": 200,
+    "seconds": 0.4,
+    "success": true,
+    "rows": 0
+  },
+  {
+    "name": "fallback-nba-pr",
+    "status": 200,
+    "seconds": 1.31,
+    "success": true,
+    "rows": 23
+  },
+  {
+    "name": "fallback-nfl-slate",
+    "status": 200,
+    "seconds": 0.23,
+    "success": true,
+    "rows": 14
+  }
+]

@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_user_approval",
+  "status": "withdrawn_after_failed_live_gates",
   "sourceCommit": "7a2c442fe2e8a2d21969ae69f98a3fc7e3b64b1b",
   "worker": "sach-sports-cloudflare-test",
   "bundleDigest": "31302af418fa34c141220edbd9b73f0c4c7015fc7284c68e0eeb9c89de415c03",
@@ -25,5 +25,9 @@
   "approvalRequired": true,
   "scope": "Combined NBA EV/memory, NHL loading/season/coverage, NFL ranking, bounded capture/checkpoint and cold framework accounting repairs. Read-only audit client fix; no model replacement or nflverse production adoption.",
   "supersedesWithdrawnDigest": "1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68",
-  "liveVerification": "Post-deployment browser, fresh API, cold capture/checkpoint and scheduled independence gates mandatory; immediate compatible fallback on critical failure."
+  "liveVerification": "Post-deployment browser, fresh API, cold capture/checkpoint and scheduled independence gates mandatory; immediate compatible fallback on critical failure.",
+  "candidateDeployment": "79d6b9b0-8014-451a-bd3d-f732bbe15888",
+  "candidateVersion": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+  "rollbackDeployment": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+  "failure": "Live NBA dashboard-summary HTTP 503; same-request Worker logs report unsupported redirect:error"
 }

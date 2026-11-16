@@ -1,0 +1,144 @@
+{
+  "dashboard": [
+    {
+      "id": "9b1c3dea-a683-4e0f-9f42-71236a095a9d",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Restore verified compatible fallback: new candidate failed live cold NFL recovery gate, repeated rankings_unavailable with no checkpoint and needsAttention. Preserve all namespace state, original/new receipts, grades and CW08.",
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-15T20:14:05.897546Z"
+    }
+  ],
+  "rollback": {
+    "id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "metadata": {
+      "created_on": "2026-11-15T04:12:28.395101Z",
+      "source": "cf_cli",
+      "author_id": "e92707e1aaac0119fe175be1e977f65d",
+      "author_email": "sevans70@hotmail.com",
+      "has_preview": false
+    }
+  },
+  "settings": {
+    "compatibility_date": "2026-11-06",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "limits": {
+      "subrequests": 350
+    },
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "redact_query_string": true,
+      "logs": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "persist": true,
+        "invocation_logs": true
+      },
+      "traces": {
+        "enabled": true,
+        "persist": true,
+        "head_sampling_rate": 0.1
+      }
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "BACKUP_DRIVE_FOLDER_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "DASHBOARD_JOBS",
+        "type": "durable_object_namespace",
+        "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+        "class_name": "DashboardJobQueue"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_REFRESH_TOKEN",
+        "type": "secret_text"
+      },
+      {
+        "name": "OWLS_INSIGHT_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SPORTSGAMEODDS_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_SECRET_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_URL",
+        "type": "secret_text"
+      },
+      {
+        "name": "VINEXT_KV_CACHE",
+        "type": "kv_namespace",
+        "namespace_id": "644df6a469e84dba90c8f7dac410f895"
+      }
+    ]
+  },
+  "research": [
+    {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Approved CW08 transport-only update; frozen mod...",
+        "workers/triggered_by": "upload"
+      },
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-14T19:54:01.859122Z"
+    }
+  ],
+  "schedule": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  },
+  "builds": [
+    {
+      "trigger_uuid": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "modified_on": "2026-11-15T17:40:21.816Z"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "scope": "Real production fallback browser, truthful audit User-Agent, no replay or clock changes",
+  "pages": [
+    {
+      "sport": "nfl",
+      "httpStatus": 200,
+      "secondsThroughSettledObservation": 4.86,
+      "cards": 0,
+      "rankingTextExcerpt": "PLAYER RANKINGS\nToday\nMon, Nov 16\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards r"
+    },
+    {
+      "sport": "nhl",
+      "httpStatus": 200,
+      "secondsThroughSettledObservation": 4.39,
+      "cards": 5,
+      "rankingTextExcerpt": "PLAYER RANKINGS\nToday\nTomorrow\n\ud83c\udfd2Shots on Goal\n\u2b50Points\n\ud83e\udd45Goals\n\ud83c\udfafAssists\n\ud83d\udee1\ufe0fBlocked Shots\n\ud83e\udde4Goalie Saves\n\u203a\n\ud83c\udfd2 Shots on Goal\n\n7 rankings \u00b7 7 picks\n\n1\nCG\nCutter Gauthier\nANA \u00b7 Flames @ Ducks\nSun, Nov 15, 8:00 PM EST\nFINAL\nPlayed\nEV\n+16.2%\nShots on Goal\nO/U 4.5\nSach Prediction\nUNDER 4.5\nSach Projection\n3.5\n\nSaved pregame book: Pinnacle \u00b7 Over +125 / Under -167\n\nFinished with 5 shots on goal; 0.5 above the "
+    },
+    {
+      "sport": "nba",
+      "httpStatus": 200,
+      "secondsThroughSettledObservation": 4.29,
+      "cards": 5,
+      "rankingTextExcerpt": "PLAYER RANKINGS\nToday\nPrevious Slate\nTomorrow\n\ud83c\udfc0Points\n\ud83d\udcaaRebounds\n\ud83c\udfafAssists\n3\ufe0f\u20e33-Pointers Made\n\u23f1\ufe0fQ1 Points\n\u23f1\ufe0fQ1 Rebounds\n\u23f1\ufe0fQ1 Assists\n\ud83d\udccaPoints + Rebounds + Assists\n\u2795Points + Rebounds\n\u2795Points + Assists\n\u2795Rebounds + Assists\n\ud83d\udd90\ufe0fSteals\n\ud83e\uddf1Blocks\n1\ufe0f\u20e3First Basket\n\u203a\n\ud83c\udfc0 Points\n\n20 rankings \u00b7 9 picks\n\n2\nAS\nAlex Sarr\nC \u00b7 WSH \u00b7 Houston Rockets @ Washington Wizards\nSun, Nov 15, 7:00 PM EST\nFINAL\nPlayed\nEV\n+14.3%\nSaved"
+    }
+  ],
+  "errors": []
+}

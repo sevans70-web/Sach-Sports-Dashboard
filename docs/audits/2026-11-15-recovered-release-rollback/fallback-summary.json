@@ -1,0 +1,510 @@
+{
+  "status": 200,
+  "body": {
+    "success": true,
+    "sport": "nba",
+    "league": "eng.1",
+    "market": "points",
+    "slateDay": "2026-11-15",
+    "scope": "Current slate \u00b7 available ranking markets",
+    "games": 17,
+    "live": 0,
+    "finals": 9,
+    "lineups": 34,
+    "confirmedLineups": 0,
+    "pendingLineups": 34,
+    "rankedPlayers": 0,
+    "playerProps": 59,
+    "predictions": 0,
+    "estimatedPicks": 16,
+    "modelPickRows": [],
+    "verifiedRows": [],
+    "marketCounts": [
+      {
+        "market": "points",
+        "rankings": 20,
+        "lines": 20,
+        "projections": 20,
+        "picks": 9,
+        "ev": 20
+      },
+      {
+        "market": "rebounds",
+        "rankings": 16,
+        "lines": 16,
+        "projections": 16,
+        "picks": 7,
+        "ev": 16
+      },
+      {
+        "market": "assists",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "threes_made",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "pts_rebs_asts",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "pts_rebs",
+        "rankings": 23,
+        "lines": 23,
+        "projections": 23,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "pts_asts",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "rebs_asts",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "steals",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "blocks",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "first_basket",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "q1_points",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "q1_rebounds",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      },
+      {
+        "market": "q1_assists",
+        "rankings": 0,
+        "lines": 0,
+        "projections": 0,
+        "picks": 0,
+        "ev": 0
+      }
+    ],
+    "coverageComplete": false,
+    "rankingsAvailable": true,
+    "marketsCounted": 3,
+    "coverageAudit": {
+      "expectedMarkets": 14,
+      "observedMarkets": 3,
+      "expectedMarketDates": 28,
+      "observedMarketDates": 3,
+      "missingMarketDates": [
+        {
+          "day": "2026-11-16",
+          "market": "points"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "rebounds"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "assists"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "threes_made"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "pts_rebs_asts"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "pts_rebs"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "pts_asts"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "rebs_asts"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "steals"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "blocks"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "first_basket"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "q1_points"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "q1_rebounds"
+        },
+        {
+          "day": "2026-11-16",
+          "market": "q1_assists"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "assists"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "threes_made"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "pts_rebs_asts"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "pts_asts"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "rebs_asts"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "steals"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "blocks"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "first_basket"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "q1_points"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "q1_rebounds"
+        },
+        {
+          "day": "2026-11-15",
+          "market": "q1_assists"
+        }
+      ],
+      "missingMarkets": [
+        "points",
+        "rebounds",
+        "assists",
+        "threes_made",
+        "pts_rebs_asts",
+        "pts_rebs",
+        "pts_asts",
+        "rebs_asts",
+        "steals",
+        "blocks",
+        "first_basket",
+        "q1_points",
+        "q1_rebounds",
+        "q1_assists"
+      ],
+      "complete": false,
+      "selectedPicks": 16
+    },
+    "previewGames": [
+      {
+        "id": "401909994",
+        "date": "2026-11-17T00:00Z",
+        "awayTeam": "Orlando Magic",
+        "awayAbbr": "ORL",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/orl.png",
+        "awayScore": 0,
+        "homeTeam": "Boston Celtics",
+        "homeAbbr": "BOS",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/bos.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 7:00 PM EST"
+      },
+      {
+        "id": "401909995",
+        "date": "2026-11-17T00:00Z",
+        "awayTeam": "Chicago Bulls",
+        "awayAbbr": "CHI",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/chi.png",
+        "awayScore": 0,
+        "homeTeam": "Cleveland Cavaliers",
+        "homeAbbr": "CLE",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/cle.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 7:00 PM EST"
+      },
+      {
+        "id": "401909996",
+        "date": "2026-11-17T00:00Z",
+        "awayTeam": "Memphis Grizzlies",
+        "awayAbbr": "MEM",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/mem.png",
+        "awayScore": 0,
+        "homeTeam": "Washington Wizards",
+        "homeAbbr": "WSH",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/wsh.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 7:00 PM EST"
+      },
+      {
+        "id": "401909997",
+        "date": "2026-11-17T00:30Z",
+        "awayTeam": "Philadelphia 76ers",
+        "awayAbbr": "PHI",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phi.png",
+        "awayScore": 0,
+        "homeTeam": "Brooklyn Nets",
+        "homeAbbr": "BKN",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/bkn.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 7:30 PM EST"
+      },
+      {
+        "id": "401909998",
+        "date": "2026-11-17T00:30Z",
+        "awayTeam": "Houston Rockets",
+        "awayAbbr": "HOU",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/hou.png",
+        "awayScore": 0,
+        "homeTeam": "Miami Heat",
+        "homeAbbr": "MIA",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/mia.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 7:30 PM EST"
+      },
+      {
+        "id": "401909999",
+        "date": "2026-11-17T01:00Z",
+        "awayTeam": "Portland Trail Blazers",
+        "awayAbbr": "POR",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/por.png",
+        "awayScore": 0,
+        "homeTeam": "Minnesota Timberwolves",
+        "homeAbbr": "MIN",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/min.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 8:00 PM EST"
+      },
+      {
+        "id": "401910000",
+        "date": "2026-11-17T01:00Z",
+        "awayTeam": "Golden State Warriors",
+        "awayAbbr": "GS",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/gs.png",
+        "awayScore": 0,
+        "homeTeam": "New Orleans Pelicans",
+        "homeAbbr": "NO",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/no.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 8:00 PM EST"
+      },
+      {
+        "id": "401910001",
+        "date": "2026-11-17T02:00Z",
+        "awayTeam": "Phoenix Suns",
+        "awayAbbr": "PHX",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phx.png",
+        "awayScore": 0,
+        "homeTeam": "Denver Nuggets",
+        "homeAbbr": "DEN",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/den.png",
+        "homeScore": 0,
+        "state": "pre",
+        "status": "11/16 - 9:00 PM EST"
+      },
+      {
+        "id": "401909985",
+        "date": "2026-11-15T18:00Z",
+        "awayTeam": "Indiana Pacers",
+        "awayAbbr": "IND",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/ind.png",
+        "awayScore": 124,
+        "homeTeam": "Philadelphia 76ers",
+        "homeAbbr": "PHI",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phi.png",
+        "homeScore": 131,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909986",
+        "date": "2026-11-15T21:00Z",
+        "awayTeam": "Los Angeles Lakers",
+        "awayAbbr": "LAL",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/lal.png",
+        "awayScore": 131,
+        "homeTeam": "Phoenix Suns",
+        "homeAbbr": "PHX",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phx.png",
+        "homeScore": 123,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909987",
+        "date": "2026-11-15T21:30Z",
+        "awayTeam": "Charlotte Hornets",
+        "awayAbbr": "CHA",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/cha.png",
+        "awayScore": 105,
+        "homeTeam": "LA Clippers",
+        "homeAbbr": "LAC",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/lac.png",
+        "homeScore": 113,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909988",
+        "date": "2026-11-15T22:00Z",
+        "awayTeam": "San Antonio Spurs",
+        "awayAbbr": "SA",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/sa.png",
+        "awayScore": 110,
+        "homeTeam": "Utah Jazz",
+        "homeAbbr": "UTAH",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/utah.png",
+        "homeScore": 102,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909989",
+        "date": "2026-11-15T23:00Z",
+        "awayTeam": "Dallas Mavericks",
+        "awayAbbr": "DAL",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/dal.png",
+        "awayScore": 94,
+        "homeTeam": "Boston Celtics",
+        "homeAbbr": "BOS",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/bos.png",
+        "homeScore": 131,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909990",
+        "date": "2026-11-15T23:00Z",
+        "awayTeam": "New York Knicks",
+        "awayAbbr": "NY",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/ny.png",
+        "awayScore": 112,
+        "homeTeam": "Toronto Raptors",
+        "homeAbbr": "TOR",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/tor.png",
+        "homeScore": 108,
+        "state": "post",
+        "status": "Final/OT"
+      },
+      {
+        "id": "401909991",
+        "date": "2026-11-16T00:00Z",
+        "awayTeam": "Houston Rockets",
+        "awayAbbr": "HOU",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/hou.png",
+        "awayScore": 147,
+        "homeTeam": "Washington Wizards",
+        "homeAbbr": "WSH",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/wsh.png",
+        "homeScore": 119,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909992",
+        "date": "2026-11-16T01:00Z",
+        "awayTeam": "Atlanta Hawks",
+        "awayAbbr": "ATL",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/atl.png",
+        "awayScore": 113,
+        "homeTeam": "Milwaukee Bucks",
+        "homeAbbr": "MIL",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/mil.png",
+        "homeScore": 106,
+        "state": "post",
+        "status": "Final"
+      },
+      {
+        "id": "401909993",
+        "date": "2026-11-16T02:00Z",
+        "awayTeam": "Oklahoma City Thunder",
+        "awayAbbr": "OKC",
+        "awayLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/okc.png",
+        "awayScore": 125,
+        "homeTeam": "Sacramento Kings",
+        "homeAbbr": "SAC",
+        "homeLogo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/sac.png",
+        "homeScore": 103,
+        "state": "post",
+        "status": "Final"
+      }
+    ],
+    "scheduleAvailable": true,
+    "weekNumber": null,
+    "warning": "Partial market coverage: counts include observed markets only; missing markets are not zero.",
+    "updatedAt": "2026-11-16T04:35:26.305Z"
+  }
+}

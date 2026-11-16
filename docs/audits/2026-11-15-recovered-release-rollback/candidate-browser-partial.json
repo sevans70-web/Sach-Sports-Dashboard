@@ -1,0 +1,123 @@
+{
+  "errors": [],
+  "hydrationErrors": [],
+  "nfl": {
+    "passing_yards": {
+      "cards": 24,
+      "seconds": 6.127,
+      "coverage": {
+        "sourceRows": 24,
+        "displayableRows": 24,
+        "fittedProjections": 20,
+        "baselineOnly": 1,
+        "savedQuoteRows": 24,
+        "evAvailable": 0,
+        "reasons": {
+          "Model probability accuracy checks not met; confidence and EV are unavailable": 20,
+          "Verified player/team history is unavailable": 3,
+          "Independent model probability needed": 1
+        }
+      },
+      "explanationVisible": true
+    },
+    "passing_tds": {
+      "cards": 24,
+      "seconds": 3.898,
+      "coverage": {
+        "sourceRows": 24,
+        "displayableRows": 24,
+        "fittedProjections": 0,
+        "baselineOnly": 21,
+        "savedQuoteRows": 24,
+        "evAvailable": 0,
+        "reasons": {
+          "A fitted forecast is not available for this market": 24
+        }
+      },
+      "explanationVisible": true
+    },
+    "passing_interceptions": {
+      "cards": 24,
+      "seconds": 3.851,
+      "coverage": {
+        "sourceRows": 24,
+        "displayableRows": 24,
+        "fittedProjections": 0,
+        "baselineOnly": 21,
+        "savedQuoteRows": 24,
+        "evAvailable": 0,
+        "reasons": {
+          "A fitted forecast is not available for this market": 24
+        }
+      },
+      "explanationVisible": true
+    },
+    "qb_rushing_yards": {
+      "cards": 24,
+      "seconds": 3.976,
+      "coverage": {
+        "sourceRows": 24,
+        "displayableRows": 24,
+        "fittedProjections": 0,
+        "baselineOnly": 22,
+        "savedQuoteRows": 24,
+        "evAvailable": 0,
+        "reasons": {
+          "A fitted forecast is not available for this market": 24
+        }
+      },
+      "explanationVisible": true
+    },
+    "passing_rushing_yards": {
+      "cards": 24,
+      "seconds": 3.738,
+      "coverage": {
+        "sourceRows": 24,
+        "displayableRows": 24,
+        "fittedProjections": 0,
+        "baselineOnly": 21,
+        "savedQuoteRows": 24,
+        "evAvailable": 0,
+        "reasons": {
+          "A fitted forecast is not available for this market": 24
+        }
+      },
+      "explanationVisible": true
+    }
+  },
+  "nhl": {},
+  "nba": {},
+  "responses": [
+    {
+      "sport": "nfl",
+      "market": "passing_tds",
+      "status": 200
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_yards",
+      "status": 200
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_interceptions",
+      "status": 200
+    },
+    {
+      "sport": "nfl",
+      "market": "qb_rushing_yards",
+      "status": 200
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_rushing_yards",
+      "status": 200
+    },
+    {
+      "sport": "nfl",
+      "market": "anytime_td",
+      "status": 200
+    }
+  ],
+  "scope": "Actual production browser, no replay, no clock changes, TLS verification enabled"
+}

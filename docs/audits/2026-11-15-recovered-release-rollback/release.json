@@ -1,0 +1,20 @@
+{
+  "status": "rolled_back_candidate_withdrawn",
+  "packageCommit": "fe2f058292c92ea8223fbd781288c67e63978c77",
+  "sourceCommit": "7a2c442fe2e8a2d21969ae69f98a3fc7e3b64b1b",
+  "bundleDigest": "31302af418fa34c141220edbd9b73f0c4c7015fc7284c68e0eeb9c89de415c03",
+  "archiveSha256": "1db8fd3a085a6ca61fc8a039d2914383db1f54ac827c4271d100af85cbbbb4ab",
+  "manualBuild": "bd510169-8d3f-4c42-8037-4c1ef8702815",
+  "candidateDeployment": "79d6b9b0-8014-451a-bd3d-f732bbe15888",
+  "candidateVersion": "9cdbd746-b0d2-47a8-aed8-41775bb1fbed",
+  "candidateCreatedAt": "2026-11-16T04:31:15.173534Z",
+  "criticalFailureAt": "2026-11-16T04:33:39.624Z",
+  "rollbackDeployment": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "rollbackAt": "2026-11-16T04:34:08.794804Z",
+  "applicationCompiledDuringActivation": false,
+  "newResources": false,
+  "automaticBuilds": "paused",
+  "CW08": "unchanged",
+  "completion": "not_accepted"
+}

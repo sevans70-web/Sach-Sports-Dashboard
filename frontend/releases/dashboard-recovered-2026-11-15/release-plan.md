@@ -1,3 +1,9 @@
+# Withdrawn after live acceptance failure — do not deploy
+
+Approved candidate deployment 79d6b9b0-8014-451a-bd3d-f732bbe15888 failed the NBA dashboard-summary live gate on November 15, 2026 Toronto time. Compatible fallback restored as deployment 4e8f8721-6e0a-4836-b877-9446a0f360d0. Archive retained unchanged for audit; preparation now rejects it. Any corrected candidate requires new validation and approval. Full live browser acceptance did not complete.
+
+Original approved plan follows for historical context.
+
 # Combined recovered-dashboard controlled release
 
 Status: prepared, not uploaded; new explicit user approval required.

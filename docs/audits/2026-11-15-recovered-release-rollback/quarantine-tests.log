@@ -1,0 +1,15 @@
+✔ saved, expired or unpriced ranking responses cannot clear the fresh authentication gate (2.579982ms)
+✔ authorized audit identifies itself truthfully, uses fixed public routes, and never retries a denial (49.761102ms)
+✔ frozen retry repair reproduces the tested artifact; altered code cannot pass its digest (445.671571ms)
+✔ new preparation command rejects deployment and old failed candidate remains quarantined (76.245356ms)
+✔ combined NFL and capture artifact has a separate frozen identity and still cannot upload (1.136011ms)
+✔ denied-source and NBA memory candidate is independently frozen and requires fresh approval (0.720827ms)
+✔ recovered candidate withdrawn after live summary failure cannot be prepared again (0.840199ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 798.595329

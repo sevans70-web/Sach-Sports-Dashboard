@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "columns": [
+        "completed_jobs"
+      ],
+      "rows": [
+        [
+          17
+        ]
+      ],
+      "meta": {
+        "rows_read": 390,
+        "rows_written": 0
+      }
+    },
+    {
+      "columns": [
+        "max_subrequests",
+        "max_source_checkpoints"
+      ],
+      "rows": [
+        [
+          32,
+          40
+        ]
+      ],
+      "meta": {
+        "rows_read": 390,
+        "rows_written": 0
+      }
+    }
+  ]
+}

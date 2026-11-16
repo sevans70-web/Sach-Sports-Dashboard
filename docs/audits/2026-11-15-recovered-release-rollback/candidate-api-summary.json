@@ -1,0 +1,33 @@
+{
+  "nflUpcomingPassing": {
+    "success": true,
+    "source": "Owls Insight + frozen daily slate",
+    "boardDay": "2026-11-16",
+    "nflCoverage": {
+      "sourceRows": 2,
+      "displayableRows": 2,
+      "fittedProjections": 1,
+      "baselineOnly": 1,
+      "savedQuoteRows": 0,
+      "evAvailable": 0,
+      "reasons": {
+        "Verified player/team history is unavailable": 1,
+        "Model probability accuracy checks not met; confidence and EV are unavailable": 1
+      }
+    }
+  },
+  "nhlCurrentShots": {
+    "success": true,
+    "source": "Owls Insight NHL props + NHL API",
+    "displayableRows": 21,
+    "coverageNotice": "",
+    "verifiedQuoteCount": 25
+  },
+  "nbaSummary": {
+    "status": 503,
+    "requestId": "e32464f8d1de08d4d44bb59aa63f622e",
+    "rootCause": "Unsupported redirect:error on foreground official-source fetch; same-request log correlation",
+    "cpuMs": 28,
+    "wallMs": 30
+  }
+}
