@@ -1,0 +1,20 @@
+[
+  {
+    "sport": "nfl",
+    "market": "anytime_td",
+    "new_originals": 1,
+    "first_captured": "2026-11-16 17:13:06.575001+00",
+    "last_captured": "2026-11-16 17:13:06.575001+00",
+    "captured_after_start": 0,
+    "future_quotes": 0
+  },
+  {
+    "sport": "nfl",
+    "market": "first_td",
+    "new_originals": 1,
+    "first_captured": "2026-11-16 17:13:08.503287+00",
+    "last_captured": "2026-11-16 17:13:08.503287+00",
+    "captured_after_start": 0,
+    "future_quotes": 0
+  }
+]

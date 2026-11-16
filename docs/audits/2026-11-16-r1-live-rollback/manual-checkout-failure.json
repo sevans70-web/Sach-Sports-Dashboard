@@ -1,0 +1,31 @@
+{
+  "build": "f171ddb0-0aa7-4a2a-b0ff-55f075e0fcd0",
+  "upload": false,
+  "lines": [
+    [
+      1794848709233,
+      "fatal: Not a valid commit name 2bf33d6f9bfc0a57aaa42b7346ebcce65422680a"
+    ],
+    [
+      1794848709235,
+      "Error: Command failed: git merge-base --is-ancestor 2bf33d6f9bfc0a57aaa42b7346ebcce65422680a HEAD"
+    ],
+    [
+      1794848709235,
+      "fatal: Not a valid commit name 2bf33d6f9bfc0a57aaa42b7346ebcce65422680a"
+    ],
+    [
+      1794848709247,
+      "Failed: error occurred while running build command"
+    ]
+  ],
+  "restored": {
+    "success": true,
+    "includes": [
+      "__cw08_manual_release_only__"
+    ],
+    "build_command": "cd frontend && npm ci && npm run build:vinext",
+    "deploy_command": "cd frontend && npm run deploy:vinext"
+  },
+  "recovery": "Fetch missing Git history, rerun original ancestry/hash checks without changes; exact frozen artifact subsequently verified and uploaded."
+}

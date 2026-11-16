@@ -1,0 +1,29 @@
+{
+  "status": "production_acceptance_failed_rolled_back",
+  "r1Complete": false,
+  "candidateDeployment": "f2f5c908-4d8a-420a-918d-6a0e02e0b2b9",
+  "fallbackDeployment": "a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb",
+  "checks": {
+    "frozenArtifact": "pass",
+    "backup20466": "pass",
+    "bindingsAndFallback": "pass",
+    "nbaSummaryObserved": "HTTP200",
+    "nflBrowser17Tabs": "pass_display_counts_only_not_all_forecasts_available",
+    "nhlBrowser6Tabs": "pass_counts_and_explanations_not_all_forecasts_available",
+    "nbaBrowser7Markets": "failed_first_market_0_eligible_points_cards",
+    "allSportCaptureAndGradingRotation": "not_completed_critical_rollback",
+    "oldRecordIntegrity": "pass_20466_exact_fingerprints",
+    "newReceiptIntegrity": "pass_2_originals_before_kickoff_zero_future_quotes_zero_duplicates",
+    "cw08": "healthy_unchanged",
+    "automaticBuilds": "paused",
+    "tracker": "CW11_blocked_no_rows_moved"
+  },
+  "applicationChanges": false,
+  "applicationRebuilt": false,
+  "previousRehearsal": {
+    "regressionPass": 832,
+    "compiledPass": 19,
+    "claim": "Prior frozen rehearsal only; not rerun or relabeled as a production pass."
+  },
+  "evidenceVerification": "All audit JSON parse; prior/final protected inventory equality;2safe receipts;0duplicate identities; failed browser gate retained;17NFL tabs; fallback/build filter; archive SHA256 unchanged verified locally."
+}

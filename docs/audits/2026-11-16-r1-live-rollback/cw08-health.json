@@ -1,0 +1,17 @@
+{
+  "study": "cw08-nhl-v3-prospective-shadow",
+  "production": false,
+  "modelCommit": "007c02b",
+  "ready": true,
+  "receipts": 974,
+  "grades": 871,
+  "pendingUploads": 0,
+  "lateAnchors": 0,
+  "active": [],
+  "completedCycles": 211,
+  "manifestHead": {
+    "key": "runs/72f9b34fe26299f5512bab126522956999662fb7073fa5bef22b04023da33e0e.json",
+    "hash": "72f9b34fe26299f5512bab126522956999662fb7073fa5bef22b04023da33e0e"
+  },
+  "lastStorageError": null
+}

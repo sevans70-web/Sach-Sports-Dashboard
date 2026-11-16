@@ -1,0 +1,82 @@
+{
+  "count": 11,
+  "events": [
+    {
+      "at": 1794849193503,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:first_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"first_td\",\"from\":\"publish\",\"to\":\"done\",\"state\":\"done\",\"eligible\":25,\"stored\":1,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":3,\"limit\":220,\"costs\":{\"kv\":3},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJFGZ0000000000000012",
+      "requestId": "15388f21f3cca03c2a1ce4e83ae731fd",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849192172,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:anytime_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"anytime_td\",\"from\":\"publish\",\"to\":\"done\",\"state\":\"done\",\"eligible\":25,\"stored\":1,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":3,\"limit\":220,\"costs\":{\"kv\":3},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJE7C0000000000000018",
+      "requestId": "a8f09d33b8e6ca13ba4f3f38704f50f4",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849190765,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:first_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"first_td\",\"from\":\"picks\",\"to\":\"publish\",\"state\":\"active\",\"eligible\":25,\"stored\":1,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":0,\"limit\":220,\"costs\":{},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJCVD000000000000000Z",
+      "requestId": "78fb21d7fa5390aec38f65f6eb6a2d09",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849189765,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:anytime_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"anytime_td\",\"from\":\"picks\",\"to\":\"publish\",\"state\":\"active\",\"eligible\":25,\"stored\":1,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":0,\"limit\":220,\"costs\":{},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJBW5000000000000000Z",
+      "requestId": "08cc819a68848eed3891be2c7f007628",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849188765,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:first_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"first_td\",\"from\":\"originals\",\"to\":\"picks\",\"state\":\"active\",\"eligible\":25,\"stored\":1,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":6,\"limit\":220,\"costs\":{\"provider_gate\":3,\"history_http\":3},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":3,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJAWX0000000000000026",
+      "requestId": "2a524e9a46adb3dc7974cafbeb5dffeb",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849186829,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:anytime_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"anytime_td\",\"from\":\"originals\",\"to\":\"picks\",\"state\":\"active\",\"eligible\":25,\"stored\":1,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":6,\"limit\":220,\"costs\":{\"provider_gate\":3,\"history_http\":3},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":3,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJ90D0000000000000026",
+      "requestId": "b30b772e9e5bbd6c66a6fbcc3180ce77",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849185105,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:first_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"first_td\",\"from\":\"rank\",\"to\":\"originals\",\"state\":\"active\",\"eligible\":25,\"stored\":0,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":4,\"limit\":220,\"costs\":{\"provider_gate\":2,\"history_http\":2},\"cacheHits\":2,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":2,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":2}}",
+      "id": "01M7JNJ7AH0000000000000037",
+      "requestId": "da7f8b176e6a668dde0946ee0928325b",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849183397,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nfl:anytime_td:14957076\",\"kind\":\"capture\",\"sport\":\"nfl\",\"market\":\"anytime_td\",\"from\":\"rank\",\"to\":\"originals\",\"state\":\"active\",\"eligible\":25,\"stored\":0,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":36,\"limit\":220,\"costs\":{\"provider_gate\":18,\"official_http\":14,\"odds_or_other_http\":2,\"history_http\":2},\"cacheHits\":23,\"cacheWrites\":4,\"checkpointBytes\":1502255,\"completedRequests\":18,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":1,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[{\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog\",\"status\":403,\"retryAt\":1794852782089},{\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog\",\"status\":403,\"retryAt\":1794852782090},{\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog\",\"status\":403,\"retryAt\":1794852782090},{\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog\",\"status\":403,\"retryAt\":1794852782090},{\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2\",\"status\":403,\"retryAt\":1794852782188},{\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2\",\"status\":403,\"retryAt\":1794852782271}],\"denialHits\":23}}",
+      "id": "01M7JNJ5N500000000000000W0",
+      "requestId": "a6757ec82b220b0da09b80f047763d21",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849180971,
+      "message": "[dashboard-job-phase] {\"id\":\"replay:nba:14957076\",\"kind\":\"replay\",\"sport\":\"nba\",\"from\":\"game\",\"to\":\"done\",\"state\":\"done\",\"usage\":{\"used\":0,\"limit\":220,\"costs\":{},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJ39B000000000000000W",
+      "requestId": "98970ee8a2661c9fb63213aa26473a39",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849179971,
+      "message": "[dashboard-job-phase] {\"id\":\"replay:nba:14957076\",\"kind\":\"replay\",\"sport\":\"nba\",\"from\":\"scan\",\"to\":\"game\",\"state\":\"active\",\"usage\":{\"used\":2,\"limit\":220,\"costs\":{\"provider_gate\":1,\"history_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":1,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}",
+      "id": "01M7JNJ2A3000000000000001D",
+      "requestId": "2c72b0e486c51c7ffbe5746dc19a35b0",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    },
+    {
+      "at": 1794849178042,
+      "message": "[dashboard-job-enqueued] {\"queued\":[\"capture:nfl:anytime_td:14957076\",\"capture:nfl:first_td:14957076\",\"replay:nba:14957076\"]}",
+      "id": "01M7JNJ0DT000000000000000P",
+      "requestId": "52b7bf27537bd908c20be582fc7f4a91",
+      "version": "a8e46b4c-3f72-431b-9155-459bfb1f8704"
+    }
+  ]
+}

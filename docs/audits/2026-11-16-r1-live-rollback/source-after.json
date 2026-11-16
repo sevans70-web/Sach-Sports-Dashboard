@@ -1,0 +1,45 @@
+[
+  {
+    "captured_at": "2026-11-16 17:14:33.528333+00",
+    "protected_tables": [
+      {
+        "source": "history_documents",
+        "records": 11615,
+        "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+      },
+      {
+        "source": "worker_pregame_originals",
+        "records": 6109,
+        "inventory": "818aaa5e07e8e6a79ef98a1fbbc880f9"
+      },
+      {
+        "source": "worker_pregame_picks",
+        "records": 1473,
+        "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+      },
+      {
+        "source": "worker_pregame_grades",
+        "records": 1269,
+        "inventory": "0e21950e276648be18bce04e2c468e33"
+      }
+    ],
+    "total_tables": [
+      {
+        "source": "history_documents",
+        "records": 11615
+      },
+      {
+        "source": "worker_pregame_originals",
+        "records": 6111
+      },
+      {
+        "source": "worker_pregame_picks",
+        "records": 1473
+      },
+      {
+        "source": "worker_pregame_grades",
+        "records": 1269
+      }
+    ]
+  }
+]

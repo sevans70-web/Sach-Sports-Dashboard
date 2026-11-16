@@ -1,0 +1,25 @@
+{
+  "scope": "Actual production fallback browser, TLS verified, no replay",
+  "errors": [],
+  "hydrationErrors": [],
+  "pages": {
+    "nba": {
+      "status": 200,
+      "seconds": 11.92,
+      "visibleCards": 5,
+      "text": "PLAYER RANKINGS\nToday\nPrevious Slate\nTomorrow\n\ud83c\udfc0Points\n\ud83d\udcaaRebounds\n\ud83c\udfafAssists\n3\ufe0f\u20e33-Pointers Made\n\u23f1\ufe0fQ1 Points\n\u23f1\ufe0fQ1 Rebounds\n\u23f1\ufe0fQ1 Assists\n\ud83d\udccaPoints + Rebounds + Assists\n\u2795Points + Rebounds\n\u2795Points + Assists\n\u2795Rebounds + Assists\n\ud83d\udd90\ufe0fSteals\n\ud83e\uddf1Blocks\n1\ufe0f\u20e3First Basket\n\u203a\n\ud83c\udfc0 Points\n\n25 rankings \u00b7 25 picks\n\n1\nBP\nBobby Portis\nF \u00b7 MIA \u00b7 Houston Rockets @ Miami Heat\nMon, Nov 16, 7:30 PM EST\nLineup pending\nEV\n+14.0%\nResearch EV\nPoints\nO/U 6.5\nSach Prediction\nUNDER 6.5\nSach Projection\n5.8\n\nBook: Pinnacle \u00b7 Over -112 / Under -118\n\nLoading recent player results\u2026\n\nPinnacle \u00b7 -118 \u00b7 16.7 expected minutes \u00b7 range 0\u201312.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n2\nDD\nDeMar DeRozan\nG \u00b7 DEN \u00b7 Phoenix Suns @ Denver Nuggets\nMon, Nov 16, 9:00 PM EST\nLineup pending\nEV\n+11.5%\nResearch EV\nPoints\nO/U 10.5\nSach Prediction\nUNDER 10"
+    },
+    "nfl": {
+      "status": 200,
+      "seconds": 30.404,
+      "visibleCards": 0,
+      "text": "PLAYER RANKINGS\nToday\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards rankings with a verified line, projection, prediction and EV are available for this slate."
+    },
+    "nhl": {
+      "status": 200,
+      "seconds": 3.276,
+      "visibleCards": 5,
+      "text": "PLAYER RANKINGS\nToday\nTomorrow\n\ud83c\udfd2Shots on Goal\n\u2b50Points\n\ud83e\udd45Goals\n\ud83c\udfafAssists\n\ud83d\udee1\ufe0fBlocked Shots\n\ud83e\udde4Goalie Saves\n\u203a\n\ud83c\udfd2 Shots on Goal\n\n24 rankings \u00b7 13 picks\n\n1\nCK\nClayton Keller\nUTA \u00b7 Canucks @ Mammoth\nMon, Nov 16, 9:30 PM EST\nLineup pending\nEV\n+4.0%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3\n\nBook: Pinnacle \u00b7 Over +129 / Under -172\n\nLoading recent player results\u2026\n\nPinnacle \u00b7 -172 \u00b7 20.7 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n2\nBB\nBrock Boeser\nVAN \u00b7 Canucks @ Mammoth\nMon, Nov 16, 9:30 PM EST\nLineup pending\nEV\n+16.4%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.6\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nLoading recent player results\u2026\n\nPinnacle \u00b7 -132 \u00b7 20.5 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analys"
+    }
+  }
+}

@@ -1,0 +1,471 @@
+{
+  "error": "('live browser/API mismatch', 'nba', 'points', 0, 'PLAYER RANKINGS\\nToday\\nPrevious Slate\\nTomorrow\\n\ud83c\udfc0Points\\n\ud83d\udcaaRebounds\\n\ud83c\udfafAssists\\n3\ufe0f\u20e33-Pointers Made\\n\u23f1\ufe0fQ1 Points\\n\u23f1\ufe0fQ1 Rebounds\\n\u23f1\ufe0fQ1 Assists\\n\ud83d\udccaPoints + Rebounds + Assists\\n\u2795Points + Rebounds\\n\u2795Points + Assists\\n\u2795Rebounds + Assists\\n\ud83d\udd90\ufe0fSteals\\n\ud83e\uddf1Blocks\\n1\ufe0f\u20e3First Basket\\n\u203a\\n\ud83c\udfc0 Points\\n\\n0 rankings \u00b7 0 picks\\n\\nNo Points rankings with a verified line, projection, prediction and EV are available for this slate.')",
+  "at": 1794849219.6807017,
+  "report": {
+    "errors": [],
+    "hydrationErrors": [],
+    "nfl": {
+      "passing_yards": {
+        "cards": 2,
+        "seconds": 2.767,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "passing_tds": {
+        "cards": 2,
+        "seconds": 0.297,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "passing_interceptions": {
+        "cards": 2,
+        "seconds": 1.268,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "qb_rushing_yards": {
+        "cards": 2,
+        "seconds": 0.285,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "passing_rushing_yards": {
+        "cards": 2,
+        "seconds": 0.5,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 2
+          }
+        },
+        "explanationVisible": true
+      },
+      "anytime_td": {
+        "cards": 25,
+        "seconds": 2.924,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 25
+          }
+        },
+        "explanationVisible": true
+      },
+      "first_td": {
+        "cards": 25,
+        "seconds": 1.585,
+        "coverage": {
+          "sourceRows": 25,
+          "displayableRows": 25,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "A fitted forecast is not available for this market": 25
+          }
+        },
+        "explanationVisible": true
+      },
+      "receiving_yards": {
+        "cards": 15,
+        "seconds": 1.772,
+        "coverage": {
+          "sourceRows": 15,
+          "displayableRows": 15,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 15
+          }
+        },
+        "explanationVisible": true
+      },
+      "receptions": {
+        "cards": 15,
+        "seconds": 1.923,
+        "coverage": {
+          "sourceRows": 15,
+          "displayableRows": 15,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 15
+          }
+        },
+        "explanationVisible": true
+      },
+      "rushing_yards": {
+        "cards": 6,
+        "seconds": 1.264,
+        "coverage": {
+          "sourceRows": 6,
+          "displayableRows": 6,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 6
+          }
+        },
+        "explanationVisible": true
+      },
+      "rushing_receiving_yards": {
+        "cards": 6,
+        "seconds": 1.422,
+        "coverage": {
+          "sourceRows": 6,
+          "displayableRows": 6,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 6
+          }
+        },
+        "explanationVisible": true
+      },
+      "sacks": {
+        "cards": 2,
+        "seconds": 0.389,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 2,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 2,
+          "reasons": {}
+        },
+        "explanationVisible": false
+      },
+      "tackles": {
+        "cards": 9,
+        "seconds": 1.895,
+        "coverage": {
+          "sourceRows": 9,
+          "displayableRows": 9,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 9
+          }
+        },
+        "explanationVisible": true
+      },
+      "tackles_assists": {
+        "cards": 9,
+        "seconds": 1.519,
+        "coverage": {
+          "sourceRows": 9,
+          "displayableRows": 9,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "Official player history is unavailable; no new confidence or EV can be calculated": 9
+          }
+        },
+        "explanationVisible": true
+      },
+      "q1_passing_yards": {
+        "cards": 2,
+        "seconds": 0.365,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 1,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 1,
+          "reasons": {
+            "At least five verified quarter-history games are needed": 1
+          }
+        },
+        "explanationVisible": true
+      },
+      "q1_receiving_yards": {
+        "cards": 5,
+        "seconds": 0.919,
+        "coverage": {
+          "sourceRows": 5,
+          "displayableRows": 5,
+          "fittedProjections": 4,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 4,
+          "reasons": {
+            "At least five verified quarter-history games are needed": 1
+          }
+        },
+        "explanationVisible": true
+      },
+      "q1_rushing_yards": {
+        "cards": 2,
+        "seconds": 0.245,
+        "coverage": {
+          "sourceRows": 2,
+          "displayableRows": 2,
+          "fittedProjections": 0,
+          "baselineOnly": 0,
+          "savedQuoteRows": 0,
+          "evAvailable": 0,
+          "reasons": {
+            "At least five verified quarter-history games are needed": 2
+          }
+        },
+        "explanationVisible": true
+      }
+    },
+    "nhl": {
+      "shots_on_goal": {
+        "cards": 25,
+        "seconds": 3.228,
+        "coverage": null,
+        "explanationVisible": false
+      },
+      "points": {
+        "cards": 25,
+        "seconds": 1.05,
+        "coverage": null,
+        "explanationVisible": false
+      },
+      "assists": {
+        "cards": 0,
+        "seconds": 2.687,
+        "coverage": null,
+        "explanationVisible": true
+      },
+      "goals": {
+        "cards": 0,
+        "seconds": 0.157,
+        "coverage": null,
+        "explanationVisible": true
+      },
+      "blocked_shots": {
+        "cards": 0,
+        "seconds": 0.074,
+        "coverage": null,
+        "explanationVisible": true
+      },
+      "goalie_saves": {
+        "cards": 0,
+        "seconds": 1.465,
+        "coverage": null,
+        "explanationVisible": true
+      }
+    },
+    "nba": {},
+    "responses": [
+      {
+        "sport": "nfl",
+        "market": "passing_tds",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "passing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "qb_rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "passing_interceptions",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "passing_rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "anytime_td",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "first_td",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "receiving_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "receptions",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "rushing_receiving_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "sacks",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "tackles",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "tackles_assists",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "q1_passing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "q1_receiving_yards",
+        "status": 200
+      },
+      {
+        "sport": "nfl",
+        "market": "q1_rushing_yards",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "points",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "blocked_shots",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "goals",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "assists",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "goalie_saves",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "points",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "shots_on_goal",
+        "status": 200
+      },
+      {
+        "sport": "nhl",
+        "market": "points",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "rebounds",
+        "status": 200
+      },
+      {
+        "sport": "nba",
+        "market": "points",
+        "status": 200
+      }
+    ],
+    "scope": "Actual production browser, no replay, no clock changes, TLS verification enabled",
+    "nhlReloadSeconds": [
+      1.101,
+      1.575
+    ]
+  }
+}

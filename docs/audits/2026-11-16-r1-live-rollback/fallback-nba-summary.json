@@ -1,0 +1,233 @@
+{
+  "points": {
+    "http": 200,
+    "seconds": 11.971,
+    "rowCount": 25,
+    "diagnostics": {
+      "success": true,
+      "market": "points",
+      "saved": false,
+      "feedWarning": "Supplemental odds authorization failed: waiting before rechecking credentials.",
+      "quoteMatchAudit": {
+        "quotes": 114,
+        "fixtures": 8,
+        "rosterPlayers": 278,
+        "matchedQuotes": 108,
+        "quotedRows": 106,
+        "pregameRows": 202,
+        "integrityVerifiedQuotes": 106,
+        "rowsWithLine": 106,
+        "fittedForecasts": 101,
+        "researchSelections": 33,
+        "forecastReasons": {
+          "available": 33,
+          "price_threshold_not_met": 12,
+          "recent_official_history_unavailable": 60,
+          "prior_basketball_role_uncertain": 19,
+          "verified_quote_unavailable": 56,
+          "insufficient_basketball_role_history": 14,
+          "player_team_history_unavailable": 8
+        }
+      },
+      "verifiedPredictions": 0,
+      "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately.",
+      "updatedAt": "2026-11-16T17:15:08.245Z",
+      "source": "Current ESPN rosters (today + next slate) + 2025\u201326 baseline",
+      "pregameContextCount": 236,
+      "excludedUnavailable": 34,
+      "integrityVersion": 1,
+      "verifiedQuoteCount": 25,
+      "researchCount": 202,
+      "forecastBlockers": {
+        "selected": 33,
+        "price_threshold_not_met": 12,
+        "recent_official_history_unavailable": 60,
+        "prior_basketball_role_uncertain": 19,
+        "verified_quote_unavailable": 56,
+        "insufficient_basketball_role_history": 14,
+        "player_team_history_unavailable": 8
+      },
+      "pricedForecastCandidates": 106,
+      "fittedResearchForecastCount": 101,
+      "modelSelectionCount": 25,
+      "boardDay": "2026-11-16",
+      "publicRankingCount": 25,
+      "boardSaved": false,
+      "boardLockAt": "2026-11-17T00:00:00.000Z",
+      "dropped": [],
+      "evDiagnostics": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "rankingAudit": {
+        "market": "points",
+        "day": "2026-11-16",
+        "cards": 25,
+        "underCount": 19,
+        "underCapExceeded": true,
+        "previouslyCaptured": true,
+        "missingCardFields": {
+          "line": 0,
+          "prediction": 0,
+          "projection": 0,
+          "ev": 0
+        }
+      }
+    }
+  },
+  "rebounds": {
+    "http": 200,
+    "seconds": 10.46,
+    "rowCount": 25,
+    "diagnostics": {
+      "success": true,
+      "market": "rebounds",
+      "saved": false,
+      "feedWarning": "Supplemental odds returned 401",
+      "quoteMatchAudit": {
+        "quotes": 109,
+        "fixtures": 8,
+        "rosterPlayers": 278,
+        "matchedQuotes": 104,
+        "quotedRows": 102,
+        "pregameRows": 202,
+        "integrityVerifiedQuotes": 102,
+        "rowsWithLine": 102,
+        "fittedForecasts": 85,
+        "researchSelections": 14,
+        "forecastReasons": {
+          "available": 14,
+          "price_threshold_not_met": 18,
+          "recent_official_history_unavailable": 70,
+          "verified_quote_unavailable": 53,
+          "insufficient_basketball_role_history": 14,
+          "player_team_history_unavailable": 7,
+          "prior_basketball_role_uncertain": 26
+        }
+      },
+      "verifiedPredictions": 0,
+      "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately.",
+      "updatedAt": "2026-11-16T17:15:20.537Z",
+      "source": "Current ESPN rosters (today + next slate) + 2025\u201326 baseline",
+      "pregameContextCount": 236,
+      "excludedUnavailable": 34,
+      "integrityVersion": 1,
+      "verifiedQuoteCount": 25,
+      "researchCount": 202,
+      "forecastBlockers": {
+        "selected": 14,
+        "price_threshold_not_met": 18,
+        "recent_official_history_unavailable": 70,
+        "verified_quote_unavailable": 53,
+        "insufficient_basketball_role_history": 14,
+        "player_team_history_unavailable": 7,
+        "prior_basketball_role_uncertain": 26
+      },
+      "pricedForecastCandidates": 102,
+      "fittedResearchForecastCount": 85,
+      "modelSelectionCount": 14,
+      "boardDay": "2026-11-16",
+      "publicRankingCount": 25,
+      "boardSaved": false,
+      "boardLockAt": "2026-11-17T00:00:00.000Z",
+      "dropped": [],
+      "evDiagnostics": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "rankingAudit": {
+        "market": "rebounds",
+        "day": "2026-11-16",
+        "cards": 25,
+        "underCount": 12,
+        "underCapExceeded": true,
+        "previouslyCaptured": true,
+        "missingCardFields": {
+          "line": 0,
+          "prediction": 11,
+          "projection": 0,
+          "ev": 0
+        }
+      }
+    }
+  },
+  "pts_rebs": {
+    "http": 200,
+    "seconds": 10.29,
+    "rowCount": 25,
+    "diagnostics": {
+      "success": true,
+      "market": "pts_rebs",
+      "saved": false,
+      "feedWarning": "Supplemental odds returned 401",
+      "quoteMatchAudit": {
+        "quotes": 105,
+        "fixtures": 8,
+        "rosterPlayers": 278,
+        "matchedQuotes": 101,
+        "quotedRows": 101,
+        "pregameRows": 202,
+        "integrityVerifiedQuotes": 101,
+        "rowsWithLine": 101,
+        "fittedForecasts": 88,
+        "researchSelections": 22,
+        "forecastReasons": {
+          "price_threshold_not_met": 14,
+          "available": 22,
+          "recent_official_history_unavailable": 65,
+          "verified_quote_unavailable": 52,
+          "insufficient_basketball_role_history": 20,
+          "prior_basketball_role_uncertain": 23,
+          "player_team_history_unavailable": 6
+        }
+      },
+      "verifiedPredictions": 0,
+      "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately.",
+      "updatedAt": "2026-11-16T17:15:31.551Z",
+      "source": "Current ESPN rosters (today + next slate) + 2025\u201326 baseline",
+      "pregameContextCount": 236,
+      "excludedUnavailable": 34,
+      "integrityVersion": 1,
+      "verifiedQuoteCount": 25,
+      "researchCount": 202,
+      "forecastBlockers": {
+        "price_threshold_not_met": 14,
+        "selected": 22,
+        "recent_official_history_unavailable": 65,
+        "verified_quote_unavailable": 52,
+        "insufficient_basketball_role_history": 20,
+        "prior_basketball_role_uncertain": 23,
+        "player_team_history_unavailable": 6
+      },
+      "pricedForecastCandidates": 101,
+      "fittedResearchForecastCount": 88,
+      "modelSelectionCount": 22,
+      "boardDay": "2026-11-16",
+      "publicRankingCount": 25,
+      "boardSaved": false,
+      "boardLockAt": "2026-11-17T00:00:00.000Z",
+      "dropped": [],
+      "evDiagnostics": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "rankingAudit": {
+        "market": "pts_rebs",
+        "day": "2026-11-16",
+        "cards": 25,
+        "underCount": 9,
+        "underCapExceeded": true,
+        "previouslyCaptured": true,
+        "missingCardFields": {
+          "line": 0,
+          "prediction": 3,
+          "projection": 0,
+          "ev": 0
+        }
+      }
+    }
+  }
+}

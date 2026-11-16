@@ -1,6 +1,6 @@
 # R1 — Stability and Existing-Ranking Recovery
 
-**Pre-deployment rehearsal and current-backup gates passed. Ready for controlled deployment approval; upload is NOT authorized.** The completion tracker remains the source of truth; CW11/V62 remain open. No completed row is reopened or moved.
+**Latest outcome: approved release failed actual production NBA ranking acceptance and was rolled back. R1 is blocked, not complete.** Candidate deployment `f2f5c908-4d8a-420a-918d-6a0e02e0b2b9`; active compatible fallback deployment `a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb`. See `docs/audits/2026-11-16-r1-live-rollback/README.md`. The pre-deployment plan below is retained as historical evidence; do not treat its earlier approval-readiness statements as permission to retry. The completion tracker remains the source of truth; CW11/V62 remain open. No completed row is reopened or moved.
 
 ## Frozen identity and included fixes
 
