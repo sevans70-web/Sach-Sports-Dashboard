@@ -1,0 +1,95 @@
+{
+  "legacyBackupCompletedAt": "2026-11-15T07:31:06.876Z",
+  "totals": {
+    "history_documents": 121,
+    "worker_pregame_grades": 1020,
+    "worker_pregame_originals": 268,
+    "worker_pregame_picks": 36
+  },
+  "groups": [
+    {
+      "source": "history_documents",
+      "sport": "cbb",
+      "records_after_legacy_backup": 10,
+      "earliest": "2026-11-15 11:01:50.675062+00",
+      "latest": "2026-11-15 11:01:51.453309+00"
+    },
+    {
+      "source": "history_documents",
+      "sport": "cfb",
+      "records_after_legacy_backup": 13,
+      "earliest": "2026-11-15 07:31:35.406208+00",
+      "latest": "2026-11-15 11:01:34.283805+00"
+    },
+    {
+      "source": "history_documents",
+      "sport": "nba",
+      "records_after_legacy_backup": 75,
+      "earliest": "2026-11-15 11:01:11.422539+00",
+      "latest": "2026-11-15 11:02:27.360774+00"
+    },
+    {
+      "source": "history_documents",
+      "sport": "nfl",
+      "records_after_legacy_backup": 17,
+      "earliest": "2026-11-15 11:01:05.603164+00",
+      "latest": "2026-11-15 11:01:10.020608+00"
+    },
+    {
+      "source": "history_documents",
+      "sport": "nhl",
+      "records_after_legacy_backup": 6,
+      "earliest": "2026-11-15 11:01:38.217818+00",
+      "latest": "2026-11-15 11:01:38.72213+00"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "sport": "nba",
+      "records_after_legacy_backup": 978,
+      "earliest": "2026-11-15 15:52:14.449385+00",
+      "latest": "2026-11-15 15:55:37.54618+00"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "sport": "nfl",
+      "records_after_legacy_backup": 11,
+      "earliest": "2026-11-15 19:01:04.090026+00",
+      "latest": "2026-11-15 19:01:04.091106+00"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "sport": "nhl",
+      "records_after_legacy_backup": 31,
+      "earliest": "2026-11-15 18:32:39.297963+00",
+      "latest": "2026-11-15 18:33:12.679909+00"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "sport": "nfl",
+      "records_after_legacy_backup": 166,
+      "earliest": "2026-11-15 15:52:22.190203+00",
+      "latest": "2026-11-16 04:32:51.705561+00"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "sport": "nhl",
+      "records_after_legacy_backup": 102,
+      "earliest": "2026-11-15 17:57:05.335636+00",
+      "latest": "2026-11-15 18:01:05.757484+00"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "sport": "nfl",
+      "records_after_legacy_backup": 4,
+      "earliest": "2026-11-15 17:57:03.97828+00",
+      "latest": "2026-11-15 17:57:03.995586+00"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "sport": "nhl",
+      "records_after_legacy_backup": 32,
+      "earliest": "2026-11-15 17:57:07.295104+00",
+      "latest": "2026-11-15 17:59:12.898012+00"
+    }
+  ]
+}

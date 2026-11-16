@@ -1,0 +1,27 @@
+✔ full current backup verifies every table and losslessly restores all fields with duplicate prevention (16.269994ms)
+✔ missing pages and changed source inventory cannot produce a completed snapshot (4.021228ms)
+✔ tampered remote bytes, source row hash and duplicated parts are rejected before restore (4.243411ms)
+✔ offline restoration reads every field back from new SQLite storage and refuses to overwrite it (22.341545ms)
+✔ offline restore rejects missing archive evidence and rolls back all inserted records (5.350598ms)
+✔ offline restore rejects tampered archive evidence and rolls back all inserted records (4.053008ms)
+✔ offline restore rejects duplicate archive evidence and rolls back all inserted records (4.639343ms)
+✔ archives every stream, verifies byte-for-byte restores, and reuses a retried archive (55.882649ms)
+✔ never publishes a manifest for a changed or corrupt source document (1.080378ms)
+✔ the daily schedule rotates each sport and selects Toronto history dates (23.734324ms)
+✔ two-minute recent grading cycles only NBA NFL NHL, preserving other sports for daily archive (2.473861ms)
+✔ successive checks of the same sport advance independent replay batches (1.47222ms)
+✔ recent replay reads checksum-protected finals without uploading to Drive (1.701857ms)
+✔ a tampered protected receipt stops read-only grading replay (0.833188ms)
+✔ Cloudflare staging routes the existing pregame cron to independent postgame replay (11.838448ms)
+✔ independently backs up quote originals, picks and grades, then verifies exact restoration (145.891561ms)
+✔ no manifest is published if source inventory changes while archiving (3.12137ms)
+✔ missing active sport records need no Drive authentication or writes (0.478963ms)
+✔ rejects a source capture that was made after official kickoff (0.56892ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 743.53557

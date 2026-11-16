@@ -1,0 +1,35 @@
+{
+  "status": "blocked_by_automatic_approval_review",
+  "sourceTables": [
+    {
+      "source": "history_documents",
+      "records": 11615,
+      "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "records": 6109,
+      "inventory": "818aaa5e07e8e6a79ef98a1fbbc880f9"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "records": 1473,
+      "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "records": 1269,
+      "inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  ],
+  "destinationFolder": "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe",
+  "format": "sach-dashboard-recovery-part/v1",
+  "frozenSourceAt": "2026-11-16 14:47:10.809376+00",
+  "remoteWrites": 0,
+  "productionWrites": 0,
+  "credentialsIncluded": false,
+  "researchWorkerTablesIncluded": false,
+  "duplicateFoldersCreated": 0,
+  "restoreOfCurrentRecordsPassed": false,
+  "reason": "Automatic approval review rejected the production payload export as not explicitly authorized. No workaround attempted. Narrow export approval has been requested."
+}
