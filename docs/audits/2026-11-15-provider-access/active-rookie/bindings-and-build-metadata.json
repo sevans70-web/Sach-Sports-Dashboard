@@ -1,0 +1,60 @@
+{
+  "sach-sports-cloudflare-test": {
+    "id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "metadata": {
+      "created_on": "2026-11-15T04:12:28.395101Z",
+      "source": "cf_cli",
+      "has_preview": false
+    },
+    "bindings": [
+      {
+        "name": "OWLS_INSIGHT_API_KEY",
+        "type": "secret_text",
+        "availableMetadataKeys": [
+          "name",
+          "type"
+        ]
+      },
+      {
+        "name": "SPORTSGAMEODDS_API_KEY",
+        "type": "secret_text",
+        "availableMetadataKeys": [
+          "name",
+          "type"
+        ]
+      }
+    ]
+  },
+  "sach-cw08-nhl-shadow": {
+    "id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+    "metadata": {
+      "created_on": "2026-11-14T19:54:01.859122Z",
+      "source": "api",
+      "has_preview": false
+    },
+    "bindings": [
+      {
+        "name": "OWLS_INSIGHT_API_KEY",
+        "type": "secret_text",
+        "availableMetadataKeys": [
+          "name",
+          "type"
+        ]
+      }
+    ]
+  },
+  "buildVariables": [
+    {
+      "name": "OWLS_INSIGHT_API_KEY",
+      "isSecret": true,
+      "createdAt": "2026-11-07T06:15:37.103Z",
+      "valueReadable": false
+    },
+    {
+      "name": "SPORTSGAMEODDS_API_KEY",
+      "isSecret": true,
+      "createdAt": "2026-11-07T06:17:11.298Z",
+      "valueReadable": false
+    }
+  ]
+}

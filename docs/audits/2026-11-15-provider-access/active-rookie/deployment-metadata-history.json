@@ -1,0 +1,70 @@
+{
+  "scripts": {
+    "count": 9,
+    "changes": [
+      {
+        "id": "01a1e04d-3958-707d-afbd-7fc44cb93379",
+        "at": "2026-11-15T17:41:59.768Z",
+        "type": "scripts",
+        "resource": "sach-sports-cloudflare-test",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      },
+      {
+        "id": "01a1dfe8-8b8b-77e8-9fd6-b5ee601a18ec",
+        "at": "2026-11-15T15:52:01.675Z",
+        "type": "scripts",
+        "resource": "sach-sports-cloudflare-test",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      },
+      {
+        "id": "01a1dd6c-ec50-74e0-ac96-52250a4a8c7a",
+        "at": "2026-11-15T04:17:45.552Z",
+        "type": "scripts",
+        "resource": "sach-sports-cloudflare-test",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      },
+      {
+        "id": "01a1dd68-1120-75ba-a069-2849db8a11ee",
+        "at": "2026-11-15T04:12:27.296Z",
+        "type": "scripts",
+        "resource": "sach-sports-cloudflare-test",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      },
+      {
+        "id": "01a1db9f-be69-7738-868a-ecc86c545fee",
+        "at": "2026-11-14T19:54:01.705Z",
+        "type": "scripts",
+        "resource": "sach-cw08-nhl-shadow",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      },
+      {
+        "id": "01a1d883-5edc-7aad-a8c1-dfbc83af1c00",
+        "at": "2026-11-14T05:24:10.588Z",
+        "type": "scripts",
+        "resource": "sach-cw08-nhl-shadow",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      },
+      {
+        "id": "01a1d86b-40f8-7165-92e4-ecc9aafd2599",
+        "at": "2026-11-14T04:57:50.072Z",
+        "type": "scripts",
+        "resource": "sach-cw08-nhl-shadow",
+        "method": "PUT",
+        "requestKeys": [],
+        "bindingNames": []
+      }
+    ]
+  }
+}

@@ -1,11 +1,29 @@
-Subject: Existing account access check — NFL/NHL merged player props return 403
+Subject: Active Rookie subscription — intermittent NFL/NHL merged props HTTP 403
 
-Please confirm our current plan, paid/trial status, API key activation and entitlement to:
+DRAFT FOR OWNER REVIEW — NOT SENT
+
+Our Rookie subscription is confirmed active through December 15, 2026. Your published documentation includes NFL and NHL merged player props on Rookie. Please investigate this under our EXISTING subscription. We are not requesting another subscription, an upgrade or a purchase.
+
+Required endpoints:
 GET https://api.owlsinsight.com/api/v1/nfl/props
 GET https://api.owlsinsight.com/api/v1/nhl/props
 
-Our application runs on Cloudflare Workers and uses your documented Authorization: Bearer header. We are not requesting a new subscription or upgrade. Please distinguish required-tier denial, ended/unpaid subscription, deactivated key and any Cloudflare egress/WAF restriction, and explain the no-upgrade correction if our existing plan includes these routes.
+We use Cloudflare Workers with Authorization: Bearer and the existing OWLS_INSIGHT_API_KEY secret binding. The binding name/type and deployed request-header scheme were checked; no missing or renamed binding was found. Secret values were not retrieved or exposed. The dashboard and research Workers have separate bindings of the same name; we cannot prove their values or account association are identical from Cloudflare's redacted metadata.
 
-A reviewed NHL failure occurred November 15, 2026, 5:36:41 PM America/Toronto (22:36:41 UTC). Cloudflare trace: b384795a9cecbb017456168ea0530ba2. The dashboard and a separate NHL research collector both observe 403 at the NHL route. Earlier dashboard NHL requests succeeded that day.
+Observed evidence from existing Cloudflare traces:
+- Dashboard /nfl/props: HTTP 403; 2026-11-15 03:13:48 PM EST / 2026-11-15 20:13:48 UTC; Cloudflare trace 63fb910c00095943d7de489931d912a6.
+- Dashboard /nhl/props: HTTP 403; 2026-11-15 08:01:48 PM EST / 2026-11-16 01:01:48 UTC; Cloudflare trace 0b778bd73b9de0373a8afacbaff6fb38.
+- Research /nhl/props: HTTP 403; 2026-11-15 07:44:16 PM EST / 2026-11-16 00:44:16 UTC; Cloudflare trace 9f471bfff88d0e4fa78fbc0d7d6f60f3.
+- Research /nhl/props: HTTP 200; 2026-11-15 08:47:43 PM EST / 2026-11-16 01:47:43 UTC; Cloudflare trace a4a28b7d458a21e455b47c38ee32376b.
 
-Please state the required tier/error code and whether your account portal shows the key linked to our active subscription. No API key is included in this message. Please do not request keys through unsecured chat/email; use your authenticated account support workflow.
+These are our Cloudflare trace identifiers, not claimed OWL request IDs. Research enrollment subsequently increased from 902 to 930 receipts. This is intermittent/Worker-specific access evidence, not proof that the configured dashboard key belongs to the intended active account. Our telemetry does not retain your denial JSON or requiredTier.
+
+Please confirm:
+1. Our active Rookie account is entitled to both exact merged props routes.
+2. Which non-secret key identifier/account your logs associate with the failed requests, and whether it is active, deactivated or linked to another account.
+3. Whether permission caching/propagation, endpoint restrictions, or a Cloudflare egress/WAF restriction explains the 403-to-200 change.
+4. The exact error code/requiredTier from your logs and a correction under the existing subscription.
+
+We will not rotate credentials blindly, bypass a rejection, or change hosting/providers. Please use the authenticated account support process for key/account verification; no full API key should be sent through email or chat.
+
+Separate issue: our own dashboard URL rejected the audit client with Cloudflare Error 1010 before reaching the app. This is not being presented as an OWL response. We stopped those requests and did not attempt a bypass.

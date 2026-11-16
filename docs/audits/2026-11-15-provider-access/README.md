@@ -1,5 +1,7 @@
 # NFL/NHL provider access recommendation — November 15, 2026
 
+> Current correction: the owner confirms **Rookie, active through December 15, 2026**. Both merged props routes are included. No upgrade or new subscription is recommended. See [active Rookie findings](active-rookie/README.md) and the updated [unsent support draft](owl-support-request.txt). Earlier conditional pricing below is historical analysis, not the current recommendation.
+
 Application/recovery code remains `616cf96`. This investigation used read-only Cloudflare telemetry, binding **names/types**, repository configuration, connected email search and public provider documentation. No blocked sports-data endpoint was retried, no key was requested/read/copied, no account or provider was changed, and nothing was deployed. No application files changed; another development/test cycle is not represented as a solution to account access.
 
 ## Confirmed failures and affected markets

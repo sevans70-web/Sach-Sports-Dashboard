@@ -1,0 +1,32 @@
+✔ durable sportsbook input snapshots exclude credentials and account metadata (1.630427ms)
+✔ capture preserves denied-source stage diagnostics and provider retry window (24.967464ms)
+✔ historical combination EV cannot be manufactured from saved component means (1.090535ms)
+✔ included results and a single book history use fixed queries, collapse requests and cache the sample (79.478439ms)
+✔ permission denial stops the route, never escalates to another endpoint, and cools down (1.410173ms)
+✔ markets share one successful feed request; billing failures enter cooldown without stale lines (54.818849ms)
+✔ model archive probe is fixed and bounded; concurrent calls share cache and provider denial is not an empty dataset (2.62827ms)
+✔ missing values are not fabricated zeroes (0.819013ms)
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/401 401 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/403 403 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/429 429 text/plain;charset=UTF-8
+✔ public feed requests collapse and cached bodies remain independently readable (30.962275ms)
+✔ ESPN service failure retries the official alternate host; failed responses are never cached (2.876753ms)
+✔ authenticated sportsbook requests are not cached or sent to alternate hosts (1.722411ms)
+✔ ESPN access denials and rate limits never switch hosts (2.303976ms)
+✔ all football markets share one authenticated league request and honor rate-limit cooldown (24.548629ms)
+✔ consensus-only odds cannot become named-book quotes (0.623978ms)
+✔ book adapter preserves exact quarter, named book, threshold and both prices; ignores alt rungs (1.265883ms)
+✔ opposing side must match player, quarter, book and line and be available (0.506928ms)
+✔ first basket retains the actual named-book scorer price without manufacturing an Under (0.668392ms)
+✔ NBA props require the correct opponent and day, never the nearest scheduled game (0.532952ms)
+✔ unauthorized SGO keys get a bounded cooldown without blocking valid retries forever (0.18702ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3765.342514
