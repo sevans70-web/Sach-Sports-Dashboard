@@ -58,6 +58,8 @@ Read-only fixed-cutoff current-session inventories verify all18 sport/table grou
 
 Cloudflare readback confirms dashboard automatic builds still exclude `cloudflare-compatibility-test` via the existing `__cw08_manual_release_only__` filter. Existing dashboard bindings, fallback version and schedules remain unchanged. CW08 remains on deployment `39ea465b-ca3f-47f8-9bd2-50eb2f1ad174`, frozen model007c02b and `*/15` cron: 953 receipts, 871 grades, 186 completed cycles, zero pending uploads or storage error at the read. Research OWL HTTP200 responses continue; no research mutation occurred.
 
+Terminal logs have only trailing whitespace normalized; response fixtures and frozen archives are unchanged.
+
 ## Reproduction
 
 From `frontend`:
