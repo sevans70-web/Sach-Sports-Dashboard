@@ -1,0 +1,29 @@
+{
+  "status": "awaiting_user_approval",
+  "sourceCommit": "7a2c442fe2e8a2d21969ae69f98a3fc7e3b64b1b",
+  "worker": "sach-sports-cloudflare-test",
+  "bundleDigest": "31302af418fa34c141220edbd9b73f0c4c7015fc7284c68e0eeb9c89de415c03",
+  "files": 424,
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 13195375,
+    "sha256": "1db8fd3a085a6ca61fc8a039d2914383db1f54ac827c4271d100af85cbbbb4ab"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "currentFallbackDeployment": "9b1c3dea-a683-4e0f-9f42-71236a095a9d",
+  "fallbackArtifact": "../dashboard-capture-2026-11-14/fallback.tar.gz",
+  "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "newNamespaces": false,
+  "migrations": false,
+  "automaticBuilds": "paused",
+  "cw08": "untouched",
+  "credentialChanges": false,
+  "productionModifiedDuringAudit": false,
+  "preparation": "node scripts/prepare-dashboard-retry-release.mjs --prepare-only --recovered",
+  "dryRun": "node scripts/prepare-dashboard-retry-release.mjs --dry-run --recovered",
+  "uploadAllowed": false,
+  "approvalRequired": true,
+  "scope": "Combined NBA EV/memory, NHL loading/season/coverage, NFL ranking, bounded capture/checkpoint and cold framework accounting repairs. Read-only audit client fix; no model replacement or nflverse production adoption.",
+  "supersedesWithdrawnDigest": "1a78b897e0bd1f35b1de61009e5ca5b8abe33011619fd2a0ad46e9b81c72cd68",
+  "liveVerification": "Post-deployment browser, fresh API, cold capture/checkpoint and scheduled independence gates mandatory; immediate compatible fallback on critical failure."
+}

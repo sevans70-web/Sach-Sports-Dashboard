@@ -1,0 +1,229 @@
+{
+  "study": "cw08-nhl-v3-prospective-shadow",
+  "production": false,
+  "modelCommit": "007c02b",
+  "releaseApproved": false,
+  "ready": true,
+  "seedRequired": 339,
+  "receipts": 938,
+  "grades": 781,
+  "pendingUploads": 0,
+  "lateAnchors": 0,
+  "active": [],
+  "completedCycles": 160,
+  "manifestHead": {
+    "key": "runs/327ba42254a69c83db0173eea6ac2a57ce585b7b8979bac05a555c73730b0ac2.json",
+    "hash": "327ba42254a69c83db0173eea6ac2a57ce585b7b8979bac05a555c73730b0ac2"
+  },
+  "lastStorageError": null,
+  "latestSummary": {
+    "kind": "cw08_nhl_shadow_summary",
+    "results": {
+      "goals": {
+        "all": {
+          "captured": 623,
+          "settled": 516,
+          "pending": 107,
+          "fixtures": 17,
+          "selected": 218,
+          "over": 199,
+          "under": 19,
+          "pushes": 0,
+          "brierDifferenceCluster95": {
+            "clusters": 17,
+            "replicates": 1000,
+            "lower95": -0.028924421690091958,
+            "upper95": -0.012341091370452096
+          },
+          "unitRoiCluster95": {
+            "clusters": 17,
+            "replicates": 1000,
+            "lower95": -0.5129373322571488,
+            "upper95": 0.11698061078279795
+          },
+          "evidenceGates": {
+            "minimumFinalFixtures": false,
+            "requiredFixtures": 100,
+            "nonregressionUpper95": true,
+            "positiveReturnLower95": false
+          }
+        },
+        "originalTen": {
+          "captured": 10,
+          "settled": 10,
+          "pending": 0,
+          "fixtures": 3,
+          "selected": 5,
+          "over": 4,
+          "under": 1,
+          "pushes": 0,
+          "brierDifferenceCluster95": null,
+          "unitRoiCluster95": null,
+          "evidenceGates": {
+            "minimumFinalFixtures": false,
+            "requiredFixtures": 30,
+            "nonregressionUpper95": false,
+            "positiveReturnLower95": false
+          }
+        },
+        "byLine": {
+          "0.5": {
+            "captured": 623,
+            "settled": 516,
+            "pending": 107,
+            "fixtures": 17,
+            "selected": 218,
+            "over": 199,
+            "under": 19,
+            "pushes": 0,
+            "brierDifferenceCluster95": {
+              "clusters": 17,
+              "replicates": 1000,
+              "lower95": -0.028924421690091958,
+              "upper95": -0.012341091370452096
+            },
+            "unitRoiCluster95": {
+              "clusters": 17,
+              "replicates": 1000,
+              "lower95": -0.5129373322571488,
+              "upper95": 0.11698061078279795
+            },
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 20,
+              "nonregressionUpper95": true,
+              "positiveReturnLower95": false
+            }
+          }
+        }
+      },
+      "assists": {
+        "all": {
+          "captured": 315,
+          "settled": 265,
+          "pending": 50,
+          "fixtures": 17,
+          "selected": 93,
+          "over": 45,
+          "under": 48,
+          "pushes": 0,
+          "brierDifferenceCluster95": {
+            "clusters": 17,
+            "replicates": 1000,
+            "lower95": -0.01514465795386889,
+            "upper95": 0.0065644484587908955
+          },
+          "unitRoiCluster95": {
+            "clusters": 17,
+            "replicates": 1000,
+            "lower95": -0.37077569888114836,
+            "upper95": 0.04776746793099217
+          },
+          "evidenceGates": {
+            "minimumFinalFixtures": false,
+            "requiredFixtures": 100,
+            "nonregressionUpper95": false,
+            "positiveReturnLower95": false
+          }
+        },
+        "originalTen": {
+          "captured": 9,
+          "settled": 9,
+          "pending": 0,
+          "fixtures": 3,
+          "selected": 2,
+          "over": 1,
+          "under": 1,
+          "pushes": 0,
+          "brierDifferenceCluster95": null,
+          "unitRoiCluster95": null,
+          "evidenceGates": {
+            "minimumFinalFixtures": false,
+            "requiredFixtures": 30,
+            "nonregressionUpper95": false,
+            "positiveReturnLower95": false
+          }
+        },
+        "byLine": {
+          "0.5": {
+            "captured": 313,
+            "settled": 263,
+            "pending": 50,
+            "fixtures": 17,
+            "selected": 92,
+            "over": 45,
+            "under": 47,
+            "pushes": 0,
+            "brierDifferenceCluster95": {
+              "clusters": 17,
+              "replicates": 1000,
+              "lower95": -0.013520587540466675,
+              "upper95": 0.006652746568374327
+            },
+            "unitRoiCluster95": {
+              "clusters": 17,
+              "replicates": 1000,
+              "lower95": -0.3730336859282712,
+              "upper95": 0.03997530012142944
+            },
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 20,
+              "nonregressionUpper95": false,
+              "positiveReturnLower95": false
+            }
+          },
+          "1.5": {
+            "captured": 2,
+            "settled": 2,
+            "pending": 0,
+            "fixtures": 2,
+            "selected": 1,
+            "over": 0,
+            "under": 1,
+            "pushes": 0,
+            "brierDifferenceCluster95": null,
+            "unitRoiCluster95": null,
+            "evidenceGates": {
+              "minimumFinalFixtures": false,
+              "requiredFixtures": 20,
+              "nonregressionUpper95": false,
+              "positiveReturnLower95": false
+            }
+          }
+        }
+      }
+    },
+    "releaseApproved": false,
+    "reason": "Research evidence gates only; insufficient/missing groups fail closed. Independent pregame anchoring and application release checks remain mandatory. No automatic production promotion."
+  },
+  "latestCollectionHealth": {
+    "sourceDeferrals": 0,
+    "rosterFailures": 0,
+    "historySourceFailures": 0,
+    "rejectionsByReason": {
+      "unresolved_or_ambiguous_official_player": 61,
+      "official_history_missing": 3,
+      "prior_history_unavailable": 3
+    },
+    "warmedPlayers": 0,
+    "newReceipts": 0,
+    "sourceSnapshots": 13,
+    "state": "healthy"
+  },
+  "sourceTransport": [
+    {
+      "origin": "https://api-web.nhle.com",
+      "nextAt": 1794802596168,
+      "failures": 0,
+      "blockedUntil": 0
+    },
+    {
+      "origin": "https://api.owlsinsight.com",
+      "nextAt": 1794802596569,
+      "failures": 0,
+      "blockedUntil": 0
+    }
+  ],
+  "collectionEndsAt": "2026-12-15T12:00:00Z"
+}

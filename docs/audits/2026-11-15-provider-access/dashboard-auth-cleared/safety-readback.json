@@ -1,0 +1,70 @@
+{
+  "infrastructure": {
+    "dashboard": {
+      "id": "9b1c3dea-a683-4e0f-9f42-71236a095a9d",
+      "source": "api",
+      "strategy": "percentage",
+      "annotations": {
+        "workers/message": "Restore verified compatible fallback: new candidate failed live cold NFL recovery gate, repeated rankings_unavailable with no checkpoint and needsAttention. Preserve all namespace state, original/new receipts, grades and CW08.",
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-15T20:14:05.897546Z"
+    },
+    "rollback": {
+      "id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "created_on": "2026-11-15T04:12:28.395101Z"
+    },
+    "research": {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "source": "api",
+      "strategy": "percentage",
+      "annotations": {
+        "workers/message": "Approved CW08 transport-only update; frozen mod...",
+        "workers/triggered_by": "upload"
+      },
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-14T19:54:01.859122Z"
+    },
+    "schedule": {
+      "schedules": [
+        {
+          "cron": "*/15 * * * *",
+          "created_on": "2026-11-14T05:24:15.908994Z",
+          "modified_on": "2026-11-14T05:24:15.908994Z"
+        }
+      ]
+    },
+    "automaticBuilds": {
+      "branchIncludes": [
+        "__cw08_manual_release_only__"
+      ],
+      "modifiedOn": "2026-11-15T17:40:21.816Z"
+    }
+  },
+  "successfulScheduledCycle": [
+    {
+      "timestamp": "2026-11-16T04:16:40.494Z",
+      "source": {
+        "production": false,
+        "event": "cw08_cycle_complete",
+        "cycle": "1994225",
+        "manifest": {
+          "key": "runs/327ba42254a69c83db0173eea6ac2a57ce585b7b8979bac05a555c73730b0ac2.json",
+          "hash": "327ba42254a69c83db0173eea6ac2a57ce585b7b8979bac05a555c73730b0ac2"
+        }
+      },
+      "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "sourceCommit": "7a2c442fe2e8a2d21969ae69f98a3fc7e3b64b1b",
+  "fullRegression": {
+    "command": "node --test tests/*.test.mjs",
+    "tests": 825,
+    "passed": 824,
+    "failed": 0,
+    "skipped": 1,
+    "skip": "optional withdrawn-artifact diagnostic baseline",
+    "durationMs": 270130.682453
+  },
+  "compiledRuntime": {
+    "command": "SACH_COMPILED_RUNTIME=1 node --test tests/actual-cold-routes.test.mjs",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 1,
+    "scope": "Real compiled Vinext Worker, SQLite DO, isolated KV, intercepted outbound sources; 350 runtime subrequest ceiling and 220 job guard; cold NFL, lost-ack restart, repeated denial bounding, NHL current-season coverage, SGO contract fallback and concurrent foreground NFL tabs"
+  },
+  "focused": {
+    "passed": 12,
+    "failed": 0,
+    "scope": "recovered real-data history/receipt validation, audit client and release helper"
+  },
+  "typescript": {
+    "command": "tsc --noEmit",
+    "diagnostics": 0,
+    "logBytes": 0
+  },
+  "productionBuild": {
+    "command": "npm run build:vinext",
+    "passed": true
+  },
+  "dryRun": {
+    "command": "node scripts/prepare-dashboard-retry-release.mjs --dry-run --recovered",
+    "passed": true,
+    "uploaded": false
+  },
+  "artifactChecks": {
+    "archiveShaVerified": true,
+    "bundleDigestVerified": true,
+    "deliberateTamperRejected": true,
+    "compatibleFallbackDigest": "86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f"
+  },
+  "browser": {
+    "candidateReplayNFLTabs": 17,
+    "candidateReplayNBAMarkets": 7,
+    "candidateReplayNHLMarkets": 4,
+    "hydrationErrors": 0,
+    "forcedPR503RetainedCards": 20,
+    "liveProductionBrowser": "Blocked before application execution by workspace managed proxy certificate trust; TLS verification was not disabled. No live browser pass claimed.",
+    "liveAPI": "Repeated successful fresh dashboard-bound quotes using normal TLS verification"
+  },
+  "productionDeployed": false,
+  "automaticBuilds": "paused",
+  "CW08": "unchanged"
+}
