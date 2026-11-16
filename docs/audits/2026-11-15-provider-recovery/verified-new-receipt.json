@@ -1,0 +1,43 @@
+{
+  "key": "receipts/6e68c6845d1b15c2b9097e4b1661dbf05aa31a9412860e03bdf1cb8a0dcab991.json",
+  "createdAt": 1794800012607,
+  "sqlMeta": {
+    "rows_read": 2136,
+    "rows_written": 0
+  },
+  "payloadSha256": "6e68c6845d1b15c2b9097e4b1661dbf05aa31a9412860e03bdf1cb8a0dcab991",
+  "receiptSha256": "f83272e3e02d06725d1c1f8902a31afdf324fe7ac5b12649c48a73d1e926df67",
+  "target": {
+    "gameId": "2026020331",
+    "gameTime": "2026-11-17T00:30:00Z",
+    "market": "assists",
+    "opponentId": "NYR",
+    "playerId": "8483515",
+    "season": "20262027",
+    "sport": "nhl",
+    "teamId": "MTL"
+  },
+  "quote": {
+    "bookmaker": "caesars",
+    "capturedAt": "2026-11-16T03:33:32.607Z",
+    "decisionAt": "2026-11-16T03:33:32.607Z",
+    "gameId": "2026020331",
+    "line": 0.5,
+    "mainLine": true,
+    "market": "assists",
+    "overPrice": 145,
+    "period": "game",
+    "playerId": "8483515",
+    "quoteId": "caesars-6c474b87-66b0-32ec-ac2f-73d3398c9e8c",
+    "quoteMarket": "assists",
+    "quotePeriod": "game",
+    "sport": "nhl",
+    "underPrice": -197,
+    "updatedAt": "2026-11-16T03:28:39.218Z"
+  },
+  "sourceFetchedAt": "2026-11-16T03:33:32.607Z",
+  "modelFreezeCommit": "007c02b",
+  "production": false,
+  "selectionApproved": false,
+  "historySha256": "1e315834d4bdb95cc2cdd8c730a3c95489326d7fcff2cbf120cec7bd48f0aef6"
+}

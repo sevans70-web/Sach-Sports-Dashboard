@@ -1,0 +1,12 @@
+{
+  "observedResearchSuccessesSinceLastSampledFailure": 13,
+  "firstSuccessToronto": "2026-11-15T20:21:31.635000-05:00",
+  "lastSuccessToronto": "2026-11-15T22:34:04.146000-05:00",
+  "lastResearchFailureToronto": "2026-11-15T19:44:16.290000-05:00",
+  "scope": "Sampled existing scheduled requests, not all requests and not a fresh dashboard authentication probe",
+  "nflDashboardRecovery": "unverified",
+  "nhlDashboardRecovery": "unverified; last observed 403 precedes research recovery",
+  "sgoLatestStatus": 401,
+  "credentialsChanged": false,
+  "canClearGlobalProviderBlocker": false
+}

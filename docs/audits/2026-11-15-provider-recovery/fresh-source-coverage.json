@@ -1,0 +1,9 @@
+{
+  "key": "sources/6fafd5cc02a940376d98e91105269bc4cd58a71b6319a415994af839f06c8bc8.json",
+  "verifiedPayloadSha256": "6fafd5cc02a940376d98e91105269bc4cd58a71b6319a415994af839f06c8bc8",
+  "url": "https://api.owlsinsight.com/api/v1/nhl/props",
+  "sourceFetchedAt": "2026-11-16T03:34:09.439Z",
+  "gameId": "2026020343",
+  "quoteCount": 0,
+  "sourceModified": false
+}

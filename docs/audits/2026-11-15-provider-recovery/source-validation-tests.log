@@ -1,0 +1,14 @@
+✔ authorized real nflverse histories match by ESPN/GSIS identity and exact fixture, never by name (10.41248ms)
+✔ real prior-season and target-game outcomes cannot enter a pregame NFL history (0.896381ms)
+✔ quarter-specific and scoring-order evidence cannot be manufactured from full-game totals (0.305514ms)
+✔ actual zero interceptions and zero rushing yards survive; missing combination components never become zero (3.388533ms)
+✔ duplicate, wrong-team, ambiguous fixture and malformed schedule evidence fail safely without mutating source (4.734821ms)
+✔ fresh recovered NHL receipt retains original odds and reproduces frozen research probabilities (20.646041ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 843.77664

@@ -1,0 +1,46 @@
+{
+  "result": {
+    "results": [
+      {
+        "columns": [
+          "key",
+          "hash",
+          "created_at"
+        ],
+        "rows": [
+          [
+            "sources/6fafd5cc02a940376d98e91105269bc4cd58a71b6319a415994af839f06c8bc8.json",
+            "6fafd5cc02a940376d98e91105269bc4cd58a71b6319a415994af839f06c8bc8",
+            1794800049439
+          ],
+          [
+            "sources/ea6e7983a1c1ec43ed0bada55f03a3ebaddd262a630a0f5962b039a11359c530.json",
+            "ea6e7983a1c1ec43ed0bada55f03a3ebaddd262a630a0f5962b039a11359c530",
+            1794800046780
+          ]
+        ],
+        "meta": {
+          "rows_read": 6331,
+          "rows_written": 0
+        }
+      },
+      {
+        "columns": [
+          "n"
+        ],
+        "rows": [
+          [
+            938
+          ]
+        ],
+        "meta": {
+          "rows_read": 938,
+          "rows_written": 0
+        }
+      }
+    ]
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}

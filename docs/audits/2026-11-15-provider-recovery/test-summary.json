@@ -1,0 +1,27 @@
+{
+  "regression": {
+    "passed": 822,
+    "failed": 0,
+    "skipped": 1,
+    "skipReason": "Withdrawn production artifact reproduction is opt-in; previously verified separately"
+  },
+  "compiledRuntime": {
+    "passed": 6,
+    "failed": 0
+  },
+  "newRealDataValidation": {
+    "passed": 6,
+    "failed": 0
+  },
+  "typescriptDiagnostics": 0,
+  "researchBundle": {
+    "bytes": 151874,
+    "sha256": "c6a71a74051e42a9f6642944b6f9e247be3c4b3f74c96cd84319fb0dbb4959e4"
+  },
+  "shippingDashboardSourceChanged": false,
+  "credentialsChanged": false,
+  "deployed": false,
+  "globalAccessBlockerCleared": false,
+  "researchAccess": "observed recovered; monitoring",
+  "readyForControlledDeployment": false
+}
