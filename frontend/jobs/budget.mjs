@@ -70,6 +70,7 @@ function responseFor(body,response){return new Response([204,205,304].includes(r
 async function jobFetch(scope,native,input,init={}){
  const url=input instanceof Request?input.url:String(input),u=new URL(url),method=String(init.method||(input instanceof Request?input.method:'GET')).toUpperCase();
  const headers=new Headers(init.headers||(input instanceof Request?input.headers:undefined));
+ const redirectMode=init.redirect||(input instanceof Request?input.redirect:'follow');
  const source=method==='GET'&&!headers.has('Authorization')&&!headers.has('x-api-key')&&!headers.has('cookie')&&!headers.has('range')&&!/key|token|auth/i.test(u.search)&&cacheTtl(url)>0&&scope.cacheSources;
  const caller=init.signal||(input instanceof Request?input.signal:undefined),queuedSignal=AbortSignal.any([scope.abort.signal,...(caller?[caller]:[])]);
  active(scope);checkSignal(queuedSignal);if(scope.paused)throw scope.paused;
@@ -100,7 +101,8 @@ async function jobFetch(scope,native,input,init={}){
     active(scope);checkSignal(signal);
     if(response.status===429){const until=retryTime(response.headers.get('Retry-After'),scope.now());await response.body?.cancel();charge(scope,'provider_gate',1,ticket);await abortable(scope.gate(new URL(current).origin,until),signal);throw pause(scope,'provider_http_429',until);}
     if([301,302,303,307,308].includes(response.status)){
-     const location=response.headers.get('Location');await response.body?.cancel();if(!source||!location||redirects>=3)throw Error('job_source_redirect_rejected');const next=new URL(location,current);if(!official.has(next.hostname)||next.username||next.password)throw Error('job_source_redirect_rejected');current=next.href;continue;
+     if(redirectMode==='manual')break;
+     const location=response.headers.get('Location');await response.body?.cancel();if(redirectMode==='error'||!source||!location||redirects>=3)throw Error('job_source_redirect_rejected');const next=new URL(location,current);if(!official.has(next.hostname)||next.username||next.password)throw Error('job_source_redirect_rejected');current=next.href;continue;
     }
     break;
    }
