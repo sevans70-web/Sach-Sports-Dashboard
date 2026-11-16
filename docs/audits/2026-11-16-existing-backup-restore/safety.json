@@ -1,0 +1,17 @@
+{
+  "dashboardDeployment": "4e8f8721-6e0a-4836-b877-9446a0f360d0",
+  "researchDeployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "branchIncludes": [
+    [
+      "__cw08_manual_release_only__"
+    ]
+  ],
+  "backupFolder": "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe",
+  "owner": "sachsportsplatform@gmail.com",
+  "sharingChanges": 0,
+  "remoteFileWrites": 0,
+  "productionWrites": 0,
+  "duplicateFoldersCreated": 0,
+  "trackerReadbackVerified": true,
+  "checklistItemsClosed": 0
+}

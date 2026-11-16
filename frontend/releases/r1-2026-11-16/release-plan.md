@@ -18,6 +18,10 @@ Source `2bf33d6f9bfc0a57aaa42b7346ebcce65422680a`; application repairs through `
 
 No frozen research model, protocol, historical pick, selection or grade is rewritten. No nflverse production adoption, provider switch, additional subscription or dashboard redesign.
 
+## Backup follow-up
+
+The existing folder `1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe` is owned by the connected Sach Sports account. Eight scheduled manifests/11parts passed an actual isolated restore (489history documents/1008pregame records). Earlier access assumptions are superseded. These archives cover November10 (NFL pregame November9), not all newer production records; the broader complete-current recovery-point gate remains unverified. Use the same location and preserve every existing file. See `docs/audits/2026-11-16-existing-backup-restore/README.md`.
+
 ## Before any approval request
 
 Use `node scripts/prepare-r1-release.mjs --prepare-only` or `--dry-run`; neither supports upload. Tests must use the extracted archive, not a subsequently rebuilt directory. See the audit README for exact commands and the distinction between synthetic faults, authentic recorded input and current production reads.

@@ -1,0 +1,213 @@
+{
+  "passed": true,
+  "scope": "Exact selected archived sport-days, not an all-current-production disaster recovery snapshot",
+  "productionModified": false,
+  "remoteWrites": 0,
+  "manifests": 8,
+  "parts": 11,
+  "bytes": 11504113,
+  "historyDocuments": 489,
+  "pregameRecords": 1008,
+  "summaries": [
+    {
+      "kind": "history",
+      "sport": "nfl",
+      "day": "2026-11-10",
+      "manifestId": "11QoetNUTkTRC_hZXyiHeuB0kHke03A0D",
+      "createdAt": "2026-11-16T09:17:47.910Z",
+      "manifestMd5": "766ab542ee861985cff3d408e02442e3",
+      "parts": 1,
+      "records": 17,
+      "bytes": 323748,
+      "tables": {},
+      "sourceChecksum": null,
+      "inventoryChecksum": "48b52e79ae8e83d5178191c8e56181c253a764f0c8e98ae9701adda406e83354",
+      "passed": true
+    },
+    {
+      "kind": "pregame",
+      "sport": "nba",
+      "day": "2026-11-10",
+      "manifestId": "1Wk9A5D1Odz3N3dk0GKplIOVIlmqsFOgt",
+      "createdAt": "2026-11-16T09:17:05.567Z",
+      "manifestMd5": "32dbe8c1939372e1288bc5ba423ba2e2",
+      "parts": 1,
+      "records": 657,
+      "bytes": 706170,
+      "tables": {
+        "worker_pregame_originals": 412,
+        "worker_pregame_picks": 125,
+        "worker_pregame_grades": 120
+      },
+      "sourceChecksum": "0d9dbe58855915056e2ec6316df4aac6c1054c79a3cf838d25797e38a22cbbc2",
+      "inventoryChecksum": "0d9dbe58855915056e2ec6316df4aac6c1054c79a3cf838d25797e38a22cbbc2",
+      "passed": true
+    },
+    {
+      "kind": "history",
+      "sport": "nba",
+      "day": "2026-11-10",
+      "manifestId": "1PMESAu3qwjCvID_TMZStHm4qjdyofhL8",
+      "createdAt": "2026-11-16T09:16:58.347Z",
+      "manifestMd5": "7b9b2edc35a67721b6cfe0ccdac09f0f",
+      "parts": 4,
+      "records": 127,
+      "bytes": 6539446,
+      "tables": {},
+      "sourceChecksum": null,
+      "inventoryChecksum": "22500361343991734f524519a34efb76a6b1f4aefe65c69679fa699f61710d06",
+      "passed": true
+    },
+    {
+      "kind": "history",
+      "sport": "cbb",
+      "day": "2026-11-10",
+      "manifestId": "12KpAzDOLH8jvNUeEgztfvqdVBryJVDRH",
+      "createdAt": "2026-11-16T09:15:48.447Z",
+      "manifestMd5": "edf76bb71d519338744f7abb4740c990",
+      "parts": 1,
+      "records": 254,
+      "bytes": 1605849,
+      "tables": {},
+      "sourceChecksum": null,
+      "inventoryChecksum": "f07003e766469bc0b0a102cfc5ded0015774ffe945cd72db67bf93e48e1d785f",
+      "passed": true
+    },
+    {
+      "kind": "pregame",
+      "sport": "nhl",
+      "day": "2026-11-10",
+      "manifestId": "1hR8RwRzzx-VLkFhh-afW-dHP7NBKdnho",
+      "createdAt": "2026-11-16T09:11:56.984Z",
+      "manifestMd5": "4e1382bea80fd8b97e00443d1846c70a",
+      "parts": 1,
+      "records": 198,
+      "bytes": 208445,
+      "tables": {
+        "worker_pregame_originals": 110,
+        "worker_pregame_picks": 44,
+        "worker_pregame_grades": 44
+      },
+      "sourceChecksum": "8db11cc493870afac8a7999e130538ab10f6b8407129b0915d0c6a06e6b3547b",
+      "inventoryChecksum": "8db11cc493870afac8a7999e130538ab10f6b8407129b0915d0c6a06e6b3547b",
+      "passed": true
+    },
+    {
+      "kind": "history",
+      "sport": "nhl",
+      "day": "2026-11-10",
+      "manifestId": "1b4kbB_DjiTzZqlf-ASSR3F8H3t-BGb7P",
+      "createdAt": "2026-11-16T09:11:49.969Z",
+      "manifestMd5": "081cb07dffa33f22c667d1454902407e",
+      "parts": 1,
+      "records": 55,
+      "bytes": 764561,
+      "tables": {},
+      "sourceChecksum": null,
+      "inventoryChecksum": "71122ea8bff8754b98aad71f1937121358432d2a9d9d0888086fbc80bed238a2",
+      "passed": true
+    },
+    {
+      "kind": "history",
+      "sport": "cfb",
+      "day": "2026-11-10",
+      "manifestId": "1Nv3kPaXa-k4VWaL9zlNANcYUKViOQ8N5",
+      "createdAt": "2026-11-16T09:10:50.471Z",
+      "manifestMd5": "180cb609c441096582f214ec4306d4f4",
+      "parts": 1,
+      "records": 36,
+      "bytes": 1179509,
+      "tables": {},
+      "sourceChecksum": null,
+      "inventoryChecksum": "f5b7d9fb7626a69a5fc89ade691a4c773495c3692f95511ed125584655e2a0ba",
+      "passed": true
+    },
+    {
+      "kind": "pregame",
+      "sport": "nfl",
+      "day": "2026-11-09",
+      "manifestId": "1o6k6HlQDBTqqS6a09f187o37TP2ZVPou",
+      "createdAt": "2026-11-15T09:17:54.545Z",
+      "manifestMd5": "5170320f5fb19765f27c6f4e5aad2f16",
+      "parts": 1,
+      "records": 153,
+      "bytes": 176385,
+      "tables": {
+        "worker_pregame_originals": 136,
+        "worker_pregame_picks": 10,
+        "worker_pregame_grades": 7
+      },
+      "sourceChecksum": "829ad0ed6495382414d05297bf99a18e5caa8bd3d6e6f0695c7dfcdc995a580d",
+      "inventoryChecksum": "829ad0ed6495382414d05297bf99a18e5caa8bd3d6e6f0695c7dfcdc995a580d",
+      "passed": true
+    }
+  ],
+  "verifiedParts": [
+    {
+      "id": "1vwkKWTynNGYOZ_roTz0kaNjo13UmLKSq",
+      "name": "cloudflare-staging-history-v1-nfl-2026-11-10-part-1-8be95c641bf30dffc8eb3108aa710067.json",
+      "bytes": 323748,
+      "md5": "8be95c641bf30dffc8eb3108aa710067"
+    },
+    {
+      "id": "1DiC0USSH1HeOd-TOC0JwkUiUyYMPW_c5",
+      "name": "cloudflare-staging-pregame-v1-nba-2026-11-10-part-1-cce57726bc6caea47d715e08e3a5d271.json",
+      "bytes": 706170,
+      "md5": "cce57726bc6caea47d715e08e3a5d271"
+    },
+    {
+      "id": "1rxmaSl5YwUxsfnOHd8Wdp38vlUCOPpP3",
+      "name": "cloudflare-staging-history-v1-nba-2026-11-10-part-1-a886d151cd4ad0b1897f4b9218ed1c61.json",
+      "bytes": 2030882,
+      "md5": "a886d151cd4ad0b1897f4b9218ed1c61"
+    },
+    {
+      "id": "1sTuYcL7_lbzrG6cZFmlQ7fN-utRcFWf3",
+      "name": "cloudflare-staging-history-v1-nba-2026-11-10-part-2-4a1d670d7d7053fa6f4babcf5e55e2b6.json",
+      "bytes": 2078522,
+      "md5": "4a1d670d7d7053fa6f4babcf5e55e2b6"
+    },
+    {
+      "id": "1FPmKUE_qF_zZ_EqTOkO6D9OBgyQsgsYZ",
+      "name": "cloudflare-staging-history-v1-nba-2026-11-10-part-3-b0f7d90bab748360ab88fa339c74ba1c.json",
+      "bytes": 1998352,
+      "md5": "b0f7d90bab748360ab88fa339c74ba1c"
+    },
+    {
+      "id": "1LcD59yWheBzkaIcVH8ldeQRguCAkx7Hh",
+      "name": "cloudflare-staging-history-v1-nba-2026-11-10-part-4-6550bc48c8909a95901ebfddb02e76be.json",
+      "bytes": 431690,
+      "md5": "6550bc48c8909a95901ebfddb02e76be"
+    },
+    {
+      "id": "1YpHZ8phihkq7Rk_dgcvM7NLjwsYMOjYR",
+      "name": "cloudflare-staging-history-v1-cbb-2026-11-10-part-1-a6f7ae7e98494cf8463441bbf259c85e.json",
+      "bytes": 1605849,
+      "md5": "a6f7ae7e98494cf8463441bbf259c85e"
+    },
+    {
+      "id": "1pAiQs_u9-VJ822FF8_Ev2BiAUWpa8hM_",
+      "name": "cloudflare-staging-pregame-v1-nhl-2026-11-10-part-1-9d2046ec1ad570557f042a1770f15cfa.json",
+      "bytes": 208445,
+      "md5": "9d2046ec1ad570557f042a1770f15cfa"
+    },
+    {
+      "id": "1tOs0pOaV_FjIH3g_UGauX0O1KHNbzXKs",
+      "name": "cloudflare-staging-history-v1-nhl-2026-11-10-part-1-49f0d4ff30e4b4fb130d0bb399c866e4.json",
+      "bytes": 764561,
+      "md5": "49f0d4ff30e4b4fb130d0bb399c866e4"
+    },
+    {
+      "id": "1PC-MKYDTo92lg7Q6UohYmfeaUxTJXjOG",
+      "name": "cloudflare-staging-history-v1-cfb-2026-11-10-part-1-a11ff70b79170d9191446271a02d539a.json",
+      "bytes": 1179509,
+      "md5": "a11ff70b79170d9191446271a02d539a"
+    },
+    {
+      "id": "1br0_mZjqY8VzEK1CqOsGXCnGJHOyrLR_",
+      "name": "cloudflare-staging-pregame-v1-nfl-2026-11-09-part-1-6998ce28bbc4f8f2a3f31ee4e29ece3f.json",
+      "bytes": 176385,
+      "md5": "6998ce28bbc4f8f2a3f31ee4e29ece3f"
+    }
+  ]
+}

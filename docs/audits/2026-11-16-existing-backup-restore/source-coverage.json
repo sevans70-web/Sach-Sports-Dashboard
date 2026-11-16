@@ -1,0 +1,506 @@
+[
+  {
+    "kind": "grades",
+    "sport": "nba",
+    "game_day": "2026-11-09",
+    "records": 160
+  },
+  {
+    "kind": "grades",
+    "sport": "nba",
+    "game_day": "2026-11-10",
+    "records": 120
+  },
+  {
+    "kind": "grades",
+    "sport": "nba",
+    "game_day": "2026-11-11",
+    "records": 147
+  },
+  {
+    "kind": "grades",
+    "sport": "nba",
+    "game_day": "2026-11-12",
+    "records": 157
+  },
+  {
+    "kind": "grades",
+    "sport": "nba",
+    "game_day": "2026-11-13",
+    "records": 239
+  },
+  {
+    "kind": "grades",
+    "sport": "nba",
+    "game_day": "2026-11-14",
+    "records": 200
+  },
+  {
+    "kind": "grades",
+    "sport": "nfl",
+    "game_day": "2026-11-09",
+    "records": 7
+  },
+  {
+    "kind": "grades",
+    "sport": "nfl",
+    "game_day": "2026-11-12",
+    "records": 17
+  },
+  {
+    "kind": "grades",
+    "sport": "nfl",
+    "game_day": "2026-11-15",
+    "records": 11
+  },
+  {
+    "kind": "grades",
+    "sport": "nhl",
+    "game_day": "2026-11-09",
+    "records": 20
+  },
+  {
+    "kind": "grades",
+    "sport": "nhl",
+    "game_day": "2026-11-10",
+    "records": 44
+  },
+  {
+    "kind": "grades",
+    "sport": "nhl",
+    "game_day": "2026-11-11",
+    "records": 35
+  },
+  {
+    "kind": "grades",
+    "sport": "nhl",
+    "game_day": "2026-11-12",
+    "records": 38
+  },
+  {
+    "kind": "grades",
+    "sport": "nhl",
+    "game_day": "2026-11-13",
+    "records": 32
+  },
+  {
+    "kind": "grades",
+    "sport": "nhl",
+    "game_day": "2026-11-14",
+    "records": 42
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-09",
+    "records": 260
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-10",
+    "records": 254
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-11",
+    "records": 292
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-12",
+    "records": 205
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-13",
+    "records": 286
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-14",
+    "records": 322
+  },
+  {
+    "kind": "history",
+    "sport": "cbb",
+    "game_day": "2026-11-15",
+    "records": 10
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-09",
+    "records": 10
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-10",
+    "records": 36
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-11",
+    "records": 34
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-12",
+    "records": 27
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-13",
+    "records": 36
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-14",
+    "records": 339
+  },
+  {
+    "kind": "history",
+    "sport": "cfb",
+    "game_day": "2026-11-15",
+    "records": 12
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-09",
+    "records": 163
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-10",
+    "records": 127
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-11",
+    "records": 172
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-12",
+    "records": 108
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-13",
+    "records": 150
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-14",
+    "records": 117
+  },
+  {
+    "kind": "history",
+    "sport": "nba",
+    "game_day": "2026-11-15",
+    "records": 43
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-09",
+    "records": 54
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-10",
+    "records": 17
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-11",
+    "records": 17
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-12",
+    "records": 54
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-13",
+    "records": 17
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-14",
+    "records": 17
+  },
+  {
+    "kind": "history",
+    "sport": "nfl",
+    "game_day": "2026-11-15",
+    "records": 19
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-09",
+    "records": 30
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-10",
+    "records": 55
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-11",
+    "records": 50
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-12",
+    "records": 75
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-13",
+    "records": 23
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-14",
+    "records": 87
+  },
+  {
+    "kind": "history",
+    "sport": "nhl",
+    "game_day": "2026-11-15",
+    "records": 9
+  },
+  {
+    "kind": "originals",
+    "sport": "cfb",
+    "game_day": "2026-11-10",
+    "records": 29
+  },
+  {
+    "kind": "originals",
+    "sport": "nba",
+    "game_day": "2026-11-09",
+    "records": 564
+  },
+  {
+    "kind": "originals",
+    "sport": "nba",
+    "game_day": "2026-11-10",
+    "records": 412
+  },
+  {
+    "kind": "originals",
+    "sport": "nba",
+    "game_day": "2026-11-11",
+    "records": 564
+  },
+  {
+    "kind": "originals",
+    "sport": "nba",
+    "game_day": "2026-11-12",
+    "records": 420
+  },
+  {
+    "kind": "originals",
+    "sport": "nba",
+    "game_day": "2026-11-13",
+    "records": 571
+  },
+  {
+    "kind": "originals",
+    "sport": "nba",
+    "game_day": "2026-11-14",
+    "records": 514
+  },
+  {
+    "kind": "originals",
+    "sport": "nfl",
+    "game_day": "2026-11-09",
+    "records": 136
+  },
+  {
+    "kind": "originals",
+    "sport": "nfl",
+    "game_day": "2026-11-12",
+    "records": 145
+  },
+  {
+    "kind": "originals",
+    "sport": "nfl",
+    "game_day": "2026-11-15",
+    "records": 878
+  },
+  {
+    "kind": "originals",
+    "sport": "nfl",
+    "game_day": "2026-11-16",
+    "records": 50
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-09",
+    "records": 53
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-10",
+    "records": 110
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-11",
+    "records": 152
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-12",
+    "records": 530
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-13",
+    "records": 224
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-14",
+    "records": 655
+  },
+  {
+    "kind": "originals",
+    "sport": "nhl",
+    "game_day": "2026-11-15",
+    "records": 102
+  },
+  {
+    "kind": "picks",
+    "sport": "nba",
+    "game_day": "2026-11-09",
+    "records": 172
+  },
+  {
+    "kind": "picks",
+    "sport": "nba",
+    "game_day": "2026-11-10",
+    "records": 125
+  },
+  {
+    "kind": "picks",
+    "sport": "nba",
+    "game_day": "2026-11-11",
+    "records": 159
+  },
+  {
+    "kind": "picks",
+    "sport": "nba",
+    "game_day": "2026-11-12",
+    "records": 159
+  },
+  {
+    "kind": "picks",
+    "sport": "nba",
+    "game_day": "2026-11-13",
+    "records": 246
+  },
+  {
+    "kind": "picks",
+    "sport": "nba",
+    "game_day": "2026-11-14",
+    "records": 218
+  },
+  {
+    "kind": "picks",
+    "sport": "nfl",
+    "game_day": "2026-11-09",
+    "records": 10
+  },
+  {
+    "kind": "picks",
+    "sport": "nfl",
+    "game_day": "2026-11-12",
+    "records": 19
+  },
+  {
+    "kind": "picks",
+    "sport": "nfl",
+    "game_day": "2026-11-15",
+    "records": 120
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-09",
+    "records": 20
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-10",
+    "records": 44
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-11",
+    "records": 36
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-12",
+    "records": 38
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-13",
+    "records": 32
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-14",
+    "records": 43
+  },
+  {
+    "kind": "picks",
+    "sport": "nhl",
+    "game_day": "2026-11-15",
+    "records": 32
+  }
+]

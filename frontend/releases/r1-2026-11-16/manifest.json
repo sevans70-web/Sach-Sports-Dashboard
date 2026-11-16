@@ -36,6 +36,16 @@
   ],
   "liveProductionAcceptance": "Not performed for this candidate; mandatory after an approved deployment",
   "remainingPreapprovalGates": [
-    "Locate and verify the latest complete history and pregame backup manifests and every referenced part; perform a non-destructive restore with exact counts/checksums. Archive-job success logs alone are insufficient."
-  ]
+    "Existing Drive access is confirmed and latest scheduled sport-day archives passed isolated restore. They cover November10 (NFL pregame November9); verify a current complete recovery point including newer records before treating the full current-backup gate as passed. No new folder or sharing required."
+  ],
+  "backupVerification": {
+    "folderId": "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe",
+    "owner": "sachsportsplatform@gmail.com",
+    "scheduledArchiveRestorePassed": true,
+    "manifests": 8,
+    "parts": 11,
+    "historyDocuments": 489,
+    "pregameRecords": 1008,
+    "fullCurrentSnapshotVerified": false
+  }
 }

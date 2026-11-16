@@ -1,0 +1,70 @@
+{
+  "archivedScopes": [
+    {
+      "kind": "history",
+      "sport": "nfl",
+      "day": "2026-11-10",
+      "databaseRecords": 17,
+      "restoredRecords": 17,
+      "countMatch": true
+    },
+    {
+      "kind": "pregame",
+      "sport": "nba",
+      "day": "2026-11-10",
+      "databaseRecords": 657,
+      "restoredRecords": 657,
+      "countMatch": true
+    },
+    {
+      "kind": "history",
+      "sport": "nba",
+      "day": "2026-11-10",
+      "databaseRecords": 127,
+      "restoredRecords": 127,
+      "countMatch": true
+    },
+    {
+      "kind": "history",
+      "sport": "cbb",
+      "day": "2026-11-10",
+      "databaseRecords": 254,
+      "restoredRecords": 254,
+      "countMatch": true
+    },
+    {
+      "kind": "pregame",
+      "sport": "nhl",
+      "day": "2026-11-10",
+      "databaseRecords": 198,
+      "restoredRecords": 198,
+      "countMatch": true
+    },
+    {
+      "kind": "history",
+      "sport": "nhl",
+      "day": "2026-11-10",
+      "databaseRecords": 55,
+      "restoredRecords": 55,
+      "countMatch": true
+    },
+    {
+      "kind": "history",
+      "sport": "cfb",
+      "day": "2026-11-10",
+      "databaseRecords": 36,
+      "restoredRecords": 36,
+      "countMatch": true
+    },
+    {
+      "kind": "pregame",
+      "sport": "nfl",
+      "day": "2026-11-09",
+      "databaseRecords": 153,
+      "restoredRecords": 153,
+      "countMatch": true
+    }
+  ],
+  "laterDatabaseRecordsNotCoveredByTheseManifests": 9346,
+  "fullCurrentSnapshotVerified": false
+}
