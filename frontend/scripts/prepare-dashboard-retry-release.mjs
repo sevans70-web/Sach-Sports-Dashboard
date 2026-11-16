@@ -6,6 +6,7 @@ import {resolve,dirname,join,relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const app=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const release=join(app,'releases/dashboard-retry-2026-11-15');
+export const recoveredRelease=join(app,'releases/dashboard-recovered-2026-11-15');
 export const blockersRelease=join(app,'releases/dashboard-blockers-2026-11-15');
 export const combinedRelease=join(app,'releases/dashboard-nfl-capture-2026-11-15');
 const sha=x=>createHash('sha256').update(x).digest('hex');
@@ -19,13 +20,13 @@ export function fingerprint(output){
  return {digest:sha(JSON.stringify(ordered({config,files}))),files:files.length,worker:config.name};
 }
 export function prepare(output=join(app,'.cloudflare/output/v0'),selectedRelease=release){
- if(![release,combinedRelease,blockersRelease].includes(selectedRelease))throw Error('unknown_release');
+ if(![release,combinedRelease,blockersRelease,recoveredRelease].includes(selectedRelease))throw Error('unknown_release');
  const manifest=JSON.parse(readFileSync(join(selectedRelease,'manifest.json'))),archive=join(selectedRelease,'candidate.tar.gz');
  if(manifest.status!=='awaiting_user_approval'||sha(readFileSync(archive))!==manifest.archive.sha256)throw Error('release_manifest_or_archive_mismatch');
  const names=execFileSync('tar',['-tzf',archive],{encoding:'utf8'}).trim().split('\n');if(names.some(n=>n.startsWith('/')||n.split('/').includes('..')))throw Error('unsafe_archive');
  rmSync(output,{recursive:true,force:true});mkdirSync(output,{recursive:true});execFileSync('tar',['-xzf',archive,'-C',output]);const result=fingerprint(output);if(result.digest!==manifest.bundleDigest)throw Error('release_digest_mismatch');return {...result,sourceCommit:manifest.sourceCommit,approvalRequired:true};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- const mode=process.argv[2];if(![3,4].includes(process.argv.length)||(process.argv[3]&&!['--combined','--blockers'].includes(process.argv[3]))||!['--prepare-only','--dry-run'].includes(mode))throw Error('Use --prepare-only or --dry-run. Upload requires separate user approval.');
- console.info('[dashboard-retry-artifact]',JSON.stringify(prepare(undefined,process.argv[3]==='--blockers'?blockersRelease:process.argv[3]==='--combined'?combinedRelease:release)));if(mode==='--dry-run')execFileSync(process.execPath,[join(app,'scripts/deploy-cloudflare.mjs'),'--dry-run'],{cwd:app,stdio:'inherit'});
+ const mode=process.argv[2];if(![3,4].includes(process.argv.length)||(process.argv[3]&&!['--combined','--blockers','--recovered'].includes(process.argv[3]))||!['--prepare-only','--dry-run'].includes(mode))throw Error('Use --prepare-only or --dry-run. Upload requires separate user approval.');
+ console.info('[dashboard-retry-artifact]',JSON.stringify(prepare(undefined,process.argv[3]==='--recovered'?recoveredRelease:process.argv[3]==='--blockers'?blockersRelease:process.argv[3]==='--combined'?combinedRelease:release)));if(mode==='--dry-run')execFileSync(process.execPath,[join(app,'scripts/deploy-cloudflare.mjs'),'--dry-run'],{cwd:app,stdio:'inherit'});
 }
