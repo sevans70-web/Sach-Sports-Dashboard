@@ -1,0 +1,98 @@
+{
+  "schema": "r1-dashboard-release/v1",
+  "status": "rehearsal_passed_awaiting_approval",
+  "sourceCommit": "e65304c8f1bda7c5265494d417c31abbee3f7be8",
+  "applicationRepairCommit": "e65304c8f1bda7c5265494d417c31abbee3f7be8",
+  "worker": "sach-sports-cloudflare-test",
+  "bundleDigest": "832d9ab38287f57ca12d3caa7297249324c6fbe8c770fb8612022ad9620720e4",
+  "files": 424,
+  "archive": {
+    "file": "candidate.tar.gz",
+    "sha256": "62fd7f9543cf1a54be9a8ba7e0cb3c5bebbf899f5b9e35e5813ad9593a3fa8a0",
+    "bytes": 13086239
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "currentFallbackDeployment": "a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb",
+  "dashboardNamespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+  "dashboardKV": "644df6a469e84dba90c8f7dac410f895",
+  "limits": {
+    "job": 220,
+    "worker": 350,
+    "sourceConcurrency": 4
+  },
+  "newNamespaces": false,
+  "migrations": false,
+  "credentialChanges": false,
+  "automaticBuilds": "paused",
+  "CW08": "unchanged",
+  "productionDeployed": false,
+  "approvalRequired": true,
+  "uploadSupportedByPreparationTool": false,
+  "scope": [
+    "NBA redirect/cache/schema and preserved EV/PR memory repairs",
+    "Existing NFL quote-backed ranking visibility",
+    "Existing NHL loading/season/identity and retained ranking recovery",
+    "Bounded per-sport capture/grading/checkpoint and retry recovery",
+    "NBA athlete/season-specific denial caches and exact cached-evidence outage recovery"
+  ],
+  "liveProductionAcceptance": "Pending separate approval and actual production browser/resource and complete capture/grading acceptance; local replay is not a live pass.",
+  "remainingPreapprovalGates": [],
+  "backupVerification": {
+    "folderId": "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe",
+    "owner": "sachsportsplatform@gmail.com",
+    "manifestId": "1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf",
+    "manifestSha256": "80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b",
+    "sourceObservedAt": "2026-11-16 15:31:31.088141+00",
+    "sourceReverifiedAt": "2026-11-16 16:07:38.010924+00",
+    "totalRecords": 20466,
+    "tables": [
+      {
+        "source": "history_documents",
+        "records": 11615,
+        "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+      },
+      {
+        "source": "worker_pregame_originals",
+        "records": 6109,
+        "inventory": "818aaa5e07e8e6a79ef98a1fbbc880f9"
+      },
+      {
+        "source": "worker_pregame_picks",
+        "records": 1473,
+        "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+      },
+      {
+        "source": "worker_pregame_grades",
+        "records": 1269,
+        "inventory": "0e21950e276648be18bce04e2c468e33"
+      }
+    ],
+    "dataObjects": 3,
+    "internalParts": 132,
+    "remoteReadbackVerified": true,
+    "isolatedRestorePassed": true,
+    "duplicatePreventionPassed": true,
+    "availabilityReverifiedDateToronto": "2026-11-17",
+    "manifestReadbackSha256Reverified": true,
+    "verifiedRecoveryPointOnly": true,
+    "newExportOrRestorePerformed": false,
+    "verifiedRecoverySnapshotComplete": true
+  },
+  "deploymentAuthorization": "Not granted for this corrected release. Preparation and verification only.",
+  "releaseId": "R1-2026-11-17-e65304c-832d9ab3",
+  "reusedEvidence": "docs/audits/2026-11-17-r1-nba-recovery",
+  "additionalChecks": [
+    "Tested source hashes and output fingerprint unchanged",
+    "Frozen extraction, CLI safety and upload-free dry-run",
+    "Existing rollback/bindings/schedules/limits verified read-only",
+    "Existing backup manifest authenticated readback SHA256 and data-object availability verified"
+  ],
+  "supersedes": "r1-2026-11-16 (withdrawn; do not deploy)",
+  "reusedTests": {
+    "regressionPassed": 844,
+    "regressionFailed": 0,
+    "shippingRuntimePassed": 19,
+    "newNbaCompiledPassed": 2,
+    "typescriptDiagnostics": 0
+  }
+}

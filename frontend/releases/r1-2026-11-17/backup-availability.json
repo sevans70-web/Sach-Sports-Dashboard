@@ -1,0 +1,50 @@
+{
+  "existingVerifiedRecoveryPointRecords": 20466,
+  "manifestId": "1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf",
+  "manifestReadbackSha256": "80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b",
+  "authenticatedReadbackPassed": true,
+  "restoreEvidenceReused": "docs/audits/2026-11-16-r1-current-recovery-complete",
+  "newExportsOrRestores": false,
+  "objects": [
+    {
+      "status": "fulfilled",
+      "id": "1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf",
+      "bytes": "101766",
+      "modified": "2026-11-16T16:08:43.329Z",
+      "parents": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "success": true
+    },
+    {
+      "status": "fulfilled",
+      "id": "19my795XhazztQz0ETo1zMjEqZeq1iyrx",
+      "bytes": "134710",
+      "modified": "2026-11-16T15:42:58.774Z",
+      "parents": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "success": true
+    },
+    {
+      "status": "fulfilled",
+      "id": "1S7c-AAqtvf8ljR_kjcKs1yDr9RvC2W6D",
+      "bytes": "24883200",
+      "modified": "2026-11-16T16:03:33.487Z",
+      "parents": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "success": true
+    },
+    {
+      "status": "fulfilled",
+      "id": "1rPgzEH3uF0nQkHXYjSYd9n1WMouhYNDp",
+      "bytes": "18667520",
+      "modified": "2026-11-16T16:03:15.452Z",
+      "parents": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "success": true
+    }
+  ]
+}

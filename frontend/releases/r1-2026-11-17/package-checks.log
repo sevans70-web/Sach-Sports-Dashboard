@@ -1,0 +1,12 @@
+✔ corrected R1 frozen bytes equal the already-tested output and preserve all release bindings (669.425423ms)
+✔ corrected release preparation has no upload mode (241.914929ms)
+✔ R1 extracts its frozen production artifact and detects changed code or bindings (573.555995ms)
+✔ R1 preparation cannot upload or accept deployment flags (182.798836ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1827.735669
