@@ -1,0 +1,41 @@
+✔ CW06 all seven NBA markets retain signed and zero EV without manufacturing a pick (4.93456ms)
+✔ CW06 invalid or unavailable evidence has an explicit reason; no bookmaker-implied fallback (0.377973ms)
+✔ CW06 cannot reprice or flip an invalid saved selection; saved EV survives results (0.459642ms)
+✔ CW06 API enrichment preserves ranks, predictions, original objects and unrelated markets (0.816187ms)
+✔ CW06 unavailable Worker runtime cannot erase frozen NBA forecasts (1448.605435ms)
+✔ midnight keeps previous slate when one or four games remain live (0.985604ms)
+✔ next slate remains independently addressable while older games are live (0.764741ms)
+✔ after final the default can advance but previous board date remains available (0.239552ms)
+✔ live games retain their slate beyond an arbitrary early-morning cutoff and month rollover (0.146487ms)
+NBA_CACHE_FIRST_RECORDED_RUNTIME {"results":[{"market":"points","scope":"active","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"points","scope":"explicit","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"rebounds","scope":"active","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"rebounds","scope":"explicit","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"assists","scope":"active","rows":22,"ev":{"available":20,"unavailable":2,"reasons":{"direction_unavailable":2}}},{"market":"assists","scope":"explicit","rows":22,"ev":{"available":20,"unavailable":2,"reasons":{"direction_unavailable":2}}},{"market":"threes_made","scope":"active","rows":25,"ev":{"available":24,"unavailable":1,"reasons":{"direction_unavailable":1}}},{"market":"threes_made","scope":"explicit","rows":25,"ev":{"available":24,"unavailable":1,"reasons":{"direction_unavailable":1}}},{"market":"pts_rebs_asts","scope":"active","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}},{"market":"pts_rebs_asts","scope":"explicit","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}},{"market":"pts_rebs","scope":"active","rows":20,"ev":{"available":20,"unavailable":0,"reasons":{}}},{"market":"pts_rebs","scope":"explicit","rows":20,"ev":{"available":20,"unavailable":0,"reasons":{}}},{"market":"pts_asts","scope":"active","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}},{"market":"pts_asts","scope":"explicit","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}}],"concurrentCacheRecoveryCalls":0,"evidenceUnchanged":true,"productionAccess":false}
+✔ shipping Worker serves exact recent NBA evidence before blocked recovery; scope, expiry and other sports remain protected (4693.871676ms)
+✔ NBA provider outage recovery reads the exact existing pregame cache without rewriting forecasts or history (11.981328ms)
+✔ NBA recovery rejects invalid quote/model evidence and started games without rewriting originals (6.209016ms)
+✔ NBA ranked cards show ONLY positive verified EV, from highest to lowest (3.119396ms)
+✔ no model selection or unverified/mismatched original quote means no NBA EV card (0.219183ms)
+✔ negative OVER cannot be flipped to UNDER merely to rank (0.24415ms)
+✔ actual54Points/52Rebounds incident coverage is an outage, not a successful empty slate (5.089727ms)
+✔ history outage classification does not hide valid rows, normal empty schedules, model holds or partial forecasts (0.292361ms)
+[N05 NBA Q1 live card audit] {"market":"q1_points","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_rebounds","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_assists","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_threes_made","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+[N05 NBA Q1 live card audit] {"market":"q1_pts_rebs_asts","day":"2026-10-28","cards":1,"quotes":0,"predictions":0,"projections":0,"ev":0,"forecastReasons":{"none":1},"evReasons":{"Independent model probability needed":1}}
+✔ relative date requests resolve Toronto dates across midnight, DST and year boundaries (1.72038ms)
+✔ scope handles UTC rollover and filters wrong date, market, missing and invalid fixture times without changing originals (1.843738ms)
+✔ every NBA market and combination is independently scoped (2.600576ms)
+✔ cached First Basket boards retain sportsbook prices and suppress old stat-model fields (0.238474ms)
+✔ original survives replacement attempts and cloud failure until verified retry (16.731495ms)
+✔ all eight sports retain separate pregame and final receipts (15.887531ms)
+✔ Worker receipts use a verified insert-only write with concurrent publishers (26.734799ms)
+✔ NFL immediately returns unchanged original early decisions alongside genuine current pregame rows (2.72459ms)
+✔ stale, wrong-day, already-started and unverified fresh rows cannot replace or remove the original locked board (0.765039ms)
+✔ a fresh job-published KV board fills later blocks while preserving the original early row (15.154118ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11890.109036

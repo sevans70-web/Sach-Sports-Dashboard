@@ -1,0 +1,171 @@
+{
+  "targeted": {
+    "passed": 27,
+    "failed": 0,
+    "skipped": 0
+  },
+  "typescriptDiagnostics": 0,
+  "wholeDashboardBuildRun": false,
+  "liveProviderTest": false,
+  "productionAccessInRuntimeTests": false,
+  "recordedRuntime": {
+    "results": [
+      {
+        "market": "points",
+        "scope": "active",
+        "rows": 23,
+        "ev": {
+          "available": 23,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "points",
+        "scope": "explicit",
+        "rows": 23,
+        "ev": {
+          "available": 23,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "rebounds",
+        "scope": "active",
+        "rows": 23,
+        "ev": {
+          "available": 23,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "rebounds",
+        "scope": "explicit",
+        "rows": 23,
+        "ev": {
+          "available": 23,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "assists",
+        "scope": "active",
+        "rows": 22,
+        "ev": {
+          "available": 20,
+          "unavailable": 2,
+          "reasons": {
+            "direction_unavailable": 2
+          }
+        }
+      },
+      {
+        "market": "assists",
+        "scope": "explicit",
+        "rows": 22,
+        "ev": {
+          "available": 20,
+          "unavailable": 2,
+          "reasons": {
+            "direction_unavailable": 2
+          }
+        }
+      },
+      {
+        "market": "threes_made",
+        "scope": "active",
+        "rows": 25,
+        "ev": {
+          "available": 24,
+          "unavailable": 1,
+          "reasons": {
+            "direction_unavailable": 1
+          }
+        }
+      },
+      {
+        "market": "threes_made",
+        "scope": "explicit",
+        "rows": 25,
+        "ev": {
+          "available": 24,
+          "unavailable": 1,
+          "reasons": {
+            "direction_unavailable": 1
+          }
+        }
+      },
+      {
+        "market": "pts_rebs_asts",
+        "scope": "active",
+        "rows": 17,
+        "ev": {
+          "available": 17,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "pts_rebs_asts",
+        "scope": "explicit",
+        "rows": 17,
+        "ev": {
+          "available": 17,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "pts_rebs",
+        "scope": "active",
+        "rows": 20,
+        "ev": {
+          "available": 20,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "pts_rebs",
+        "scope": "explicit",
+        "rows": 20,
+        "ev": {
+          "available": 20,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "pts_asts",
+        "scope": "active",
+        "rows": 17,
+        "ev": {
+          "available": 17,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      },
+      {
+        "market": "pts_asts",
+        "scope": "explicit",
+        "rows": 17,
+        "ev": {
+          "available": 17,
+          "unavailable": 0,
+          "reasons": {}
+        }
+      }
+    ],
+    "concurrentCacheRecoveryCalls": 0,
+    "evidenceUnchanged": true,
+    "productionAccess": false
+  },
+  "changedSourceSha256": {
+    "frontend/worker-entry.mjs": "2163de573af9ebeb037b135216f19ce2fb8f090b805ead29ad259fe0622ebebc",
+    "frontend/lib/nba-cached-recovery.ts": "da09a859f846d99d393120b33785acb7aa544b9f17c4e387d363dda4babd5aaa",
+    "frontend/components/player-rankings-panel.tsx": "49874129a01919a1594189fbf7205500af288b98c8c17f3da7176c2f8fc94e51"
+  }
+}

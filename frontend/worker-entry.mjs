@@ -1,5 +1,6 @@
 import {ensureFetchPatch} from 'vinext/shims/fetch-cache';
 import {recoverNbaCachedBoard} from './lib/nba-cached-recovery';
+import {nbaEvMarket} from './lib/nba-ranking-ev';
 import {nflRankingPayload} from './lib/nfl-ranking-display';
 import dashboard from 'vinext/server/fetch-handler';
 import {cachePregameBoard,readPregameBoard} from './lib/ranking-board-cache';
@@ -29,6 +30,13 @@ export default {
   const day=url.searchParams.get('day'),slate=url.searchParams.get('slate');
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto'}).format(new Date());
   const publicBoard=request.method==='GET'&&sport&&market&&!['tomorrow','previous'].includes(slate);
+  if(publicBoard&&sport==='nba'&&nbaEvMarket(market)){
+   const cacheDay=!day||day==='today'?today:day;
+   if(/^\d{4}-\d{2}-\d{2}$/.test(cacheDay)){
+    const cached=await recoverNbaCachedBoard(env.VINEXT_KV_CACHE,market,cacheDay,Date.now(),{activeScope:!day,cacheFirst:true});
+    if(cached)return Response.json(cached,{headers:{'Cache-Control':'no-store'}});
+   }
+  }
   if(publicBoard&&sport==='nfl'&&/^\d{4}-\d{2}-\d{2}$/.test(day||'')&&day>=today){
    const cached=await readPregameBoard(env.VINEXT_KV_CACHE,sport,market,day);
    if(cached?.pregameOnly)return Response.json(nflRankingPayload(cached.board),{headers:{'Cache-Control':'no-store'}});
@@ -49,6 +57,9 @@ export default {
   if(publicBoard&&response.ok){
    ctx.waitUntil(response.clone().json().then(body=>Promise.all([
     cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),
+    // Default navigation has a separate short-lived key. A scheduled or
+    // explicit-day board cannot replace its known active-slate identity.
+    sport==='nba'&&nbaEvMarket(market)&&!day&&!slate?cachePregameBoard(env.VINEXT_KV_CACHE,'nba-active',market,body):null,
     !day||day==='today'||day===today?recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body):null,
    ])).catch(error=>console.error('[ranking cache write]',sport,market,error instanceof Error?error.message:'unavailable')));
   }

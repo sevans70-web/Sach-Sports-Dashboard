@@ -2141,7 +2141,7 @@ export function PlayerRankingsPanel({
           }
 
           if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
-          if(rankingPayload.dataState==='stale')setError('Showing retained rankings from '+new Date(rankingPayload.observedAt).toLocaleTimeString()+'. Refresh pending; prices may have changed.');
+          if(rankingPayload.dataState==='stale')setError('Showing retained rankings from '+new Date(rankingPayload.observedAt).toLocaleTimeString()+'. '+(sport==='nba'&&rankingPayload.coverageNotice?rankingPayload.coverageNotice:'Refresh pending; prices may have changed.'));
           if(sport==='nhl')setNhlCoverage({market:requestedMarket,slate:nhlSlate,message:rankingPayload.coverageNotice||''});
           const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
           const scoped=sport==='nba'?scopedNbaBoard(rankingPayload,requestedMarket,requestedDay||rankingPayload?.boardDay||nbaFixtureDay(new Date())):rankingPayload;

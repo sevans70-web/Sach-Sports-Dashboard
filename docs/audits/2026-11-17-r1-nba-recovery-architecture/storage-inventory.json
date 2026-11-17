@@ -1,0 +1,199 @@
+{
+  "scope": "Offline read-only analysis of the existing verified November16 recovery point; not current live database counts",
+  "recoveryPoint": "2026-11-16T15:31:31.088141Z",
+  "productionAccess": false,
+  "tables": {
+    "history_documents": {
+      "nbaRecords": 3081,
+      "firstDay": "2026-10-16",
+      "lastDay": "2026-11-15",
+      "marketCounts": {},
+      "rowJsonSha256": "30db3b2f38875ac5155134056112826a3e37013309448ee1c5023874408e251f"
+    },
+    "worker_pregame_originals": {
+      "nbaRecords": 3045,
+      "firstDay": "2026-11-09",
+      "lastDay": "2026-11-14",
+      "marketCounts": {
+        "assists": 290,
+        "blocks": 113,
+        "first_basket": 176,
+        "points": 272,
+        "pts_asts": 285,
+        "pts_rebs": 305,
+        "pts_rebs_asts": 299,
+        "q1_points": 233,
+        "rebounds": 294,
+        "rebs_asts": 302,
+        "steals": 211,
+        "threes_made": 265
+      },
+      "rowJsonSha256": "9498441c4036b2003341c3c8c88550ffb3bce6f85148ec6b7719591cfe64306f"
+    },
+    "worker_pregame_picks": {
+      "nbaRecords": 1079,
+      "firstDay": "2026-11-09",
+      "lastDay": "2026-11-14",
+      "marketCounts": {
+        "assists": 137,
+        "blocks": 92,
+        "points": 134,
+        "pts_asts": 64,
+        "pts_rebs": 62,
+        "pts_rebs_asts": 70,
+        "q1_points": 201,
+        "rebounds": 111,
+        "steals": 85,
+        "threes_made": 123
+      },
+      "rowJsonSha256": "ff469599eeb44fa937a2b52616cd3b9ca1d988e363c06472744367e5af92714b"
+    },
+    "worker_pregame_grades": {
+      "nbaRecords": 1023,
+      "firstDay": "2026-11-09",
+      "lastDay": "2026-11-14",
+      "marketCounts": {
+        "assists": 129,
+        "blocks": 87,
+        "points": 127,
+        "pts_asts": 62,
+        "pts_rebs": 61,
+        "pts_rebs_asts": 67,
+        "q1_points": 183,
+        "rebounds": 108,
+        "steals": 80,
+        "threes_made": 119
+      },
+      "rowJsonSha256": "43c3b317ec0419165e798a5ea7d75f0c649d09e3d03c9b7e3898a3dd1ab015e3"
+    }
+  },
+  "historyCategories": {
+    "other": {
+      "documents": 125,
+      "firstDay": "2026-10-16",
+      "lastDay": "2026-11-15"
+    },
+    "official_final_": {
+      "documents": 107,
+      "firstDay": "2026-10-20",
+      "lastDay": "2026-11-07"
+    },
+    "protected_final_": {
+      "documents": 181,
+      "firstDay": "2026-10-20",
+      "lastDay": "2026-11-14"
+    },
+    "slate_board_": {
+      "documents": 376,
+      "firstDay": "2026-10-20",
+      "lastDay": "2026-11-15"
+    },
+    "model_pick_results_": {
+      "documents": 166,
+      "firstDay": "2026-10-21",
+      "lastDay": "2026-11-15"
+    },
+    "restored_slate_board_": {
+      "documents": 71,
+      "firstDay": "2026-10-23",
+      "lastDay": "2026-11-14"
+    },
+    "featured_": {
+      "documents": 396,
+      "firstDay": "2026-10-24",
+      "lastDay": "2026-11-15"
+    },
+    "protected_pregame_": {
+      "documents": 1659,
+      "firstDay": "2026-10-26",
+      "lastDay": "2026-11-14"
+    }
+  },
+  "latestSevenMarketBoards": {
+    "assists": {
+      "day": "2026-11-15",
+      "rows": 16,
+      "availableForecasts": 16,
+      "twoSidedQuotes": 16,
+      "capturedAt": "2026-11-15T11:01:17.077Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    },
+    "points": {
+      "day": "2026-11-15",
+      "rows": 25,
+      "availableForecasts": 25,
+      "twoSidedQuotes": 25,
+      "capturedAt": "2026-11-15T11:01:16.492Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    },
+    "pts_asts": {
+      "day": "2026-11-15",
+      "rows": 22,
+      "availableForecasts": 22,
+      "twoSidedQuotes": 22,
+      "capturedAt": "2026-11-15T11:01:15.036Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    },
+    "pts_rebs": {
+      "day": "2026-11-15",
+      "rows": 23,
+      "availableForecasts": 23,
+      "twoSidedQuotes": 23,
+      "capturedAt": "2026-11-15T11:01:15.127Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    },
+    "pts_rebs_asts": {
+      "day": "2026-11-15",
+      "rows": 17,
+      "availableForecasts": 17,
+      "twoSidedQuotes": 17,
+      "capturedAt": "2026-11-15T11:01:15.908Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    },
+    "rebounds": {
+      "day": "2026-11-15",
+      "rows": 16,
+      "availableForecasts": 16,
+      "twoSidedQuotes": 16,
+      "capturedAt": "2026-11-15T11:01:17.233Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    },
+    "threes_made": {
+      "day": "2026-11-15",
+      "rows": 17,
+      "availableForecasts": 17,
+      "twoSidedQuotes": 17,
+      "capturedAt": "2026-11-15T11:01:15.172Z",
+      "lockAt": "2026-11-15T18:00:00.000Z"
+    }
+  },
+  "savedFinalEvidence": {
+    "distinctGames": 181,
+    "playerRows": 4079,
+    "withHeaderAndFullTeamCensus": 0,
+    "withMinutes": 0,
+    "withFieldGoalAttempts": 0,
+    "note": "Normalized result/participation records are grading evidence; not complete basketball-context model observations."
+  },
+  "embeddedHistory": {
+    "compressedSha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+    "observations": 75882,
+    "markets": {
+      "assists": 12647,
+      "blocks": 12647,
+      "points": 12647,
+      "rebounds": 12647,
+      "steals": 12647,
+      "threes_made": 12647
+    },
+    "uniquePlayerGames": 12647,
+    "players": 697,
+    "seasons": [
+      "2025",
+      "2026"
+    ],
+    "firstGame": "2024-10-23T02:00:00.000Z",
+    "lastGame": "2026-04-13T00:30:00.000Z",
+    "asOf": "2026-10-19T16:14:29.542Z"
+  }
+}
