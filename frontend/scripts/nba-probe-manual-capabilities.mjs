@@ -1,16 +1,25 @@
 // Capability inventory only: no provider/preview requests, credential reads,
 // builds, deployments, bindings or production data access.
-import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
-const require = createRequire(import.meta.url);
 const packages = {};
 for (const name of ['cf', '@cloudflare/vite-plugin', 'wrangler', '@cloudflare/dev']) {
   try {
-    packages[name] = { installed: true, version: require(`${name}/package.json`).version };
+    let root = dirname(fileURLToPath(import.meta.resolve(name)));
+    for (;;) {
+      let manifest;
+      try { manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')); } catch {}
+      if (manifest?.name === name) {
+        packages[name] = { installed: true, version: manifest.version };
+        break;
+      }
+      if (dirname(root) === root) throw Error('package manifest not found');
+      root = dirname(root);
+    }
   } catch {
     packages[name] = { installed: false };
   }
