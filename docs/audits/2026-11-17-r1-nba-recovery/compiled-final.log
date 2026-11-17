@@ -1,0 +1,18 @@
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+COMPILED_NBA_CACHE_RECOVERY {"results":[{"market":"points","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"rebounds","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"assists","rows":22,"ev":{"available":20,"unavailable":2,"reasons":{"direction_unavailable":2}}},{"market":"threes_made","rows":25,"ev":{"available":24,"unavailable":1,"reasons":{"direction_unavailable":1}}},{"market":"pts_rebs_asts","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}},{"market":"pts_rebs","rows":20,"ev":{"available":20,"unavailable":0,"reasons":{}}},{"market":"pts_asts","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}}],"upstreamCalls":77,"writes":0}
+✔ actual compiled NBA ranking routes recover seven recorded markets from existing KV during denied feeds, including cold concurrency (9346.921605ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":4,"fixtureFailures":0,"unavailablePlayers":4,"observations":0}
+COMPILED_NBA_COMPARISON {"artifact":"/workspace/Sach-Sports-Dashboard/frontend/.cloudflare/output/v0/workers/default/bundle","expectedCollapse":false,"rows":9,"requests":25,"deniedAthletes":["3064482","3978","4712896","4432165"],"forecastReasons":{"recent_official_history_unavailable":4,"selected":8,"player_team_history_unavailable":4,"prior_basketball_role_uncertain":8,"price_threshold_not_met":1},"ev":{"available":8,"unavailable":1,"reasons":{"direction_unavailable":1}}}
+✔ exact shipping NBA Points forecast path: mixed athlete403 must not erase other eligible snapshot-backed forecasts (8453.311888ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23659.836409

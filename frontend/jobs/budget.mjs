@@ -55,7 +55,8 @@ export function installJobFetch(){
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};
  globalThis[nativeKey]=wrapped;globalThis.fetch=wrapped;
 }
-function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web.api.espn.com','site.api.espn.com'].includes(u.hostname))return null;const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;return path?'denied:'+u.origin+path:null;}
+function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web.api.espn.com','site.api.espn.com'].includes(u.hostname))return null;const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;// NBA 403 evidence is specific to an athlete/season, never all athletes.
+ return path?'denied:'+u.origin+(u.pathname.includes('/basketball/nba/')?u.pathname+u.search:path):null;}
 function cachedResponse(scope,c){scope.cacheHits++;const h=new Headers(c.headers);h.set('x-sach-observed-at',new Date(c.observed).toISOString());return new Response(c.body,{status:c.status,headers:h});}
 async function readBody(response,signal,limit){
  if(!response.body)return '';

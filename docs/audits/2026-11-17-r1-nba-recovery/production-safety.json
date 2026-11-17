@@ -1,0 +1,44 @@
+{
+  "dashboard": {
+    "id": "a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Immediate R1 fallback: actual production browser NBA Points showed zero eligible rankings; seven-market acceptance failed. Preserve all history, original/new receipts, grades and namespace state. CW08 unchanged.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-16T17:13:53.982362Z"
+  },
+  "research": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  },
+  "automaticBuildFilters": [
+    {
+      "includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "excludes": []
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "withdrawn": {
+    "sha256": "115fb0e140b83907d42d8bb6bd1345fc8841b2478f112f40e2fc9045cf3c3f41",
+    "observations": 12647,
+    "asOf": "2026-10-19T16:14:29.542Z",
+    "snapshotDigest": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080"
+  },
+  "fallback": {
+    "sha256": "115fb0e140b83907d42d8bb6bd1345fc8841b2478f112f40e2fc9045cf3c3f41",
+    "observations": 12647,
+    "asOf": "2026-10-19T16:14:29.542Z",
+    "snapshotDigest": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080"
+  },
+  "corrected": {
+    "sha256": "115fb0e140b83907d42d8bb6bd1345fc8841b2478f112f40e2fc9045cf3c3f41",
+    "observations": 12647,
+    "asOf": "2026-10-19T16:14:29.542Z",
+    "snapshotDigest": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080"
+  }
+}

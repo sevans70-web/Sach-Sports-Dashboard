@@ -1,0 +1,15 @@
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:15:09.245Z"}
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":25,"fixtureFailures":0,"unavailablePlayers":25,"observations":0}
+COMPILED_NBA_COMPARISON {"artifact":"/workspace/work/r1-nba-comparison/candidate/workers/default/bundle","expectedCollapse":true,"rows":0,"requests":4,"deniedAthletes":["3064482","3978","4712896","4432165"],"forecastReasons":{"recent_official_history_unavailable":25},"ev":{"available":0,"unavailable":0,"reasons":{}}}
+✔ exact shipping NBA Points forecast path: mixed athlete403 must not erase other eligible snapshot-backed forecasts (5645.311555ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7201.807445

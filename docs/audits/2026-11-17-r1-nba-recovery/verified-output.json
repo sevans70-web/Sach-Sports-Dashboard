@@ -1,0 +1,16 @@
+{
+  "baseCommit": "81502468af6b36925a7e387400b890334185fc14",
+  "sourceFiles": {
+    "frontend/jobs/budget.mjs": "ddeecf3cc41d1ce60a0c61641f7e7c64289695d1d3e2808cedf50f7b1fd087e2",
+    "frontend/lib/official-history-source.ts": "7194c5ed97d50c5adaa4937f892b726fd515abf9f0c31f493996df4939341926",
+    "frontend/lib/nba-cached-recovery.ts": "141d2b62c3ac5900c142f3de086c6a27234d7f663cdccc2f3220f062e66d5787",
+    "frontend/worker-entry.mjs": "39e77931b7cf857850a593a0e7fb477a65331f3f8bd1360d9ea24a820595e485"
+  },
+  "compiled": {
+    "digest": "832d9ab38287f57ca12d3caa7297249324c6fbe8c770fb8612022ad9620720e4",
+    "files": 424,
+    "worker": "sach-sports-cloudflare-test"
+  },
+  "deployed": false,
+  "frozenReleaseApproved": false
+}

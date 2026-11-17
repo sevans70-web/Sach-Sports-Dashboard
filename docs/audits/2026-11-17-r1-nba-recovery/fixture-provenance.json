@@ -1,0 +1,8 @@
+{
+  "path": "frontend/tests/fixtures/nba-points-recovery-2026-11-16.json.gz",
+  "sha256": "793640b719f718d92a22ae5b5c118769cc7f76b1e87f37fee5406da3e10273a9",
+  "source": "Actual fallback NBA Points HTTP200 response recorded November16 during rollback verification",
+  "recordedAt": "2026-11-16T17:15:08.245Z",
+  "providerReplay": "Four rejected gamelog IDs; healthy responses explicitly constructed with no new observations",
+  "productionRecordsModified": false
+}

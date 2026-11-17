@@ -1,0 +1,25 @@
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:42:57.056Z"}
+✔ one NBA athlete denial cannot suppress other athletes or seasons; repeat denied URL remains cooled down (47.914284ms)
+✔ persistent NBA capture denial is athlete/season specific across restart, without relaxing NFL or provider limits (16.627926ms)
+✔ NBA and NFL official fetches use manual redirects and reject every redirect without forwarding credentials (37.781396ms)
+✔ official fetch preserves authentication failures and responds to caller cancellation without poisoning later reads (4.757714ms)
+✔ live scoreboards never enter the historical 15-minute cache (1.250863ms)
+✔ NBA deadline retains memory admission until cancelled work settles (27.724303ms)
+✔ memory queue bounds concurrency and removes timed-out queued work (12.259538ms)
+✔ source cache bounds bytes and entries and expires (0.919829ms)
+✔ NBA retries honor cooldown, are bounded, and exclude authorization errors (26.808662ms)
+✔ NFL denied history persists cooldown, permits checkpoint, then recovers (39.173473ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T18:42:58.363Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-16T19:42:58.375Z"}
+✔ NFL public-source denial never switches host or invents a successful history (46.744793ms)
+✔ optional NFL policy does not soften basketball authorization or NFL rate limiting (2.128611ms)
+✔ NBA optional gamelog denial is a recorded unavailable source, without converting schedule denials into history cooldowns (7.050909ms)
+✔ foreground official history honors long denial and rate-limit cooldowns across queued URLs (1.870379ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2087.999135

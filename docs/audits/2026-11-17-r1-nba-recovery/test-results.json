@@ -1,0 +1,41 @@
+{
+  "baseCommit": "81502468af6b36925a7e387400b890334185fc14",
+  "deployed": false,
+  "comparison": {
+    "withdrawnRows": 0,
+    "fallbackRows": 9,
+    "correctedRows": 9,
+    "exactFallbackProjectionProbabilityEvParity": true,
+    "deniedAthletes": 4,
+    "samePointsModelPartition": true
+  },
+  "compiledCacheRoutes": {
+    "points": 23,
+    "rebounds": 23,
+    "assists": 22,
+    "threes_made": 25,
+    "pts_rebs_asts": 17,
+    "pts_rebs": 20,
+    "pts_asts": 17
+  },
+  "tests": {
+    "fullRegression": {
+      "pass": 844,
+      "fail": 0,
+      "skip": 15
+    },
+    "shippingRuntime": {
+      "pass": 19,
+      "fail": 0,
+      "skip": 1
+    },
+    "newCompiledNba": {
+      "pass": 2,
+      "fail": 0
+    },
+    "typescriptDiagnostics": 0,
+    "productionBuild": "pass"
+  },
+  "productionAcceptance": "not_run_no_deployment",
+  "fixtureScope": "Authentic recorded rows and embedded histories; explicitly constructed provider failure contracts; no live pass claimed."
+}

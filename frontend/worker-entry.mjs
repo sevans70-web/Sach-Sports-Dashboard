@@ -1,4 +1,5 @@
 import {ensureFetchPatch} from 'vinext/shims/fetch-cache';
+import {recoverNbaCachedBoard} from './lib/nba-cached-recovery';
 import {nflRankingPayload} from './lib/nfl-ranking-display';
 import dashboard from 'vinext/server/fetch-handler';
 import {cachePregameBoard,readPregameBoard} from './lib/ranking-board-cache';
@@ -33,6 +34,18 @@ export default {
    if(cached?.pregameOnly)return Response.json(nflRankingPayload(cached.board),{headers:{'Cache-Control':'no-store'}});
   }
   const response=await dashboard.fetch(request,env,ctx);
+  // A provider failure may return HTTP200 with no eligible NBA rows. Do not
+  // discard a still-valid cache receipt merely because this refresh failed.
+  if(publicBoard&&sport==='nba'){
+   const body=response.ok?await response.clone().json().catch(()=>null):null;
+   if(!response.ok||body?.success===false||body?.rows?.length===0){
+    const recoveryDay=!day||day==='today'?today:day;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(recoveryDay)){
+     const recovered=await recoverNbaCachedBoard(env.VINEXT_KV_CACHE,market,recoveryDay);
+     if(recovered)return Response.json(recovered,{headers:{'Cache-Control':'no-store'}});
+    }
+   }
+  }
   if(publicBoard&&response.ok){
    ctx.waitUntil(response.clone().json().then(body=>Promise.all([
     cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),

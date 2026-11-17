@@ -1,0 +1,15 @@
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3064482/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3978/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4712896/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4432165/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":4,"fixtureFailures":0,"unavailablePlayers":4,"observations":0}
+COMPILED_NBA_COMPARISON {"artifact":"/workspace/work/r1-nba-comparison/fallback/workers/default/bundle","expectedCollapse":false,"rows":9,"requests":29,"deniedAthletes":["3064482","3978","4712896","4432165"],"forecastReasons":{"recent_official_history_unavailable":4,"selected":8,"player_team_history_unavailable":4,"prior_basketball_role_uncertain":8,"price_threshold_not_met":1},"ev":{"available":8,"unavailable":1,"reasons":{"direction_unavailable":1}}}
+✔ exact shipping NBA Points forecast path: mixed athlete403 must not erase other eligible snapshot-backed forecasts (15516.682785ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21426.487963

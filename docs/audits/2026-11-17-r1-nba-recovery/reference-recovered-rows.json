@@ -1,0 +1,218 @@
+[
+  {
+    "id": "4997536",
+    "projection": 9.9,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401910000",
+        "playerId": "4997536",
+        "quoteId": "pinnacle-1640567675",
+        "sportsbookKey": "pinnacle",
+        "line": 6.5,
+        "overPrice": -136,
+        "underPrice": 102,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.7661691542288557,
+      "underProbability": 0.23383084577114427,
+      "pushProbability": 0,
+      "overExpectedReturn": 0.32952882645595555,
+      "underExpectedReturn": -0.5276616915422885
+    },
+    "ev": 32.95288264559556
+  },
+  {
+    "id": "4278053",
+    "projection": 8.8,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401909998",
+        "playerId": "4278053",
+        "quoteId": "pinnacle-1640567813",
+        "sportsbookKey": "pinnacle",
+        "line": 13.5,
+        "overPrice": -114,
+        "underPrice": -116,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.22388059701492538,
+      "underProbability": 0.7761194029850746,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.579732914375491,
+      "underExpectedReturn": 0.44518785383427684
+    },
+    "ev": 44.518785383427684
+  },
+  {
+    "id": "3155526",
+    "projection": 13.5,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401910001",
+        "playerId": "3155526",
+        "quoteId": "pinnacle-1640567951",
+        "sportsbookKey": "pinnacle",
+        "line": 15.5,
+        "overPrice": 102,
+        "underPrice": -136,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.35323383084577115,
+      "underProbability": 0.6467661691542289,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.2864676616915423,
+      "underExpectedReturn": 0.12232952882645604
+    },
+    "ev": 12.232952882645604
+  },
+  {
+    "id": "4709138",
+    "projection": 15.3,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401910000",
+        "playerId": "4709138",
+        "quoteId": "pinnacle-1640567636",
+        "sportsbookKey": "pinnacle",
+        "line": 18.5,
+        "overPrice": -122,
+        "underPrice": -108,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.29850746268656714,
+      "underProbability": 0.7014925373134329,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.4568142892096893,
+      "underExpectedReturn": 0.35102266445550034
+    },
+    "ev": 35.102266445550036
+  },
+  {
+    "id": "4601023",
+    "projection": 5.5,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401910001",
+        "playerId": "4601023",
+        "quoteId": "pinnacle-1640568005",
+        "sportsbookKey": "pinnacle",
+        "line": 5.5,
+        "overPrice": -112,
+        "underPrice": -118,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.47761194029850745,
+      "underProbability": 0.5223880597014925,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.0959488272921108,
+      "underExpectedReturn": -0.034910194788768056
+    },
+    "ev": null
+  },
+  {
+    "id": "5061589",
+    "projection": 8.1,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401910000",
+        "playerId": "5061589",
+        "quoteId": "pinnacle-1640567732",
+        "sportsbookKey": "pinnacle",
+        "line": 6.5,
+        "overPrice": -104,
+        "underPrice": -128,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.582089552238806,
+      "underProbability": 0.417910447761194,
+      "pushProbability": 0,
+      "overExpectedReturn": 0.14179104477611948,
+      "underExpectedReturn": -0.2555970149253732
+    },
+    "ev": 14.179104477611947
+  },
+  {
+    "id": "4066436",
+    "projection": 8.1,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401910000",
+        "playerId": "4066436",
+        "quoteId": "pinnacle-1640567648",
+        "sportsbookKey": "pinnacle",
+        "line": 13.5,
+        "overPrice": 102,
+        "underPrice": -136,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.15920398009950248,
+      "underProbability": 0.8407960199004975,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.678407960199005,
+      "underExpectedReturn": 0.45902838747439273
+    },
+    "ev": 45.902838747439276
+  },
+  {
+    "id": "4066261",
+    "projection": 16.3,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401909998",
+        "playerId": "4066261",
+        "quoteId": "pinnacle-1640567795",
+        "sportsbookKey": "pinnacle",
+        "line": 18.5,
+        "overPrice": 103,
+        "underPrice": -136,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.35323383084577115,
+      "underProbability": 0.6467661691542289,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.28293532338308464,
+      "underExpectedReturn": 0.12232952882645604
+    },
+    "ev": 12.232952882645604
+  },
+  {
+    "id": "5175643",
+    "projection": 7.4,
+    "probabilities": {
+      "quoteEvidence": {
+        "sport": "nba",
+        "market": "points",
+        "gameId": "401909997",
+        "playerId": "5175643",
+        "quoteId": "pinnacle-1640568050",
+        "sportsbookKey": "pinnacle",
+        "line": 9.5,
+        "overPrice": -120,
+        "underPrice": -111,
+        "calculatedAt": "2026-11-16T17:15:09.245Z"
+      },
+      "overProbability": 0.32338308457711445,
+      "underProbability": 0.6766169154228856,
+      "pushProbability": 0,
+      "overExpectedReturn": -0.4071310116086235,
+      "underExpectedReturn": 0.2861817040921519
+    },
+    "ev": 28.61817040921519
+  }
+]
