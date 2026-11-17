@@ -1,0 +1,21 @@
+{
+  "baseCommit": "cfbeef04d4cc3dddb2584aa7e0242ff07baac2f3",
+  "status": "blocked_at_private_preview_invocation",
+  "previewCreated": true,
+  "previewInvocationHttp": 403,
+  "previewResponseJson": false,
+  "previewResponseBytes": 87,
+  "espnHttpStatus": null,
+  "espnRequestDurationMs": null,
+  "coldStartHistorySufficient": null,
+  "sevenMarketFollowup": "not_run_connection_gate_not_passed",
+  "probeSourceSha256": "21a22cb14905afeaae27b66991b871eb3b7ff7a9b11a170a85512e47fbbebb4f",
+  "productionUnchanged": true,
+  "testsRerun": false,
+  "localChecks": [
+    "probe JS syntax",
+    "before/after deployment equality",
+    "paused builds",
+    "CW08 version equality"
+  ]
+}
