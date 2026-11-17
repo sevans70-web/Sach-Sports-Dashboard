@@ -1,0 +1,580 @@
+{
+  "deployment": {
+    "id": "4699c3c4-5067-4347-b3b7-9d205fee5085",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Immediate approved R1 fallback: live NBA Points/Rebounds zero eligible rankings despite54/52 verified quotes; all official histories unavailable. Preserve existing/new records, namespace and grades. CW08 untouched.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-17T15:32:32.710012Z"
+  },
+  "automaticBuilds": [
+    {
+      "includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "build": "cd frontend && npm ci && npm run build:vinext",
+      "deploy": "cd frontend && npm run deploy:vinext"
+    }
+  ],
+  "denials": [
+    {
+      "at": 1794929498354,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=foo --- TRUNCATED --- 154 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929498353,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=foo --- TRUNCATED --- 154 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929498339,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=foo --- TRUNCATED --- 154 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929498309,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=foo --- TRUNCATED --- 154 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929498062,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929498049,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497999,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497984,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497983,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497980,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497934,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497932,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497930,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497926,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497884,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497884,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497884,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497884,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497838,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497834,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497833,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497831,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497788,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497650,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497649,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497644,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497603,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497602,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497601,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497600,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497557,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497447,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497447,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497446,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497405,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497405,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497405,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497401,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497400,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497367,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497346,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497345,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497342,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497340,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497287,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497286,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497285,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497282,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497249,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497242,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497229,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497228,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497216,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/ba --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497216,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497199,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497172,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497168,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497165,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497162,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497114,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497106,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497106,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497103,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497057,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497052,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497051,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497041,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497004,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929497001,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496992,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496952,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496939,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496938,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496889,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496873,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496872,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496870,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496859,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496837,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496805,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496799,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496791,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496790,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496789,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496762,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496728,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496725,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496723,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496721,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496673,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496660,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496652,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496638,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496620,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496613,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496598,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496488,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496483,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496447,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496440,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496430,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496427,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496415,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496350,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496342,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496339,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496247,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496234,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496223,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    },
+    {
+      "at": 1794929496193,
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bas --- TRUNCATED --- 182 chars",
+      "version": "59deb144-942b-450a-a380-c865789a2e88"
+    }
+  ]
+}

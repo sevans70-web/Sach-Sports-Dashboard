@@ -1,6 +1,6 @@
 # Corrected R1 — controlled manual release awaiting approval
 
-**No upload is authorized yet.** All preparation gates pass. Source/application commit `e65304c8f1bda7c5265494d417c31abbee3f7be8`; use the release-package Git commit containing this plan when starting the manual environment. No application code changed during freezing.
+**Latest outcome: approved attempt failed actual production NBA acceptance and was rolled back. No retry is authorized.** Candidate b672510a; active rollback4699c3c4. See `docs/audits/2026-11-17-r1-approved-rollback/README.md`. The preparation/activation plan below is retained as history. Source/application commit `e65304c8f1bda7c5265494d417c31abbee3f7be8`; use the release-package Git commit containing this plan when starting the manual environment. No application code changed during freezing.
 
 ## Frozen identity
 

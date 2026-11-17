@@ -1,0 +1,21 @@
+{
+  "status": "stopped",
+  "outcome": "success",
+  "deployment": {
+    "id": "b672510a-7112-4cfc-a207-f71dbcb1e174",
+    "source": "cf_cli",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved corrected R1; source e65304c; fingerpr...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "59deb144-942b-450a-a380-c865789a2e88",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-17T15:31:07.567515Z"
+  }
+}

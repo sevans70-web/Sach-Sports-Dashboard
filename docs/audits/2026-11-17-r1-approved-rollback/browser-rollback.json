@@ -1,0 +1,25 @@
+{
+  "scope": "Actual production fallback browser, TLS verified, no replay",
+  "errors": [],
+  "hydrationErrors": [],
+  "pages": {
+    "nba": {
+      "status": 200,
+      "seconds": 9.604,
+      "visibleCards": 5,
+      "text": "PLAYER RANKINGS\nToday\nPrevious Slate\nTomorrow\n\ud83c\udfc0Points\n\ud83d\udcaaRebounds\n\ud83c\udfafAssists\n3\ufe0f\u20e33-Pointers Made\n\u23f1\ufe0fQ1 Points\n\u23f1\ufe0fQ1 Rebounds\n\u23f1\ufe0fQ1 Assists\n\ud83d\udccaPoints + Rebounds + Assists\n\u2795Points + Rebounds\n\u2795Points + Assists\n\u2795Rebounds + Assists\n\ud83d\udd90\ufe0fSteals\n\ud83e\uddf1Blocks\n1\ufe0f\u20e3First Basket\n\u203a\n\ud83c\udfc0 Points\n\n25 rankings \u00b7 25 picks\n\n1\nMM\nMiles McBride\nG \u00b7 NY \u00b7 New York Knicks @ Toronto Raptors\nTue, Nov 17, 7:30 PM EST\nLineup pending\nEV\n+7.4%\nResearch EV\nPoints\nO/U 6.5\nSach Prediction\nOVER 6.5\nSach Projection\n8\n\nBook: Pinnacle \u00b7 Over -130 / Under -102\n\nLoading recent player results\u2026\n\nPinnacle \u00b7 -130 \u00b7 20.6 expected minutes \u00b7 range 2\u201315.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n2\nMB\nMikal Bridges\nG \u00b7 NY \u00b7 New York Knicks @ Toronto Raptors\nTue, Nov 17, 7:30 PM EST\nLineup pending\nEV\n+6.4%\nResearch EV\nPoints\nO/U 8.5\nSach Prediction\nUNDER "
+    },
+    "nfl": {
+      "status": 200,
+      "seconds": 30.398,
+      "visibleCards": 0,
+      "text": "PLAYER RANKINGS\nToday\nThu, Nov 19\nSun, Nov 22\nMon, Nov 23\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards rankings with a verified line, projection, prediction and EV are available for this slate."
+    },
+    "nhl": {
+      "status": 200,
+      "seconds": 4.23,
+      "visibleCards": 5,
+      "text": "PLAYER RANKINGS\nToday\nTomorrow\n\ud83c\udfd2Shots on Goal\n\u2b50Points\n\ud83e\udd45Goals\n\ud83c\udfafAssists\n\ud83d\udee1\ufe0fBlocked Shots\n\ud83e\udde4Goalie Saves\n\u203a\n\ud83c\udfd2 Shots on Goal\n\n25 rankings \u00b7 21 picks\n\n1\nTT\nTroy Terry\nANA \u00b7 Ducks @ Blues\nTue, Nov 17, 8:00 PM EST\nLineup pending\nEV\n+8.8%\nShots on Goal\nO/U 1.5\nSach Prediction\nUNDER 1.5\nSach Projection\n1.5\n\nBook: Pinnacle \u00b7 Over -105 / Under -126\n\nLast 5: 2, 4, 0, 2, 1 shots on goal. 3 of the last 5 finished above 1.5; 2 below.\n\nPinnacle \u00b7 -126 \u00b7 14 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n2\nJR\nJason Robertson\nDAL \u00b7 Stars @ Golden Knights\nTue, Nov 17, 10:00 PM EST\nLineup pending\nEV\n+30.2%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.7\n\nBook: Pinnacle \u00b7 Over -170 / Under +125\n\nLoading recent player results\u2026\n\nPinnacle \u00b7 +125 \u00b7 18.5 expected minutes "
+    }
+  }
+}

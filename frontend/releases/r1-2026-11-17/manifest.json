@@ -1,6 +1,6 @@
 {
   "schema": "r1-dashboard-release/v1",
-  "status": "rehearsal_passed_awaiting_approval",
+  "status": "rehearsal_blocked",
   "sourceCommit": "e65304c8f1bda7c5265494d417c31abbee3f7be8",
   "applicationRepairCommit": "e65304c8f1bda7c5265494d417c31abbee3f7be8",
   "worker": "sach-sports-cloudflare-test",
@@ -12,7 +12,7 @@
     "bytes": 13086239
   },
   "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
-  "currentFallbackDeployment": "a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb",
+  "currentFallbackDeployment": "4699c3c4-5067-4347-b3b7-9d205fee5085",
   "dashboardNamespace": "fc70a55e49c84d28bacc562a8d5cfb62",
   "dashboardKV": "644df6a469e84dba90c8f7dac410f895",
   "limits": {
@@ -35,7 +35,7 @@
     "Bounded per-sport capture/grading/checkpoint and retry recovery",
     "NBA athlete/season-specific denial caches and exact cached-evidence outage recovery"
   ],
-  "liveProductionAcceptance": "Pending separate approval and actual production browser/resource and complete capture/grading acceptance; local replay is not a live pass.",
+  "liveProductionAcceptance": "FAILED: actual NBA Points browser0cards; all-sport full acceptance incomplete. See docs/audits/2026-11-17-r1-approved-rollback.",
   "remainingPreapprovalGates": [],
   "backupVerification": {
     "folderId": "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe",
@@ -78,7 +78,7 @@
     "newExportOrRestorePerformed": false,
     "verifiedRecoverySnapshotComplete": true
   },
-  "deploymentAuthorization": "Not granted for this corrected release. Preparation and verification only.",
+  "deploymentAuthorization": "Approved attempt completed and rolled back after critical live NBA eligibility failure; no automatic retry.",
   "releaseId": "R1-2026-11-17-e65304c-832d9ab3",
   "reusedEvidence": "docs/audits/2026-11-17-r1-nba-recovery",
   "additionalChecks": [
@@ -94,5 +94,8 @@
     "shippingRuntimePassed": 19,
     "newNbaCompiledPassed": 2,
     "typescriptDiagnostics": 0
-  }
+  },
+  "productionAttempted": true,
+  "lastCandidateDeployment": "b672510a-7112-4cfc-a207-f71dbcb1e174",
+  "activeFallbackDeployment": "4699c3c4-5067-4347-b3b7-9d205fee5085"
 }

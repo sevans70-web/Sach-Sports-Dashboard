@@ -1,0 +1,14 @@
+[
+  {
+    "at": 1794929498062,
+    "message": "[basketball refresh audit] {\"sport\":\"nba\",\"players\":54,\"discoveredFixtures\":0,\"omittedFixtures\":0,\"gamelogFailures\":54,\"fixtureFailures\":0,\"unavailablePlayers\":54,\"observations\":0}",
+    "requestId": "b5e5456b0493fea3fa2ab14275ca8a18",
+    "version": "59deb144-942b-450a-a380-c865789a2e88"
+  },
+  {
+    "at": 1794929497405,
+    "message": "[basketball refresh audit] {\"sport\":\"nba\",\"players\":52,\"discoveredFixtures\":0,\"omittedFixtures\":0,\"gamelogFailures\":52,\"fixtureFailures\":0,\"unavailablePlayers\":52,\"observations\":0}",
+    "requestId": "633e584b1e88bda1ca5cec837f035e4b",
+    "version": "59deb144-942b-450a-a380-c865789a2e88"
+  }
+]

@@ -1,0 +1,3 @@
+{
+  "error": "Error: Cloudflare API error: POST /accounts/d3d6d023ab7ab731cc3e191d0ea3c179/workers/observability/telemetry/query returned HTTP 403 (Ray ID a5bfce6d6e9323f2-DFW).\n\n{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"message\": \"Forbidden\"\n    }\n  ],\n  \"messages\": []\n}\n\nThis connection already has `workers-observability.write` (Workers Observability Write), which this endpoint accepts, so reconnecting will not help. Cloudflare refused for another reason: usually the user’s role on the account or zone, or a resource in an account this connection was not granted."
+}

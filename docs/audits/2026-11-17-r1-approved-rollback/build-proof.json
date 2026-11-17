@@ -1,0 +1,38 @@
+{
+  "buildId": "1167a4c9-56a3-47fc-9f49-b0ba5bc4df5a",
+  "proof": [
+    [
+      1794929447260,
+      "[r1-corrected-frozen-artifact] {\"digest\":\"832d9ab38287f57ca12d3caa7297249324c6fbe8c770fb8612022ad9620720e4\",\"files\":424,\"worker\":\"sach-sports-cloudflare-test\",\"sourceCommit\":\"e65304c8f1bda7c5265494d417c31abbee3f7be8\",\"archiveSha256\":\"62fd7f9543cf1a54be9a8ba7e0cb3c5bebbf899f5b9e35e5813ad9593a3fa8a0\",\"approvalRequired\":true,\"productionDeployed\":false,\"rehearsal\":\"rehearsal_passed_awaiting_approval\"}"
+    ],
+    [
+      1794929450008,
+      "[r1-corrected-frozen-artifact] {\"digest\":\"832d9ab38287f57ca12d3caa7297249324c6fbe8c770fb8612022ad9620720e4\",\"files\":424,\"worker\":\"sach-sports-cloudflare-test\",\"sourceCommit\":\"e65304c8f1bda7c5265494d417c31abbee3f7be8\",\"archiveSha256\":\"62fd7f9543cf1a54be9a8ba7e0cb3c5bebbf899f5b9e35e5813ad9593a3fa8a0\",\"approvalRequired\":true,\"productionDeployed\":false,\"rehearsal\":\"rehearsal_passed_awaiting_approval\"}"
+    ],
+    [
+      1794929471724,
+      "│  Current Version ID: 59deb144-942b-450a-a380-c865789a2e88"
+    ],
+    [
+      1794929471950,
+      "Success: Deploy command completed"
+    ]
+  ],
+  "cw08": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  }
+}
