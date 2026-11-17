@@ -39,16 +39,16 @@ export class EvidenceQueue extends Base{
  now(){return clock;}
  inspect(){return {versions:this.rows("SELECT name FROM sqlite_master WHERE name='nba_history_versions'").length?this.rows('SELECT source,sha,body FROM nba_history_versions ORDER BY source,sha'):[],checks:this.rows("SELECT name FROM sqlite_master WHERE name='nba_history_checks'").length?this.rows('SELECT * FROM nba_history_checks ORDER BY source'):[],documents:this.documents('protected-test-marker')};}
  seed(){this.document('protected-test-marker','original',{savedAt:'original-time',projection:17,probability:.63,ev:7,grade:'original'});return this.inspect();}
- async background(args){let calls=0;const store={cacheRead:()=>null,cacheWrite:()=>true,readNbaEvidence:s=>this.readNbaHistoryEvidence(s),writeNbaEvidence:v=>this.writeNbaHistoryEvidence(v)};const execution=await runJobBudget({env:this.env,store,cacheSources:true,allowNbaSourceDenials:true,now:()=>clock},async()=>refreshNbaObservations(args.rows,clock,async source=>{calls++;if(!args.sources[source])throw Error('HTTP429 test outage');return args.sources[source];},{evidence:configuredNbaEvidence()}),withEnv);return {...execution,calls};}
+ async background(args){let calls=0;const store={cacheRead:u=>this.cacheRead(u),cacheWrite:(u,v)=>this.cacheWrite(u,v),readNbaEvidence:s=>this.readNbaHistoryEvidence(s),writeNbaEvidence:v=>this.writeNbaHistoryEvidence(v)};const execution=await runJobBudget({env:this.env,store,gate:async()=>0,limit:args.requestLimit||220,cacheSources:true,allowNbaSourceDenials:true,now:()=>clock},async()=>refreshNbaObservations(args.rows,clock,async source=>{calls++;if(args.useHttp){const response=await fetch(source);if(!response.ok)throw Error('source unavailable');return response.json();}if(!args.sources[source])throw Error('HTTP429 test outage');return args.sources[source];},{evidence:configuredNbaEvidence()}),withEnv);return {...execution,calls};}
 }
 export default{async fetch(request,env){const a=await request.json();clock=a.clock??clock;try{
  if(a.action==='foreground'){let calls=0;const access=configuredNbaEvidence();const result=await refreshNbaObservations(a.rows,clock,async()=>{calls++;throw Error('HTTP403 test outage');},{evidence:access});return Response.json({result,calls,writeEnabled:Boolean(access?.write)});}
  const stub=env.DASHBOARD_JOBS.getByName(a.lane||'capture:nba');if(!['seed','inspect','background','readNbaHistoryEvidence','writeNbaHistoryEvidence'].includes(a.action))throw Error('test_action');return Response.json(await stub[a.action](...(a.args||[])));
- }catch(e){return Response.json({error:e.message});}}};`;
+ }catch(e){return Response.json({error:e.message,usage:e.usage});}}};`;
 
 test('real official NBA censuses persist in the existing DO, recover after eviction, and retain seven-market calculations',{timeout:120000},async()=>{
  const dir=await mkdtemp(join(tmpdir(),'nba-durable-'));let mf;
- const boot=async()=>{const opts=convertV4MiniflareOptions({modules:true,modulesRoot:dir,scriptPath:join(dir,'worker.mjs'),compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],durableObjects:{DASHBOARD_JOBS:{className:'EvidenceQueue',useSQLite:true}},resourcePersistencePath:join(dir,'storage'),outboundService:()=>{throw Error('No production/provider requests permitted');}});opts.workers[0].config.limits={subrequests:350,cpuMs:30000};return new Miniflare(opts);};
+ const boot=async()=>{const opts=convertV4MiniflareOptions({modules:true,modulesRoot:dir,scriptPath:join(dir,'worker.mjs'),compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],durableObjects:{DASHBOARD_JOBS:{className:'EvidenceQueue',useSQLite:true}},resourcePersistencePath:join(dir,'storage'),outboundService:request=>{assert.equal(request.method,'GET');assert.ok(sources[request.url],'No uncaptured production/provider requests permitted');return Response.json(sources[request.url]);}});opts.workers[0].config.limits={subrequests:350,cpuMs:30000};return new Miniflare(opts);};
  const call=async(action,args=[],clock=now,extra={})=>{const response=await mf.dispatchFetch('https://isolated.test/control',{method:'POST',body:JSON.stringify({action,args,clock,...extra})});assert.equal(response.status,200);return response.json();};
  try{
   await writeFile(join(dir,'entry.mjs'),entry);const bundle=await rolldown({input:join(dir,'entry.mjs'),platform:'neutral',external:['cloudflare:workers',/^node:/],plugins:[{name:'app-aliases',resolveId(id){if(id==='next/server')return resolve('tests/fixtures/ranking-framework.mjs');if(id.startsWith('@/'))return resolve(id.slice(2)+'.ts');}}]});await bundle.write({file:join(dir,'worker.mjs'),format:'esm'});await bundle.close();mf=await boot();
@@ -83,6 +83,18 @@ test('real official NBA censuses persist in the existing DO, recover after evict
   assert.deepEqual(partialRefresh.result.unavailablePlayers,[affected.playerId]);assert.equal(partialRefresh.calls,1);assert.equal(partialRefresh.usage.cacheWrites,0);
   assert.deepEqual(await call('inspect',[],now+40*60000),checkpoint);
   assert.deepEqual((await call('inspect',[],now,{lane:'capture:nfl'})).versions,[]);assert.deepEqual((await call('inspect',[],now,{lane:'capture:nhl'})).versions,[]);assert.deepEqual((await call('inspect')).documents,marker.documents);
+  const phases=[];let resumed,prior=0;
+  for(let phase=0;phase<12;phase++){
+   resumed=await call('background',[{rows,sources,useHttp:true,requestLimit:30}],now,{lane:'capture:nba-budget-rehearsal'});
+   assert.ok(resumed.usage.used<=30);assert.ok(resumed.usage.maxActive<=4);
+   const persisted=(await call('inspect',[],now,{lane:'capture:nba-budget-rehearsal'})).versions.length;
+   phases.push({phase,used:resumed.usage.used,checkpoints:resumed.usage.cacheWrites,versions:persisted,error:resumed.error||null});
+   if(!resumed.error)break;
+   assert.equal(resumed.error,'job_subrequest_budget');assert.ok(resumed.usage.cacheWrites>0||persisted>prior,'a limited phase must make checkpoint progress');prior=persisted;
+   if(phase===0){await mf.dispose();mf=await boot();}
+  }
+  assert.equal(resumed.error,undefined,JSON.stringify(phases));assert.ok(phases.length>1);assert.deepEqual(sort(resumed.result.observations),sort(warm.result.observations));
+  console.log('NBA_SOURCE_BUDGET_RECOVERY',JSON.stringify({limit:30,phases,observations:resumed.result.observations.length}));
 
   // No invented historical values: compare unchanged models with the same
   // real observations, before/after storage. The future fixture is a declared

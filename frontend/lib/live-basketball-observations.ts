@@ -7,9 +7,13 @@ import type {OpportunityGame} from '@/lib/opportunity-backtest';
 import {configuredNbaEvidence} from '@/lib/nba-durable-history';
 import {readNbaHistorySource,rethrowNbaEvidenceCancellation,type NbaEvidenceAccess} from '@/lib/nba-history-evidence';
 import {assertNbaRankingActive} from '@/lib/nba-ranking-work';
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 type SourceReceipt={payload:any;observedAt:string};
 type EvidenceReference={source:string;sha256:string;observedAt:string;lastVerifiedAt:string;recovered:boolean};
-type Refresh={observations:OpportunityGame[];unavailablePlayers:string[];checkedAt:string;sourceEvidence?:EvidenceReference[]};
+type Refresh={observations:OpportunityGame[];unavailablePlayers:string[];checkedAt:string;sourceEvidence?:EvidenceReference[];sourceBudget?:{attempted:number;limit:number|null;exhausted:boolean}};
+// At most two subrequests per foreground source (durable read + HTTP),
+// leaving94 of the Worker's350 for schedules, rosters, odds and history.
+const NBA_FOREGROUND_SOURCE_LIMIT=128;
 type JsonSource=(url:string)=>Promise<any>;
 const cache=boundedValueCache<Refresh>(4*1024*1024,4);
 const pending=new Map<string,Promise<Refresh>>();
@@ -33,8 +37,14 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
  if(get===officialJson&&!options.evidence&&!evidence?.write){const hit=cache.get(key);if(hit)return hit;if(pending.has(key))return pending.get(key)!}
  const task=(async()=>{
   const sourceEvidence:EvidenceReference[]=[];
+  const requestedSources=new Set<string>();let sourceBudgetExhausted=false;
+  const resumableNbaCapture=sport==='nba'&&Boolean(dashboardJobContext()?.writeNbaEvidence);
   const read=async(source:string)=>{
    if(sport==='nba')assertNbaRankingActive();
+   if(sport==='nba'&&!requestedSources.has(source)){
+    if(!resumableNbaCapture&&requestedSources.size>=NBA_FOREGROUND_SOURCE_LIMIT){sourceBudgetExhausted=true;throw Error('nba_history_source_budget');}
+    requestedSources.add(source);
+   }
    if(!evidence)return {payload:await get(source),observedAt:new Date(now).toISOString()};
    const loaded=await readNbaHistorySource(source,now,()=>get===officialJson?officialRead(source):get(source).then(payload=>({payload,observedAt:new Date(now).toISOString()})),evidence);
    if(sport==='nba')assertNbaRankingActive();
@@ -61,9 +71,13 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
   }));
   const observations:OpportunityGame[]=[];
   const jobs=[...fixtures];
-  // A bounded request must abstain for omitted evidence, not silently call it fresh.
-  for(const [,fixture] of jobs.slice(64))for(const id of fixture.players)unavailable.add(id);
-  for(let i=0;i<Math.min(jobs.length,64);i+=4)await Promise.all(jobs.slice(i,Math.min(i+4,64)).map(async([gameId,fixture])=>{
+  // NBA capture's existing request/deadline guard checkpoints and resumes the
+  // full census. A fixed fixture slice would omit the same game on every run.
+  // Foreground has the separate bounded source budget above. College retains
+  // its existing policy; no unrelated model or collection behavior changes.
+  const fixtureLimit=sport==='nba'?jobs.length:Math.min(jobs.length,64);
+  for(const [,fixture] of jobs.slice(fixtureLimit))for(const id of fixture.players)unavailable.add(id);
+  for(let i=0;i<fixtureLimit;i+=4)await Promise.all(jobs.slice(i,Math.min(i+4,fixtureLimit)).map(async([gameId,fixture])=>{
    const source=`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/summary?event=${gameId}`;
    try{
     const receipt=await read(source),parsed=basketballModelObservations(receipt.payload,{sport,season:fixture.season,gameId,source,retrievedAt:receipt.observedAt});
@@ -71,8 +85,8 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
     observations.push(...parsed);
    }catch(error){if(sport==='nba')rethrowNbaEvidenceCancellation(error);fixtureFailures++;for(const id of fixture.players)unavailable.add(id)}
   }));
-  console.info('[basketball refresh audit]',JSON.stringify({sport,players:players.length,discoveredFixtures:jobs.length,omittedFixtures:Math.max(0,jobs.length-64),gamelogFailures,fixtureFailures,unavailablePlayers:unavailable.size,observations:observations.length}));
-  const value={observations,unavailablePlayers:[...unavailable].sort(),checkedAt:new Date(now).toISOString(),...(evidence?{sourceEvidence:sourceEvidence.sort((a,b)=>a.source.localeCompare(b.source))}:{})};
+  console.info('[basketball refresh audit]',JSON.stringify({sport,players:players.length,discoveredFixtures:jobs.length,omittedFixtures:jobs.length-fixtureLimit,gamelogFailures,fixtureFailures,unavailablePlayers:unavailable.size,observations:observations.length,sourceBudgetExhausted}));
+  const value={observations,unavailablePlayers:[...unavailable].sort(),checkedAt:new Date(now).toISOString(),...(sport==='nba'?{sourceBudget:{attempted:requestedSources.size,limit:resumableNbaCapture?null:NBA_FOREGROUND_SOURCE_LIMIT,exhausted:sourceBudgetExhausted}}:{}),...(evidence?{sourceEvidence:sourceEvidence.sort((a,b)=>a.source.localeCompare(b.source))}:{})};
   if(get===officialJson&&!options.evidence){cache.set(key,value,unavailable.size?30_000:15*60_000,now)}
   return value;
  })();

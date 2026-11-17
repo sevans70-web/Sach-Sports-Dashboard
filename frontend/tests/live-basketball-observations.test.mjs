@@ -32,3 +32,11 @@ test('college history errors abstain; a mismatched fixture season cannot supply 
  const p=await refreshCbbObservations([row],now,async url=>{if(url.includes('/gamelog'))return log;const value=box();value.header.season.year=2026;return value});
  assert.equal(p.observations.length,0);assert.deepEqual(p.unavailablePlayers,['5144091']);
 });
+
+test('NBA foreground limits total source lookups rather than permanently slicing the fixture list',async()=>{
+ const ids=Array.from({length:140},(_,i)=>String(900000000+i)),calls=[];
+ const discovery={events:Object.fromEntries(ids.map(id=>[id,{gameDate:'2026-10-20T00:00Z',gameResult:'W'}])),seasonTypes:[{displayName:'Regular Season',categories:[{type:'event',events:ids.map(eventId=>({eventId}))}]}]};
+ const result=await refreshNbaObservations([row],now,async url=>{calls.push(url);if(url.includes('/gamelog'))return discovery;throw Error('source fault contract, no historical statistic supplied');});
+ assert.equal(calls.length,128);assert.ok(calls.some(url=>url.endsWith('event='+ids[64])),'a validly discovered65th fixture must not be silently omitted by a fixed64 slice');
+ assert.equal(result.sourceBudget.limit,128);assert.equal(result.sourceBudget.exhausted,true);assert.equal(result.sourceBudget.attempted,128);assert.equal(result.observations.length,0);assert.deepEqual(result.unavailablePlayers,[row.playerId]);
+});
