@@ -1,0 +1,24 @@
+✔ budget pause drains admitted bodies; resumed attempt requests only unfinished inputs (131.484804ms)
+✔ duplicate public inputs coalesce without sharing consumed response bodies (8.546514ms)
+✔ request timeout cancels bodies and queued work without late HTTP or checkpoints (49.359276ms)
+✔ late provider RPC after phase cancellation cannot launch HTTP (36.879858ms)
+✔ 429 persistence has reserved RPC capacity at budget edge and retries respect cooldown (1.900988ms)
+✔ genuine 404 status is briefly cached; transient errors cannot become empty player histories (2.228631ms)
+✔ each redirect hop is metered and cancellation reaches a streaming private database response (17.178844ms)
+✔ explicit manual/error redirect policies remain authoritative inside capture accounting (1.533137ms)
+✔ capture accepts neither stale/post-start quotes nor a route failure as a successful reservation (44.583211ms)
+✔ budget deadline cancels orphan requests, while ordinary foreground fetch remains usable (32.043706ms)
+✔ Retry-After never shortens provider limits; only public historical inputs are eligible for cache (0.658927ms)
+✔ recent replay checkpoints complete verified pages beyond 900 documents and targets one official game (557.538235ms)
+✔ unavailable official game is recorded and cannot starve later games on the same page (0.789178ms)
+✔ background ranking results and pending builds cannot poison a concurrent foreground board (14.437719ms)
+✔ foreground provider reads do not join a cancelled job-owned pending source request (101.70553ms)
+✔ workerd isolate serves concurrent cold NBA combination forecasts with exact original histories (4745.322589ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7177.723452

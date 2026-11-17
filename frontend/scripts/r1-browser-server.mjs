@@ -2,7 +2,7 @@
 import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {readdir,readFile,stat} from 'node:fs/promises';import {createServer} from 'node:http';import {join,resolve} from 'node:path';
 import {mkdtempSync,rmSync} from 'node:fs';import {tmpdir} from 'node:os';import {prepareR1} from './prepare-r1-release.mjs';
-const frozen=mkdtempSync(join(tmpdir(),'r1-browser-'));console.info(JSON.stringify(prepareR1(frozen)));
+const frozen=mkdtempSync(join(tmpdir(),'r1-browser-'));console.info(JSON.stringify(prepareR1(frozen,process.env.SACH_R1_RELEASE?resolve(process.env.SACH_R1_RELEASE):undefined)));
 const base=join(frozen,'workers/default'),bundle=base+'/bundle',files=[];
 async function walk(d){for(const f of await readdir(d,{withFileTypes:true})){const path=join(d,f.name);if(f.isDirectory())await walk(path);else if(path.endsWith('.js'))files.push({type:'ESModule',path});}}await walk(bundle);files.sort((a,b)=>a.path===bundle+'/index.js'?-1:b.path===bundle+'/index.js'?1:0);
 const mf=new Miniflare(convertV4MiniflareOptions({name:'local-nfl-candidate',modules:files,modulesRoot:bundle,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],kvNamespaces:['VINEXT_KV_CACHE'],durableObjects:{DASHBOARD_JOBS:{className:'DashboardJobQueue',useSQLite:true}},serviceBindings:{ASSETS:()=>new Response(null,{status:404})},outboundService:()=>new Response('{"error":"Live outbound is disabled in local browser replay"}',{status:503})}));

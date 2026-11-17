@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {rea
 const enabled=!!process.env.SACH_NBA_COMPARISON_BUNDLE;
 const recorded=JSON.parse(gunzipSync(await readFile(new URL('../../docs/audits/2026-11-15-release-blockers/recorded-browser-inputs.json.gz',import.meta.url)))).files;
 const markets=['points','rebounds','assists','threes_made','pts_rebs_asts','pts_rebs','pts_asts'],now=Date.parse('2026-11-15T15:54:10Z');
-test('actual compiled NBA ranking routes recover seven recorded markets from existing KV during denied feeds, including cold concurrency',{skip:!enabled,timeout:180000},async()=>{
+test('actual compiled NBA ranking routes serve seven verified caches before denied feeds and report an uncached outage',{skip:!enabled,timeout:180000},async()=>{
  const dir=await mkdtemp(join(tmpdir(),'nba-compiled-cache-'));let mf;const writes=[],calls=[];
  try{
   await cp(resolve(process.env.SACH_NBA_COMPARISON_BUNDLE),dir,{recursive:true});const files=(await readdir(dir,{recursive:true})).filter(p=>p.endsWith('.js'));
@@ -15,6 +15,10 @@ test('actual compiled NBA ranking routes recover seven recorded markets from exi
   for(const market of markets){const board=recorded['nba-'+market+'.json'],key='sach:pregame-board:v1:nba:2026-11-15:'+market,value=JSON.stringify({capturedAt:Date.parse(board.updatedAt),pregameOnly:true,board:{...board,boardDay:'2026-11-15'}});snapshots.set(key,value);await kv.put(key,value);}
   const check=async market=>{const response=await mf.dispatchFetch('https://test/api/nba/rankings?market='+market+'&day=2026-11-15'),body=await response.json();assert.equal(response.status,200,JSON.stringify(body));assert.equal(body.dataState,'stale',JSON.stringify(body));assert.ok(body.coverageNotice);assert.equal(body.rows.length,recorded['nba-'+market+'.json'].rows.length,market);assert.deepEqual(body.rows.map(r=>r.researchForecast),recorded['nba-'+market+'.json'].rows.map(r=>r.researchForecast));assert.ok(body.evDiagnostics.available>0);return {market,rows:body.rows.length,ev:body.evDiagnostics};};
   const results=await Promise.all(markets.slice(0,2).map(check));for(const market of markets.slice(2))results.push(await check(market));
-  for(const [key,value]of snapshots)assert.equal(await kv.get(key),value,'outage recovery must not overwrite cached evidence');assert.deepEqual(writes,[]);assert.ok(calls.length>0,'must exercise failed upstream, not mock route responses');console.log('COMPILED_NBA_CACHE_RECOVERY',JSON.stringify({results,upstreamCalls:calls.length,writes:writes.length}));
+  for(const [key,value]of snapshots)assert.equal(await kv.get(key),value,'outage recovery must not overwrite cached evidence');assert.deepEqual(writes,[]);assert.equal(calls.length,0,'verified cached boards must bypass provider/model recovery');
+  await kv.delete('sach:pregame-board:v1:nba:2026-11-15:points');
+  const missing=await mf.dispatchFetch('https://test/api/nba/rankings?market=points&day=2026-11-15'),unavailable=await missing.json();
+  assert.ok(missing.status>=500||unavailable.success===false,'missing evidence must not be reported as a healthy empty board');assert.equal(unavailable.rows.length,0);assert.ok(calls.length>0,'the uncached route must exercise the actual denied upstream');assert.deepEqual(writes,[]);
+  console.log('COMPILED_NBA_CACHE_RECOVERY',JSON.stringify({results,cachedUpstreamCalls:0,uncachedUpstreamCalls:calls.length,uncachedStatus:missing.status,writes:writes.length}));
  }finally{await mf?.dispose();await rm(dir,{recursive:true,force:true});}
 });

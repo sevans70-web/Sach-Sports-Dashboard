@@ -1,0 +1,11 @@
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+COMPILED_NBA_CACHE_RECOVERY {"results":[{"market":"points","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"rebounds","rows":23,"ev":{"available":23,"unavailable":0,"reasons":{}}},{"market":"assists","rows":22,"ev":{"available":20,"unavailable":2,"reasons":{"direction_unavailable":2}}},{"market":"threes_made","rows":25,"ev":{"available":24,"unavailable":1,"reasons":{"direction_unavailable":1}}},{"market":"pts_rebs_asts","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}},{"market":"pts_rebs","rows":20,"ev":{"available":20,"unavailable":0,"reasons":{}}},{"market":"pts_asts","rows":17,"ev":{"available":17,"unavailable":0,"reasons":{}}}],"cachedUpstreamCalls":0,"uncachedUpstreamCalls":11,"uncachedStatus":200,"writes":0}
+✔ actual compiled NBA ranking routes serve seven verified caches before denied feeds and report an uncached outage (6721.069055ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8048.242845

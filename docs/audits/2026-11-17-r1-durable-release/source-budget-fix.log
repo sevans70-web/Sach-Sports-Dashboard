@@ -1,0 +1,34 @@
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":60,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":60,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":140,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":140,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":true}
+✔ new-season log supplies complete two-team context, with no preseason, duplicate or <48h result leakage (6.142124ms)
+✔ failed discovery, incomplete totals and mismatched fixtures withhold affected players (2.21921ms)
+✔ locked and started cards never refresh or replace historical inputs (0.303547ms)
+✔ college refresh uses current college season and complete official census, with no NBA endpoint or prior-season substitution (11.174951ms)
+✔ college history errors abstain; a mismatched fixture season cannot supply usable observations (1.542001ms)
+✔ NBA foreground limits total source lookups rather than permanently slicing the fixture list (3.283759ms)
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":15,"fixtureFailures":0,"unavailablePlayers":15,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382,"sourceBudgetExhausted":false}
+NBA_SOURCE_BUDGET_RECOVERY {"limit":30,"phases":[{"phase":0,"used":28,"checkpoints":26,"versions":12,"error":"job_subrequest_budget"},{"phase":1,"used":28,"checkpoints":29,"versions":27,"error":"job_subrequest_budget"},{"phase":2,"used":26,"checkpoints":25,"versions":39,"error":"job_subrequest_budget"},{"phase":3,"used":16,"checkpoints":18,"versions":49,"error":null}],"observations":5382}
+NBA_DURABLE_REAL_EVIDENCE {"censuses":34,"observations":5382,"discoveryContracts":15,"coldProviderCalls":0,"sevenMarkets":[{"market":"points","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"rebounds","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"assists","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"threes_made","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"pts_rebs_asts","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"pts_rebs","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"pts_asts","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true}],"productionAccess":false}
+✔ real official NBA censuses persist in the existing DO, recover after eviction, and retain seven-market calculations (14516.399684ms)
+✔ semantic validation rejects reconciled-but-impossible census values and ambiguous identities (11.150879ms)
+✔ cancellation propagates through storage reads, stale-census recovery and both refresh phases (89.823007ms)
+✔ a foreground deadline admits no new reads or provider requests after in-flight evidence returns (63.064107ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16862.331694
