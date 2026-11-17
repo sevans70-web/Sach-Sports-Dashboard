@@ -72,15 +72,17 @@ export async function readNbaHistorySource(source:string,now:number,live:()=>Pro
  let stored:NbaHistoryEvidence|null=null;
  try{stored=checkedNbaHistoryEvidence(await access.read(source),source,now);}catch(error){rethrowNbaEvidenceCancellation(error);}
  const fresh=stored&&now-Date.parse(stored.lastVerifiedAt)<NBA_DISCOVERY_FRESH_MS;
- if(fresh||stored?.kind==='fixture'&&!access.write)return {evidence:stored!,recovered:true};
+ // A validated FINAL is a durable model input, not a fifteen-minute response
+ // cache. Capture must read it before attempting a denied refresh, just as
+ // foreground does. Discovery still requires its independent freshness check.
+ if(fresh||stored?.kind==='fixture')return {evidence:stored!,recovered:true};
  let evidence:NbaHistoryEvidence;
  try{
   const incoming=await live();evidence=validateNbaHistoryEvidence(source,incoming.payload,incoming.observedAt,Math.max(now,Date.now()));
  }catch(error){
   rethrowNbaEvidenceCancellation(error);
-  // An official FINAL remains a real observation during an outage. Never
-  // extend discovery coverage or claim that this older census was re-fetched.
-  if(stored?.kind==='fixture')return {evidence:stored,recovered:true};
+  // FINAL recovery already returned above. A failed discovery must never
+  // extend coverage or claim that the old discovery was successfully checked.
   throw error;
  }
  // A persistence failure must not silently substitute an older version after

@@ -87,11 +87,12 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
    const measured=progress(job,error.usage,false,this.now());
    if(error.message==='job_subrequest_budget'&&error.usage?.cacheWrites>0)due=this.now()+1000;
-   const blocked=job.kind==='capture'&&(measured.stalledAttempts>=3||attempts>=8);
+   const nbaAccessBlocked=job.sport==='nba'&&/^job_source_http_(401|403)$/.test(error.message);
+   const blocked=job.kind==='capture'&&(error.blocked===true||nbaAccessBlocked||measured.stalledAttempts>=3||attempts>=8);
    if(measured.stalledAttempts>=3)due=Math.max(due,this.now()+15*60000);
    if(blocked){due=Math.max(due,this.now()+30*60000);measured.needsAttention=true;}
    next={...job,attempts,state:blocked?'blocked':job.state,lastError:safeError(error),failureDetails:error.details||null,usage:error.usage||null,progress:measured};
-   console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:due,usage:next.usage,failureDetails:next.failureDetails}));
+   console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,state:next.state,reason:next.lastError,retryAt:due,usage:next.usage,failureDetails:next.failureDetails,progress:next.progress}));
   }finally{
    if(owns()){
     const touched=this.now();next.retryAt=next.state==='done'?null:due;

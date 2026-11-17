@@ -15,6 +15,14 @@ export async function capturePhase(job,services){
   const quotes=[...unique.values()];
   const failed=!response.ok||board?.success===false||!Array.isArray(board?.rows);
   if(failed&&!quotes.length){
+   if(job.sport==='nba'&&board?.reason==='nba_official_history_unavailable'){
+    const failure=new JobDeferred('nba_history_evidence_unavailable',now()+3600000);
+    failure.blocked=true;
+    failure.details={stage:'rank',httpStatus:response.status,code:board.reason,
+     verifiedQuotes:Number(board.quoteMatchAudit?.integrityVerifiedQuotes||0),
+     requiredEvidence:['fresh_regular_season_discovery','validated_final_two_team_censuses']};
+    throw failure;
+   }
    const source=board?.bookFeedCoverage?.primary||board?.sourceCoverage?.bookFeedCoverage?.primary;
    const code=typeof source?.code==='string'&&/^(provider_http_\d{3}|provider_empty_feed|provider_invalid_schema|worker_secret_missing|request_timeout|provider_request_failed)$/.test(source.code)?source.code:null;
    const failure=new JobDeferred(code?'rankings_'+code:!response.ok?'rankings_http_'+response.status:'rankings_unavailable',Math.max(now()+30000,Date.parse(source?.retryAt||'')||0));

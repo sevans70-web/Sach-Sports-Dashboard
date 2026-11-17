@@ -130,12 +130,15 @@ test('cancellation propagates through storage reads, stale-census recovery and b
  const {validateNbaHistoryEvidence,readNbaHistorySource}=await loadTs(new URL('../lib/nba-history-evidence.ts',import.meta.url));
  const {refreshNbaObservations}=await loadTs(new URL('../lib/live-basketball-observations.ts',import.meta.url));
  const frame=fixtures.accepted[0],stored=validateNbaHistoryEvidence(frame.source,frame.payload,fixtures.provenance.revalidatedAt,now);
+ const [discoveryUrl,discoveryBody]=Object.entries(sources).find(([s])=>s.includes('/gamelog'));
+ const discovery=validateNbaHistoryEvidence(discoveryUrl,discoveryBody,fixtures.provenance.revalidatedAt,now);
  const errors=[new DOMException('caller cancelled','AbortError'),new DOMException('caller deadline','TimeoutError'),Object.assign(Error('job_subrequest_budget'),{deferred:true}),Error('job_lease_lost'),Error('nba_ranking_deadline')];
  for(const error of errors){
   let live=0,writes=0;
   await assert.rejects(()=>readNbaHistorySource(frame.source,now,async()=>{live++;return {payload:frame.payload,observedAt:stored.observedAt};},{read:()=>{throw error;},write:()=>{writes++;}}),e=>e===error);
   assert.equal(live,0);assert.equal(writes,0);
-  await assert.rejects(()=>readNbaHistorySource(frame.source,now+20*60000,async()=>{throw error;},{read:()=>stored,write:()=>{writes++;}}),e=>e===error);
+  // An expired discovery must refresh; FINAL bodies now recover without HTTP.
+  await assert.rejects(()=>readNbaHistorySource(discoveryUrl,now+20*60000,async()=>{throw error;},{read:()=>discovery,write:()=>{writes++;}}),e=>e===error);
   assert.equal(writes,0,'a cancelled refresh must not silently return or update an older census');
   await assert.rejects(()=>refreshNbaObservations(rows.slice(0,1),now,async()=>{throw error;}),e=>e===error);
   const [url,log]=Object.entries(sources).find(([s])=>s.includes('/athletes/'+rows[0].playerId+'/'));

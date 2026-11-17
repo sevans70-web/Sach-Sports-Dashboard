@@ -14,7 +14,7 @@ export function cacheTtl(url){const u=new URL(url);if(!official.has(u.hostname))
 export function retryTime(value,now=Date.now()){const n=Number(value),date=Date.parse(value||'');return Math.max(now+60000,value!=null&&String(value).trim()!==''&&Number.isFinite(n)&&n>=0?now+n*1000:Number.isFinite(date)?date:0);}
 function active(scope){if(scope.closed||scope.abort.signal.aborted)throw scope.abort.signal.reason||new JobDeferred('job_phase_closed');}
 function pause(scope,code,at){scope.paused??=new JobDeferred(code,at);for(const wait of scope.waiters.splice(0)){wait.clean();scope.queueCancelled++;wait.reject(scope.paused);}return scope.paused;}
-function cancel(scope,error){const paused=pause(scope,error.message,error.retryAt);if(error.details&&paused.message===error.message&&!paused.details)paused.details=error.details;if(!scope.abort.signal.aborted)scope.abort.abort(error);}
+function cancel(scope,error){const paused=pause(scope,error.message,error.retryAt);if(paused.message===error.message){if(error.details&&!paused.details)paused.details=error.details;if(error.blocked===true)paused.blocked=true;}if(!scope.abort.signal.aborted)scope.abort.abort(error);}
 function charge(scope,kind,n=1,ticket){
  active(scope);
  if(ticket){if(ticket.remaining<n)throw Error('job_request_reservation_exhausted');ticket.remaining-=n;scope.reserved-=n;}
@@ -58,7 +58,16 @@ export function installJobFetch(){
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};
  globalThis[nativeKey]=wrapped;globalThis.fetch=wrapped;
 }
-function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web.api.espn.com','site.api.espn.com'].includes(u.hostname))return null;const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;// NBA 403 evidence is specific to an athlete/season, never all athletes.
+function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web.api.espn.com','site.api.espn.com'].includes(u.hostname))return null;
+ // These callers already handle unavailable optional season baselines and
+ // individual summaries. A refusal must not poison the whole job before
+ // validated history can be read. Preserve the exact denied URL and status;
+ // scoreboards, other sports and origin-wide rate limits remain unchanged.
+ if(scope.allowNbaSourceDenials&&(
+  u.hostname==='site.web.api.espn.com'&&u.pathname==='/apis/common/v3/sports/basketball/nba/statistics/byathlete'||
+  u.hostname==='site.api.espn.com'&&u.pathname==='/apis/site/v2/sports/basketball/nba/summary'&&/^\d+$/.test(u.searchParams.get('event')||'')
+ ))return 'denied:'+u.href;
+ const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;// NBA 403 evidence is specific to an athlete/season, never all athletes.
  return path?'denied:'+u.origin+(u.pathname.includes('/basketball/nba/')?u.pathname+u.search:path):null;}
 function cachedResponse(scope,c){scope.cacheHits++;const h=new Headers(c.headers);h.set('x-sach-observed-at',new Date(c.observed).toISOString());return new Response(c.body,{status:c.status,headers:h});}
 async function readBody(response,signal,limit){
@@ -122,7 +131,11 @@ async function jobFetch(scope,native,input,init={}){
      return responseFor(body,{status:response.status,headers:h});
     }
     if(deniedKey&&response.status===403){const at=scope.now(),expires=Math.max(at+3600000,retryTime(response.headers.get('Retry-After'),at));const endpoint=deniedKey.slice(7);const value={status:403,body:JSON.stringify({error:'official_source_access_denied',endpoint,retryAt:new Date(expires).toISOString()}),headers:[['Content-Type','application/json'],['x-sach-source-state','recorded_access_denial']],observed:at,expires};if(scope.store.cacheWrite(deniedKey,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');scope.sourceDenials.push({endpoint,status:403,retryAt:expires});return responseFor(value.body,{status:403,headers:value.headers});}
-    if(source&&[401,403,408,500,502,503,504].includes(response.status))throw pause(scope,'job_source_http_'+response.status,retryTime(response.headers.get('Retry-After'),scope.now()));
+    if(source&&[401,403,408,500,502,503,504].includes(response.status)){
+     const failure=pause(scope,'job_source_http_'+response.status,retryTime(response.headers.get('Retry-After'),scope.now()));
+     failure.details??={stage:'source',endpoint:u.origin+u.pathname,status:response.status};
+     throw failure;
+    }
     return responseFor(body,response);
    }
    if(!response.body){scope.completed++;return response;}
