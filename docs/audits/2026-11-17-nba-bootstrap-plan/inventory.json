@@ -1,0 +1,2335 @@
+{
+  "asOf": "2026-11-17T23:46:16.981Z",
+  "summary": {
+    "retainedResponses": 224,
+    "classification": {
+      "stale_discovery_reference_only": 50,
+      "valid_final": 101,
+      "original_http_receipt_unknown": 34,
+      "nba_evidence_incomplete_census": 39
+    },
+    "selectedFinalSources": 101,
+    "observations": 16242,
+    "playerFixtureRecords": 2707,
+    "players": 473,
+    "teams": 30,
+    "teamsWithAtLeast5Fixtures": 22,
+    "playersWithAtLeast5AppearancesIncludingDnp": 284,
+    "firstGame": "2026-10-21T23:00Z",
+    "lastGame": "2026-11-15T22:00Z",
+    "freshDiscoveries": 0,
+    "liveForecastCoverageEstablished": false
+  },
+  "archives": [
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "sha256": "731e0abbdd7de8e4e98a01b46e8ee0995ecaf5f7b4d4bc4b8f0fcb0c51a9be8c",
+      "bytes": 3430769,
+      "records": 115
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "sha256": "a852c1c8ec295aa2ab43ab672287cccf208cb4d68b3bfcfee30b351d0134bd27",
+      "bytes": 146474,
+      "parentReceiptVerified": false
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "sha256": "d0dabf5ab64468e6aa0ab8975c9ac8b536c24c48e66408417d2cda3869367609",
+      "bytes": 2600635,
+      "parentReceiptVerified": true,
+      "records": 50
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "sha256": "e2d6c229c3c5c057496633efd3063c9bc18239920acb455be508c39e5fc07b32",
+      "bytes": 210621,
+      "parentReceiptVerified": true,
+      "records": 11
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective-pending/official-results.json.gz",
+      "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6",
+      "bytes": 23,
+      "parentReceiptVerified": false,
+      "records": 0
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "sha256": "7b23069a9e316e141ea9f58821ed9fab51595ae899f072ccdf93728dc838e6da",
+      "bytes": 563471,
+      "parentReceiptVerified": true,
+      "records": 11
+    },
+    {
+      "archive": "model-research/2026-10-30-p01-nba-points-initial/official-results.json.gz",
+      "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6",
+      "bytes": 23,
+      "parentReceiptVerified": true,
+      "records": 0
+    },
+    {
+      "archive": "model-research/2026-10-30-p01-nba-points-scored/official-results.json.gz",
+      "sha256": "7874b136eb1494bdda9f2131651bdeda7b72d7fa3607749deb1e0c9a76556879",
+      "bytes": 133797,
+      "parentReceiptVerified": true,
+      "records": 3
+    },
+    {
+      "archive": "model-research/2026-10-19/nba-context-population/source-manifest.json.gz",
+      "sha256": "7e20a66db4e2c0d04e785b858345d1d83b280d4323733ac13af9fd1ecfae9ba5",
+      "bytes": 36987,
+      "parentReceiptVerified": false
+    },
+    {
+      "archive": "tests/fixtures/nba-summary-scoreboards-2026-11-15.json.gz",
+      "sha256": "6763930f5356366b62a333ef6c2932feac699b7b042ef6446aca6f20a7fb6246",
+      "bytes": 96725,
+      "parentReceiptVerified": false
+    }
+  ],
+  "excluded": [
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "reason": "previously_rejected_census",
+      "records": [
+        {
+          "file": "401909965.json",
+          "reason": "nba_evidence_incomplete_census"
+        },
+        {
+          "file": "401909967.json",
+          "reason": "nba_evidence_incomplete_census"
+        },
+        {
+          "file": "401909984.json",
+          "reason": "nba_evidence_incomplete_census"
+        }
+      ]
+    },
+    {
+      "archive": "model-research/2026-10-19/nba-context-population/source-manifest.json.gz",
+      "reason": "metadata_and_derived_observations_are_not_complete_raw_sources",
+      "fixtures": 2469,
+      "observations": 372468
+    },
+    {
+      "archive": "tests/fixtures/nba-summary-scoreboards-2026-11-15.json.gz",
+      "reason": "ancillary_schedule_only_not_player_discovery_or_complete_census",
+      "responses": 9,
+      "originalReceiptTimesKnown": false
+    }
+  ],
+  "inventory": [
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4431823/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:22.642120Z",
+      "payloadSha256": "1e1ce9f0836bb6c1c253ae46a5998854251faa595471e5d85566ef5660a49677",
+      "kind": "discovery",
+      "evidenceSha256": "1e1ce9f0836bb6c1c253ae46a5998854251faa595471e5d85566ef5660a49677",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3147657/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:22.632890Z",
+      "payloadSha256": "8037c7d8e6a75af46bb8ff52c306229ecef0961fb4e4e3c7bc28382b77fbdebf",
+      "kind": "discovery",
+      "evidenceSha256": "8037c7d8e6a75af46bb8ff52c306229ecef0961fb4e4e3c7bc28382b77fbdebf",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432847/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:23.354635Z",
+      "payloadSha256": "10ef691614d3f9e648f1cc2c668c54bb234a63670707266777282286d7198b53",
+      "kind": "discovery",
+      "evidenceSha256": "10ef691614d3f9e648f1cc2c668c54bb234a63670707266777282286d7198b53",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3134908/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:23.333134Z",
+      "payloadSha256": "8107b590c932eee49d4a40a1e22bc5f30e6feeeb91453721594714e6f72c7bf0",
+      "kind": "discovery",
+      "evidenceSha256": "8107b590c932eee49d4a40a1e22bc5f30e6feeeb91453721594714e6f72c7bf0",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4066259/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:23.910349Z",
+      "payloadSha256": "0c634960fc49bc05db189cc62161cbbcbb6fd7beb5999e0e28bb1f8efdcb3388",
+      "kind": "discovery",
+      "evidenceSha256": "0c634960fc49bc05db189cc62161cbbcbb6fd7beb5999e0e28bb1f8efdcb3388",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5107199/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:23.905684Z",
+      "payloadSha256": "13ced82721847a76a3c910a9da919658bdc701069d6a97f047bd99295ed57564",
+      "kind": "discovery",
+      "evidenceSha256": "13ced82721847a76a3c910a9da919658bdc701069d6a97f047bd99295ed57564",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4684272/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:24.517914Z",
+      "payloadSha256": "75e40fa44e79199d709b11443258d48a9308efaf1ae4a9cffe667f53d3c3b5cd",
+      "kind": "discovery",
+      "evidenceSha256": "75e40fa44e79199d709b11443258d48a9308efaf1ae4a9cffe667f53d3c3b5cd",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4592479/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:24.561302Z",
+      "payloadSha256": "4dab1adbd7227e37a7be512899db018a90804cb0ba18c73dd827f1f10f65b981",
+      "kind": "discovery",
+      "evidenceSha256": "4dab1adbd7227e37a7be512899db018a90804cb0ba18c73dd827f1f10f65b981",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5037871/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:25.124568Z",
+      "payloadSha256": "5fbbbce9158763d8d96acfae610b3c9483640aceec020f9b748948c3e094fdff",
+      "kind": "discovery",
+      "evidenceSha256": "5fbbbce9158763d8d96acfae610b3c9483640aceec020f9b748948c3e094fdff",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3135045/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:25.156209Z",
+      "payloadSha256": "e12d1b81da01280824bc2f77285a8e426512b63c60bf6c32b0d717e20902e3c6",
+      "kind": "discovery",
+      "evidenceSha256": "e12d1b81da01280824bc2f77285a8e426512b63c60bf6c32b0d717e20902e3c6",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3995/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:25.623553Z",
+      "payloadSha256": "f374d25b72a2c2818dfdf40b0b7d402413ce3739732afa1ad2e170defca8e8cd",
+      "kind": "discovery",
+      "evidenceSha256": "f374d25b72a2c2818dfdf40b0b7d402413ce3739732afa1ad2e170defca8e8cd",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433137/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:25.586695Z",
+      "payloadSha256": "e28028d9081a061a270d361d51af6e3984443709a69aa31d179ae4fc511c61a6",
+      "kind": "discovery",
+      "evidenceSha256": "e28028d9081a061a270d361d51af6e3984443709a69aa31d179ae4fc511c61a6",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4066372/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:26.064566Z",
+      "payloadSha256": "db1f66ec6b807ab60c21f513899210e01257767a334bbb656ea375cee72e57b1",
+      "kind": "discovery",
+      "evidenceSha256": "db1f66ec6b807ab60c21f513899210e01257767a334bbb656ea375cee72e57b1",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395651/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:26.114038Z",
+      "payloadSha256": "30a452a0d02d0e928abeb78eadaab75ae70a457fa9a45e2d38d13809e0fbced7",
+      "kind": "discovery",
+      "evidenceSha256": "30a452a0d02d0e928abeb78eadaab75ae70a457fa9a45e2d38d13809e0fbced7",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3908845/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:26.509450Z",
+      "payloadSha256": "30f9a611b3b38d215547c55f831c182830c8d367084eccc33724e80013c2f595",
+      "kind": "discovery",
+      "evidenceSha256": "30f9a611b3b38d215547c55f831c182830c8d367084eccc33724e80013c2f595",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278580/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:26.641519Z",
+      "payloadSha256": "74a3a568d3884d86ee291cac12a6299aa750c7cfc990ea34d6fca9c0322d4108",
+      "kind": "discovery",
+      "evidenceSha256": "74a3a568d3884d86ee291cac12a6299aa750c7cfc990ea34d6fca9c0322d4108",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433134/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:26.940193Z",
+      "payloadSha256": "daeaebfaee08a7ab9bba19adb614c6c57b5a2ea5aff824723d375b2c4d155afa",
+      "kind": "discovery",
+      "evidenceSha256": "daeaebfaee08a7ab9bba19adb614c6c57b5a2ea5aff824723d375b2c4d155afa",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4683678/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:27.137677Z",
+      "payloadSha256": "fde78dfd168b42d1662ba330d4818ee804c1faaab607e6be22f673a52d22c2a6",
+      "kind": "discovery",
+      "evidenceSha256": "fde78dfd168b42d1662ba330d4818ee804c1faaab607e6be22f673a52d22c2a6",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5104157/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:27.435760Z",
+      "payloadSha256": "615980ea3658c26607b478e1450bf72ed8a6a632f2c90951510b632e4f9e7268",
+      "kind": "discovery",
+      "evidenceSha256": "615980ea3658c26607b478e1450bf72ed8a6a632f2c90951510b632e4f9e7268",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433287/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:27.650759Z",
+      "payloadSha256": "d9e5cc2ce5994dc1beee46d1462d060c6f2aa6417605b62c577e407a04c02ef3",
+      "kind": "discovery",
+      "evidenceSha256": "d9e5cc2ce5994dc1beee46d1462d060c6f2aa6417605b62c577e407a04c02ef3",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4845367/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:27.948469Z",
+      "payloadSha256": "0910365058abd57240a458d1653359e63e0f071679a6868f85abf29536cd49ed",
+      "kind": "discovery",
+      "evidenceSha256": "0910365058abd57240a458d1653359e63e0f071679a6868f85abf29536cd49ed",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/2596112/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:28.124626Z",
+      "payloadSha256": "4e2ca53d14849857cfc6844cecb0d73b2033117d254806c8153124a6041e96d9",
+      "kind": "discovery",
+      "evidenceSha256": "4e2ca53d14849857cfc6844cecb0d73b2033117d254806c8153124a6041e96d9",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433249/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:28.505836Z",
+      "payloadSha256": "a3c4fc6a5a3a05c8d782dbb123b8887bd11ca37f1732142a3ce28f23d4b7eba5",
+      "kind": "discovery",
+      "evidenceSha256": "a3c4fc6a5a3a05c8d782dbb123b8887bd11ca37f1732142a3ce28f23d4b7eba5",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4397014/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:28.644963Z",
+      "payloadSha256": "915a544b59ad6222bbe0b8a6116762bf511cf69cfa0928d33c7ccc78e42c16c4",
+      "kind": "discovery",
+      "evidenceSha256": "915a544b59ad6222bbe0b8a6116762bf511cf69cfa0928d33c7ccc78e42c16c4",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4277811/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:28.989355Z",
+      "payloadSha256": "0d315988dc320decc1bd67d14eb9dc5ee48e86cdea57b6501fcab9709c145254",
+      "kind": "discovery",
+      "evidenceSha256": "0d315988dc320decc1bd67d14eb9dc5ee48e86cdea57b6501fcab9709c145254",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278562/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:29.180004Z",
+      "payloadSha256": "faa49634f293210e09078b929b19907bc6f08ff76461303efd1844fc5973b7fa",
+      "kind": "discovery",
+      "evidenceSha256": "faa49634f293210e09078b929b19907bc6f08ff76461303efd1844fc5973b7fa",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3062679/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:29.423674Z",
+      "payloadSha256": "2c8ed82ab92751533cfb295f04a4afb5ba5c54aefcd8180e65db5d91498e940a",
+      "kind": "discovery",
+      "evidenceSha256": "2c8ed82ab92751533cfb295f04a4afb5ba5c54aefcd8180e65db5d91498e940a",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3934672/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:29.629681Z",
+      "payloadSha256": "dbcd24af08d59ba591468e2bedff14f6e72ec807ea247b28854a3199474b60d6",
+      "kind": "discovery",
+      "evidenceSha256": "dbcd24af08d59ba591468e2bedff14f6e72ec807ea247b28854a3199474b60d6",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3914044/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:29.846928Z",
+      "payloadSha256": "02667814b84c06248d4880b25154dc880439a8ab27217566e7bf9c17704394ad",
+      "kind": "discovery",
+      "evidenceSha256": "02667814b84c06248d4880b25154dc880439a8ab27217566e7bf9c17704394ad",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5093267/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:30.182837Z",
+      "payloadSha256": "135bc4da22e20540c881ec198b3aed262b4b37602bb7ac83dff82cea3f66379b",
+      "kind": "discovery",
+      "evidenceSha256": "135bc4da22e20540c881ec198b3aed262b4b37602bb7ac83dff82cea3f66379b",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395723/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:30.303317Z",
+      "payloadSha256": "b7da297a8e85fbd9643dfd5d46aabce328ffce268bd3b682f0c44c382de207c1",
+      "kind": "discovery",
+      "evidenceSha256": "b7da297a8e85fbd9643dfd5d46aabce328ffce268bd3b682f0c44c382de207c1",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395724/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:30.651900Z",
+      "payloadSha256": "b68319459f37f8302feef9f1554b778a7c59f2a8ded4d964f09be22639af6c1c",
+      "kind": "discovery",
+      "evidenceSha256": "b68319459f37f8302feef9f1554b778a7c59f2a8ded4d964f09be22639af6c1c",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4431736/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:30.791198Z",
+      "payloadSha256": "22d5b55167e47970a972828625fb4de78aeb1621726414127777d89b5d991793",
+      "kind": "discovery",
+      "evidenceSha256": "22d5b55167e47970a972828625fb4de78aeb1621726414127777d89b5d991793",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4683021/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:31.151599Z",
+      "payloadSha256": "1452401cb2e4bc9622f83188e098d1801b1e01c91d805eca0fe755e9a484929c",
+      "kind": "discovery",
+      "evidenceSha256": "1452401cb2e4bc9622f83188e098d1801b1e01c91d805eca0fe755e9a484929c",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3934719/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:31.264812Z",
+      "payloadSha256": "68adc98bd9605ab6c9f4eda3742fa26d5be84f6b972d1ff0bfd542863192bb55",
+      "kind": "discovery",
+      "evidenceSha256": "68adc98bd9605ab6c9f4eda3742fa26d5be84f6b972d1ff0bfd542863192bb55",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3945274/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:31.633999Z",
+      "payloadSha256": "1751d7f14c5f267a1ebfae07dacf8ce79c7a29a063707688993cf4c81ab5bee7",
+      "kind": "discovery",
+      "evidenceSha256": "1751d7f14c5f267a1ebfae07dacf8ce79c7a29a063707688993cf4c81ab5bee7",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5105565/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:31.718811Z",
+      "payloadSha256": "3881b23966487cd11505ff8f9f93554453ff006979439385445244a55d4ee787",
+      "kind": "discovery",
+      "evidenceSha256": "3881b23966487cd11505ff8f9f93554453ff006979439385445244a55d4ee787",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5081727/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:32.116436Z",
+      "payloadSha256": "3fe83f8d4c34e773483dba1c6a08ce6c5f3bc29238eae2205e492fe4bc443a94",
+      "kind": "discovery",
+      "evidenceSha256": "3fe83f8d4c34e773483dba1c6a08ce6c5f3bc29238eae2205e492fe4bc443a94",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3064560/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:32.230810Z",
+      "payloadSha256": "b3c90f7515610a8fc817bad8e1e482073eb550c149bb3c83a505793ce6c5dbb4",
+      "kind": "discovery",
+      "evidenceSha256": "b3c90f7515610a8fc817bad8e1e482073eb550c149bb3c83a505793ce6c5dbb4",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3136195/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:32.582561Z",
+      "payloadSha256": "17ce67682900fdc746ef4775acc7c5a761c4f958dee817cc7d681ce06aa66f06",
+      "kind": "discovery",
+      "evidenceSha256": "17ce67682900fdc746ef4775acc7c5a761c4f958dee817cc7d681ce06aa66f06",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/6606/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:32.697686Z",
+      "payloadSha256": "4ed3dabbd766c1a6c96a7c0640b1d33502b49d6a47d9ea629f28cacad96b2505",
+      "kind": "discovery",
+      "evidenceSha256": "4ed3dabbd766c1a6c96a7c0640b1d33502b49d6a47d9ea629f28cacad96b2505",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4602025/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:33.068005Z",
+      "payloadSha256": "f64d78303fe31becc786242f35482b1a72902ae79606f1d66a4bfa44d9b0ce3f",
+      "kind": "discovery",
+      "evidenceSha256": "f64d78303fe31becc786242f35482b1a72902ae79606f1d66a4bfa44d9b0ce3f",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3907498/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:33.210010Z",
+      "payloadSha256": "3f68db4afd54bac836443629f70fcb331f02b93fec7d3aed7d8b1da894187477",
+      "kind": "discovery",
+      "evidenceSha256": "3f68db4afd54bac836443629f70fcb331f02b93fec7d3aed7d8b1da894187477",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395630/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:33.510753Z",
+      "payloadSha256": "074dc48d49bc50f25283e0bee3f43d6f080edf4195bcc0f79e41ee108b55887b",
+      "kind": "discovery",
+      "evidenceSha256": "074dc48d49bc50f25283e0bee3f43d6f080edf4195bcc0f79e41ee108b55887b",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4396971/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:33.719333Z",
+      "payloadSha256": "19dfccafbafe5ccb18bf229614306099aa6e1c8b0b3f364ef7124a979c973320",
+      "kind": "discovery",
+      "evidenceSha256": "19dfccafbafe5ccb18bf229614306099aa6e1c8b0b3f364ef7124a979c973320",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432241/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:34.010810Z",
+      "payloadSha256": "20119cb5cf214bcafa20380ed73d18fa18fbeac3e4096ea58d4309bc8243f516",
+      "kind": "discovery",
+      "evidenceSha256": "20119cb5cf214bcafa20380ed73d18fa18fbeac3e4096ea58d4309bc8243f516",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4592691/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:34.198217Z",
+      "payloadSha256": "4114a13373ae51a62b4620a34a1ba3f82cc21ecf0150ee4063eb0389ce6f04d1",
+      "kind": "discovery",
+      "evidenceSha256": "4114a13373ae51a62b4620a34a1ba3f82cc21ecf0150ee4063eb0389ce6f04d1",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432166/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:34.432907Z",
+      "payloadSha256": "ea108829ee87efea7a8dd7b90affa2a3eaa7e13d616840414b6d783b59cd2883",
+      "kind": "discovery",
+      "evidenceSha256": "ea108829ee87efea7a8dd7b90affa2a3eaa7e13d616840414b6d783b59cd2883",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395625/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:34.644149Z",
+      "payloadSha256": "ba6033c07e8790381ba51cd04a1983aba45da80105af0a6f14886dd6cc472ff8",
+      "kind": "discovery",
+      "evidenceSha256": "ba6033c07e8790381ba51cd04a1983aba45da80105af0a6f14886dd6cc472ff8",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4684742/gamelog?season=2027",
+      "originalObservedAt": "2026-11-17T22:04:34.944044Z",
+      "payloadSha256": "91bc9d4c73a4db0aea14f9452de52648b88c0936254daf6cb6f9f8c34a335069",
+      "kind": "discovery",
+      "evidenceSha256": "91bc9d4c73a4db0aea14f9452de52648b88c0936254daf6cb6f9f8c34a335069",
+      "fresh": false,
+      "status": "stale_discovery_reference_only"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909296",
+      "originalObservedAt": "2026-11-17T22:04:35.422573Z",
+      "payloadSha256": "b581b123298fdeddeb785ac13111b7782f2dfcda74db7e93859291e0c671c4e2",
+      "kind": "fixture",
+      "evidenceSha256": "cbc3813433a8d532a7de439fd5f491f6dcc975ef1946adf4b5044f347135e640",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909967",
+      "originalObservedAt": "2026-11-17T22:04:35.514390Z",
+      "payloadSha256": "4eaaaf18b4027bd9efefbc7d26f027845ab6723fcf350b20ac0e087c8ade03e6",
+      "kind": "fixture",
+      "evidenceSha256": "089127c56b4f8c79add3d8382249a51da4804dc6526e45ece2343294f611b876",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909960",
+      "originalObservedAt": "2026-11-17T22:04:35.810461Z",
+      "payloadSha256": "2f7c6b1ae9cb47a6c80f7613e842c3b7bf52b452f04e9923c8ab6ce7759687b4",
+      "kind": "fixture",
+      "evidenceSha256": "5c58b78d5a66957d82f81f16a62493cac2ba211f2684a71f03931ef48f750c4e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909940",
+      "originalObservedAt": "2026-11-17T22:04:35.913276Z",
+      "payloadSha256": "f50e70aa4eee97b7b8ed6959bf93a99651cf25f2afc56d38a560d12ed2c01d56",
+      "kind": "fixture",
+      "evidenceSha256": "5f1bc064b27cbfcf282017a9c32ae1d49e7954075fff91a6a3d380fb4f5fed4a",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909926",
+      "originalObservedAt": "2026-11-17T22:04:36.216576Z",
+      "payloadSha256": "57fcfe12962aa4ed00effac3ab77544e587a589e73a3dc099180ab36337c245a",
+      "kind": "fixture",
+      "evidenceSha256": "8c7b8c463b8afd3a55d366eb4e444cb524513faf3d2664664997d8729eb55c53",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909910",
+      "originalObservedAt": "2026-11-17T22:04:36.385307Z",
+      "payloadSha256": "8fe62b6a3c2458412a0e6f20c4b4b7d15e69e127ebb7249a5e6547f6bd897768",
+      "kind": "fixture",
+      "evidenceSha256": "63f482326591bbb01877e58c9d84118a084698d8f4efe86db90ffb0183aece80",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909280",
+      "originalObservedAt": "2026-11-17T22:04:36.681803Z",
+      "payloadSha256": "c0bce2181424e3e169a6e85d0c3009f5a9f7b67973a1ba06a48d4053b3132cc5",
+      "kind": "fixture",
+      "evidenceSha256": "65a7ddcd1e393870c4a3ab52281043ab9d0c226abd2ef7261724906435162761",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909886",
+      "originalObservedAt": "2026-11-17T22:04:36.797056Z",
+      "payloadSha256": "84e135f08dd86b3067aa6db0c9f68baaf8fac0e0f3c08ce9c87073cb52140496",
+      "kind": "fixture",
+      "evidenceSha256": "a23bb250b27ac3984025faf8cc060c8cbb365e5a96330c4fc969ad83e799d11c",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909878",
+      "originalObservedAt": "2026-11-17T22:04:37.087158Z",
+      "payloadSha256": "3c014e3d9a40b016b2fd3f9f10de2f93599f6a1acde61bfa010554c91d33b39c",
+      "kind": "fixture",
+      "evidenceSha256": "a0066f4a1f37a2a288e0b6df441053e2632f3117b114ac6c98c2a5a771b2381b",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909984",
+      "originalObservedAt": "2026-11-17T22:04:37.159920Z",
+      "payloadSha256": "62ae69d6071358d916b88d1de7749cb45c01a4fc8cc51db902883e9fcc913a6a",
+      "kind": "fixture",
+      "evidenceSha256": "80a0bcd00ee4e86ea87627408d0c17058fd7fcbf721246833e66920b8a920006",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909978",
+      "originalObservedAt": "2026-11-17T22:04:37.492913Z",
+      "payloadSha256": "973aa4bf9c5ce1745f53fe9e374903cab5aeb6b9b63104dabd384af2f1203214",
+      "kind": "fixture",
+      "evidenceSha256": "957c9eb6cfac57a8fc9f1b072a3bd4860bd36e53a1ccc603b6477db3ed88aaa7",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909947",
+      "originalObservedAt": "2026-11-17T22:04:37.542144Z",
+      "payloadSha256": "87bdd26820311d37736aaf73eb7f4c469f4000304c41466c4f093548f59891d8",
+      "kind": "fixture",
+      "evidenceSha256": "8c998aaa7a2332ccd758a3903ed9f2e4ae43cc0c86d9b953c880450787b89473",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909901",
+      "originalObservedAt": "2026-11-17T22:04:37.913019Z",
+      "payloadSha256": "1853a29bbe91e0cd9aebe32e1911ce8f104b5e41d956a2e2eab133cb45dd8afd",
+      "kind": "fixture",
+      "evidenceSha256": "85ab3fbd0e63eacc0562ec4e9f00f30155492627ccfa32b0884efe1812892475",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909284",
+      "originalObservedAt": "2026-11-17T22:04:38.002989Z",
+      "payloadSha256": "7e690c53c6684d3c1ab83c119cf86c431f1086946606dcbd5c6821acde822828",
+      "kind": "fixture",
+      "evidenceSha256": "096dce295a2b15b81b7e0fdc7e2c0e0b091cdf7fc9dca2c3b19710cebb02ac84",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909888",
+      "originalObservedAt": "2026-11-17T22:04:38.270625Z",
+      "payloadSha256": "6b5a87e653e7b7880bbcf57b075e2721da03a4e63d51ffb374650374b6edcb1e",
+      "kind": "fixture",
+      "evidenceSha256": "99acaaf7ef564c6eac52a4201abdd948706c6c9c057f660818c7580ab1102599",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909976",
+      "originalObservedAt": "2026-11-17T22:04:38.392014Z",
+      "payloadSha256": "f6152e2204d0d60260ddd389d84b4e95bf8c85cb17a084135755c2708f37a1d8",
+      "kind": "fixture",
+      "evidenceSha256": "f838fabe37cf68a35bca9be501235bf9ac449f272e8c9bee1678a7df4c286ee7",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909968",
+      "originalObservedAt": "2026-11-17T22:04:38.675288Z",
+      "payloadSha256": "a243c84a1621a83c3fd9958ee5cc79bba87a33fe2d985d113bd778476eb607c3",
+      "kind": "fixture",
+      "evidenceSha256": "833d103d70368faca026fc9641755068a54947affc57b3516256b023925e4190",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909955",
+      "originalObservedAt": "2026-11-17T22:04:38.751079Z",
+      "payloadSha256": "8ccef675626beb48680e21cd3653b7b2de40b9a9e51b4d554147b1524a1489a8",
+      "kind": "fixture",
+      "evidenceSha256": "1d7e2dbb9a86bda367bf464d88063bf8b011fdf19905fdcfa0bafb4acb0d5071",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909292",
+      "originalObservedAt": "2026-11-17T22:04:38.918512Z",
+      "payloadSha256": "ae2835dedfde32b3bf92d22f238bba3284dac6fca2c7d5f749379b99198a662a",
+      "kind": "fixture",
+      "evidenceSha256": "2727825092827037ff238d09dbe68a7512cba7fdc9f1f423be47168d74aa34bb",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909931",
+      "originalObservedAt": "2026-11-17T22:04:39.133599Z",
+      "payloadSha256": "2f2bceb55cd5208357eda6f1b28f313b2c0c76f0664233102fb450a77084f030",
+      "kind": "fixture",
+      "evidenceSha256": "502991d0d354549e2602fe56d8e974b401ffb380882e2bca27685e04ae0e501a",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909281",
+      "originalObservedAt": "2026-11-17T22:04:39.340383Z",
+      "payloadSha256": "76310608e4a3b0438e374e418a34be4b28114a90d5e93c49f5af3e9979b43de0",
+      "kind": "fixture",
+      "evidenceSha256": "85bc90ede5e5daf4f53db01c3badd5a4b7b851a89c0dd45201dfe7b93baf7938",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909885",
+      "originalObservedAt": "2026-11-17T22:04:39.616560Z",
+      "payloadSha256": "1aaaf2a81c447f0b94a5a4ffb6f74afebfee92d1278380cb8b955ccf147c47d0",
+      "kind": "fixture",
+      "evidenceSha256": "2f52c4ac6960487761b44b1135b25c697239d28dc6a5f423777b65e5647aa097",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909302",
+      "originalObservedAt": "2026-11-17T22:04:39.733047Z",
+      "payloadSha256": "d2d7118fd153647a93c835bd3a3ed790cfd4c98e954b2596009f2055aec4f7a9",
+      "kind": "fixture",
+      "evidenceSha256": "ae7cc3c7d3971c56c8f49d28864558a4315818e5ef36df924586c42b2da42646",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909969",
+      "originalObservedAt": "2026-11-17T22:04:39.930540Z",
+      "payloadSha256": "2f3bcb703247a8af3b588da2066cfc0f1900698be1122ba45bbe177ab8bea005",
+      "kind": "fixture",
+      "evidenceSha256": "f84acdb26041256f6b117507b1d429b5a7ddc3a9b0a9484e59ca87c1d879024c",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909958",
+      "originalObservedAt": "2026-11-17T22:04:40.082937Z",
+      "payloadSha256": "d4fec4a6a9d44a6244650512039815bdd05125860770215093678d1f6ecafc5a",
+      "kind": "fixture",
+      "evidenceSha256": "c670f279599bfc27141522a50363b1ec55d6efefb37840bcf248bd8dee7d922d",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909944",
+      "originalObservedAt": "2026-11-17T22:04:40.256304Z",
+      "payloadSha256": "8ecfc4e492a040f0ac28bef31d6d4cab23e043c026a014e03e6c5ecd77e1c7a9",
+      "kind": "fixture",
+      "evidenceSha256": "57035e909c90104d2e4970a057e016d79d1b580feb17420df84cb431606b02f1",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909295",
+      "originalObservedAt": "2026-11-17T22:04:40.414530Z",
+      "payloadSha256": "52ec3a871e17eaa780ec42170f4dfa517878cda2aa54109e24d6f8f4ae2c5c02",
+      "kind": "fixture",
+      "evidenceSha256": "b9edecc35632d58c9cb5b053373b1925a41bf97e0f39378c2e1ad7c46676ffc1",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909933",
+      "originalObservedAt": "2026-11-17T22:04:40.675658Z",
+      "payloadSha256": "1a5ea044693327f230cf83e34f0ca5fa211dbec31fe019426e14e26b41ab7bf8",
+      "kind": "fixture",
+      "evidenceSha256": "f294a41b6d1ae23231bb9fa7835b879a558358e1c504c3409b4f40711cbc0496",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909917",
+      "originalObservedAt": "2026-11-17T22:04:40.823877Z",
+      "payloadSha256": "d930cdc38a58b1325a4d944831aa2bf62c39d9b60d4ba8782c32acd52600e60a",
+      "kind": "fixture",
+      "evidenceSha256": "c5ea393d1e4039b80ae72a5d6a3d0d423cfd52b570b928c58a00c2d910baf09d",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909890",
+      "originalObservedAt": "2026-11-17T22:04:41.013006Z",
+      "payloadSha256": "0bb9f80faddcb9b827d83b7011bd4626f06a1bd2707d280d6768963d3b1bc082",
+      "kind": "fixture",
+      "evidenceSha256": "e3cb53b5b0157fd226a4aa5c2817c80372ed4b4e1608e778fae92c95f7bea539",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909879",
+      "originalObservedAt": "2026-11-17T22:04:41.205280Z",
+      "payloadSha256": "2cdc08db31214a9731ccd40f13d40e89c6b059236af5c254ded0fc9eb564e8bd",
+      "kind": "fixture",
+      "evidenceSha256": "bc4b09ba695103ac229c85161f1591cb4c49cfb1be5ca2b582aa22f4c9953761",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909982",
+      "originalObservedAt": "2026-11-17T22:04:41.321071Z",
+      "payloadSha256": "159d53fb6018719cbbb19138e3396db29fdaa9ca926bab5351bb61765b427c61",
+      "kind": "fixture",
+      "evidenceSha256": "0a8c2b83977a0fc5e43c513f6a90f1f5fdf9c2ac28a19ddc26d2b3a7b5a509f8",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909977",
+      "originalObservedAt": "2026-11-17T22:04:41.549448Z",
+      "payloadSha256": "a77de1980c9726a2599ab9d7dd5010008a38ce0e95d4cb7ffe239446c4ac2e11",
+      "kind": "fixture",
+      "evidenceSha256": "ce38968ccd0595e8fd72762f85739ded2096d92c904c3bd72db48ee47c2fbb71",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909954",
+      "originalObservedAt": "2026-11-17T22:04:41.658246Z",
+      "payloadSha256": "b1718e4186c113081db9134f3a5606f4ca3ac0d7c1eecaf583a2ba2246face13",
+      "kind": "fixture",
+      "evidenceSha256": "7bba90d023c6a86d334720d07b8e3c45a7ed387e27f49e38c7320649c66e52b9",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909946",
+      "originalObservedAt": "2026-11-17T22:04:41.980025Z",
+      "payloadSha256": "1b88ec2e88674a9bfce0179b4dd3f044cebedb1406054da6b164994c160d14b2",
+      "kind": "fixture",
+      "evidenceSha256": "7a3d61b57e186a499644bc882b224ba69dffc36e244bd8495bc2889e3b03c708",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909922",
+      "originalObservedAt": "2026-11-17T22:04:42.008274Z",
+      "payloadSha256": "cddb65bc40a9ad6f8c470c2a1665675549d94cb79d733a1e7e7870d708e6cbfb",
+      "kind": "fixture",
+      "evidenceSha256": "af78a187240ef176f71ce8efe5a7d735227a555684ec45f2e940b880714f51a8",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909908",
+      "originalObservedAt": "2026-11-17T22:04:42.298396Z",
+      "payloadSha256": "d86e36aed0aa159b21da21010740d3e97c118c08f8be3eb267e3b4e804d1c087",
+      "kind": "fixture",
+      "evidenceSha256": "9b0158ea7ff3f90e36a6e8ed3537e669939f0174753f46206b1457041bc17d2e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909279",
+      "originalObservedAt": "2026-11-17T22:04:42.375852Z",
+      "payloadSha256": "9f7e8f5a4154c0483df1208fcab3835b2ba0364904683470fe29338145e77af5",
+      "kind": "fixture",
+      "evidenceSha256": "20c49b9b0585846810f0ef1d6387db19548d8ce3d23b4719046c14f9c4b1d4bd",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909883",
+      "originalObservedAt": "2026-11-17T22:04:42.675324Z",
+      "payloadSha256": "3af7010d906486ce77c4794d4efc15edf01289157411edd7e03df9a967571d48",
+      "kind": "fixture",
+      "evidenceSha256": "8128c29f482a18c92d246d19aea4fadf4451080959f36cf6aafdbb2a62984c94",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909920",
+      "originalObservedAt": "2026-11-17T22:04:42.794091Z",
+      "payloadSha256": "54b0a8eb7239e194fbf767af87da42b5eef74ad6086dc8b8699ce55dde3a4286",
+      "kind": "fixture",
+      "evidenceSha256": "7c4bde86953896ee4d9c06f3a0e9799e439bb4b2e1bc9e55c9653bf7308a0ca3",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909906",
+      "originalObservedAt": "2026-11-17T22:04:43.060734Z",
+      "payloadSha256": "35b7c8013afcb1761782e8731b29e98eb6a9c11a08b7f7d1fd43854ed708be3b",
+      "kind": "fixture",
+      "evidenceSha256": "7e71b3463153429ffceeae8ec329b5b5f55fa12c7d7ed0a535979eaae7fe788c",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909988",
+      "originalObservedAt": "2026-11-17T22:04:43.001774Z",
+      "payloadSha256": "3958c581a8a7fdf7eedea88e6d68c9f693bc4254d5fca32a42d9b32bb67311b3",
+      "kind": "fixture",
+      "evidenceSha256": "be13248c02f315a5e85150c5db38b1b69bddcd38fe659b1859ea0db68e3cf7b2",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909987",
+      "originalObservedAt": "2026-11-17T22:04:43.373956Z",
+      "payloadSha256": "75bf53e083c805c2140543b8344a0460bd79036ee14ed5b4aa875e8433b5bf38",
+      "kind": "fixture",
+      "evidenceSha256": "c5769252703c4806993d7a1f67efea46c7387bcb780ca85ef4d6ac404aafa9a9",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909979",
+      "originalObservedAt": "2026-11-17T22:04:43.450889Z",
+      "payloadSha256": "d4830c04ff6fa39776d477735911119c2dfe987c74b86967383b02ab0c0a870d",
+      "kind": "fixture",
+      "evidenceSha256": "1c8e981c7ff4c463e95ba8d67941be2ac6b1ce7ad29c8efd4af2695b953a292b",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909953",
+      "originalObservedAt": "2026-11-17T22:04:43.697228Z",
+      "payloadSha256": "4a30ea0dbfd27c6ea7fe12175ff4e6ed7f0e080de92d0579b93cfbac2a56420c",
+      "kind": "fixture",
+      "evidenceSha256": "ea2665fee5a9858b17eaad6b3aadb172a04eed48417431f6ddb04e1ec1ef0bd4",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909288",
+      "originalObservedAt": "2026-11-17T22:04:43.798387Z",
+      "payloadSha256": "6f609c5ccf7e441d97a3a3ed4fe0fdfa3c31569113bdb674bd46e09ebd237445",
+      "kind": "fixture",
+      "evidenceSha256": "96f9e42e70d552fc36086b288f56b8324998766f6eb5e04da520b6cf0352d66f",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909925",
+      "originalObservedAt": "2026-11-17T22:04:44.068361Z",
+      "payloadSha256": "036fd25c1a35b27768e4a5ffc3c758fe689c1f5409437d30db8375fb117c9adf",
+      "kind": "fixture",
+      "evidenceSha256": "63e4e6e5403e13464d6c385561e14cd7960893cf59854ce42fefbea37fc9c3c9",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909897",
+      "originalObservedAt": "2026-11-17T22:04:44.074073Z",
+      "payloadSha256": "06eb2318ced0bb1ab9328617053298eeed74e698c32e3961f0366b53c0e7ccfa",
+      "kind": "fixture",
+      "evidenceSha256": "92aa15bd73eea9f4a595092ea5ebad36320cb1219bdcde92e15fe9f7ee2b8fcf",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909277",
+      "originalObservedAt": "2026-11-17T22:04:44.401769Z",
+      "payloadSha256": "919214f82ac6c34af49c58678fab46a5a6c0522d8625e447a4e04d658128204b",
+      "kind": "fixture",
+      "evidenceSha256": "3081a55a66f940c8893de8e31a37c14d7d4b80ebb4c02dc10adc523bf60e1e96",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909303",
+      "originalObservedAt": "2026-11-17T22:04:44.426434Z",
+      "payloadSha256": "b85dc6c30ccd6ba5b07b5ab2f95a4a2a6354e1d2fe2c9e99afcb6fc1c81e4e83",
+      "kind": "fixture",
+      "evidenceSha256": "9f3e51310c9b81f4dafd53905a82f7e6580c847d24bf5e087c490a38876ae311",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909975",
+      "originalObservedAt": "2026-11-17T22:04:44.602611Z",
+      "payloadSha256": "7925fd8c39d99299ad0e6016fb2bb944a549a766ebaaa52e7c901da3ca507196",
+      "kind": "fixture",
+      "evidenceSha256": "7a735d1fe047c00b81f3731b47a0134f219455c0baba16abbc2dd2cdf3d3fbbd",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909965",
+      "originalObservedAt": "2026-11-17T22:04:44.849091Z",
+      "payloadSha256": "1086f2f90268f6539881bcb29c03f054f70830de7b0518ee37d8099431d7d09b",
+      "kind": "fixture",
+      "evidenceSha256": "37c065fed89178d9d9e78497cb83d28beb92701c1c7d626d71c21bcc8dcdec81",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909294",
+      "originalObservedAt": "2026-11-17T22:04:44.908736Z",
+      "payloadSha256": "fb2bb435b9f12d5ff2cb5f21051ea761430a4a90e37dd3a01ca4640c88a7a8c5",
+      "kind": "fixture",
+      "evidenceSha256": "0b51f5e3bc666d457c5f7fe27b30b46150093f5e4cbafbcbc9d017c92a08276d",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909932",
+      "originalObservedAt": "2026-11-17T22:04:45.269659Z",
+      "payloadSha256": "002c9966c5770d8b321dbd3efb6c04b4749f324220323f3e4b2f14522738625d",
+      "kind": "fixture",
+      "evidenceSha256": "8ff55909da89e0912603fac38ad4e1440cd3a67fe51f2ba6e3ec2e94a00fa555",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909918",
+      "originalObservedAt": "2026-11-17T22:04:45.130175Z",
+      "payloadSha256": "a4668eb09cd151065311f225162cf697698de2f80845ac150a0601494826113b",
+      "kind": "fixture",
+      "evidenceSha256": "161648f8fb06bae01b4bba636d52ec29b1c00f3385fb05fba137f1bdbbf6ec2e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909896",
+      "originalObservedAt": "2026-11-17T22:04:45.330826Z",
+      "payloadSha256": "a9c9bed75a78fed42e2c6860a6b7328d2809a717c55c2ccc0ba3d4d525481ea8",
+      "kind": "fixture",
+      "evidenceSha256": "46b972fca1425fe770965a0b5bfb9c4cc7a6cdd72a5b33953351221c77db1d50",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909895",
+      "originalObservedAt": "2026-11-17T22:04:45.478730Z",
+      "payloadSha256": "3202d6ba0db8240b24446c9b0d737c4f87ed66319366fc1b990a9436fd23db82",
+      "kind": "fixture",
+      "evidenceSha256": "ad25ea4ee7fe73e03c139f6b4ab2d5dbcd0dc940bf9535f04336a46ce9889cd7",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909880",
+      "originalObservedAt": "2026-11-17T22:04:45.542786Z",
+      "payloadSha256": "07eae168a5c4472de6582f06cba2ca5e80ba967fddfdc75be315a8e1e495cf06",
+      "kind": "fixture",
+      "evidenceSha256": "27c38d82106db4ec4ef6ab36a3e3c7b84ee1afe3ddda5f1f5301a206f63c2c61",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909986",
+      "originalObservedAt": "2026-11-17T22:04:45.705334Z",
+      "payloadSha256": "caa77178a34326b54e4608a9f406febd8f4176c25a04dff46e1d51acb046dd19",
+      "kind": "fixture",
+      "evidenceSha256": "6434fac567dca02b29bb39a372caff1dd52f5c6b593f934f4f87cce394e45c43",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909971",
+      "originalObservedAt": "2026-11-17T22:04:45.892655Z",
+      "payloadSha256": "58d337cb3f0ec0cd24b0fe23aa63aebaf59814942c5a2a5e71808f4af3ac9b26",
+      "kind": "fixture",
+      "evidenceSha256": "e8ff5b70c46473bb85c55e4df09f7fc330e3242c190113af9e229c8748e01ab8",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909952",
+      "originalObservedAt": "2026-11-17T22:04:46.041401Z",
+      "payloadSha256": "596ebaa418d63dac83f65054a4f1ef0d7d4667b1a4c10c6428b33d8b225595fd",
+      "kind": "fixture",
+      "evidenceSha256": "7c2a907ed7086b972525a73a154fe15679cb018be649ec9b3b0e513ea4c24f6a",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909934",
+      "originalObservedAt": "2026-11-17T22:04:46.266641Z",
+      "payloadSha256": "9aba82e8c9440a038312f7aa20ac45781b15b874acf2be0864b7597e29ff0fe4",
+      "kind": "fixture",
+      "evidenceSha256": "5b10755534bd2640aa0255837f6e12936b80ec0760c5498787638ba83854c2c0",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909921",
+      "originalObservedAt": "2026-11-17T22:04:46.271591Z",
+      "payloadSha256": "88869500376a45fcc9a5ebbd2413288d01ec651bd60d2ed725b042693f3e5464",
+      "kind": "fixture",
+      "evidenceSha256": "7bfeb27874cd31be325083f50ce01abbf2202ce85ea0696f0524c20378cbffb6",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909285",
+      "originalObservedAt": "2026-11-17T22:04:46.625268Z",
+      "payloadSha256": "829a0bf0f8e79a6c5fbd5e910699ae0cec23a0dd0992c446c49c719087005523",
+      "kind": "fixture",
+      "evidenceSha256": "e23b86a7530c799573467eea56a8a793cae564daadb2165e6881284129947bc2",
+      "status": "valid_final"
+    },
+    {
+      "archive": "../docs/audits/2026-11-17-r1-durable-release/current-inputs.tar.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909892",
+      "originalObservedAt": "2026-11-17T22:04:46.689002Z",
+      "payloadSha256": "99fb16ab647d5a42423e4cc60ac1aa6cd18ffbcde893321bf28b0751a8602993",
+      "kind": "fixture",
+      "evidenceSha256": "a01781c54072caf8b75c4afec07139e350f1f51ebe96dc7f5e04df1b21ed83e8",
+      "status": "valid_final"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909296",
+      "originalObservedAt": null,
+      "payloadSha256": "cbc3813433a8d532a7de439fd5f491f6dcc975ef1946adf4b5044f347135e640",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909297",
+      "originalObservedAt": null,
+      "payloadSha256": "84ccb819b5851b82cc646099b8b510cae14eb9c350de64ab94c613ea0ab5cd48",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909298",
+      "originalObservedAt": null,
+      "payloadSha256": "935831060bff6c0a902c9b1dde1f6e720f972d53767636001b12306491ee68d2",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909299",
+      "originalObservedAt": null,
+      "payloadSha256": "331b60ac5fda56083d52b2f67cdca390fea5d9081f96245bae772663610003b6",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909300",
+      "originalObservedAt": null,
+      "payloadSha256": "1376b2da28e74c8b06219b30d5a1c65a82b67a225b788aac1d9d6496352f2d97",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909301",
+      "originalObservedAt": null,
+      "payloadSha256": "ec2bee0fadfa5f79e78ef9090809d2fa8516b4370ffdf7aff041540e599f865c",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909302",
+      "originalObservedAt": null,
+      "payloadSha256": "ae7cc3c7d3971c56c8f49d28864558a4315818e5ef36df924586c42b2da42646",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909303",
+      "originalObservedAt": null,
+      "payloadSha256": "9f3e51310c9b81f4dafd53905a82f7e6580c847d24bf5e087c490a38876ae311",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909955",
+      "originalObservedAt": null,
+      "payloadSha256": "1d7e2dbb9a86bda367bf464d88063bf8b011fdf19905fdcfa0bafb4acb0d5071",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909956",
+      "originalObservedAt": null,
+      "payloadSha256": "ae73697d3714ca2af85b47258bcf033262561498974d2ada3b16dfc8a8dedd9d",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909957",
+      "originalObservedAt": null,
+      "payloadSha256": "b5d18e370d4582918e876b5d01bf225eb257ab75b6c456c8b54bf009426ebe44",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909958",
+      "originalObservedAt": null,
+      "payloadSha256": "2fed34123626999e402ae46afc9535c9b4389ca187c7e5b226f3c96f2de78a15",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909959",
+      "originalObservedAt": null,
+      "payloadSha256": "a4c526806571c0f5d5ad2e4304dbec4053fc3ff886b6f0c6b841faba69e88647",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909960",
+      "originalObservedAt": null,
+      "payloadSha256": "5c58b78d5a66957d82f81f16a62493cac2ba211f2684a71f03931ef48f750c4e",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909961",
+      "originalObservedAt": null,
+      "payloadSha256": "9bac3c38b78ce23d92d6760f28654e66a53d62f8175840026e96cb5aa70cfa20",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909963",
+      "originalObservedAt": null,
+      "payloadSha256": "2e31c55f36fc3e3693a249138ea1639af0701af347af23a7ef5e390fc7f9abe1",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909964",
+      "originalObservedAt": null,
+      "payloadSha256": "a1ece9ca29704f242a6a08d7dfce913cf62f7f1c4fca4e75bc5eb7e0bc94dfe0",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909966",
+      "originalObservedAt": null,
+      "payloadSha256": "c2e9d6dfb1031245e6e51c1823578140f92f2e129ab63388b2fbce423f35bf09",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909968",
+      "originalObservedAt": null,
+      "payloadSha256": "833d103d70368faca026fc9641755068a54947affc57b3516256b023925e4190",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909969",
+      "originalObservedAt": null,
+      "payloadSha256": "f84acdb26041256f6b117507b1d429b5a7ddc3a9b0a9484e59ca87c1d879024c",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909970",
+      "originalObservedAt": null,
+      "payloadSha256": "e5dc858764ae7c0a916c375f3266f2b2c50ce1420b50bb6646ef73571e31bb79",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909971",
+      "originalObservedAt": null,
+      "payloadSha256": "e8ff5b70c46473bb85c55e4df09f7fc330e3242c190113af9e229c8748e01ab8",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909972",
+      "originalObservedAt": null,
+      "payloadSha256": "1e4aba4158b6112ce9f1af7d5ccdbe68ba391f148971e47c1436af64425324d2",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909973",
+      "originalObservedAt": null,
+      "payloadSha256": "7af0427721a27f5f0f54ff32e8dd75362fc5e89eaf952adbf0b83d86a5226228",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909974",
+      "originalObservedAt": null,
+      "payloadSha256": "85f1cc1f7c9aece2b9000dee0144ed0bf22ff2103fe4f1f01dcc670b6a81b7b3",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909975",
+      "originalObservedAt": null,
+      "payloadSha256": "7a735d1fe047c00b81f3731b47a0134f219455c0baba16abbc2dd2cdf3d3fbbd",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909976",
+      "originalObservedAt": null,
+      "payloadSha256": "f838fabe37cf68a35bca9be501235bf9ac449f272e8c9bee1678a7df4c286ee7",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909977",
+      "originalObservedAt": null,
+      "payloadSha256": "ce38968ccd0595e8fd72762f85739ded2096d92c904c3bd72db48ee47c2fbb71",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909978",
+      "originalObservedAt": null,
+      "payloadSha256": "957c9eb6cfac57a8fc9f1b072a3bd4860bd36e53a1ccc603b6477db3ed88aaa7",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909979",
+      "originalObservedAt": null,
+      "payloadSha256": "1c8e981c7ff4c463e95ba8d67941be2ac6b1ce7ad29c8efd4af2695b953a292b",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909980",
+      "originalObservedAt": null,
+      "payloadSha256": "7b6ee2542d4b354b0d96ca59ae4bfc44018e359b1932e7fa4bcf8babb6d911f8",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909981",
+      "originalObservedAt": null,
+      "payloadSha256": "19d5cd27de19dae43aa7d94581c10c6156078eee933792c0c74e59b3f8e70db8",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909982",
+      "originalObservedAt": null,
+      "payloadSha256": "0a8c2b83977a0fc5e43c513f6a90f1f5fdf9c2ac28a19ddc26d2b3a7b5a509f8",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "tests/fixtures/nba-official-censuses-2026-11-15.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909983",
+      "originalObservedAt": null,
+      "payloadSha256": "3931c2464759001beebb8cb058f796da34eff1fe1a92915a724d0369bceee0e3",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "original_http_receipt_unknown"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909840",
+      "originalObservedAt": "2026-10-28T20:16:29.294Z",
+      "payloadSha256": "192e396b4c71eb81ee49bffec284a5087e5776b49540556dd0e1e56f17f5692c",
+      "kind": "fixture",
+      "evidenceSha256": "95b5072fcb7d4cc3baba1290e7aa3adc802a76392599c2763f840d8d13b2a138",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909841",
+      "originalObservedAt": "2026-10-28T20:16:29.512Z",
+      "payloadSha256": "c9345edce6dcf80b24317230f4937485c38d64c92aa9e911cb31e2254c59848f",
+      "kind": "fixture",
+      "evidenceSha256": "78dfa8caad7587b89b846558f9369785d8f1ea163827cfe1d681d2c606507f1d",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909091",
+      "originalObservedAt": "2026-10-28T20:16:29.664Z",
+      "payloadSha256": "5943dc3a01a81c97a6010f25525f3081a78f90255890d364b1dc33d92b3d3498",
+      "kind": "fixture",
+      "evidenceSha256": "98e2934a64b47b81ed015d40292556b2d918936615b1d2c742a9d83e22964149",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909834",
+      "originalObservedAt": "2026-10-28T20:16:29.824Z",
+      "payloadSha256": "cbe76cde30fc9b223bb2d5e4817630125ca21778470492a68c774b3fe75c881a",
+      "kind": "fixture",
+      "evidenceSha256": "b2811e02236570cf1a55cf0d7166082e78f494bef0809bf5c488f24261f1cb5c",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909835",
+      "originalObservedAt": "2026-10-28T20:16:29.920Z",
+      "payloadSha256": "8bdb88e43391a9e393e848102e203abddf339a7d1432dcb83287c8d5c526c4c8",
+      "kind": "fixture",
+      "evidenceSha256": "770da08aef351036bb69a00f287eb3a2b4a7b1365123b1e93d3a8d9d6aead5be",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909836",
+      "originalObservedAt": "2026-10-28T20:16:30.016Z",
+      "payloadSha256": "b62d842c734807d6a39070b0d94f99f46358049e392f4c467a44af7aea056b62",
+      "kind": "fixture",
+      "evidenceSha256": "ba915a904c812121371278f045fae9b2d890d3071bfea456a11c56e87de597be",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909837",
+      "originalObservedAt": "2026-10-28T20:16:30.233Z",
+      "payloadSha256": "b290b9183642adf6b1e2bb786c91ea61195a53b23decaf4ec5fcfcc9da13610b",
+      "kind": "fixture",
+      "evidenceSha256": "60d0a9a6ef8a47ae618d71b04aa0d517c31b2301867f3a25c71d4bacac1275ce",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909092",
+      "originalObservedAt": "2026-10-28T20:16:30.444Z",
+      "payloadSha256": "02353ada6a8bb28d09d8b2004aaffca4c124e7da30546a3b1f8477b9ad3ffb13",
+      "kind": "fixture",
+      "evidenceSha256": "9a7c6b6141db3febc104eb8a0b0623338c41f403b91e02b46f5f45159b4f2ee9",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909839",
+      "originalObservedAt": "2026-10-28T20:16:30.561Z",
+      "payloadSha256": "c57d3c24569816bd92fb0dbcafbe884e622dd182e58ea171d247691cf321099b",
+      "kind": "fixture",
+      "evidenceSha256": "8c68c43390930bd668d30f26562f94681479cdb4a86aa4bad55728a0178b4b0a",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909096",
+      "originalObservedAt": "2026-10-28T20:16:30.740Z",
+      "payloadSha256": "70b031064a3bd726d7475174e2701ec2a85f351de0adc2038b6a172506b9241c",
+      "kind": "fixture",
+      "evidenceSha256": "e800a2989e1969700d4bc01a39ce0052d226fea6d074db953a25f722dc84fc9e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909095",
+      "originalObservedAt": "2026-10-28T20:16:30.820Z",
+      "payloadSha256": "b3d710e22052b77e29be93ab8f5b3d93e949839964c3f581a569e0f2a0fed312",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "incomplete_or_inconsistent_two_team_census"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909838",
+      "originalObservedAt": "2026-10-28T20:16:30.910Z",
+      "payloadSha256": "f1593e7c44320701dcacb99b73b2581c511d8d0e08f8ca6fb524a9b7a12bb2c8",
+      "kind": "fixture",
+      "evidenceSha256": "3eb27121898065e88fb9005bac61ce29e3256e6bb0870bb2c2f631cc8d125f04",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909845",
+      "originalObservedAt": "2026-10-28T20:16:31.021Z",
+      "payloadSha256": "7d746bd051000d7e868861c8233d3c5ede27f0d3ec85cbbc3980105945a9ddf7",
+      "kind": "fixture",
+      "evidenceSha256": "a85ce459433a801c6e9f818683ca5bfd517bf4bb3fe32ea78fc213693ba651d9",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909094",
+      "originalObservedAt": "2026-10-28T20:16:31.117Z",
+      "payloadSha256": "660eb3aeb41071aaaf610f841a8763b8f5f56ca1410a7f2531254fabbc74935f",
+      "kind": "fixture",
+      "evidenceSha256": "0269a4662da923610568aa76ad625c73857d326126dcb874804c827d0898239e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909847",
+      "originalObservedAt": "2026-10-28T20:16:31.215Z",
+      "payloadSha256": "dfda3f6e94dbd71c27761a4bba871d0cebef6fcf58feefa10b1badf7ea9acfed",
+      "kind": "fixture",
+      "evidenceSha256": "24374a06debbb913d336654a4db8ec76a8ec82780e710babc61e95e0c864f03e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909093",
+      "originalObservedAt": "2026-10-28T20:16:31.364Z",
+      "payloadSha256": "996cb8729330b777433e55a57ae39eef7eeda2c146260005dd2ce06704532220",
+      "kind": "fixture",
+      "evidenceSha256": "4b4d91b36bf55e643de288aa13b47c4f6550e0f997ccc31553d3495f8d18b199",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909848",
+      "originalObservedAt": "2026-10-28T20:16:31.450Z",
+      "payloadSha256": "0b4bd4104271a91147401af91baf3b486ca9d41c983c3580a652e95d2e8ad30a",
+      "kind": "fixture",
+      "evidenceSha256": "f995e5e192c4153120d318b8cfa8044b67fb78c40e5be7e4f2ba9777499c65ed",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909843",
+      "originalObservedAt": "2026-10-28T20:16:31.520Z",
+      "payloadSha256": "314dcc9f18b253cb9485a86e8e72d2debc85d53f0d548c4fe78e890a858553c1",
+      "kind": "fixture",
+      "evidenceSha256": "47f6492e1af50efadead2523ff7cd4f3dac1e50ec38dbb2ca4acc2853740b6c2",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909849",
+      "originalObservedAt": "2026-10-28T20:16:31.671Z",
+      "payloadSha256": "24b6e1777063e44396e27ec0ea4212adce84943b2006919183e0cd4712ecd1ec",
+      "kind": "fixture",
+      "evidenceSha256": "a105e4e98099e4a2146596f5ff902a0f2e20c5fb5e8e77f1d07e9b4bf0dd288c",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909844",
+      "originalObservedAt": "2026-10-28T20:16:31.737Z",
+      "payloadSha256": "805b5a1420512239351f0efc05677adc1032430db0ea987ddd9ae3f7bcd0b8d4",
+      "kind": "fixture",
+      "evidenceSha256": "c5f2968f190ac36d3d4bad1aa4754ee0a4157e15369ce5991aa64500ecad201a",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909852",
+      "originalObservedAt": "2026-10-28T20:16:31.862Z",
+      "payloadSha256": "e7c3d9eba6a6ff11079c1a32ba68bdaf07c8f7ffc8ec30ec09684eab9af8cc12",
+      "kind": "fixture",
+      "evidenceSha256": "4659efbe576c25965ce2e9aea5b9469b4e7ddccd454e50912ab3baad0469d85c",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909846",
+      "originalObservedAt": "2026-10-28T20:16:32.080Z",
+      "payloadSha256": "c242871678e1adce0ee7edb285a8d11f99a754101090754e47c13b3e5db57868",
+      "kind": "fixture",
+      "evidenceSha256": "5a1126f3b908baa8754548f22176f246c98c2988f1b62259cd9b8830d70c1bf4",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909850",
+      "originalObservedAt": "2026-10-28T20:16:32.310Z",
+      "payloadSha256": "efe69eaaefaf0e23695a99b3ecc1fc920a0e8320d1363080095274cf5c4d3e93",
+      "kind": "fixture",
+      "evidenceSha256": "332f70eca8348a0052de9de8e0813bafab32199365b8afbc1624c0f155aba514",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909860",
+      "originalObservedAt": "2026-10-28T20:16:32.397Z",
+      "payloadSha256": "3e2246e6a438d59f84b36adee2ee36462c01bcd7b9edcd7ddd60fd814045303e",
+      "kind": "fixture",
+      "evidenceSha256": "199f279c554dc2cc618d88834d27ea00b70506675e3066dc835fbacdc5ced35f",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909856",
+      "originalObservedAt": "2026-10-28T20:16:32.562Z",
+      "payloadSha256": "db196f8f06494a87269bcdf95dcc3a3e9904943e1f4e85782b7236d4f8f62f94",
+      "kind": "fixture",
+      "evidenceSha256": "da4c58f299ad6395b278d986e9f5c8eadc6f4a1dc37a71da543a23b898248fcd",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909859",
+      "originalObservedAt": "2026-10-28T20:16:32.638Z",
+      "payloadSha256": "2bdf708b2bc948891a0c6eea4aede03a9867d67a69279b609ccd736b7a6a9225",
+      "kind": "fixture",
+      "evidenceSha256": "cfd4312a0c28a014134b0c632266535624eac31e0c6a99004eec83a2694029d4",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909858",
+      "originalObservedAt": "2026-10-28T20:16:32.722Z",
+      "payloadSha256": "51a2215a577486ec4409e70a2ae0d36f50b004f4624efb2fa007bff93dd27262",
+      "kind": "fixture",
+      "evidenceSha256": "29a7bc59f8f0c3a1940b20b9faab6288d663892db2c7ff80719c612c89224d51",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909855",
+      "originalObservedAt": "2026-10-28T20:16:32.851Z",
+      "payloadSha256": "3c7d4543938e804144cff2906817794d143b926699748272946939cb7f9c6bb6",
+      "kind": "fixture",
+      "evidenceSha256": "223c023f9ca65bb23241b979c2e321a32ea9acf2e7ec7d46adbce392c1d2e076",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909854",
+      "originalObservedAt": "2026-10-28T20:16:32.943Z",
+      "payloadSha256": "6b45d25c05b5c627c20e3752bb7cc99b7385090d65cb768d6d532446a16c1506",
+      "kind": "fixture",
+      "evidenceSha256": "0746bfbf09e1bc7aaa61d79d0636f3c9f6032f5ab9b45edbe8e38011a9e3dd43",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909857",
+      "originalObservedAt": "2026-10-28T20:16:33.024Z",
+      "payloadSha256": "fa5b231f4f41942299ed05bba35eede0a545c23d5ccce3dff1251b88b82d5862",
+      "kind": "fixture",
+      "evidenceSha256": "74e05319f005424ca7dd38df044ba2ce5444df28f1e781729e624d2a09ea8cfc",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909853",
+      "originalObservedAt": "2026-10-28T20:16:33.161Z",
+      "payloadSha256": "46b2bbc085af630d21f320eeba1ed05e9429672b584ac189a30022cd47144690",
+      "kind": "fixture",
+      "evidenceSha256": "f2a796e67ec73dbc5957d6c22a319fda1950e6250558696f86db7d4f9cccd2d3",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909866",
+      "originalObservedAt": "2026-10-28T20:16:33.250Z",
+      "payloadSha256": "ad3e4237325ee99dfbc2a06644ff2c2254bd2ec65cb3d82c5a820489aabfbdf9",
+      "kind": "fixture",
+      "evidenceSha256": "23596bed53db45998a0a6a1d71fe5bff62df6bf67fd1b7af444712ad4e2abb5b",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909864",
+      "originalObservedAt": "2026-10-28T20:16:33.328Z",
+      "payloadSha256": "8341f0f9cd9b3c64c9ca58bc10bc3b6a1667e4a056b86cdcafef4992ef60f051",
+      "kind": "fixture",
+      "evidenceSha256": "95bd715e3453812308ac562780b53472bf291db98b070d3b0f6734b78f2645fd",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909863",
+      "originalObservedAt": "2026-10-28T20:16:33.476Z",
+      "payloadSha256": "0ffc373c1869cf583fca5a23e48d15f5c304766914db68f15cd3b77c51f1c1b7",
+      "kind": "fixture",
+      "evidenceSha256": "7a41ae2ea068079cd6f3265af17995dc9ff1a5d668d86a41e2fb68ca16125e47",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909862",
+      "originalObservedAt": "2026-10-28T20:16:33.556Z",
+      "payloadSha256": "ecab0892263ca0a06c354cf28442e781183018b0d31eb6d3949011aec24e9825",
+      "kind": "fixture",
+      "evidenceSha256": "c812e85b8308da1eab502aede2f25b186272892ea0659ecad37be82760635393",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909861",
+      "originalObservedAt": "2026-10-28T20:16:33.646Z",
+      "payloadSha256": "afb36e10ad2c406db519669bccebcef9ef5002b5db7b4743937b918e8c9bfd77",
+      "kind": "fixture",
+      "evidenceSha256": "cde34616f32f0678b89cd3f05167b0823e3f4689023b3dc7b8cbe21ec031795e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909873",
+      "originalObservedAt": "2026-10-28T20:16:33.773Z",
+      "payloadSha256": "6e09924fd2d1392b1b298d9c862a87624ebaca86cf616ba8355ea6ce40c35997",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909868",
+      "originalObservedAt": "2026-10-28T20:16:33.875Z",
+      "payloadSha256": "7c444715822daad0eab588cdbde8b390da4acbe2b4f332a13b686a4fc0a6bff5",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909867",
+      "originalObservedAt": "2026-10-28T20:16:33.959Z",
+      "payloadSha256": "132e2d317a99df7a0c8ab0b4be087b7458f02c5756ce18828b43c618a0c31fe9",
+      "kind": "fixture",
+      "evidenceSha256": "1f1d1854618d5bde768250c1394d35f267a873f8da7d5d1309a7143c136b683e",
+      "status": "valid_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909869",
+      "originalObservedAt": "2026-10-28T20:16:34.143Z",
+      "payloadSha256": "5ed1eaa23786c2d713f3f1bee9ea4082c06cbf4c70356e83759404cc8dc9e71a",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909875",
+      "originalObservedAt": "2026-10-28T20:16:34.220Z",
+      "payloadSha256": "e333360daeed4059fd66067a283d67f3c2e79674761bc403bca9dfe2088af761",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909874",
+      "originalObservedAt": "2026-10-28T20:16:34.364Z",
+      "payloadSha256": "3bb6359a91350a6d757a70d516397f5e96d3f1ef436e171777945762c1b27d73",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909876",
+      "originalObservedAt": "2026-10-28T20:16:34.509Z",
+      "payloadSha256": "c582c56f6516bba7f7ae5cffa88189105052500a8efc01dc4fed4e437bf7f0a4",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909872",
+      "originalObservedAt": "2026-10-28T20:16:34.622Z",
+      "payloadSha256": "8623ccd0d64ad60063787eb8f55d4eaa1f894fa6e2cc1cf979b876fd3e530b68",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909870",
+      "originalObservedAt": "2026-10-28T20:16:34.734Z",
+      "payloadSha256": "06feb6355a79685d7e2a0606670cb415173868de6019e19788f5b1b6891a7421",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909877",
+      "originalObservedAt": "2026-10-28T20:16:34.895Z",
+      "payloadSha256": "383ac936523fb6f1be3ef4b607d51ff7e27ac09bbc9621ec96139061848766b6",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909880",
+      "originalObservedAt": "2026-10-28T20:16:34.977Z",
+      "payloadSha256": "0dc460fb61d220b489ff49065698598c371cfe1855f99be6e199de5035e53434",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909871",
+      "originalObservedAt": "2026-10-28T20:16:35.075Z",
+      "payloadSha256": "a2227d1924f4f038dd8c23207090ed6f724f3bd5741cb0ff26f867b0603caed2",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909879",
+      "originalObservedAt": "2026-10-28T20:16:35.204Z",
+      "payloadSha256": "15dd9b02422512c41fd22440d6b33129a15f25e35d64d41ca6f6276342ed6620",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909878",
+      "originalObservedAt": "2026-10-28T20:16:35.294Z",
+      "payloadSha256": "5b4b732ba0f0c282f09e91d291fd45c5e605060e542a684b4078ff127cd7e408",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909889",
+      "originalObservedAt": "2026-10-28T20:21:12.227Z",
+      "payloadSha256": "309b911a6f9d69442fe2ee1e4b3225becbda411a170d6d4b8e07baa22ae78930",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909881",
+      "originalObservedAt": "2026-10-28T20:21:12.323Z",
+      "payloadSha256": "9bbce9b006b8bbbbbb4b63b6fa17b124dbc6eff79fa6c39c491ecba18d2d34cd",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909882",
+      "originalObservedAt": "2026-10-28T20:21:12.446Z",
+      "payloadSha256": "00b0ff676e342a4df323fdc51132635765a4d1a11532a1470cfdc82b7ab298a7",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909890",
+      "originalObservedAt": "2026-10-28T20:21:12.527Z",
+      "payloadSha256": "ff1d5d66f419673958d10dd800a3c25c322a65a2c965a947a1e8cdf3a3513606",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909888",
+      "originalObservedAt": "2026-10-28T20:21:12.623Z",
+      "payloadSha256": "bcd9b1d202db2dd2384d6a6c7b27d20ae42d50cfc4cc1e35042aeb053faed68a",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909886",
+      "originalObservedAt": "2026-10-28T20:21:12.723Z",
+      "payloadSha256": "8d06562536b6464e314740e6f732695ffea170f3c3b97b24dc95194114a61679",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909885",
+      "originalObservedAt": "2026-10-28T20:21:12.814Z",
+      "payloadSha256": "bcc0213b31037be753fd1a201bd653ecbfc365b5214ba5109f0c5e8c099b3b5b",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909884",
+      "originalObservedAt": "2026-10-28T20:21:12.901Z",
+      "payloadSha256": "d5b7db29a2410dc67f08c2d4a0eec081d46dba41c696acb0e6b58fd9ddcdc13e",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909883",
+      "originalObservedAt": "2026-10-28T20:21:13.011Z",
+      "payloadSha256": "231f761bfd601d4e89a331f0ff8f5740b2dd13e4eb40e25c9c4055903f34179d",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909891",
+      "originalObservedAt": "2026-10-28T20:21:13.095Z",
+      "payloadSha256": "23842284e6e01d7eee0b0059112e42521d1c82d297dca8d36530d36c8de2954d",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909887",
+      "originalObservedAt": "2026-10-28T20:21:13.266Z",
+      "payloadSha256": "99d227cb18c953ff7bddbbcec4cc43f7f0bdba66e2b3f59da3d8912fd0cb8552",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "not_official_final"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909889",
+      "originalObservedAt": "2026-10-29T04:49:47.329Z",
+      "payloadSha256": "e11a0d6363e84ffc48b02aa43abd96a347791543b07f67b588b5ed934e2aac47",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909881",
+      "originalObservedAt": "2026-10-29T04:49:47.524Z",
+      "payloadSha256": "c220482b16f8d8a23fdf66768cc6a78dc6ac0b3f1d31807b78a2084e3ca702b2",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909882",
+      "originalObservedAt": "2026-10-29T04:49:47.756Z",
+      "payloadSha256": "0690151d25a913c767f66e4f4738734995f2115375fc420bb40f516de84167dc",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909890",
+      "originalObservedAt": "2026-10-29T04:49:47.929Z",
+      "payloadSha256": "26e8f5adc706b32ffbfae4e94b61da8d5a619ba95987c1f012953ee563d6bb2b",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909888",
+      "originalObservedAt": "2026-10-29T04:49:48.109Z",
+      "payloadSha256": "f0ba73ba9a3ddeae11c2ef06c8cef66826fdceace10487588466bece9eb2f123",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909886",
+      "originalObservedAt": "2026-10-29T04:49:48.273Z",
+      "payloadSha256": "552f7d4a3765283f20d18d5728c74dd161ff15bb3937685d3a2ed4d1ec6b4671",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909885",
+      "originalObservedAt": "2026-10-29T04:49:48.471Z",
+      "payloadSha256": "29905c916b4af538613094fd6b7c2097d2becf463d183146224e227a8f70e77d",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909884",
+      "originalObservedAt": "2026-10-29T04:49:48.727Z",
+      "payloadSha256": "40d65eb47dc43736d6f32def7166d999ae2bd7619e9f3e718aae9b2d8e8b13f2",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909883",
+      "originalObservedAt": "2026-10-29T04:49:48.943Z",
+      "payloadSha256": "a4eb904f1ab00329a4987150a39bbe0641b91dd59e20aa2157645fbba35ddc5f",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909891",
+      "originalObservedAt": "2026-10-29T04:49:49.087Z",
+      "payloadSha256": "4c271cc0fec11f8d5bf4e550c3bc816b2a083224aa66a66571ad7b7e6de0f372",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909887",
+      "originalObservedAt": "2026-10-29T04:49:49.234Z",
+      "payloadSha256": "9d6b1829f71bf7725ea4138b0ccd63c78bb92e589db4a6ad8f311e4ac7d1f847",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-30-p01-nba-points-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909895",
+      "originalObservedAt": "2026-10-30T17:07:02.324Z",
+      "payloadSha256": "e67033c0473a62bc4fbee11e0067bdd2d4e257ca93132fca1d25f4184af0266c",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-30-p01-nba-points-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909894",
+      "originalObservedAt": "2026-10-30T17:07:02.582Z",
+      "payloadSha256": "68cb3affcb9763a957f2a2f01e4ff9450db15f1c109fb48fc9b5aefbd7b96626",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    },
+    {
+      "archive": "model-research/2026-10-30-p01-nba-points-scored/official-results.json.gz",
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909893",
+      "originalObservedAt": "2026-10-30T17:07:02.759Z",
+      "payloadSha256": "95f3802e48b75553afb3d9e5e1c62f312e1f659eacca83d11f595e3650e17b20",
+      "kind": "fixture",
+      "status": "quarantined",
+      "reason": "nba_evidence_incomplete_census",
+      "diagnostic": "inside_existing_48h_receipt_rule"
+    }
+  ],
+  "coverage": {
+    "scope": "historical feature coverage of captured public25/player-market cohort at original snapshot clock; not present-day eligible universe, odds or forecasts",
+    "snapshotAt": "2026-11-17T22:04:46.790297+00:00",
+    "markets": [
+      {
+        "market": "points",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "rebounds",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "assists",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "threes_made",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "pts_rebs_asts",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "pts_rebs",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "pts_asts",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      }
+    ],
+    "readerWindowFinals": 65,
+    "olderArchiveFinalsOutsideReaderWindow": 36,
+    "readerWindowOnly": [
+      {
+        "market": "points",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "rebounds",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "assists",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "threes_made",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "pts_rebs_asts",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "pts_rebs",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      },
+      {
+        "market": "pts_asts",
+        "capturedRows": 25,
+        "historicalInputsSupported": 25,
+        "reasons": {}
+      }
+    ]
+  },
+  "plan": {
+    "digest": "3c2d82c7e3310ccd01528da5f4ca92646a22cba5cd40f68492d89e6fbfdd8813",
+    "compressedSha256": "c6f828e8463b1bb616e2f88b86f0049cbb67156a1b9404469dd3ef8d74dba6c4",
+    "compressedBytes": 475365,
+    "decodedBytes": 3488439,
+    "estimatedSqliteEncodedBytes": 764248,
+    "largestEncodedSource": 8076,
+    "existingEvidenceCapacityBytes": 67108864
+  },
+  "productionImport": false,
+  "newDeployment": false
+}

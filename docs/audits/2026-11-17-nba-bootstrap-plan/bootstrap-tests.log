@@ -1,0 +1,12 @@
+✔ complete retained NBA inventory obeys original receipts and excludes stale discovery (2534.841962ms)
+NBA_BOOTSTRAP_REHEARSAL {"finals":101,"firstRunInserted":100,"existingDuplicateUntouched":1,"duplicateRunInserted":0,"checksumAndOriginalTimeReadbacks":101,"restartExact":true,"rollbackDeactivatedOnlyNew":100,"immutableVersionsRetained":true,"laterCollectionPreserved":true,"allProtectedRecordsUnchanged":true,"networkCalls":0,"productionAccess":false}
+✔ actual SQLite Durable Object accepts insert-only bootstrap, survives restart, and rolls back without touching existing/later records (11219.714669ms)
+✔ bootstrap planning CLI has no deployment or production import mode (238.3439ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14927.753934

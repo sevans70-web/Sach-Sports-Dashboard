@@ -1,0 +1,23 @@
+{
+  "baseCommits": [
+    "936f6d4",
+    "07c69bc"
+  ],
+  "focusedTests": {
+    "command": "node --test tests/nba-bootstrap.test.mjs",
+    "passed": 3,
+    "failed": 0,
+    "runtime": "actual local workerd + SQLite Durable Object, no outbound network",
+    "scope": "offline planning and storage compatibility; not a live import or forecast pass"
+  },
+  "typescript": {
+    "command": "./node_modules/.bin/tsc --noEmit --incremental false",
+    "exitCode": 0,
+    "diagnostics": 0
+  },
+  "productionImport": false,
+  "productionDeployment": false,
+  "modelChanges": false,
+  "planGzipSha256": "c6f828e8463b1bb616e2f88b86f0049cbb67156a1b9404469dd3ef8d74dba6c4",
+  "planDigest": "3c2d82c7e3310ccd01528da5f4ca92646a22cba5cd40f68492d89e6fbfdd8813"
+}
