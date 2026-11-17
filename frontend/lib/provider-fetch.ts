@@ -1,5 +1,8 @@
 /** Public provider transport. Memory-only: never touches durable history or backups. */
 type ProviderPayload={status:number;headers:Headers;body:string};
+// The established public SachSports integration identity; keep consumers in
+// agreement rather than silently introducing a second request profile.
+export const PUBLIC_PROVIDER_USER_AGENT='Mozilla/5.0 (compatible; SachSports/1.0)';
 type ProviderState={cache:Map<string,ProviderPayload&{expires:number;bytes:number}>;pending:Map<string,Promise<ProviderPayload>>;bytes:number;nhlStarted?:Map<string,number>};
 const shared=globalThis as typeof globalThis&{__sachProviderTransportV2?:ProviderState};
 const state:ProviderState=shared.__sachProviderTransportV2||(shared.__sachProviderTransportV2={cache:new Map(),pending:new Map(),bytes:0});
@@ -33,7 +36,7 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
   work=(async()=>{
     const headers=new Headers(init?.headers);
     headers.set("Accept","application/json");
-    headers.set("User-Agent","Mozilla/5.0 (compatible; SachSports/1.0)");
+    headers.set("User-Agent",PUBLIC_PROVIDER_USER_AGENT);
     const options={...init,headers,cache:"no-store" as RequestCache,signal:init?.signal ?? AbortSignal.timeout(8_000)};
     let response=await globalThis.fetch(input,options);
     // Alternate official hosts may recover service errors, never access denials or rate limits.

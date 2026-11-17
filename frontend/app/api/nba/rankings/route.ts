@@ -1,4 +1,5 @@
 import {runNbaRankingWork} from '@/lib/nba-ranking-work';
+import {nbaHistoryUnavailable} from '@/lib/nba-history-availability';
 import {scopedNbaBoard,nbaSlateRows} from '@/lib/nba-slate-scope';
 import {currentNbaPregameSnapshot,readNbaSlateBoard} from '@/lib/nba-slate-board';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
@@ -96,5 +97,7 @@ async function getRankings(req:NextRequest){
   result={success:true,market,boardFrozen:true,boardDay:fallbackDay,boardCapturedAt:saved.capturedAt,source:'saved_pregame_board',warning:'Live updates are temporarily unavailable. Showing the saved pregame board.',rows:saved.rows.map((row:any)=>({...row,boardFrozen:true,boardCapturedAt:saved.capturedAt,boardDay:fallbackDay,gameStatus:'Live status unavailable'}))};
  }
 
- return NextResponse.json(scopedNbaBoard(result,market,day||result?.boardDay||dates.today),{status:200,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
+ const board=scopedNbaBoard(result,market,day||result?.boardDay||dates.today);
+ if(nbaHistoryUnavailable(board))return NextResponse.json({...board,success:false,dataState:'unavailable',reason:'nba_official_history_unavailable',error:'Official NBA player history is unavailable. Retained rankings may be stale; refresh will retry.'},{status:503,headers:{'Cache-Control':'no-store','Retry-After':'60'}});
+ return NextResponse.json(board,{status:200,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }

@@ -1,0 +1,18 @@
+{
+  "baseCommit": "7a0b9a5",
+  "deployed": false,
+  "newVerification": {
+    "focused": 34,
+    "realHandlerWorkerd": 1,
+    "compiledProfile": 2,
+    "compiledCache": 1,
+    "compiledSummary": 10,
+    "failures": 0,
+    "typescriptDiagnostics": 0,
+    "build": "pass"
+  },
+  "fullRegressionRerun": false,
+  "reusedRegressionEvidence": "Previous844pass/0fail; not represented as a new suite run",
+  "productionCausality": "Request-profile drift confirmed in code. Live ESPN cause not proven; profile-sensitive acceptance is an explicit fault contract, not a live provider pass.",
+  "remainingGate": "Authorized production-equivalent verification of intended NBA history request; retain fallback and require approval before deployment."
+}

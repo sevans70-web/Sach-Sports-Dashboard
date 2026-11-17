@@ -1,4 +1,5 @@
 import {boundedWork} from '@/lib/bounded-work';
+import {PUBLIC_PROVIDER_USER_AGENT} from '@/lib/provider-fetch';
 /** Public official evidence only. Never retry a denied endpoint on another host. */
 import {dashboardJobContext} from '@/lib/dashboard-job-context';
 const entries=new Map<string,{at:number;expires:number;status:number;body:string;bytes:number}>();
@@ -29,7 +30,10 @@ async function read(url:string,init:RequestInit={}){
  // anything upstream. Keep the no-redirect policy explicitly, including when
  // the background budget wrapper meters this request.
  const deadline=AbortSignal.timeout(8000),signal=init.signal?AbortSignal.any([init.signal,deadline]):deadline;
- const response=await globalThis.fetch(url,{...init,headers:{Accept:'application/json','User-Agent':'SachSports/1.0'},signal,redirect:'manual'});
+ // Preserve the existing NBA public integration's identity on the initial
+ // request. Never change profiles or retry another host after an access denial.
+ const userAgent=source.pathname.includes('/sports/basketball/nba/')?PUBLIC_PROVIDER_USER_AGENT:'SachSports/1.0';
+ const response=await globalThis.fetch(url,{...init,...(source.pathname.includes('/sports/basketball/nba/')?{cache:'no-store' as RequestCache}:{}),headers:{Accept:'application/json','User-Agent':userAgent},signal,redirect:'manual'});
  if([301,302,303,307,308].includes(response.status)){
   await response.body?.cancel();
   throw Error('official_source_redirect_rejected');

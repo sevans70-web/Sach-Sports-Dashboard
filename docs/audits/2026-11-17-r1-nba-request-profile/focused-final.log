@@ -1,0 +1,51 @@
+✔ CW06 shipped Node/Cloudflare points joint distribution reaches API EV without retraining (733.596677ms)
+✔ CW06 shipped Node/Cloudflare rebounds joint distribution reaches API EV without retraining (281.999135ms)
+✔ CW06 shipped Node/Cloudflare assists joint distribution reaches API EV without retraining (398.274055ms)
+✔ CW06 shipped Node/Cloudflare threes_made joint distribution reaches API EV without retraining (329.59692ms)
+✔ CW06 shipped Node/Cloudflare pts_rebs_asts joint distribution reaches API EV without retraining (672.073276ms)
+✔ CW06 shipped Node/Cloudflare pts_rebs joint distribution reaches API EV without retraining (387.658908ms)
+✔ CW06 shipped Node/Cloudflare pts_asts joint distribution reaches API EV without retraining (297.239686ms)
+✔ protected featured originals survive missing and replaced summaries across all eight sports (83.157332ms)
+✔ recovery rejects wrong-day and wrong-category receipts without inventing missing categories (0.294139ms)
+✔ NBA provider outage recovery reads the exact existing pregame cache without rewriting forecasts or history (13.521632ms)
+✔ NBA recovery rejects invalid quote/model evidence and started games without rewriting originals (5.696922ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-17T17:33:27.484Z"}
+✔ one NBA athlete denial cannot suppress other athletes or seasons; repeat denied URL remains cooled down (34.246903ms)
+✔ persistent NBA capture denial is athlete/season specific across restart, without relaxing NFL or provider limits (12.781344ms)
+✔ actual54Points/52Rebounds incident coverage is an outage, not a successful empty slate (5.316985ms)
+✔ history outage classification does not hide valid rows, normal empty schedules, model holds or partial forecasts (0.440003ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-17T17:33:28.771Z"}
+✔ NBA initial request preserves the existing public application profile while NFL and redirect/cancellation safeguards remain unchanged (42.828743ms)
+✔ NBA genuine403 remains a denial: no profile switch, host switch or second request (2.379245ms)
+✔ NBA and NFL official fetches use manual redirects and reject every redirect without forwarding credentials (54.363862ms)
+✔ official fetch preserves authentication failures and responds to caller cancellation without poisoning later reads (4.497605ms)
+✔ live scoreboards never enter the historical 15-minute cache (0.946367ms)
+✔ missing values are not fabricated zeroes (1.554461ms)
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] api-web.nhle.com /test/failure 503 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/401 401 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/403 403 text/plain;charset=UTF-8
+[provider unavailable] site.api.espn.com /test/access-denied/429 429 text/plain;charset=UTF-8
+✔ public feed requests collapse and cached bodies remain independently readable (64.784523ms)
+✔ ESPN service failure retries the official alternate host; failed responses are never cached (6.906313ms)
+✔ authenticated sportsbook requests are not cached or sent to alternate hosts (0.824324ms)
+✔ ESPN access denials and rate limits never switch hosts (4.530873ms)
+✔ NBA deadline retains memory admission until cancelled work settles (48.009346ms)
+✔ memory queue bounds concurrency and removes timed-out queued work (11.697654ms)
+✔ source cache bounds bytes and entries and expires (1.044209ms)
+✔ NBA retries honor cooldown, are bounded, and exclude authorization errors (38.837203ms)
+✔ NFL denied history persists cooldown, permits checkpoint, then recovers (72.571811ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/:id/gamelog","status":403,"retryAt":"2026-11-17T17:33:31.114Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-17T18:33:31.124Z"}
+✔ NFL public-source denial never switches host or invents a successful history (112.891837ms)
+✔ optional NFL policy does not soften basketball authorization or NFL rate limiting (2.434658ms)
+✔ NBA optional gamelog denial is a recorded unavailable source, without converting schedule denials into history cooldowns (3.442276ms)
+✔ foreground official history honors long denial and rate-limit cooldowns across queued URLs (2.878565ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17147.383271

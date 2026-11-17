@@ -1,0 +1,31 @@
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+COLD_SUMMARY {"status":200,"games":17,"warning":"Partial market coverage: counts include observed markets only; missing markets are not zero.","officialRequests":8,"baseline":false,"unsupportedRedirects":0}
+✔ shipping cold NBA summary reproduces withdrawn 503 or succeeds with the same official fixtures (6443.893827ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+CONCURRENT_SUMMARY {"games":17,"scoreboardRequests":8,"writes":0}
+✔ shipping cold concurrent summary and slate requests agree without duplicate scoreboard fan-out (4681.244581ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for redirectSame without crashing or following a redirect (1680.637954ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for redirectOther without crashing or following a redirect (1803.795252ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for http401 without crashing or following a redirect (4585.831942ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for http403 without crashing or following a redirect (1534.152208ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for http429 without crashing or following a redirect (4684.935867ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for http503 without crashing or following a redirect (1479.67801ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+✔ shipping cold summary reports unknown counts for malformed without crashing or following a redirect (1555.513742ms)
+[sach-history] Cloudflare Worker: Node monitor and interval scheduler disabled
+TIMEOUT_RECOVERY {"elapsedMs":17183,"requests":32}
+✔ shipping cold summary times out safely, preserves unknown counts and recovers with valid data (17615.45416ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 47408.982689

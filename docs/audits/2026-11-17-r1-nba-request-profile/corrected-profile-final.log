@@ -1,0 +1,74 @@
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":22,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":17,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":20,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+NBA_PROFILE_CONTRACT {"allDenied":false,"failed":false,"counts":{"points":{"rows":9,"ev":{"available":9,"unavailable":0,"reasons":{}}},"rebounds":{"rows":9,"ev":{"available":9,"unavailable":0,"reasons":{}}},"assists":{"rows":8,"ev":{"available":8,"unavailable":0,"reasons":{}}},"threes_made":{"rows":11,"ev":{"available":11,"unavailable":0,"reasons":{}}},"pts_rebs_asts":{"rows":8,"ev":{"available":8,"unavailable":0,"reasons":{}}},"pts_rebs":{"rows":11,"ev":{"available":11,"unavailable":0,"reasons":{}}},"pts_asts":{"rows":8,"ev":{"available":8,"unavailable":0,"reasons":{}}}},"calls":50,"agents":["Mozilla/5.0 (compatible; SachSports/1.0)"]}
+✔ compiled NBA7 existing initial public profile contract (6141.073071ms)
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":23,"fixtureFailures":0,"unavailablePlayers":23,"observations":0}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":23,"fixtureFailures":0,"unavailablePlayers":23,"observations":0}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[basketball refresh audit] {"sport":"nba","players":22,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":22,"fixtureFailures":0,"unavailablePlayers":22,"observations":0}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":25,"fixtureFailures":0,"unavailablePlayers":25,"observations":0}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[basketball refresh audit] {"sport":"nba","players":17,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":17,"fixtureFailures":0,"unavailablePlayers":17,"observations":0}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-15T16:54:10.000Z"}
+[basketball refresh audit] {"sport":"nba","players":20,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":20,"fixtureFailures":0,"unavailablePlayers":20,"observations":0}
+NBA_PROFILE_CONTRACT {"allDenied":true,"failed":false,"counts":{"points":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"rebounds":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"assists":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"threes_made":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"pts_rebs_asts":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"pts_rebs":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"pts_asts":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}}},"calls":50,"agents":["Mozilla/5.0 (compatible; SachSports/1.0)"]}
+✔ compiled NBA7 genuine full denial must abstain (2300.722431ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10169.873215

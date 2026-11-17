@@ -1,0 +1,15 @@
+{
+  "sourceFiles": {
+    "frontend/lib/provider-fetch.ts": "ae8182b3579a3393e8d59ca7d99a6b344c5b7fb6e77c1ba63fe98843a34825a0",
+    "frontend/lib/official-history-source.ts": "cf71766a7901a180ba2dc6e04184918b337b70d1aae4ab6fbaf76eff75ef95bb",
+    "frontend/lib/nba-history-availability.ts": "f7f9c2fe677581ecd62728cdb503b493652cbe92056deba0e17ef125a1c5dcc8",
+    "frontend/app/api/nba/rankings/route.ts": "0afdd9c71ee57a5ebda8b04ec6db457f792f1e1dee169ca10ae3b530afd98fa0"
+  },
+  "compiled": {
+    "digest": "f7a26c01b83d2fa1812678ac0f88f012f04b19299bae2558a98a15ffe01d0a56",
+    "files": 424,
+    "worker": "sach-sports-cloudflare-test"
+  },
+  "deployed": false,
+  "liveAccessVerified": false
+}

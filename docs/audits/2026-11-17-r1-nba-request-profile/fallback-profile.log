@@ -1,0 +1,154 @@
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":22,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":17,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":20,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+NBA_PROFILE_CONTRACT {"allDenied":false,"failed":false,"counts":{"points":{"rows":9,"ev":{"available":9,"unavailable":0,"reasons":{}}},"rebounds":{"rows":9,"ev":{"available":9,"unavailable":0,"reasons":{}}},"assists":{"rows":8,"ev":{"available":8,"unavailable":0,"reasons":{}}},"threes_made":{"rows":11,"ev":{"available":11,"unavailable":0,"reasons":{}}},"pts_rebs_asts":{"rows":8,"ev":{"available":8,"unavailable":0,"reasons":{}}},"pts_rebs":{"rows":11,"ev":{"available":11,"unavailable":0,"reasons":{}}},"pts_asts":{"rows":8,"ev":{"available":8,"unavailable":0,"reasons":{}}}},"calls":50,"agents":["Mozilla/5.0 (compatible; SachSports/1.0)"]}
+✔ compiled NBA7 existing initial public profile contract (6353.007567ms)
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4591725/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278594/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5160992/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4437244/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278585/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3155526/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3917376/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/1966/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066383/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3136193/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4431678/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4432848/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395725/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5203685/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/2581018/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3133628/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5124612/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3912848/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3134907/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4601023/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5082206/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5164559/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":23,"fixtureFailures":0,"unavailablePlayers":23,"observations":0}
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3136193/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065804/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4397014/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5203685/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278594/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4683689/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5124612/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065648/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4397424/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066383/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3917376/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/1966/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278585/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3078576/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3912848/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4431678/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066354/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4251/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4601023/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3155526/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4437244/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/2581018/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":23,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":23,"fixtureFailures":0,"unavailablePlayers":23,"observations":0}
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4433136/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278039/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3917376/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4277811/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4397014/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4431680/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/1966/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4397424/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4869342/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3945274/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4701230/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4251/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065648/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066354/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5160992/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4397183/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5124612/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/2490149/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4431678/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3078576/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3912848/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":22,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":22,"fixtureFailures":0,"unavailablePlayers":22,"observations":0}
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4433627/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395630/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3202/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3133628/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/2581018/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4431678/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/1966/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4711272/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3078576/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4251/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066354/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3037789/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4433192/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395725/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065648/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5082206/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3912848/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065804/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5164559/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4591725/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5160992/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4432848/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5124612/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3917376/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":25,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":25,"fixtureFailures":0,"unavailablePlayers":25,"observations":0}
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278585/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278594/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4437244/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3155526/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3917376/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066383/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3136193/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395724/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395625/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/1966/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4431678/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4601023/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5160992/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4684272/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5124612/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3912848/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":17,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":17,"fixtureFailures":0,"unavailablePlayers":17,"observations":0}
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278594/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3155526/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3136193/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395625/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4397424/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4395724/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065648/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4601023/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5203685/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4278585/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4437244/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4065804/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/5160992/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066354/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4684272/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3078576/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/3134908/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4066383/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4251/gamelog 403 text/plain;charset=UTF-8
+[provider unavailable] site.web.api.espn.com /apis/common/v3/sports/basketball/nba/athletes/4683689/gamelog 403 text/plain;charset=UTF-8
+[basketball refresh audit] {"sport":"nba","players":20,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":20,"fixtureFailures":0,"unavailablePlayers":20,"observations":0}
+NBA_PROFILE_CONTRACT {"allDenied":true,"failed":false,"counts":{"points":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"rebounds":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"assists":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"threes_made":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"pts_rebs_asts":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"pts_rebs":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}},"pts_asts":{"rows":0,"ev":{"available":0,"unavailable":0,"reasons":{}}}},"calls":260,"agents":["Mozilla/5.0 (compatible; SachSports/1.0)"]}
+✔ compiled NBA7 genuine full denial must abstain (3327.143106ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11696.222069
