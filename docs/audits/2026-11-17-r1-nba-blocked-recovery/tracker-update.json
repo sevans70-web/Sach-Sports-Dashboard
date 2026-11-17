@@ -1,0 +1,656 @@
+{
+  "updatedAt": "2026-11-17T23:22:46.511Z",
+  "write": {
+    "note": "2026-11-17 focusedNBAblockerrepair from17813dc; application936f6d4070bc02e4d24e6989d6defbb659479a84. Read-only existingdashboardcapture:nbaSQL rows_written0 proves NO nba_history_versions/checks,only5expiredrawsummarycacheentries/0unexpired/noplayerdiscovery. Exact oldAssists/Threesjobsalreadyblockedafter3attempts,0checkpoints;notinfiniteretry. HistoricalforegroundendpointconfirmedNBAathletegamelogseason2027HTTP403. OldbackgroundfailureDetailsnulldoesNOTidentifyexactURL;oldguardreproducedwithoptionalbyathletestatistics403,notclaimedproductionendpointproof. FixedNBAoptionalbaseline/summaryexactURLdenialsreturned403+cooldownwithoutjob-widepause;validatedFINALread-firstalsoinbackground;freshdiscovery15min/48hlag/semanticchecksunchanged. KnownmissingNBAhistorynowblockedFIRSTattemptwithexplicitevidence/quote diagnostics;blockedflagpropagatesbudgetcancellation;future sourceerrorsincludeorigin/path/status andjoblogsstate/progress. 42focusedchecksPASS/0FAIL(31source/all-sportjob+5workerdrecovery/durable+6NBA/college);TSverifiedexit0. UncachedRebounds/Assists/Threes25eachfrom115realcapturedsourcebodies/actualsnapshotquotes,exactprojection/probability/EVparity;localcaptureall3DONE/stored25eachunder403;sourceCheckpoints0becauseexistinginputsreused,phase/immutablewriteprogressproved. Emptyinputstoreblocksafter1attemptanddoesnotretry/write;no productiondata seeded. ThisisofflineworkerdsnapshotclockNOTliveR1acceptance. ChromiumcerttrustRESOLVED:managedCAalreadytrusted;NSSinitializationneedednarrowauthorizedRWfilesystempermissiontoexisting~/.pki/nssdb. Samebrowser/proxy/TLSchecks:onactualfallbackdesktop200/1.297s,mobile200/0.763s;noCAimport/HOMEchange/insecureflags/credentials. CurrentCloudflareNBAaccessNOTprovedrestored;productiondurableinputsabsent. Requirelegitimatefreshcompleteplayer/seasondiscovery<=15minandcompletevalidatedrecentFINALtwo-teamplayer/workload/role/possessions/opponentcensuses(48hlag,min5team/opponentfixtures)pluscurrentfixture/freshquotes. Olderarchive/5rawsummariescannotfillgaps. R1/CW11/V62remainBlocked;no newrelease/artifact/deploy/import/subscription/privatepreview/source-bypass/productionrecord/backups/CW08mutation. Activefallbackb1ef6404/a48c431a,CW0839ea465b/46e95f99/buildfilterpausedverified. No100%rowmoved.",
+    "requests": [
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 5
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 6
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Map latest Cloudflare commit to deployed version, verify runtime and source/API; durable backups/recovery and scheduled tasks; mobile pregame/live/final QA; retire Railway only after proven data safeguards. Related L10, GitHub Issue #128.\n\n2026-11-15 approved frozen fe2f058 release: deployment 79d6b9b0-8014-451a-bd3d-f732bbe15888 failed actual live NBA dashboard-summary (HTTP 503). Same-request Cloudflare logs identify unsupported redirect:error in the official-source fetch path; no memory/subrequest exhaustion found in the retained release window. Immediate compatible fallback deployment 4e8f8721-6e0a-4836-b877-9446a0f360d0 is active. Actual production browser verified 24 saved quarterback rankings in each of five NFL tabs before stopping; all-17/NBA/NHL/full acceptance incomplete. All17 pending NFL jobs completed (max32 measured requests/phase; passing40 source checkpoints) and the pending NHL job completed (46 source checkpoints). Fifty new NFL original receipts are preserved; all50 captured before kickoff, zero future quotes and zero new betting selections. All-sport scheduled acceptance remains incomplete. All18 historical checksum groups unchanged; zero duplicate original/pick/grade keys. CW08 unchanged and healthy (938receipts/781grades); dashboard automatic builds paused. No item moved to 100% completed. Correct the unsupported fetch option, add a truly cold foreground summary runtime regression and obtain new release approval after checks.\n\n2026-11-16 CW11/V62 code repair verified, source 600bd5d22811ddf17be9684b0cab2a86ed22d7ed. Exact withdrawn compiled request replay: HTTP503,24 unsupported redirect:error attempts,0 upstream scoreboard calls. Corrected compiled Worker: HTTP200,17 games,0 unsupported attempts,8 scoreboard calls; concurrent summaries/slate agree. Manual redirect handling explicitly rejects redirects and background accounting honors it; eight-second source/caller cancellation preserved. Removed live scoreboards from the15-minute history cache and reject malformed scoreboard JSON before short-cache insertion; recovery verified. Full regression830passed/0failed (11opt-in skips; ten compiled cases executed separately); compiled runtime17passed, instrumented summary10passed; TypeScript0diagnostics; production build/dry-run pass. NFL cold foreground, capture/checkpoint/lost-ACK restart and NHL coverage pass; NBA EV/PR/featured/history regressions preserved. Nothing deployed. Automatic builds paused; CW08 unchanged/healthy938receipts,781grades,162cycles. CW11 remains Blocked, not complete: freeze a new artifact, obtain approval and pass real production browser/all-sport scheduled acceptance before closure.\n\n2026-11-17 ONEapprovedexactdurableR1attempt fromfe049d6,artifactR1-2026-11-17-4c23239-6173e391. Authenticatedmanualbuild809e57db verifiesarchive47fb6034/bundle6173e391twice; no compile/credentialtransfer. Candidatee5892740-c77f-4a3d-9d95-9f5deb8350f0/version01c7e153 at5:38:53PMToronto. LiveAPI summary/slate/featured/history200all3sports,summary1.107s/0.477s/0.449s;partialcountsnotinvented. Pointsretained25rows/25EV/stalenoticerecoveryworks. ReboundsCANDIDATE503/nba_official_history_unavailable in4.82s,54verifiedquotes/0forecasts. ActualcandidateNBAhistory56gamelogs403,0observations. ScheduledNBAAssists+Threesretryafter60s,rank->rank,job_source_http_403,0checkpointBytes,usage20/4<=220,maxconcurrency4. CriticalrecoverygateFAIL. NHLreplayscan->game->doneONLY;complete38market/3sportgraderotationNOTverified. Immediatefallbackb1ef6404-fd00-4312-857c-c50013bb64a2/versiona48c431a100% at5:43:16PMToronto;lateralarm/cronlogsconfirmfallbackholds. ActualChromiumproductionnavigationblockedbylocalERR_CERT_AUTHORITY_INVALIDbeforerendering;TLSchecksNOTdisabled;focusedsystemCAregistrationdidnotresolve. DesktopNOTpassed/mobileNOTattempted/no replayorAPIsubstitution. All20468orderedfullrowhashesunchanged:11615history/6111originals/1473picks/1269grades. Backup20466manifest+3objectsavailable,untouched. No newnamespace/import/deletion/model/providerpurchase.145releasewindowevents,noobservednon-okWorkeroutcomes,maxCPU462ms/wall16495ms;notfullmemory/resourcesoak. RollbackAPI NBApoints25/rebounds25/NHLshots25/NFLpassing2,200;notbrowsercounts. CW08same39ea465b/46e95f99,15min/frozen007c02b,ready1509receipts/960grades/329cycles/0pending/noerror. Manualcommandsrestored;buildfilterpausedthroughout. NO-GO;no2ndattempt;CW11/R1/V62Blocked/no100%closure. Next:exactnoncheckpointedNBA403sourcepath/recovery+legitimateuncachedCloudflareNBAinputs;repairlocalbrowsertesttrustbeforeanynewrelease. No repeatedprivatepreview/generalrepaircycle.\n\n2026-11-17 focusedNBAblockerrepair from17813dc; application936f6d4070bc02e4d24e6989d6defbb659479a84. Read-only existingdashboardcapture:nbaSQL rows_written0 proves NO nba_history_versions/checks,only5expiredrawsummarycacheentries/0unexpired/noplayerdiscovery. Exact oldAssists/Threesjobsalreadyblockedafter3attempts,0checkpoints;notinfiniteretry. HistoricalforegroundendpointconfirmedNBAathletegamelogseason2027HTTP403. OldbackgroundfailureDetailsnulldoesNOTidentifyexactURL;oldguardreproducedwithoptionalbyathletestatistics403,notclaimedproductionendpointproof. FixedNBAoptionalbaseline/summaryexactURLdenialsreturned403+cooldownwithoutjob-widepause;validatedFINALread-firstalsoinbackground;freshdiscovery15min/48hlag/semanticchecksunchanged. KnownmissingNBAhistorynowblockedFIRSTattemptwithexplicitevidence/quote diagnostics;blockedflagpropagatesbudgetcancellation;future sourceerrorsincludeorigin/path/status andjoblogsstate/progress. 42focusedchecksPASS/0FAIL(31source/all-sportjob+5workerdrecovery/durable+6NBA/college);TSverifiedexit0. UncachedRebounds/Assists/Threes25eachfrom115realcapturedsourcebodies/actualsnapshotquotes,exactprojection/probability/EVparity;localcaptureall3DONE/stored25eachunder403;sourceCheckpoints0becauseexistinginputsreused,phase/immutablewriteprogressproved. Emptyinputstoreblocksafter1attemptanddoesnotretry/write;no productiondata seeded. ThisisofflineworkerdsnapshotclockNOTliveR1acceptance. ChromiumcerttrustRESOLVED:managedCAalreadytrusted;NSSinitializationneedednarrowauthorizedRWfilesystempermissiontoexisting~/.pki/nssdb. Samebrowser/proxy/TLSchecks:onactualfallbackdesktop200/1.297s,mobile200/0.763s;noCAimport/HOMEchange/insecureflags/credentials. CurrentCloudflareNBAaccessNOTprovedrestored;productiondurableinputsabsent. Requirelegitimatefreshcompleteplayer/seasondiscovery<=15minandcompletevalidatedrecentFINALtwo-teamplayer/workload/role/possessions/opponentcensuses(48hlag,min5team/opponentfixtures)pluscurrentfixture/freshquotes. Olderarchive/5rawsummariescannotfillgaps. R1/CW11/V62remainBlocked;no newrelease/artifact/deploy/import/subscription/privatepreview/source-bypass/productionrecord/backups/CW08mutation. Activefallbackb1ef6404/a48c431a,CW0839ea465b/46e95f99/buildfilterpausedverified. No100%rowmoved."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 13
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Focused403/capture repairverified936f6d4;ChromiumTLSrunnerfixed. R1remainsBLOCKED:sufficientfreshNBAhistoricalinputsabsentinproductionstore. No newrelease/deployment."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 14
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "ObtainlegitimatecompletefreshNBAplayer/seasondiscoveryandvalidatedeligibleFINALcensuses;verifyactualCloudflareinputsanduncachedRebounds/Assists/Threesrecovery. No importpresumedapproved. Thenremainingproductionacceptance/newapproval;no releasepreparationnow."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 15
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "936f6d4:optionalNBA403doesnotpoisonphase;validatedFINALread-first;missingevidencefirstattemptblocked;origin/path/status+progressdiagnostics;blockedflagpropagation.42focusedpass/0fail/TS0;uncached3markets25eachandall3localcaptureDONE. Models/EVunchanged."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 16
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Read-onlycapture:nbaSQL0writes:no durableNBAevidencetables,5expiredrawsummaries,0freshdiscovery. EarlierWorkerNBAgamelogs403stilllatestconfirmedcandidateaccess;no newblockedfeedretry. Needcompletefreshlegitimatedata,notaverages/stalearchives. BrowsertrustblockerresolvedviaauthorizedNSSRWaccess."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 1777924792,
+            "rowIndex": 23,
+            "columnIndex": 18
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 90,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "LatestfrozenreleaseattemptstillFAILED/ROLLEDBACK;fallbackb1ef6404/a48c431aactive. Newcode936f6d4verifiedONLY;no newartifact/release/deploymentprepared."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 91,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "42focusedchecksPASS/0fail/TS0. Realcaptured-sourceworkerdcoldrecoveryRebounds/Assists/Threes25each/exactmathparity;3localcapturejobsDONE;emptyinputstoreBLOCKEDfirstattempt. ActualfallbackTLSdesktop/mobile200afterauthorizedNSSRWpermission. NOTliveR1acceptance."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 92,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Remainingrealblocker:productioncapture:nbaSQLhasNOdurableNBAevidence,5expiredrawsummaries/0freshdiscovery. LatestcandidateNBAgamelogs403. Freshcompletelegitimateplayer/team/opponentinputsrequired;localtestsdoNOTclearthisgate. No newreleaseapprovalrequest."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 93,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Exactoldbackground403URLwasnotrecorded;byathletestatisticsguardreproisnotproofthatwasproductionURL. Newdiagnosticsrecordsanitizedendpoint/status. Discoveryfreshnessunchanged;olderarchivecannotclaimcurrentcoverage. BrowsercertificateissueRESOLVED,noproviderbypass/newspending."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 94,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Samefallbackb1ef6404/a48c431a,CW0839ea465b/46e95f99,pausedbuildfilter/originalcommands. Read-onlydashboardDOqueriesallrows_written0;no productionrecord/dataimport/backup/credential/researchmutation. ExistingNSSfilesystempermissiononlyfortestcommands,TLSenabled."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 95,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "Supply/verifyfreshauthorizedNBA discovery+censuseswithoutprivatepreview/repeatedblockedcalls. No import/deploymentauthorizednow;no newartifactprepared. Reuseverified42tests/Chromiumrunner;leaveR1/CW11/V62openuntilactualproductionacceptance."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2026111601,
+            "rowIndex": 96,
+            "columnIndex": 1
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2052936075,
+            "rowIndex": 62,
+            "columnIndex": 4
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "2026-11-15 approved frozen fe2f058 release: deployment 79d6b9b0-8014-451a-bd3d-f732bbe15888 failed actual live NBA dashboard-summary (HTTP 503). Same-request Cloudflare logs identify unsupported redirect:error in the official-source fetch path; no memory/subrequest exhaustion found in the retained release window. Immediate compatible fallback deployment 4e8f8721-6e0a-4836-b877-9446a0f360d0 is active. Actual production browser verified 24 saved quarterback rankings in each of five NFL tabs before stopping; all-17/NBA/NHL/full acceptance incomplete. All17 pending NFL jobs completed (max32 measured requests/phase; passing40 source checkpoints) and the pending NHL job completed (46 source checkpoints). Fifty new NFL original receipts are preserved; all50 captured before kickoff, zero future quotes and zero new betting selections. All-sport scheduled acceptance remains incomplete. All18 historical checksum groups unchanged; zero duplicate original/pick/grade keys. CW08 unchanged and healthy (938receipts/781grades); dashboard automatic builds paused. No item moved to 100% completed. Correct the unsupported fetch option, add a truly cold foreground summary runtime regression and obtain new release approval after checks.\n\n2026-11-16 CW11/V62 code repair verified, source 600bd5d22811ddf17be9684b0cab2a86ed22d7ed. Exact withdrawn compiled request replay: HTTP503,24 unsupported redirect:error attempts,0 upstream scoreboard calls. Corrected compiled Worker: HTTP200,17 games,0 unsupported attempts,8 scoreboard calls; concurrent summaries/slate agree. Manual redirect handling explicitly rejects redirects and background accounting honors it; eight-second source/caller cancellation preserved. Removed live scoreboards from the15-minute history cache and reject malformed scoreboard JSON before short-cache insertion; recovery verified. Full regression830passed/0failed (11opt-in skips; ten compiled cases executed separately); compiled runtime17passed, instrumented summary10passed; TypeScript0diagnostics; production build/dry-run pass. NFL cold foreground, capture/checkpoint/lost-ACK restart and NHL coverage pass; NBA EV/PR/featured/history regressions preserved. Nothing deployed. Automatic builds paused; CW08 unchanged/healthy938receipts,781grades,162cycles. CW11 remains Blocked, not complete: freeze a new artifact, obtain approval and pass real production browser/all-sport scheduled acceptance before closure.\n\n2026-11-16 R1 rehearsal: frozen2bf33d6 application600bd5d, bundle d7714dc0/archive f6bf4343 (full SHA in evidence).832 regression/0fail/13opt-in skips;19 frozen compiled checks/0fail including exact V62 replay, persistent fallback/read/resume and shipping NBA/NFL/NHL grading with synthetic fixtures. TypeScript0/build/dry-run pass. Recorded browser replay NBA7/NFL17/NHL6 at desktop/mobile size passes; forced PR503 retains20 cards. Corrected two test-only mixed-clock failures; strict ranking assertions preserved. Fresh actual dashboard-bound OWL NFL2/NHL25 quotes verified; all18 current-session history inventories unchanged. CW08 unchanged953receipts/871grades/186cycles. NOT deployed, automatic builds paused. Open preapproval blocker: latest complete history+pregame backup manifests/parts and isolated full restore unverified; successful archive logs report restored:null. No deployment approval requested and no completion row moved. Real candidate production browser/resources/scheduled acceptance still required after approval.\n\n2026-11-16 explicit current-export authorization completed: all11615history/6109originals/1473picks/1269grades exported to existing owned Drive folder,132internal parts in3data objects plus verified completion manifest1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf (SHA80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b). Authenticated Drive readbacks restored20466/20466records; all4 full-row inventories and11615history payload SHA checks match; duplicate insert rejected. Production inventories unchanged through11:07:38AM Toronto.22focused backup/artifact tests pass. Export transport interruption resumed from checkpoints; no source writes, credentials/sharing change, old backup overwrite or research-table access. Frozen candidate bytes unchanged. Backup gate cleared; candidate ready for controlled approval, NOT deployed or production-complete. V62 failure/rollback facts remain unchanged; no completed row moved.\n\n2026-11-16 approved R1 actual production release: frozen archive f6bf4343 / bundle d7714dc0 uploaded unchanged from54836ed; candidate deployment f2f5c908-4d8a-420a-918d-6a0e02e0b2b9 (version a8e46b4c). NBA summary200/1.619s, but ACTUAL browser NBA Points0 eligible cards failed acceptance. ESPN NBA athlete-gamelog403 logged on the same candidate;102/106player refreshes recovered0observations. Immediate compatible fallback a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb selects a48c431a100%. All17NFL tabs rendered (QB2each); NHL Shots25/Points25, other4tabs0 with explanations. NFL anytime/firstTD scheduled jobs both done, max36requests/phase, max4sources,2new original receipts and0newpicks. Full38-market/all-sport grading rotation stopped by critical rollback; NOT verified. All20466pre-release row fingerprints unchanged; originals now6111, picks1473, grades1269; no duplicates, late captures or future quotes. CW08 unchanged974receipts/871grades/211cycles/no storage error. Fallback NBA25rankings recovered; fallback retains known NFL0cards limitation. Automatic builds paused. Cold NBA history/eligibility discrepancy versus retained fallback, featured publication and remaining live acceptance are blockers; no model/provider/credential changes, no completed row moved.\n\n2026-11-17 targeted NBA comparison completed from8150246. Exact fallback/withdrawn/corrected Points partition identical (SHA115fb0e1;12647observations). Candidate foreground and persistent capture denial keys incorrectly generalized one NBA athlete403 to all athletes/seasons for1hour. NBA keys now retain athlete+season; denied URLs keep cooldowns,429/NFL policies unchanged. Compiled controlled mixed-denial comparison: withdrawn0rows/4requests; fallback9rows/29requests; corrected same9rows/25requests, exact projection/probability/EV parity (8EVavailable,1explicit direction_unavailable). Also fixed NBA KV recovery: cache was written but only NFL read it. Actual corrected compiled routes recover7recorded NBA markets during denied feeds, cold concurrent Points/Rebounds:23/23/22/25/17/20/17rows; forecasts/KV unchanged,0history writes. These are recorded-input/fault-contract workerd tests, not live acceptance. Full regression844pass/0fail/15opt-in skips; shipping runtime19pass/0fail;2new compiled checks pass; TypeScript0diagnostics; build/dry-run pass. NFL17-tab/checkpoint/fallback/grading and NHL coverage regressions preserved. Nothing deployed; samefallback a43f9bf6 active; builds paused. CW08 unchanged1427receipts/960grades/298cycles/0pending/error. Targeted comparison blocker repaired in code; R1/CW11/V62 remain open pending new frozen release preparation, current safety checks/approval and actual production browser/all-sport capture/grading acceptance. No completed rows moved.\n\n2026-11-17 corrected R1 frozen for approval, no deployment: artifact R1-2026-11-17-e65304c-832d9ab3; sourcee65304c;424files; tested fingerprint832d9ab38287f57ca12d3caa7297249324c6fbe8c770fb8612022ad9620720e4; archive SHA62fd7f9543cf1a54be9a8ba7e0cb3c5bebbf899f5b9e35e5813ad9593a3fa8a0. Reused844regression/21compiled passes,0TS and existing restore evidence because source/output hashes identical. Only4package/CLI checks and upload-free dry-run rerun; passed. Authenticated backup manifest readback SHA80765c6b... matches; all3data objects available in existing folder. Same active compatible fallback a43f9bf6-bdb6-4e45-a5b0-7d1b2881cfcb /a48c431a verified; same SQLite/KV/secret binding names,2026-11-06 compatibility/nodejs_compat,350Worker/220job/4source limits; capture*/2,grade0/30,dailyarchive unchanged. Automatic builds paused; CW08 same deployment/version. New package preserves NBA/NFL/NHL repairs and replaces withdrawn Nov16 artifact. Ready for controlled deployment APPROVAL only; actual browser/records/resources/full38-market capture and3-sport grading acceptance remain pending after approval, with immediate fallback on critical failure. No completed row moved.\n\n2026-11-17 approved exact corrected R1 upload: deployment b672510a-7112-4cfc-a207-f71dbcb1e174/version59deb144 at10:31AM Toronto. Exact artifact SHA62fd7f95/fingerprint832d9ab3 verified in authenticated manual environment. ACTUAL browser NBA Points0cards failed; Points54/Rebounds52verified quotes but0fitted forecasts/public rankings. Official audits54/54 and52/52gamelog failures,0observations. Immediate fallback4699c3c4-5067-4347-b3b7-9d205fee5085/versiona48c431a100% at10:32AM. Fallback browser again shows25NBA Points and25NHL Shots rankings, while its known NFL0Passing Yards limitation persists. Candidate summary/slate/featured/history APIs200; other markets/all17NFL/NHL browser acceptance and full38-market/3-sport grading rotation incomplete due critical rollback. Resource telemetry follow-up rejected403 by Cloudflare; no bypass/repeated blocked queries. All20468records retain identical full-row fingerprints (includes20466original protected records+2earlier receipts); no loss/overwrite/newgrade. CW08 unchanged1448receipts/960grades/300cycles/0pending/no storage error. Builds paused/manualcommands restored. Local comparison did not establish live equivalence; actual full-denial/history/cache difference versus fallback remains unresolved. No retry and no100% closure.\n\n2026-11-17 scoped request-profile/outage repair from7a0b9a5, no deployment. Confirmed fallback public NBA identity Mozilla/5.0 (compatible; SachSports/1.0)+no-store differed from candidate SachSports/1.0+unspecified cache. Restore established initial NBA profile only; keep NFL profile/manual redirects/deadlines/concurrency/403/429 cooldowns. Confirmed incident defect: complete priced-player history failure returned200empty; NBA now returns503/nba_official_history_unavailable with explicit reason, preserving existing retry/card retention and valid-cache recovery. Workerd real handler accepts actual54/52incident fault inputs across7markets: outage503,normalempty200. Explicit profile-sensitive CONTRACT: failed artifact0in7markets; fallback/corrected identical9/9/8/11/8/11/8rows/probabilities. Unconditional403 stillabstains. Actual compiled cache7markets restoredunchanged,0historywrites. 48targetedchecks passed/0failed;TS0/buildpass; unrelated844regression evidence reused, not rerun. Live ESPN403 reason NOT proved: no retained response policy/body or successful same-connection profile verification. Do not infer live access from contract tests or request new production deployment. Current read-only KV Points key absent404; not evidence of its incident-time state. Activefallback4699c3c4/a48c431a andpausedbuildfilter verified unchanged; no production writes/backup/CW08 changes. R1 remainsBlocked pendingauthorized production-equivalent connection verification; no100% closure.\n\n2026-11-17 minimum real-history connection attempt fromcfbeef0; no R1 deployment. Prepared single fixed NBA gamelog probe, corrected profile/manual redirects/8s/2MiB,0bindings/schedules/writes. Cloudflare remote-preview SDK workflow: initial body-format400 corrected; authorized session issued; optional exchange403 not retried; SDK original-session fallback+explicitmultipart accepted ephemeral private preview. Single preview invocation then returned403/non-JSON87bytes, not probe JSON. No verified ESPN response/history/requestduration; cannot classify as ESPN denial, subscription failure or insufficient NBA history. Cloudflare invocation/access is the current verification blocker; precise network/session policy unknown. No identity/host/network bypass or further blocked invocation attempted. Points/other6market followup NOT run because connection gate did not pass. Existing48tests/investigations not repeated; onlyprobe syntax/evidence-state consistency checked. Before/after activefallback4699c3c4/a48c431a unchanged; pausedbuildfilter and CW08 deployment39ea465b/version46e95f99 unchanged. No production records/backup/binding changes. Minimum nextstep: authorized authenticated private-preview invocation of prepared probe, not newR1release/spending/tokenrotation. R1 remainsBlocked; no100%closure.\n\n2026-11-17 private-preview403 narrowed to invocation-client host restriction. Reviewed existing account/subdomain, unchanged preview settings(enabled/previews_enabled alreadytrue), exact-host Access-app lookup(no match), authenticated session/upload success and installed SDK flow. MadeONEfocused private invocation with SDK-equivalent preview/proxy headers and manual redirects. Actual403in6ms,text/plain87bytes,body: Forbidden: requests to sach-sports-cloudflare-test.sevans70.workers.dev are not allowed. NoCF-Ray/server/authenticate/location headers; no probe JSON. This is integration outbound-destination rejection, not a verified ESPN denial or expired account/session credential. No repeat/alternate client invocation after refusal. RealNBAstatus/history/duration stillunverified;7marketgate notpassed. Safestalternative: reviewed diagnostic-only existing authenticated Cloudflare manual environment, production deploy stage disabled, standardSDKprivatepreview with its own session and existing binding-free probe; no transferring credentials/proxy bypass/public-preview changes. No such alternative run performed. Fallback4699c3c4/a48c431a,pausedbuilds,previewsettings,CW08same before/after. No prodrecords/backups/bindings/credentials changed;48tests notrerun. R1 remainsBlocked/no100%closure.\n\n2026-11-17 existing Cloudflare manual environment checked once, pinned e363518; job dd25748c-8f0a-46c3-bb5e-9a94a5885b8d succeeded at2:03:52PM Toronto ONLY for capability inventory. Build command installed existing lockfile without lifecycle scripts and ran package inventory; deploy command was explicit no-op. Actual image: Node24.22.1,cf1.0.0-beta.28,Vite plugin2.0.0-beta.v.12,no project Wrangler/no Wrangler onPATH/no separate@cloudflare/dev. Existing Vite public interface supports local execution/remote bindings, not a supported whole-Worker private runner for this binding-free probe. Internal preview helpers are not exported. No internal extraction/new client/custom credential transport or other workaround attempted. STOPPED as instructed;0preview/provider requests, no ESPN response/duration/history sufficiency result;7market connection gate remains unverified. Prepared probe SHA21a22cb14905afeaae27b66991b871eb3b7ff7a9b11a170a85512e47fbbebb4f unchanged. Original manual commands restored;pausedfilter and activefallback4699c3c4/a48c431a,CW08deployment39ea465b/46e95f99 unchanged before/after. No production records/bindings/credentials/backups/public-preview settings/schedules modified.48checks reused,no broad rerun/rebuild/deployment. R1/CW11/V62 remainBlocked; no100%closure. Further execution requires separately reviewed supported private client/session; no additional workaround authorized.\n\n2026-11-17 durableNBA work fromd88776d:34 previously retained real official censuses validate into5382observations;3 excluded for TO/REB/STL reconciliation failures. Existing model fields/provenance contract identified. Uncommitted code adds immutable checksummed source versions+monotonic checks in existing capture:nba SQLite DO, transactional/background fenced writes and read-only foreground recovery; no new service/namespace. Separate runtime test passed real Worker eviction/restart and exact5382input recovery with0provider calls, expired discovery abstention and preserved originals. All7markets matched unchanged projections/probability arrays/EV arithmetic under declared offline fixture contracts; not live coverage.9focused checks+1runtime check passed;TS0 at completed checkpoint. Broader job/regression results and final TS unverified because workspace disconnected(exec-server transport closed,connectivity offline/environment unavailable). Last guard patch NOT applied: finish truncated-discovery/nonnegative/identity validation and cancellation propagation; derive reconstructed discovery W/L from real header. Working tree NOTcommitted/pushed; no release approval requested. Resume same workspace/preserve edits, inspect pending logs and finish narrowly scoped checks, then commit/push. No private-preview work, source purchase, rebuild, deployment, production records/bindings/backups/CW08 changes. Activefallback4699c3c4,CW0839ea465b andpausedbranchfilter confirmed after interruption. R1/CW11/V62 remainBlocked; no100%closure.\n\n2026-11-17 durable NBA recovery resumed in ORIGINAL workspace; all pending edits/fixtures/logs preserved. Retrieved interrupted regression result28passed/0failed/0skipped andTS0. Completed4remaining guards: monotonic completed regular-season discovery set(reject category truncation even orphan metadata remains); semantic numeric/identity/home-away/usage/possessions validation; propagate cancellation/deadlines/budget deferrals/lease loss across read/fallback/bothrefreshphases; reconstructed W/L derives actual team winner and scores. Final4durable tests+5NBA/college refresh tests passed,TS0,diffcheckpass; overlapping baseline28reused,not falsely added as new fullsuite. Existing capture:nba SQLite immutable/checksummed versions+transactional successful-check pointer recover5382identical observations/34realcensuses after fullWorkerrestart with0providercalls/foregroundwrites; all7market projections/probability arrays/EV arithmetic match; original receipt times/marker records preserved.3inconsistent fixtures still excluded. Rawarchive originalHTTPtimes unknown and explicitlynotbackdated; discovery/futuretarget contracts offline,NOTlivecoverage. Model/calibration/EV artifact bytesunchanged. COMMITTED/PUSHED6d987101b25b3e3d5f29c429ad35e1add0a06e58,remoteSHAverified. Workspaceblockresolved; implementationcomplete,NOTdeployed/imported. No rebuild/newsubscription/providerrequest/productionrecord/binding/credential/backup/CW08mutation. Pausedbuildfilter,fallback4699c3c4/a48c431a,CW0839ea465b/46e95f99verifiedunchanged. Next: updatedfrozenR1artifact/releasechecks,current-slatecompleteinputcoverage/resourcebounds,approvalthenactualbrowser/capture/gradingacceptance. R1/CW11/V62remainBlocked/no100%closure.\n\n2026-11-17 R1 release preparation from6d98710: frozen source4c23239,artifactR1-2026-11-17-4c23239-6173e391;bundle6173e39163b64964c07591a9b93f94c4282a71df8abfc694af85e8edfeb97aca/archive47fb603427002383ccfa99e39d4d90a48a20369c04b51c82d1bc0ccba18fa153. Current real50gamelogs+65fixtures=115HTTP200. Confirmed permanent64fixturecutoff withheld3Pointsplayers; bounded128source foreground/full-census resumable backgroundfix. Same captured real inputs now25/25rows in all7NBAmarkets,84–90sources; public displayed cohort only,NOTallunfilteredbooks/playerpool or productionegress proof.48selectedchecks pass/0fail/1intentionalwithdrawnbaselineskip;TS0/build/dryrunpass,gzip7573.14KiB. Finalcompiled19pass includesredirect/coldNFL/NHL/checkpoints/fallback/grading; sourcebudget30 recovers4phases28/28/26/16calls,versions12/27/39/49,5382identicalobservations/7marketmathparity. Desktop/mobile recordedbrowserNBA7/NFL17/NHL6passes,nohydrationerrors; forcedPR503retains20cards. Prior844regression reused,notrerun. Backup20466manifest/3objectsavailable,priorrestoreevidencereused. Activefallback4699c3c4/a48c431a,namespace/KV/secretnames/schedules/pausedbuildfilter,CW0839ea465b/46e95f99unchanged. No deployment/import/prodrecord/researchmutation. GOforcontrolledapprovalonly; requirefreshrelease-timequotes/providerhealth,actualproductionbrowser/resources,complete38marketcapture/3sportgradingandrecordinventories beforecompletion;fallbackimmediateoncriticalfailure. Optionalprovider/model/coverageinstrumentationworkseparate. R1/CW11/V62OPEN;no100%rowmoved.\n\n2026-11-17 ONEapprovedexactdurableR1attempt fromfe049d6,artifactR1-2026-11-17-4c23239-6173e391. Authenticatedmanualbuild809e57db verifiesarchive47fb6034/bundle6173e391twice; no compile/credentialtransfer. Candidatee5892740-c77f-4a3d-9d95-9f5deb8350f0/version01c7e153 at5:38:53PMToronto. LiveAPI summary/slate/featured/history200all3sports,summary1.107s/0.477s/0.449s;partialcountsnotinvented. Pointsretained25rows/25EV/stalenoticerecoveryworks. ReboundsCANDIDATE503/nba_official_history_unavailable in4.82s,54verifiedquotes/0forecasts. ActualcandidateNBAhistory56gamelogs403,0observations. ScheduledNBAAssists+Threesretryafter60s,rank->rank,job_source_http_403,0checkpointBytes,usage20/4<=220,maxconcurrency4. CriticalrecoverygateFAIL. NHLreplayscan->game->doneONLY;complete38market/3sportgraderotationNOTverified. Immediatefallbackb1ef6404-fd00-4312-857c-c50013bb64a2/versiona48c431a100% at5:43:16PMToronto;lateralarm/cronlogsconfirmfallbackholds. ActualChromiumproductionnavigationblockedbylocalERR_CERT_AUTHORITY_INVALIDbeforerendering;TLSchecksNOTdisabled;focusedsystemCAregistrationdidnotresolve. DesktopNOTpassed/mobileNOTattempted/no replayorAPIsubstitution. All20468orderedfullrowhashesunchanged:11615history/6111originals/1473picks/1269grades. Backup20466manifest+3objectsavailable,untouched. No newnamespace/import/deletion/model/providerpurchase.145releasewindowevents,noobservednon-okWorkeroutcomes,maxCPU462ms/wall16495ms;notfullmemory/resourcesoak. RollbackAPI NBApoints25/rebounds25/NHLshots25/NFLpassing2,200;notbrowsercounts. CW08same39ea465b/46e95f99,15min/frozen007c02b,ready1509receipts/960grades/329cycles/0pending/noerror. Manualcommandsrestored;buildfilterpausedthroughout. NO-GO;no2ndattempt;CW11/R1/V62Blocked/no100%closure. Next:exactnoncheckpointedNBA403sourcepath/recovery+legitimateuncachedCloudflareNBAinputs;repairlocalbrowsertesttrustbeforeanynewrelease. No repeatedprivatepreview/generalrepaircycle.\n\n2026-11-17 focusedNBAblockerrepair from17813dc; application936f6d4070bc02e4d24e6989d6defbb659479a84. Read-only existingdashboardcapture:nbaSQL rows_written0 proves NO nba_history_versions/checks,only5expiredrawsummarycacheentries/0unexpired/noplayerdiscovery. Exact oldAssists/Threesjobsalreadyblockedafter3attempts,0checkpoints;notinfiniteretry. HistoricalforegroundendpointconfirmedNBAathletegamelogseason2027HTTP403. OldbackgroundfailureDetailsnulldoesNOTidentifyexactURL;oldguardreproducedwithoptionalbyathletestatistics403,notclaimedproductionendpointproof. FixedNBAoptionalbaseline/summaryexactURLdenialsreturned403+cooldownwithoutjob-widepause;validatedFINALread-firstalsoinbackground;freshdiscovery15min/48hlag/semanticchecksunchanged. KnownmissingNBAhistorynowblockedFIRSTattemptwithexplicitevidence/quote diagnostics;blockedflagpropagatesbudgetcancellation;future sourceerrorsincludeorigin/path/status andjoblogsstate/progress. 42focusedchecksPASS/0FAIL(31source/all-sportjob+5workerdrecovery/durable+6NBA/college);TSverifiedexit0. UncachedRebounds/Assists/Threes25eachfrom115realcapturedsourcebodies/actualsnapshotquotes,exactprojection/probability/EVparity;localcaptureall3DONE/stored25eachunder403;sourceCheckpoints0becauseexistinginputsreused,phase/immutablewriteprogressproved. Emptyinputstoreblocksafter1attemptanddoesnotretry/write;no productiondata seeded. ThisisofflineworkerdsnapshotclockNOTliveR1acceptance. ChromiumcerttrustRESOLVED:managedCAalreadytrusted;NSSinitializationneedednarrowauthorizedRWfilesystempermissiontoexisting~/.pki/nssdb. Samebrowser/proxy/TLSchecks:onactualfallbackdesktop200/1.297s,mobile200/0.763s;noCAimport/HOMEchange/insecureflags/credentials. CurrentCloudflareNBAaccessNOTprovedrestored;productiondurableinputsabsent. Requirelegitimatefreshcompleteplayer/seasondiscovery<=15minandcompletevalidatedrecentFINALtwo-teamplayer/workload/role/possessions/opponentcensuses(48hlag,min5team/opponentfixtures)pluscurrentfixture/freshquotes. Olderarchive/5rawsummariescannotfillgaps. R1/CW11/V62remainBlocked;no newrelease/artifact/deploy/import/subscription/privatepreview/source-bypass/productionrecord/backups/CW08mutation. Activefallbackb1ef6404/a48c431a,CW0839ea465b/46e95f99/buildfilterpausedverified. No100%rowmoved."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2052936075,
+            "rowIndex": 62,
+            "columnIndex": 5
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "BLOCKEDbyactualmissingfreshNBAinputcoverage;403guard/storage/firstattemptblockedcodeverified42tests/TS0. ChromiumTLSrunnerresolvedinactualfallbackdesktop/mobile. No newreleaseprepared/deployed;livecorrectedcandidateacceptanceNOTclaimed."
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      },
+      {
+        "updateCells": {
+          "start": {
+            "sheetId": 2052936075,
+            "rowIndex": 62,
+            "columnIndex": 6
+          },
+          "rows": [
+            {
+              "values": [
+                {
+                  "userEnteredValue": {
+                    "stringValue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-15-recovered-release-rollback/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-15-cw11-redirect-repair/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-16-r1-rehearsal/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-16-r1-current-recovery-complete/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-16-r1-live-rollback/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-recovery/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/frontend/releases/r1-2026-11-17/release-plan.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-approved-rollback/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-request-profile/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-connection-check/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-preview-invocation-blocker/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-manual-diagnostic/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-6961137179\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/6d98710/docs/audits/2026-11-17-r1-nba-durable-recovery/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-durable-release/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-durable-live-rollback/README.md\nhttps://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                  }
+                }
+              ]
+            }
+          ],
+          "fields": "userEnteredValue"
+        }
+      }
+    ]
+  },
+  "result": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "replies": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    "updatedSpreadsheet": null
+  },
+  "readback": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "spreadsheetUrl": "https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit",
+    "properties": {
+      "title": "Sach Sports — Completion Tracker",
+      "locale": "en_US",
+      "timeZone": "America/Toronto"
+    },
+    "sheets": [
+      {
+        "properties": {
+          "sheetId": 2026111601,
+          "title": "Workstreams & release plan",
+          "index": 0,
+          "sheetType": "GRID",
+          "gridProperties": {
+            "rowCount": 100,
+            "columnCount": 8,
+            "frozenRowCount": 4
+          }
+        },
+        "data": [
+          {
+            "startRow": 90,
+            "startColumn": 1,
+            "rowData": [
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "LatestfrozenreleaseattemptstillFAILED/ROLLEDBACK;fallbackb1ef6404/a48c431aactive. Newcode936f6d4verifiedONLY;no newartifact/release/deploymentprepared."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              },
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "42focusedchecksPASS/0fail/TS0. Realcaptured-sourceworkerdcoldrecoveryRebounds/Assists/Threes25each/exactmathparity;3localcapturejobsDONE;emptyinputstoreBLOCKEDfirstattempt. ActualfallbackTLSdesktop/mobile200afterauthorizedNSSRWpermission. NOTliveR1acceptance."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              },
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Remainingrealblocker:productioncapture:nbaSQLhasNOdurableNBAevidence,5expiredrawsummaries/0freshdiscovery. LatestcandidateNBAgamelogs403. Freshcompletelegitimateplayer/team/opponentinputsrequired;localtestsdoNOTclearthisgate. No newreleaseapprovalrequest."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              },
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Exactoldbackground403URLwasnotrecorded;byathletestatisticsguardreproisnotproofthatwasproductionURL. Newdiagnosticsrecordsanitizedendpoint/status. Discoveryfreshnessunchanged;olderarchivecannotclaimcurrentcoverage. BrowsercertificateissueRESOLVED,noproviderbypass/newspending."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              },
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Samefallbackb1ef6404/a48c431a,CW0839ea465b/46e95f99,pausedbuildfilter/originalcommands. Read-onlydashboardDOqueriesallrows_written0;no productionrecord/dataimport/backup/credential/researchmutation. ExistingNSSfilesystempermissiononlyfortestcommands,TLSenabled."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              },
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Supply/verifyfreshauthorizedNBA discovery+censuseswithoutprivatepreview/repeatedblockedcalls. No import/deploymentauthorizednow;no newartifactprepared. Reuseverified42tests/Chromiumrunner;leaveR1/CW11/V62openuntilactualproductionacceptance."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              },
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP",
+                      "textFormat": {
+                        "link": {
+                          "uri": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "properties": {
+          "sheetId": 1777924792,
+          "title": "Repair checklist",
+          "index": 1,
+          "sheetType": "GRID",
+          "gridProperties": {
+            "rowCount": 964,
+            "columnCount": 26,
+            "frozenRowCount": 1,
+            "frozenColumnCount": 2,
+            "rowGroupControlAfter": true,
+            "columnGroupControlAfter": true
+          }
+        },
+        "data": [
+          {
+            "startRow": 23,
+            "startColumn": 5,
+            "rowData": [
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Blocked"
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "startRow": 23,
+            "startColumn": 13,
+            "rowData": [
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Focused403/capture repairverified936f6d4;ChromiumTLSrunnerfixed. R1remainsBLOCKED:sufficientfreshNBAhistoricalinputsabsentinproductionstore. No newrelease/deployment."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  },
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "ObtainlegitimatecompletefreshNBAplayer/seasondiscoveryandvalidatedeligibleFINALcensuses;verifyactualCloudflareinputsanduncachedRebounds/Assists/Threesrecovery. No importpresumedapproved. Thenremainingproductionacceptance/newapproval;no releasepreparationnow."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  },
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "936f6d4:optionalNBA403doesnotpoisonphase;validatedFINALread-first;missingevidencefirstattemptblocked;origin/path/status+progressdiagnostics;blockedflagpropagation.42focusedpass/0fail/TS0;uncached3markets25eachandall3localcaptureDONE. Models/EVunchanged."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  },
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "Read-onlycapture:nbaSQL0writes:no durableNBAevidencetables,5expiredrawsummaries,0freshdiscovery. EarlierWorkerNBAgamelogs403stilllatestconfirmedcandidateaccess;no newblockedfeedretry. Needcompletefreshlegitimatedata,notaverages/stalearchives. BrowsertrustblockerresolvedviaauthorizedNSSRWaccess."
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  },
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "R1 — Stability and existing-ranking recovery (release owner)"
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP"
+                    }
+                  },
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                    },
+                    "userEnteredFormat": {
+                      "verticalAlignment": "TOP",
+                      "wrapStrategy": "WRAP",
+                      "textFormat": {
+                        "link": {
+                          "uri": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/cloudflare-compatibility-test/docs/audits/2026-11-17-r1-nba-blocked-recovery/README.md"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "properties": {
+          "sheetId": 2052936075,
+          "title": "Verification log",
+          "index": 4,
+          "sheetType": "GRID",
+          "gridProperties": {
+            "rowCount": 1000,
+            "columnCount": 26,
+            "frozenRowCount": 1,
+            "frozenColumnCount": 1,
+            "rowGroupControlAfter": true,
+            "columnGroupControlAfter": true
+          }
+        },
+        "data": [
+          {
+            "startRow": 62,
+            "startColumn": 5,
+            "rowData": [
+              {
+                "values": [
+                  {
+                    "userEnteredValue": {
+                      "stringValue": "BLOCKEDbyactualmissingfreshNBAinputcoverage;403guard/storage/firstattemptblockedcodeverified42tests/TS0. ChromiumTLSrunnerresolvedinactualfallbackdesktop/mobile. No newreleaseprepared/deployed;livecorrectedcandidateacceptanceNOTclaimed."
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "noCompletedRowsMoved": true
+}

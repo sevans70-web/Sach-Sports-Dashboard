@@ -1,0 +1,136 @@
+{
+  "events": [
+    {
+      "timestamp": 1794955262521,
+      "requestId": "6c279009d8f9f9543c266bc5eaf1203c",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\":\"nba\",\"market\":\"threes_made\",\"from\":\"rank\",\"to\":\"rank\",\"state\":\"active\",\"usage\":{\"used\":4,\"limit\":220,\"costs\":{\"provider_gate\":2,\"history_http\":1,\"official_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":2,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}"
+    },
+    {
+      "timestamp": 1794955262521,
+      "requestId": "6c279009d8f9f9543c266bc5eaf1203c",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\":\"nba\",\"market\":\"threes_made\",\"phase\":\"rank\",\"reason\":\"job_source_http_403\",\"retryAt\":1794955322521,\"usage\":{\"used\":4,\"limit\":220,\"costs\":{\"provider_gate\":2,\"history_http\":1,\"official_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":2,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null}"
+    },
+    {
+      "timestamp": 1794955262106,
+      "requestId": "b26aabe6e198b089bf2019c65fa140d8",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955261689,
+      "requestId": "01aafd6fd79b43d3f873ff172650de6d",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955261611,
+      "requestId": "8a1a47c836a4d5572660fc4c88db2389",
+      "message": "Tue Nov 17 2026 22:40:58 GMT+0000 (Coordinated Universal Time)",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260643,
+      "requestId": "8a1a47c836a4d5572660fc4c88db2389",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:assists:14957960\",\"kind\":\"capture\",\"sport\":\"nba\",\"market\":\"assists\",\"from\":\"rank\",\"to\":\"rank\",\"state\":\"active\",\"usage\":{\"used\":20,\"limit\":220,\"costs\":{\"provider_gate\":10,\"history_http\":1,\"official_http\":9},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":10,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}"
+    },
+    {
+      "timestamp": 1794955260643,
+      "requestId": "8a1a47c836a4d5572660fc4c88db2389",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:assists:14957960\",\"kind\":\"capture\",\"sport\":\"nba\",\"market\":\"assists\",\"phase\":\"rank\",\"reason\":\"job_source_http_403\",\"retryAt\":1794955320626,\"usage\":{\"used\":20,\"limit\":220,\"costs\":{\"provider_gate\":10,\"history_http\":1,\"official_http\":9},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":10,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null}"
+    },
+    {
+      "timestamp": 1794955260546,
+      "requestId": "d98327ca202537f901c2d019db9d1097",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260533,
+      "requestId": "75e21f15fd167a24a8b084fd06832385",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260479,
+      "requestId": "58078022dfeecce3d454103981cbc718",
+      "message": "[dashboard-job-phase] {\"id\":\"replay:nhl:14957960\",\"kind\":\"replay\",\"sport\":\"nhl\",\"from\":\"game\",\"to\":\"done\",\"state\":\"done\",\"usage\":{\"used\":0,\"limit\":220,\"costs\":{},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}"
+    },
+    {
+      "timestamp": 1794955260475,
+      "requestId": "4cda3257be5c625b9cbdde8cb1e1ee40",
+      "message": "Tue Nov 17 2026 22:40:58 GMT+0000 (Coordinated Universal Time)",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260366,
+      "requestId": "18bc1509cee1fce8dac22122469dbb69",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260356,
+      "requestId": "f5386041431aecf184ca016b59cd4d24",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260304,
+      "requestId": "042d122f887fb9ed76572473b7c73b58",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260296,
+      "requestId": "50d6b7589fd83054fe8da71557ecc359",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260179,
+      "requestId": "b95126c012419112474cc3b15822f9c7",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260179,
+      "requestId": "a6a507b02dd5522ba43c1f96c19b1315",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955260179,
+      "requestId": "dd35376c6878c7fa88c466e0a5bc52e2",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955259479,
+      "requestId": "4cda3257be5c625b9cbdde8cb1e1ee40",
+      "message": "[dashboard-job-phase] {\"id\":\"replay:nhl:14957960\",\"kind\":\"replay\",\"sport\":\"nhl\",\"from\":\"scan\",\"to\":\"game\",\"state\":\"active\",\"usage\":{\"used\":2,\"limit\":220,\"costs\":{\"provider_gate\":1,\"history_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":1,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0}}"
+    },
+    {
+      "timestamp": 1794955259172,
+      "requestId": "0f980f3b9452e9005185f358db73b4a8",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955258980,
+      "requestId": "1b55d3d74d98f9987a83ac68f4c895ea",
+      "message": "DashboardJobQueue.jsrpc",
+      "outcome": "ok"
+    },
+    {
+      "timestamp": 1794955258980
+    },
+    {
+      "timestamp": 1794955258980
+    },
+    {
+      "timestamp": 1794955258980
+    },
+    {
+      "timestamp": 1794955258980
+    }
+  ]
+}

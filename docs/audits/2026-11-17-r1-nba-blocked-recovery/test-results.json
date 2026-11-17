@@ -1,0 +1,18 @@
+{
+  "applicationCommit": "936f6d4070bc02e4d24e6989d6defbb659479a84",
+  "baseCommit": "17813dc",
+  "tests": {
+    "focused": 31,
+    "recoveryAndDurability": 5,
+    "NBAAndCollegeRefresh": 6,
+    "total": 42,
+    "failures": 0,
+    "TypeScriptExitCode": 0
+  },
+  "productionFixed": false,
+  "productionMissingEvidence": true,
+  "productionDeployment": false,
+  "newReleaseArtifact": false,
+  "browserTrustFixed": true,
+  "marketRecoveryScope": "captured actual inputs in local workerd at frozen snapshot clock; not live candidate acceptance"
+}

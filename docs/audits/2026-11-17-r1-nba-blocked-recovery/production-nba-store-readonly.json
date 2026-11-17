@@ -1,0 +1,109 @@
+{
+  "result": {
+    "results": [
+      {
+        "columns": [
+          "name"
+        ],
+        "rows": [
+          [
+            "_cf_METADATA"
+          ],
+          [
+            "documents"
+          ],
+          [
+            "jobs"
+          ],
+          [
+            "metadata"
+          ],
+          [
+            "phase_events"
+          ],
+          [
+            "source_cache"
+          ],
+          [
+            "sqlite_sequence"
+          ]
+        ],
+        "meta": {
+          "rows_read": 18,
+          "rows_written": 0
+        }
+      },
+      {
+        "columns": [
+          "job",
+          "at",
+          "phase",
+          "outcome",
+          "detail"
+        ],
+        "rows": [
+          [
+            "capture:nba:threes_made:14957960",
+            1794955384461,
+            "rank",
+            "deferred",
+            "{\"reason\":\"job_source_http_403\",\"retryAt\":1794957184461,\"usage\":{\"used\":4,\"limit\":220,\"costs\":{\"provider_gate\":2,\"history_http\":1,\"official_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":2,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":null,\"stalledAttempts\":3,\"needsAttention\":true}}"
+          ],
+          [
+            "capture:nba:assists:14957960",
+            1794955382860,
+            "rank",
+            "deferred",
+            "{\"reason\":\"job_source_http_403\",\"retryAt\":1794957182860,\"usage\":{\"used\":20,\"limit\":220,\"costs\":{\"provider_gate\":10,\"history_http\":1,\"official_http\":9},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":10,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":null,\"stalledAttempts\":3,\"needsAttention\":true}}"
+          ],
+          [
+            "capture:nba:threes_made:14957960",
+            1794955323337,
+            "rank",
+            "deferred",
+            "{\"reason\":\"job_source_http_403\",\"retryAt\":1794955383337,\"usage\":{\"used\":4,\"limit\":220,\"costs\":{\"provider_gate\":2,\"history_http\":1,\"official_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":2,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":null,\"stalledAttempts\":2,\"needsAttention\":false}}"
+          ],
+          [
+            "capture:nba:assists:14957960",
+            1794955321273,
+            "rank",
+            "deferred",
+            "{\"reason\":\"job_source_http_403\",\"retryAt\":1794955381256,\"usage\":{\"used\":20,\"limit\":220,\"costs\":{\"provider_gate\":10,\"history_http\":1,\"official_http\":9},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":10,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":null,\"stalledAttempts\":2,\"needsAttention\":false}}"
+          ],
+          [
+            "capture:nba:threes_made:14957960",
+            1794955262521,
+            "rank",
+            "deferred",
+            "{\"reason\":\"job_source_http_403\",\"retryAt\":1794955322521,\"usage\":{\"used\":4,\"limit\":220,\"costs\":{\"provider_gate\":2,\"history_http\":1,\"official_http\":1},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":2,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":null,\"stalledAttempts\":1,\"needsAttention\":false}}"
+          ],
+          [
+            "capture:nba:assists:14957960",
+            1794955260643,
+            "rank",
+            "deferred",
+            "{\"reason\":\"job_source_http_403\",\"retryAt\":1794955320626,\"usage\":{\"used\":20,\"limit\":220,\"costs\":{\"provider_gate\":10,\"history_http\":1,\"official_http\":9},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":10,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":null,\"stalledAttempts\":1,\"needsAttention\":false}}"
+          ]
+        ],
+        "meta": {
+          "rows_read": 282,
+          "rows_written": 0
+        }
+      },
+      {
+        "columns": [
+          "url",
+          "expires"
+        ],
+        "rows": [],
+        "meta": {
+          "rows_read": 6,
+          "rows_written": 0
+        }
+      }
+    ]
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}

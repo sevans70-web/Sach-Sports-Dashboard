@@ -1,0 +1,21 @@
+{
+  "scope": "active production fallback TLS only; not R1 candidate acceptance",
+  "tlsVerificationEnabled": true,
+  "nssDirectory": "/home/agent/.pki/nssdb",
+  "sessions": [
+    {
+      "viewport": "desktop",
+      "httpStatus": 200,
+      "title": "Sach Sports",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/nba",
+      "seconds": 1.297
+    },
+    {
+      "viewport": "mobile",
+      "httpStatus": 200,
+      "title": "Sach Sports",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/nba",
+      "seconds": 0.763
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "before": {
+    "error": "ERR_CERT_AUTHORITY_INVALID",
+    "nssReadable": true,
+    "managedRootAlreadyTrusted": true,
+    "rootSha256": "c71b4d1e9d7775c538c688ab10cea9ce417d7312e89838f9d15ff73256cd7fc3",
+    "networkCertificatePathValid": false
+  },
+  "diagnosis": "NSS initialization needs authorized read/write filesystem access to existing /home/agent/.pki/nssdb; readable certutil listing alone is insufficient",
+  "after": {
+    "scope": "active production fallback TLS only; not R1 candidate acceptance",
+    "tlsVerificationEnabled": true,
+    "nssDirectory": "/home/agent/.pki/nssdb",
+    "sessions": [
+      {
+        "viewport": "desktop",
+        "httpStatus": 200,
+        "title": "Sach Sports",
+        "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/nba",
+        "seconds": 1.297
+      },
+      {
+        "viewport": "mobile",
+        "httpStatus": 200,
+        "title": "Sach Sports",
+        "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/nba",
+        "seconds": 0.763
+      }
+    ]
+  },
+  "newCaImported": false,
+  "tlsBypass": false,
+  "HOMEChanged": false,
+  "credentialsChanged": false
+}

@@ -1,0 +1,80 @@
+{
+  "applicationCommit": "936f6d4070bc02e4d24e6989d6defbb659479a84",
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 9392,
+      "sha256": "ae64f0bffafd0568359ea3d55b2acce3e4571d661919064bc9372683c4d0dcc0"
+    },
+    {
+      "file": "chromium-desktop-mobile.json",
+      "bytes": 573,
+      "sha256": "ac62d5dc284454bf99f1da629c7160a8a39c64edd6ec51df7d40cda9a9c79591"
+    },
+    {
+      "file": "chromium-trust-comparison.json",
+      "bytes": 1151,
+      "sha256": "53e48b2a5a0447577b8feee1bc953d6a20d96bace21aa613c707ae4f980fa6f9"
+    },
+    {
+      "file": "focused-final.log",
+      "bytes": 52617,
+      "sha256": "5d490e4ad93e7bc4520858abd5b543aeaf7a2ce2aa3e761d3d161584260c5d3d"
+    },
+    {
+      "file": "production-nba-blocked-state-readonly.json",
+      "bytes": 756,
+      "sha256": "4ffd5e3f2d1b339010300c401990702f4c0682712c962bd8c110ca1b6963b16b"
+    },
+    {
+      "file": "production-nba-store-details-readonly.json",
+      "bytes": 1230,
+      "sha256": "d907ef0e5c986bdf0c007727473b164d920becb6413ae823a03c04f2d1ec8e58"
+    },
+    {
+      "file": "production-nba-store-readonly.json",
+      "bytes": 5211,
+      "sha256": "b9983b293ce229ecfcbeb150452acef32e0ac7d7586e99e7a01874d2b790f629"
+    },
+    {
+      "file": "production-safety.json",
+      "bytes": 1469,
+      "sha256": "2a258f6941d8934bb68018ed6206688e4a5303bc37005077aa9e848da5f20bdd"
+    },
+    {
+      "file": "recorded-capture-first.json",
+      "bytes": 6469,
+      "sha256": "3cf029cf55d7b3ccf17610b097bf97a1bf3360218072324efcba818306451499"
+    },
+    {
+      "file": "recovery-final.log",
+      "bytes": 25865,
+      "sha256": "04a8211f2baeaf5a85184ea439fb7860ade5a7128304b96930866c4b5162901a"
+    },
+    {
+      "file": "refresh-regression.log",
+      "bytes": 2455,
+      "sha256": "d2864d7acc31a870183e8097415228e6cfeaf4b02e21ae6e583833a422a53731"
+    },
+    {
+      "file": "test-results.json",
+      "bytes": 543,
+      "sha256": "2b8ad3df923600ded08ad2846d6043e051236826fef378c93aa90f938b5a71e9"
+    },
+    {
+      "file": "tracker-update.json",
+      "bytes": 57806,
+      "sha256": "f5898ec7d1e3e62c150243b0ca8f25f70c6e57bc805c176b433f05c45571b8c3"
+    },
+    {
+      "file": "types-verified.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "file": "withdrawn-stats-reproduction.log",
+      "bytes": 53,
+      "sha256": "221142a1732c215f705da23d7362387da194dd2418f355533850478989a11b57"
+    }
+  ]
+}

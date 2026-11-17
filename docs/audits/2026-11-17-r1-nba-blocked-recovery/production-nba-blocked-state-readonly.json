@@ -1,0 +1,45 @@
+{
+  "result": {
+    "results": [
+      {
+        "columns": [
+          "id",
+          "state"
+        ],
+        "rows": [
+          [
+            "capture:nba:assists:14957960",
+            "blocked"
+          ],
+          [
+            "capture:nba:threes_made:14957960",
+            "blocked"
+          ]
+        ],
+        "meta": {
+          "rows_read": 4,
+          "rows_written": 0
+        }
+      },
+      {
+        "columns": [
+          "totalCachedSources",
+          "unexpiredCachedSources"
+        ],
+        "rows": [
+          [
+            5,
+            0
+          ]
+        ],
+        "meta": {
+          "rows_read": 5,
+          "rows_written": 0
+        }
+      }
+    ]
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}

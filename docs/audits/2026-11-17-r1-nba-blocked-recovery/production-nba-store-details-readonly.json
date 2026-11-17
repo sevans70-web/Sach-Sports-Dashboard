@@ -1,0 +1,48 @@
+{
+  "result": {
+    "results": [
+      {
+        "columns": [
+          "url",
+          "expires",
+          "bytes"
+        ],
+        "rows": [
+          [
+            "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909980",
+            1794717245767,
+            63196
+          ],
+          [
+            "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909981",
+            1794717245738,
+            60368
+          ],
+          [
+            "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909982",
+            1794717359732,
+            62608
+          ],
+          [
+            "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909983",
+            1794717245665,
+            62232
+          ],
+          [
+            "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909984",
+            1794717245668,
+            60196
+          ]
+        ],
+        "meta": {
+          "rows_read": 5,
+          "rows_written": 0
+        }
+      }
+    ],
+    "error": "ambiguous column name: id at offset 7: SQLITE_ERROR"
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}
