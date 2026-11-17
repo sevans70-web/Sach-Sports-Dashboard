@@ -1,0 +1,47 @@
+{
+  "at": "2026-11-17T19:04:38.154Z",
+  "trigger": {
+    "trigger_uuid": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+    "build_command": "cd frontend && npm ci && npm run build:vinext",
+    "deploy_command": "cd frontend && npm run deploy:vinext",
+    "branch_includes": [
+      "__cw08_manual_release_only__"
+    ],
+    "branch_excludes": [],
+    "root_directory": "/"
+  },
+  "dashboard": {
+    "id": "4699c3c4-5067-4347-b3b7-9d205fee5085",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Immediate approved R1 fallback: live NBA Points/Rebounds zero eligible rankings despite54/52 verified quotes; all official histories unavailable. Preserve existing/new records, namespace and grades. CW08 untouched.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-17T15:32:32.710012Z"
+  },
+  "cw08": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  }
+}

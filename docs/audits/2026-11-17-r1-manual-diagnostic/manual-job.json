@@ -1,0 +1,30 @@
+{
+  "status": "stopped",
+  "outcome": "success",
+  "stopped_on": "2026-11-17T19:03:52.626Z",
+  "commit": "e363518b08e867bd0ab4993911769fa095e2b8e6",
+  "buildCommand": "cd frontend && npm ci --ignore-scripts && node scripts/nba-probe-manual-capabilities.mjs",
+  "deployCommand": "node -e 'console.log(\"R1_DIAGNOSTIC_ONLY_NO_DEPLOY\")'",
+  "lines": [
+    [
+      1794942131349,
+      "Executing user build command: cd frontend && npm ci --ignore-scripts && node scripts/nba-probe-manual-capabilities.mjs"
+    ],
+    [
+      1794942229844,
+      "R1_MANUAL_CAPABILITIES {\"at\":\"2026-11-17T19:03:49.836Z\",\"node\":\"v24.22.1\",\"packages\":{\"cf\":{\"installed\":true,\"version\":\"1.0.0-beta.28\"},\"@cloudflare/vite-plugin\":{\"installed\":true,\"version\":\"2.0.0-beta.v.12\"},\"wrangler\":{\"installed\":false},\"@cloudflare/dev\":{\"installed\":false}},\"wranglerOnPath\":false,\"wranglerVersion\":null,\"probeSha256\":\"21a22cb14905afeaae27b66991b871eb3b7ff7a9b11a170a85512e47fbbebb4f\",\"diagnosticExecuted\":false,\"providerRequests\":0,\"productionWrites\":0}"
+    ],
+    [
+      1794942229859,
+      "Success: Build command completed"
+    ],
+    [
+      1794942230118,
+      "Executing user deploy command: node -e 'console.log(\"R1_DIAGNOSTIC_ONLY_NO_DEPLOY\")'"
+    ],
+    [
+      1794942230364,
+      "R1_DIAGNOSTIC_ONLY_NO_DEPLOY"
+    ]
+  ]
+}

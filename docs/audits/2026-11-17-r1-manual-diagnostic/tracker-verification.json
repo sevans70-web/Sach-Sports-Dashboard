@@ -1,0 +1,53 @@
+{
+  "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+  "checks": [
+    {
+      "sheetId": 2026111601,
+      "row": 94,
+      "valuesMatch": true,
+      "wrapStrategies": [
+        [
+          "WRAP"
+        ],
+        [
+          "WRAP"
+        ],
+        [
+          "WRAP"
+        ],
+        [
+          "WRAP"
+        ]
+      ]
+    },
+    {
+      "sheetId": 1777924792,
+      "row": 24,
+      "valuesMatch": true,
+      "wrapStrategies": [
+        [
+          "WRAP",
+          "WRAP",
+          "WRAP",
+          "WRAP",
+          "WRAP",
+          "WRAP"
+        ]
+      ]
+    },
+    {
+      "sheetId": 2052936075,
+      "row": 63,
+      "valuesMatch": true,
+      "wrapStrategies": [
+        [
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  ],
+  "status": "Blocked",
+  "movedToCompleted": false
+}
