@@ -1,0 +1,311 @@
+{
+  "observedAt": "2026-11-17T22:42:22.697Z",
+  "events": [
+    {
+      "timestamp": 1794955241096,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[basketball refresh audit] {\"sport\":\"nba\",\"players\":56,\"discoveredFixtures\":0,\"omittedFixtures\":0,\"gamelogFailures\":56,\"fixtureFailures\":0,\"unavailablePlayers\":56,\"observations\":0,\"sourceBudgetExhausted\":false}"
+    },
+    {
+      "timestamp": 1794955241096,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:41.054Z\"}"
+    },
+    {
+      "timestamp": 1794955240892,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.844Z\"}"
+    },
+    {
+      "timestamp": 1794955240892,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.844Z\"}"
+    },
+    {
+      "timestamp": 1794955240891,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.844Z\"}"
+    },
+    {
+      "timestamp": 1794955240732,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.686Z\"}"
+    },
+    {
+      "timestamp": 1794955240552,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.508Z\"}"
+    },
+    {
+      "timestamp": 1794955240546,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.502Z\"}"
+    },
+    {
+      "timestamp": 1794955240546,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.502Z\"}"
+    },
+    {
+      "timestamp": 1794955240386,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.327Z\"}"
+    },
+    {
+      "timestamp": 1794955240224,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.176Z\"}"
+    },
+    {
+      "timestamp": 1794955240209,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.163Z\"}"
+    },
+    {
+      "timestamp": 1794955240188,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:40.138Z\"}"
+    },
+    {
+      "timestamp": 1794955240021,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.962Z\"}"
+    },
+    {
+      "timestamp": 1794955240017,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.965Z\"}"
+    },
+    {
+      "timestamp": 1794955240017,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.962Z\"}"
+    },
+    {
+      "timestamp": 1794955240008,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.963Z\"}"
+    },
+    {
+      "timestamp": 1794955239844,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.792Z\"}"
+    },
+    {
+      "timestamp": 1794955239830,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.775Z\"}"
+    },
+    {
+      "timestamp": 1794955239638,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.585Z\"}"
+    },
+    {
+      "timestamp": 1794955239627,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.585Z\"}"
+    },
+    {
+      "timestamp": 1794955239467,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.414Z\"}"
+    },
+    {
+      "timestamp": 1794955239269,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.221Z\"}"
+    },
+    {
+      "timestamp": 1794955239263,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.214Z\"}"
+    },
+    {
+      "timestamp": 1794955239263,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.212Z\"}"
+    },
+    {
+      "timestamp": 1794955239096,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:39.048Z\"}"
+    },
+    {
+      "timestamp": 1794955238897,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.844Z\"}"
+    },
+    {
+      "timestamp": 1794955238897,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.844Z\"}"
+    },
+    {
+      "timestamp": 1794955238894,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.844Z\"}"
+    },
+    {
+      "timestamp": 1794955238727,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.675Z\"}"
+    },
+    {
+      "timestamp": 1794955238534,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.476Z\"}"
+    },
+    {
+      "timestamp": 1794955238522,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.468Z\"}"
+    },
+    {
+      "timestamp": 1794955238514,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.468Z\"}"
+    },
+    {
+      "timestamp": 1794955238349,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.304Z\"}"
+    },
+    {
+      "timestamp": 1794955238152,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.101Z\"}"
+    },
+    {
+      "timestamp": 1794955238148,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.097Z\"}"
+    },
+    {
+      "timestamp": 1794955238141,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:38.094Z\"}"
+    },
+    {
+      "timestamp": 1794955237981,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.930Z\"}"
+    },
+    {
+      "timestamp": 1794955237779,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.735Z\"}"
+    },
+    {
+      "timestamp": 1794955237778,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.739Z\"}"
+    },
+    {
+      "timestamp": 1794955237776,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.735Z\"}"
+    },
+    {
+      "timestamp": 1794955237613,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.427Z\"}"
+    },
+    {
+      "timestamp": 1794955237388,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.224Z\"}"
+    },
+    {
+      "timestamp": 1794955237277,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.228Z\"}"
+    },
+    {
+      "timestamp": 1794955237268,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.223Z\"}"
+    },
+    {
+      "timestamp": 1794955237095,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:37.050Z\"}"
+    },
+    {
+      "timestamp": 1794955237038,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.835Z\"}"
+    },
+    {
+      "timestamp": 1794955237008,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.836Z\"}"
+    },
+    {
+      "timestamp": 1794955236881,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.836Z\"}"
+    },
+    {
+      "timestamp": 1794955236701,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.537Z\"}"
+    },
+    {
+      "timestamp": 1794955236347,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.299Z\"}"
+    },
+    {
+      "timestamp": 1794955236347,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.299Z\"}"
+    },
+    {
+      "timestamp": 1794955236347,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:36.299Z\"}"
+    },
+    {
+      "timestamp": 1794955236161,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:35.951Z\"}"
+    },
+    {
+      "timestamp": 1794955236125,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:35.953Z\"}"
+    },
+    {
+      "timestamp": 1794955236123,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:35.951Z\"}"
+    },
+    {
+      "timestamp": 1794955236122,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog\",\"status\":403,\"retryAt\":\"2026-11-17T23:40:35.951Z\"}"
+    },
+    {
+      "timestamp": 1794955174099,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=football\",\"status\":403,\"retryAt\":\"2026-11-17T23:39:33.822Z\"}"
+    },
+    {
+      "timestamp": 1794955174074,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=football\",\"status\":403,\"retryAt\":\"2026-11-17T23:39:33.838Z\"}"
+    },
+    {
+      "timestamp": 1794955174072,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/search/v2?sport=football\",\"status\":403,\"retryAt\":\"2026-11-17T23:39:33.838Z\"}"
+    }
+  ],
+  "statistics": {
+    "elapsed": 0.191294145,
+    "rows_read": 2607005,
+    "bytes_read": 322216750,
+    "abr_level": 1
+  }
+}

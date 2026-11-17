@@ -1,0 +1,39 @@
+{
+  "artifact": "R1-2026-11-17-4c23239-6173e391",
+  "packageCommit": "fe049d6994890ce60a6a9c1475c2bc44beebd027",
+  "build": "809e57db-5eae-4904-bc8c-269dc673c5a8",
+  "candidateDeployment": "e5892740-c77f-4a3d-9d95-9f5deb8350f0",
+  "candidateVersion": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+  "candidateActivatedAt": "2026-11-17T22:38:53.493445Z",
+  "rollbackDeployment": "b1ef6404-fd00-4312-857c-c50013bb64a2",
+  "rollbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "rollbackActivatedAt": "2026-11-17T22:43:16.641996Z",
+  "decision": "NO-GO; live acceptance failed; no further deployment authorized",
+  "criticalFailures": [
+    "NBA Assists/Threes capture repeats job_source_http_403 after cooldown, rank->rank, zero checkpointBytes",
+    "NBA Rebounds actual candidate HTTP503/nba_official_history_unavailable despite54verifiedquotes;0fittedforecasts"
+  ],
+  "browser": {
+    "passed": false,
+    "desktopAttempt": "Actual Chromium navigation failed with ERR_CERT_AUTHORITY_INVALID in local audit environment before rendering",
+    "mobileAttempted": false,
+    "disabledCertificateChecks": false,
+    "apiTestsAreNotBrowserAcceptance": true
+  },
+  "scheduledAcceptance": {
+    "complete38MarketCapture": false,
+    "complete3SportGrading": false,
+    "nhlReplayReachedDone": true,
+    "firstTwoNbaCaptureJobsRepeatedDeferral": true,
+    "firstTwoNbaCaptureJobMaxUsage": 20,
+    "firstTwoNbaCaptureJobLimit": 220,
+    "firstTwoNbaCaptureJobMaxActive": 4
+  },
+  "protectedRecords": {
+    "before": 20468,
+    "after": 20468,
+    "allFourOrderedFullRowHashesUnchanged": true
+  },
+  "automaticBuilds": "paused; original manual commands restored",
+  "CW08": "unchanged;1509receipts,960grades,329cycles,0pendingUploads,noStorageError; frozen007c02b"
+}

@@ -1,0 +1,33 @@
+{
+  "rows": 25,
+  "dataState": "stale",
+  "coverageNotice": "Live refresh is unavailable. Showing recent verified pregame rankings; original forecast and sportsbook timestamps are preserved.",
+  "evDiagnostics": {
+    "available": 25,
+    "unavailable": 0,
+    "reasons": {}
+  },
+  "updatedAt": "2026-11-17T22:34:48.596Z",
+  "quoteMatchAudit": {
+    "quotes": 87,
+    "fixtures": 5,
+    "rosterPlayers": 175,
+    "matchedQuotes": 57,
+    "quotedRows": 56,
+    "pregameRows": 115,
+    "integrityVerifiedQuotes": 56,
+    "rowsWithLine": 56,
+    "fittedForecasts": 76,
+    "researchSelections": 26,
+    "forecastReasons": {
+      "price_threshold_not_met": 20,
+      "available": 26,
+      "recent_official_history_unavailable": 10,
+      "verified_quote_unavailable": 30,
+      "prior_basketball_role_uncertain": 17,
+      "insufficient_basketball_role_history": 11,
+      "player_team_history_unavailable": 1
+    }
+  },
+  "scope": "Actual candidate production API; retained board, not cold provider success"
+}

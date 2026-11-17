@@ -1,0 +1,1215 @@
+{
+  "observedAt": "2026-11-17T22:44:21.576Z",
+  "events": [
+    {
+      "timestamp": 1794955392022,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 4499,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387673,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 462,
+      "wallMs": 4536,
+      "type": "fetch",
+      "message": "GET https://sach-sports-cloudflare-test.sevans70.workers.dev/api/nba/rankings",
+      "level": "error"
+    },
+    {
+      "timestamp": 1794955387548,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "fetch",
+      "message": "[basketball refresh audit] {\"sport\":\"nba\",\"players\":54,\"discoveredFixtures\":0,\"omittedFixtu --- TRUNCATED --- 210 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387519,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 100,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387516,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 103,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387516
+    },
+    {
+      "timestamp": 1794955387516
+    },
+    {
+      "timestamp": 1794955387516
+    },
+    {
+      "timestamp": 1794955387413,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387320,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 103,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387320,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 108,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387220,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 110,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955387109,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 183,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386961,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 102,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386961,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386924
+    },
+    {
+      "timestamp": 1794955386924
+    },
+    {
+      "timestamp": 1794955386924
+    },
+    {
+      "timestamp": 1794955386916,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 108,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386807,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 191,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386797,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "fetch",
+      "message": "[official source unavailable] {\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/bask --- TRUNCATED --- 182 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955386614,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 103,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386614,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 102,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386607,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 107,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386607
+    },
+    {
+      "timestamp": 1794955386607
+    },
+    {
+      "timestamp": 1794955386607
+    },
+    {
+      "timestamp": 1794955386498,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 195,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386360,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 104,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386360,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 104,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386295,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 107,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955386187,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 188,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385997,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 102,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385997,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 114,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385993,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 114,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385877,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 104,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385877,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 104,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385877,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 107,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385794
+    },
+    {
+      "timestamp": 1794955385794
+    },
+    {
+      "timestamp": 1794955385794
+    },
+    {
+      "timestamp": 1794955385790,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 117,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385674,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 106,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385674,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 106,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385674,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 108,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385670,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 116,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385553,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 106,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385553,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 109,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385553,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 114,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385550,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 116,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385433,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 105,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385433,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385433,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 117,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385424,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 109,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385360,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385360,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 99,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385360,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 103,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385305
+    },
+    {
+      "timestamp": 1794955385305
+    },
+    {
+      "timestamp": 1794955385305
+    },
+    {
+      "timestamp": 1794955385300,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 103,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385196,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 98,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385196,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 102,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385196,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 109,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385187,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 121,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385064,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385064,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 102,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385064,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955385060
+    },
+    {
+      "timestamp": 1794955385060
+    },
+    {
+      "timestamp": 1794955385060
+    },
+    {
+      "timestamp": 1794955385057,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 111,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955384947,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 101,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955384947,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 103,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955384947,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 107,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955384939,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 14,
+      "wallMs": 1092,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:43:03 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955384461,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\":\" --- TRUNCATED --- 437 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955384461,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\" --- TRUNCATED --- 488 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955384095,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 88,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955383891,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 8,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955383841,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 57,
+      "wallMs": 1635,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:43:02 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382860,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:assists:14957960\",\"kind\":\"capture\",\"sport\":\"nb --- TRUNCATED --- 433 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382860,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:assists:14957960\",\"kind\":\"capture\",\"sport\":\" --- TRUNCATED --- 484 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955382744,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 6,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382696,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 5,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382658,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 8,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382586,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 5,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382566,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 5,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382528,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 89,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382500,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 7,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382500,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 7,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382488,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 9,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382488
+    },
+    {
+      "timestamp": 1794955382487
+    },
+    {
+      "timestamp": 1794955382247,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 9,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955382220,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 13,
+      "wallMs": 1756,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:43:00 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955381496,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"replay:nba:14957961\",\"kind\":\"replay\",\"sport\":\"nba\",\"fr --- TRUNCATED --- 345 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955381491,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 16,
+      "wallMs": 1370,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:43:00 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955381225,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:steals:14957961\",\"kind\":\"capture\",\"sport\":\"nba --- TRUNCATED --- 426 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955381225,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:steals:14957961\",\"kind\":\"capture\",\"sport\":\"n --- TRUNCATED --- 478 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955380835,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 89,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955380496,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"replay:nba:14957961\",\"kind\":\"replay\",\"sport\":\"nba\",\"fr --- TRUNCATED --- 381 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955380487,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 9,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955380463,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 18,
+      "wallMs": 1591,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:42:58 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955380150,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 13,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955379469,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:blocks:14957961\",\"kind\":\"capture\",\"sport\":\"nba --- TRUNCATED --- 426 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955379469,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:blocks:14957961\",\"kind\":\"capture\",\"sport\":\"n --- TRUNCATED --- 478 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955379265,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 1,
+      "wallMs": 2242,
+      "type": "scheduled",
+      "cron": "*/2 * * * *",
+      "message": "*/2 * * * *",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955379265,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "scheduled",
+      "cron": "*/2 * * * *",
+      "message": "[dashboard-job-enqueued] {\"queued\":[\"capture:nba:steals:14957961\",\"capture:nba:blocks:14957961\",\"replay:nba:14957961\"]}",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955379126,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 3,
+      "wallMs": 245,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955379099,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 1,
+      "wallMs": 95,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955378896,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 11,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955377878,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 282,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955377878,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 209,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955330859,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 14,
+      "wallMs": 8337,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:42:02 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955323337,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\": --- TRUNCATED --- 436 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955323337,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\" --- TRUNCATED --- 488 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955322928,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 90,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955322554,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 8,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955322505,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 65,
+      "wallMs": 1895,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:42:00 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955321273,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:assists:14957960\",\"kind\":\"capture\",\"sport\":\"nb --- TRUNCATED --- 432 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955321273,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:assists:14957960\",\"kind\":\"capture\",\"sport\":\" --- TRUNCATED --- 484 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955321189,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 8,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955321041,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 9,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955321021,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 8,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955321007,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 13,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955320894,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 4,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955320857,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 91,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955320826,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 13,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955320826,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 13,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955320826,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 14,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955320653,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 13,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955276976,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 5,
+      "wallMs": 16495,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:41:00 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955270031,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 14,
+      "wallMs": 8387,
+      "type": "alarm",
+      "message": "Tue Nov 17 2026 22:41:01 GMT+0000 (Coordinated Universal Time)",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955262521,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\":\" --- TRUNCATED --- 436 chars",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955262521,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "type": "alarm",
+      "message": "[dashboard-job-deferred] {\"id\":\"capture:nba:threes_made:14957960\",\"kind\":\"capture\",\"sport\" --- TRUNCATED --- 488 chars",
+      "level": "warn"
+    },
+    {
+      "timestamp": 1794955262106,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 88,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    {
+      "timestamp": 1794955261689,
+      "version": "01c7e153-5f96-49ac-9cad-6590cf3ab71e",
+      "outcome": "ok",
+      "cpuMs": 0,
+      "wallMs": 8,
+      "type": "jsrpc",
+      "message": "DashboardJobQueue.jsrpc",
+      "level": "info"
+    },
+    "--- TRUNCATED --- 156 more items"
+  ],
+  "statistics": {
+    "elapsed": 0.17278698,
+    "rows_read": 2917987,
+    "bytes_read": 403247254,
+    "abr_level": 1
+  }
+}

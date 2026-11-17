@@ -1,0 +1,98 @@
+{
+  "nba": {
+    "games": 17,
+    "estimatedPicks": 25,
+    "coverageComplete": false,
+    "summarySeconds": 1.107,
+    "slateSeconds": 0.987,
+    "featuredKeys": [
+      "slateDay",
+      "plays",
+      "marketsChecked",
+      "verifiedQuoteCount",
+      "state",
+      "updatedAt"
+    ],
+    "historyKeys": [
+      "success",
+      "connected",
+      "partial",
+      "sport",
+      "period",
+      "league",
+      "readOnly",
+      "researchSummary",
+      "probabilityAccuracy",
+      "overallSummary",
+      "categories",
+      "coverage",
+      "records",
+      "updatedAt",
+      "refreshing"
+    ]
+  },
+  "nfl": {
+    "games": 13,
+    "estimatedPicks": null,
+    "coverageComplete": false,
+    "summarySeconds": 0.477,
+    "slateSeconds": 0.137,
+    "featuredKeys": [
+      "slateDay",
+      "plays",
+      "marketsChecked",
+      "verifiedQuoteCount",
+      "state",
+      "updatedAt"
+    ],
+    "historyKeys": [
+      "success",
+      "connected",
+      "partial",
+      "sport",
+      "period",
+      "league",
+      "readOnly",
+      "researchSummary",
+      "probabilityAccuracy",
+      "overallSummary",
+      "categories",
+      "coverage",
+      "records",
+      "updatedAt",
+      "refreshing"
+    ]
+  },
+  "nhl": {
+    "games": 14,
+    "estimatedPicks": 20,
+    "coverageComplete": false,
+    "summarySeconds": 0.449,
+    "slateSeconds": 0.141,
+    "featuredKeys": [
+      "slateDay",
+      "plays",
+      "marketsChecked",
+      "verifiedQuoteCount",
+      "state",
+      "updatedAt"
+    ],
+    "historyKeys": [
+      "success",
+      "connected",
+      "partial",
+      "sport",
+      "period",
+      "league",
+      "readOnly",
+      "researchSummary",
+      "probabilityAccuracy",
+      "overallSummary",
+      "categories",
+      "coverage",
+      "records",
+      "updatedAt",
+      "refreshing"
+    ]
+  }
+}

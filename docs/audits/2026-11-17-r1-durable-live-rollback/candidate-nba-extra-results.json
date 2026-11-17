@@ -1,0 +1,25 @@
+{
+  "rebounds": {
+    "status": 503,
+    "seconds": 4.82,
+    "rows": 0,
+    "quotes": 0,
+    "reason": "nba_official_history_unavailable",
+    "state": "unavailable",
+    "audit": {
+      "quotes": 85,
+      "fixtures": 5,
+      "rosterPlayers": 175,
+      "matchedQuotes": 55,
+      "quotedRows": 54,
+      "pregameRows": 54,
+      "integrityVerifiedQuotes": 54,
+      "rowsWithLine": 54,
+      "fittedForecasts": 0,
+      "researchSelections": 0,
+      "forecastReasons": {
+        "recent_official_history_unavailable": 54
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "nba-points": {
+    "status": 200,
+    "rows": 25,
+    "seconds": 11.208,
+    "state": null,
+    "ev": {
+      "available": 25,
+      "unavailable": 0,
+      "reasons": {}
+    }
+  },
+  "nba-rebounds": {
+    "status": 200,
+    "rows": 25,
+    "seconds": 7.856,
+    "state": null,
+    "ev": {
+      "available": 25,
+      "unavailable": 0,
+      "reasons": {}
+    }
+  },
+  "nhl-shots_on_goal": {
+    "status": 200,
+    "rows": 25,
+    "seconds": 5.081,
+    "state": null,
+    "ev": null
+  },
+  "nfl-passing_yards": {
+    "status": 200,
+    "rows": 2,
+    "seconds": 2.05,
+    "state": null,
+    "ev": null
+  }
+}

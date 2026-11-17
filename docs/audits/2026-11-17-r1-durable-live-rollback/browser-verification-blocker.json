@@ -1,0 +1,14 @@
+{
+  "error": "Page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://sach-sports-cloudflare-test.sevans70.workers.dev/nba\nCall log:\n  - navigating to \"https://sach-sports-cloudflare-test.sevans70.workers.dev/nba\", waiting until \"domcontentloaded\"\n",
+  "at": 1794955317.5046737,
+  "report": {
+    "viewport": "desktop",
+    "errors": [],
+    "hydrationErrors": [],
+    "nfl": {},
+    "nhl": {},
+    "nba": {},
+    "responses": [],
+    "scope": "Actual production browser, no replay, no clock changes, TLS verification enabled"
+  }
+}

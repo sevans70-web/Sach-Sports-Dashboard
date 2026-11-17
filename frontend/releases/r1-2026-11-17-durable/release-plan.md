@@ -1,6 +1,6 @@
 # R1 durable NBA recovery — controlled release awaiting approval
 
-**GO for a controlled deployment approval request. Nothing uploaded; R1 is not production-complete.** This replaces the withdrawn earlier R1 packages; their approvals do not authorize this new artifact.
+**LATEST OUTCOME: the one approved production attempt failed and was rolled back. NO-GO; no further candidate attempt is authorized.** Candidate deployment `e5892740-c77f-4a3d-9d95-9f5deb8350f0`, active fallback `b1ef6404-fd00-4312-857c-c50013bb64a2` / version `a48c431a-5c3e-4491-8529-38cb20dfa898`. NBA capture repeated403 without checkpoint progress; uncached Rebounds returned503 despite54verified quotes. Actual browser acceptance did not pass. See `docs/audits/2026-11-17-r1-durable-live-rollback/README.md`. Frozen archive/manifest remain unchanged; the preparation plan below is retained as history, not permission to retry.
 
 ## Frozen identity
 

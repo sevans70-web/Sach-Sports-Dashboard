@@ -1,0 +1,106 @@
+{
+  "artifact": "R1-2026-11-17-4c23239-6173e391",
+  "outcome": "failed_and_rolled_back",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 7162,
+      "sha256": "40641a1eba185324e2d258954510031e01e8025602c905df55738b29e3b06f82"
+    },
+    {
+      "path": "api-verification.json",
+      "bytes": 1831,
+      "sha256": "f5ef440185beb50119c4b1a9aaf5c9433b3f30a77cb9d1f98ab7fd256e8ce647"
+    },
+    {
+      "path": "backup-availability.json",
+      "bytes": 2712,
+      "sha256": "64582f44ab99a2e8ff7a02b49080cc31401b78c029afe6dfa1a0e6e23952815e"
+    },
+    {
+      "path": "browser-verification-blocker.json",
+      "bytes": 537,
+      "sha256": "3c482753e929c413f89a211581ab95277ad82b117945322b158c7ea241ec33ae"
+    },
+    {
+      "path": "candidate-nba-extra-results.json",
+      "bytes": 546,
+      "sha256": "71dc96bd8549604194d094fd5c1b09121f5320371628a5ea333bcf42f468a7b1"
+    },
+    {
+      "path": "candidate-points-recovery.json",
+      "bytes": 1009,
+      "sha256": "f97b3ed2682b11fa4bb63ca1b64291749cf537e4724169c8e00f56d362be1fd7"
+    },
+    {
+      "path": "candidate-telemetry.json",
+      "bytes": 32744,
+      "sha256": "7ca0fe446dca37f433a2482de705478583b049f6bd5e4d8ae9e56ea11f467b1f"
+    },
+    {
+      "path": "capture-telemetry.json",
+      "bytes": 6592,
+      "sha256": "bae904f0666d32e57583a8c986f5d1c9c22ed04f77c84eece4618d1f2ee1aace"
+    },
+    {
+      "path": "cw08-status.json",
+      "bytes": 212,
+      "sha256": "3fee5e25c34abb2d6307ba23f452adc083fb4539349595e611f340207efcae29"
+    },
+    {
+      "path": "deployment.json",
+      "bytes": 2233,
+      "sha256": "e0b8fb74f417be5c2c3ae2123b01f464729d67d5ff8f8eac09a50a15d476d1b9"
+    },
+    {
+      "path": "fallback-hold-verification.json",
+      "bytes": 1006,
+      "sha256": "40881a81e1b6171e887534d94af20cf3653de72131737e386ff52fbcd6d6e0e6"
+    },
+    {
+      "path": "history-denials.json",
+      "bytes": 19104,
+      "sha256": "3f260ad47537484a3263b1014de84c01c9dc9bb47bcefafebbc9ad462f5d2097"
+    },
+    {
+      "path": "nba-rebounds.json",
+      "bytes": 1632,
+      "sha256": "2b1422d7d21fafc41e3d773f39ae4d32b5f81cf7408eeca0a84c62c5d36008b0"
+    },
+    {
+      "path": "post-release-safety.json",
+      "bytes": 1739,
+      "sha256": "e92a93170201f6fff0f2baab58b3849eb9ec3fa2a40e1bf392b903f792c1aa10"
+    },
+    {
+      "path": "preflight-cloudflare.json",
+      "bytes": 3639,
+      "sha256": "818945fcc693c8551af2c05fa90f2eea20f8143f60ba506bac21067ee473cddc"
+    },
+    {
+      "path": "release-result.json",
+      "bytes": 1758,
+      "sha256": "e1b49d579fce7e358ff7dde0e4c91beceff2e0b25cea42469a516338855c943f"
+    },
+    {
+      "path": "rollback-api-verification.json",
+      "bytes": 613,
+      "sha256": "7973fe668cb275d6be48d17b2465f9fcfc43b170907b4ef452d4a6956618455f"
+    },
+    {
+      "path": "source-after.json",
+      "bytes": 594,
+      "sha256": "ac7345a8ec49a712ae72eb033761cb29d58eeca0856b0cbbfce9d81e612b72bb"
+    },
+    {
+      "path": "source-before.json",
+      "bytes": 594,
+      "sha256": "55b36fbce8de603b5f43543f8be8e20b49ec7232090552f74788f45d6e16bfcd"
+    },
+    {
+      "path": "tracker-update.json",
+      "bytes": 52676,
+      "sha256": "749b36aa048e9c4ab034d2587d5eb12fc588c5bc9502332fcf6f326659f61bf6"
+    }
+  ]
+}

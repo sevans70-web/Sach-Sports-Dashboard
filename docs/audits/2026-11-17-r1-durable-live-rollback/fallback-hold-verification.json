@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-11-17T22:47:07.213Z",
+  "events": [
+    {
+      "timestamp": 1794955559727,
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1794955499727,
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1794955497070,
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "message": "[dashboard-release-hold] {\"kind\":\"scheduled\",\"cron\":\"*/2 * * * *\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1794955439726,
+      "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    }
+  ]
+}
