@@ -49,7 +49,10 @@ export function budgetBinding(binding,scope,kind='kv'){
  return new Proxy(binding,{get(target,key){const value=Reflect.get(target,key,target);if(typeof value!=='function')return value;return (...args)=>{charge(scope,kind,Array.isArray(args[0])?Math.max(1,args[0].length):1);return value.apply(target,args);};}});
 }
 export function installJobFetch(){
- globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;},readInput:key=>scope.store.cacheRead(key),checkpointInput:(key,value,progress)=>{active(scope);if(scope.store.cacheWrite(key,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');if(progress){scope.cacheWrites++;scope.checkpointBytes+=JSON.stringify(value).length;}}}:undefined;};
+ globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;},readInput:key=>scope.store.cacheRead(key),
+  readNbaEvidence:scope.allowNbaSourceDenials&&scope.store.readNbaEvidence?key=>{active(scope);return scope.store.readNbaEvidence(key);}:undefined,
+  writeNbaEvidence:scope.allowNbaSourceDenials&&scope.cacheSources&&scope.store.writeNbaEvidence?value=>{active(scope);if(scope.paused)throw scope.paused;const stored=scope.store.writeNbaEvidence(value);if(stored){scope.cacheWrites++;scope.checkpointBytes+=JSON.stringify(value).length;}return stored;}:undefined,
+  checkpointInput:(key,value,progress)=>{active(scope);if(scope.store.cacheWrite(key,value)===false)throw new JobDeferred('job_source_checkpoint_unavailable');if(progress){scope.cacheWrites++;scope.checkpointBytes+=JSON.stringify(value).length;}}}:undefined;};
  if(globalThis.fetch===globalThis[nativeKey])return;
  const native=globalThis.fetch.bind(globalThis);
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};

@@ -1,0 +1,90 @@
+{
+  "baseCommit": "d88776df1804049c117c1bcb635f7ac82d66f3ba",
+  "status": "implementation_verified_not_deployed",
+  "runs": {
+    "baseline-regression.log.gz": {
+      "tests": 28,
+      "pass": 28,
+      "fail": 0,
+      "skipped": 0
+    },
+    "final-durable.log": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "skipped": 0
+    },
+    "final-refresh.log": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "countsAreOverlappingRuns": true,
+  "typescriptDiagnostics": 0,
+  "wholeDashboardBuild": false,
+  "productionImport": false,
+  "providerRequests": 0,
+  "runtimeEvidence": {
+    "censuses": 34,
+    "observations": 5382,
+    "discoveryContracts": 15,
+    "coldProviderCalls": 0,
+    "sevenMarkets": [
+      {
+        "market": "points",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      },
+      {
+        "market": "rebounds",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      },
+      {
+        "market": "assists",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      },
+      {
+        "market": "threes_made",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      },
+      {
+        "market": "pts_rebs_asts",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      },
+      {
+        "market": "pts_rebs",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      },
+      {
+        "market": "pts_asts",
+        "inputParity": true,
+        "projectionAndProbabilityParity": true,
+        "evArithmeticParity": true
+      }
+    ],
+    "productionAccess": false
+  },
+  "unchangedModelFilesSha256": {
+    "frontend/model-runtime/snapshot.json.gz": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+    "frontend/model-runtime/nba-combination-models.json": "9bb0fa1ad02cb04f60292d5a47b04389cf010ff7004e6f0e32b8e0b28a1c5923",
+    "frontend/lib/probability-forecast.ts": "dc722d1b88aae5436768d9dc360b11d31b01c14fb41731bfb133b1ab09e2df2b",
+    "frontend/lib/basketball-model-inputs.ts": "da430c80ab64993b7f19f2f737d635daf5336c3da9a32241383386bc5de0f08b",
+    "frontend/lib/basketball-model-observations.ts": "11e9c68797617e93c31ef535a337092b37304bf76fa50111768ca95a7479b69e",
+    "frontend/lib/estimated-ev.ts": "fe8068fab0c50482138f220d14466258cf931bc2470d0f66c0622ac7b73036b8",
+    "frontend/lib/nba-ranking-ev.ts": "dd16374b7451e02ee966b5c1d199d82a7a6a204ae71ba4f79093ca492dbbdb38"
+  },
+  "sourceFixtureSha256": "a852c1c8ec295aa2ab43ab672287cccf208cb4d68b3bfcfee30b351d0134bd27"
+}

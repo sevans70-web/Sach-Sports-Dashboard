@@ -4,6 +4,7 @@ import {runPhase} from './tasks.mjs';
 import {PREGAME_MARKETS,torontoCaptureDay,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
+import {nbaEvidenceStore} from './nba-evidence-store.mjs';
 const sports=['nba','nfl','nhl'];
 const safeError=e=>/^[a-z0-9_ .:-]{1,160}$/i.test(e?.message||'')?e.message:'dashboard_job_failed';
 function progress(job,usage,advanced,now){
@@ -26,6 +27,8 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
  meta(key){const row=this.rows('SELECT value FROM metadata WHERE key=?',key)[0];return row?JSON.parse(row.value):null;}
  setMeta(key,value){this.sql.exec('INSERT OR REPLACE INTO metadata VALUES(?,?)',key,JSON.stringify(value));}
  cacheRead(url){const row=this.rows('SELECT body FROM source_cache WHERE url=? AND expires>?',url,this.now())[0];return row?decode(row.body):null;}
+ readNbaHistoryEvidence(source){return nbaEvidenceStore(this.sql,()=>this.now()).read(source);}
+ writeNbaHistoryEvidence(value){return this.ctx.storage.transactionSync(()=>nbaEvidenceStore(this.sql,()=>this.now()).write(value));}
  cacheWrite(url,value){
   const body=encode(value),bytes=body.length;if(bytes>1536*1024)return false;
   this.sql.exec('DELETE FROM source_cache WHERE expires<=?',this.now());
@@ -64,7 +67,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   if(!row){await this.arm();return;}
   const job=decode(row.data),token=crypto.randomUUID();this.setMeta('lease',{token,until:this.now()+90000});
   const owns=()=>this.meta('lease')?.token===token;
-  const fencedStore={cacheRead:u=>this.cacheRead(u),cacheWrite:(u,v)=>{if(!owns())throw Error('job_lease_lost');return this.cacheWrite(u,v);},document:(...args)=>{if(!owns())throw Error('job_lease_lost');this.document(...args);},documents:id=>this.documents(id)};
+  const fencedStore={readNbaEvidence:u=>this.readNbaHistoryEvidence(u),writeNbaEvidence:v=>{if(!owns())throw Error('job_lease_lost');return this.writeNbaHistoryEvidence(v);},cacheRead:u=>this.cacheRead(u),cacheWrite:(u,v)=>{if(!owns())throw Error('job_lease_lost');return this.cacheWrite(u,v);},document:(...args)=>{if(!owns())throw Error('job_lease_lost');this.document(...args);},documents:id=>this.documents(id)};
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{

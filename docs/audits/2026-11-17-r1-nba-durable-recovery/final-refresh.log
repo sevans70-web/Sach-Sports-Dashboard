@@ -1,0 +1,20 @@
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":60}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"fixtureFailures":0,"unavailablePlayers":1,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":60}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":0}
+[basketball refresh audit] {"sport":"cbb","players":1,"discoveredFixtures":1,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":1,"unavailablePlayers":1,"observations":0}
+✔ new-season log supplies complete two-team context, with no preseason, duplicate or <48h result leakage (8.340848ms)
+✔ failed discovery, incomplete totals and mismatched fixtures withhold affected players (2.952575ms)
+✔ locked and started cards never refresh or replace historical inputs (0.465096ms)
+✔ college refresh uses current college season and complete official census, with no NBA endpoint or prior-season substitution (3.110522ms)
+✔ college history errors abstain; a mismatched fixture season cannot supply usable observations (10.776265ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 902.527967

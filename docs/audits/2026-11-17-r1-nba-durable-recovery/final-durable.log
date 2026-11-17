@@ -1,0 +1,18 @@
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":15,"fixtureFailures":0,"unavailablePlayers":15,"observations":0}
+[basketball refresh audit] {"sport":"nba","players":15,"discoveredFixtures":34,"omittedFixtures":0,"gamelogFailures":0,"fixtureFailures":0,"unavailablePlayers":0,"observations":5382}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"fixtureFailures":0,"unavailablePlayers":1,"observations":0}
+NBA_DURABLE_REAL_EVIDENCE {"censuses":34,"observations":5382,"discoveryContracts":15,"coldProviderCalls":0,"sevenMarkets":[{"market":"points","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"rebounds","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"assists","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"threes_made","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"pts_rebs_asts","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"pts_rebs","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true},{"market":"pts_asts","inputParity":true,"projectionAndProbabilityParity":true,"evArithmeticParity":true}],"productionAccess":false}
+✔ real official NBA censuses persist in the existing DO, recover after eviction, and retain seven-market calculations (12068.855422ms)
+✔ semantic validation rejects reconciled-but-impossible census values and ambiguous identities (30.524581ms)
+✔ cancellation propagates through storage reads, stale-census recovery and both refresh phases (373.983801ms)
+✔ a foreground deadline admits no new reads or provider requests after in-flight evidence returns (63.777012ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13776.196754
