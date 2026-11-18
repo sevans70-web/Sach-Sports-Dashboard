@@ -1,0 +1,48 @@
+{
+  "baseCommit": "4e1bd571df7b9bebf5097ac7f4e48c6b5840c9ca",
+  "checkedAt": "2026-11-18T00:19:51.659810+00:00",
+  "productionImport": false,
+  "productionSqlRequests": 0,
+  "productionDeployment": false,
+  "sourcePackageSha256": "c6f828e8463b1bb616e2f88b86f0049cbb67156a1b9404469dd3ef8d74dba6c4",
+  "sourcePlanDigest": "3c2d82c7e3310ccd01528da5f4ca92646a22cba5cd40f68492d89e6fbfdd8813",
+  "focusedTests": {
+    "passed": 3,
+    "failed": 0,
+    "command": "node --test tests/nba-bootstrap-import.test.mjs",
+    "mode": "actual local workerd/SQLite + API-shaped one-statement transport + offline file bridge; no actual production API writes"
+  },
+  "typescript": {
+    "command": "./node_modules/.bin/tsc --noEmit --incremental false",
+    "exitCode": 0,
+    "diagnostics": 0
+  },
+  "limits": {
+    "sources": 128,
+    "batch": 10,
+    "payload": 131072,
+    "sql": 102400,
+    "manifest": 2097152,
+    "capacity": 67108864,
+    "calls": 90
+  },
+  "observedPacketBounds": {
+    "sources": 101,
+    "newPointerExample": 101,
+    "exampleIsProductionPreflight": false,
+    "stageBatches": 11,
+    "maximumSqlBytes": 3087,
+    "maximumBindParameters": 4,
+    "maximumStagePayloadBytes": 79341,
+    "manifestPayloadBytes": 862886,
+    "schemaStatements": 12,
+    "rehearsalSqlRequests": 61
+  },
+  "codeSha256": {
+    "scripts/nba-bootstrap-import.ts": "f375008cffe21ff23496abb4491a18d70e1cf3e0b4c531ced3c91717e5619e92",
+    "scripts/nba-bootstrap-import-cli.mjs": "720ef0599b8e2e192b7f91e401e3dab9e61fe0d6c97072f0221afbac93776e6c",
+    "tests/nba-bootstrap-import.test.mjs": "b7af9a9e03da1953ef7191a2b8b9a3076412e8b559f4ef257798558c19c8ab2e"
+  },
+  "sevenMarketModelMath": "unchanged; reuse verified 4e1bd57 source/cohort evidence, not current forecast acceptance",
+  "nullSafeConcurrentConflictVerified": true
+}

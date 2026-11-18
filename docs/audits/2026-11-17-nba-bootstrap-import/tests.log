@@ -1,0 +1,12 @@
+NBA_IMPORT_TRANSPORT {"sources":101,"existingPointerPreserved":1,"ownedPointers":100,"stageLostAckRecovered":true,"publishLostAckRecovered":true,"rollbackLostAckRecovered":true,"restart":true,"atomicPublicationConflict":true,"atomicStagingConflict":true,"nullSafeConflict":true,"partialPublicationRolledBack":true,"laterCollectionRollbackRefused":true,"consumptionLock":true,"immutableJournal":true,"protectedMarkersUnchanged":true,"allSourceHashTimesVerified":true,"maxBatchSources":10,"maxParams":4,"calls":61,"actualNetworkCalls":0,"productionAccess":false}
+✔ single-statement API-shaped imports are bounded, resumable and atomic in actual SQLite workerd (10595.672669ms)
+✔ authorization/schema/package gates fail before writes; file bridge cannot send or silently resend requests (1581.279051ms)
+✔ ambiguous transport timeout stops after one request without an automatic retry (15249.353256ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27914.673263

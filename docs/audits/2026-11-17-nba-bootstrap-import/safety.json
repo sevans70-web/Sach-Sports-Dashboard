@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-18T00:08:36.376Z",
+  "dashboardDeployment": "b1ef6404-fd00-4312-857c-c50013bb64a2",
+  "dashboardVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "researchDeployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "researchVersion": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+  "buildsObservedAt": "2026-11-18T00:09:44.012Z",
+  "builds": [
+    {
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext"
+    }
+  ],
+  "operations": "Only read-only Cloudflare metadata. No production SQL request, import, deployment, secret, binding, schedule, backup or research-data mutation."
+}
