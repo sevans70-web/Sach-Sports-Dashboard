@@ -1,0 +1,20 @@
+{
+  "readOnlyPreflight": true,
+  "packageAndNormalizedSourceHashesVerified": 101,
+  "sessionAndRollbackChecksumsVerified": true,
+  "codeMatches29e97b4": true,
+  "priorTestsReused": {
+    "tests": 3,
+    "failed": 0,
+    "typescriptDiagnostics": 0,
+    "evidence": "../2026-11-17-nba-bootstrap-import/checks.json"
+  },
+  "currentProductionFingerprintsMatchLastVerified": true,
+  "backupManifestFreshDownloadHashMatches": true,
+  "productionWrites": 0,
+  "productionSchemaChanges": 0,
+  "importOrRollbackExecuted": false,
+  "r1DeploymentPreparedOrAttempted": false,
+  "cw08Changed": false,
+  "automaticBuildsChanged": false
+}

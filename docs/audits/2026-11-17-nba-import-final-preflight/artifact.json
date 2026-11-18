@@ -1,0 +1,44 @@
+{
+  "artifactId": "NBA-FINAL-SEED-2026-11-17-7a5cba7d706f",
+  "codeCommit": "29e97b4a1dbb00d482c20bde9e2a707a87621761",
+  "preparedAt": "2026-11-18T00:36:27.136Z",
+  "sessionDigest": "7a5cba7d706f70dbfd1a8e2196d2aa6a44f8987f13b105361ebdeb0508262ef3",
+  "run": "c2e156b4d30bde7ddffebb29967e2651883f0955bedc009bd93dc9bff7cd6de3",
+  "sessionGzipSha256": "ff969f9b2e9ad3be1870916448f1d79a1d979e4e93c62b38781847c6dc550794",
+  "sessionGzipBytes": 594129,
+  "sourcePackageSha256": "c6f828e8463b1bb616e2f88b86f0049cbb67156a1b9404469dd3ef8d74dba6c4",
+  "sourcePlanDigest": "3c2d82c7e3310ccd01528da5f4ca92646a22cba5cd40f68492d89e6fbfdd8813",
+  "beforeSnapshotSha256": "d2b6c1ea398a0a28eb98281b0cc0c430c22066b6e156d030b6ad34955939c72d",
+  "protectedRecordBaselineSha256": "a97f788f814479fa335239d6576fd861c692195bb9c31bbd0c579c7cee0af8af",
+  "protectedRecords": 20468,
+  "target": {
+    "account": "d3d6d023ab7ab731cc3e191d0ea3c179",
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "name": "capture:nba"
+  },
+  "newPointers": 101,
+  "existingPointers": 0,
+  "sourceBodies": 101,
+  "encodedSourceBytes": 764248,
+  "evidenceCapacityBytes": 67108864,
+  "maximumStagePayloadBytes": 79341,
+  "maximumSqlBytes": 3087,
+  "maximumBoundParameters": 4,
+  "manifestBytes": 862886,
+  "codeSha256": {
+    "scripts/nba-bootstrap-import.ts": "f375008cffe21ff23496abb4491a18d70e1cf3e0b4c531ced3c91717e5619e92",
+    "scripts/nba-bootstrap-import-cli.mjs": "720ef0599b8e2e192b7f91e401e3dab9e61fe0d6c97072f0221afbac93776e6c",
+    "tests/nba-bootstrap-import.test.mjs": "b7af9a9e03da1953ef7191a2b8b9a3076412e8b559f4ef257798558c19c8ab2e"
+  },
+  "productionImport": false,
+  "productionSchemaCreated": false,
+  "productionWrites": 0,
+  "authorizationGranted": false,
+  "unverified": [
+    "Production DDL/DML permission and automatic approval review",
+    "Physical SQLite page occupancy: page_count denied SQLITE_AUTH; not retried",
+    "Two later original receipts beyond the existing verified 20466-record backup",
+    "Future exclusive release/consumer-inactive window requires operator control"
+  ],
+  "r1Ready": false
+}

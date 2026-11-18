@@ -1,0 +1,14 @@
+{
+  "manifestId": "1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf",
+  "manifestSha256": "80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b",
+  "manifestBytes": 101766,
+  "status": "verified_complete",
+  "backupRecords": 20466,
+  "currentRecords": 20468,
+  "knownLaterOriginalReceipts": 2,
+  "objectsAvailable": 3,
+  "objectSizeAndModifiedTimesMatchPrior": true,
+  "currentManifestDownloadedAndHashed": true,
+  "objectPayloadChecksumsAndIsolatedRestore": "Reused verified November16 evidence; not repeated",
+  "productionInventoryMatchesLatestNovember17Rollback": true
+}

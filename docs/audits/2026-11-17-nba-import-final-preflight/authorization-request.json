@@ -1,0 +1,40 @@
+{
+  "approvalStatus": "NOT_AUTHORIZED",
+  "recommendation": "GO for separately approved narrow historical seed; NO R1 clearance",
+  "artifactId": "NBA-FINAL-SEED-2026-11-17-7a5cba7d706f",
+  "sessionDigest": "7a5cba7d706f70dbfd1a8e2196d2aa6a44f8987f13b105361ebdeb0508262ef3",
+  "sessionGzipSha256": "ff969f9b2e9ad3be1870916448f1d79a1d979e4e93c62b38781847c6dc550794",
+  "codeCommit": "29e97b4a1dbb00d482c20bde9e2a707a87621761",
+  "target": {
+    "account": "d3d6d023ab7ab731cc3e191d0ea3c179",
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "name": "capture:nba"
+  },
+  "authorizeOnly": [
+    "Create absent nba_history_versions and nba_history_checks tables plus nba_bootstrap_events journal and nine journal triggers in existing capture:nba object",
+    "Stage exactly 101 validated FINAL source bodies insert-only, preserving hashes/provenance/original timestamps",
+    "Atomically publish exactly 101 absent source-check pointers and verify all readbacks",
+    "Maintain pinned fallback and consumer-inactive release window; use up to three explicit same-session recovery attempts",
+    "While no consumer has used the evidence, deactivate only this session's unchanged introduced pointers if a critical check fails, retaining immutable bodies and journal"
+  ],
+  "neverAuthorize": [
+    "Existing production record/pointer/ledger overwrite or deletion",
+    "R1 or any Worker deployment",
+    "CW08 data/binding/schedule/credential change",
+    "New namespace/service/subscription, source-access bypass, freshness/model changes"
+  ],
+  "requiredBeforeFirstWrite": [
+    "Explicit user authorization referencing this artifact/session",
+    "Refresh actual fallback/build/lease/evidence-schema/protected-inventory safety observations; stop on mismatch without silently changing the session",
+    "Authorization expiry at most 30 minutes and genuine safety proof at most two minutes old",
+    "No concurrent release or NBA evidence maintenance for the import/rollback window",
+    "Stop on integration permission/security or approval-review denial; no retry through another client"
+  ],
+  "risksExplicitlyDisclosed": [
+    "Production DDL/DML permission and automatic approval review",
+    "Physical SQLite page occupancy: page_count denied SQLITE_AUTH; not retried",
+    "Two later original receipts beyond the existing verified 20466-record backup",
+    "Future exclusive release/consumer-inactive window requires operator control"
+  ],
+  "backupScope": "Verified existing backup covers 20466; two known later original receipts are not in it. Import does not access that ledger. Never use an old ledger restore to roll back this seed."
+}

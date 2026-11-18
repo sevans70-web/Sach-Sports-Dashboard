@@ -1,0 +1,1007 @@
+{
+  "checkedAt": "2026-11-18T00:34:44.785Z",
+  "safety": {
+    "at": "2026-11-18T00:28:51.064Z",
+    "accountId": "d3d6d023ab7ab731cc3e191d0ea3c179",
+    "dashboard": {
+      "deployments": [
+        {
+          "id": "b1ef6404-fd00-4312-857c-c50013bb64a2",
+          "source": "api",
+          "strategy": "percentage",
+          "author_email": "sevans70@hotmail.com",
+          "annotations": {
+            "workers/message": "Immediate approved R1 fallback: live NBA Assists/Threes capture repeats job_source_http_403 after cooldown with zero checkpoint bytes and no phase progress. Preserve all namespace state, original/new records and CW08. No further attempt authorized.",
+            "workers/triggered_by": "deployment"
+          },
+          "versions": [
+            {
+              "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+              "percentage": 100
+            }
+          ],
+          "created_on": "2026-11-17T22:43:16.641996Z"
+        }
+      ]
+    },
+    "research": {
+      "deployments": [
+        {
+          "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+          "source": "api",
+          "strategy": "percentage",
+          "author_email": "sevans70@hotmail.com",
+          "annotations": {
+            "workers/message": "Approved CW08 transport-only update; frozen mod...",
+            "workers/triggered_by": "upload"
+          },
+          "versions": [
+            {
+              "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+              "percentage": 100
+            }
+          ],
+          "created_on": "2026-11-14T19:54:01.859122Z"
+        }
+      ]
+    },
+    "settings": {
+      "limits": {
+        "subrequests": 350
+      },
+      "bindings": [
+        {
+          "class_name": "DashboardJobQueue",
+          "name": "DASHBOARD_JOBS",
+          "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+          "type": "durable_object_namespace"
+        },
+        {
+          "name": "VINEXT_KV_CACHE",
+          "namespace_id": "644df6a469e84dba90c8f7dac410f895",
+          "type": "kv_namespace"
+        }
+      ],
+      "compatibility_date": "2026-11-06"
+    },
+    "builds": [
+      {
+        "trigger_uuid": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+        "branch_includes": [
+          "__cw08_manual_release_only__"
+        ],
+        "build_command": "cd frontend && npm ci && npm run build:vinext",
+        "deploy_command": "cd frontend && npm run deploy:vinext"
+      }
+    ],
+    "fallback": {
+      "id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+      "metadata": {
+        "created_on": "2026-11-15T04:12:28.395101Z",
+        "source": "cf_cli",
+        "author_id": "e92707e1aaac0119fe175be1e977f65d",
+        "author_email": "sevans70@hotmail.com",
+        "has_preview": false
+      }
+    }
+  },
+  "objectSchema": {
+    "at": "2026-11-18T00:29:23.052Z",
+    "request": {
+      "durable_object_name": "capture:nba",
+      "jurisdiction": "none",
+      "queries": [
+        {
+          "sql": "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE '_cf%' ORDER BY type,name",
+          "params": []
+        }
+      ]
+    },
+    "response": {
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "type",
+              "name",
+              "tbl_name",
+              "sql"
+            ],
+            "rows": [
+              [
+                "table",
+                "documents",
+                "documents",
+                "CREATE TABLE documents(job TEXT,stream TEXT,body TEXT,PRIMARY KEY(job,stream))"
+              ],
+              [
+                "table",
+                "jobs",
+                "jobs",
+                "CREATE TABLE jobs(id TEXT PRIMARY KEY, kind TEXT, sport TEXT, state TEXT, due INTEGER, touched INTEGER, data TEXT)"
+              ],
+              [
+                "table",
+                "metadata",
+                "metadata",
+                "CREATE TABLE metadata(key TEXT PRIMARY KEY,value TEXT)"
+              ],
+              [
+                "table",
+                "phase_events",
+                "phase_events",
+                "CREATE TABLE phase_events(id INTEGER PRIMARY KEY AUTOINCREMENT,job TEXT,at INTEGER,phase TEXT,outcome TEXT,detail TEXT)"
+              ],
+              [
+                "table",
+                "source_cache",
+                "source_cache",
+                "CREATE TABLE source_cache(url TEXT PRIMARY KEY,expires INTEGER,body TEXT,bytes INTEGER)"
+              ],
+              [
+                "table",
+                "sqlite_sequence",
+                "sqlite_sequence",
+                "CREATE TABLE sqlite_sequence(name,seq)"
+              ]
+            ],
+            "meta": {
+              "rows_read": 17,
+              "rows_written": 0
+            }
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": []
+    }
+  },
+  "importSnapshot": {
+    "at": "2026-11-18T00:32:48.080Z",
+    "query": {
+      "sql": "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE sql IS NOT NULL AND (name IN ('nba_history_versions','nba_history_checks','nba_bootstrap_events') OR tbl_name IN ('nba_history_versions','nba_history_checks','nba_bootstrap_events')) ORDER BY name",
+      "params": []
+    },
+    "response": {
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "type",
+              "name",
+              "tbl_name",
+              "sql"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 12,
+              "rows_written": 0
+            }
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": []
+    }
+  },
+  "objectState": {
+    "at": "2026-11-18T00:30:42.531Z",
+    "results": [
+      {
+        "query": {
+          "sql": "SELECT id,kind,sport,state,due,touched,LENGTH(data) AS checkpointBytes FROM jobs ORDER BY touched DESC LIMIT 50",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [
+              {
+                "columns": [
+                  "id",
+                  "kind",
+                  "sport",
+                  "state",
+                  "due",
+                  "touched",
+                  "checkpointBytes"
+                ],
+                "rows": [
+                  [
+                    "capture:nba:threes_made:14957960",
+                    "capture",
+                    "nba",
+                    "blocked",
+                    1794957184461,
+                    1794955384461,
+                    528
+                  ],
+                  [
+                    "capture:nba:assists:14957960",
+                    "capture",
+                    "nba",
+                    "blocked",
+                    1794957182860,
+                    1794955382860,
+                    528
+                  ],
+                  [
+                    "capture:nba:steals:14957961",
+                    "capture",
+                    "nba",
+                    "active",
+                    1794955441225,
+                    1794955381225,
+                    520
+                  ],
+                  [
+                    "capture:nba:blocks:14957961",
+                    "capture",
+                    "nba",
+                    "active",
+                    1794955439469,
+                    1794955379469,
+                    520
+                  ],
+                  [
+                    "capture:nba:q1_rebounds:14956445",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773526433,
+                    1794773525503,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_assists:14956445",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773465572,
+                    1794773464644,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_points:14956444",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773406130,
+                    1794773405231,
+                    484
+                  ],
+                  [
+                    "capture:nba:first_basket:14956444",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773344762,
+                    1794773343824,
+                    492
+                  ],
+                  [
+                    "capture:nba:rebs_asts:14956443",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773286398,
+                    1794773285483,
+                    488
+                  ],
+                  [
+                    "capture:nba:pts_asts:14956443",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773225097,
+                    1794773224164,
+                    484
+                  ],
+                  [
+                    "capture:nba:pts_rebs_asts:14956442",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773166461,
+                    1794773165520,
+                    492
+                  ],
+                  [
+                    "capture:nba:pts_rebs:14956442",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773105282,
+                    1794773104388,
+                    488
+                  ],
+                  [
+                    "capture:nba:steals:14956441",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794773046035,
+                    1794773045091,
+                    484
+                  ],
+                  [
+                    "capture:nba:blocks:14956441",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794772985115,
+                    1794772984173,
+                    480
+                  ],
+                  [
+                    "capture:nba:threes_made:14956440",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794772926826,
+                    1794772925890,
+                    488
+                  ],
+                  [
+                    "capture:nba:assists:14956440",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794772866078,
+                    1794772865155,
+                    484
+                  ],
+                  [
+                    "capture:nba:rebounds:14956439",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794772807134,
+                    1794772806264,
+                    484
+                  ],
+                  [
+                    "capture:nba:points:14956439",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794772746098,
+                    1794772745153,
+                    484
+                  ],
+                  [
+                    "capture:nba:q1_rebounds:14956426",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794771245570,
+                    1794771244630,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_assists:14956426",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794771184811,
+                    1794771183877,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_points:14956425",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794771127648,
+                    1794771126738,
+                    484
+                  ],
+                  [
+                    "capture:nba:first_basket:14956425",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794771065324,
+                    1794771064402,
+                    488
+                  ],
+                  [
+                    "capture:nba:rebs_asts:14956424",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794771007846,
+                    1794771006929,
+                    488
+                  ],
+                  [
+                    "capture:nba:pts_asts:14956424",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770946651,
+                    1794770945773,
+                    484
+                  ],
+                  [
+                    "capture:nba:pts_rebs_asts:14956423",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770885700,
+                    1794770884763,
+                    492
+                  ],
+                  [
+                    "capture:nba:pts_rebs:14956423",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770829654,
+                    1794770828747,
+                    488
+                  ],
+                  [
+                    "capture:nba:steals:14956422",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770766585,
+                    1794770765648,
+                    480
+                  ],
+                  [
+                    "capture:nba:blocks:14956422",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770705508,
+                    1794770704600,
+                    484
+                  ],
+                  [
+                    "capture:nba:threes_made:14956421",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770646970,
+                    1794770646023,
+                    488
+                  ],
+                  [
+                    "capture:nba:assists:14956421",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770586747,
+                    1794770585807,
+                    484
+                  ],
+                  [
+                    "capture:nba:rebounds:14956420",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770527233,
+                    1794770526307,
+                    484
+                  ],
+                  [
+                    "capture:nba:points:14956420",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794770466105,
+                    1794770465173,
+                    484
+                  ],
+                  [
+                    "capture:nba:q1_rebounds:14956407",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768966145,
+                    1794768965205,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_assists:14956407",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768905237,
+                    1794768904326,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_points:14956406",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768847998,
+                    1794768847100,
+                    488
+                  ],
+                  [
+                    "capture:nba:first_basket:14956406",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768786009,
+                    1794768785073,
+                    492
+                  ],
+                  [
+                    "capture:nba:rebs_asts:14956405",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768725361,
+                    1794768724446,
+                    488
+                  ],
+                  [
+                    "capture:nba:pts_asts:14956405",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768664473,
+                    1794768663565,
+                    484
+                  ],
+                  [
+                    "capture:nba:pts_rebs_asts:14956404",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768606427,
+                    1794768605481,
+                    492
+                  ],
+                  [
+                    "capture:nba:pts_rebs:14956404",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768545358,
+                    1794768544449,
+                    484
+                  ],
+                  [
+                    "capture:nba:steals:14956403",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768485276,
+                    1794768484337,
+                    480
+                  ],
+                  [
+                    "capture:nba:blocks:14956403",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768424380,
+                    1794768423487,
+                    484
+                  ],
+                  [
+                    "capture:nba:threes_made:14956402",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768365479,
+                    1794768364524,
+                    488
+                  ],
+                  [
+                    "capture:nba:assists:14956402",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768304693,
+                    1794768303751,
+                    484
+                  ],
+                  [
+                    "capture:nba:rebounds:14956401",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768247788,
+                    1794768246893,
+                    484
+                  ],
+                  [
+                    "capture:nba:points:14956401",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794768190312,
+                    1794768189396,
+                    484
+                  ],
+                  [
+                    "capture:nba:q1_rebounds:14956388",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794766685512,
+                    1794766684572,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_assists:14956388",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794766624746,
+                    1794766623804,
+                    488
+                  ],
+                  [
+                    "capture:nba:q1_points:14956387",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794766565993,
+                    1794766565084,
+                    484
+                  ],
+                  [
+                    "capture:nba:first_basket:14956387",
+                    "capture",
+                    "nba",
+                    "done",
+                    1794766505033,
+                    1794766504129,
+                    492
+                  ]
+                ],
+                "meta": {
+                  "rows_read": 128,
+                  "rows_written": 0
+                }
+              }
+            ]
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      },
+      {
+        "query": {
+          "sql": "SELECT json_extract(value,'$.until') AS leaseUntil FROM metadata WHERE key='lease'",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [
+              {
+                "columns": [
+                  "leaseUntil"
+                ],
+                "rows": [
+                  [
+                    null
+                  ]
+                ],
+                "meta": {
+                  "rows_read": 1,
+                  "rows_written": 0
+                }
+              }
+            ]
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      },
+      {
+        "query": {
+          "sql": "SELECT (SELECT COALESCE(SUM(LENGTH(body)),0) FROM source_cache) AS sourceCacheBodyBytes,(SELECT COALESCE(SUM(LENGTH(body)),0) FROM documents) AS documentsBodyBytes,(SELECT COALESCE(SUM(LENGTH(data)),0) FROM jobs) AS jobDataBytes",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [
+              {
+                "columns": [
+                  "sourceCacheBodyBytes",
+                  "documentsBodyBytes",
+                  "jobDataBytes"
+                ],
+                "rows": [
+                  [
+                    308600,
+                    4800,
+                    30576
+                  ]
+                ],
+                "meta": {
+                  "rows_read": 129,
+                  "rows_written": 0
+                }
+              }
+            ]
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      }
+    ]
+  },
+  "consumers": {
+    "at": "2026-11-18T00:31:32.771Z",
+    "otherWorkerDurableBindings": {
+      "my-money-hq": [],
+      "sach-cw08-nhl-shadow": [
+        {
+          "class_name": "NhlShadowCoordinator",
+          "name": "STUDY",
+          "namespace_id": "24d604463d7f410f880ba8366769e853",
+          "type": "durable_object_namespace"
+        }
+      ]
+    },
+    "recentBuilds": [
+      {
+        "build_uuid": "809e57db-5eae-4904-bc8c-269dc673c5a8",
+        "status": "stopped",
+        "created_on": "2026-11-17T22:36:14.538Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "dd25748c-8f0a-46c3-bb5e-9a94a5885b8d",
+        "status": "stopped",
+        "created_on": "2026-11-17T19:00:36.227Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "1167a4c9-56a3-47fc-9f49-b0ba5bc4df5a",
+        "status": "stopped",
+        "created_on": "2026-11-17T15:26:07.556Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "5a8bf49a-4eae-4da9-8e11-fd47afcf01ae",
+        "status": "stopped",
+        "created_on": "2026-11-16T17:10:27.834Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "f171ddb0-0aa7-4a2a-b0ff-55f075e0fcd0",
+        "status": "stopped",
+        "created_on": "2026-11-16T17:04:00.354Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "bd510169-8d3f-4c42-8037-4c1ef8702815",
+        "status": "stopped",
+        "created_on": "2026-11-16T04:29:53.852Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "279281f0-51c3-42ec-b1c0-48c070cdc751",
+        "status": "stopped",
+        "created_on": "2026-11-15T17:40:21.505Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "b3b40d2e-e4f2-4d87-9e25-1336d25d06e0",
+        "status": "stopped",
+        "created_on": "2026-11-15T15:50:51.273Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "95a2515a-b7eb-4c8b-84bb-ae18eb95929b",
+        "status": "stopped",
+        "created_on": "2026-11-15T04:15:50.240Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      },
+      {
+        "build_uuid": "a4dea404-29fc-43eb-a20f-7f06d989d5c3",
+        "status": "stopped",
+        "created_on": "2026-11-15T04:10:00.909Z",
+        "trigger": "c62c5d54fee546e7ae265126ea2a719e"
+      }
+    ]
+  },
+  "backupMetadata": [
+    {
+      "id": "1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf",
+      "title": "sach-dashboard-recovery-v1-2026-11-16T153131Z-complete-80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b.json",
+      "mime_type": "application/json",
+      "size": "101766",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": "2026-11-16T16:08:43.329Z",
+      "parent_ids": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "19my795XhazztQz0ETo1zMjEqZeq1iyrx",
+      "title": "history_documents-part-0000-151c6a6405a0a6d80eec22a293a0a20a41018b55b318c07d581a754416947333.json.gz",
+      "mime_type": "application/gzip",
+      "size": "134710",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": "2026-11-16T15:42:58.774Z",
+      "parent_ids": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1S7c-AAqtvf8ljR_kjcKs1yDr9RvC2W6D",
+      "title": "sach-dashboard-recovery-v1-bundle-a247c446aa5a1b8be1a21d7b50b19784df5d32dfe8c5f477f4afa2bd793fcfc2.tar",
+      "mime_type": "application/x-tar",
+      "size": "24883200",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": "2026-11-16T16:03:33.487Z",
+      "parent_ids": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    },
+    {
+      "id": "1rPgzEH3uF0nQkHXYjSYd9n1WMouhYNDp",
+      "title": "sach-dashboard-recovery-v1-bundle-e322ab6cc1425dbb1d85cf690bf8567d6663c402f58b87f75558bef97fc72083.tar",
+      "mime_type": "application/x-tar",
+      "size": "18667520",
+      "url": null,
+      "file_or_folder": "file",
+      "created_time": null,
+      "modified_time": "2026-11-16T16:03:15.452Z",
+      "parent_ids": [
+        "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe"
+      ],
+      "drive_id": null,
+      "current_user_can_share": null,
+      "has_augmented_permissions": null,
+      "shared": null,
+      "permissions": null,
+      "source_visibility_status": "access_not_verified"
+    }
+  ],
+  "protectedRecordTables": [
+    {
+      "source": "history_documents",
+      "records": 11615,
+      "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "records": 6111,
+      "inventory": "33d1173b71b0fe2f35aaf0b314a22836"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "records": 1473,
+      "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "records": 1269,
+      "inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  ],
+  "diagnosticLimitations": {
+    "at": "2026-11-18T00:29:48.600Z",
+    "results": [
+      {
+        "query": {
+          "sql": "PRAGMA page_count",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [],
+            "error": "not authorized: SQLITE_AUTH"
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      },
+      {
+        "query": {
+          "sql": "PRAGMA page_size",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [
+              {
+                "columns": [
+                  "page_size"
+                ],
+                "rows": [
+                  [
+                    4096
+                  ]
+                ],
+                "meta": {
+                  "rows_read": 0,
+                  "rows_written": 0
+                }
+              }
+            ]
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      },
+      {
+        "query": {
+          "sql": "SELECT id,kind,sport,state,due,touched, json_extract(data,'$.phase') AS phase, json_extract(data,'$.leaseUntil') AS leaseUntil FROM jobs ORDER BY touched DESC LIMIT 12",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [],
+            "error": "malformed JSON: SQLITE_ERROR"
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      },
+      {
+        "query": {
+          "sql": "SELECT key FROM metadata ORDER BY key LIMIT 30",
+          "params": []
+        },
+        "response": {
+          "result": {
+            "results": [
+              {
+                "columns": [
+                  "key"
+                ],
+                "rows": [
+                  [
+                    "lease"
+                  ]
+                ],
+                "meta": {
+                  "rows_read": 1,
+                  "rows_written": 0
+                }
+              }
+            ]
+          },
+          "success": true,
+          "errors": [],
+          "messages": []
+        }
+      }
+    ]
+  }
+}
