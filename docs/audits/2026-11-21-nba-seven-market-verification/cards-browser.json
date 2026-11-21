@@ -1,0 +1,165 @@
+{
+  "scope": "Local Cloudflare Vite candidate with real November17 boards at original declared snapshot clock; not current live data/production acceptance",
+  "clock": "2026-11-17T22:04:46.790297+00:00",
+  "viewports": {
+    "desktop": {
+      "markets": [
+        {
+          "market": "points",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "rebounds",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 2,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "assists",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 6,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "threes_made",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 3,
+          "zeroFormattedEvs": 1,
+          "overflow": false
+        },
+        {
+          "market": "pts_rebs_asts",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "pts_rebs",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "pts_asts",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        }
+      ],
+      "pr503Recovery": {
+        "retained": 25,
+        "staleExplained": true
+      }
+    },
+    "mobile": {
+      "markets": [
+        {
+          "market": "points",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "rebounds",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 2,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "assists",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 6,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "threes_made",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 3,
+          "zeroFormattedEvs": 1,
+          "overflow": false
+        },
+        {
+          "market": "pts_rebs_asts",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "pts_rebs",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        },
+        {
+          "market": "pts_asts",
+          "cards": 25,
+          "allCardsMatchedIdentityAndMarket": true,
+          "allProjectionsLinesSidesEvAndConfidenceMatched": true,
+          "lowestVerifiedRank": 25,
+          "negativeEvs": 0,
+          "zeroFormattedEvs": 0,
+          "overflow": false
+        }
+      ],
+      "pr503Recovery": {
+        "retained": 25,
+        "staleExplained": true
+      }
+    }
+  },
+  "pageErrors": [],
+  "hydrationErrors": [],
+  "historyRequests": []
+}

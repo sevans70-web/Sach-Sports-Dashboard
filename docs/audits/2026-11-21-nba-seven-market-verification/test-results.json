@@ -1,0 +1,64 @@
+{
+  "fullSuite": {
+    "command": "node --test tests/*.test.mjs",
+    "exitCode": 0,
+    "tests": 909,
+    "passed": 892,
+    "failed": 0,
+    "cancelled": 0,
+    "skippedOptIn": 17,
+    "durationMs": 464661.479627,
+    "rawLogSha256": "9db76adffcdaf2e4e6de631e65ce388c08c554f47dd3fc80ef6d2681127e1c02"
+  },
+  "typescript": {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "diagnostics": 0
+  },
+  "diagnosticCompiledRuntime": {
+    "tests": 2,
+    "passed": 2,
+    "markets": 7,
+    "providerReads": 1,
+    "originalIdentityAndPriceReadback": true,
+    "configurationUnchanged": true,
+    "unchangedRawFiles": 749,
+    "productionAccess": false
+  },
+  "NBARecordedBrowser": {
+    "markets": 7,
+    "cardsPerMarket": 25,
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "cardChecks": 350,
+    "allPassed": true,
+    "negativeAndFormattedZeroVisible": true,
+    "pr503Retains25WithStaleExplanation": true,
+    "currentLiveAcceptance": false
+  },
+  "otherSportsRecordedBrowser": {
+    "nflTabs": 17,
+    "nhlMarkets": 6,
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "allPassed": true,
+    "pageErrors": 0,
+    "hydrationErrors": 0,
+    "currentLiveAcceptance": false
+  },
+  "priorEvidenceReused": {
+    "sourceCommit": "6f5c306",
+    "nbaModels": 7,
+    "players": 34,
+    "forecastsPerMarket": 19,
+    "legitimateHoldsPerMarket": 15,
+    "coldProviderCalls": 0
+  },
+  "productionDeployment": false,
+  "diagnosticActivation": "Awaiting separate production-upload approval",
+  "R1": "Blocked: current seven-market exact quote/identity/full-slate evidence and later production acceptance remain open"
+}

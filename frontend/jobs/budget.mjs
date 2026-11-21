@@ -61,12 +61,13 @@ export function installJobFetch(){
 }
 function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web.api.espn.com','site.api.espn.com'].includes(u.hostname))return null;
  // These callers already handle unavailable optional season baselines and
- // individual summaries. A refusal must not poison the whole job before
+ // individual summaries/team calendars. A refusal must not poison the whole job before
  // validated history can be read. Preserve the exact denied URL and status;
  // scoreboards, other sports and origin-wide rate limits remain unchanged.
  if(scope.allowNbaSourceDenials&&(
   u.hostname==='site.web.api.espn.com'&&u.pathname==='/apis/common/v3/sports/basketball/nba/statistics/byathlete'||
-  u.hostname==='site.api.espn.com'&&u.pathname==='/apis/site/v2/sports/basketball/nba/summary'&&/^\d+$/.test(u.searchParams.get('event')||'')
+  u.hostname==='site.api.espn.com'&&u.pathname==='/apis/site/v2/sports/basketball/nba/summary'&&/^\d+$/.test(u.searchParams.get('event')||'')||
+  u.hostname==='site.api.espn.com'&&/^\/apis\/site\/v2\/sports\/basketball\/nba\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2'&&[...u.searchParams.keys()].length===2
  ))return 'denied:'+u.href;
  const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;// NBA 403 evidence is specific to an athlete/season, never all athletes.
  return path?'denied:'+u.origin+(u.pathname.includes('/basketball/nba/')?u.pathname+u.search:path):null;}

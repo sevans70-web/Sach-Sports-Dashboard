@@ -30,6 +30,7 @@ import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingStatusText,completedRankingsLast,rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
+import {rankingModelConfidence} from '@/lib/ranking-model-confidence';
 import {checkedRankingPayload,rankingEvText} from "@/lib/ranking-display-evidence";
 import {cardModelPick,cardModelProjection,modelPickNotice,capRankingUnders} from '@/lib/saved-model-pick';
 import {cardQuotePrices,firstBasketQuote,completeRankingProp,forecastDetailText} from '@/lib/public-card-metrics';
@@ -997,6 +998,7 @@ function PlayerCard({
   const projectionComparison=!complete&&!modelSelection&&footballForecast.side!=null;
   const displayedPick=sport==='nfl'?nflEvidence?.direction||null:complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
+  const modelConfidence=rankingModelConfidence(card.raw);
   const nbaDisplayEv=sport==='nba'&&nbaEvMarket(card.market)?nbaRankingEv(card.raw):null;
   const evPercent=nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
   // Display a valid signed expected return independently of betting qualification.
@@ -1159,6 +1161,8 @@ function PlayerCard({
         </>}
       </div>
 
+      {['nba','nfl','nhl'].includes(sport)&&!firstBasket?<div className={styles.faceFooter}><p data-confidence-status={modelConfidence.status}>{modelConfidence.status==='available'?`Model confidence: ${(modelConfidence.winProbability*100).toFixed(1)}% ${modelConfidence.side}${modelConfidence.pushProbability>0?` · Push ${(modelConfidence.pushProbability*100).toFixed(1)}%`:''}`:`Confidence unavailable: ${modelConfidence.reason}`}</p></div>:null}
+
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>{card.raw.boardFrozen?"Saved pregame book: ":"Book: "}{card.raw.sportsbook}{cardQuotePrices(card.raw)?` · ${cardQuotePrices(card.raw)}`:""}</p> : null}
@@ -1230,7 +1234,7 @@ function PlayerCard({
 
       {open ? (
         <div className={styles.intelligence}>
-          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied OVER chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):sport==='nfl'?(nflEvidence?.confidence==null?'—':`${nflEvidence.confidence.toFixed(1)}%`):predictionProbabilityText(card.raw)}</strong>{quarterTarget?<small>Book-implied chance from OVER odds</small>:null}</div>:null}
+          {!firstBasket?<div className={styles.probabilityDetail}><span>{quarterTarget?'Book-implied OVER chance':'Model probability'}</span><strong>{quarterTarget?(milestoneChance==null?'—':`${shortNumber(milestoneChance)}%`):['nba','nfl','nhl'].includes(sport)?(modelConfidence.status==='available'?`${(modelConfidence.winProbability*100).toFixed(1)}% ${modelConfidence.side}`:'—'):predictionProbabilityText(card.raw)}</strong>{quarterTarget?<small>Book-implied chance from OVER odds</small>:null}</div>:null}
           <div className={`${styles.expandedHeader} ${firstBasket?styles.firstBasketExpanded:''}`}>
             {firstBasket?<>
               <div><b>First basket chance</b><span>Book-implied likelihood</span><strong>{scorerQuote?`${shortNumber(scorerQuote.probability)}%`:'—'}</strong></div>

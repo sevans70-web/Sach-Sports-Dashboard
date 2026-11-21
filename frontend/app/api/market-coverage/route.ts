@@ -1,4 +1,4 @@
-import {nbaFeedSample,validNbaFeedSample} from '@/lib/nba-feed-sample';
+import {readNbaFeedDiagnostic} from '@/lib/nba-feed-sample';
 import {NextRequest,NextResponse} from 'next/server';
 import {owlsFailureCategory,getOwlsPayload,getOwlsBet365Payload,getOwlsArchiveCoverage,getOwlsArchiveValidationSample,getOwlsIncludedResultsSample,getOwlsNbaPeriodSourceCoverage} from '@/lib/owls-provider';
 import {footballBookRows} from '@/lib/football-book-quotes';
@@ -25,11 +25,7 @@ export async function GET(req:NextRequest){
   try{return NextResponse.json(await getOwlsNbaPeriodSourceCoverage(),{headers:{'Cache-Control':'no-store'}})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Source unavailable'},{status:503,headers:{'Cache-Control':'no-store'}})}
  }
  if(req.nextUrl.searchParams.get('mode')==='feed-sample'){
-  if(sport==='nba'){
-   const market=req.nextUrl.searchParams.get('market')||'points',rawLimit=req.nextUrl.searchParams.get('limit'),limit=rawLimit==null?2:Number(rawLimit);
-   if(!validNbaFeedSample(market,limit))return NextResponse.json({error:'Choose a supported NBA market and an integer limit from 1 to 25.'},{status:400});
-   try{return NextResponse.json({...nbaFeedSample(await getOwlsPayload('nba'),market,limit),updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}})}catch(error){return NextResponse.json({error:'NBA quote sample unavailable',reason:owlsFailureCategory(error)},{status:503,headers:{'Cache-Control':'no-store'}})}
-  }
+  if(sport==='nba')return readNbaFeedDiagnostic(req.nextUrl.searchParams,()=>getOwlsPayload('nba'),owlsFailureCategory);
   const allowed=(row:any,keys:string[])=>Object.fromEntries(keys.filter(k=>['string','number','boolean'].includes(typeof row?.[k])).map(k=>[k,row[k]]));
   try{const p=await getOwlsPayload(sport);return NextResponse.json({sport,games:(p?.data||[]).slice(0,30).map((g:any)=>({
    ...allowed(g,['id','gameId','eventId','homeTeam','awayTeam','home_team','away_team','commenceTime','commence_time','startTime','date']),

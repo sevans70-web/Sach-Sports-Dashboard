@@ -1,0 +1,14 @@
+{
+  "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+  "updatedCells": 16,
+  "exactReadbacks": 16,
+  "status": "Blocked",
+  "historyPreserved": true,
+  "completedRowsMoved": 0,
+  "ranges": [
+    "Repair checklist!G24,N24:Q24,S24",
+    "Workstreams & release plan!B91:B97",
+    "Verification log!E63:G63"
+  ],
+  "summary": "892 pass/0 fail/17 skips; TS0; local replay not live acceptance; frozen diagnostic activation awaiting separate production-upload approval."
+}

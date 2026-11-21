@@ -1,0 +1,29 @@
+{
+  "artifact": "NBA-ODDS-DIAG-2026-11-21-cae200070535",
+  "artifactSha256": "cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20",
+  "worker": "sach-sports-cloudflare-test",
+  "baseArtifactDigest": "86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f",
+  "baseArchiveSha256": "25aab16c46cf967700333b9ff4d9781c5d11575cadbc55f7a3ba1866e481d764",
+  "rollbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "authorizationRequired": true,
+  "scope": "Only GET /api/market-coverage?sport=nba&mode=feed-sample. Unmatched fetches, assets, held schedules, queue class, bindings, models and records retain approved fallback.",
+  "changed": [
+    {
+      "path": "bundle/namespace-fallback.js",
+      "beforeSha256": "7e4590256345a42d2c63aa762763e64aba2959418f4f6256e6fc8495a2ad61a1",
+      "afterSha256": "40f614ca9868fe185c25efc7c7d70605f6e827cf8f1645355d6f0e43a218e815"
+    },
+    {
+      "path": "bundle/nba-odds-diagnostic.js",
+      "beforeSha256": null,
+      "afterSha256": "841a4da64a657c1c252f465ec32693a37162c363d03d8b335efd78db84d01961"
+    }
+  ],
+  "unchangedFiles": 749,
+  "configurationUnchanged": true,
+  "patch": {
+    "file": "diagnostic-patch.tar.gz",
+    "sha256": "bc8c69baddce01bac2c5c3988c05149d1a8b7b5150f458f394f6780187dfc899",
+    "bytes": 7770
+  }
+}
