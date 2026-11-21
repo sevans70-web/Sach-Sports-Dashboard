@@ -1,0 +1,33 @@
+{
+  "dateToronto": "2026-11-21",
+  "sourceCommit": "c07eb36",
+  "originalImportEvidenceCommit": "60f9b9c",
+  "issueComment": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7067595845",
+  "tracker": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "updated": ["Repair checklist!F24:G24", "Repair checklist!N24:Q24", "Repair checklist!S24", "Verification log!E63:G63", "Workstreams & release plan!B91:B97"],
+    "writeFields": "userEnteredValue",
+    "exactValueReadbackMismatches": 0,
+    "status": "Blocked",
+    "completedRowsMoved": 0
+  },
+  "tests": {
+    "fullRun": {"cases":891,"passed":871,"failed":3,"skipped":17},
+    "failedHarnessCasesCorrectedAndRetested": {"passed":3,"failed":0},
+    "finalFocused": {"passed":40,"failed":0},
+    "overlappingFinalCoverage": {"passed":13,"failed":0},
+    "typescriptDiagnostics":0,
+    "fullRunRepeatedAfterHarnessCorrection":false,
+    "liveProductionCategoriesAuditedPerViewport":37,
+    "recordedCandidateCategoriesAuditedPerViewport":37,
+    "candidateIsProductionAcceptance":false
+  },
+  "productionDeploymentsThisTask":0,
+  "productionImportsThisTask":0,
+  "protectedRecords":20468,
+  "existingBackupRecords":20466,
+  "backupGapOriginalReceipts":2,
+  "automaticBuildsPaused":true,
+  "cw08Modified":false,
+  "releaseDecision":"NO-GO: current complete NBA input coverage and live release acceptance remain unverified"
+}
