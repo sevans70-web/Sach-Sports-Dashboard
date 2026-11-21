@@ -1,0 +1,519 @@
+{
+  "schema": "nba-bootstrap-execution-receipt/v1",
+  "operation": "import",
+  "sessionDigest": "7a5cba7d706f70dbfd1a8e2196d2aa6a44f8987f13b105361ebdeb0508262ef3",
+  "run": "c2e156b4d30bde7ddffebb29967e2651883f0955bedc009bd93dc9bff7cd6de3",
+  "planDigest": "3c2d82c7e3310ccd01528da5f4ca92646a22cba5cd40f68492d89e6fbfdd8813",
+  "ownedPointers": [
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909091",
+      "sha": "98e2934a64b47b81ed015d40292556b2d918936615b1d2c742a9d83e22964149",
+      "verified": "2026-10-28T20:16:29.664Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909092",
+      "sha": "9a7c6b6141db3febc104eb8a0b0623338c41f403b91e02b46f5f45159b4f2ee9",
+      "verified": "2026-10-28T20:16:30.444Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909093",
+      "sha": "4b4d91b36bf55e643de288aa13b47c4f6550e0f997ccc31553d3495f8d18b199",
+      "verified": "2026-10-28T20:16:31.364Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909094",
+      "sha": "0269a4662da923610568aa76ad625c73857d326126dcb874804c827d0898239e",
+      "verified": "2026-10-28T20:16:31.117Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909096",
+      "sha": "e800a2989e1969700d4bc01a39ce0052d226fea6d074db953a25f722dc84fc9e",
+      "verified": "2026-10-28T20:16:30.740Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909277",
+      "sha": "3081a55a66f940c8893de8e31a37c14d7d4b80ebb4c02dc10adc523bf60e1e96",
+      "verified": "2026-11-17T22:04:44.401769Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909279",
+      "sha": "20c49b9b0585846810f0ef1d6387db19548d8ce3d23b4719046c14f9c4b1d4bd",
+      "verified": "2026-11-17T22:04:42.375852Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909280",
+      "sha": "65a7ddcd1e393870c4a3ab52281043ab9d0c226abd2ef7261724906435162761",
+      "verified": "2026-11-17T22:04:36.681803Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909281",
+      "sha": "85bc90ede5e5daf4f53db01c3badd5a4b7b851a89c0dd45201dfe7b93baf7938",
+      "verified": "2026-11-17T22:04:39.340383Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909284",
+      "sha": "096dce295a2b15b81b7e0fdc7e2c0e0b091cdf7fc9dca2c3b19710cebb02ac84",
+      "verified": "2026-11-17T22:04:38.002989Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909285",
+      "sha": "e23b86a7530c799573467eea56a8a793cae564daadb2165e6881284129947bc2",
+      "verified": "2026-11-17T22:04:46.625268Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909288",
+      "sha": "96f9e42e70d552fc36086b288f56b8324998766f6eb5e04da520b6cf0352d66f",
+      "verified": "2026-11-17T22:04:43.798387Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909292",
+      "sha": "2727825092827037ff238d09dbe68a7512cba7fdc9f1f423be47168d74aa34bb",
+      "verified": "2026-11-17T22:04:38.918512Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909294",
+      "sha": "0b51f5e3bc666d457c5f7fe27b30b46150093f5e4cbafbcbc9d017c92a08276d",
+      "verified": "2026-11-17T22:04:44.908736Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909295",
+      "sha": "b9edecc35632d58c9cb5b053373b1925a41bf97e0f39378c2e1ad7c46676ffc1",
+      "verified": "2026-11-17T22:04:40.414530Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909296",
+      "sha": "cbc3813433a8d532a7de439fd5f491f6dcc975ef1946adf4b5044f347135e640",
+      "verified": "2026-11-17T22:04:35.422573Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909302",
+      "sha": "ae7cc3c7d3971c56c8f49d28864558a4315818e5ef36df924586c42b2da42646",
+      "verified": "2026-11-17T22:04:39.733047Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909303",
+      "sha": "9f3e51310c9b81f4dafd53905a82f7e6580c847d24bf5e087c490a38876ae311",
+      "verified": "2026-11-17T22:04:44.426434Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909834",
+      "sha": "b2811e02236570cf1a55cf0d7166082e78f494bef0809bf5c488f24261f1cb5c",
+      "verified": "2026-10-28T20:16:29.824Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909835",
+      "sha": "770da08aef351036bb69a00f287eb3a2b4a7b1365123b1e93d3a8d9d6aead5be",
+      "verified": "2026-10-28T20:16:29.920Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909836",
+      "sha": "ba915a904c812121371278f045fae9b2d890d3071bfea456a11c56e87de597be",
+      "verified": "2026-10-28T20:16:30.016Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909837",
+      "sha": "60d0a9a6ef8a47ae618d71b04aa0d517c31b2301867f3a25c71d4bacac1275ce",
+      "verified": "2026-10-28T20:16:30.233Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909838",
+      "sha": "3eb27121898065e88fb9005bac61ce29e3256e6bb0870bb2c2f631cc8d125f04",
+      "verified": "2026-10-28T20:16:30.910Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909839",
+      "sha": "8c68c43390930bd668d30f26562f94681479cdb4a86aa4bad55728a0178b4b0a",
+      "verified": "2026-10-28T20:16:30.561Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909840",
+      "sha": "95b5072fcb7d4cc3baba1290e7aa3adc802a76392599c2763f840d8d13b2a138",
+      "verified": "2026-10-28T20:16:29.294Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909841",
+      "sha": "78dfa8caad7587b89b846558f9369785d8f1ea163827cfe1d681d2c606507f1d",
+      "verified": "2026-10-28T20:16:29.512Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909843",
+      "sha": "47f6492e1af50efadead2523ff7cd4f3dac1e50ec38dbb2ca4acc2853740b6c2",
+      "verified": "2026-10-28T20:16:31.520Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909844",
+      "sha": "c5f2968f190ac36d3d4bad1aa4754ee0a4157e15369ce5991aa64500ecad201a",
+      "verified": "2026-10-28T20:16:31.737Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909845",
+      "sha": "a85ce459433a801c6e9f818683ca5bfd517bf4bb3fe32ea78fc213693ba651d9",
+      "verified": "2026-10-28T20:16:31.021Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909846",
+      "sha": "5a1126f3b908baa8754548f22176f246c98c2988f1b62259cd9b8830d70c1bf4",
+      "verified": "2026-10-28T20:16:32.080Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909847",
+      "sha": "24374a06debbb913d336654a4db8ec76a8ec82780e710babc61e95e0c864f03e",
+      "verified": "2026-10-28T20:16:31.215Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909848",
+      "sha": "f995e5e192c4153120d318b8cfa8044b67fb78c40e5be7e4f2ba9777499c65ed",
+      "verified": "2026-10-28T20:16:31.450Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909849",
+      "sha": "a105e4e98099e4a2146596f5ff902a0f2e20c5fb5e8e77f1d07e9b4bf0dd288c",
+      "verified": "2026-10-28T20:16:31.671Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909850",
+      "sha": "332f70eca8348a0052de9de8e0813bafab32199365b8afbc1624c0f155aba514",
+      "verified": "2026-10-28T20:16:32.310Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909852",
+      "sha": "4659efbe576c25965ce2e9aea5b9469b4e7ddccd454e50912ab3baad0469d85c",
+      "verified": "2026-10-28T20:16:31.862Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909853",
+      "sha": "f2a796e67ec73dbc5957d6c22a319fda1950e6250558696f86db7d4f9cccd2d3",
+      "verified": "2026-10-28T20:16:33.161Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909854",
+      "sha": "0746bfbf09e1bc7aaa61d79d0636f3c9f6032f5ab9b45edbe8e38011a9e3dd43",
+      "verified": "2026-10-28T20:16:32.943Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909855",
+      "sha": "223c023f9ca65bb23241b979c2e321a32ea9acf2e7ec7d46adbce392c1d2e076",
+      "verified": "2026-10-28T20:16:32.851Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909856",
+      "sha": "da4c58f299ad6395b278d986e9f5c8eadc6f4a1dc37a71da543a23b898248fcd",
+      "verified": "2026-10-28T20:16:32.562Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909857",
+      "sha": "74e05319f005424ca7dd38df044ba2ce5444df28f1e781729e624d2a09ea8cfc",
+      "verified": "2026-10-28T20:16:33.024Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909858",
+      "sha": "29a7bc59f8f0c3a1940b20b9faab6288d663892db2c7ff80719c612c89224d51",
+      "verified": "2026-10-28T20:16:32.722Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909859",
+      "sha": "cfd4312a0c28a014134b0c632266535624eac31e0c6a99004eec83a2694029d4",
+      "verified": "2026-10-28T20:16:32.638Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909860",
+      "sha": "199f279c554dc2cc618d88834d27ea00b70506675e3066dc835fbacdc5ced35f",
+      "verified": "2026-10-28T20:16:32.397Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909861",
+      "sha": "cde34616f32f0678b89cd3f05167b0823e3f4689023b3dc7b8cbe21ec031795e",
+      "verified": "2026-10-28T20:16:33.646Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909862",
+      "sha": "c812e85b8308da1eab502aede2f25b186272892ea0659ecad37be82760635393",
+      "verified": "2026-10-28T20:16:33.556Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909863",
+      "sha": "7a41ae2ea068079cd6f3265af17995dc9ff1a5d668d86a41e2fb68ca16125e47",
+      "verified": "2026-10-28T20:16:33.476Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909864",
+      "sha": "95bd715e3453812308ac562780b53472bf291db98b070d3b0f6734b78f2645fd",
+      "verified": "2026-10-28T20:16:33.328Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909866",
+      "sha": "23596bed53db45998a0a6a1d71fe5bff62df6bf67fd1b7af444712ad4e2abb5b",
+      "verified": "2026-10-28T20:16:33.250Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909867",
+      "sha": "1f1d1854618d5bde768250c1394d35f267a873f8da7d5d1309a7143c136b683e",
+      "verified": "2026-10-28T20:16:33.959Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909878",
+      "sha": "a0066f4a1f37a2a288e0b6df441053e2632f3117b114ac6c98c2a5a771b2381b",
+      "verified": "2026-11-17T22:04:37.087158Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909879",
+      "sha": "bc4b09ba695103ac229c85161f1591cb4c49cfb1be5ca2b582aa22f4c9953761",
+      "verified": "2026-11-17T22:04:41.205280Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909880",
+      "sha": "27c38d82106db4ec4ef6ab36a3e3c7b84ee1afe3ddda5f1f5301a206f63c2c61",
+      "verified": "2026-11-17T22:04:45.542786Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909883",
+      "sha": "8128c29f482a18c92d246d19aea4fadf4451080959f36cf6aafdbb2a62984c94",
+      "verified": "2026-11-17T22:04:42.675324Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909885",
+      "sha": "2f52c4ac6960487761b44b1135b25c697239d28dc6a5f423777b65e5647aa097",
+      "verified": "2026-11-17T22:04:39.616560Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909886",
+      "sha": "a23bb250b27ac3984025faf8cc060c8cbb365e5a96330c4fc969ad83e799d11c",
+      "verified": "2026-11-17T22:04:36.797056Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909888",
+      "sha": "99acaaf7ef564c6eac52a4201abdd948706c6c9c057f660818c7580ab1102599",
+      "verified": "2026-11-17T22:04:38.270625Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909890",
+      "sha": "e3cb53b5b0157fd226a4aa5c2817c80372ed4b4e1608e778fae92c95f7bea539",
+      "verified": "2026-11-17T22:04:41.013006Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909892",
+      "sha": "a01781c54072caf8b75c4afec07139e350f1f51ebe96dc7f5e04df1b21ed83e8",
+      "verified": "2026-11-17T22:04:46.689002Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909895",
+      "sha": "ad25ea4ee7fe73e03c139f6b4ab2d5dbcd0dc940bf9535f04336a46ce9889cd7",
+      "verified": "2026-11-17T22:04:45.478730Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909896",
+      "sha": "46b972fca1425fe770965a0b5bfb9c4cc7a6cdd72a5b33953351221c77db1d50",
+      "verified": "2026-11-17T22:04:45.330826Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909897",
+      "sha": "92aa15bd73eea9f4a595092ea5ebad36320cb1219bdcde92e15fe9f7ee2b8fcf",
+      "verified": "2026-11-17T22:04:44.074073Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909901",
+      "sha": "85ab3fbd0e63eacc0562ec4e9f00f30155492627ccfa32b0884efe1812892475",
+      "verified": "2026-11-17T22:04:37.913019Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909906",
+      "sha": "7e71b3463153429ffceeae8ec329b5b5f55fa12c7d7ed0a535979eaae7fe788c",
+      "verified": "2026-11-17T22:04:43.060734Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909908",
+      "sha": "9b0158ea7ff3f90e36a6e8ed3537e669939f0174753f46206b1457041bc17d2e",
+      "verified": "2026-11-17T22:04:42.298396Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909910",
+      "sha": "63f482326591bbb01877e58c9d84118a084698d8f4efe86db90ffb0183aece80",
+      "verified": "2026-11-17T22:04:36.385307Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909917",
+      "sha": "c5ea393d1e4039b80ae72a5d6a3d0d423cfd52b570b928c58a00c2d910baf09d",
+      "verified": "2026-11-17T22:04:40.823877Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909918",
+      "sha": "161648f8fb06bae01b4bba636d52ec29b1c00f3385fb05fba137f1bdbbf6ec2e",
+      "verified": "2026-11-17T22:04:45.130175Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909920",
+      "sha": "7c4bde86953896ee4d9c06f3a0e9799e439bb4b2e1bc9e55c9653bf7308a0ca3",
+      "verified": "2026-11-17T22:04:42.794091Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909921",
+      "sha": "7bfeb27874cd31be325083f50ce01abbf2202ce85ea0696f0524c20378cbffb6",
+      "verified": "2026-11-17T22:04:46.271591Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909922",
+      "sha": "af78a187240ef176f71ce8efe5a7d735227a555684ec45f2e940b880714f51a8",
+      "verified": "2026-11-17T22:04:42.008274Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909925",
+      "sha": "63e4e6e5403e13464d6c385561e14cd7960893cf59854ce42fefbea37fc9c3c9",
+      "verified": "2026-11-17T22:04:44.068361Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909926",
+      "sha": "8c7b8c463b8afd3a55d366eb4e444cb524513faf3d2664664997d8729eb55c53",
+      "verified": "2026-11-17T22:04:36.216576Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909931",
+      "sha": "502991d0d354549e2602fe56d8e974b401ffb380882e2bca27685e04ae0e501a",
+      "verified": "2026-11-17T22:04:39.133599Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909932",
+      "sha": "8ff55909da89e0912603fac38ad4e1440cd3a67fe51f2ba6e3ec2e94a00fa555",
+      "verified": "2026-11-17T22:04:45.269659Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909933",
+      "sha": "f294a41b6d1ae23231bb9fa7835b879a558358e1c504c3409b4f40711cbc0496",
+      "verified": "2026-11-17T22:04:40.675658Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909934",
+      "sha": "5b10755534bd2640aa0255837f6e12936b80ec0760c5498787638ba83854c2c0",
+      "verified": "2026-11-17T22:04:46.266641Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909940",
+      "sha": "5f1bc064b27cbfcf282017a9c32ae1d49e7954075fff91a6a3d380fb4f5fed4a",
+      "verified": "2026-11-17T22:04:35.913276Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909944",
+      "sha": "57035e909c90104d2e4970a057e016d79d1b580feb17420df84cb431606b02f1",
+      "verified": "2026-11-17T22:04:40.256304Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909946",
+      "sha": "7a3d61b57e186a499644bc882b224ba69dffc36e244bd8495bc2889e3b03c708",
+      "verified": "2026-11-17T22:04:41.980025Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909947",
+      "sha": "8c998aaa7a2332ccd758a3903ed9f2e4ae43cc0c86d9b953c880450787b89473",
+      "verified": "2026-11-17T22:04:37.542144Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909952",
+      "sha": "7c2a907ed7086b972525a73a154fe15679cb018be649ec9b3b0e513ea4c24f6a",
+      "verified": "2026-11-17T22:04:46.041401Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909953",
+      "sha": "ea2665fee5a9858b17eaad6b3aadb172a04eed48417431f6ddb04e1ec1ef0bd4",
+      "verified": "2026-11-17T22:04:43.697228Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909954",
+      "sha": "7bba90d023c6a86d334720d07b8e3c45a7ed387e27f49e38c7320649c66e52b9",
+      "verified": "2026-11-17T22:04:41.658246Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909955",
+      "sha": "1d7e2dbb9a86bda367bf464d88063bf8b011fdf19905fdcfa0bafb4acb0d5071",
+      "verified": "2026-11-17T22:04:38.751079Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909958",
+      "sha": "c670f279599bfc27141522a50363b1ec55d6efefb37840bcf248bd8dee7d922d",
+      "verified": "2026-11-17T22:04:40.082937Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909960",
+      "sha": "5c58b78d5a66957d82f81f16a62493cac2ba211f2684a71f03931ef48f750c4e",
+      "verified": "2026-11-17T22:04:35.810461Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909965",
+      "sha": "37c065fed89178d9d9e78497cb83d28beb92701c1c7d626d71c21bcc8dcdec81",
+      "verified": "2026-11-17T22:04:44.849091Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909967",
+      "sha": "089127c56b4f8c79add3d8382249a51da4804dc6526e45ece2343294f611b876",
+      "verified": "2026-11-17T22:04:35.514390Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909968",
+      "sha": "833d103d70368faca026fc9641755068a54947affc57b3516256b023925e4190",
+      "verified": "2026-11-17T22:04:38.675288Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909969",
+      "sha": "f84acdb26041256f6b117507b1d429b5a7ddc3a9b0a9484e59ca87c1d879024c",
+      "verified": "2026-11-17T22:04:39.930540Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909971",
+      "sha": "e8ff5b70c46473bb85c55e4df09f7fc330e3242c190113af9e229c8748e01ab8",
+      "verified": "2026-11-17T22:04:45.892655Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909975",
+      "sha": "7a735d1fe047c00b81f3731b47a0134f219455c0baba16abbc2dd2cdf3d3fbbd",
+      "verified": "2026-11-17T22:04:44.602611Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909976",
+      "sha": "f838fabe37cf68a35bca9be501235bf9ac449f272e8c9bee1678a7df4c286ee7",
+      "verified": "2026-11-17T22:04:38.392014Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909977",
+      "sha": "ce38968ccd0595e8fd72762f85739ded2096d92c904c3bd72db48ee47c2fbb71",
+      "verified": "2026-11-17T22:04:41.549448Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909978",
+      "sha": "957c9eb6cfac57a8fc9f1b072a3bd4860bd36e53a1ccc603b6477db3ed88aaa7",
+      "verified": "2026-11-17T22:04:37.492913Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909979",
+      "sha": "1c8e981c7ff4c463e95ba8d67941be2ac6b1ce7ad29c8efd4af2695b953a292b",
+      "verified": "2026-11-17T22:04:43.450889Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909982",
+      "sha": "0a8c2b83977a0fc5e43c513f6a90f1f5fdf9c2ac28a19ddc26d2b3a7b5a509f8",
+      "verified": "2026-11-17T22:04:41.321071Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909984",
+      "sha": "80a0bcd00ee4e86ea87627408d0c17058fd7fcbf721246833e66920b8a920006",
+      "verified": "2026-11-17T22:04:37.159920Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909986",
+      "sha": "6434fac567dca02b29bb39a372caff1dd52f5c6b593f934f4f87cce394e45c43",
+      "verified": "2026-11-17T22:04:45.705334Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909987",
+      "sha": "c5769252703c4806993d7a1f67efea46c7387bcb780ca85ef4d6ac404aafa9a9",
+      "verified": "2026-11-17T22:04:43.373956Z"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909988",
+      "sha": "be13248c02f315a5e85150c5db38b1b69bddcd38fe659b1859ea0db68e3cf7b2",
+      "verified": "2026-11-17T22:04:43.001774Z"
+    }
+  ],
+  "existingPointersPreserved": 0,
+  "readbackVerified": true,
+  "consumerInactive": true,
+  "calls": 62,
+  "sha256": "40f5c271d2c2b0f6c1b02945119bdf33a567c2df1ffc09d370c4d5ac2d28548e"
+}

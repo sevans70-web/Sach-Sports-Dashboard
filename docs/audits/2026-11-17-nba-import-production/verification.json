@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-11-18T01:09:31.062Z",
+  "artifact": "NBA-FINAL-SEED-2026-11-17-7a5cba7d706f",
+  "sessionDigest": "7a5cba7d706f70dbfd1a8e2196d2aa6a44f8987f13b105361ebdeb0508262ef3",
+  "readbacks": 101,
+  "activePointers": 101,
+  "canonicalSourceValidationPassed": 101,
+  "originalObservedAndVerifiedTimesExact": true,
+  "exactVersionBodies": true,
+  "dryDuplicatePreparation": {
+    "newPointers": 0,
+    "existingPointers": 101,
+    "executed": false
+  },
+  "encodedSourceBytes": 764248,
+  "sqlRequests": 62,
+  "receiptSha256": "40f5c271d2c2b0f6c1b02945119bdf33a567c2df1ffc09d370c4d5ac2d28548e",
+  "transcriptGzipSha256": "455cb8579587e557e6b60c46b31bf13a4c1f4de42f7ec14dc781732309598dac",
+  "transcriptGzipBytes": 1181551,
+  "rollbackRequired": false,
+  "workerDeployment": false
+}

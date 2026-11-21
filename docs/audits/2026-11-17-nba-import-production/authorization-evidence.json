@@ -1,0 +1,10 @@
+{
+  "operation": "import",
+  "sessionDigest": "7a5cba7d706f70dbfd1a8e2196d2aa6a44f8987f13b105361ebdeb0508262ef3",
+  "planDigest": "3c2d82c7e3310ccd01528da5f4ca92646a22cba5cd40f68492d89e6fbfdd8813",
+  "approvalReference": "Explicit user approval: one controlled import of NBA-FINAL-SEED-2026-11-17-7a5cba7d706f using sessiond0a63bb/mechanism29e97b4; current task",
+  "expiresAt": "2026-11-18T01:17:29.886Z",
+  "consumerInactive": true,
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "protectedRecordBaselineSha256": "a97f788f814479fa335239d6576fd861c692195bb9c31bbd0c579c7cee0af8af"
+}
