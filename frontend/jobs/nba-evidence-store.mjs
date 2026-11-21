@@ -21,7 +21,7 @@ export function nbaEvidenceStore(sql,now=()=>Date.now()){
    sql.exec('CREATE TABLE IF NOT EXISTS nba_history_checks(source TEXT PRIMARY KEY,sha TEXT,verified TEXT)');
    const prior=rows('SELECT c.verified,v.body FROM nba_history_checks c JOIN nba_history_versions v ON v.source=c.source AND v.sha=c.sha WHERE c.source=?',value.source)[0];
    if(prior&&Date.parse(prior.verified)>=Date.parse(value.observedAt))return false;
-   if(prior&&validated.kind==='discovery'){
+   if(prior&&validated.kind!=='fixture'){
     const previous=completedNbaDiscoveryEvents(decode(prior.body).payload),next=completedNbaDiscoveryEvents(validated.payload);
     if([...previous].some(id=>!next.has(id)))throw Error('nba_evidence_discovery_regression');
    }

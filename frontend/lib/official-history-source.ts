@@ -21,7 +21,7 @@ async function read(url:string,init:RequestInit={}){
  const job=dashboardJobContext();job?.assertActive();const now=Date.now(),source=new URL(url),origin=source.origin,family=officialHistoryFamily(url),denialKey=family&&source.pathname.includes('/basketball/nba/')?source.href:family,until=denialKey?denied.get(denialKey)||0:0;
  // Live scoreboards have their own short, schema-validated NBA cache. Never
  // freeze their changing statuses in this 15-minute historical-input cache.
- const cacheable=!source.pathname.endsWith('/scoreboard');
+ const cacheable=!source.pathname.endsWith('/scoreboard')&&!/\/basketball\/nba\/teams\/\d+\/schedule$/.test(source.pathname);
  for(const [key,expires] of denied)if(expires<=now)denied.delete(key);
  if(!job){for(const [k,v] of entries)if(v.expires<=now){entries.delete(k);bytes-=v.bytes;}const hit=cacheable?entries.get(url):null;if(hit)return new Response(hit.body,{status:hit.status,headers:{'Content-Type':'application/json','x-sach-observed-at':new Date(hit.at).toISOString()}});}
  const cooldown=limited.get(origin)||0;if(!job&&cooldown>now)return Response.json({error:'provider_cooldown',retryAt:new Date(cooldown).toISOString()},{status:429,headers:{'Retry-After':String(Math.ceil((cooldown-now)/1000))}});

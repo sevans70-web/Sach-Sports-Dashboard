@@ -10,6 +10,7 @@ const official=new Set(['api-web.nhle.com','api.nhle.com','site.api.espn.com','s
 export function cacheTtl(url){const u=new URL(url);if(!official.has(u.hostname))return 0;
  if(/\/gamecenter\/|\/score\//.test(u.pathname))return 0;
  if(u.pathname==='/apis/search/v2')return 60000;
+ if(u.hostname==='site.api.espn.com'&&/^\/apis\/site\/v2\/sports\/basketball\/nba\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2')return 15*60000;
  return /\/roster|\/game-log\/|\/gamelog|\/statistics|\/stats\/|\/standings\/|\/summary$/.test(u.pathname)?15*60000:0;}
 export function retryTime(value,now=Date.now()){const n=Number(value),date=Date.parse(value||'');return Math.max(now+60000,value!=null&&String(value).trim()!==''&&Number.isFinite(n)&&n>=0?now+n*1000:Number.isFinite(date)?date:0);}
 function active(scope){if(scope.closed||scope.abort.signal.aborted)throw scope.abort.signal.reason||new JobDeferred('job_phase_closed');}

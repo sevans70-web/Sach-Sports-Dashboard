@@ -1,0 +1,16 @@
+{
+  "scope": "Actual production fallback read-only GET routes; no preview, deployment or history/capture endpoint; TLS verification enabled",
+  "results": [
+    {
+      "path": "/api/market-coverage?sport=nba&mode=feed-sample",
+      "at": "2026-11-21T22:10:34.945112+00:00",
+      "status": 200,
+      "seconds": 1.532,
+      "success": null,
+      "error": null,
+      "teams": 0,
+      "players": 0,
+      "games": 5
+    }
+  ]
+}

@@ -188,7 +188,7 @@ async function attachForecasts(payload:any,sport:string,now=Date.now(),options:{
    ?await refreshCbbObservations(payload.rows,now)
    :await refreshNbaObservations(payload.rows.filter((r:any)=>verifiedPropQuote(r,now)),now);
   basketballRefreshUnavailable=new Set(refresh.unavailablePlayers);
-  if(sport==='nba'&&refresh.sourceEvidence)payload={...payload,officialHistoryCoverage:{requested:payload.rows.filter((r:any)=>verifiedPropQuote(r,now)).length,unavailable:refresh.unavailablePlayers.length,checkedAt:refresh.checkedAt,sourceBudget:refresh.sourceBudget,sourceEvidence:refresh.sourceEvidence}};
+  if(sport==='nba'&&refresh.sourceEvidence)payload={...payload,officialHistoryCoverage:{requested:payload.rows.filter((r:any)=>verifiedPropQuote(r,now)).length,unavailable:refresh.unavailablePlayers.length,checkedAt:refresh.checkedAt,sourceBudget:refresh.sourceBudget,discoveryRecovery:refresh.discoveryRecovery,sourceEvidence:refresh.sourceEvidence}};
   const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));
   for(const r of refresh.observations)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);
   data={...data,observations:[...merged.values()]};

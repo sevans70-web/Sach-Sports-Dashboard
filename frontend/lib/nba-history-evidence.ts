@@ -1,9 +1,10 @@
 import {createHash} from 'node:crypto';
+import {validatedNbaTeamSchedule} from '@/lib/nba-team-schedule';
 import {basketballModelObservations} from '@/lib/basketball-model-observations';
 import {basketballRegularSeasonGroups} from '@/lib/basketball-history-window';
 
 export const NBA_DISCOVERY_FRESH_MS=15*60_000;
-export type NbaHistoryEvidence={version:1;source:string;kind:'discovery'|'fixture';payload:any;sha256:string;observedAt:string;validatedAt:string;lastVerifiedAt:string};
+export type NbaHistoryEvidence={version:1;source:string;kind:'discovery'|'fixture'|'team_schedule';payload:any;sha256:string;observedAt:string;validatedAt:string;lastVerifiedAt:string};
 export type NbaEvidenceAccess={read:(source:string)=>Promise<NbaHistoryEvidence|null>|NbaHistoryEvidence|null;write?:(value:NbaHistoryEvidence)=>Promise<unknown>|unknown};
 export const nbaEvidenceHash=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 /** Request/job cancellation is control flow, never a recoverable feed outage. */
@@ -13,6 +14,7 @@ export function rethrowNbaEvidenceCancellation(error:unknown){
 }
 export function completedNbaDiscoveryEvents(payload:any){
  const ids=new Set<string>();
+ if(Array.isArray(payload?.events)){for(const e of payload.events)if(e.competitions?.[0]?.status?.type?.completed===true)ids.add(String(e.id));return ids;}
  for(const group of basketballRegularSeasonGroups(payload))for(const category of group.categories||[])if(category.type==='event')for(const event of category.events||[]){
   const id=String(event.eventId||'');if(['W','L'].includes(String(payload.events?.[id]?.gameResult)))ids.add(id);
  }
@@ -21,6 +23,7 @@ export function completedNbaDiscoveryEvents(payload:any){
 export function nbaEvidenceIdentity(source:string){
  const u=new URL(source);if(u.username||u.password||u.hash||u.port||u.protocol!=='https:')throw Error('nba_evidence_source_invalid');
  if(u.hostname==='site.web.api.espn.com'&&/^\/apis\/common\/v3\/sports\/basketball\/nba\/athletes\/\d+\/gamelog$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&[...u.searchParams.keys()].length===1)return {kind:'discovery' as const,season:u.searchParams.get('season')!,playerId:u.pathname.split('/').at(-2)!};
+ if(u.hostname==='site.api.espn.com'&&/^\/apis\/site\/v2\/sports\/basketball\/nba\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2'&&[...u.searchParams.keys()].length===2)return {kind:'team_schedule' as const,season:u.searchParams.get('season')!,teamId:u.pathname.split('/').at(-2)!};
  if(u.hostname==='site.api.espn.com'&&u.pathname==='/apis/site/v2/sports/basketball/nba/summary'&&/^\d+$/.test(u.searchParams.get('event')||'')&&[...u.searchParams.keys()].length===1)return {kind:'fixture' as const,gameId:u.searchParams.get('event')!};
  throw Error('nba_evidence_source_invalid');
 }
@@ -43,6 +46,9 @@ export function validateNbaHistoryEvidence(source:string,input:any,observedAt:st
     !Number.isFinite(c.teamPossessions)||c.teamPossessions<=0||!Number.isFinite(c.duration)||c.duration<=0||
     (r.workload>0&&!finiteNonnegative(c.usage))||!['points','rebounds','assists','threes_made','steals','blocks'].every(m=>Number.isInteger(c.allowed[m])&&c.allowed[m]>=0);
   }))throw Error('nba_evidence_incomplete_census');
+ }else if(id.kind==='team_schedule'){
+  payload=validatedNbaTeamSchedule(input,id.teamId,id.season);
+  if(payload.events.some((e:any)=>e.competitions[0].status.type.completed&&Date.parse(e.date)>=stamp))throw Error('nba_schedule_future_final');
  }else{
   if(!Array.isArray(input?.seasonTypes)||!input.events||typeof input.events!=='object'||Array.isArray(input.events)||input.athlete?.id&&String(input.athlete.id)!==id.playerId)throw Error('nba_evidence_incomplete_discovery');
   const groups=basketballRegularSeasonGroups(input);let count=0;
@@ -79,6 +85,7 @@ export async function readNbaHistorySource(source:string,now:number,live:()=>Pro
  let evidence:NbaHistoryEvidence;
  try{
   const incoming=await live();evidence=validateNbaHistoryEvidence(source,incoming.payload,incoming.observedAt,Math.max(now,Date.now()));
+  if(evidence.kind!=='fixture'&&now-Date.parse(evidence.lastVerifiedAt)>=NBA_DISCOVERY_FRESH_MS)throw Error('nba_discovery_response_expired');
  }catch(error){
   rethrowNbaEvidenceCancellation(error);
   // FINAL recovery already returned above. A failed discovery must never

@@ -1,0 +1,24 @@
+[basketball refresh audit] {"sport":"nba","players":34,"discoveredFixtures":19,"omittedFixtures":0,"gamelogFailures":34,"scheduleFailures":0,"calendarRecovered":34,"fixtureFailures":0,"unavailablePlayers":0,"observations":2982,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":34,"discoveredFixtures":19,"omittedFixtures":0,"gamelogFailures":0,"scheduleFailures":0,"calendarRecovered":34,"fixtureFailures":0,"unavailablePlayers":0,"observations":2982,"sourceBudgetExhausted":false}
+NBA_REAL_TEAM_DISCOVERY {"roster":34,"finals":19,"observations":2982,"sourceRecords":21,"coldProviderCalls":0,"lowerRosterPlayersObserved":true,"absentPlayerNotInvented":true}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":0,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":0,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":0,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":0,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":0,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":0,"sourceBudgetExhausted":false}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":9,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":1,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":1368,"sourceBudgetExhausted":false}
+[official source unavailable] {"endpoint":"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/:id/gamelog","status":403,"retryAt":"2026-11-21T23:05:16.647Z"}
+[basketball refresh audit] {"sport":"nba","players":1,"discoveredFixtures":9,"omittedFixtures":0,"gamelogFailures":1,"scheduleFailures":1,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":1,"observations":1368,"sourceBudgetExhausted":false}
+✔ two real full calendars reconcile FINAL records and reject identity, partial, duplicate and contradictory inputs (171.619969ms)
+✔ actual34-player roster recovers exact complete current-team/opponent observations after athlete403, including lower roster players (381.646133ms)
+✔ 401/429/503, cancellation, wrong fixture, stale context and incomplete schedules do not authorize replacement discovery (31.31426ms)
+✔ calendar expiry requires a real source refresh and never restamps the stored successful check (5.97696ms)
+✔ oversized calendars cancel their stream and the operational cache policy stays NBA-specific (496.753307ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2494.400557

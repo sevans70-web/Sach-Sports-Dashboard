@@ -1,0 +1,38 @@
+{
+  "scope": "Actual production fallback read-only GET routes; no preview, deployment or history/capture endpoint; TLS verification enabled",
+  "results": [
+    {
+      "path": "/api/game-slate-detail?sport=nba&gameId=401910028",
+      "at": "2026-11-21T22:09:15.841509+00:00",
+      "status": 200,
+      "seconds": 1.409,
+      "success": true,
+      "error": null,
+      "teams": 2,
+      "players": 34,
+      "games": 0
+    },
+    {
+      "path": "/api/game-slate-detail?sport=nba&gameId=401910015",
+      "at": "2026-11-21T22:09:17.250711+00:00",
+      "status": 200,
+      "seconds": 0.903,
+      "success": true,
+      "error": null,
+      "teams": 2,
+      "players": 27,
+      "games": 0
+    },
+    {
+      "path": "/api/player-card-context?sport=nba&id=4433188&team=BOS&before=2026-11-22T03%3A00%3A00Z",
+      "at": "2026-11-21T22:09:18.153250+00:00",
+      "status": 200,
+      "seconds": 0.351,
+      "success": null,
+      "error": null,
+      "teams": 0,
+      "players": 0,
+      "games": 20
+    }
+  ]
+}

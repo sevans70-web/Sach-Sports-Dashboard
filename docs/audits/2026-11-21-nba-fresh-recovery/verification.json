@@ -1,0 +1,140 @@
+{
+  "NBA_CURRENT_POINTS_SAMPLE": {
+    "fixture": "401910028",
+    "scope": "actual bounded allowlisted diagnostic; lacks provider quote IDs",
+    "quoted": 6,
+    "validEv": 0,
+    "exactQuoteBindingUnavailable": true,
+    "players": [
+      {
+        "player": "Paul George",
+        "line": 26.5,
+        "projection": 16.2,
+        "evReason": "Independent model probabilities needed"
+      },
+      {
+        "player": "Jordan Walsh",
+        "line": 7.5,
+        "projection": null,
+        "evReason": "An independent model probability is unavailable"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "line": 13.5,
+        "projection": 11.7,
+        "evReason": "Independent model probabilities needed"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "line": 22.5,
+        "projection": 25.8,
+        "evReason": "Independent model probabilities needed"
+      },
+      {
+        "player": "Sam Hauser",
+        "line": 9.5,
+        "projection": 6.1,
+        "evReason": "Independent model probabilities needed"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "line": 12.5,
+        "projection": 9.4,
+        "evReason": "Independent model probabilities needed"
+      }
+    ]
+  },
+  "NBA_TEAM_RUNTIME": {
+    "players": 34,
+    "observations": 2982,
+    "phases": [
+      {
+        "error": "job_subrequest_budget",
+        "used": 42,
+        "sourceCheckpoints": 0,
+        "checks": 0,
+        "denialReceipts": 21
+      },
+      {
+        "error": "job_subrequest_budget",
+        "used": 42,
+        "sourceCheckpoints": 14,
+        "checks": 6,
+        "denialReceipts": 34
+      },
+      {
+        "used": 26,
+        "sourceCheckpoints": 28,
+        "checks": 21,
+        "denialReceipts": 34
+      }
+    ],
+    "coldProviderCalls": 0,
+    "models": [
+      {
+        "market": "points",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      },
+      {
+        "market": "rebounds",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      },
+      {
+        "market": "assists",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      },
+      {
+        "market": "threes_made",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      },
+      {
+        "market": "pts_rebs_asts",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      },
+      {
+        "market": "pts_rebs",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      },
+      {
+        "market": "pts_asts",
+        "available": 19,
+        "unavailable": 15,
+        "priced": 0
+      }
+    ],
+    "protectedMarkersUnchanged": true,
+    "productionAccess": false
+  },
+  "NBA_REAL_TEAM_DISCOVERY": {
+    "roster": 34,
+    "finals": 19,
+    "observations": 2982,
+    "sourceRecords": 21,
+    "coldProviderCalls": 0,
+    "lowerRosterPlayersObserved": true,
+    "absentPlayerNotInvented": true
+  },
+  "focusedVerification": {
+    "distinctPassingChecks": 54,
+    "failures": 0,
+    "typescriptDiagnostics": 0,
+    "fullSuiteRepeated": false,
+    "releaseBuildPerformed": false
+  },
+  "fixtures": {
+    "nba-team-schedules-2026-11-21.json.gz": "8f5daf781a6882813c015bd900b2248bd27ad4ce7b0710c6eb99211c6436e1bc",
+    "nba-current-points-sample-2026-11-21.json.gz": "da2bb8229d418e4aaae695e0ffa2faf876b7498de97177ab2203416034492115"
+  }
+}

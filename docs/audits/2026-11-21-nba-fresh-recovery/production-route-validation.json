@@ -1,0 +1,13 @@
+{
+  "pregameFixture": "401910028",
+  "currentRosterIdsMatch": true,
+  "matchedPlayers": 34,
+  "contextReturnedGames": 20,
+  "currentSeasonCalendarGamesMatched": 15,
+  "latestCurrentSeasonMatch": {
+    "gameId": "401910015",
+    "date": "2026-11-19T02:30Z",
+    "opponent": "Denver Nuggets"
+  },
+  "scope": "Deterministic comparison of the already captured live production GETs with separately captured official data; no additional production requests"
+}
