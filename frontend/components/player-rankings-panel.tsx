@@ -30,6 +30,7 @@ import {rankingTimeBlocks} from "@/lib/ranking-time-blocks";
 import {rankingStatusText,completedRankingsLast,rankingCardState,rankingLineProgress,rankingGameForRow} from "@/lib/ranking-card-state";
 import {cardObservedProgress,cardProgressLine,researchFinalOutcome,scorerTarget,cardStatUnit} from "@/lib/card-results";
 import {propLineText} from '@/lib/prop-line-format';
+import {checkedRankingPayload,rankingEvText} from "@/lib/ranking-display-evidence";
 import {cardModelPick,cardModelProjection,modelPickNotice,capRankingUnders} from '@/lib/saved-model-pick';
 import {cardQuotePrices,firstBasketQuote,completeRankingProp,forecastDetailText} from '@/lib/public-card-metrics';
 import {excludeUnavailableRanking} from '@/lib/ranking-availability';
@@ -883,7 +884,7 @@ function PlayerCard({
   }, [card.playerId, card.market, card.gameTime]);
 
   useEffect(() => {
-    if (historyLoaded) return;
+    if ((['nba','nfl','nhl'].includes(sport)&&!open) || historyLoaded) return;
 
     const controller = new AbortController();
     setHistoryLoading(true);
@@ -906,6 +907,7 @@ function PlayerCard({
     return () => controller.abort();
   }, [
     historyLoaded,
+    open,
     sport,
     league,
     card.playerId,
@@ -977,7 +979,7 @@ function PlayerCard({
           : ""
     );
 
-  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
+  const context=publicPropContext({...card.raw,playerName:card.playerName,matchup:card.matchup,gameTime:card.gameTime,historyLoaded,historyDeferred:['nba','nfl','nhl'].includes(sport)&&!open&&!historyLoaded,gameState:state==='final'?'post':state==='live'?'in':'pre',actualResult:card.actual,liveCurrent:card.liveCurrent},sport,card.market,historyLoaded?historyValues:[]);
   const intelligence={...propIntelligence({...card.raw,rank:card.rank,marketLabel:card.marketLabel,gameTime:card.gameTime},sport,card.market),...context};
   const fittedForecast=(state==='pregame'||card.raw?.boardFrozen===true)&&card.raw?.researchForecast?.status==='available'?card.raw.researchForecast:null;
   const modelSelection=cardModelPick(card.raw);
@@ -997,9 +999,9 @@ function PlayerCard({
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
   const nbaDisplayEv=sport==='nba'&&nbaEvMarket(card.market)?nbaRankingEv(card.raw):null;
   const evPercent=nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
-  // A non-positive expected return is an abstention, not an actionable EV card.
-  // Retain the original signed value in the underlying record for auditing.
-  const evText=typeof evPercent==='number'&&Number.isFinite(evPercent)&&(sport==='nfl'||evPercent>0)?formatEvPercent(evPercent):'—',evNotice=estimatedEvNotice(card.raw);
+  // Display a valid signed expected return independently of betting qualification.
+  // Original selections and their saved evidence remain unchanged.
+  const evText=rankingEvText(evPercent,sport,formatEvPercent),evNotice=complete?.comparison?'Research expected return for this projection direction at the exact recorded sportsbook line and odds; not a betting recommendation.':nflEvidence?.reason||estimatedEvNotice(card.raw);
   const displayedAverage=sport==='nfl'?(nflEvidence?.projection??nflEvidence?.baseline??null):complete?.projection??(quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null));
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
@@ -1091,6 +1093,8 @@ function PlayerCard({
         </div>}
       </div>
 
+      {['nba','nfl','nhl'].includes(sport)&&!firstBasket&&!nbaDisplayEv?<div className={styles.faceFooter}><p data-ev-status={evText==='—'?'unavailable':'available'}>{evText==='—'?`EV unavailable: ${evNotice}`:evNotice}</p></div>:null}
+
       <div className={`${styles.faceMetrics} ${firstBasket?styles.firstBasketMetrics:''} ${quarterCard?styles.quarterMetrics:''}`} style={{gridTemplateColumns:`repeat(${firstBasket||binaryEvent?2:3}, minmax(0, 1fr))`}}>
         {quarterCard?<>
           <div><span>{card.marketLabel}</span><strong>{(complete||card.raw?.quoteVerified)&&card.sportsbookLine!=null?quarterTarget?`${propLineText(card.sportsbookLine)}+`:`O/U ${propLineText(card.sportsbookLine)}`:'—'}</strong></div>
@@ -1158,7 +1162,7 @@ function PlayerCard({
       {card.raw?.integrityVersion ? (
         <div className={styles.faceFooter}>
           {card.raw.quoteVerified ? <p>{card.raw.boardFrozen?"Saved pregame book: ":"Book: "}{card.raw.sportsbook}{cardQuotePrices(card.raw)?` · ${cardQuotePrices(card.raw)}`:""}</p> : null}
-          <p>{firstBasket?'Chance implied by the displayed sportsbook odds.':researchOnly?intelligence.face:card.summary}</p>
+          <p>{firstBasket?'Chance implied by the displayed sportsbook odds. EV unavailable: an independent First Basket model is not available.':researchOnly?intelligence.face:card.summary}</p>
         </div>
       ) : (sport === "cfb" || sport === "nfl") && (card.sportsbookLine != null || card.raw?.marketBacked === true) ? (
         <div className={styles.faceFooter}>
@@ -2128,10 +2132,11 @@ export function PlayerRankingsPanel({
               : sport === "nba" ? nbaSlateRequest(market.key,nbaSlate) : `/api/${sport}/rankings?market=${encodeURIComponent(market.key)}${sport==="nhl"?`&slate=${nhlSlate}`:sport==="nfl"?`&day=${requestedNflDay}`:""}`;
 
           // Never make rankings wait for grading/performance data.
-          const rankingPayload = await fetchJson(
+          const receivedRankingPayload = await fetchJson(
             rankingUrl,
             controller.signal
           );
+          const rankingPayload=['nba','nfl','nhl'].includes(sport)?checkedRankingPayload(receivedRankingPayload,sport,requestedMarket):receivedRankingPayload;
           // A provider/API failure is not a verified zero-pick slate. Route
           // unsuccessful responses through retry handling, preserving the
           // current verified market board rather than replacing it with [].
@@ -2143,6 +2148,7 @@ export function PlayerRankingsPanel({
           if(!alive||controller.signal.aborted||requestId!==rankingRequestSeq.current)return;
           if(rankingPayload.dataState==='stale')setError('Showing retained rankings from '+new Date(rankingPayload.observedAt).toLocaleTimeString()+'. '+(sport==='nba'&&rankingPayload.coverageNotice?rankingPayload.coverageNotice:'Refresh pending; prices may have changed.'));
           if(sport==='nhl')setNhlCoverage({market:requestedMarket,slate:nhlSlate,message:rankingPayload.coverageNotice||''});
+          if(rankingPayload.rankingEvidenceDiagnostics?.withheld)setError(rankingPayload.coverageNotice);
           const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
           const scoped=sport==='nba'?scopedNbaBoard(rankingPayload,requestedMarket,requestedDay||rankingPayload?.boardDay||nbaFixtureDay(new Date())):rankingPayload;
           rawRows = scoped?.rows || [];
@@ -2324,11 +2330,11 @@ export function PlayerRankingsPanel({
         // Keep the last good board on screen. A background refresh failure
         // should never turn the ranking section into a blank panel.
         setError(
-          sport==='nhl'&&cause instanceof Error&&/^(The NHL sportsbook feed denied access|No current verified sportsbook quotes)/.test(cause.message)?cause.message+' Retained rankings may be out of date.':sport==='nba' ? 'NBA refresh is unavailable. Any retained rankings may be stale. Retrying…' : cause instanceof Error
+          cause instanceof Error&&/^(The original pregame ranking board is unavailable|Ranking response belongs|The NHL sportsbook feed denied access|No current verified sportsbook quotes)/.test(cause.message)?cause.message+' Retained rankings may be out of date.':sport==='nba' ? 'NBA refresh is unavailable. Any retained rankings may be stale. Retrying…' : cause instanceof Error
             ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : "Player rankings are temporarily unavailable. Retrying…"
             : "Player rankings are temporarily unavailable."
         );
-        retryTimer=setTimeout(run,5000);
+        if((cause as {retryable?:boolean})?.retryable!==false)retryTimer=setTimeout(run,5000);
       } finally {
         running=false;
         if (
@@ -2530,8 +2536,7 @@ export function PlayerRankingsPanel({
         return forecast?[{card,forecast}]:[];
       })
         .sort((a,b)=>b.forecast.percent-a.forecast.percent);
-      return capRankingUnders(ranked,({forecast})=>forecast.percent>0?forecast.side:null)
-        .map(({card},index)=>({...card,rank:index+1}));
+      return ranked.map(({card},index)=>({...card,rank:index+1}));
     }
     const ordered=completedRankingsLast(scopedDisplayCards);
     if(!['cbb','cfb'].includes(sport))return ordered;

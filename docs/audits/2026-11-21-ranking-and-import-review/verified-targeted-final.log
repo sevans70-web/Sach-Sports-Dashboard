@@ -1,0 +1,50 @@
+✔ estimated EV uses selected side, American payout and zero-profit pushes (2.48147ms)
+✔ stale/mismatched quotes, failed validation and book-implied scorer chances cannot create EV (0.684133ms)
+✔ saved pregame EV survives kickoff and final results without using outcomes (2.810287ms)
+✔ shared EV arithmetic applies to all eight sports without a GI dependency (0.703255ms)
+✔ saved probability evidence is deterministic across file order and exact fixture/quote constraints (59.731548ms)
+✔ all eight sports reject failed, retimed and quote-spliced selection evidence (2.094293ms)
+✔ new quote-bound probability evidence remains usable and rejects every altered identity field (0.635064ms)
+✔ NBA comparison EV uses both exact prices without manufacturing a saved selection (1.170156ms)
+✔ one NBA research EV follows displayed projection direction, never the most attractive side (1.78501ms)
+✔ Top 25 is selected after eligibility over the entire candidate pool (6.305424ms)
+✔ locked recovery uses only recorded pre-lock decisions and respects latest abstentions (18.508302ms)
+✔ recorded live NFL QB disappearance is reproduced and quote-backed coverage restored without manufacturing selections (49.816765ms)
+✔ model validation failures remain unavailable confidence/EV; baselines and unmodelled quarters stay distinct (1.051374ms)
+✔ exact normalized probabilities can price signed NFL research EV without generating a betting selection (1.472298ms)
+✔ wrong sport, invalid quote, after-start recovery, unavailable player and tampered capture remain excluded (1.104419ms)
+✔ negative and zero exact-price NFL comparisons remain signed and never acquire selections (1.105144ms)
+✔ quarter sportsbook category aliases remain exact to period and do not borrow full-game offers (271.500974ms)
+✔ two-sided NFL quarter forecasts retain their projection direction without being promoted to betting picks (0.942732ms)
+✔ count mass responds to mean, retains zero/multiple outcomes and integer pushes (7.254747ms)
+✔ same EV requirement permits long-odds OVER and favorite UNDER without quotas (1.17519ms)
+✔ NHL runtime exposes count diagnostics but withholds unvalidated selections and old GI (8.197851ms)
+[P01 coverage audit] {"sport":"nhl","market":"goals","rows":1,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1}}
+[P01 coverage audit] {"sport":"nhl","market":"assists","rows":1,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1}}
+✔ frozen saved NHL forecasts retain original side and probabilities byte for byte (2771.248137ms)
+✔ NHL coverage retains eight eligible UNDERs without relabeling or mutating them (15.454339ms)
+✔ passing history excludes low-volume backups, prior seasons and post-kickoff data (127.036868ms)
+✔ descriptive sample average and line counts use dated observations and never become a pick or GI (47.56417ms)
+✔ live facts use the latest live stat, even when the ranking snapshot has an older actual field (0.450675ms)
+✔ chart points retain exact dates, opponents and zero values without leaking the current game (6.058863ms)
+✔ ranking evidence never relabels another sport/market/game/player/quote or a future forecast (9.499128ms)
+✔ an unavailable locked board and wrong-market response are terminal states, not verified empty boards (1.732661ms)
+✔ all three requested sports display valid negative/zero EV without turning it into a selection or altering other sports (3.837661ms)
+✔ the captured real API population is checked in every active category at its snapshot clock (204.835815ms)
+✔ NBA candidates and market counts preserve eight legitimate UNDER rows rather than enforcing a five-UNDER quota (810.45096ms)
+✔ deferred card history is disclosed without claiming a request is in flight (208.767928ms)
+✔ coverage counts match all 17 NFL quote-backed categories and every legitimate NHL comparison EV (85.122658ms)
+✔ NBA/NFL/NHL date failures and malformed payloads cannot publish partial schedules or false empty dates (3.759382ms)
+✔ failed polls retain bounded same-sport schedules; confirmed empty dates replace them and expired dates cannot leak (1.125462ms)
+✔ scope counts bind market, date and official fixture; unknown coverage is not zero and kickoff invalidates aggregate caches (4.836585ms)
+✔ seven NBA diagnostic rows, scorer candidates and true picks remain separate in coverage (1.946551ms)
+✔ coverage caches use actual future fixture dates and reject expired/future-dated counters (2.110003ms)
+✔ NHL tomorrow roster enrichment uses tomorrow teams, not only today teams, across Toronto DST (88.15886ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36665.694639

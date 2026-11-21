@@ -1,0 +1,11 @@
+✔ NBA failed refresh at 2026-11-01T04:30Z retains the original live slate and respects explicit calendar requests (265.344765ms)
+✔ NBA failed refresh at 2026-03-08T06:30Z retains the original live slate and respects explicit calendar requests (18.361016ms)
+✔ NBA failed refresh at 2026-11-01T07:30Z retains the original live slate and respects explicit calendar requests (17.882926ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3388.463875

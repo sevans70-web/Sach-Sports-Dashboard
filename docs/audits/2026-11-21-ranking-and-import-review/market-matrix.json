@@ -1,0 +1,1252 @@
+{
+  "liveApiClock": "2026-11-21T18:14\u201318:16Z; NFL browser on November22 game-day later in session",
+  "candidateSnapshotClock": "2026-11-21T18:17:00Z",
+  "categories": 37,
+  "markets": [
+    {
+      "sport": "nba",
+      "market": "points",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "rebounds",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "assists",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "threes_made",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "q1_points",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "q1_rebounds",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "q1_assists",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "pts_rebs_asts",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "pts_rebs",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "pts_asts",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "rebs_asts",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "steals",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "blocks",
+      "liveApiRows": 0,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "boardUnavailable": true
+      },
+      "evidenceAudit": {
+        "rows": 0,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {},
+        "boardUnavailable": true
+      }
+    },
+    {
+      "sport": "nba",
+      "market": "first_basket",
+      "liveApiRows": 20,
+      "actualProductionBrowser": {
+        "desktop": 20,
+        "mobile": 20
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 20,
+        "mobile": 20
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 20
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 20,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "EV is not supported for this market": 20
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 20
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_yards",
+      "liveApiRows": 23,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 23,
+        "mobile": 23
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_validation_failed": 16,
+          "fewer_than_three_same_season_team_appearances": 6,
+          "latest_passing_role_uncertain": 1
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 23,
+        "fitted": 16,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Probability accuracy checks not met": 16,
+          "Independent model probability needed": 7
+        },
+        "forecastBlockers": {
+          "price_validation_failed": 16,
+          "fewer_than_three_same_season_team_appearances": 6,
+          "latest_passing_role_uncertain": 1
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_tds",
+      "liveApiRows": 23,
+      "actualProductionBrowser": {
+        "desktop": 10,
+        "mobile": 10
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 23,
+        "mobile": 23
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "selected": 9,
+          "price_threshold_not_met": 7,
+          "fewer_than_three_same_season_team_appearances": 6,
+          "latest_passing_role_uncertain": 1
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 23,
+        "fitted": 16,
+        "complete": 16,
+        "identityMismatch": 0,
+        "availableEv": 16,
+        "positive": 11,
+        "zero": 0,
+        "negative": 5,
+        "reasons": {
+          "Independent model probability needed": 7
+        },
+        "forecastBlockers": {
+          "selected": 9,
+          "price_threshold_not_met": 7,
+          "fewer_than_three_same_season_team_appearances": 6,
+          "latest_passing_role_uncertain": 1
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_interceptions",
+      "liveApiRows": 22,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 22,
+        "mobile": 22
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 22
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 22,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 22
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 22
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "qb_rushing_yards",
+      "liveApiRows": 23,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 23,
+        "mobile": 23
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 23
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 23,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 23
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 23
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "passing_rushing_yards",
+      "liveApiRows": 20,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 20,
+        "mobile": 20
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 20
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 20,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 20
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 20
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "rushing_yards",
+      "liveApiRows": 43,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 43,
+        "mobile": 43
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_validation_failed": 38,
+          "prior_workload_role_uncertain": 4,
+          "fewer_than_three_same_season_team_appearances": 1
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 43,
+        "fitted": 38,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Probability accuracy checks not met": 38,
+          "Independent model probability needed": 5
+        },
+        "forecastBlockers": {
+          "price_validation_failed": 38,
+          "prior_workload_role_uncertain": 4,
+          "fewer_than_three_same_season_team_appearances": 1
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "receiving_yards",
+      "liveApiRows": 61,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 61,
+        "mobile": 61
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_validation_failed": 58,
+          "prior_workload_role_uncertain": 3
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 61,
+        "fitted": 58,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Probability accuracy checks not met": 58,
+          "Independent model probability needed": 3
+        },
+        "forecastBlockers": {
+          "price_validation_failed": 58,
+          "prior_workload_role_uncertain": 3
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "receptions",
+      "liveApiRows": 61,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 61,
+        "mobile": 61
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_validation_failed": 55,
+          "prior_workload_role_uncertain": 6
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 61,
+        "fitted": 55,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Probability accuracy checks not met": 55,
+          "Independent model probability needed": 6
+        },
+        "forecastBlockers": {
+          "price_validation_failed": 55,
+          "prior_workload_role_uncertain": 6
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "rushing_receiving_yards",
+      "liveApiRows": 32,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 32,
+        "mobile": 32
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 32
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 32,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 32
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 32
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "anytime_td",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 25,
+        "mobile": 25
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 25
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 25
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 25
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "first_td",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 25,
+        "mobile": 25
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 25
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 25
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 25
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "sacks",
+      "liveApiRows": 6,
+      "actualProductionBrowser": {
+        "desktop": 9,
+        "mobile": 9
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 6,
+        "mobile": 6
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "selected": 4,
+          "fewer_than_three_same_season_team_appearances": 1,
+          "price_threshold_not_met": 1
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 6,
+        "fitted": 5,
+        "complete": 5,
+        "identityMismatch": 0,
+        "availableEv": 5,
+        "positive": 5,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 1
+        },
+        "forecastBlockers": {
+          "selected": 4,
+          "fewer_than_three_same_season_team_appearances": 1,
+          "price_threshold_not_met": 1
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "tackles",
+      "liveApiRows": 10,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 10,
+        "mobile": 10
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 10
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 10,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 10
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 10
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "tackles_assists",
+      "liveApiRows": 12,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 12,
+        "mobile": 12
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 12
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 12,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 12
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 12
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_passing_yards",
+      "liveApiRows": 19,
+      "actualProductionBrowser": {
+        "desktop": 10,
+        "mobile": 5
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 19,
+        "mobile": 19
+      },
+      "apiDiagnostics": {
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 19,
+        "fitted": 10,
+        "complete": 10,
+        "identityMismatch": 0,
+        "availableEv": 10,
+        "positive": 6,
+        "zero": 0,
+        "negative": 4,
+        "reasons": {
+          "Independent model probability needed": 9
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_receiving_yards",
+      "liveApiRows": 45,
+      "actualProductionBrowser": {
+        "desktop": 36,
+        "mobile": 18
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 45,
+        "mobile": 45
+      },
+      "apiDiagnostics": {
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 45,
+        "fitted": 32,
+        "complete": 32,
+        "identityMismatch": 0,
+        "availableEv": 32,
+        "positive": 17,
+        "zero": 0,
+        "negative": 15,
+        "reasons": {
+          "Independent model probability needed": 13
+        }
+      }
+    },
+    {
+      "sport": "nfl",
+      "market": "q1_rushing_yards",
+      "liveApiRows": 33,
+      "actualProductionBrowser": {
+        "desktop": 19,
+        "mobile": 12
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 33,
+        "mobile": 33
+      },
+      "apiDiagnostics": {
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 33,
+        "fitted": 21,
+        "complete": 21,
+        "identityMismatch": 0,
+        "availableEv": 21,
+        "positive": 14,
+        "zero": 0,
+        "negative": 7,
+        "reasons": {
+          "Independent model probability needed": 12
+        }
+      }
+    },
+    {
+      "sport": "nhl",
+      "market": "shots_on_goal",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 9,
+        "mobile": 9
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 9,
+        "mobile": 9
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "pregame_only": 7,
+          "verified_quote_unavailable": 9,
+          "price_threshold_not_met": 5,
+          "selected": 4
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 18,
+        "complete": 9,
+        "identityMismatch": 0,
+        "availableEv": 4,
+        "positive": 4,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 16,
+          "Original pregame forecast needed": 5
+        },
+        "forecastBlockers": {
+          "pregame_only": 7,
+          "verified_quote_unavailable": 9,
+          "price_threshold_not_met": 5,
+          "selected": 4
+        }
+      }
+    },
+    {
+      "sport": "nhl",
+      "market": "points",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 20,
+        "mobile": 20
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 20,
+        "mobile": 20
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "selected": 2,
+          "price_threshold_not_met": 18,
+          "pregame_only": 3,
+          "verified_quote_unavailable": 2
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 22,
+        "complete": 20,
+        "identityMismatch": 0,
+        "availableEv": 2,
+        "positive": 2,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Original pregame forecast needed": 18,
+          "Independent model probability needed": 5
+        },
+        "forecastBlockers": {
+          "selected": 2,
+          "price_threshold_not_met": 18,
+          "pregame_only": 3,
+          "verified_quote_unavailable": 2
+        }
+      }
+    },
+    {
+      "sport": "nhl",
+      "market": "goals",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_validation_failed": 23,
+          "pregame_only": 2
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 23,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Probability accuracy checks not met": 23,
+          "Independent model probability needed": 2
+        },
+        "forecastBlockers": {
+          "price_validation_failed": 23,
+          "pregame_only": 2
+        }
+      }
+    },
+    {
+      "sport": "nhl",
+      "market": "assists",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_validation_failed": 19,
+          "pregame_only": 5,
+          "fewer_than_three_same_season_team_appearances": 1
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 19,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Probability accuracy checks not met": 19,
+          "Independent model probability needed": 6
+        },
+        "forecastBlockers": {
+          "price_validation_failed": 19,
+          "pregame_only": 5,
+          "fewer_than_three_same_season_team_appearances": 1
+        }
+      }
+    },
+    {
+      "sport": "nhl",
+      "market": "blocked_shots",
+      "liveApiRows": 8,
+      "actualProductionBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 0,
+        "mobile": 0
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "market_model_not_fitted": 8
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 8,
+        "fitted": 0,
+        "complete": 0,
+        "identityMismatch": 0,
+        "availableEv": 0,
+        "positive": 0,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Independent model probability needed": 8
+        },
+        "forecastBlockers": {
+          "market_model_not_fitted": 8
+        }
+      }
+    },
+    {
+      "sport": "nhl",
+      "market": "goalie_saves",
+      "liveApiRows": 25,
+      "actualProductionBrowser": {
+        "desktop": 3,
+        "mobile": 3
+      },
+      "recordedCandidateBrowser": {
+        "desktop": 3,
+        "mobile": 3
+      },
+      "apiDiagnostics": {
+        "forecastBlockers": {
+          "price_threshold_not_met": 1,
+          "selected": 2,
+          "verified_quote_unavailable": 19,
+          "prior_workload_role_uncertain": 1,
+          "player_team_history_unavailable": 1,
+          "pregame_only": 1
+        },
+        "warning": "Model forecasts and estimated EV depend on the accuracy of model probabilities. Sportsbook lines and historical baselines are shown separately."
+      },
+      "evidenceAudit": {
+        "rows": 25,
+        "fitted": 22,
+        "complete": 3,
+        "identityMismatch": 0,
+        "availableEv": 2,
+        "positive": 2,
+        "zero": 0,
+        "negative": 0,
+        "reasons": {
+          "Original pregame forecast needed": 1,
+          "Independent model probability needed": 22
+        },
+        "forecastBlockers": {
+          "price_threshold_not_met": 1,
+          "selected": 2,
+          "verified_quote_unavailable": 19,
+          "prior_workload_role_uncertain": 1,
+          "player_team_history_unavailable": 1,
+          "pregame_only": 1
+        }
+      }
+    }
+  ]
+}

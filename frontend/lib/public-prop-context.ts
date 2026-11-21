@@ -36,7 +36,7 @@ export function publicPropContext(row:any,sport:string,market:string,history:num
  const actual=num(row.gameState==='post'?row.actualResult:row.liveCurrent);
  if(['in','post'].includes(row.gameState)&&actual!=null)facts.unshift(`${row.gameState==='post'?'Finished with':'Currently at'} ${fmt(actual)} ${unit}${line==null?'':actual===line?`; on the ${propLineText(line)} line`:`; ${propLineText(Math.abs(actual-line))} ${actual>line?'above':'below'} the ${propLineText(line)} line`}.`);
  if(row.gameState==='post'&&actual==null)facts.unshift('Final statistic is not available yet.');
- if(!facts.length)facts.push(row.historyLoaded===true?'Recent results are unavailable for this market.':'Loading recent player results…');
+ if(!facts.length)facts.push(row.historyDeferred===true?'Expand quick analysis to load recent player results.':row.historyLoaded===true?'Recent results are unavailable for this market.':'Loading recent player results…');
  return {facts,face:facts.slice(0,row.gameState==='post'?1:2).join(' '),recentAverage:average,recentCount:count,recentLabel:count?`Last ${count} avg.`:'Recent avg.'};
 }
 import {cardStatUnit} from '@/lib/card-results';

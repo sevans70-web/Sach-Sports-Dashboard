@@ -6,6 +6,7 @@ import {excludeUnavailableRanking} from '@/lib/ranking-availability';
 import {capRankingUnders,cardModelPick,cardModelProjection} from '@/lib/saved-model-pick';
 import {completeRankingProp,firstBasketQuote} from '@/lib/public-card-metrics';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
+import {nflRankingDisplay} from '@/lib/nfl-ranking-display';
 
 type MarketCount = {gameId:string;rows:number;lines:number;projections:number;picks:number;ev:number};
 type MarketCoverage = {day:string;market:string;checkedAt:number;games:MarketCount[]};
@@ -23,23 +24,25 @@ export function rankingMarketCoverage(sport:string,market:string,day:string,rows
   matches.set(`${row.gameId}|${row.playerId}`,{...row,market,sport});
  }
  // Match the public card filter before claiming that a market has rankings.
- // A raw sportsbook quote is not a visible ranking without a complete forecast.
+ // NFL also displays verified quote-backed historical context with unavailable forecasts labelled.
  const ranked=[...matches.values()].map((raw,index)=>({raw,rank:index+1,playerId:String(raw.playerId)}));
- const eligible=ranked.flatMap(card=>{
+ const eligible=ranked.flatMap<{raw:any;rank:number;playerId:string;forecast:ReturnType<typeof completeRankingProp>|{side:null;percent:number}}>(card=>{
+  if(sport==='nfl')return nflRankingDisplay(card.raw,now)?[{...card,forecast:null}]:[];
   const forecast=sport==='nba'&&nbaEvMarket(market)?{side:null,percent:0}:sport==='nba'&&market==='first_basket'?firstBasketQuote(card.raw,now)&&{side:null,percent:0}:completeRankingProp(card.raw,now);
   return forecast?[{...card,forecast}]:[];
  });
  const frozen=eligible.filter(card=>card.raw.boardFrozen||card.raw.frozen||card.raw.lockedAtKickoff);
  const upcoming=eligible.filter(card=>!frozen.includes(card));
- const sorted=sport==='nba'&&!nbaEvMarket(market)&&market!=='first_basket'?[...upcoming].sort((a,b)=>b.forecast.percent-a.forecast.percent||a.rank-b.rank):upcoming;
- const visible=sport==='nhl'||sport==='nba'&&(nbaEvMarket(market)||market==='first_basket')?sorted:capRankingUnders(sorted,card=>sport==='nba'
-  ?card.forecast.percent>0?card.forecast.side:null
-  :cardModelPick(card.raw,now)?.side||card.forecast.side);
+ const sorted=sport==='nba'&&!nbaEvMarket(market)&&market!=='first_basket'?[...upcoming].sort((a,b)=>(b.forecast?.percent??0)-(a.forecast?.percent??0)||a.rank-b.rank):upcoming;
+ const visible=['nba','nfl','nhl'].includes(sport)?sorted:capRankingUnders(sorted,card=>sport==='nba'
+  ?(card.forecast?.percent??0)>0?card.forecast?.side:null
+  :cardModelPick(card.raw,now)?.side||card.forecast?.side);
  const displayed=new Set([...frozen,...visible].map(card=>card.raw));
  const games=new Map<string,MarketCount>();
  for(const {raw} of ranked){
   const gameId=String(raw.gameId),game=games.get(gameId)||{gameId,rows:0,lines:0,projections:0,picks:0,ev:0};
-  const ev=sport==='nba'&&nbaEvMarket(market)?nbaRankingEv(raw,now):estimatedEv(raw,now);
+  const complete=['nba','nhl'].includes(sport)?completeRankingProp(raw,now):null;
+  const ev=sport==='nba'&&nbaEvMarket(market)?nbaRankingEv(raw,now):sport==='nfl'?nflRankingDisplay(raw,now)?.ev||estimatedEv(raw,now):complete?{status:'available',percent:complete.percent}:estimatedEv(raw,now);
   if(displayed.has(raw))game.rows++;
   if(verifiedPropQuote(raw,now,raw.boardFrozen===true))game.lines++;
   if(cardModelProjection(raw,now)!=null)game.projections++;

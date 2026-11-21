@@ -1,0 +1,21 @@
+✔ ranking evidence never relabels another sport/market/game/player/quote or a future forecast (3.968333ms)
+✔ an unavailable locked board and wrong-market response are terminal states, not verified empty boards (0.797703ms)
+✔ all three requested sports display valid negative/zero EV without turning it into a selection or altering other sports (1.412282ms)
+✔ the captured real API population is checked in every active category at its snapshot clock (380.276993ms)
+✔ NBA candidates and market counts preserve eight legitimate UNDER rows rather than enforcing a five-UNDER quota (7893.374975ms)
+✔ deferred card history is disclosed without claiming a request is in flight (700.213702ms)
+✔ coverage counts match all 17 NFL quote-backed categories and every legitimate NHL comparison EV (592.460531ms)
+✔ NBA/NFL/NHL date failures and malformed payloads cannot publish partial schedules or false empty dates (14.393258ms)
+✔ failed polls retain bounded same-sport schedules; confirmed empty dates replace them and expired dates cannot leak (0.640622ms)
+✔ scope counts bind market, date and official fixture; unknown coverage is not zero and kickoff invalidates aggregate caches (15.838772ms)
+✔ seven NBA diagnostic rows, scorer candidates and true picks remain separate in coverage (7.602402ms)
+✔ coverage caches use actual future fixture dates and reject expired/future-dated counters (5.661077ms)
+✔ NHL tomorrow roster enrichment uses tomorrow teams, not only today teams, across Toronto DST (253.015935ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18883.755193
