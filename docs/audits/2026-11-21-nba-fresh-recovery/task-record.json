@@ -1,0 +1,38 @@
+{
+  "dateToronto": "2026-11-21",
+  "sourceCommit": "6f5c306",
+  "issueComment": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7070245285",
+  "tracker": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "updated": [
+      "Repair checklist!F24:G24",
+      "Repair checklist!N24:Q24",
+      "Repair checklist!S24",
+      "Verification log!E63:G63",
+      "Workstreams & release plan!B91:B97"
+    ],
+    "exactReadbackMismatches": 0,
+    "writeFields": "userEnteredValue",
+    "status": "Blocked",
+    "completedRowsMoved": 0
+  },
+  "tests": {
+    "distinctFocusedPassed": 54,
+    "failed": 0,
+    "typescriptDiagnostics": 0,
+    "fullSuiteRepeated": false,
+    "releaseBuildPerformed": false
+  },
+  "sevenModelCoverage": {
+    "playersEvaluated": 34,
+    "availablePerMarket": 19,
+    "withheldPerMarket": 15,
+    "livePricedRankingCount": null
+  },
+  "currentOddsVerification": "Only bounded Points sample available; diagnostic omitted quote IDs, so no exact EV fabricated",
+  "productionImportsThisTask": 0,
+  "productionDeploymentsThisTask": 0,
+  "automaticBuildsPaused": true,
+  "cw08Modified": false,
+  "r1Complete": false
+}
