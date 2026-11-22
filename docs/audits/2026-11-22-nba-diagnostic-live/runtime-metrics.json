@@ -1,0 +1,147 @@
+{
+  "checkedAt": "2026-11-22T17:57:11.017Z",
+  "timeframe": {
+    "from": 1795369454000,
+    "to": 1795370229876
+  },
+  "metricQuerySuccess": true,
+  "metrics": [
+    {
+      "alias": "requests",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 532,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 532
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 1,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "alias": "maxCpuMs",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 4604,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 532
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 4069,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "alias": "maxWallMs",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 10521,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 532
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 6836,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "holdQuerySuccess": true,
+  "holds": [
+    {
+      "timestamp": 1795370173235,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795370112991,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795370096491,
+      "message": "[dashboard-release-hold] {\"kind\":\"scheduled\",\"cron\":\"*/2 * * * *\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795370052729,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795369992485,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795369976882,
+      "message": "[dashboard-release-hold] {\"kind\":\"scheduled\",\"cron\":\"*/2 * * * *\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795369932248,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795369871857,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795369856670,
+      "message": "[dashboard-release-hold] {\"kind\":\"scheduled\",\"cron\":\"*/2 * * * *\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    },
+    {
+      "timestamp": 1795369811628,
+      "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}"
+    }
+  ],
+  "headersOmitted": true
+}

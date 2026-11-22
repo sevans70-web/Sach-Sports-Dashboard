@@ -1,0 +1,101 @@
+{
+  "checkedAt": "2026-11-22T17:44:39.079Z",
+  "status": "stopped",
+  "outcome": "success",
+  "logs": [
+    [
+      1795369455785,
+      "│  Binding                                                                              Resource            "
+    ],
+    [
+      1795369455785,
+      "│  env.DASHBOARD_JOBS (DashboardJobQueue, defined in sach-sports-cloudflare-test)       Durable Object      "
+    ],
+    [
+      1795369455785,
+      "│  env.VINEXT_KV_CACHE (644df6a469e84dba90c8f7dac410f895)                               KV Namespace        "
+    ],
+    [
+      1795369455785,
+      "│  env.ASSETS                                                                           Assets              "
+    ],
+    [
+      1795369455786,
+      "│"
+    ],
+    [
+      1795369455786,
+      "│  Uploaded sach-sports-cloudflare-test (8.81 sec)"
+    ],
+    [
+      1795369457344,
+      "│  Deployed sach-sports-cloudflare-test triggers (1.56 sec)"
+    ],
+    [
+      1795369457345,
+      "│    https://sach-sports-cloudflare-test.sevans70.workers.dev"
+    ],
+    [
+      1795369457345,
+      "│  Current Version ID: 48e8858a-7326-41ea-9457-532c74ec3337"
+    ],
+    [
+      1795369457346,
+      "◆  Deploy complete"
+    ],
+    [
+      1795369457420,
+      "Success: Deploy command completed"
+    ],
+    [
+      1795369457637,
+      "✨ Success! Build completed."
+    ]
+  ],
+  "proof": [
+    [
+      1795369442736,
+      "[approved-dashboard-artifact] {\"stage\":\"fallback\",\"source\":\"a949453dac8d3ae08a3feeca99dc55fe1991d267\",\"worker\":\"sach-sports-cloudflare-test\",\"digest\":\"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f\",\"files\":422}"
+    ],
+    [
+      1795369442806,
+      "{\"artifact\":\"NBA-ODDS-DIAG-2026-11-21-cae200070535\",\"artifactSha256\":\"cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20\",\"worker\":\"sach-sports-cloudflare-test\",\"baseArtifactDigest\":\"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f\",\"baseArchiveSha256\":\"25aab16c46cf967700333b9ff4d9781c5d11575cadbc55f7a3ba1866e481d764\",\"rollbackVersion\":\"a48c431a-5c3e-4491-8529-38cb20dfa898\",\"authorizationRequired\":true,\"scope\":\"Only GET /api/market-coverage?sport=nba&mode=feed-sample. Unmatched fetches, assets, held schedules, queue class, bindings, models and records retain approved fallback.\",\"changed\":[{\"path\":\"bundle/namespace-fallback.js\",\"beforeSha256\":\"7e4590256345a42d2c63aa762763e64aba2959418f4f6256e6fc8495a2ad61a1\",\"afterSha256\":\"40f614ca9868fe185c25efc7c7d70605f6e827cf8f1645355d6f0e43a218e815\"},{\"path\":\"bundle/nba-odds-diagnostic.js\",\"beforeSha256\":null,\"afterSha256\":\"841a4da64a657c1c252f465ec32693a37162c363d03d8b335efd78db84d01961\"}],\"unchangedFiles\":749,\"configurationUnchanged\":true,\"patch\":{\"file\":\"diagnostic-patch.tar.gz\",\"sha256\":\"bc8c69baddce01bac2c5c3988c05149d1a8b7b5150f458f394f6780187dfc899\",\"bytes\":7770}}"
+    ],
+    [
+      1795369443072,
+      "Executing user deploy command: cd frontend && node -e \"require('node:fs').rmSync('.cloudflare/output/v0',{recursive:true,force:true})\" && node scripts/prepare-nba-odds-diagnostic.mjs --prepare-frozen .cloudflare/output/v0 && node scripts/deploy-cloudflare.mjs --tag nba-odds-diagnostic --message 'Approved diagnostic only; cae200070535; no R1 release'"
+    ],
+    [
+      1795369443730,
+      "[approved-dashboard-artifact] {\"stage\":\"fallback\",\"source\":\"a949453dac8d3ae08a3feeca99dc55fe1991d267\",\"worker\":\"sach-sports-cloudflare-test\",\"digest\":\"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f\",\"files\":422}"
+    ],
+    [
+      1795369443800,
+      "{\"artifact\":\"NBA-ODDS-DIAG-2026-11-21-cae200070535\",\"artifactSha256\":\"cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20\",\"worker\":\"sach-sports-cloudflare-test\",\"baseArtifactDigest\":\"86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f\",\"baseArchiveSha256\":\"25aab16c46cf967700333b9ff4d9781c5d11575cadbc55f7a3ba1866e481d764\",\"rollbackVersion\":\"a48c431a-5c3e-4491-8529-38cb20dfa898\",\"authorizationRequired\":true,\"scope\":\"Only GET /api/market-coverage?sport=nba&mode=feed-sample. Unmatched fetches, assets, held schedules, queue class, bindings, models and records retain approved fallback.\",\"changed\":[{\"path\":\"bundle/namespace-fallback.js\",\"beforeSha256\":\"7e4590256345a42d2c63aa762763e64aba2959418f4f6256e6fc8495a2ad61a1\",\"afterSha256\":\"40f614ca9868fe185c25efc7c7d70605f6e827cf8f1645355d6f0e43a218e815\"},{\"path\":\"bundle/nba-odds-diagnostic.js\",\"beforeSha256\":null,\"afterSha256\":\"841a4da64a657c1c252f465ec32693a37162c363d03d8b335efd78db84d01961\"}],\"unchangedFiles\":749,\"configurationUnchanged\":true,\"patch\":{\"file\":\"diagnostic-patch.tar.gz\",\"sha256\":\"bc8c69baddce01bac2c5c3988c05149d1a8b7b5150f458f394f6780187dfc899\",\"bytes\":7770}}"
+    ],
+    [
+      1795369457345,
+      "│  Current Version ID: 48e8858a-7326-41ea-9457-532c74ec3337"
+    ],
+    [
+      1795369457346,
+      "◆  Deploy complete"
+    ],
+    [
+      1795369457420,
+      "Success: Deploy command completed"
+    ]
+  ],
+  "active": [
+    {
+      "id": "5f930400-3285-4177-b1d8-ed5307374566",
+      "versions": [
+        {
+          "version_id": "48e8858a-7326-41ea-9457-532c74ec3337",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-22T17:44:14.008529Z"
+    }
+  ]
+}

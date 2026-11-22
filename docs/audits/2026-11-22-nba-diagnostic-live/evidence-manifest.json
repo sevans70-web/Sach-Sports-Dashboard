@@ -1,0 +1,372 @@
+{
+  "archive": "evidence.tar.gz",
+  "archiveSha256": "3e7888e440abcdc4599cd2419392ff630f23f465b1d7a2decbac83bc2960e076",
+  "files": [
+    {
+      "path": "after-browser.json",
+      "bytes": 359154,
+      "sha256": "e55093d5aa3099097564ebbc01bef546fb96673318a385a9c1bfc11cc41d8829"
+    },
+    {
+      "path": "after-nba-assists-rankings.json",
+      "bytes": 160696,
+      "sha256": "9f6c2906561e5efa37310f0d89d510dcb7d20388145ca9d6cb4af2e6fc9493d1"
+    },
+    {
+      "path": "after-nba-points-rankings.json",
+      "bytes": 169849,
+      "sha256": "b95d5f8dbd0d9e84a3a5ac2e88233bfb8da41903dd25bf59c2ca089594853dd8"
+    },
+    {
+      "path": "after-nba-pts_asts-rankings.json",
+      "bytes": 170020,
+      "sha256": "e6439f121c8c84ac4bef3aa7f49561363c4984f275bfaefe80f1cb7c72324c62"
+    },
+    {
+      "path": "after-nba-pts_rebs-rankings.json",
+      "bytes": 172696,
+      "sha256": "bd95b2ebe60f02f7fc27e1e5fa9e14d079738098558b513dff7dda4ea4e47c18"
+    },
+    {
+      "path": "after-nba-pts_rebs_asts-rankings.json",
+      "bytes": 168160,
+      "sha256": "de90bbd5b5fc478ac61c4024f743d8a99b2e25c6218619ca7a0e6340f62833a7"
+    },
+    {
+      "path": "after-nba-q1_points-rankings.json",
+      "bytes": 178697,
+      "sha256": "9adc2bbe28770a1edd7be5e704fba127272a6c696c658f530a6e33d8142974ee"
+    },
+    {
+      "path": "after-nba-rebounds-rankings.json",
+      "bytes": 160457,
+      "sha256": "dd5ea972c5acf0f5616f1e94e15558f11fa5b0a03dc848de596d5bef3c1dfa64"
+    },
+    {
+      "path": "after-nba-rebs_asts-rankings.json",
+      "bytes": 125224,
+      "sha256": "a2b103e14a7c63100c71763f0c13f73fdf0449d837db3803e88872d91efe74c5"
+    },
+    {
+      "path": "after-nba-threes_made-rankings.json",
+      "bytes": 166276,
+      "sha256": "ba6bc43a664b3fe86ebac3418d7d3bbde781921067d51e8653de74a955716910"
+    },
+    {
+      "path": "after-nfl-passing_tds-rankings.json",
+      "bytes": 115424,
+      "sha256": "d5a1076fb70f40a29784cf9e59f94efaf024988e9c867189bf981fb7b63756a7"
+    },
+    {
+      "path": "after-nfl-passing_yards-rankings.json",
+      "bytes": 108674,
+      "sha256": "bf2f4e7b736bd5694c9feb639ae63461e6b9e0f9035cfe22e8df1c997d50ab9b"
+    },
+    {
+      "path": "after-nhl-points-rankings.json",
+      "bytes": 77192,
+      "sha256": "cecab0000111f90a7ef004ba6fb91ca97f06191414c408b263347de521d0e4a7"
+    },
+    {
+      "path": "after-nhl-shots_on_goal-rankings.json",
+      "bytes": 82728,
+      "sha256": "be5ccb87ff6e9d59391cac14bdaeb1cf217264531692f6d7630401924e74f8d4"
+    },
+    {
+      "path": "backup-availability.json",
+      "bytes": 2739,
+      "sha256": "3ed4b2ed4c641caa9e25690d7111fc628c5b14aac8574238130b934772d9b57d"
+    },
+    {
+      "path": "before-browser.json",
+      "bytes": 83644,
+      "sha256": "c25b485746484a97ed6e9fa67b61d72193480ba102f2987144e5547ddc180936"
+    },
+    {
+      "path": "browser.py",
+      "bytes": 4140,
+      "sha256": "9c54f1503a7358a221809478956c4600b4cc7ff7425bbb7e4a538fdd85c8f5cf"
+    },
+    {
+      "path": "build-start.json",
+      "bytes": 278,
+      "sha256": "60ce8d1b3f52b37022b3bbf24f41ecb9b7420b6d08cf7591b4254b7ad9dd921a"
+    },
+    {
+      "path": "cards-browser.json",
+      "bytes": 320926,
+      "sha256": "d7c1b8c45a6c2a4c043f3af3b8a1b29484d3e04b5ad43e74022f2080740d2fa9"
+    },
+    {
+      "path": "cards-desktop-independent-verification.json",
+      "bytes": 137388,
+      "sha256": "6882a9f4fbfdf333624d58c39b2877d2261f350068e13fd96e874e265ea5f4b9"
+    },
+    {
+      "path": "cards-desktop-input-receipt-verification.json",
+      "bytes": 196,
+      "sha256": "e5e0a27a05f64ee921c74396c798e4c51f3d6604e8250134375ec13ff24384d4"
+    },
+    {
+      "path": "cards-desktop-nba-assists-rankings.json",
+      "bytes": 158489,
+      "sha256": "9038ed9c00aff479a5555a439601b9c9aa86901263eb437866a025703acb5966"
+    },
+    {
+      "path": "cards-desktop-nba-points-rankings.json",
+      "bytes": 169577,
+      "sha256": "f80c7190df39599e0f3a626eb3b0eac1ac177dd403fd35e3b340bbfd6f0120c7"
+    },
+    {
+      "path": "cards-desktop-nba-pts_asts-rankings.json",
+      "bytes": 170015,
+      "sha256": "3ce69118bfbe880ae61b4da451c6bd1b359a1594641a1bb29f975ee145b24497"
+    },
+    {
+      "path": "cards-desktop-nba-pts_rebs-rankings.json",
+      "bytes": 169878,
+      "sha256": "cc56a9d5c01291d114edc775a126ddd0c174bc7beade55c553f2e9d714de97cf"
+    },
+    {
+      "path": "cards-desktop-nba-pts_rebs_asts-rankings.json",
+      "bytes": 167938,
+      "sha256": "ef435651de6736d71cd5dd08091b655b0cd4022dae8c6863dbe271a694e95284"
+    },
+    {
+      "path": "cards-desktop-nba-q1_points-rankings.json",
+      "bytes": 178698,
+      "sha256": "d9c7460dbf360b85e70e6d6e89b422245ca2828b4af8f8833fc82753ce9fd51a"
+    },
+    {
+      "path": "cards-desktop-nba-rebounds-rankings.json",
+      "bytes": 160457,
+      "sha256": "10ffe6a82c0092f307e754cee0c2dd1f3cd4a341a18d9db0a26e8ac286671411"
+    },
+    {
+      "path": "cards-desktop-nba-rebs_asts-rankings.json",
+      "bytes": 125226,
+      "sha256": "85f768b9ed6467f230de7e5a5f5be1aa02d081a279bae4144b615a04f41dca4b"
+    },
+    {
+      "path": "cards-desktop-nba-threes_made-rankings.json",
+      "bytes": 166276,
+      "sha256": "150c55208d0fefddc2f5571da5c099aae61c4853c76edf4a2d6806883aa2e2a7"
+    },
+    {
+      "path": "cards-mobile-independent-verification.json",
+      "bytes": 137375,
+      "sha256": "5130a4b09ce9c5bddcac6526225b82ad0ca123a4b065caff95ecd7769844415a"
+    },
+    {
+      "path": "cards-mobile-input-receipt-verification.json",
+      "bytes": 196,
+      "sha256": "e5e0a27a05f64ee921c74396c798e4c51f3d6604e8250134375ec13ff24384d4"
+    },
+    {
+      "path": "cards-mobile-nba-assists-rankings.json",
+      "bytes": 157616,
+      "sha256": "0f48402c0281b01f3eac00972ad597f60e42d4f4936494246d6ea683d55035a1"
+    },
+    {
+      "path": "cards-mobile-nba-points-rankings.json",
+      "bytes": 170303,
+      "sha256": "27be93a787ee9cb4d4cceac0e9148076491fb9bb4739c3d3dfe8d534eefa7e7a"
+    },
+    {
+      "path": "cards-mobile-nba-pts_asts-rankings.json",
+      "bytes": 170017,
+      "sha256": "4a59c8484a03232f54f67df07e45746f17960882ecbcfeb17dff40e4c817221b"
+    },
+    {
+      "path": "cards-mobile-nba-pts_rebs-rankings.json",
+      "bytes": 170846,
+      "sha256": "94ff5e02250cecd591fa2775887d00f1d34aff9c0df604640c79fd02d202290a"
+    },
+    {
+      "path": "cards-mobile-nba-pts_rebs_asts-rankings.json",
+      "bytes": 169040,
+      "sha256": "7c50b27c148c1e28dc4ea2c570542324f7f96b996dc67b0ca80a5d5145d99ddb"
+    },
+    {
+      "path": "cards-mobile-nba-q1_points-rankings.json",
+      "bytes": 178698,
+      "sha256": "11601e10427b9972690b0fc50c94e56671cd6dd3d5bc244a71261bb5a59eb5b1"
+    },
+    {
+      "path": "cards-mobile-nba-rebounds-rankings.json",
+      "bytes": 160457,
+      "sha256": "05351d747df8435f0a69e32f5b28832671225007cd92e88ceebe39399d87f678"
+    },
+    {
+      "path": "cards-mobile-nba-rebs_asts-rankings.json",
+      "bytes": 125226,
+      "sha256": "2017ded9d4b27e4196aec68b08d987d496988eb011ab6d32557c34e84659027d"
+    },
+    {
+      "path": "cards-mobile-nba-threes_made-rankings.json",
+      "bytes": 166276,
+      "sha256": "cefbe31b63c41285b7751f027dc11342f30d730bb5e2cb0dbcbf73007fefb844"
+    },
+    {
+      "path": "cards-same-response-verification.json",
+      "bytes": 3789,
+      "sha256": "654c3dc8fe255521ffc6d80c9cbf242321162363c9c82243551d90aaf6b0a64c"
+    },
+    {
+      "path": "collect-odds.py",
+      "bytes": 1604,
+      "sha256": "a00cd13e047660db220ab871fe93ff1d4606a87fd60bbe3efe3f2a38fb6196e7"
+    },
+    {
+      "path": "collect-official.py",
+      "bytes": 1450,
+      "sha256": "4e103114b5655fdda76f29eed4a82034d510ca7a3bb54ef71ca195c1bb4918dd"
+    },
+    {
+      "path": "deployment.json",
+      "bytes": 5433,
+      "sha256": "a05e783eb6141ddabcbfc6bb5760c7f8e3aa131719cb41a2aa7814e5527c435e"
+    },
+    {
+      "path": "input-receipt-verification.json",
+      "bytes": 196,
+      "sha256": "e5e0a27a05f64ee921c74396c798e4c51f3d6604e8250134375ec13ff24384d4"
+    },
+    {
+      "path": "live-card-verification.json",
+      "bytes": 7430,
+      "sha256": "c431a4c05b07a42113ba74bdebeb214ba9cb50c9bc0a8c63ca6f1243bfcc1b37"
+    },
+    {
+      "path": "live-independent-verification.json",
+      "bytes": 136368,
+      "sha256": "4b82b93bb48312f637bfcef511dd940a1a16de53b06e49f4c36286f62ab47275"
+    },
+    {
+      "path": "odds-assists.json",
+      "bytes": 141361,
+      "sha256": "e6ffc7ad54b4f9a055c26bf34bccc00098d19c2ad4705dd23db000a852d0a97c"
+    },
+    {
+      "path": "odds-points.json",
+      "bytes": 173691,
+      "sha256": "c32d44098ba4e9c1115a08052bba6cbd0a886f22f295eb6f89cd641e8e2483d7"
+    },
+    {
+      "path": "odds-pts_asts.json",
+      "bytes": 118565,
+      "sha256": "d9e16a84757bd182aadf0f6cdf72332af3b209d673b4507628f9657c750e5134"
+    },
+    {
+      "path": "odds-pts_rebs.json",
+      "bytes": 141554,
+      "sha256": "021e1422181c1b7824f6c5ec4132c324125e980ad34e2ff4e37fe89a81bb8281"
+    },
+    {
+      "path": "odds-pts_rebs_asts.json",
+      "bytes": 144090,
+      "sha256": "6a17eb052926f6d0959e653a6256acb7f9eac628fb863a509880b32e6396bf52"
+    },
+    {
+      "path": "odds-rebounds.json",
+      "bytes": 169019,
+      "sha256": "7d13a7aa2f1a4f64b02058afc549b3aafd9480f90c5e4d49966951b1bded433b"
+    },
+    {
+      "path": "odds-receipts.json",
+      "bytes": 6806,
+      "sha256": "a646ffc8b0c1f4aab34dd448c5d4ce43f74c617e2b0b5c62dd53b5a735a97191"
+    },
+    {
+      "path": "odds-threes_made.json",
+      "bytes": 152412,
+      "sha256": "7dcafa1f56112572099ebf99691ddc824b6e3ba9a61374a21d12f04c2ab47791"
+    },
+    {
+      "path": "official-nba-slate.json",
+      "bytes": 6253,
+      "sha256": "14240b676343a064f7c32c175ec369446c606ce78b6bc61cbcb3cd59242f6f0a"
+    },
+    {
+      "path": "official-receipts.json",
+      "bytes": 2218,
+      "sha256": "38aabf64e95a39dc9d790644124e68cbf26acfdcc10b1805f65ba4a766b5d6f1"
+    },
+    {
+      "path": "official-rosters-401910029.json",
+      "bytes": 8647,
+      "sha256": "09bc2c5b0ef3b8e4491bb4f13d48aab68c7df0c9af3871ffef6c67d3707eeca2"
+    },
+    {
+      "path": "official-rosters-401910030.json",
+      "bytes": 7970,
+      "sha256": "fb542e0993cffe30c603ae7e353d854995bfc08abc3ff7ff2712f29e07ff2287"
+    },
+    {
+      "path": "official-rosters-401910031.json",
+      "bytes": 8111,
+      "sha256": "7dfbc13369e326f7af7de9ff6d55ac2cacd60e796f2ba6b918e0135c8f16830a"
+    },
+    {
+      "path": "official-rosters-401910032.json",
+      "bytes": 7723,
+      "sha256": "1a687e5739634c8fa985fab02ce82a67ed7b8ce4694201cf67cf4cf5f65d725e"
+    },
+    {
+      "path": "official-rosters-401910033.json",
+      "bytes": 8142,
+      "sha256": "f977384a97359b45892973867883f23335b340798efa45016f4a02a772c2a29d"
+    },
+    {
+      "path": "official-rosters-401910034.json",
+      "bytes": 7804,
+      "sha256": "b6322b37b783f3f5fa673affbecb54036408d0706ae66ec8d8b77c90ad41af35"
+    },
+    {
+      "path": "official-rosters-401910035.json",
+      "bytes": 8066,
+      "sha256": "65813fb39763bd8845a18bb89394f96ac153ec8a325f6ded939e4ad74a26f8b9"
+    },
+    {
+      "path": "post-settings.json",
+      "bytes": 2926,
+      "sha256": "3835c17ffefc82707e4d97d0a49979d2888b8f1b26f49e37f3d4c3eb39c589ba"
+    },
+    {
+      "path": "preflight-cloudflare.json",
+      "bytes": 4973,
+      "sha256": "ebc1e06f4eac776283e8180a724cc4c67861b3dcb499983b25a61c076ec0730c"
+    },
+    {
+      "path": "provider-error-observations.json",
+      "bytes": 10499,
+      "sha256": "56ad9c967898dc38ceca7956ce71f8598938e7a6a0eaafdea2a14a24849dd4af"
+    },
+    {
+      "path": "reconstruct.log",
+      "bytes": 1386,
+      "sha256": "4554fa0fe50144045343556df2943d7164bb4d5a5ccf2c212e161435583d161e"
+    },
+    {
+      "path": "runtime-metrics.json",
+      "bytes": 3981,
+      "sha256": "3ebe843c9f91f53bd11b8ed01112a43e5681e70a67a47195b5029f4b730048cb"
+    },
+    {
+      "path": "verify-cards.py",
+      "bytes": 3104,
+      "sha256": "fd964d379bd78e001281d3057f104ad65bfd818126981ec8992fc1b41d0522cc"
+    },
+    {
+      "path": "verify-live.py",
+      "bytes": 9761,
+      "sha256": "af7139792e3c22ac8fb5676478431adca0b1398f022222b151de45f33b1c62e5"
+    },
+    {
+      "path": "verify-receipts.mjs",
+      "bytes": 1127,
+      "sha256": "5df12a92b0f284fbfe1575f30a7d012ffe7a5d2a16db495564647aa9f2043a9e"
+    }
+  ],
+  "scope": "Original public production responses and read-only Cloudflare metadata, plus local verification scripts. No credentials/request headers/production data exports. Forecast/quote source timestamps unchanged."
+}

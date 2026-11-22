@@ -1,0 +1,187 @@
+{
+  "artifact": "NBA-ODDS-DIAG-2026-11-21-cae200070535",
+  "deploymentId": "5f930400-3285-4177-b1d8-ed5307374566",
+  "versionId": "48e8858a-7326-41ea-9457-532c74ec3337",
+  "deploymentAt": "2026-11-22T17:44:14.008529Z",
+  "deployedOnce": true,
+  "fullR1Deployed": false,
+  "rollbackUsed": false,
+  "criticalDeploymentFailures": [],
+  "sevenMarketsHttp200": 7,
+  "markets": [
+    {
+      "market": "points",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 25,
+      "unavailableEv": [],
+      "sourceOffers": 773,
+      "omittedSourceOffers": 204,
+      "liveEvSignsMobile": {
+        "positive": 25
+      }
+    },
+    {
+      "market": "rebounds",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 25,
+      "unavailableEv": [],
+      "sourceOffers": 742,
+      "omittedSourceOffers": 165,
+      "liveEvSignsMobile": {
+        "positive": 18,
+        "negative": 7
+      }
+    },
+    {
+      "market": "assists",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 24,
+      "unavailableEv": [
+        {
+          "rank": 21,
+          "playerId": "4712849",
+          "playerName": "Anthony Black",
+          "code": "direction_unavailable",
+          "reason": "Projection equals the line; no OVER/UNDER direction is displayed",
+          "projection": 5.5,
+          "line": 5.5
+        }
+      ],
+      "sourceOffers": 621,
+      "omittedSourceOffers": 59,
+      "liveEvSignsMobile": {
+        "positive": 17,
+        "negative": 7
+      }
+    },
+    {
+      "market": "threes_made",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 25,
+      "unavailableEv": [],
+      "sourceOffers": 661,
+      "omittedSourceOffers": 147,
+      "liveEvSignsMobile": {
+        "positive": 22,
+        "negative": 3
+      }
+    },
+    {
+      "market": "pts_rebs_asts",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 25,
+      "unavailableEv": [],
+      "sourceOffers": 610,
+      "omittedSourceOffers": 127,
+      "liveEvSignsMobile": {
+        "positive": 23,
+        "negative": 2
+      }
+    },
+    {
+      "market": "pts_rebs",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 25,
+      "unavailableEv": [],
+      "sourceOffers": 600,
+      "omittedSourceOffers": 184,
+      "liveEvSignsMobile": {
+        "positive": 23,
+        "negative": 2
+      }
+    },
+    {
+      "market": "pts_asts",
+      "cardsDesktop": 25,
+      "cardsMobile": 25,
+      "modelRowsVerifiedPerView": 25,
+      "availableEvPerView": 25,
+      "unavailableEv": [],
+      "sourceOffers": 501,
+      "omittedSourceOffers": 124,
+      "liveEvSignsMobile": {
+        "positive": 22,
+        "negative": 3
+      }
+    }
+  ],
+  "independentDesktopMath": {
+    "currentMarkets": 7,
+    "rowsAudited": 175,
+    "officialPlayerGameIdentityPassed": 175,
+    "independentModelMathPassed": 175,
+    "independentProbabilityPassed": 175,
+    "independentApiEVPassed": 174,
+    "unavailableEVs": 1,
+    "failureRows": 0,
+    "fullEligiblePopulationVerified": false,
+    "sourceCompletenessLimitation": "Per-book samples truncate1010of5518offers; no explicit provider player IDs/period fields; official joins provide independent row identity, not missing raw IDs."
+  },
+  "independentMobileMath": {
+    "currentMarkets": 7,
+    "rowsAudited": 175,
+    "officialPlayerGameIdentityPassed": 175,
+    "independentModelMathPassed": 175,
+    "independentProbabilityPassed": 175,
+    "independentApiEVPassed": 174,
+    "unavailableEVs": 1,
+    "failureRows": 0,
+    "fullEligiblePopulationVerified": false,
+    "sourceCompletenessLimitation": "Per-book samples truncate1010of5518offers; no explicit provider player IDs/period fields; official joins provide independent row identity, not missing raw IDs."
+  },
+  "sameResponseCards": {
+    "cards": 350,
+    "identityProjectionLineDirectionPassed": 350,
+    "exactEvOrUnavailableNoticeLatestSnapshotMatches": 350,
+    "earlierSnapshotComparisons": 0,
+    "issues": 0
+  },
+  "inputReceiptHashes": {
+    "desktop": 175,
+    "mobile": 175,
+    "failures": 0
+  },
+  "productionBrowser": {
+    "pageErrors": [],
+    "hydrationErrors": [],
+    "nbaNflNhlHttp200BothViewports": true,
+    "unchangedNflPassingCards": 0,
+    "unchangedNhlShotsCards": 14,
+    "scope": "Actual live Chromium; auxiliary history/write endpoints blocked, not model/feed endpoints."
+  },
+  "sourceLimitations": {
+    "returnedOffers": 4508,
+    "matchedOffersBeforeCap": 5518,
+    "omittedByApprovedBound": 1010,
+    "incompleteOrInvalidTwoSidedAmerican": 1746,
+    "explicitProviderPlayerIds": 0,
+    "explicitProviderPeriods": 0,
+    "officialGameJoins": 7,
+    "sourceVsOfficialStartOffsetSeconds": 600,
+    "fullEligiblePopulationVerified": false
+  },
+  "providerWarnings": "OWL seven-market requests200; supplemental odds401 and official-source403/NFL partial schedule warnings persist. No denial bypass or automatic retries performed by diagnostic client.",
+  "reusedRegression": {
+    "sourceCommit": "434f1db",
+    "passed": 892,
+    "failed": 0,
+    "optionalSkipped": 17,
+    "typescriptDiagnostics": 0,
+    "rerun": false
+  },
+  "productionRecords": "No explicit production record writes/import/restore/deletion or new protected inventory query; prior20468 vs20466backup gap remains open.",
+  "safety": "Bindings/namespace targets/cron/limits unchanged, manual commands restored, auto builds paused, CW08 code/cron unchanged.",
+  "R1Status": "Blocked; diagnostic/data/math acceptance for published rows passed, not full R1/cold/capture/grading acceptance."
+}

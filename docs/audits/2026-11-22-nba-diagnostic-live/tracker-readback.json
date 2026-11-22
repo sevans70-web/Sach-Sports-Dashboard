@@ -1,0 +1,11 @@
+{
+  "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+  "updatedCells": 16,
+  "exactReadbacks": 16,
+  "formattingValidationAndHistoryPreserved": true,
+  "evidenceHyperlinksUpdated": 2,
+  "completedRowsMoved": 0,
+  "status": "Blocked",
+  "visualScope": "Readback of native values/format/validation metadata; native visual rendering not repeated for content-only update.",
+  "result": "Diagnostic-only deployment and published-row NBA live verification passed; R1/CW11/V62 remain Blocked."
+}

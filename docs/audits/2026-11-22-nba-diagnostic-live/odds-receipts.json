@@ -1,0 +1,212 @@
+[
+  {
+    "market": "points",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=points&limit=25",
+    "startedAt": "2026-11-22T17:45:18.819439+00:00",
+    "status": 200,
+    "seconds": 1.549,
+    "bytes": 173691,
+    "sha256": "c32d44098ba4e9c1115a08052bba6cbd0a886f22f295eb6f89cd641e8e2483d7",
+    "responseMarket": "points",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 977,
+      "returnedProps": 773,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 204,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 773,
+        "explicit_period_missing": 773,
+        "incomplete_two_sided_prices": 252
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf45d8154c96-MSP"
+  },
+  {
+    "market": "rebounds",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=rebounds&limit=25",
+    "startedAt": "2026-11-22T17:45:20.372044+00:00",
+    "status": 200,
+    "seconds": 0.152,
+    "bytes": 169019,
+    "sha256": "7d13a7aa2f1a4f64b02058afc549b3aafd9480f90c5e4d49966951b1bded433b",
+    "responseMarket": "rebounds",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 907,
+      "returnedProps": 742,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 165,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 742,
+        "explicit_period_missing": 742,
+        "incomplete_two_sided_prices": 252
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf4f0ea2ad08-MSP"
+  },
+  {
+    "market": "assists",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=assists&limit=25",
+    "startedAt": "2026-11-22T17:45:20.527539+00:00",
+    "status": 200,
+    "seconds": 1.344,
+    "bytes": 141361,
+    "sha256": "e6ffc7ad54b4f9a055c26bf34bccc00098d19c2ad4705dd23db000a852d0a97c",
+    "responseMarket": "assists",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 680,
+      "returnedProps": 621,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 59,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 621,
+        "explicit_period_missing": 621,
+        "incomplete_two_sided_prices": 268
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf503ef2ffae-MSP"
+  },
+  {
+    "market": "threes_made",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=threes_made&limit=25",
+    "startedAt": "2026-11-22T17:45:21.873554+00:00",
+    "status": 200,
+    "seconds": 0.142,
+    "bytes": 152412,
+    "sha256": "7dcafa1f56112572099ebf99691ddc824b6e3ba9a61374a21d12f04c2ab47791",
+    "responseMarket": "threes_made",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 808,
+      "returnedProps": 661,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 147,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 661,
+        "explicit_period_missing": 661,
+        "incomplete_two_sided_prices": 245
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf582c524c96-MSP"
+  },
+  {
+    "market": "pts_rebs_asts",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=pts_rebs_asts&limit=25",
+    "startedAt": "2026-11-22T17:45:22.018353+00:00",
+    "status": 200,
+    "seconds": 0.131,
+    "bytes": 144090,
+    "sha256": "6a17eb052926f6d0959e653a6256acb7f9eac628fb863a509880b32e6396bf52",
+    "responseMarket": "pts_rebs_asts",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 737,
+      "returnedProps": 610,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 127,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 610,
+        "explicit_period_missing": 610,
+        "incomplete_two_sided_prices": 225
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf591e29ad08-MSP"
+  },
+  {
+    "market": "pts_rebs",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=pts_rebs&limit=25",
+    "startedAt": "2026-11-22T17:45:22.153351+00:00",
+    "status": 200,
+    "seconds": 0.114,
+    "bytes": 141554,
+    "sha256": "021e1422181c1b7824f6c5ec4132c324125e980ad34e2ff4e37fe89a81bb8281",
+    "responseMarket": "pts_rebs",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 784,
+      "returnedProps": 600,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 184,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 600,
+        "explicit_period_missing": 600,
+        "incomplete_two_sided_prices": 261
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf59ef57ad08-MSP"
+  },
+  {
+    "market": "pts_asts",
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-sample&market=pts_asts&limit=25",
+    "startedAt": "2026-11-22T17:45:22.268873+00:00",
+    "status": 200,
+    "seconds": 0.106,
+    "bytes": 118565,
+    "sha256": "d9e16a84757bd182aadf0f6cdf72332af3b209d673b4507628f9657c750e5134",
+    "responseMarket": "pts_asts",
+    "diagnostics": {
+      "sourceGames": 7,
+      "returnedGames": 7,
+      "matchedPropsInReturnedBooks": 625,
+      "returnedProps": 501,
+      "gamesOmitted": 0,
+      "booksOmitted": 0,
+      "propsOmitted": 124,
+      "truncated": true,
+      "evidenceGaps": {
+        "provider_player_id_missing": 501,
+        "explicit_period_missing": 501,
+        "incomplete_two_sided_prices": 243
+      },
+      "officialIdentityMatchVerified": false
+    },
+    "error": null,
+    "reason": null,
+    "cacheControl": "no-store",
+    "cfRay": "a5e9bf5aaa58e892-MSP"
+  }
+]

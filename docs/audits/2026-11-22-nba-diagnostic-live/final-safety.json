@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-11-22T18:00:56.849Z",
+  "active": [
+    {
+      "id": "5f930400-3285-4177-b1d8-ed5307374566",
+      "versions": [
+        {
+          "version_id": "48e8858a-7326-41ea-9457-532c74ec3337",
+          "percentage": 100
+        }
+      ]
+    }
+  ],
+  "settingsUnchanged": true,
+  "dashboardSchedulesUnchanged": true,
+  "cw08Unchanged": true,
+  "cw08": [
+    {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ]
+    }
+  ],
+  "buildsPaused": true,
+  "manualCommandsRestored": true
+}

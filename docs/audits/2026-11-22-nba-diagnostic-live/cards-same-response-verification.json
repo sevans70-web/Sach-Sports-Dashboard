@@ -1,0 +1,129 @@
+{
+  "scope": "Actual desktop/mobile cards compared against their own retained API responses, not a later viewport snapshot.",
+  "views": {
+    "desktop": [
+      {
+        "market": "points",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "rebounds",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "assists",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "threes_made",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "pts_rebs_asts",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "pts_rebs",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "pts_asts",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      }
+    ],
+    "mobile": [
+      {
+        "market": "points",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "rebounds",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "assists",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "threes_made",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "pts_rebs_asts",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "pts_rebs",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      },
+      {
+        "market": "pts_asts",
+        "cards": 25,
+        "identityProjectionLineDirectionPassed": 25,
+        "exactEVOrUnavailableNoticeMatchedLatestAPI": 25,
+        "earlierQuoteSnapshots": [],
+        "lowestRank": 25
+      }
+    ]
+  },
+  "issues": [],
+  "summary": {
+    "cards": 350,
+    "identityProjectionLineDirectionPassed": 350,
+    "exactEvOrUnavailableNoticeLatestSnapshotMatches": 350,
+    "earlierSnapshotComparisons": 0,
+    "issues": 0
+  }
+}
