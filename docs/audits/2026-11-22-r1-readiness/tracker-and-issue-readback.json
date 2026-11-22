@@ -1,0 +1,21 @@
+{
+  "codeCommit": "d605e1a",
+  "branch": "cloudflare-compatibility-test",
+  "githubIssue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7084565430",
+  "tracker": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "readbackVerifiedCells": 16,
+    "formatsValidationNotesChipsPreserved": true,
+    "automaticHyperlinkTargetsUpdated": 2,
+    "historyAppended": true,
+    "R1Status": "Blocked",
+    "completedRowsMoved": 0,
+    "backupSubgate": "PASS_20468",
+    "codeCommit": "d605e1a"
+  },
+  "decision": "NO_GO_current_full_population_and_full_slate_cold_evidence_missing",
+  "newDeployment": false,
+  "productionRecordWrites": 0,
+  "existingBackupOverwrites": 0,
+  "researchChanges": 0
+}
