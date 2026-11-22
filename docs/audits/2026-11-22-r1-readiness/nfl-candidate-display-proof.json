@@ -1,0 +1,16 @@
+{
+  "scope": "Reused actual November22 production response at original17:40:31Z clock; not a new live candidate pass",
+  "rows": 23,
+  "sourceRows": 23,
+  "displayableRows": 23,
+  "fittedProjections": 16,
+  "baselineOnly": 3,
+  "savedQuoteRows": 0,
+  "evAvailable": 0,
+  "reasons": {
+    "Model probability accuracy checks not met; confidence and EV are unavailable": 16,
+    "Independent model probability needed": 6,
+    "Verified player/team history is unavailable": 1
+  },
+  "originalRowsUnchanged": true
+}

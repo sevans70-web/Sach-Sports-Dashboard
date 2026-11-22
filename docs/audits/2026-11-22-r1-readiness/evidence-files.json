@@ -1,0 +1,78 @@
+{
+  "README.md": {
+    "bytes": 12470,
+    "sha256": "5f9b0fb7f45af6620eb988a912f69d566c91994ad032a9ab6d27b0247ac8afa7"
+  },
+  "backup-complete-proof.json": {
+    "bytes": 505,
+    "sha256": "d64c6f7077a2a0bdb941f80eabb4c980de2e1b8cebc085c51796d467bbc54217"
+  },
+  "backup-completion-manifest.json": {
+    "bytes": 2692,
+    "sha256": "cfea0a1386720861866117a3720f1789f1179be3a5151d9fbd41ccf520a67175"
+  },
+  "backup-local-verification.json": {
+    "bytes": 1313,
+    "sha256": "7c29324928154eb3cfcc9d6a4cbc372bcca45e0250bdb45978dfacfbdff9644e"
+  },
+  "delta-readback-proof.json": {
+    "bytes": 286,
+    "sha256": "b4e05592074efcb63be97e14ba6c7c9e23513560839cf279be0ad2380b6131ef"
+  },
+  "held-cohort-audit.json": {
+    "bytes": 17943,
+    "sha256": "c7357fe452a69bac7c5d1ade95d68023dc75a2d0dd18ad7c2891a48097e6c992"
+  },
+  "nba-alias-coverage-proof.json": {
+    "bytes": 1357,
+    "sha256": "6dd9e623963b7f14439718314b12a5c5a9cdfdb640c8adeef9f9459ccdb26b37"
+  },
+  "nba-alias-targeted.log": {
+    "bytes": 1900,
+    "sha256": "e7903c0cda90304e71cbc3c1ff51621567ac2fc3a17c4559006d0f8226d6806d"
+  },
+  "nba-coverage-summary.json": {
+    "bytes": 5180,
+    "sha256": "1787f9e8f75c69df0b547c1a7cd1ada7f628ec161c94b35bc2cde8bd40334a49"
+  },
+  "nba-observed-population.json.gz": {
+    "bytes": 30144,
+    "sha256": "cde18858c0e208427154103d82bef3e4fddfc716821069a7e32a9428f7a1198c"
+  },
+  "nfl-candidate-display-proof.json": {
+    "bytes": 510,
+    "sha256": "71dd28cf33aecb5a152e4ce804eec7816c259bbda60974f7e1b72087c2ec13d5"
+  },
+  "nfl-day-source-receipt.json": {
+    "bytes": 288,
+    "sha256": "e35d60fa75f8bf8efcede55e233486a95c8a042484e5bea4b60cb970ca5a0850"
+  },
+  "nfl-live-schedule-receipt.json": {
+    "bytes": 264,
+    "sha256": "01a16e6e7b2fbd82fd8f2587fe4495f9d6ac4c4b9c175a7629dc773ec90fd7df"
+  },
+  "nfl-scope-baseline-verified.log": {
+    "bytes": 532,
+    "sha256": "4e7925fb2172ea2a19cf3148cfc0c2626d379c5a03fc511500a88db033edf311"
+  },
+  "nfl-targeted-final-verified.log": {
+    "bytes": 3559,
+    "sha256": "1c544f2a23e3b2158cf356c5379d8ebb87848bb961a3f74e9f85ca04664177ac"
+  },
+  "production-safety.json": {
+    "bytes": 1838,
+    "sha256": "8c2ef58e2ffefc3cf9ce102c66899409ab2ef1c9217c3c337edd410ed9718c8b"
+  },
+  "protected-inventories.json": {
+    "bytes": 717,
+    "sha256": "4001b2d691e4af0e84e086682c53cc4275afaf0ce984f272ddc27eb11f18dba1"
+  },
+  "targeted-cold-recovery.log": {
+    "bytes": 41499,
+    "sha256": "0fa8b4f2f16c3eccc39114178ebca919273f59979a84b4a2746965c9f445718c"
+  },
+  "types-after-alias.log": {
+    "bytes": 208,
+    "sha256": "e0d5fd0bdebcba8fe9c7e303d0e6bfcfbbc4cda1af1190b751ea1251221ce456"
+  }
+}

@@ -308,7 +308,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
   return NextResponse.json({success:false,rows:[],error:"Choose a game day from this NFL week."},{status:400});
  let locked:any=null;
  try{
-  const lockSchedule=await getEspnNflSchedule();
+  const lockSchedule=await getEspnNflSchedule(requestedDay||undefined);
   locked=!requestedDay||requestedDay===todayKey?await lockedNflBoard(market,lockSchedule):null;
   if(!refresh&&req.nextUrl.hostname!=='sach-capture.internal'){
    const day=requestedDay||activeFootballBoardDay(lockSchedule),published=(await readDurableHistory<any>('nfl','featured_'+market,day,true))[0];
@@ -330,7 +330,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
     // Legacy fallback rows have already lost per-book prices and market structure.
     // They cannot establish a verified O/U quote; fall back to model watch instead.
     return [];
-  }),getEspnNflSchedule()]),today=requestedDay||activeFootballBoardDay(lockSchedule);
+  }),Promise.resolve(lockSchedule)]),today=requestedDay||activeFootballBoardDay(lockSchedule);
   bookFeedCoverage=(owlsRows as any).bookFeedCoverage||bookFeedCoverage;
   if(providerError&&!owlsRows.length){const retry=Date.parse(bookFeedCoverage?.primary?.retryAt||'');return NextResponse.json({success:false,market,rows:[],bookFeedCoverage,reason:bookFeedCoverage?.primary?.code||'provider_request_failed',error:'Current sportsbook inputs are unavailable; no quotes have been fabricated.'},{status:503,headers:{'Cache-Control':'no-store','Retry-After':String(Math.max(30,Number.isFinite(retry)?Math.ceil((retry-Date.now())/1000):30))}});}
   const scopedSchedule=requestedDay?schedule.filter(game=>easternDayKey(game.date)===requestedDay):schedule;

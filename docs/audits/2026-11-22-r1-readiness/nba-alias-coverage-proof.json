@@ -1,0 +1,69 @@
+{
+  "rosterSlots": 246,
+  "beforeUnmatchedOfferOccurrences": 46,
+  "afterUnmatchedOfferOccurrences": 0,
+  "markets": [
+    {
+      "market": "points",
+      "executableQuotes": 92,
+      "recoveredOfficialPlayerIds": [
+        "5160992",
+        "3138196"
+      ],
+      "deduped": 89
+    },
+    {
+      "market": "rebounds",
+      "executableQuotes": 92,
+      "recoveredOfficialPlayerIds": [
+        "5160992",
+        "3138196"
+      ],
+      "deduped": 89
+    },
+    {
+      "market": "assists",
+      "executableQuotes": 73,
+      "recoveredOfficialPlayerIds": [
+        "4871145"
+      ],
+      "deduped": 71
+    },
+    {
+      "market": "threes_made",
+      "executableQuotes": 77,
+      "recoveredOfficialPlayerIds": [
+        "5160992",
+        "3138196"
+      ],
+      "deduped": 74
+    },
+    {
+      "market": "pts_rebs_asts",
+      "executableQuotes": 73,
+      "recoveredOfficialPlayerIds": [
+        "4871145"
+      ],
+      "deduped": 71
+    },
+    {
+      "market": "pts_rebs",
+      "executableQuotes": 89,
+      "recoveredOfficialPlayerIds": [
+        "5160992",
+        "3138196"
+      ],
+      "deduped": 87
+    },
+    {
+      "market": "pts_asts",
+      "executableQuotes": 68,
+      "recoveredOfficialPlayerIds": [
+        "4871145"
+      ],
+      "deduped": 67
+    }
+  ],
+  "productionAccess": false,
+  "projectionsChanged": false
+}

@@ -1,0 +1,11 @@
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/scoreboard 403 application/json
+NFL_SCOPE_BASELINE {"compiledSource":"1c567c1","scopedStatus":503,"currentDayGamesAvailable":11,"requests":5,"unrelatedDateDenialBlocksCurrentDay":true,"productionAccess":false}
+✔ compiled NFL explicit-day collection survives an unrelated weekly403, without weakening full-week completeness (3681.295974ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6352.820642

@@ -1,0 +1,7 @@
+{
+  "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?limit=200&dates=20261122",
+  "capturedAt": "2026-11-22T19:20:29.917387+00:00",
+  "httpStatus": 200,
+  "seconds": 0.285,
+  "rawSha256": "0fc7f2169b09609520041a0b41066ba67ffbd4a6be6816e4c02943c0a4455467"
+}

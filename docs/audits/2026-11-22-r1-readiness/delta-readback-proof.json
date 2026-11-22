@@ -1,0 +1,10 @@
+{
+  "driveId": "1Ri51JKy7XNdZzcKvNTVn7hnVChiRF4di",
+  "bytes": 4169,
+  "sha256": "86d10721e11ce67313d2e5a0aaa5c45e5986edf783db118f7dafacf3da7693ee",
+  "exactByteReadback": true,
+  "records": 2,
+  "baseRecords": 20466,
+  "combinedRestoredRecords": 20468,
+  "productionModified": false
+}

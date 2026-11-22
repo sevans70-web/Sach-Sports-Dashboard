@@ -154,7 +154,8 @@ function dateKey(d:Date){
   return `${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,"0")}${String(d.getUTCDate()).padStart(2,"0")}`;
 }
 
-export async function getEspnNflSchedule(){
+export async function getEspnNflSchedule(requestedDay?:string){
+  if(requestedDay&&(!/^\d{4}-\d{2}-\d{2}$/.test(requestedDay)||!Number.isFinite(Date.parse(requestedDay+'T12:00Z'))||new Date(requestedDay+'T12:00Z').toISOString().slice(0,10)!==requestedDay))throw Error('Invalid NFL schedule day');
   const now=new Date();
   // NFL week selection must use Eastern Time, not the Railway server's UTC day.
   // This keeps Monday-night games on the current week until Monday is actually
@@ -172,7 +173,9 @@ export async function getEspnNflSchedule(){
   const etCalendarDate=new Date(Date.UTC(y,m-1,d,12));
   const toThursday=day===2||day===3?4-day:-(day>=4?day-4:day+3);
   const thursday=new Date(etCalendarDate.getTime()+toThursday*86400000);
-  const dates=[0,1,2,3,4].map(offset=>dateKey(new Date(thursday.getTime()+offset*86400000)));
+  // A selected-day ranking needs that complete date, not unrelated dates.
+  // Week-wide consumers still require every requested scoreboard to succeed.
+  const dates=requestedDay?[requestedDay.replaceAll('-','')]:[0,1,2,3,4].map(offset=>dateKey(new Date(thursday.getTime()+offset*86400000)));
   const payloads=await schedulePayloads(dates.map(date=>json(`${ESPN_SCOREBOARD}?limit=200&dates=${date}`)),"NFL",p=>Array.isArray(p.events));
   const seen=new Set<string>();
   const out:any[]=[];

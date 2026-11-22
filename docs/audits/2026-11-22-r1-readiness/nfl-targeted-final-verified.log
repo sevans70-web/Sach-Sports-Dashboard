@@ -1,0 +1,35 @@
+✔ NFL passing interceptions are listed and read from passing only; defensive stats keep their separate units (3.852103ms)
+✔ combined history requires every component, preserves a real zero and never treats missing receiving yards as zero (4.005798ms)
+✔ passing interception baseline excludes low-attempt roles and future games using the existing passing cohort policy (10.00219ms)
+✔ full-game progress preserves official defense and offense totals without requiring a quarter tape (370.288729ms)
+✔ recorded live NFL QB disappearance is reproduced and quote-backed coverage restored without manufacturing selections (21.974074ms)
+✔ model validation failures remain unavailable confidence/EV; baselines and unmodelled quarters stay distinct (0.588015ms)
+✔ exact normalized probabilities can price signed NFL research EV without generating a betting selection (1.045388ms)
+✔ wrong sport, invalid quote, after-start recovery, unavailable player and tampered capture remain excluded (0.625114ms)
+✔ negative and zero exact-price NFL comparisons remain signed and never acquire selections (0.624776ms)
+✔ quarter sportsbook category aliases remain exact to period and do not borrow full-game offers (68.722051ms)
+✔ two-sided NFL quarter forecasts retain their projection direction without being promoted to betting picks (0.573233ms)
+✔ foreground retained NFL board exposes diagnostics without calling sportsbook feeds or changing originals (38.307716ms)
+✔ background capture bypasses retained-board shortcut and actually reaches source collection (2.757624ms)
+✔ foreground merges a job-published later block with frozen early evidence even when legacy publication is absent (3.719207ms)
+✔ explicit NFL day reaches retained and cold routes without unrelated weekly requests or duplicate schedule fetching (3.664683ms)
+[provider unavailable] site.api.espn.com /apis/site/v2/sports/football/nfl/scoreboard 403 application/json
+NFL_SCOPED_SCHEDULE {"source":"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?limit=200&dates=20261122","actualCurrentDayGames":11,"scopedRequests":1,"unrelatedDenialRequests":0,"wholeWeekFailsClosed":true,"invalidDateCalls":0,"CloudflareLimit":350,"productionAccess":false}
+✔ compiled NFL explicit-day collection survives an unrelated weekly403, without weakening full-week completeness (3435.909759ms)
+✔ NFL immediately returns unchanged original early decisions alongside genuine current pregame rows (2.786757ms)
+✔ stale, wrong-day, already-started and unverified fresh rows cannot replace or remove the original locked board (1.273566ms)
+✔ a fresh job-published KV board fills later blocks while preserving the original early row (26.824982ms)
+✔ NBA/NFL/NHL date failures and malformed payloads cannot publish partial schedules or false empty dates (3.335839ms)
+✔ failed polls retain bounded same-sport schedules; confirmed empty dates replace them and expired dates cannot leak (2.67988ms)
+✔ scope counts bind market, date and official fixture; unknown coverage is not zero and kickoff invalidates aggregate caches (4.068935ms)
+✔ seven NBA diagnostic rows, scorer candidates and true picks remain separate in coverage (2.287787ms)
+✔ coverage caches use actual future fixture dates and reject expired/future-dated counters (1.645315ms)
+✔ NHL tomorrow roster enrichment uses tomorrow teams, not only today teams, across Toronto DST (49.051368ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10519.669922

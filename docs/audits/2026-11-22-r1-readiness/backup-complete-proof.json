@@ -1,0 +1,13 @@
+{
+  "completeManifestDriveId": "1lPS2RRr2hwyrz4s21wZgX8e0hzBRi9KE",
+  "completeManifestSha256": "cfea0a1386720861866117a3720f1789f1179be3a5151d9fbd41ccf520a67175",
+  "completeManifestBytes": 2692,
+  "deltaDriveId": "1Ri51JKy7XNdZzcKvNTVn7hnVChiRF4di",
+  "deltaSha256": "86d10721e11ce67313d2e5a0aaa5c45e5986edf783db118f7dafacf3da7693ee",
+  "deltaExactReadback": true,
+  "manifestExactReadback": true,
+  "records": 20468,
+  "closedGap": 2,
+  "productionModified": false,
+  "oldBackupFilesModified": false
+}

@@ -1,0 +1,147 @@
+{
+  "scope": "Reused November22 raw diagnostic, official roster and pre-limit aggregate evidence. No new card audit, source request or invented individual hold reason.",
+  "rosterSlots": 246,
+  "markets": [
+    {
+      "market": "points",
+      "published": 25,
+      "pipelineCandidatesAccounted": 173,
+      "preLimitModelReasonCounts": {
+        "price_threshold_not_met": 15,
+        "selected": 25,
+        "recent_official_history_unavailable": 46,
+        "insufficient_basketball_role_history": 16,
+        "prior_basketball_role_uncertain": 14,
+        "verified_quote_unavailable": 55,
+        "player_team_history_unavailable": 2
+      },
+      "rolePolicyHolds": 30,
+      "sourceHistoryHolds": 48,
+      "rosterSlotsWithAnySampleOffer": 90,
+      "sourceNamesNotMatchedUniquely": 7,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    },
+    {
+      "market": "rebounds",
+      "published": 25,
+      "pipelineCandidatesAccounted": 173,
+      "preLimitModelReasonCounts": {
+        "price_threshold_not_met": 22,
+        "selected": 15,
+        "recent_official_history_unavailable": 49,
+        "prior_basketball_role_uncertain": 23,
+        "verified_quote_unavailable": 48,
+        "insufficient_basketball_role_history": 14,
+        "player_team_history_unavailable": 2
+      },
+      "rolePolicyHolds": 37,
+      "sourceHistoryHolds": 51,
+      "rosterSlotsWithAnySampleOffer": 89,
+      "sourceNamesNotMatchedUniquely": 7,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    },
+    {
+      "market": "assists",
+      "published": 25,
+      "pipelineCandidatesAccounted": 173,
+      "preLimitModelReasonCounts": {
+        "price_threshold_not_met": 15,
+        "selected": 14,
+        "recent_official_history_unavailable": 40,
+        "prior_basketball_role_uncertain": 20,
+        "verified_quote_unavailable": 65,
+        "insufficient_basketball_role_history": 16,
+        "player_team_history_unavailable": 3
+      },
+      "rolePolicyHolds": 36,
+      "sourceHistoryHolds": 43,
+      "rosterSlotsWithAnySampleOffer": 72,
+      "sourceNamesNotMatchedUniquely": 6,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    },
+    {
+      "market": "threes_made",
+      "published": 25,
+      "pipelineCandidatesAccounted": 172,
+      "preLimitModelReasonCounts": {
+        "selected": 20,
+        "price_threshold_not_met": 14,
+        "insufficient_basketball_role_history": 16,
+        "recent_official_history_unavailable": 37,
+        "verified_quote_unavailable": 65,
+        "prior_basketball_role_uncertain": 18,
+        "player_team_history_unavailable": 2
+      },
+      "rolePolicyHolds": 34,
+      "sourceHistoryHolds": 39,
+      "rosterSlotsWithAnySampleOffer": 74,
+      "sourceNamesNotMatchedUniquely": 7,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    },
+    {
+      "market": "pts_rebs_asts",
+      "published": 25,
+      "pipelineCandidatesAccounted": 173,
+      "preLimitModelReasonCounts": {
+        "selected": 21,
+        "price_threshold_not_met": 10,
+        "recent_official_history_unavailable": 37,
+        "prior_basketball_role_uncertain": 23,
+        "verified_quote_unavailable": 64,
+        "insufficient_basketball_role_history": 14,
+        "player_team_history_unavailable": 4
+      },
+      "rolePolicyHolds": 37,
+      "sourceHistoryHolds": 41,
+      "rosterSlotsWithAnySampleOffer": 71,
+      "sourceNamesNotMatchedUniquely": 5,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    },
+    {
+      "market": "pts_rebs",
+      "published": 25,
+      "pipelineCandidatesAccounted": 173,
+      "preLimitModelReasonCounts": {
+        "selected": 22,
+        "price_threshold_not_met": 17,
+        "recent_official_history_unavailable": 45,
+        "prior_basketball_role_uncertain": 14,
+        "verified_quote_unavailable": 57,
+        "insufficient_basketball_role_history": 16,
+        "player_team_history_unavailable": 2
+      },
+      "rolePolicyHolds": 30,
+      "sourceHistoryHolds": 47,
+      "rosterSlotsWithAnySampleOffer": 89,
+      "sourceNamesNotMatchedUniquely": 8,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    },
+    {
+      "market": "pts_asts",
+      "published": 25,
+      "pipelineCandidatesAccounted": 173,
+      "preLimitModelReasonCounts": {
+        "selected": 22,
+        "price_threshold_not_met": 10,
+        "recent_official_history_unavailable": 32,
+        "prior_basketball_role_uncertain": 22,
+        "verified_quote_unavailable": 66,
+        "insufficient_basketball_role_history": 17,
+        "player_team_history_unavailable": 4
+      },
+      "rolePolicyHolds": 39,
+      "sourceHistoryHolds": 36,
+      "rosterSlotsWithAnySampleOffer": 72,
+      "sourceNamesNotMatchedUniquely": 6,
+      "sampleTruncated": true,
+      "completeIndividualPreLimitAudit": false
+    }
+  ],
+  "decision": "NO-GO for claiming full eligible-player coverage: exact pre-limit per-player/history lineage is not exposed by the approved bounded diagnostic. Do not infer individual role/history reasons from aggregate counters."
+}

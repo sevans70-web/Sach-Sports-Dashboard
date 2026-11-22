@@ -1,0 +1,17 @@
+✔ coverage distinguishes period markets and excludes full-game or first-field-goal substitutions (10.263912ms)
+✔ NBA same-player back-to-back quotes remain distinct while same-game books dedupe (1.521699ms)
+✔ Official roster selection never collapses two separate fixtures for the same player (0.178888ms)
+✔ Sportsbooks with different court tip times for the same official game cannot duplicate the NBA card (0.903662ms)
+✔ NBA advertised-start and court-tip differences retain the exact teams and date (2.96654ms)
+✔ provider full team names and known abbreviations bind to the official roster (0.461192ms)
+✔ verified NBA aliases require both the official ID and canonical name; unrelated identities stay unchanged (2.374393ms)
+NBA_ALIAS_COVERAGE {"rosterSlots":246,"beforeUnmatchedOfferOccurrences":46,"afterUnmatchedOfferOccurrences":0,"markets":[{"market":"points","executableQuotes":92,"recoveredOfficialPlayerIds":["5160992","3138196"],"deduped":89},{"market":"rebounds","executableQuotes":92,"recoveredOfficialPlayerIds":["5160992","3138196"],"deduped":89},{"market":"assists","executableQuotes":73,"recoveredOfficialPlayerIds":["4871145"],"deduped":71},{"market":"threes_made","executableQuotes":77,"recoveredOfficialPlayerIds":["5160992","3138196"],"deduped":74},{"market":"pts_rebs_asts","executableQuotes":73,"recoveredOfficialPlayerIds":["4871145"],"deduped":71},{"market":"pts_rebs","executableQuotes":89,"recoveredOfficialPlayerIds":["5160992","3138196"],"deduped":87},{"market":"pts_asts","executableQuotes":68,"recoveredOfficialPlayerIds":["4871145"],"deduped":67}],"productionAccess":false,"projectionsChanged":false}
+✔ reused Nov22 seven-market source evidence recovers exact roster identities without changing quotes or fixture guards (2276.496296ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5286.382462

@@ -1,0 +1,624 @@
+{
+  "scope": "Complete captured34-player November21 cohort at original capture clock; no current November22/full-slate claim. No HTTP or production storage access.",
+  "at": "2026-11-21T22:05:16.647490+00:00",
+  "players": 34,
+  "observations": 2982,
+  "markets": [
+    {
+      "market": "points",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    },
+    {
+      "market": "rebounds",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    },
+    {
+      "market": "assists",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    },
+    {
+      "market": "threes_made",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    },
+    {
+      "market": "pts_rebs_asts",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    },
+    {
+      "market": "pts_rebs",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    },
+    {
+      "market": "pts_asts",
+      "available": 19,
+      "held": 15,
+      "holdReasons": {
+        "insufficient_basketball_role_history": 5,
+        "prior_basketball_role_uncertain": 4,
+        "reported_unavailable": 5,
+        "player_team_history_unavailable": 1
+      },
+      "heldPlayers": [
+        {
+          "playerId": "4433188",
+          "playerName": "Devin Carter",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "3195",
+          "playerName": "Mike Conley",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "4397251",
+          "playerName": "Ron Harper Jr.",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5106283",
+          "playerName": "Dillon Mitchell",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4351852",
+          "playerName": "Mitchell Robinson",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4065648",
+          "playerName": "Jayson Tatum",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4683689",
+          "playerName": "Jordan Walsh",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "3078576",
+          "playerName": "Derrick White",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "4702745",
+          "playerName": "Amari Williams",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4917149",
+          "playerName": "Alex Karaban",
+          "reason": "prior_basketball_role_uncertain"
+        },
+        {
+          "playerId": "5107897",
+          "playerName": "Jonathan Mogbo",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4709131",
+          "playerName": "Sean Pedulla",
+          "reason": "player_team_history_unavailable"
+        },
+        {
+          "playerId": "2488653",
+          "playerName": "Mason Plumlee",
+          "reason": "insufficient_basketball_role_history"
+        },
+        {
+          "playerId": "4898371",
+          "playerName": "Maxime Raynaud",
+          "reason": "reported_unavailable"
+        },
+        {
+          "playerId": "3907387",
+          "playerName": "Ben Simmons",
+          "reason": "reported_unavailable"
+        }
+      ]
+    }
+  ]
+}

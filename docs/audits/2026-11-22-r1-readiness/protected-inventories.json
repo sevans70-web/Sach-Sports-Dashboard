@@ -1,0 +1,28 @@
+{
+  "algorithm": "md5(string_agg(md5(to_jsonb(t)::text),'' ORDER BY source primary key))",
+  "before": [
+    {
+      "source": "history_documents",
+      "records": 11615,
+      "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "records": 6111,
+      "inventory": "33d1173b71b0fe2f35aaf0b314a22836"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "records": 1473,
+      "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "records": 1269,
+      "inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  ],
+  "afterMatchesBefore": true,
+  "readOnlySourceExports": true,
+  "sourceWrites": 0
+}

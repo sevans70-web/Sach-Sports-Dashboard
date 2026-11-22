@@ -22,7 +22,7 @@ import {nativeFirstBasketRows} from '@/lib/native-first-basket';
 import {getNbaFirstBasketSource} from '@/lib/owls-provider';
 import {getOwlsPayload} from "@/lib/owls-provider";
 import {nbaQuoteMatchesGame,nbaQuoteMatchesRosterTeam} from "@/lib/nba-game-match";
-import {dedupeNbaFixtureQuotes,nbaOfficialPlayerFixtureKey} from "@/lib/nba-fixture-identity";
+import {dedupeNbaFixtureQuotes,nbaOfficialPlayerFixtureKey,nbaRosterNameKeys} from "@/lib/nba-fixture-identity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
 import {nbaSourceFetch as fetch} from "@/lib/nba-source-fetch";
 import {nullableNumber} from "@/lib/provider-fetch";
@@ -139,10 +139,11 @@ async function loadSlateContext(overview:any):Promise<SlateContext>{
      const entry={game:block.game,roster,player};
      entries.push(entry);
 
-     const key=cleanNbaName(player.playerName);
-     const list=byName.get(key)||[];
-     list.push(entry);
-     byName.set(key,list);
+     for(const key of nbaRosterNameKeys(player)){
+      const list=byName.get(key)||[];
+      list.push(entry);
+      byName.set(key,list);
+     }
     }
    }
   }

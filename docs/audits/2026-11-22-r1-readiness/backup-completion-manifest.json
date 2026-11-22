@@ -1,0 +1,69 @@
+{
+  "schema": "sach-dashboard-recovery-complete/v2-delta",
+  "completedAt": "2026-11-22T19:12:13.256106+00:00",
+  "status": "verified_complete_composite_backup",
+  "folderId": "1q0FpKWUxzvGq7KM7bc6ov1hkXjTgaFYe",
+  "base": {
+    "manifestDriveId": "1Gl1quPVMBo5ELLFKBIAuQEOkHqqQRKZf",
+    "manifestSha256": "80765c6ba9187d4c5c0f639889a72c04ec9cbfa14fd55e1d28f49585afd31a6b",
+    "records": 20466,
+    "immutableDataDriveIds": [
+      "19my795XhazztQz0ETo1zMjEqZeq1iyrx",
+      "1S7c-AAqtvf8ljR_kjcKs1yDr9RvC2W6D",
+      "1rPgzEH3uF0nQkHXYjSYd9n1WMouhYNDp"
+    ]
+  },
+  "delta": {
+    "driveId": "1Ri51JKy7XNdZzcKvNTVn7hnVChiRF4di",
+    "filename": "sach-dashboard-recovery-delta-2026-11-22-86d10721e11ce67313d2e5a0aaa5c45e5986edf783db118f7dafacf3da7693ee.json",
+    "sha256": "86d10721e11ce67313d2e5a0aaa5c45e5986edf783db118f7dafacf3da7693ee",
+    "bytes": 4169,
+    "records": 2,
+    "table": "worker_pregame_originals",
+    "sourcePositions": [
+      3246,
+      3410
+    ],
+    "rowMD5s": [
+      "0b6b2c46d5e41bfbce63bd6750dca594",
+      "8306e47274fff2bd56462a71b08c6ab2"
+    ]
+  },
+  "totalRecords": 20468,
+  "sourceTables": [
+    {
+      "source": "history_documents",
+      "records": 11615,
+      "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "records": 6111,
+      "inventory": "33d1173b71b0fe2f35aaf0b314a22836"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "records": 1473,
+      "inventory": "656e60d2cb9dc59db003de6754cf09cb"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "records": 1269,
+      "inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  ],
+  "verification": {
+    "remoteDeltaExactByteReadback": true,
+    "isolatedLocalRestore": true,
+    "allFourCanonicalSourceInventoriesMatch": true,
+    "all20466OriginalRowBytesPreserved": true,
+    "duplicateIdentitiesRejected": true,
+    "sqliteIntegrity": "ok",
+    "productionBeforeAfterInventoriesUnchanged": true,
+    "productionWrites": 0,
+    "existingBackupOverwrites": 0,
+    "CW08Accessed": false
+  },
+  "restoreProcedure": "Restore and verify the immutable base manifest and parts with the existing current-recovery-backup tooling. In an isolated local database only, insert the two complete delta rows after validating row_md5 and PK absence. Merge original-receipt source ordering at authoritative zero-based positions3246 and3410; verify all four source table inventories and20468total. Never import into production without separate authorization.",
+  "fingerprintAlgorithm": "md5 concatenated PostgreSQL MD5(to_jsonb(full_row)::text), ordered by each original source primary key; all columns/timestamps retained."
+}

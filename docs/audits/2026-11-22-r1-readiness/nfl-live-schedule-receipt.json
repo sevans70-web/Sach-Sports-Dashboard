@@ -1,0 +1,9 @@
+{
+  "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/game-slate?sport=nfl",
+  "status": 200,
+  "seconds": 0.844,
+  "sha256": "dd8b287cf614284213ad47112568bc8c988d41ba0c2c7d881feff1cbbfdbf6e3",
+  "success": true,
+  "error": null,
+  "games": 13
+}
