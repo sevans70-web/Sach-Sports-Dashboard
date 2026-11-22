@@ -1,0 +1,36 @@
+{
+  "verifiedAt": "2026-11-22T04:09:34.229Z",
+  "passedChecks": 12,
+  "failedChecks": 0,
+  "checks": {
+    "activeFallbackUnchanged": true,
+    "rollbackVersionAvailable": true,
+    "productionBindingNamesTypesTargetsUnchanged": true,
+    "compatibilityAndSubrequestLimitUnchanged": true,
+    "dashboardCronConfigurationUnchanged": true,
+    "automaticBuildsStillPaused": true,
+    "researchDeploymentUnchanged": true,
+    "researchScheduleUnchanged": true,
+    "exactFrozenDeltaChecksum": true,
+    "exactTwoModuleScope": true,
+    "frozenReconstructionPassed": true,
+    "backupObjectsRemainAvailableUnchangedMetadata": true
+  },
+  "artifact": "NBA-ODDS-DIAG-2026-11-21-cae200070535",
+  "artifactSha256": "cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20",
+  "deltaSha256": "bc8c69baddce01bac2c5c3988c05149d1a8b7b5150f458f394f6780187dfc899",
+  "sourceCodeCommit": "434f1dbfc56df845fbaedff9d00dd4227e98eb3f",
+  "newApplicationCodeChanges": false,
+  "testEvidenceReused": {
+    "fullSuite": {
+      "passed": 892,
+      "failed": 0,
+      "skippedOptIn": 17
+    },
+    "typescriptDiagnostics": 0,
+    "recordedNbaCardChecks": 350,
+    "notCurrentLiveAcceptance": true
+  },
+  "currentSevenMarketQuoteEvidence": "Not retrieved: required diagnostic-only production upload has no recorded separate authorization",
+  "decision": "READY FOR DIAGNOSTIC-ONLY AUTHORIZATION; NO UPLOAD. R1 remains blocked."
+}

@@ -1,0 +1,13 @@
+{
+  "reviewedIssue": 129,
+  "latestCommentId": 7071170277,
+  "latestCommentsReviewed": [
+    7067595845,
+    7070245285,
+    7071170277
+  ],
+  "artifact": "NBA-ODDS-DIAG-2026-11-21-cae200070535",
+  "exactUploadAuthorizationRecorded": false,
+  "latestUserInstruction": "Prepare diagnostic-only deployment for final authorization. Do not upload production code without that separate approval.",
+  "productionUploadAttempted": false
+}
