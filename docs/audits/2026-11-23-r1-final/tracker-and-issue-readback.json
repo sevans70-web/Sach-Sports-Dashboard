@@ -1,0 +1,39 @@
+{
+  "tracker": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "cells": 18,
+    "valuesVerified": 18,
+    "priorHistoryRetained": true,
+    "validationNotesChipsWrappingPreserved": true,
+    "intentionalAutoHyperlinkChanges": [
+      {
+        "key": "2026111601|96|1",
+        "from": {
+          "uri": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/58829c2/docs/audits/2026-11-23-nba-population-live/README.md"
+        },
+        "to": {
+          "uri": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/09e2285/frontend/releases/r1-2026-11-23-final/release-plan.md"
+        }
+      },
+      {
+        "key": "1777924792|23|18",
+        "from": {
+          "uri": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/58829c2/docs/audits/2026-11-23-nba-population-live/README.md"
+        },
+        "to": null
+      }
+    ],
+    "status": "Needs verification",
+    "completedRowsMoved": 0,
+    "visualFit": "Native render not performed; wrapping/style metadata verified for content-only edits.",
+    "url": "https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit"
+  },
+  "issue": {
+    "number": 129,
+    "commentId": 7114921104,
+    "url": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7114921104"
+  },
+  "packageCommit": "09e2285",
+  "productionUploaded": false,
+  "approvalRequired": true
+}
