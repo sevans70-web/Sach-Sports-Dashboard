@@ -1,0 +1,26 @@
+{
+  "readbackCells": 16,
+  "historyAppended": true,
+  "formatValidationNotesChipsPreserved": true,
+  "automaticEvidenceHyperlinksUpdated": 2,
+  "R1Status": "Blocked",
+  "completedRowsMoved": 0,
+  "codeCommit": "58829c2",
+  "diagnosticDeployment": "907bf0e9-e512-48d6-8629-ab9b33a68710",
+  "fullR1Deployed": false,
+  "nativeSheetFit": "not re-rendered; existing formatting/wrap/TOP metadata preserved",
+  "issue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7112683363",
+  "decision": "NBA_population_and_recorded_current_data_recovery_verified; proceed_to_R1_freeze_and_remaining_release_checks",
+  "newCodeDeployed": false,
+  "activeDiagnosticArtifact": "NBA-POP-CENSUS-2026-11-23-01e5a84612d9",
+  "sourceCollection": {
+    "requests": 142,
+    "seconds": 36.26,
+    "maxConcurrent": 1,
+    "retries": 0,
+    "failures": 0
+  },
+  "productionDataWrites": 0,
+  "CW08Changed": false,
+  "automaticBuildsPaused": true
+}

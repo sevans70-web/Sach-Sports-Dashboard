@@ -106,5 +106,9 @@
   "warmup.log": {
     "bytes": 186119,
     "sha256": "ef13037aebe730ee89512a5c8f49e1c1b528d06c5f4d857a1ab347a091c62663"
+  },
+  "tracker-and-issue-readback.json": {
+    "bytes": 951,
+    "sha256": "4bdfdcac005cc146df1a54bcd730a308dd8fd883d8176f57d993a0165308eddd"
   }
 }
