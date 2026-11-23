@@ -1,0 +1,18 @@
+{
+  "artifact": "NBA-POP-CENSUS-2026-11-23-01e5a84612d9",
+  "artifactSha256": "01e5a84612d9b65745c2ec8c980d85750602e5522c7b0b33b103e0ce133c4561",
+  "changedModules": [
+    "bundle/nba-odds-diagnostic.js"
+  ],
+  "unchangedFiles": 750,
+  "syntheticContractOffers": 5518,
+  "bytes": 3599421,
+  "durationMs": 4023,
+  "providerReads": 1,
+  "officialDenials": 1,
+  "deniedRetries": 0,
+  "CloudflareSubrequestLimit": 350,
+  "productionAccess": false,
+  "durableWrites": 0,
+  "legacySamplePreserved": true
+}

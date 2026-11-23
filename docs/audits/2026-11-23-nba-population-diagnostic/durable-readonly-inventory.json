@@ -1,0 +1,57 @@
+{
+  "observedAt": "2026-11-23T18:36:49.831Z",
+  "namespace": "dashboard only",
+  "object": "capture:nba",
+  "queryReadOnly": true,
+  "response": {
+    "result": {
+      "results": [
+        {
+          "columns": [
+            "versions",
+            "encoded_bytes"
+          ],
+          "rows": [
+            [
+              101,
+              764248
+            ]
+          ],
+          "meta": {
+            "rows_read": 101,
+            "rows_written": 0
+          }
+        },
+        {
+          "columns": [
+            "active_sources",
+            "oldest_verified",
+            "newest_verified",
+            "final_sources",
+            "team_calendars",
+            "athlete_discoveries",
+            "fresh_discoveries"
+          ],
+          "rows": [
+            [
+              101,
+              "2026-10-28T20:16:29.294Z",
+              "2026-11-17T22:04:46.689002Z",
+              101,
+              0,
+              0,
+              0
+            ]
+          ],
+          "meta": {
+            "rows_read": 101,
+            "rows_written": 0
+          }
+        }
+      ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+  }
+}

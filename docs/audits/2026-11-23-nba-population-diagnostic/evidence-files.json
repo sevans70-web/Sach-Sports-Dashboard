@@ -1,0 +1,38 @@
+{
+  "README.md": {
+    "bytes": 8686,
+    "sha256": "f829a6c5f94bfd2bb363c78af7772791a2f1b22769cd96e9f127131bde299604"
+  },
+  "compiled-proof.json": {
+    "bytes": 500,
+    "sha256": "7179529925309b22325cf58dbaa5555935d7efb1c9805b5ff9542547febf24ec"
+  },
+  "durable-readonly-inventory.json": {
+    "bytes": 1165,
+    "sha256": "37f02e940c1c073209a9c08d7c9a58ad5abd8361b26de37c7611a71878ba22dd"
+  },
+  "frozen-readback.log": {
+    "bytes": 1364,
+    "sha256": "3d67e36d0b2b66dd4d00f52e8f1169f4ef9bbfc86274c4795310380fae9351da"
+  },
+  "guard-retest.log": {
+    "bytes": 239,
+    "sha256": "0bcb0ecc150028e58d6410c5b76417199598634ef57e9feef3429b3228621b87"
+  },
+  "new-tests-before-guard-assertion.log": {
+    "bytes": 85215,
+    "sha256": "094c2d9f1b9f57b60e3ff2409f4922c9bef383d6c07eab3b189f0f836c1f2f85"
+  },
+  "production-safety.json": {
+    "bytes": 1150,
+    "sha256": "5bbeedbd5c0582a141119876dc7459c6972dc290142c82723c9aafbabacc6541"
+  },
+  "types-final.log": {
+    "bytes": 208,
+    "sha256": "e0d5fd0bdebcba8fe9c7e303d0e6bfcfbbc4cda1af1190b751ea1251221ce456"
+  },
+  "verification-summary.json": {
+    "bytes": 736,
+    "sha256": "2d7776d7d1ea3dcb1af8b29377c83134e1ac4a4214f02d58727d776b7a2419e2"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "newDistinctChecksPassed": 9,
+  "unresolvedTestFailures": 0,
+  "testRuns": [
+    {
+      "file": "new-tests-before-guard-assertion.log",
+      "passed": 8,
+      "failed": 1,
+      "cause": "test expected the offer-count guard before the stronger serialized-byte guard; no application failure or guard relaxation"
+    },
+    {
+      "file": "guard-retest.log",
+      "passed": 1,
+      "failed": 0,
+      "changed": "assertion accepts either hard bound; only this case rerun"
+    }
+  ],
+  "typeScript": {
+    "exitCode": 0,
+    "diagnostics": 0
+  },
+  "priorPassingSuitesRerun": false,
+  "liveFullPopulationVerified": false,
+  "currentProductionColdRecoveryVerified": false,
+  "productionUploads": 0,
+  "productionRowsWritten": 0
+}

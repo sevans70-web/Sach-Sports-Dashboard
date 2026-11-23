@@ -1,0 +1,26 @@
+{
+  "artifact": "NBA-POP-CENSUS-2026-11-23-01e5a84612d9",
+  "artifactSha256": "01e5a84612d9b65745c2ec8c980d85750602e5522c7b0b33b103e0ce133c4561",
+  "worker": "sach-sports-cloudflare-test",
+  "baseArtifact": "NBA-ODDS-DIAG-2026-11-21-cae200070535",
+  "baseArtifactSha256": "cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20",
+  "baseDeployment": "5f930400-3285-4177-b1d8-ed5307374566",
+  "rollbackVersion": "48e8858a-7326-41ea-9457-532c74ec3337",
+  "emergencyFallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "authorizationRequired": true,
+  "configurationUnchanged": true,
+  "unchangedFiles": 750,
+  "changed": [
+    {
+      "path": "bundle/nba-odds-diagnostic.js",
+      "beforeSha256": "841a4da64a657c1c252f465ec32693a37162c363d03d8b335efd78db84d01961",
+      "afterSha256": "92e02d40b55eae5d493cad22475a029fe1bc8847b1a8b53a7350d001bc1d6be8"
+    }
+  ],
+  "patch": {
+    "file": "population-patch.tar.gz",
+    "sha256": "24285ee5ec901888287c7229eab897a471436dc224f6943f452b1e96e857d302",
+    "bytes": 11227
+  },
+  "scope": "Only diagnostic module: preserve feed-sample, add all-seven-offer streamed feed-census and bounded single-resource source-census. No R1/model/queue/namespace/schema/binding/schedule/data changes."
+}
