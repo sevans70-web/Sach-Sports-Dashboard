@@ -34,5 +34,9 @@
   "verification-summary.json": {
     "bytes": 736,
     "sha256": "2d7776d7d1ea3dcb1af8b29377c83134e1ac4a4214f02d58727d776b7a2419e2"
+  },
+  "tracker-and-issue-readback.json": {
+    "bytes": 711,
+    "sha256": "9b182940709472bb3ee86614dc5fe7a2ffacb39939a86363abf0a0df03edbe9b"
   }
 }

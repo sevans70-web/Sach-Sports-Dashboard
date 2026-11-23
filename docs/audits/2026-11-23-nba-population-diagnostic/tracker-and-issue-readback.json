@@ -1,0 +1,18 @@
+{
+  "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+  "changedCells": 16,
+  "exactReadback": 16,
+  "historyAppended": true,
+  "stylesValidationNotesChipsPreserved": true,
+  "automaticHyperlinksUpdated": 2,
+  "completedRowsMoved": 0,
+  "R1Status": "Blocked",
+  "nativeVisualFit": "not re-rendered; content-only edits; existing wrap/TOP/format metadata preserved",
+  "codeCommit": "f22c93c",
+  "issue": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7110820289",
+  "decision": "GO_diagnostic_only_approval_NO_GO_R1",
+  "artifact": "NBA-POP-CENSUS-2026-11-23-01e5a84612d9",
+  "productionUpload": false,
+  "productionDataWrites": 0,
+  "oldRegressionsRerun": false
+}
