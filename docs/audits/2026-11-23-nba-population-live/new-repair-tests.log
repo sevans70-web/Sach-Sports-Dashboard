@@ -1,0 +1,12 @@
+✔ newly observed current NBA suffix variants require the exact verified official ID and canonical name (2.433069ms)
+✔ official LAC name/abbreviation allow its full city spelling without aliasing Lakers, another fixture or date (2.411083ms)
+[basketball refresh audit] {"sport":"nba","players":353,"discoveredFixtures":0,"omittedFixtures":0,"gamelogFailures":353,"scheduleFailures":8,"calendarRecovered":0,"fixtureFailures":0,"unavailablePlayers":353,"observations":0,"sourceBudgetExhausted":true}
+✔ the source operation ceiling remains256 across cache misses and HTTP; incomplete evidence stays explicitly unavailable (1335.66766ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2760.3535

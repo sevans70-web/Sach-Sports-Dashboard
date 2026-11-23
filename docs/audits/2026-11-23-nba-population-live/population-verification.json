@@ -1,0 +1,632 @@
+{
+  "scope": "Actual current source snapshot plus existing validated FINAL bodies; unchanged native matching and statistical models at true collection-completion time. Offline analysis, not production predictions or live R1 acceptance.",
+  "snapshot": "f0a256b8e4693ac8b55727f7266a13210ab9e2f8b324649e0d60e5a400b6c917",
+  "decisionAt": "2026-11-23T19:22:04.930Z",
+  "officialGames": 10,
+  "officialRosterSlots": 353,
+  "sourceEvidence": 152,
+  "requiredFinals": 132,
+  "observations": 20694,
+  "observationSha256": "4f2640237494f996d84a9e9d52dc71f1b85e3ec31acd7047460400aec568ef35",
+  "markets": [
+    {
+      "market": "points",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 142,
+      "uniqueOfficialPlayerFixtureQuotes": 121,
+      "unmatchedSelectedQuotes": 12,
+      "aliasOrAccentResolvedQuotes": 10,
+      "availableModels": 204,
+      "quotedAvailableModels": 117,
+      "researchSelections": 66,
+      "selectionReasons": {
+        "price_threshold_not_met": 51,
+        "available": 66,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 117,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    },
+    {
+      "market": "rebounds",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 138,
+      "uniqueOfficialPlayerFixtureQuotes": 119,
+      "unmatchedSelectedQuotes": 11,
+      "aliasOrAccentResolvedQuotes": 10,
+      "availableModels": 204,
+      "quotedAvailableModels": 115,
+      "researchSelections": 53,
+      "selectionReasons": {
+        "available": 53,
+        "price_threshold_not_met": 62,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 115,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    },
+    {
+      "market": "assists",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 118,
+      "uniqueOfficialPlayerFixtureQuotes": 103,
+      "unmatchedSelectedQuotes": 8,
+      "aliasOrAccentResolvedQuotes": 8,
+      "availableModels": 204,
+      "quotedAvailableModels": 99,
+      "researchSelections": 49,
+      "selectionReasons": {
+        "price_threshold_not_met": 50,
+        "available": 49,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 99,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    },
+    {
+      "market": "threes_made",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 121,
+      "uniqueOfficialPlayerFixtureQuotes": 103,
+      "unmatchedSelectedQuotes": 10,
+      "aliasOrAccentResolvedQuotes": 9,
+      "availableModels": 204,
+      "quotedAvailableModels": 99,
+      "researchSelections": 61,
+      "selectionReasons": {
+        "price_threshold_not_met": 38,
+        "available": 61,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 99,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    },
+    {
+      "market": "pts_rebs_asts",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 120,
+      "uniqueOfficialPlayerFixtureQuotes": 104,
+      "unmatchedSelectedQuotes": 9,
+      "aliasOrAccentResolvedQuotes": 9,
+      "availableModels": 204,
+      "quotedAvailableModels": 100,
+      "researchSelections": 70,
+      "selectionReasons": {
+        "available": 70,
+        "price_threshold_not_met": 30,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 100,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    },
+    {
+      "market": "pts_rebs",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 122,
+      "uniqueOfficialPlayerFixtureQuotes": 115,
+      "unmatchedSelectedQuotes": 0,
+      "aliasOrAccentResolvedQuotes": 8,
+      "availableModels": 204,
+      "quotedAvailableModels": 111,
+      "researchSelections": 78,
+      "selectionReasons": {
+        "available": 78,
+        "price_threshold_not_met": 33,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 111,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    },
+    {
+      "market": "pts_asts",
+      "rosterSlots": 353,
+      "sourceSelectedQuotes": 105,
+      "uniqueOfficialPlayerFixtureQuotes": 99,
+      "unmatchedSelectedQuotes": 0,
+      "aliasOrAccentResolvedQuotes": 7,
+      "availableModels": 204,
+      "quotedAvailableModels": 95,
+      "researchSelections": 65,
+      "selectionReasons": {
+        "price_threshold_not_met": 30,
+        "available": 65,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      },
+      "reasons": {
+        "insufficient_basketball_role_history": 25,
+        "official_unavailable": 50,
+        "model_available": 204,
+        "player_team_history_unavailable": 16,
+        "prior_basketball_role_uncertain": 58
+      },
+      "quotedReasons": {
+        "model_available": 95,
+        "prior_basketball_role_uncertain": 2,
+        "official_unavailable": 1,
+        "player_team_history_unavailable": 1
+      }
+    }
+  ],
+  "unmatchedSelectedQuotes": [
+    {
+      "market": "points",
+      "playerName": "Mo Bamba",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-UTAMBAMBA44-10",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Sandro Mamukelashvili",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALSMAMUKELASHVILI54-10",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Walker Kessler",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALWKESSLER14-15",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Keyonte George",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-UTAKGEORGE3-25",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Darryn Peterson",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-UTADPETERSON22-20",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Ace Bailey",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-UTAABAILEY19-15",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Ziaire Williams",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALZWILLIAMS11-10",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Quentin Grimes",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALQGRIMES5-15",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Matisse Thybulle",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALMTHYBULLE26-5",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Luka Dončić",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALLDONCIC77-35",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Jake LaRavia",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALJLARAVIA12-5",
+      "matches": 0
+    },
+    {
+      "market": "points",
+      "playerName": "Collin Sexton",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPTS-26NOV23UTALAL-LALCSEXTON10-10",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Mo Bamba",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-UTAMBAMBA44-10",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Collin Sexton",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALCSEXTON10-2",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Walker Kessler",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALWKESSLER14-12",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Keyonte George",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-UTAKGEORGE3-4",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Darryn Peterson",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-UTADPETERSON22-6",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Ace Bailey",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-UTAABAILEY19-6",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Sandro Mamukelashvili",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALSMAMUKELASHVILI54-4",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Quentin Grimes",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALQGRIMES5-4",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Matisse Thybulle",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALMTHYBULLE26-2",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Luka Dončić",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALLDONCIC77-8",
+      "matches": 0
+    },
+    {
+      "market": "rebounds",
+      "playerName": "Jake LaRavia",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAREB-26NOV23UTALAL-LALJLARAVIA12-4",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Keyonte George",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-UTAKGEORGE3-8",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Darryn Peterson",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-UTADPETERSON22-6",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Ace Bailey",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-UTAABAILEY19-2",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Walker Kessler",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-LALWKESSLER14-2",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Quentin Grimes",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-LALQGRIMES5-4",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Luka Dončić",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-LALLDONCIC77-8",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Jake LaRavia",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-LALJLARAVIA12-2",
+      "matches": 0
+    },
+    {
+      "market": "assists",
+      "playerName": "Collin Sexton",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAAST-26NOV23UTALAL-LALCSEXTON10-4",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Keyonte George",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-UTAKGEORGE3-3",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Darryn Peterson",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-UTADPETERSON22-3",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Ace Bailey",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-UTAABAILEY19-2",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Ziaire Williams",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALZWILLIAMS11-2",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Sandro Mamukelashvili",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALSMAMUKELASHVILI54-2",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Quentin Grimes",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALQGRIMES5-3",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Matisse Thybulle",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALMTHYBULLE26-2",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Luka Dončić",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALLDONCIC77-5",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Jake LaRavia",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALJLARAVIA12-1",
+      "matches": 0
+    },
+    {
+      "market": "threes_made",
+      "playerName": "Collin Sexton",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBA3PT-26NOV23UTALAL-LALCSEXTON10-2",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Sandro Mamukelashvili",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-LALSMAMUKELASHVILI54-15",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Collin Sexton",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-LALCSEXTON10-15",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Luka Dončić",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-LALLDONCIC77-50",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Walker Kessler",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-LALWKESSLER14-25",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Keyonte George",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-UTAKGEORGE3-35",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Darryn Peterson",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-UTADPETERSON22-30",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Ace Bailey",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-UTAABAILEY19-25",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Quentin Grimes",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-LALQGRIMES5-25",
+      "matches": 0
+    },
+    {
+      "market": "pts_rebs_asts",
+      "playerName": "Jake LaRavia",
+      "matchup": "Utah Jazz @ Los Angeles Clippers",
+      "gameTime": "2026-11-24T09:00:00Z",
+      "quoteId": "kalshi-KXNBAPRA-26NOV23UTALAL-LALJLARAVIA12-10",
+      "matches": 0
+    }
+  ]
+}

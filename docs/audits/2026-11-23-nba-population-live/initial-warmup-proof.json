@@ -1,0 +1,62 @@
+{
+  "scope": "isolated actual workerd/job budget; real captured current bodies; prior athlete403 intentionally simulated; NOT current provider failure or production initialization",
+  "initialFinalPointers": 101,
+  "initialCalendars": 0,
+  "phases": [
+    {
+      "phase": 1,
+      "error": "job_subrequest_budget",
+      "used": 218,
+      "maxActive": 4,
+      "checks": 101,
+      "denials": 109
+    },
+    {
+      "phase": 2,
+      "error": "job_subrequest_budget",
+      "used": 218,
+      "maxActive": 4,
+      "checks": 101,
+      "denials": 218
+    },
+    {
+      "phase": 3,
+      "error": "job_subrequest_budget",
+      "used": 216,
+      "maxActive": 4,
+      "checks": 101,
+      "denials": 326
+    },
+    {
+      "phase": 4,
+      "error": "job_subrequest_budget",
+      "used": 218,
+      "maxActive": 4,
+      "checks": 182,
+      "denials": 353
+    },
+    {
+      "phase": 5,
+      "done": true,
+      "used": 56,
+      "maxActive": 4,
+      "checks": 211,
+      "denials": 353
+    }
+  ],
+  "cold": {
+    "observations": 20694,
+    "unavailable": 0,
+    "sourceBudget": {
+      "attempted": 152,
+      "distinctSources": 152,
+      "limit": 256,
+      "exhausted": false
+    }
+  },
+  "postRestartProviderCalls": 0,
+  "original101PointersUnchanged": true,
+  "productionWrites": 0,
+  "realNewProviderRequests": 0,
+  "simulatedIngestionCheckTimes": "operational cache receipt timestamps at the fixed test clock, not original captured research receipts; originals retained separately"
+}

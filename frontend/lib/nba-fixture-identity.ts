@@ -8,6 +8,12 @@ const rosterAliases:Record<string,{official:string;aliases:string[]}>= {
  '4871145':{official:'Josh Giddey',aliases:['Joshua Giddey']},
  '5160992':{official:'Alex Sarr',aliases:['Alexandre Sarr']},
  '3138196':{official:'Cameron Johnson',aliases:['Cam Johnson']},
+ '4432848':{official:'Jaime Jaquez Jr.',aliases:['Jaime Jaquez']},
+ '5142620':{official:'Darius Acuff Jr.',aliases:['Darius Acuff']},
+ '4397688':{official:'Trey Murphy III',aliases:['Trey Murphy']},
+ '5101761':{official:'Mikel Brown Jr.',aliases:['Mikel Brown']},
+ '4432639':{official:'Jabari Smith Jr.',aliases:['Jabari Smith']},
+ '3936099':{official:'Derrick Jones Jr.',aliases:['Derrick Jones']},
 };
 export function nbaRosterNameKeys(row:{playerId?:unknown;playerName?:unknown}){
  const official=player(row.playerName),known=rosterAliases[fixture(row.playerId)];

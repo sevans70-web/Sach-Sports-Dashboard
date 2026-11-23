@@ -1,0 +1,48 @@
+{
+  "observedAt": "2026-11-23T19:48:56.251Z",
+  "object": "capture:nba",
+  "queryReadOnly": true,
+  "response": {
+    "result": {
+      "results": [
+        {
+          "columns": [
+            "versions",
+            "encoded_bytes"
+          ],
+          "rows": [
+            [
+              101,
+              764248
+            ]
+          ],
+          "meta": {
+            "rows_read": 101,
+            "rows_written": 0
+          }
+        },
+        {
+          "columns": [
+            "pointers",
+            "team_calendars",
+            "latest_verified"
+          ],
+          "rows": [
+            [
+              101,
+              0,
+              "2026-11-17T22:04:46.689002Z"
+            ]
+          ],
+          "meta": {
+            "rows_read": 101,
+            "rows_written": 0
+          }
+        }
+      ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+  }
+}

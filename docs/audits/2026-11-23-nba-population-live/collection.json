@@ -1,0 +1,2153 @@
+{
+  "requestLimit": 160,
+  "concurrencyLimit": 2,
+  "actualConcurrency": 1,
+  "deadlineSeconds": 240,
+  "startedAt": "2026-11-23T19:21:28.668354+00:00",
+  "requests": [
+    {
+      "sequence": 1,
+      "name": "population.ndjson",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=feed-census",
+      "startedAt": "2026-11-23T19:21:28.668369+00:00",
+      "status": 200,
+      "seconds": 3.444,
+      "bytes": 7653779,
+      "sha256": "4838d24c702310e02893e7d8b2806985e12a26ddeded4eda8c49f8f39cc9def8"
+    },
+    {
+      "sequence": 2,
+      "name": "scoreboard-2026-11-23.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=scoreboard&date=2026-11-23",
+      "startedAt": "2026-11-23T19:21:32.839586+00:00",
+      "status": 200,
+      "seconds": 0.193,
+      "bytes": 200014,
+      "sha256": "59b614689ae34058f9cfdb38552b5c22e3d41d44d8b376263d1ff5ab1150a68e",
+      "validation": {
+        "valid": true,
+        "games": 10
+      }
+    },
+    {
+      "sequence": 3,
+      "name": "summary-401910036.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910036",
+      "startedAt": "2026-11-23T19:21:33.108728+00:00",
+      "status": 200,
+      "seconds": 0.087,
+      "bytes": 29707,
+      "sha256": "fee268dbfee9a25ade7e22cb7ce8f4f4d16609394e49d7ca63c957384de3f3a5",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 4,
+      "name": "summary-401910037.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910037",
+      "startedAt": "2026-11-23T19:21:33.272970+00:00",
+      "status": 200,
+      "seconds": 0.124,
+      "bytes": 28481,
+      "sha256": "309df651647ef858fa9b0907e3d9aaff0aa896a2166326d5a7d692d314f5a402",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 5,
+      "name": "summary-401910038.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910038",
+      "startedAt": "2026-11-23T19:21:33.498077+00:00",
+      "status": 200,
+      "seconds": 0.104,
+      "bytes": 29850,
+      "sha256": "9bcd4935ba7c8d9371fe72a49fe8dfab43099ddfb880293ed5c7a7716fb11f46",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 6,
+      "name": "summary-401910039.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910039",
+      "startedAt": "2026-11-23T19:21:33.674655+00:00",
+      "status": 200,
+      "seconds": 0.1,
+      "bytes": 24615,
+      "sha256": "0d39daf4e048bbb3a3e5fe4465e8a1182c79105c8ca636ab5a8e0ad36307adeb",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 7,
+      "name": "summary-401910040.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910040",
+      "startedAt": "2026-11-23T19:21:33.853502+00:00",
+      "status": 200,
+      "seconds": 0.114,
+      "bytes": 23296,
+      "sha256": "2793c37d051606240301b77351d8519cc4a2de881e31570aa02dc02d548e2139",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 8,
+      "name": "summary-401910041.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910041",
+      "startedAt": "2026-11-23T19:21:34.062799+00:00",
+      "status": 200,
+      "seconds": 0.088,
+      "bytes": 26570,
+      "sha256": "c713f3ceee82dbf86a02952efb8333cf169bbd7f309e1d1a9ab8c75d1f1b3d4d",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 9,
+      "name": "summary-401910042.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910042",
+      "startedAt": "2026-11-23T19:21:34.215403+00:00",
+      "status": 200,
+      "seconds": 0.106,
+      "bytes": 24927,
+      "sha256": "42f96e77672774e7eb8be5207877363a43c146a2420e2de733443776c2939012",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 10,
+      "name": "summary-401910043.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910043",
+      "startedAt": "2026-11-23T19:21:34.395232+00:00",
+      "status": 200,
+      "seconds": 0.137,
+      "bytes": 21145,
+      "sha256": "1324d81d371164af7ed4b21b9206107d133ce0d0e182cb3532e6bebf0d3530e3",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 11,
+      "name": "summary-401910044.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910044",
+      "startedAt": "2026-11-23T19:21:34.606184+00:00",
+      "status": 200,
+      "seconds": 0.097,
+      "bytes": 24961,
+      "sha256": "0c49b4e323d960db9d67ece7b1083de0091ab9698db2d5eba617790d99402fb8",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 12,
+      "name": "summary-401910045.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910045",
+      "startedAt": "2026-11-23T19:21:34.772012+00:00",
+      "status": 200,
+      "seconds": 0.147,
+      "bytes": 26604,
+      "sha256": "9def6d986a7e4630d9551e5ec8266ee6e678952499f842f6f5ae7d385d8949d1",
+      "validation": {
+        "valid": true,
+        "pregame": true
+      }
+    },
+    {
+      "sequence": 13,
+      "name": "roster-10.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=10",
+      "startedAt": "2026-11-23T19:21:34.978158+00:00",
+      "status": 200,
+      "seconds": 0.094,
+      "bytes": 88365,
+      "sha256": "2948d934a0dcff57afd3c557e9673b532c0190e130d0bf309985c95179e66333",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 14,
+      "name": "roster-11.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=11",
+      "startedAt": "2026-11-23T19:21:35.129170+00:00",
+      "status": 200,
+      "seconds": 0.117,
+      "bytes": 90018,
+      "sha256": "798343dc10a7ae4c60f1ab076042213e7fd077d162a5027367996b3197d715d6",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 15,
+      "name": "roster-12.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=12",
+      "startedAt": "2026-11-23T19:21:35.298690+00:00",
+      "status": 200,
+      "seconds": 0.132,
+      "bytes": 100404,
+      "sha256": "13a392cb2b572a663b3366b9ba45c6da6a1f8e04b0735678782e5f693035acff",
+      "validation": {
+        "valid": true,
+        "players": 19
+      }
+    },
+    {
+      "sequence": 16,
+      "name": "roster-13.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=13",
+      "startedAt": "2026-11-23T19:21:35.496183+00:00",
+      "status": 200,
+      "seconds": 0.143,
+      "bytes": 93392,
+      "sha256": "40c87771a668e00e1a6343e43e770e9eceba2438bb2c2ed63d78787ca04b0e5e",
+      "validation": {
+        "valid": true,
+        "players": 19
+      }
+    },
+    {
+      "sequence": 17,
+      "name": "roster-15.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=15",
+      "startedAt": "2026-11-23T19:21:35.704911+00:00",
+      "status": 200,
+      "seconds": 0.178,
+      "bytes": 89360,
+      "sha256": "7e63ee28228c5114cffcde53ad07f1d3a45ac9fc922eb7cd63683afe844e1a5d",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 18,
+      "name": "roster-16.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=16",
+      "startedAt": "2026-11-23T19:21:35.952210+00:00",
+      "status": 200,
+      "seconds": 0.125,
+      "bytes": 83883,
+      "sha256": "3fc52c9c6580c03b038661f2ad9b475005cb613859db6fd5207bcd8664f7491a",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 19,
+      "name": "roster-17.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=17",
+      "startedAt": "2026-11-23T19:21:36.133874+00:00",
+      "status": 200,
+      "seconds": 0.136,
+      "bytes": 88426,
+      "sha256": "5bda0e92c6a1784f82144c458e693601acb5762ab51c53bbbff9f7ab4d7a68d8",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 20,
+      "name": "roster-20.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=20",
+      "startedAt": "2026-11-23T19:21:36.331990+00:00",
+      "status": 200,
+      "seconds": 0.142,
+      "bytes": 86382,
+      "sha256": "fcdc6b78c8e2367a6f8a8e8e3d1aeeff1c1b9366e46584ce313fc4c8d61f7341",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 21,
+      "name": "roster-21.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=21",
+      "startedAt": "2026-11-23T19:21:36.538604+00:00",
+      "status": 200,
+      "seconds": 0.131,
+      "bytes": 84824,
+      "sha256": "3e49a026b3205db5c53bb9375e36b83b92d70112315b5baa8419ec7b5e1289c6",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 22,
+      "name": "roster-22.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=22",
+      "startedAt": "2026-11-23T19:21:36.732701+00:00",
+      "status": 200,
+      "seconds": 0.094,
+      "bytes": 87422,
+      "sha256": "060e38e994c8fce847feee7d8daaa590356d7935af7b892c5adc1a103e9a251d",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 23,
+      "name": "roster-23.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=23",
+      "startedAt": "2026-11-23T19:21:36.879826+00:00",
+      "status": 200,
+      "seconds": 0.1,
+      "bytes": 86904,
+      "sha256": "5a0108ee2699cc7cb4107b3158c9e8a225f58ee298618d386ba22cf46a65a65d",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 24,
+      "name": "roster-24.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=24",
+      "startedAt": "2026-11-23T19:21:37.041811+00:00",
+      "status": 200,
+      "seconds": 0.131,
+      "bytes": 86665,
+      "sha256": "f470a9f6945a3427f3826c7a504eadee4d8db47002b429dab1e2c2f4e367aac2",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 25,
+      "name": "roster-25.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=25",
+      "startedAt": "2026-11-23T19:21:37.234922+00:00",
+      "status": 200,
+      "seconds": 0.096,
+      "bytes": 91328,
+      "sha256": "84cbae2f450b5f1719b008efb165b292e31357a29197e93fad3a150f69c129bf",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 26,
+      "name": "roster-26.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=26",
+      "startedAt": "2026-11-23T19:21:37.385921+00:00",
+      "status": 200,
+      "seconds": 0.114,
+      "bytes": 91632,
+      "sha256": "42dc79b68a71fd596eb9051eebef7d4c08e57233c50c528c51f42805d05eff75",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 27,
+      "name": "roster-28.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=28",
+      "startedAt": "2026-11-23T19:21:37.599656+00:00",
+      "status": 200,
+      "seconds": 0.122,
+      "bytes": 86203,
+      "sha256": "9e898d865fff9c51e1fc7726c21e29054363869e9e21aa6986fe7332b9aecee3",
+      "validation": {
+        "valid": true,
+        "players": 17
+      }
+    },
+    {
+      "sequence": 28,
+      "name": "roster-29.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=29",
+      "startedAt": "2026-11-23T19:21:37.783150+00:00",
+      "status": 200,
+      "seconds": 0.115,
+      "bytes": 90571,
+      "sha256": "ec81f142babebe545dcf2f55aa522725b730b6ce6b1c6e146af34b2c37030077",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 29,
+      "name": "roster-3.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=3",
+      "startedAt": "2026-11-23T19:21:37.969819+00:00",
+      "status": 200,
+      "seconds": 0.111,
+      "bytes": 93140,
+      "sha256": "93702cb957c520adeaf3a631cb3f14de615838683453c1af6808d6208843b894",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 30,
+      "name": "roster-30.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=30",
+      "startedAt": "2026-11-23T19:21:38.143966+00:00",
+      "status": 200,
+      "seconds": 0.102,
+      "bytes": 90908,
+      "sha256": "c8c0d4077c7641387c977a94b79f65693db5ac092295f9a2df44476a586fc5c6",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 31,
+      "name": "roster-4.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=4",
+      "startedAt": "2026-11-23T19:21:38.320198+00:00",
+      "status": 200,
+      "seconds": 0.162,
+      "bytes": 90014,
+      "sha256": "f8ac04ad7ef11e9803f082ff5f3e94d5754f57123e64ca59600383d145c3b548",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 32,
+      "name": "roster-5.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=roster&id=5",
+      "startedAt": "2026-11-23T19:21:38.605661+00:00",
+      "status": 200,
+      "seconds": 0.128,
+      "bytes": 88926,
+      "sha256": "5b0963641de9447cb9363a3a233db0fd2d5a769805e7ad2654b04401bd5c92b0",
+      "validation": {
+        "valid": true,
+        "players": 18
+      }
+    },
+    {
+      "sequence": 33,
+      "name": "team_schedule-10.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=10&season=2027",
+      "startedAt": "2026-11-23T19:21:38.801851+00:00",
+      "status": 200,
+      "seconds": 0.228,
+      "bytes": 927069,
+      "sha256": "102fe61eac8ceadc28d37894c00a00f4e99f5141fe66499e474c894270bbb9fa",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "12-5"
+      }
+    },
+    {
+      "sequence": 34,
+      "name": "team_schedule-11.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=11&season=2027",
+      "startedAt": "2026-11-23T19:21:39.118630+00:00",
+      "status": 200,
+      "seconds": 0.231,
+      "bytes": 929760,
+      "sha256": "679175bb2efbb8bae338fa2c9f88ba5538fbe417d8a78aa41dfe2abdc230242c",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "5-12"
+      }
+    },
+    {
+      "sequence": 35,
+      "name": "team_schedule-12.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=12&season=2027",
+      "startedAt": "2026-11-23T19:21:39.428502+00:00",
+      "status": 200,
+      "seconds": 0.273,
+      "bytes": 919659,
+      "sha256": "0c6b8f5785ecc60b3a2da7a58e6bcac6f2a40353a912bad9560cafe53515bbbc",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "4-11"
+      }
+    },
+    {
+      "sequence": 36,
+      "name": "team_schedule-13.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=13&season=2027",
+      "startedAt": "2026-11-23T19:21:39.779932+00:00",
+      "status": 200,
+      "seconds": 0.224,
+      "bytes": 953412,
+      "sha256": "b6d48260ff7d255ef4e2c787d68d3f4fbdaaf9ce6c11b0c0ef62047c6be78f18",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "14-3"
+      }
+    },
+    {
+      "sequence": 37,
+      "name": "team_schedule-15.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=15&season=2027",
+      "startedAt": "2026-11-23T19:21:40.087985+00:00",
+      "status": 200,
+      "seconds": 0.278,
+      "bytes": 941782,
+      "sha256": "7aedb2dc6a18eb0aef2850439b46f14350f01cb7372a51681c451ff5e0be6dd6",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "1-16"
+      }
+    },
+    {
+      "sequence": 38,
+      "name": "team_schedule-16.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=16&season=2027",
+      "startedAt": "2026-11-23T19:21:40.442061+00:00",
+      "status": 200,
+      "seconds": 0.261,
+      "bytes": 941533,
+      "sha256": "68413d9bd9220e41f7bf747eda8155f7bf1e7423ce76eb5134e22ec3b045adba",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "12-5"
+      }
+    },
+    {
+      "sequence": 39,
+      "name": "team_schedule-17.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=17&season=2027",
+      "startedAt": "2026-11-23T19:21:40.783315+00:00",
+      "status": 200,
+      "seconds": 0.171,
+      "bytes": 915654,
+      "sha256": "241e097645ec8e179136cc684d7b02624edde88745cd8fda0cf6da8cf707512c",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "3-12"
+      }
+    },
+    {
+      "sequence": 40,
+      "name": "team_schedule-20.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=20&season=2027",
+      "startedAt": "2026-11-23T19:21:41.041030+00:00",
+      "status": 200,
+      "seconds": 0.174,
+      "bytes": 929568,
+      "sha256": "f885f3b6218afff6bff1a880eef0fe8ad7a59b32a169538fd11fc414897ab6b8",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "14-3"
+      }
+    },
+    {
+      "sequence": 41,
+      "name": "team_schedule-21.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=21&season=2027",
+      "startedAt": "2026-11-23T19:21:41.288866+00:00",
+      "status": 200,
+      "seconds": 0.208,
+      "bytes": 930507,
+      "sha256": "24f118d2b9c47af983f7635674a499ada69fb1d341fa20b43978a583a8232f1b",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "8-7"
+      }
+    },
+    {
+      "sequence": 42,
+      "name": "team_schedule-22.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=22&season=2027",
+      "startedAt": "2026-11-23T19:21:41.626237+00:00",
+      "status": 200,
+      "seconds": 0.221,
+      "bytes": 939901,
+      "sha256": "ffecd06b4345d14045332c94e5b6f4d2f31739fd04ba934746853f79fafe5802",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "10-6"
+      }
+    },
+    {
+      "sequence": 43,
+      "name": "team_schedule-23.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=23&season=2027",
+      "startedAt": "2026-11-23T19:21:41.944881+00:00",
+      "status": 200,
+      "seconds": 0.206,
+      "bytes": 916807,
+      "sha256": "207a292de0d931b07e296e8018805cb7abd967aeb4455fa290d02781bcd2e33f",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "2-14"
+      }
+    },
+    {
+      "sequence": 44,
+      "name": "team_schedule-24.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=24&season=2027",
+      "startedAt": "2026-11-23T19:21:42.239597+00:00",
+      "status": 200,
+      "seconds": 0.191,
+      "bytes": 938822,
+      "sha256": "8a5b6d7d684e583d7534fa50611ebb6cb3fa3e42e6097dc4df974954c7fa662a",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "14-3"
+      }
+    },
+    {
+      "sequence": 45,
+      "name": "team_schedule-25.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=25&season=2027",
+      "startedAt": "2026-11-23T19:21:42.530909+00:00",
+      "status": 200,
+      "seconds": 0.136,
+      "bytes": 952934,
+      "sha256": "3ed7e3f20d4d47fb55f94564e3b8c5c348c961db5b3f44a5af725b263cde8e36",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "10-7"
+      }
+    },
+    {
+      "sequence": 46,
+      "name": "team_schedule-26.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=26&season=2027",
+      "startedAt": "2026-11-23T19:21:42.758665+00:00",
+      "status": 200,
+      "seconds": 0.193,
+      "bytes": 951073,
+      "sha256": "6466d916579897c470984738c9f1d5e575a8d0b4dfa49f236003cd6167e30d75",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "3-15"
+      }
+    },
+    {
+      "sequence": 47,
+      "name": "team_schedule-28.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=28&season=2027",
+      "startedAt": "2026-11-23T19:21:43.049077+00:00",
+      "status": 200,
+      "seconds": 0.204,
+      "bytes": 913877,
+      "sha256": "b894960829e41fd5e4be605818ecfd355c0b7efddbf04a3b20fcd30a7e04e6b8",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "6-10"
+      }
+    },
+    {
+      "sequence": 48,
+      "name": "team_schedule-29.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=29&season=2027",
+      "startedAt": "2026-11-23T19:21:43.331778+00:00",
+      "status": 200,
+      "seconds": 0.161,
+      "bytes": 932445,
+      "sha256": "dd70ab92e9bdc0aea8e5d507a4e19d3e41b4995a462b589b0117e4ab0a7606b6",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "12-5"
+      }
+    },
+    {
+      "sequence": 49,
+      "name": "team_schedule-3.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=3&season=2027",
+      "startedAt": "2026-11-23T19:21:43.575334+00:00",
+      "status": 200,
+      "seconds": 0.242,
+      "bytes": 953917,
+      "sha256": "ac10a7f19c324ee982be3a84c50fcb73733e0810cb12a1fe61a8d48b2148faad",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "5-13"
+      }
+    },
+    {
+      "sequence": 50,
+      "name": "team_schedule-30.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=30&season=2027",
+      "startedAt": "2026-11-23T19:21:43.914717+00:00",
+      "status": 200,
+      "seconds": 0.203,
+      "bytes": 912141,
+      "sha256": "d5bce84f9d3b6e3b2a7990ffb6cb5e24da6df65c2793c86bd9da52da53a91ff4",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "4-11"
+      }
+    },
+    {
+      "sequence": 51,
+      "name": "team_schedule-4.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=4&season=2027",
+      "startedAt": "2026-11-23T19:21:44.292571+00:00",
+      "status": 200,
+      "seconds": 0.181,
+      "bytes": 910389,
+      "sha256": "c06a891e1966fc011eae1e204a3616679b3e68a8937524f26d388c89aded106f",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "4-12"
+      }
+    },
+    {
+      "sequence": 52,
+      "name": "team_schedule-5.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=team_schedule&id=5&season=2027",
+      "startedAt": "2026-11-23T19:21:44.572011+00:00",
+      "status": 200,
+      "seconds": 0.245,
+      "bytes": 933856,
+      "sha256": "63770226b98b3236668a86176aac6686d2ed2080c8ad57c151706b1733eb589d",
+      "validation": {
+        "valid": true,
+        "events": 80,
+        "record": "9-8"
+      }
+    },
+    {
+      "sequence": 53,
+      "name": "summary-401909289.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909289",
+      "startedAt": "2026-11-23T19:21:45.001508+00:00",
+      "status": 200,
+      "seconds": 0.141,
+      "bytes": 43471,
+      "sha256": "10f9d0dfc74d64a1fbff499085ed5f6e604ac0b0cbba1d900074d199e2478357",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "247553e119a0867beb2323d5ec25af2ea46042ea76decfb4a273ba33a1b8f4d6"
+      }
+    },
+    {
+      "sequence": 54,
+      "name": "summary-401909290.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909290",
+      "startedAt": "2026-11-23T19:21:45.221660+00:00",
+      "status": 200,
+      "seconds": 0.147,
+      "bytes": 47688,
+      "sha256": "942a96b64299d339b85f2a61ae12f5b18a6e3ec285d4630b57b231c6c79678d5",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "9c8e66473016d1d53c6b72a5acc1f0a3b6404c4a48b579204bed5581ca2a8dc5"
+      }
+    },
+    {
+      "sequence": 55,
+      "name": "summary-401909291.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909291",
+      "startedAt": "2026-11-23T19:21:45.458903+00:00",
+      "status": 200,
+      "seconds": 0.187,
+      "bytes": 47825,
+      "sha256": "d5c9edf161dd8eec6f7335716a21fc3cde9d77a4992ae7446213e118195e9862",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "4b68bf2db1fb6d425e29e18245ed428e772bff6173a44b7662c1cbc39d5fa0bb"
+      }
+    },
+    {
+      "sequence": 56,
+      "name": "summary-401909293.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909293",
+      "startedAt": "2026-11-23T19:21:45.722418+00:00",
+      "status": 200,
+      "seconds": 0.129,
+      "bytes": 44720,
+      "sha256": "a199dd45632d212106ceb86e69934642043c2fb8e7b6de09f79a0d30e89b128a",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "ed988dfb948c6bec419e1d3c8eaa5eb1dc4ae305ce829815ebe90e3285692585"
+      }
+    },
+    {
+      "sequence": 57,
+      "name": "summary-401909297.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909297",
+      "startedAt": "2026-11-23T19:21:45.929114+00:00",
+      "status": 200,
+      "seconds": 0.125,
+      "bytes": 41404,
+      "sha256": "58686e3be8728012d787cb826cb7bfa4e373201b451e448865c792c8d12305a5",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "84ccb819b5851b82cc646099b8b510cae14eb9c350de64ab94c613ea0ab5cd48"
+      }
+    },
+    {
+      "sequence": 58,
+      "name": "summary-401909298.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909298",
+      "startedAt": "2026-11-23T19:21:46.137600+00:00",
+      "status": 200,
+      "seconds": 0.122,
+      "bytes": 40483,
+      "sha256": "d1aaadc7d3076e46a15f0dc51c3cf16cf5576a16fcb9aca78666f3d63eba8b86",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "26e1b434506bc3978ae840f3ff33dc0834d4477313f86729a0cdb47b7dd7fadc"
+      }
+    },
+    {
+      "sequence": 59,
+      "name": "summary-401909299.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909299",
+      "startedAt": "2026-11-23T19:21:46.341176+00:00",
+      "status": 200,
+      "seconds": 0.194,
+      "bytes": 45904,
+      "sha256": "ea1906b7000634c1590284e1360d1ba6cf963c983770ea826588ca767b981952",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "331b60ac5fda56083d52b2f67cdca390fea5d9081f96245bae772663610003b6"
+      }
+    },
+    {
+      "sequence": 60,
+      "name": "summary-401909300.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909300",
+      "startedAt": "2026-11-23T19:21:46.604264+00:00",
+      "status": 200,
+      "seconds": 0.115,
+      "bytes": 45702,
+      "sha256": "cf0f92a0b07a52b462254de9509adb522c94f9a0e13b79d421c5fd529c8eb640",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "1376b2da28e74c8b06219b30d5a1c65a82b67a225b788aac1d9d6496352f2d97"
+      }
+    },
+    {
+      "sequence": 61,
+      "name": "summary-401909301.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909301",
+      "startedAt": "2026-11-23T19:21:46.786677+00:00",
+      "status": 200,
+      "seconds": 0.158,
+      "bytes": 40873,
+      "sha256": "bf4ff03c1abdc4e563a8e25a2abb717d374fba0312ec1ad515cac6bc6789bc9d",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "ec2bee0fadfa5f79e78ef9090809d2fa8516b4370ffdf7aff041540e599f865c"
+      }
+    },
+    {
+      "sequence": 62,
+      "name": "summary-401909304.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909304",
+      "startedAt": "2026-11-23T19:21:47.014934+00:00",
+      "status": 200,
+      "seconds": 0.167,
+      "bytes": 42345,
+      "sha256": "24eb9d3e94d88295ab393bfe7c3c248410f1a138661a8ec948655d0e9e8094f5",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "e043d1435967ec176731aabc8bb2eec2991891cfd029fdf779e920028a87abe1"
+      }
+    },
+    {
+      "sequence": 63,
+      "name": "summary-401909305.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909305",
+      "startedAt": "2026-11-23T19:21:47.275107+00:00",
+      "status": 200,
+      "seconds": 0.172,
+      "bytes": 45333,
+      "sha256": "b18830b9feb0990bc9bfff97a8d2b1ab3029c0eb995026a8d9b35a9265887cfb",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "da7666399e995b06b3794eeffc2672700304cf5b9def370ef99dc45e907f7d4e"
+      }
+    },
+    {
+      "sequence": 64,
+      "name": "summary-401909306.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909306",
+      "startedAt": "2026-11-23T19:21:47.537148+00:00",
+      "status": 200,
+      "seconds": 0.122,
+      "bytes": 41290,
+      "sha256": "f4f3f271fa88ed5d7384ee7cf5f66c18623e5771170a9ca4bddd024a6699086b",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "3c89f34bb05bea6aa4dba42c1b1e56378fb92b04e6f0558b3bf6c907d432723b"
+      }
+    },
+    {
+      "sequence": 65,
+      "name": "summary-401909307.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909307",
+      "startedAt": "2026-11-23T19:21:47.728111+00:00",
+      "status": 200,
+      "seconds": 0.116,
+      "bytes": 43444,
+      "sha256": "7d7dc90180e21d46e549e7b847573b89844e775ef819f42b2a96a9b8a7bc8260",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "0cd0165cb282ec824d10ebf6258efa4a826f445143470cc8b3d18a7b38944e1a"
+      }
+    },
+    {
+      "sequence": 66,
+      "name": "summary-401909308.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909308",
+      "startedAt": "2026-11-23T19:21:47.917642+00:00",
+      "status": 200,
+      "seconds": 0.138,
+      "bytes": 44411,
+      "sha256": "79925bc90e4a9b04e19c74fed113479b03783d6a92f0dc7651f82f93535dcd2c",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "d531eee45c8ad6ae369fc7633660f0000519dca17f36f6ffa48aed9f802237d1"
+      }
+    },
+    {
+      "sequence": 67,
+      "name": "summary-401909309.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909309",
+      "startedAt": "2026-11-23T19:21:48.130892+00:00",
+      "status": 200,
+      "seconds": 0.157,
+      "bytes": 43816,
+      "sha256": "9ccd6bcf2250d434c6179c0fe59d1f96e6c8088e148e9959fc8b1ad66082eed7",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "f1bd60ef1f1416a8584c755f357989d698290b6760a6d5b6b92795c8258e3c92"
+      }
+    },
+    {
+      "sequence": 68,
+      "name": "summary-401909310.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909310",
+      "startedAt": "2026-11-23T19:21:48.371602+00:00",
+      "status": 200,
+      "seconds": 0.106,
+      "bytes": 44811,
+      "sha256": "f075414b73034892e19b532dd9bff618210139a3f1dc33c4829f5afa696b662e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "98ee1c8f8b1e459482243b870ed240568b72c85152d75e2a5b02f1e733b61167"
+      }
+    },
+    {
+      "sequence": 69,
+      "name": "summary-401909311.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909311",
+      "startedAt": "2026-11-23T19:21:48.552000+00:00",
+      "status": 200,
+      "seconds": 0.167,
+      "bytes": 41538,
+      "sha256": "526c9a99fecdd8409e9156e69508c096a0b87edda7df349b56f00b61761b1e43",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "eaf9a7dc83737eb0f4d82d1c0ff46dad53f202b4681e35bdaac7d9a42674af98"
+      }
+    },
+    {
+      "sequence": 70,
+      "name": "summary-401909312.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909312",
+      "startedAt": "2026-11-23T19:21:48.788913+00:00",
+      "status": 200,
+      "seconds": 0.155,
+      "bytes": 37042,
+      "sha256": "99bfb8408628e50cf43ac5da56298ff261e3c0639a993ef67c914adc8ebd6fa8",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "8992af920cb202d2073d5705d2a13471c3568b32c5629e12b8b9d4592f730ae5"
+      }
+    },
+    {
+      "sequence": 71,
+      "name": "summary-401909313.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909313",
+      "startedAt": "2026-11-23T19:21:49.017408+00:00",
+      "status": 200,
+      "seconds": 0.13,
+      "bytes": 39282,
+      "sha256": "8fe21fb37e4eca8b578b3b4dc58115773517dcc8273b7e9d80b1eee977760de2",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "feab623b55d291c6b95917f6dadd213258467125ebaccd3908db258ff40cdd90"
+      }
+    },
+    {
+      "sequence": 72,
+      "name": "summary-401909907.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909907",
+      "startedAt": "2026-11-23T19:21:49.217135+00:00",
+      "status": 200,
+      "seconds": 0.18,
+      "bytes": 42276,
+      "sha256": "10000c11f4712c2d22db89988be97d91c9b2c66c3a332472779ab234234eb702",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "63573eeff6833cfbd950d35dcaed54e041a8007e2358ec0ae9ffabf39ec2f3a8"
+      }
+    },
+    {
+      "sequence": 73,
+      "name": "summary-401909909.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909909",
+      "startedAt": "2026-11-23T19:21:49.462638+00:00",
+      "status": 200,
+      "seconds": 0.205,
+      "bytes": 45290,
+      "sha256": "bb489e64d9039ca7ee089ff4b2a12c2fab1f8daf380c8c3f843a00d4dee39abd",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "1c767754d4180cebc756896266c1e0669578efe6c46028e37204e1c3ddd455a6"
+      }
+    },
+    {
+      "sequence": 74,
+      "name": "summary-401909912.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909912",
+      "startedAt": "2026-11-23T19:21:49.736434+00:00",
+      "status": 200,
+      "seconds": 0.109,
+      "bytes": 46930,
+      "sha256": "dae88a0dc95e021bf10b222a053a13902468c9e05cd7f236747bae0ed654d7e4",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "2c065134a2bb53dc86340879d4e99cdf7e92d61fa50b396e16ba7de966c19590"
+      }
+    },
+    {
+      "sequence": 75,
+      "name": "summary-401909913.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909913",
+      "startedAt": "2026-11-23T19:21:49.915918+00:00",
+      "status": 200,
+      "seconds": 0.094,
+      "bytes": 43107,
+      "sha256": "8d6e900616cfe5b6ac9d2ffb9a346e61471ebc501f1ca71436efff8389e3292c",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "674652ab08d1dba3fe6b7be13d9e0ee9ee0632b3779f099408d2a7f660475e71"
+      }
+    },
+    {
+      "sequence": 76,
+      "name": "summary-401909914.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909914",
+      "startedAt": "2026-11-23T19:21:50.080870+00:00",
+      "status": 200,
+      "seconds": 0.189,
+      "bytes": 47300,
+      "sha256": "d5afd71357bc4d32ccd633f61bdcbace0ac92aeccdc9f8b3d056a106d7cdd757",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "b5101c7e7bbd6bdfa219297b15218f33aaa1432c11d8d71be53b6637046ecbaa"
+      }
+    },
+    {
+      "sequence": 77,
+      "name": "summary-401909915.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909915",
+      "startedAt": "2026-11-23T19:21:50.341075+00:00",
+      "status": 200,
+      "seconds": 0.157,
+      "bytes": 40614,
+      "sha256": "ca45e84ab3eda6102011e0433fd9902a9951eb2494cd02de45f274ec7c4e862b",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "b70efbf09f30c1b7df1e156ebb46013f58a72ea5c8f4e806201042894ec45c37"
+      }
+    },
+    {
+      "sequence": 78,
+      "name": "summary-401909916.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909916",
+      "startedAt": "2026-11-23T19:21:50.564997+00:00",
+      "status": 200,
+      "seconds": 0.198,
+      "bytes": 39792,
+      "sha256": "655315baaf1f339bb4eb1964a5c56eb1034deb3499201d79590c8a246423d347",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "0ed52709cbf169fb97b09e09fea52ae829267984d1e3a0ccb809197cd7248827"
+      }
+    },
+    {
+      "sequence": 79,
+      "name": "summary-401909919.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909919",
+      "startedAt": "2026-11-23T19:21:50.837145+00:00",
+      "status": 200,
+      "seconds": 0.152,
+      "bytes": 42503,
+      "sha256": "e02badbf9dcf0a9441fce46717353f2a3b992f770e1c9bb77cb17d1ac0cbed60",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "fb1f12ee50fa7a12db71c32bdb360199857b88c85b5db8957cc7d95f495090dc"
+      }
+    },
+    {
+      "sequence": 80,
+      "name": "summary-401909924.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909924",
+      "startedAt": "2026-11-23T19:21:51.058912+00:00",
+      "status": 200,
+      "seconds": 0.138,
+      "bytes": 39692,
+      "sha256": "2af4ce595e9158011b6d18987cb0231e494861d8a1ab7b6ed0478ce19942360e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "60bdbf3f2c533dc0394cf800384613b22a3ec1ffd508f3d0fff6519bd18d0a58"
+      }
+    },
+    {
+      "sequence": 81,
+      "name": "summary-401909927.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909927",
+      "startedAt": "2026-11-23T19:21:51.273386+00:00",
+      "status": 200,
+      "seconds": 0.149,
+      "bytes": 47966,
+      "sha256": "c1ea91f41db2c98f177c443627bc8201451406199c464d017cc998ded886e95f",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "de76a0a043ca0380b82c9b68d9e4e0588b4aef656a8839d06902368a46893da0"
+      }
+    },
+    {
+      "sequence": 82,
+      "name": "summary-401909928.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909928",
+      "startedAt": "2026-11-23T19:21:51.493302+00:00",
+      "status": 200,
+      "seconds": 0.191,
+      "bytes": 46100,
+      "sha256": "bb9fe63c9b6d36d9ea5fac1b4c0272f79015170666ef248dee1a94dfda6bd17e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "08e8d37df2b4ed12e696620f43a21f09699e60dbc0b567140111314617b1da16"
+      }
+    },
+    {
+      "sequence": 83,
+      "name": "summary-401909929.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909929",
+      "startedAt": "2026-11-23T19:21:51.761777+00:00",
+      "status": 200,
+      "seconds": 0.14,
+      "bytes": 43197,
+      "sha256": "17471be108330e1f362eec7f9fe76fb95c80fc8648bff441e9b39bc71d9cdc64",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "745c34825e2b52b5914bb9347d1e83b3c3dfa986009e603ff3c9d986c2933f3b"
+      }
+    },
+    {
+      "sequence": 84,
+      "name": "summary-401909930.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909930",
+      "startedAt": "2026-11-23T19:21:51.975461+00:00",
+      "status": 200,
+      "seconds": 0.148,
+      "bytes": 40290,
+      "sha256": "123233dd768633583747a24ac9c130e80e651d505c56f463e50840b82d215f1e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "56aa612b66a8651c54647e158de2b4dd282b2b3dffb810c91bbf0ec7c0e25886"
+      }
+    },
+    {
+      "sequence": 85,
+      "name": "summary-401909935.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909935",
+      "startedAt": "2026-11-23T19:21:52.210216+00:00",
+      "status": 200,
+      "seconds": 0.159,
+      "bytes": 40531,
+      "sha256": "fc26915f0e2efc3ef56461008b0cfb35bcc52e867f6a36c00b9e231e3ea87922",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "516a050068f2f6cbe066703191339e273c96574e10f08d9bec663cfed69fa24f"
+      }
+    },
+    {
+      "sequence": 86,
+      "name": "summary-401909936.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909936",
+      "startedAt": "2026-11-23T19:21:52.472571+00:00",
+      "status": 200,
+      "seconds": 0.125,
+      "bytes": 40640,
+      "sha256": "f42936c734c906685bd9398491335650a3426d8127c4f714cfdd6c5d56d35240",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "2acb9823539df1ca3a946438d341f0b4bfc6d98d7de5e986e84b3dec1cccf109"
+      }
+    },
+    {
+      "sequence": 87,
+      "name": "summary-401909938.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909938",
+      "startedAt": "2026-11-23T19:21:52.675470+00:00",
+      "status": 200,
+      "seconds": 0.125,
+      "bytes": 43670,
+      "sha256": "2b52f15b7621a5ae2ae52c75267b496d1f2e42522717bbef628008404fbb1b95",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "bc7a2438d6bd8905788e958e64dc6b0343a934d84c795cf0ff0df89958d0afc3"
+      }
+    },
+    {
+      "sequence": 88,
+      "name": "summary-401909939.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909939",
+      "startedAt": "2026-11-23T19:21:52.863911+00:00",
+      "status": 200,
+      "seconds": 0.141,
+      "bytes": 41337,
+      "sha256": "8a461e0873dca5f921eac9d7790cd8199f331c62ac0dfe3b3f9e518c848223fa",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "7876f66e278e34614060a3467e4417c2eaefbc98865a3c874eb14a5fbcd3a2bf"
+      }
+    },
+    {
+      "sequence": 89,
+      "name": "summary-401909941.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909941",
+      "startedAt": "2026-11-23T19:21:53.110419+00:00",
+      "status": 200,
+      "seconds": 0.144,
+      "bytes": 44452,
+      "sha256": "ccd968cfebb6f1275694866fdaa236d6e36dc1a71839ca1914eb5fe8f5d9893e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "6719ed69d99760e45f95a22e32cbcaaf40e913885e1e360d5093799bc011c593"
+      }
+    },
+    {
+      "sequence": 90,
+      "name": "summary-401909943.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909943",
+      "startedAt": "2026-11-23T19:21:53.322572+00:00",
+      "status": 200,
+      "seconds": 0.122,
+      "bytes": 38632,
+      "sha256": "65041a2cd5530a1b1937d036a4b6c5d54625305c35f2496d723654be1f669f8a",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "4b3107a290714c903d27f9f86441126f8bf787647e96f63bf400b9bb896396ef"
+      }
+    },
+    {
+      "sequence": 91,
+      "name": "summary-401909945.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909945",
+      "startedAt": "2026-11-23T19:21:53.506049+00:00",
+      "status": 200,
+      "seconds": 0.142,
+      "bytes": 44467,
+      "sha256": "91a99e714f02cfa62948148192a1ef1cfa812edbbbb846f8a1c1c42479e14e91",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "3fc8d7d6f216911a1c5e189274b374d6792b7e76c225dde47846a69fa153196b"
+      }
+    },
+    {
+      "sequence": 92,
+      "name": "summary-401909948.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909948",
+      "startedAt": "2026-11-23T19:21:53.708467+00:00",
+      "status": 200,
+      "seconds": 0.152,
+      "bytes": 42981,
+      "sha256": "28d12f420499672ee05be41b62a15ec761698d5a20794a488af8d3adb993ff36",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "e61fc420f63df74b8b4e37d9cde7b4ac56c4304d6ee8aaa930814bc244f63471"
+      }
+    },
+    {
+      "sequence": 93,
+      "name": "summary-401909949.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909949",
+      "startedAt": "2026-11-23T19:21:53.929319+00:00",
+      "status": 200,
+      "seconds": 0.203,
+      "bytes": 38064,
+      "sha256": "dbcf3547665b93a0f66973fd6d0e6a015dce6903437725f385ab1ece055d49e2",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "a7021faa1bd66a038760da51a5f68215190b4f9e3ce659b7de4ace04c4180d35"
+      }
+    },
+    {
+      "sequence": 94,
+      "name": "summary-401909950.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909950",
+      "startedAt": "2026-11-23T19:21:54.203283+00:00",
+      "status": 200,
+      "seconds": 0.24,
+      "bytes": 44048,
+      "sha256": "86a8a1fe2f39fb3d48cd449f92fea4fafb282bb59aeafd6b7adb19746e868ed5",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "f2bab17d9521f8a340e86d6256008b90043be764b4def764c99bdc9ae3dab8c3"
+      }
+    },
+    {
+      "sequence": 95,
+      "name": "summary-401909951.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909951",
+      "startedAt": "2026-11-23T19:21:54.514147+00:00",
+      "status": 200,
+      "seconds": 0.154,
+      "bytes": 38560,
+      "sha256": "55240e01af23d35d3e357a5193cfe9a4dd95ea7a31047643e202e4bf908321d3",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "e1575e049bcc857c8ab27b87b1b0d7997fad4396c45bb6f1dea5cee69698e1c7"
+      }
+    },
+    {
+      "sequence": 96,
+      "name": "summary-401909956.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909956",
+      "startedAt": "2026-11-23T19:21:54.764530+00:00",
+      "status": 200,
+      "seconds": 0.125,
+      "bytes": 47055,
+      "sha256": "dfef62d38b4cefb3b34254b4c3852d083a24c87329cfcefa4b1502fa4444548e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "ae73697d3714ca2af85b47258bcf033262561498974d2ada3b16dfc8a8dedd9d"
+      }
+    },
+    {
+      "sequence": 97,
+      "name": "summary-401909957.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909957",
+      "startedAt": "2026-11-23T19:21:54.958779+00:00",
+      "status": 200,
+      "seconds": 0.146,
+      "bytes": 38394,
+      "sha256": "9d928eabd96329058580eac1576acc1db45eba6a1da753737421670d458495f6",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "b5d18e370d4582918e876b5d01bf225eb257ab75b6c456c8b54bf009426ebe44"
+      }
+    },
+    {
+      "sequence": 98,
+      "name": "summary-401909959.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909959",
+      "startedAt": "2026-11-23T19:21:55.170447+00:00",
+      "status": 200,
+      "seconds": 0.135,
+      "bytes": 45848,
+      "sha256": "ce5c8229fa68ff84c664819e68454de97661c61f494b541df9c655f9ea44e109",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "a4c526806571c0f5d5ad2e4304dbec4053fc3ff886b6f0c6b841faba69e88647"
+      }
+    },
+    {
+      "sequence": 99,
+      "name": "summary-401909961.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909961",
+      "startedAt": "2026-11-23T19:21:55.369417+00:00",
+      "status": 200,
+      "seconds": 0.137,
+      "bytes": 43710,
+      "sha256": "c08d8c7280b23a01134583f963d4dee191284b372349573344d4bcffbe4b95d1",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "f4d8bc9e2bc10eb2a39c9cc36e1cbeaa173de926480ef92a05e6d7da1d8c725f"
+      }
+    },
+    {
+      "sequence": 100,
+      "name": "summary-401909962.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909962",
+      "startedAt": "2026-11-23T19:21:55.579739+00:00",
+      "status": 200,
+      "seconds": 0.158,
+      "bytes": 38991,
+      "sha256": "a30d9fa8ec850289f7726d1c0f727f3048c2f4cafde72378c1432d0bf462ca6d",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "e9d53f3b90a7c729bd51c03a9084b98d9ad1383be6dc63893aa94815bb0bc22f"
+      }
+    },
+    {
+      "sequence": 101,
+      "name": "summary-401909963.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909963",
+      "startedAt": "2026-11-23T19:21:55.806658+00:00",
+      "status": 200,
+      "seconds": 0.131,
+      "bytes": 42109,
+      "sha256": "40a423c83bd71d131f03ce2d102f886315d99b43998c1048a7585987f1c47493",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "2e31c55f36fc3e3693a249138ea1639af0701af347af23a7ef5e390fc7f9abe1"
+      }
+    },
+    {
+      "sequence": 102,
+      "name": "summary-401909964.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909964",
+      "startedAt": "2026-11-23T19:21:56.008642+00:00",
+      "status": 200,
+      "seconds": 0.143,
+      "bytes": 40038,
+      "sha256": "f8a0473026e64da951cc5e7418cb13eeabd24b15fd061d39016d007e2bcbee30",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "a1ece9ca29704f242a6a08d7dfce913cf62f7f1c4fca4e75bc5eb7e0bc94dfe0"
+      }
+    },
+    {
+      "sequence": 103,
+      "name": "summary-401909966.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909966",
+      "startedAt": "2026-11-23T19:21:56.230460+00:00",
+      "status": 200,
+      "seconds": 0.121,
+      "bytes": 45585,
+      "sha256": "3f835f0be96553db6f464958cc27e649013f90cb41fc75b5c2ace1637a5bb958",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "c2e9d6dfb1031245e6e51c1823578140f92f2e129ab63388b2fbce423f35bf09"
+      }
+    },
+    {
+      "sequence": 104,
+      "name": "summary-401909970.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909970",
+      "startedAt": "2026-11-23T19:21:56.421810+00:00",
+      "status": 200,
+      "seconds": 0.12,
+      "bytes": 43895,
+      "sha256": "868a6ebd7f4d6eb52d38ea022130ff14d310c34a0987c953fe338822de99bcff",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "e5dc858764ae7c0a916c375f3266f2b2c50ce1420b50bb6646ef73571e31bb79"
+      }
+    },
+    {
+      "sequence": 105,
+      "name": "summary-401909972.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909972",
+      "startedAt": "2026-11-23T19:21:56.621289+00:00",
+      "status": 200,
+      "seconds": 0.174,
+      "bytes": 40878,
+      "sha256": "e1e73c75e03fdfcb5c0c22fceffc47c8ce1775096156b0c872fd53adb109ec0b",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "1e4aba4158b6112ce9f1af7d5ccdbe68ba391f148971e47c1436af64425324d2"
+      }
+    },
+    {
+      "sequence": 106,
+      "name": "summary-401909973.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909973",
+      "startedAt": "2026-11-23T19:21:56.867771+00:00",
+      "status": 200,
+      "seconds": 0.248,
+      "bytes": 44061,
+      "sha256": "55970218629616e1aa4e093f447aa3f480995b6e7df22cef02e664098daffe65",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "7af0427721a27f5f0f54ff32e8dd75362fc5e89eaf952adbf0b83d86a5226228"
+      }
+    },
+    {
+      "sequence": 107,
+      "name": "summary-401909974.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909974",
+      "startedAt": "2026-11-23T19:21:57.203919+00:00",
+      "status": 200,
+      "seconds": 0.223,
+      "bytes": 42606,
+      "sha256": "f717371413027c37538844946ac2ee3787614b47f802deed2a341423f9a9b902",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "85f1cc1f7c9aece2b9000dee0144ed0bf22ff2103fe4f1f01dcc670b6a81b7b3"
+      }
+    },
+    {
+      "sequence": 108,
+      "name": "summary-401909980.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909980",
+      "startedAt": "2026-11-23T19:21:57.509870+00:00",
+      "status": 200,
+      "seconds": 0.139,
+      "bytes": 41331,
+      "sha256": "55250696b2965cd030968c54ba222d9c0e5afa9013dcf898da86842e2c10e404",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "7b6ee2542d4b354b0d96ca59ae4bfc44018e359b1932e7fa4bcf8babb6d911f8"
+      }
+    },
+    {
+      "sequence": 109,
+      "name": "summary-401909981.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909981",
+      "startedAt": "2026-11-23T19:21:57.712401+00:00",
+      "status": 200,
+      "seconds": 0.137,
+      "bytes": 43251,
+      "sha256": "b24a4194c14ba784b2b576eff8abb338abca395d8dcd9077353c566ac3d1b937",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "91f3a85e2b4e366835ce9f73de0e9bf310ae5c58693d990cb0ae2edc9ee2702a"
+      }
+    },
+    {
+      "sequence": 110,
+      "name": "summary-401909983.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909983",
+      "startedAt": "2026-11-23T19:21:57.917895+00:00",
+      "status": 200,
+      "seconds": 0.136,
+      "bytes": 42957,
+      "sha256": "68b892e6f787768938e8397565ef38616d835b6f8487c709e081e6cb5aaad79c",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "3931c2464759001beebb8cb058f796da34eff1fe1a92915a724d0369bceee0e3"
+      }
+    },
+    {
+      "sequence": 111,
+      "name": "summary-401909985.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909985",
+      "startedAt": "2026-11-23T19:21:58.166253+00:00",
+      "status": 200,
+      "seconds": 0.156,
+      "bytes": 45808,
+      "sha256": "a30ac62630cd0218ef371e6fdd901bb3bcf6b9160f1dcf7df85071d9cb850ab9",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "368147e49948093ed0284e55f679b0b4a7552e580edce58bc4c064eb624ad865"
+      }
+    },
+    {
+      "sequence": 112,
+      "name": "summary-401909990.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909990",
+      "startedAt": "2026-11-23T19:21:58.397992+00:00",
+      "status": 200,
+      "seconds": 0.118,
+      "bytes": 45182,
+      "sha256": "d820efb86af15386446b472913dc2f139e776046272dafda9e2d7b50090edae8",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "542d998abb0a36a1f988c07f4003996d731ef6bc10865be777ea52a65588cb31"
+      }
+    },
+    {
+      "sequence": 113,
+      "name": "summary-401909991.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909991",
+      "startedAt": "2026-11-23T19:21:58.600125+00:00",
+      "status": 200,
+      "seconds": 0.158,
+      "bytes": 40155,
+      "sha256": "72811e8e8cf47c24197888c868d565644c31a266737062fe824a122d089d7659",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "43b54555c83bd54109b3324a5f1e09e3b2844c8b848a34f4c082423478eec56b"
+      }
+    },
+    {
+      "sequence": 114,
+      "name": "summary-401909992.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909992",
+      "startedAt": "2026-11-23T19:21:58.855059+00:00",
+      "status": 200,
+      "seconds": 0.127,
+      "bytes": 40077,
+      "sha256": "ebd3f5c12c3fc15a02e09ce1dc92390b65be77021129b575487eb7df7a2f02a3",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "65bfdb4082b3324291968ac0d19fd25fad3cc6f908e347d62aa9f14e50c868f1"
+      }
+    },
+    {
+      "sequence": 115,
+      "name": "summary-401909993.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909993",
+      "startedAt": "2026-11-23T19:21:59.055770+00:00",
+      "status": 200,
+      "seconds": 0.139,
+      "bytes": 42395,
+      "sha256": "50699a4b0358ec20274fb7c3b5955a1362bc4fb3ca7c7dca444b93d2d8faf939",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "46ea1434834480779f84e463b19b3cadecf86d36bece6b4664ffb0fe816faebd"
+      }
+    },
+    {
+      "sequence": 116,
+      "name": "summary-401909995.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909995",
+      "startedAt": "2026-11-23T19:21:59.268591+00:00",
+      "status": 200,
+      "seconds": 0.183,
+      "bytes": 43302,
+      "sha256": "048acaa5fffab18563517951b9730fa10f21913cc2c05ed97be33420470f9178",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "3f56b589d089ca9cdb63bb065510fbd4608088356b6a32fc05b5fa4028e4b81c"
+      }
+    },
+    {
+      "sequence": 117,
+      "name": "summary-401909996.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909996",
+      "startedAt": "2026-11-23T19:21:59.531536+00:00",
+      "status": 200,
+      "seconds": 0.136,
+      "bytes": 45672,
+      "sha256": "3c5e47db335ac5f1f6917a4639e396bce54680890b554c6593f9a8ad9ae5b2b5",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "43d8ffdf3952a8c1a99bf1c581f947e6be73a7dd480d069bab4dd054d06d015b"
+      }
+    },
+    {
+      "sequence": 118,
+      "name": "summary-401909997.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909997",
+      "startedAt": "2026-11-23T19:21:59.753342+00:00",
+      "status": 200,
+      "seconds": 0.097,
+      "bytes": 41526,
+      "sha256": "80e638a2d17589d63ae752543105346f54269dfb416e83850d39dba70679e59f",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "ebb542eaf891d3d286f9bb09d46bed6248407346f21ceb6be6de6d0e3bc6aa7c"
+      }
+    },
+    {
+      "sequence": 119,
+      "name": "summary-401909998.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909998",
+      "startedAt": "2026-11-23T19:21:59.949132+00:00",
+      "status": 200,
+      "seconds": 0.145,
+      "bytes": 38379,
+      "sha256": "c5142799bd52437bc55ad3f25f675fc03adbe361bb9b37945d3a355dd2488d6a",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "161b4d36825533ea44ae22b57c096a4c3e43971f343736ae0a775fe03ad9823c"
+      }
+    },
+    {
+      "sequence": 120,
+      "name": "summary-401909999.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401909999",
+      "startedAt": "2026-11-23T19:22:00.198125+00:00",
+      "status": 200,
+      "seconds": 0.122,
+      "bytes": 43552,
+      "sha256": "e0ac4190b5bd4a474e8a5fa83917f3d348d1327f5517f022f06a88acd6af9cac",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "fc743edab87c59a39608c76aa5d842c8bb167411a606bee2fa9ccb9c197c8ff5"
+      }
+    },
+    {
+      "sequence": 121,
+      "name": "summary-401910000.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910000",
+      "startedAt": "2026-11-23T19:22:00.414909+00:00",
+      "status": 200,
+      "seconds": 0.15,
+      "bytes": 45725,
+      "sha256": "40f06dc681be6ae7452e6dc0e920357557d0b9034c1fa4b8d4b7a4a127d1054d",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "d9a4f0ca87675c451c5f3c4de76d9c558ff1b123efee1dc7c49515d84fb4955e"
+      }
+    },
+    {
+      "sequence": 122,
+      "name": "summary-401910001.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910001",
+      "startedAt": "2026-11-23T19:22:00.652111+00:00",
+      "status": 200,
+      "seconds": 0.161,
+      "bytes": 39401,
+      "sha256": "4f644bd65fdec203c7350092714128e572e31f60a9af9d12cc4a265b50749323",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "9bcf712cf9b3f390f7764752f3ce6a2a1983a0f8805ad4ce316550fb605aa097"
+      }
+    },
+    {
+      "sequence": 123,
+      "name": "summary-401910002.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910002",
+      "startedAt": "2026-11-23T19:22:00.882094+00:00",
+      "status": 200,
+      "seconds": 0.129,
+      "bytes": 45051,
+      "sha256": "7a6200396e22f94bc4946334633b7c60836fd20cede9d30e4bf4815060dc6d03",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "f4592e650da5a8949e73cdcca98efb5c17ef1142027e96ff184c5da3ec6816a9"
+      }
+    },
+    {
+      "sequence": 124,
+      "name": "summary-401910003.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910003",
+      "startedAt": "2026-11-23T19:22:01.083587+00:00",
+      "status": 200,
+      "seconds": 0.152,
+      "bytes": 43030,
+      "sha256": "d781f2381b1b76534cf6277fda6888ee3e39385e8261d0934637900595bfd4e3",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "00093323bcb9c0466b20cd48370fd785309288b8dab10fc8a5f1b9c5bad40e5c"
+      }
+    },
+    {
+      "sequence": 125,
+      "name": "summary-401910004.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910004",
+      "startedAt": "2026-11-23T19:22:01.306965+00:00",
+      "status": 200,
+      "seconds": 0.184,
+      "bytes": 43335,
+      "sha256": "aa9a7b7d8e55a116461c5b89a3829a960a5b04e9240bc56d12798eadb2829743",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "6887ad4964ac73cb7d53dfc9a0f09550918b34fb8f63262f833070211b4f3d9c"
+      }
+    },
+    {
+      "sequence": 126,
+      "name": "summary-401910005.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910005",
+      "startedAt": "2026-11-23T19:22:01.570056+00:00",
+      "status": 200,
+      "seconds": 0.144,
+      "bytes": 42651,
+      "sha256": "3c7ba117bef9392ec59b5f1463335389e0ffb25feec68e9d70b33944879ac89b",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "961c0ba444add454229a1fdb24aa94285e2a7481c15802a472e53c7e0b6504e6"
+      }
+    },
+    {
+      "sequence": 127,
+      "name": "summary-401910006.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910006",
+      "startedAt": "2026-11-23T19:22:01.786142+00:00",
+      "status": 200,
+      "seconds": 0.124,
+      "bytes": 41923,
+      "sha256": "529514f272e70f5144a6173c976b2e3fc48dcc11da37cef1729b3a5b1ced678c",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "ce38ba4db442ca09c24a2091c669f4fc07a178af1215c4eb7c4aaaa12933692e"
+      }
+    },
+    {
+      "sequence": 128,
+      "name": "summary-401910007.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910007",
+      "startedAt": "2026-11-23T19:22:01.971939+00:00",
+      "status": 200,
+      "seconds": 0.122,
+      "bytes": 43762,
+      "sha256": "101870b0991e70e81063f0611bd8fb002e0a321305011f7e059e51ae2448924b",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "75136b5f07cf4067bd972da1231d3a2e6f6f769c5993a2cf276792fd27dbe0cd"
+      }
+    },
+    {
+      "sequence": 129,
+      "name": "summary-401910008.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910008",
+      "startedAt": "2026-11-23T19:22:02.173078+00:00",
+      "status": 200,
+      "seconds": 0.112,
+      "bytes": 42000,
+      "sha256": "0f250a15895ca2cf4fdfd45bdc4feed60fc55b477add4e70a55f08c88a4fe6f3",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "08607b1ad3f8542aeb79cccda6549b3bcc65923612872a4b09cb2619c3432e88"
+      }
+    },
+    {
+      "sequence": 130,
+      "name": "summary-401910009.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910009",
+      "startedAt": "2026-11-23T19:22:02.357903+00:00",
+      "status": 200,
+      "seconds": 0.132,
+      "bytes": 37923,
+      "sha256": "fbac2a609fb54c407aaabf0e29d10a96ece5bd763076d10e6e0ad57b01045607",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "7ef16283da90dec4b7ad33e4f96cec7aaa23ea45288eab581d182b36cda26a48"
+      }
+    },
+    {
+      "sequence": 131,
+      "name": "summary-401910010.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910010",
+      "startedAt": "2026-11-23T19:22:02.556582+00:00",
+      "status": 200,
+      "seconds": 0.113,
+      "bytes": 44266,
+      "sha256": "4b0e9d4b483bfa0a6109e53d063dc4d002b6dff8516e55ac2903e287ed2709e7",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "7b7212b8a232b6cb2005faa6039d68563911521d8773c04c17d5d80fd06c362f"
+      }
+    },
+    {
+      "sequence": 132,
+      "name": "summary-401910011.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910011",
+      "startedAt": "2026-11-23T19:22:02.741104+00:00",
+      "status": 200,
+      "seconds": 0.124,
+      "bytes": 41181,
+      "sha256": "366169e8fc4a5b4c8a712aa1cb52c28b3d2e37ce19020761e6bbd9b618528378",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "35bf8ef8cc4d6c9cddf4f0cfb1f7486f21bffe1c4c08bce0afa81e19f6668007"
+      }
+    },
+    {
+      "sequence": 133,
+      "name": "summary-401910012.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910012",
+      "startedAt": "2026-11-23T19:22:02.943595+00:00",
+      "status": 200,
+      "seconds": 0.115,
+      "bytes": 45660,
+      "sha256": "a7ba42a46994d5d16441df61b875cdbc896fd424080c3e12544dbb24e035a02e",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "49e4eff231f779cc172eae37ae7983b748d8c110289354763348573817f4a499"
+      }
+    },
+    {
+      "sequence": 134,
+      "name": "summary-401910013.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910013",
+      "startedAt": "2026-11-23T19:22:03.162921+00:00",
+      "status": 200,
+      "seconds": 0.117,
+      "bytes": 43836,
+      "sha256": "09ffcdab74e179a23b5e7c629c792d4691c1e9cd62b9ea6bf53049012fed55d1",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "beb805e50ecd0a0b418a25561200ac8563bc6e69f4e751161ff32f677760d895"
+      }
+    },
+    {
+      "sequence": 135,
+      "name": "summary-401910014.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910014",
+      "startedAt": "2026-11-23T19:22:03.346466+00:00",
+      "status": 200,
+      "seconds": 0.095,
+      "bytes": 45294,
+      "sha256": "1212383186d45d0c45178262232a385483bc479c4b5cb12025927cd4322bedb0",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "c48ae453b6019a0ddec4ed6172a411796bc9e4b5d60a9d513fb8cfdab676dafe"
+      }
+    },
+    {
+      "sequence": 136,
+      "name": "summary-401910017.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910017",
+      "startedAt": "2026-11-23T19:22:03.545379+00:00",
+      "status": 200,
+      "seconds": 0.14,
+      "bytes": 42989,
+      "sha256": "ab1ee483f29d3a7d346a063894166b4a295b29b8a9b30ee1ea18e38364dd9523",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "a9023710d67cebdca924b71028f6af6968e417b5eb264c43f7e0fc0356a8e95f"
+      }
+    },
+    {
+      "sequence": 137,
+      "name": "summary-401910018.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910018",
+      "startedAt": "2026-11-23T19:22:03.744788+00:00",
+      "status": 200,
+      "seconds": 0.103,
+      "bytes": 39609,
+      "sha256": "5bcc2374d4f6df535ceb70d9980882ea3a9d988ed660cdc243442211b81811f4",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "5ec66dd336b24fa64f7a1be3a70b187e465372727e0cc4cbd58f41cd803cbaab"
+      }
+    },
+    {
+      "sequence": 138,
+      "name": "summary-401910019.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910019",
+      "startedAt": "2026-11-23T19:22:03.911953+00:00",
+      "status": 200,
+      "seconds": 0.113,
+      "bytes": 46222,
+      "sha256": "90d7dacbf0bde54cd6521a00d48be8c6491055715d4f66d0be7f8dbbef857733",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "1de07cb07b8bffa5e5cdec48b3f3fcca72cf4ee8ebe3fdc1d56015430dc09789"
+      }
+    },
+    {
+      "sequence": 139,
+      "name": "summary-401910020.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910020",
+      "startedAt": "2026-11-23T19:22:04.088840+00:00",
+      "status": 200,
+      "seconds": 0.137,
+      "bytes": 40974,
+      "sha256": "cab3aa16a2b8b38a58412c65f13de81b8c1cf53d6e9bf1633b1c6d3815620bfa",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "cb67ef26172583970b5aad98a369f75c540e9cf109be0e3dfd49b694499d6a1f"
+      }
+    },
+    {
+      "sequence": 140,
+      "name": "summary-401910021.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910021",
+      "startedAt": "2026-11-23T19:22:04.318060+00:00",
+      "status": 200,
+      "seconds": 0.141,
+      "bytes": 42823,
+      "sha256": "dce909e308b9260a7b745b9bc6eada32286d849ebd841e8874fafe26a70570e4",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "0cd57bf557129370e952ad40a7221d35e8323565efc57b118abcb1e73fe483d2"
+      }
+    },
+    {
+      "sequence": 141,
+      "name": "summary-401910022.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910022",
+      "startedAt": "2026-11-23T19:22:04.530469+00:00",
+      "status": 200,
+      "seconds": 0.114,
+      "bytes": 43828,
+      "sha256": "ca728e92173def303c874ccf1d5bccc7f13ee0da5a5efe13357e55aecea119c6",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "4e6160d3ed6e652353f40233003133c69c2c836bb6fe03881d18f02af2f1ac59"
+      }
+    },
+    {
+      "sequence": 142,
+      "name": "summary-401910023.json",
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/market-coverage?sport=nba&mode=source-census&kind=summary&id=401910023",
+      "startedAt": "2026-11-23T19:22:04.713359+00:00",
+      "status": 200,
+      "seconds": 0.15,
+      "bytes": 40498,
+      "sha256": "9e39832d79ec9fae250c027b8a4f063b23a3236e2e36f8c90779fff6f5202607",
+      "validation": {
+        "valid": true,
+        "kind": "fixture",
+        "sha256": "c3d7b28fc8e0c35f2a7e6eb1879f1e7b000d08115a2a8ec1c058a6e13437f209"
+      }
+    }
+  ],
+  "productionWrites": 0,
+  "status": "source_collection_complete",
+  "elapsedSeconds": 36.26,
+  "newRequests": 142,
+  "population": {
+    "verified": true,
+    "offers": 8239,
+    "matchedByMarket": {
+      "points": 1439,
+      "rebounds": 1320,
+      "assists": 1004,
+      "threes_made": 1255,
+      "pts_rebs_asts": 1111,
+      "pts_rebs": 1157,
+      "pts_asts": 953
+    },
+    "snapshot": "f0a256b8e4693ac8b55727f7266a13210ab9e2f8b324649e0d60e5a400b6c917",
+    "offersSha256": "5ab46e5642a2acb368a936ddcbeb4fbda12a872cc8ba20beaa51b8a3009e438d",
+    "forecastEligibilityVerified": false
+  },
+  "decisionClock": "2026-11-23T19:21:29.776Z",
+  "day": "2026-11-23",
+  "officialGames": 10,
+  "targetTeams": [
+    "10",
+    "11",
+    "12",
+    "13",
+    "15",
+    "16",
+    "17",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "28",
+    "29",
+    "3",
+    "30",
+    "4",
+    "5"
+  ],
+  "seasons": [
+    "2027"
+  ],
+  "requiredFinalFixtures": 132,
+  "retainedFinalsReused": 42
+}

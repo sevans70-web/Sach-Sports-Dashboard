@@ -1,0 +1,85 @@
+{
+  "observedAt": "2026-11-23T19:46:36.844Z",
+  "dashboard": {
+    "id": "907bf0e9-e512-48d6-8629-ab9b33a68710",
+    "versions": [
+      {
+        "version_id": "9b38d251-9f0a-4d95-b07c-fc7feb6eab93",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-23T19:19:00.37962Z"
+  },
+  "CW08": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  },
+  "CW08Schedules": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ]
+    }
+  ],
+  "manualBuild": {
+    "id": "98d9bfaa-7fb0-427c-9077-aaede41be295",
+    "status": "stopped",
+    "outcome": "success",
+    "commit": "f22c93c6e50b155080e013756c07ee1f84d223c9"
+  },
+  "releaseLogs": [
+    [
+      1795461527988,
+      "{\"artifact\":\"NBA-POP-CENSUS-2026-11-23-01e5a84612d9\",\"artifactSha256\":\"01e5a84612d9b65745c2ec8c980d85750602e5522c7b0b33b103e0ce133c4561\",\"worker\":\"sach-sports-cloudflare-test\",\"baseArtifact\":\"NBA-ODDS-DIAG-2026-11-21-cae200070535\",\"baseArtifactSha256\":\"cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20\",\"baseDeployment\":\"5f930400-3285-4177-b1d8-ed5307374566\",\"rollbackVersion\":\"48e8858a-7326-41ea-9457-532c74ec3337\",\"emergencyFallbackVersion\":\"a48c431a-5c3e-4491-8529-38cb20dfa898\",\"authorizationRequired\":true,\"configurationUnchanged\":true,\"unchangedFiles\":750,\"changed\":[{\"path\":\"bundle/nba-odds-diagnostic.js\",\"beforeSha256\":\"841a4da64a657c1c252f465ec32693a37162c363d03d8b335efd78db84d01961\",\"afterSha256\":\"92e02d40b55eae5d493cad22475a029fe1bc8847b1a8b53a7350d001bc1d6be8\"}],\"patch\":{\"file\":\"population-patch.tar.gz\",\"sha256\":\"24285ee5ec901888287c7229eab897a471436dc224f6943f452b1e96e857d302\",\"bytes\":11227},\"scope\":\"Only diagnostic module: preserve feed-sample, add all-seven-offer streamed feed-census and bounded single-resource source-census. No R1/model/queue/namespace/schema/binding/schedule/data changes.\"}"
+    ],
+    [
+      1795461529100,
+      "{\"artifact\":\"NBA-POP-CENSUS-2026-11-23-01e5a84612d9\",\"artifactSha256\":\"01e5a84612d9b65745c2ec8c980d85750602e5522c7b0b33b103e0ce133c4561\",\"worker\":\"sach-sports-cloudflare-test\",\"baseArtifact\":\"NBA-ODDS-DIAG-2026-11-21-cae200070535\",\"baseArtifactSha256\":\"cae200070535f2b0286266964dc29a6b6610a2ec08b77aef3426a2b33c3acc20\",\"baseDeployment\":\"5f930400-3285-4177-b1d8-ed5307374566\",\"rollbackVersion\":\"48e8858a-7326-41ea-9457-532c74ec3337\",\"emergencyFallbackVersion\":\"a48c431a-5c3e-4491-8529-38cb20dfa898\",\"authorizationRequired\":true,\"configurationUnchanged\":true,\"unchangedFiles\":750,\"changed\":[{\"path\":\"bundle/nba-odds-diagnostic.js\",\"beforeSha256\":\"841a4da64a657c1c252f465ec32693a37162c363d03d8b335efd78db84d01961\",\"afterSha256\":\"92e02d40b55eae5d493cad22475a029fe1bc8847b1a8b53a7350d001bc1d6be8\"}],\"patch\":{\"file\":\"population-patch.tar.gz\",\"sha256\":\"24285ee5ec901888287c7229eab897a471436dc224f6943f452b1e96e857d302\",\"bytes\":11227},\"scope\":\"Only diagnostic module: preserve feed-sample, add all-seven-offer streamed feed-census and bounded single-resource source-census. No R1/model/queue/namespace/schema/binding/schedule/data changes.\"}"
+    ],
+    [
+      1795461534795,
+      "│  No updated asset files to upload. Proceeding with deployment..."
+    ],
+    [
+      1795461535113,
+      "│  Total Upload: 11967.95 KiB / gzip: 5836.18 KiB"
+    ],
+    [
+      1795461542566,
+      "│  Worker Startup Time: 42 ms"
+    ],
+    [
+      1795461542568,
+      "│  Uploaded sach-sports-cloudflare-test (10.26 sec)"
+    ],
+    [
+      1795461544433,
+      "│  Current Version ID: 9b38d251-9f0a-4d95-b07c-fc7feb6eab93"
+    ],
+    [
+      1795461544506,
+      "Success: Deploy command completed"
+    ],
+    [
+      1795461544707,
+      "✨ Success! Build completed."
+    ]
+  ]
+}

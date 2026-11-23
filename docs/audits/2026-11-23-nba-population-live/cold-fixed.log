@@ -1,0 +1,24 @@
+[basketball refresh audit] {"sport":"nba","players":353,"discoveredFixtures":132,"omittedFixtures":0,"gamelogFailures":0,"scheduleFailures":0,"calendarRecovered":353,"fixtureFailures":0,"unavailablePlayers":0,"observations":20694,"sourceBudgetExhausted":false}
+{
+  "tag": "fixed",
+  "scope": "actual142request current-source capture + existing FINALs, isolated local workerd/SQLite after entire Worker restart; no production writes or network",
+  "clock": "2026-11-23T19:22:04.930Z",
+  "rosterSlots": 353,
+  "storedSources": 152,
+  "expectedObservations": 20694,
+  "expectedSha256": "4f2640237494f996d84a9e9d52dc71f1b85e3ec31acd7047460400aec568ef35",
+  "actualObservationCount": 20694,
+  "actualSha256": "4f2640237494f996d84a9e9d52dc71f1b85e3ec31acd7047460400aec568ef35",
+  "sourceBudget": {
+    "attempted": 152,
+    "distinctSources": 152,
+    "limit": 256,
+    "exhausted": false
+  },
+  "unavailablePlayers": [],
+  "sourceReferences": 152,
+  "providerCalls": 0,
+  "storeUnchanged": true,
+  "ms": 5166,
+  "CloudflareSubrequestLimit": 350
+}

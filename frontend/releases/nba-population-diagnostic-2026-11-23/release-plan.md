@@ -1,5 +1,7 @@
 # NBA population diagnostic — exact authorization boundary
 
+**Executed after explicit November23 approval:** one exact frozen diagnostic upload succeeded. Deployment `907bf0e9-e512-48d6-8629-ab9b33a68710`, version `9b38d251-9f0a-4d95-b07c-fc7feb6eab93`. Complete current collection and branch-only repairs are documented in [actual execution evidence](../../../docs/audits/2026-11-23-nba-population-live/README.md). No full R1 or production data import. The original preparation/approval plan below is preserved as history; its artifact/checksums are unchanged.
+
 **Prepared and verified offline. NOT authorized for upload; NOT deployed; not an R1 release.**
 
 | Frozen item | Value |

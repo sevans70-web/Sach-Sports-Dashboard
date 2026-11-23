@@ -1,0 +1,1662 @@
+{
+  "stage": "after",
+  "scope": "actual production Chromium, desktop/mobile, TLS enabled; auxiliary write/history endpoints suppressed",
+  "views": {
+    "desktop": {
+      "nba": {
+        "http": 200,
+        "seconds": 13.388,
+        "labels": [
+          "\ud83c\udfc0Points",
+          "\ud83d\udcaaRebounds",
+          "\ud83c\udfafAssists",
+          "3\ufe0f\u20e33-Pointers Made",
+          "\u23f1\ufe0fQ1 Points",
+          "\u23f1\ufe0fQ1 Rebounds",
+          "\u23f1\ufe0fQ1 Assists",
+          "\ud83d\udccaPoints + Rebounds + Assists",
+          "\u2795Points + Rebounds",
+          "\u2795Points + Assists",
+          "\u2795Rebounds + Assists",
+          "\ud83d\udd90\ufe0fSteals",
+          "\ud83e\uddf1Blocks",
+          "1\ufe0f\u20e3First Basket"
+        ],
+        "checks": [
+          {
+            "label": "\ud83c\udfc0Points",
+            "ready": true,
+            "cards": [
+              {
+                "playerId": "4351851",
+                "market": "points",
+                "text": "1\nAS\nAnfernee Simons\nG \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+7.1%\nResearch EV\nPoints\nO/U 8.5\nSach Prediction\nOVER 8.5\nSach Projection\n10.2\n\nBook: Pinnacle \u00b7 Over -136 / Under +103\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -136 \u00b7 23.7 expected minutes \u00b7 range 3\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4432847",
+                "market": "points",
+                "text": "2\nTJ\nTerrence Shannon Jr.\nG \u00b7 MIN \u00b7 Brooklyn Nets @ Minnesota Timberwolves\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+10.2%\nResearch EV\nPoints\nO/U 13.5\nSach Prediction\nOVER 13.5\nSach Projection\n14.6\n\nBook: Pinnacle \u00b7 Over -110 / Under -118\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -110 \u00b7 23.8 expected minutes \u00b7 range 8\u201322.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4683678",
+                "market": "points",
+                "text": "3\nSH\nScoot Henderson\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+16.4%\nResearch EV\nPoints\nO/U 9.5\nSach Prediction\nOVER 9.5\nSach Projection\n11.9\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -125 \u00b7 25.1 expected minutes \u00b7 range 5\u201319.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4433137",
+                "market": "points",
+                "text": "4\nZW\nZiaire Williams\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+4.8%\nResearch EV\nPoints\nO/U 7.5\nSach Prediction\nOVER 7.5\nSach Projection\n8.5\n\nBook: Pinnacle \u00b7 Over -118 / Under -112\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -118 \u00b7 23.1 expected minutes \u00b7 range 2\u201316.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4277811",
+                "market": "points",
+                "text": "5\nCS\nCollin Sexton\nG \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+15.1%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nUNDER 11.5\nSach Projection\n10.6\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -106 \u00b7 19.4 expected minutes \u00b7 range 5\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3059318",
+                "market": "points",
+                "text": "6\nJE\nJoel Embiid\nC \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nReported Day-To-Day \u00b7 Illness\nEV\n+8.5%\nResearch EV\nPoints\nO/U 21.5\nSach Prediction\nOVER 21.5\nSach Projection\n23.8\n\nBook: Pinnacle \u00b7 Over -127 / Under -104\n\nReported Day-To-Day \u00b7 Illness\n\nPinnacle \u00b7 -127 \u00b7 31.9 expected minutes \u00b7 range 15\u201334.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4433134",
+                "market": "points",
+                "text": "7\nSB\nScottie Barnes\nF \u00b7 TOR \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+33.4%\nResearch EV\nPoints\nO/U 23.5\nSach Prediction\nUNDER 23.5\nSach Projection\n20.9\n\nBook: Pinnacle \u00b7 Over -128 / Under -103\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -103 \u00b7 33.5 expected minutes \u00b7 range 12\u201331.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "5081727",
+                "market": "points",
+                "text": "8\nSC\nSidy Cissoko\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+18.2%\nResearch EV\nPoints\nO/U 6.5\nSach Prediction\nOVER 6.5\nSach Projection\n8.5\n\nBook: Pinnacle \u00b7 Over -102 / Under -130\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -102 \u00b7 26.8 expected minutes \u00b7 range 1\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "5124612",
+                "market": "points",
+                "text": "9\nVE\nVJ Edgecombe\nG \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+17.6%\nResearch EV\nPoints\nO/U 13.5\nSach Prediction\nOVER 13.5\nSach Projection\n15.2\n\nBook: FanDuel \u00b7 Over +102 / Under -136\n\nRecent results are unavailable for this market.\n\nFanDuel \u00b7 +102 \u00b7 34 expected minutes \u00b7 range 7\u201325.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4900671",
+                "market": "points",
+                "text": "10\nAM\nAjay Mitchell\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+14.4%\nResearch EV\nPoints\nO/U 16.5\nSach Prediction\nUNDER 16.5\nSach Projection\n15.3\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -100 \u00b7 28.3 expected minutes \u00b7 range 7\u201324.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4431678",
+                "market": "points",
+                "text": "11\nTM\nTyrese Maxey\nG \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+60.6%\nResearch EV\nPoints\nO/U 24.5\nSach Prediction\nUNDER 24.5\nSach Projection\n19.3\n\nBook: Pinnacle \u00b7 Over -137 / Under +103\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 +103 \u00b7 31.1 expected minutes \u00b7 range 11\u201330.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4395724",
+                "market": "points",
+                "text": "12\nIQ\nImmanuel Quickley\nG \u00b7 TOR \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+15.0%\nResearch EV\nPoints\nO/U 18.5\nSach Prediction\nUNDER 18.5\nSach Projection\n16.9\n\nBook: Pinnacle \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -108 \u00b7 31 expected minutes \u00b7 range 8\u201327.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3907498",
+                "market": "points",
+                "text": "13\nMT\nMatisse Thybulle\nG \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+9.5%\nResearch EV\nPoints\nO/U 6.5\nSach Prediction\nOVER 6.5\nSach Projection\n8.1\n\nBook: Pinnacle \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -122 \u00b7 24.3 expected minutes \u00b7 range 1\u201316.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3945274",
+                "market": "points",
+                "text": "14\nLD\nLuka Doncic\nG \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+6.3%\nResearch EV\nPoints\nO/U 36.5\nSach Prediction\nUNDER 36.5\nSach Projection\n34.8\n\nBook: Pinnacle \u00b7 Over +100 / Under -133\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -133 \u00b7 36 expected minutes \u00b7 range 26\u201345.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4278073",
+                "market": "points",
+                "text": "15\nSG\nShai Gilgeous-Alexander\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+19.5%\nResearch EV\nPoints\nO/U 31.5\nSach Prediction\nOVER 31.5\nSach Projection\n34.4\n\nBook: Pinnacle \u00b7 Over -118 / Under -112\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -118 \u00b7 34.8 expected minutes \u00b7 range 26\u201345.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "6606",
+                "market": "points",
+                "text": "16\nDL\nDamian Lillard\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+4.9%\nResearch EV\nPoints\nO/U 21.5\nSach Prediction\nUNDER 21.5\nSach Projection\n20.5\n\nBook: Pinnacle \u00b7 Over -110 / Under -120\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -120 \u00b7 30.3 expected minutes \u00b7 range 12\u201331.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3133628",
+                "market": "points",
+                "text": "17\nMT\nMyles Turner\nC \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-4.7%\nResearch EV\nPoints\nO/U 7.5\nSach Prediction\nOVER 7.5\nSach Projection\n7.6\n\nBook: Pinnacle \u00b7 Over -114 / Under -114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 24.7 expected minutes \u00b7 range 1\u201315.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4591725",
+                "market": "points",
+                "text": "18\nRR\nRyan Rollins\nG \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-8.2%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nOVER 11.5\nSach Projection\n12.2\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 25.8 expected minutes \u00b7 range 4\u201320.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4592691",
+                "market": "points",
+                "text": "19\nJL\nJake LaRavia\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+0.1%\nResearch EV\nPoints\nO/U 5.5\nSach Prediction\nOVER 5.5\nSach Projection\n6.9\n\nBook: Pinnacle \u00b7 Over -136 / Under +102\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 22.9 expected minutes \u00b7 range 0\u201314.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4683778",
+                "market": "points",
+                "text": "20\nJM\nJared McCain\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-4.9%\nResearch EV\nPoints\nO/U 15.5\nSach Prediction\nUNDER 15.5\nSach Projection\n15.4\n\nBook: Pinnacle \u00b7 Over -102 / Under -130\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 28.9 expected minutes \u00b7 range 7\u201325.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4684272",
+                "market": "points",
+                "text": "21\nJW\nJa'Kobe Walter\nG \u00b7 TOR \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+0.9%\nResearch EV\nPoints\nO/U 13.5\nSach Prediction\nUNDER 13.5\nSach Projection\n13.1\n\nBook: Pinnacle \u00b7 Over -114 / Under -114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 31.8 expected minutes \u00b7 range 5\u201323.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4397688",
+                "market": "points",
+                "text": "22\nTI\nTrey Murphy III\nF \u00b7 NO \u00b7 Phoenix Suns @ New Orleans Pelicans\nMon, Nov 23, 8:00 PM EST\nLineup pending\nEV\n-12.3%\nResearch EV\nPoints\nO/U 15.5\nSach Prediction\nOVER 15.5\nSach Projection\n15.7\n\nBook: Pinnacle \u00b7 Over -128 / Under -104\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 29.7 expected minutes \u00b7 range 7\u201326.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4432848",
+                "market": "points",
+                "text": "23\nJJ\nJaime Jaquez Jr.\nF \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-7.7%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nOVER 11.5\nSach Projection\n11.9\n\nBook: FanDuel \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 25.7 expected minutes \u00b7 range 4\u201320.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4278580",
+                "market": "points",
+                "text": "24\nSM\nSandro Mamukelashvili\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n-0.6%\nResearch EV\nPoints\nO/U 8.5\nSach Prediction\nOVER 8.5\nSach Projection\n9.7\n\nBook: Pinnacle \u00b7 Over -133 / Under +100\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 20.9 expected minutes \u00b7 range 3\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3995",
+                "market": "points",
+                "text": "25\nJH\nJrue Holiday\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n-4.2%\nResearch EV\nPoints\nO/U 12.5\nSach Prediction\nOVER 12.5\nSach Projection\n13.4\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 26.8 expected minutes \u00b7 range 6\u201322.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              }
+            ],
+            "count": 25,
+            "notice": "5.5\nSach Prediction\nOVER 15.5\nSach Projection\n15.7\n\nBook: Pinnacle \u00b7 Over -128 / Under -104\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 29.7 expected minutes \u00b7 range 7\u201326.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n23\nJJ\nJaime Jaquez Jr.\nF \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-7.7%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nOVER 11.5\nSach Projection\n11.9\n\nBook: FanDuel \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 25.7 expected minutes \u00b7 range 4\u201320.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n24\nSM\nSandro Mamukelashvili\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n-0.6%\nResearch EV\nPoints\nO/U 8.5\nSach Prediction\nOVER 8.5\nSach Projection\n9.7\n\nBook: Pinnacle \u00b7 Over -133 / Under +100\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 20.9 expected minutes \u00b7 range 3\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n25\nJH\nJrue Holiday\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n-4.2%\nResearch EV\nPoints\nO/U 12.5\nSach Prediction\nOVER 12.5\nSach Projection\n13.4\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 26.8 expected minutes \u00b7 range 6\u201322.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\nShow Top 5 Only"
+          }
+        ],
+        "overflow": false
+      },
+      "nfl": {
+        "http": 200,
+        "seconds": 3.612,
+        "labels": [
+          "\ud83c\udfc8Passing Yards",
+          "\ud83c\udfafPassing TDs",
+          "\ud83d\uded1Interceptions",
+          "\ud83c\udfc3QB Rushing Yards",
+          "\u26a1Pass + Rush Yards",
+          "\ud83d\udd25Anytime TD",
+          "1\ufe0f\u20e3First TD",
+          "\ud83d\ude4cReceiving Yards",
+          "\ud83e\udde4Receptions",
+          "\ud83c\udfc3Rushing Yards",
+          "\ud83d\udd00Rush + Receiving",
+          "\ud83d\udee1\ufe0fSacks",
+          "\ud83d\udee1\ufe0fSolo Tackles",
+          "\ud83d\udee1\ufe0fTackles + Assists",
+          "\u23f1\ufe0fQ1 Passing Yards",
+          "\u23f1\ufe0fQ1 Receiving Yards",
+          "\u23f1\ufe0fQ1 Rushing Yards"
+        ],
+        "checks": [
+          {
+            "label": "\ud83c\udfc8Passing Yards",
+            "ready": true,
+            "cards": [],
+            "count": 0,
+            "notice": "PLAYER RANKINGS\nToday\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards rankings with a verified line, projection, prediction and EV are available for this slate."
+          }
+        ],
+        "overflow": false
+      },
+      "nhl": {
+        "http": 200,
+        "seconds": 5.065,
+        "labels": [
+          "\ud83c\udfd2Shots on Goal",
+          "\u2b50Points",
+          "\ud83e\udd45Goals",
+          "\ud83c\udfafAssists",
+          "\ud83d\udee1\ufe0fBlocked Shots",
+          "\ud83e\udde4Goalie Saves"
+        ],
+        "checks": [
+          {
+            "label": "\ud83c\udfd2Shots on Goal",
+            "ready": true,
+            "cards": [
+              {
+                "playerId": "8478873",
+                "market": "shots_on_goal",
+                "text": "1\nTT\nTroy Terry\nANA \u00b7 Ducks @ Kraken\nMon, Nov 23, 9:40 PM EST\nLineup pending\nEV\n+21.5%\nShots on Goal\nO/U 1.5\nSach Prediction\nUNDER 1.5\nSach Projection\n1.6\n\nBook: Pinnacle \u00b7 Over -146 / Under +110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 +110 \u00b7 14.9 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8478460",
+                "market": "shots_on_goal",
+                "text": "2\nZW\nZach Werenski\nCBJ \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+27.7%\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n4\n\nBook: Pinnacle \u00b7 Over -171 / Under +128\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -171 \u00b7 26.8 expected minutes \u00b7 range 2\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8485366",
+                "market": "shots_on_goal",
+                "text": "3\nMS\nMatthew Schaefer\nNYI \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+10.9%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.3\n\nBook: Pinnacle \u00b7 Over -104 / Under -127\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -127 \u00b7 26 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8483445",
+                "market": "shots_on_goal",
+                "text": "4\nCG\nCutter Gauthier\nANA \u00b7 Ducks @ Kraken\nMon, Nov 23, 9:40 PM EST\nLineup pending\nEV\n+27.2%\nShots on Goal\nO/U 4.5\nSach Prediction\nUNDER 4.5\nSach Projection\n3.2\n\nBook: Pinnacle \u00b7 Over +117 / Under -155\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -155 \u00b7 20 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8479407",
+                "market": "shots_on_goal",
+                "text": "5\nJB\nJesper Bratt\nNJD \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+3.1%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over -163 / Under +122\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -163 \u00b7 18.1 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8479410",
+                "market": "shots_on_goal",
+                "text": "6\nMS\nMikhail Sergachev\nUTA \u00b7 Mammoth @ Jets\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+33.8%\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n3.1\n\nBook: Pinnacle \u00b7 Over +135 / Under -180\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 +135 \u00b7 25.3 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481605",
+                "market": "shots_on_goal",
+                "text": "7\nJL\nJackson LaCombe\nANA \u00b7 Ducks @ Kraken\nMon, Nov 23, 9:40 PM EST\nLineup pending\nEV\n+42.6%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -120 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -120 \u00b7 25.4 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8480014",
+                "market": "shots_on_goal",
+                "text": "8\nGV\nGabriel Vilardi\nWPG \u00b7 Mammoth @ Jets\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+17.1%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.8\n\nBook: Pinnacle \u00b7 Over -161 / Under +121\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -161 \u00b7 20.5 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481540",
+                "market": "shots_on_goal",
+                "text": "9\nCC\nCole Caufield\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+22.3%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n2.6\n\nBook: Pinnacle \u00b7 Over +107 / Under -142\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -142 \u00b7 18.6 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8483515",
+                "market": "shots_on_goal",
+                "text": "10\nJS\nJuraj Slafkovsk\u00fd\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+4.5%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.2\n\nBook: Pinnacle \u00b7 Over +110 / Under -146\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -146 \u00b7 19 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8477960",
+                "market": "shots_on_goal",
+                "text": "11\nAK\nAdrian Kempe\nLAK \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+14.9%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over -120 / Under -110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -110 \u00b7 19.4 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8480018",
+                "market": "shots_on_goal",
+                "text": "12\nNS\nNick Suzuki\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+4.2%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.2\n\nBook: Pinnacle \u00b7 Over +111 / Under -147\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -147 \u00b7 19.5 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8482720",
+                "market": "shots_on_goal",
+                "text": "13\nMK\nMatthew Knies\nCBJ \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+17.1%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over -122 / Under -109\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -122 \u00b7 19.5 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8475745",
+                "market": "shots_on_goal",
+                "text": "14\nCC\nCharlie Coyle\nCBJ \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+15.7%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.7\n\nBook: Pinnacle \u00b7 Over -150 / Under +110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -150 \u00b7 20.4 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481559",
+                "market": "shots_on_goal",
+                "text": "15\nJH\nJack Hughes\nNJD \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+23.7%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3\n\nBook: Pinnacle \u00b7 Over -120 / Under -110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -110 \u00b7 21.1 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481557",
+                "market": "shots_on_goal",
+                "text": "16\nMB\nMatt Boldy\nMIN \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+21.2%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3\n\nBook: Pinnacle \u00b7 Over -115 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -115 \u00b7 21.2 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8478398",
+                "market": "shots_on_goal",
+                "text": "17\nKC\nKyle Connor\nWPG \u00b7 Mammoth @ Jets\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+8.0%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.3\n\nBook: Pinnacle \u00b7 Over +100 / Under -135\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -135 \u00b7 22.1 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8477939",
+                "market": "shots_on_goal",
+                "text": "18\nWN\nWilliam Nylander\nTOR \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+12.5%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.3\n\nBook: Pinnacle \u00b7 Over -108 / Under -123\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -123 \u00b7 19.9 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8484227",
+                "market": "shots_on_goal",
+                "text": "19\nWS\nWill Smith\nSJS \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+4.8%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over +100 / Under -135\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -135 \u00b7 20.4 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8478864",
+                "market": "shots_on_goal",
+                "text": "20\nKK\nKirill Kaprizov\nMIN \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+24.4%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -111 / Under -119\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -119 \u00b7 21.4 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8483457",
+                "market": "shots_on_goal",
+                "text": "21\nLH\nLane Hutson\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+44.3%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n3.2\n\nBook: Pinnacle \u00b7 Over -135 / Under +100\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -135 \u00b7 25.8 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481528",
+                "market": "shots_on_goal",
+                "text": "22\nDC\nDylan Cozens\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+5.3%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2\n\nBook: Pinnacle \u00b7 Over +115 / Under -160\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -160 \u00b7 17.1 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8484801",
+                "market": "shots_on_goal",
+                "text": "23\nMC\nMacklin Celebrini\nSJS \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+12.5%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.5\n\nBook: Pinnacle \u00b7 Over -115 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -115 \u00b7 23.2 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8477500",
+                "market": "shots_on_goal",
+                "text": "24\nBH\nBo Horvat\nNYI \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -151 / Under +114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 20.7 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8480208",
+                "market": "shots_on_goal",
+                "text": "25\nDB\nDrake Batherson\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.1\n\nBook: Pinnacle \u00b7 Over -181 / Under +135\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 17.3 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              }
+            ],
+            "count": 25,
+            "notice": "Dylan Cozens\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+5.3%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2\n\nBook: Pinnacle \u00b7 Over +115 / Under -160\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -160 \u00b7 17.1 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n23\nMC\nMacklin Celebrini\nSJS \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+12.5%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.5\n\nBook: Pinnacle \u00b7 Over -115 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -115 \u00b7 23.2 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n24\nBH\nBo Horvat\nNYI \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -151 / Under +114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 20.7 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n25\nDB\nDrake Batherson\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.1\n\nBook: Pinnacle \u00b7 Over -181 / Under +135\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 17.3 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\nShow Top 5 Only"
+          }
+        ],
+        "overflow": false
+      }
+    },
+    "mobile": {
+      "nba": {
+        "http": 200,
+        "seconds": 13.328,
+        "labels": [
+          "\ud83c\udfc0Points",
+          "\ud83d\udcaaRebounds",
+          "\ud83c\udfafAssists",
+          "3\ufe0f\u20e33-Pointers Made",
+          "\u23f1\ufe0fQ1 Points",
+          "\u23f1\ufe0fQ1 Rebounds",
+          "\u23f1\ufe0fQ1 Assists",
+          "\ud83d\udccaPoints + Rebounds + Assists",
+          "\u2795Points + Rebounds",
+          "\u2795Points + Assists",
+          "\u2795Rebounds + Assists",
+          "\ud83d\udd90\ufe0fSteals",
+          "\ud83e\uddf1Blocks",
+          "1\ufe0f\u20e3First Basket"
+        ],
+        "checks": [
+          {
+            "label": "\ud83c\udfc0Points",
+            "ready": true,
+            "cards": [
+              {
+                "playerId": "4351851",
+                "market": "points",
+                "text": "1\nAS\nAnfernee Simons\nG \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+7.1%\nResearch EV\nPoints\nO/U 8.5\nSach Prediction\nOVER 8.5\nSach Projection\n10.2\n\nBook: Pinnacle \u00b7 Over -136 / Under +103\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -136 \u00b7 23.7 expected minutes \u00b7 range 3\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4432847",
+                "market": "points",
+                "text": "2\nTJ\nTerrence Shannon Jr.\nG \u00b7 MIN \u00b7 Brooklyn Nets @ Minnesota Timberwolves\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+7.3%\nResearch EV\nPoints\nO/U 13.5\nSach Prediction\nOVER 13.5\nSach Projection\n14.4\n\nBook: Pinnacle \u00b7 Over -110 / Under -118\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -110 \u00b7 23.7 expected minutes \u00b7 range 7\u201322.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4683678",
+                "market": "points",
+                "text": "3\nSH\nScoot Henderson\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+16.4%\nResearch EV\nPoints\nO/U 9.5\nSach Prediction\nOVER 9.5\nSach Projection\n11.9\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -125 \u00b7 25.1 expected minutes \u00b7 range 5\u201319.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4433137",
+                "market": "points",
+                "text": "4\nZW\nZiaire Williams\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+4.8%\nResearch EV\nPoints\nO/U 7.5\nSach Prediction\nOVER 7.5\nSach Projection\n8.5\n\nBook: Pinnacle \u00b7 Over -118 / Under -112\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -118 \u00b7 23.1 expected minutes \u00b7 range 2\u201316.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4277811",
+                "market": "points",
+                "text": "5\nCS\nCollin Sexton\nG \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+15.1%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nUNDER 11.5\nSach Projection\n10.6\n\nBook: Pinnacle \u00b7 Over -125 / Under -106\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -106 \u00b7 19.4 expected minutes \u00b7 range 5\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "2583632",
+                "market": "points",
+                "text": "6\nRO\nRoyce O'Neale\nF \u00b7 CHA \u00b7 Memphis Grizzlies @ Charlotte Hornets\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+8.3%\nResearch EV\nPoints\nO/U 7.5\nSach Prediction\nUNDER 7.5\nSach Projection\n6.6\n\nBook: Pinnacle \u00b7 Over -116 / Under -114\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -114 \u00b7 21.4 expected minutes \u00b7 range 0\u201314.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4602025",
+                "market": "points",
+                "text": "7\nSJ\nSion James\nG \u00b7 CHA \u00b7 Memphis Grizzlies @ Charlotte Hornets\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+8.3%\nResearch EV\nPoints\nO/U 7.5\nSach Prediction\nOVER 7.5\nSach Projection\n8.8\n\nBook: Pinnacle \u00b7 Over -104 / Under -127\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -104 \u00b7 28.5 expected minutes \u00b7 range 1\u201318.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4396971",
+                "market": "points",
+                "text": "8\nNR\nNaz Reid\nC \u00b7 CHA \u00b7 Memphis Grizzlies @ Charlotte Hornets\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+10.2%\nResearch EV\nPoints\nO/U 18.5\nSach Prediction\nOVER 18.5\nSach Projection\n21.1\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -132 \u00b7 34 expected minutes \u00b7 range 12\u201331.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3059318",
+                "market": "points",
+                "text": "9\nJE\nJoel Embiid\nC \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nReported Day-To-Day \u00b7 Illness\nEV\n+8.5%\nResearch EV\nPoints\nO/U 21.5\nSach Prediction\nOVER 21.5\nSach Projection\n23.8\n\nBook: Pinnacle \u00b7 Over -127 / Under -104\n\nReported Day-To-Day \u00b7 Illness\n\nPinnacle \u00b7 -127 \u00b7 31.9 expected minutes \u00b7 range 15\u201334.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4433134",
+                "market": "points",
+                "text": "10\nSB\nScottie Barnes\nF \u00b7 TOR \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+33.4%\nResearch EV\nPoints\nO/U 23.5\nSach Prediction\nUNDER 23.5\nSach Projection\n20.9\n\nBook: Pinnacle \u00b7 Over -128 / Under -103\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -103 \u00b7 33.5 expected minutes \u00b7 range 12\u201331.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "5081727",
+                "market": "points",
+                "text": "11\nSC\nSidy Cissoko\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+18.2%\nResearch EV\nPoints\nO/U 6.5\nSach Prediction\nOVER 6.5\nSach Projection\n8.5\n\nBook: Pinnacle \u00b7 Over -102 / Under -130\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -102 \u00b7 26.8 expected minutes \u00b7 range 1\u201317.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "5124612",
+                "market": "points",
+                "text": "12\nVE\nVJ Edgecombe\nG \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+17.6%\nResearch EV\nPoints\nO/U 13.5\nSach Prediction\nOVER 13.5\nSach Projection\n15.2\n\nBook: FanDuel \u00b7 Over +102 / Under -136\n\nRecent results are unavailable for this market.\n\nFanDuel \u00b7 +102 \u00b7 34 expected minutes \u00b7 range 7\u201325.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4900671",
+                "market": "points",
+                "text": "13\nAM\nAjay Mitchell\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+14.4%\nResearch EV\nPoints\nO/U 16.5\nSach Prediction\nUNDER 16.5\nSach Projection\n15.3\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -100 \u00b7 28.3 expected minutes \u00b7 range 7\u201324.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4431678",
+                "market": "points",
+                "text": "14\nTM\nTyrese Maxey\nG \u00b7 PHI \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+60.6%\nResearch EV\nPoints\nO/U 24.5\nSach Prediction\nUNDER 24.5\nSach Projection\n19.3\n\nBook: Pinnacle \u00b7 Over -137 / Under +103\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 +103 \u00b7 31.1 expected minutes \u00b7 range 11\u201330.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4395724",
+                "market": "points",
+                "text": "15\nIQ\nImmanuel Quickley\nG \u00b7 TOR \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+15.0%\nResearch EV\nPoints\nO/U 18.5\nSach Prediction\nUNDER 18.5\nSach Projection\n16.9\n\nBook: Pinnacle \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -108 \u00b7 31 expected minutes \u00b7 range 8\u201327.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3907498",
+                "market": "points",
+                "text": "16\nMT\nMatisse Thybulle\nG \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+9.5%\nResearch EV\nPoints\nO/U 6.5\nSach Prediction\nOVER 6.5\nSach Projection\n8.1\n\nBook: Pinnacle \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -122 \u00b7 24.3 expected minutes \u00b7 range 1\u201316.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3945274",
+                "market": "points",
+                "text": "17\nLD\nLuka Doncic\nG \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+6.3%\nResearch EV\nPoints\nO/U 36.5\nSach Prediction\nUNDER 36.5\nSach Projection\n34.8\n\nBook: Pinnacle \u00b7 Over +100 / Under -133\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -133 \u00b7 36 expected minutes \u00b7 range 26\u201345.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4433287",
+                "market": "points",
+                "text": "18\nBM\nBrandon Miller\nF \u00b7 CHA \u00b7 Memphis Grizzlies @ Charlotte Hornets\nMon, Nov 23, 7:00 PM EST\nLineup pending\nReported Day-To-Day \u00b7 Bruise\nEV\n+47.8%\nResearch EV\nPoints\nO/U 21.5\nSach Prediction\nUNDER 21.5\nSach Projection\n17.4\n\nBook: Pinnacle \u00b7 Over -130 / Under -102\n\nReported Day-To-Day \u00b7 Bruise\n\nPinnacle \u00b7 -102 \u00b7 29.5 expected minutes \u00b7 range 9\u201328.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4278073",
+                "market": "points",
+                "text": "19\nSG\nShai Gilgeous-Alexander\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+19.5%\nResearch EV\nPoints\nO/U 31.5\nSach Prediction\nOVER 31.5\nSach Projection\n34.4\n\nBook: Pinnacle \u00b7 Over -118 / Under -112\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -118 \u00b7 34.8 expected minutes \u00b7 range 26\u201345.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4395651",
+                "market": "points",
+                "text": "20\nCW\nCoby White\nG \u00b7 CHA \u00b7 Memphis Grizzlies @ Charlotte Hornets\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+32.2%\nResearch EV\nPoints\nO/U 17.5\nSach Prediction\nUNDER 17.5\nSach Projection\n15\n\nBook: Pinnacle \u00b7 Over -122 / Under -108\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -108 \u00b7 22.5 expected minutes \u00b7 range 8\u201322.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "6606",
+                "market": "points",
+                "text": "21\nDL\nDamian Lillard\nG \u00b7 POR \u00b7 Portland Trail Blazers @ Philadelphia 76ers\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+4.9%\nResearch EV\nPoints\nO/U 21.5\nSach Prediction\nUNDER 21.5\nSach Projection\n20.5\n\nBook: Pinnacle \u00b7 Over -110 / Under -120\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -120 \u00b7 30.3 expected minutes \u00b7 range 12\u201331.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "3133628",
+                "market": "points",
+                "text": "22\nMT\nMyles Turner\nC \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-4.7%\nResearch EV\nPoints\nO/U 7.5\nSach Prediction\nOVER 7.5\nSach Projection\n7.6\n\nBook: Pinnacle \u00b7 Over -114 / Under -114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 24.7 expected minutes \u00b7 range 1\u201315.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4591725",
+                "market": "points",
+                "text": "23\nRR\nRyan Rollins\nG \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-8.2%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nOVER 11.5\nSach Projection\n12.2\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 25.8 expected minutes \u00b7 range 4\u201320.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4592691",
+                "market": "points",
+                "text": "24\nJL\nJake LaRavia\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+0.1%\nResearch EV\nPoints\nO/U 5.5\nSach Prediction\nOVER 5.5\nSach Projection\n6.9\n\nBook: Pinnacle \u00b7 Over -136 / Under +102\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 22.9 expected minutes \u00b7 range 0\u201314.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "4683778",
+                "market": "points",
+                "text": "25\nJM\nJared McCain\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-4.9%\nResearch EV\nPoints\nO/U 15.5\nSach Prediction\nUNDER 15.5\nSach Projection\n15.4\n\nBook: Pinnacle \u00b7 Over -102 / Under -130\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 28.9 expected minutes \u00b7 range 7\u201325.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              }
+            ],
+            "count": 25,
+            "notice": "rch EV\nPoints\nO/U 7.5\nSach Prediction\nOVER 7.5\nSach Projection\n7.6\n\nBook: Pinnacle \u00b7 Over -114 / Under -114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 24.7 expected minutes \u00b7 range 1\u201315.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n23\nRR\nRyan Rollins\nG \u00b7 MIL \u00b7 Milwaukee Bucks @ Toronto Raptors\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-8.2%\nResearch EV\nPoints\nO/U 11.5\nSach Prediction\nOVER 11.5\nSach Projection\n12.2\n\nBook: Pinnacle \u00b7 Over -132 / Under -100\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 25.8 expected minutes \u00b7 range 4\u201320.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n24\nJL\nJake LaRavia\nF \u00b7 LAL \u00b7 Utah Jazz @ Los Angeles Lakers\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+0.1%\nResearch EV\nPoints\nO/U 5.5\nSach Prediction\nOVER 5.5\nSach Projection\n6.9\n\nBook: Pinnacle \u00b7 Over -136 / Under +102\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 22.9 expected minutes \u00b7 range 0\u201314.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n25\nJM\nJared McCain\nG \u00b7 OKC \u00b7 Oklahoma City Thunder @ Indiana Pacers\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n-4.9%\nResearch EV\nPoints\nO/U 15.5\nSach Prediction\nUNDER 15.5\nSach Projection\n15.4\n\nBook: Pinnacle \u00b7 Over -102 / Under -130\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 28.9 expected minutes \u00b7 range 7\u201325.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\nShow Top 5 Only"
+          }
+        ],
+        "overflow": false
+      },
+      "nfl": {
+        "http": 200,
+        "seconds": 3.47,
+        "labels": [
+          "\ud83c\udfc8Passing Yards",
+          "\ud83c\udfafPassing TDs",
+          "\ud83d\uded1Interceptions",
+          "\ud83c\udfc3QB Rushing Yards",
+          "\u26a1Pass + Rush Yards",
+          "\ud83d\udd25Anytime TD",
+          "1\ufe0f\u20e3First TD",
+          "\ud83d\ude4cReceiving Yards",
+          "\ud83e\udde4Receptions",
+          "\ud83c\udfc3Rushing Yards",
+          "\ud83d\udd00Rush + Receiving",
+          "\ud83d\udee1\ufe0fSacks",
+          "\ud83d\udee1\ufe0fSolo Tackles",
+          "\ud83d\udee1\ufe0fTackles + Assists",
+          "\u23f1\ufe0fQ1 Passing Yards",
+          "\u23f1\ufe0fQ1 Receiving Yards",
+          "\u23f1\ufe0fQ1 Rushing Yards"
+        ],
+        "checks": [
+          {
+            "label": "\ud83c\udfc8Passing Yards",
+            "ready": true,
+            "cards": [],
+            "count": 0,
+            "notice": "PLAYER RANKINGS\nToday\nAll Day\nNoon / Early\nAfternoon\nEvening\n\ud83c\udfc8Passing Yards\n\ud83c\udfafPassing TDs\n\ud83d\uded1Interceptions\n\ud83c\udfc3QB Rushing Yards\n\u26a1Pass + Rush Yards\n\ud83d\udd25Anytime TD\n1\ufe0f\u20e3First TD\n\ud83d\ude4cReceiving Yards\n\ud83e\udde4Receptions\n\ud83c\udfc3Rushing Yards\n\ud83d\udd00Rush + Receiving\n\ud83d\udee1\ufe0fSacks\n\ud83d\udee1\ufe0fSolo Tackles\n\ud83d\udee1\ufe0fTackles + Assists\n\u23f1\ufe0fQ1 Passing Yards\n\u23f1\ufe0fQ1 Receiving Yards\n\u23f1\ufe0fQ1 Rushing Yards\n\u203a\n\ud83c\udfc8 Passing Yards\n\n0 rankings \u00b7 0 picks\n\nNo Passing Yards rankings with a verified line, projection, prediction and EV are available for this slate."
+          }
+        ],
+        "overflow": false
+      },
+      "nhl": {
+        "http": 200,
+        "seconds": 4.232,
+        "labels": [
+          "\ud83c\udfd2Shots on Goal",
+          "\u2b50Points",
+          "\ud83e\udd45Goals",
+          "\ud83c\udfafAssists",
+          "\ud83d\udee1\ufe0fBlocked Shots",
+          "\ud83e\udde4Goalie Saves"
+        ],
+        "checks": [
+          {
+            "label": "\ud83c\udfd2Shots on Goal",
+            "ready": true,
+            "cards": [
+              {
+                "playerId": "8478873",
+                "market": "shots_on_goal",
+                "text": "1\nTT\nTroy Terry\nANA \u00b7 Ducks @ Kraken\nMon, Nov 23, 9:40 PM EST\nLineup pending\nEV\n+21.5%\nShots on Goal\nO/U 1.5\nSach Prediction\nUNDER 1.5\nSach Projection\n1.6\n\nBook: Pinnacle \u00b7 Over -146 / Under +110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 +110 \u00b7 14.9 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8478460",
+                "market": "shots_on_goal",
+                "text": "2\nZW\nZach Werenski\nCBJ \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+27.7%\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n4\n\nBook: Pinnacle \u00b7 Over -171 / Under +128\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -171 \u00b7 26.8 expected minutes \u00b7 range 2\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8485366",
+                "market": "shots_on_goal",
+                "text": "3\nMS\nMatthew Schaefer\nNYI \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+10.9%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.3\n\nBook: Pinnacle \u00b7 Over -104 / Under -127\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -127 \u00b7 26 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8483445",
+                "market": "shots_on_goal",
+                "text": "4\nCG\nCutter Gauthier\nANA \u00b7 Ducks @ Kraken\nMon, Nov 23, 9:40 PM EST\nLineup pending\nEV\n+27.2%\nShots on Goal\nO/U 4.5\nSach Prediction\nUNDER 4.5\nSach Projection\n3.2\n\nBook: Pinnacle \u00b7 Over +117 / Under -155\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -155 \u00b7 20 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8479407",
+                "market": "shots_on_goal",
+                "text": "5\nJB\nJesper Bratt\nNJD \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+3.1%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over -163 / Under +122\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -163 \u00b7 18.1 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8479410",
+                "market": "shots_on_goal",
+                "text": "6\nMS\nMikhail Sergachev\nUTA \u00b7 Mammoth @ Jets\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+33.8%\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n3.1\n\nBook: Pinnacle \u00b7 Over +135 / Under -180\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 +135 \u00b7 25.3 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481605",
+                "market": "shots_on_goal",
+                "text": "7\nJL\nJackson LaCombe\nANA \u00b7 Ducks @ Kraken\nMon, Nov 23, 9:40 PM EST\nLineup pending\nEV\n+42.6%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -120 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -120 \u00b7 25.4 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8480014",
+                "market": "shots_on_goal",
+                "text": "8\nGV\nGabriel Vilardi\nWPG \u00b7 Mammoth @ Jets\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+17.1%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.8\n\nBook: Pinnacle \u00b7 Over -161 / Under +121\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -161 \u00b7 20.5 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481540",
+                "market": "shots_on_goal",
+                "text": "9\nCC\nCole Caufield\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+22.3%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n2.6\n\nBook: Pinnacle \u00b7 Over +107 / Under -142\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -142 \u00b7 18.6 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8483515",
+                "market": "shots_on_goal",
+                "text": "10\nJS\nJuraj Slafkovsk\u00fd\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+4.5%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.2\n\nBook: Pinnacle \u00b7 Over +110 / Under -146\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -146 \u00b7 19 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8477960",
+                "market": "shots_on_goal",
+                "text": "11\nAK\nAdrian Kempe\nLAK \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+14.9%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over -120 / Under -110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -110 \u00b7 19.4 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8480018",
+                "market": "shots_on_goal",
+                "text": "12\nNS\nNick Suzuki\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+4.2%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.2\n\nBook: Pinnacle \u00b7 Over +111 / Under -147\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -147 \u00b7 19.5 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8482720",
+                "market": "shots_on_goal",
+                "text": "13\nMK\nMatthew Knies\nCBJ \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+17.1%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over -122 / Under -109\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -122 \u00b7 19.5 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8475745",
+                "market": "shots_on_goal",
+                "text": "14\nCC\nCharlie Coyle\nCBJ \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+15.7%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.7\n\nBook: Pinnacle \u00b7 Over -150 / Under +110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -150 \u00b7 20.4 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481559",
+                "market": "shots_on_goal",
+                "text": "15\nJH\nJack Hughes\nNJD \u00b7 Blue Jackets @ Devils\nMon, Nov 23, 7:00 PM EST\nLineup pending\nEV\n+23.7%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3\n\nBook: Pinnacle \u00b7 Over -120 / Under -110\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -110 \u00b7 21.1 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481557",
+                "market": "shots_on_goal",
+                "text": "16\nMB\nMatt Boldy\nMIN \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+21.2%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3\n\nBook: Pinnacle \u00b7 Over -115 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -115 \u00b7 21.2 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8478398",
+                "market": "shots_on_goal",
+                "text": "17\nKC\nKyle Connor\nWPG \u00b7 Mammoth @ Jets\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+8.0%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.3\n\nBook: Pinnacle \u00b7 Over +100 / Under -135\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -135 \u00b7 22.1 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8477939",
+                "market": "shots_on_goal",
+                "text": "18\nWN\nWilliam Nylander\nTOR \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+12.5%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.3\n\nBook: Pinnacle \u00b7 Over -108 / Under -123\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -123 \u00b7 19.9 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8484227",
+                "market": "shots_on_goal",
+                "text": "19\nWS\nWill Smith\nSJS \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+4.8%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2.5\n\nBook: Pinnacle \u00b7 Over +100 / Under -135\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -135 \u00b7 20.4 expected minutes \u00b7 range 0\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8478864",
+                "market": "shots_on_goal",
+                "text": "20\nKK\nKirill Kaprizov\nMIN \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+24.4%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -111 / Under -119\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -119 \u00b7 21.4 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8483457",
+                "market": "shots_on_goal",
+                "text": "21\nLH\nLane Hutson\nMTL \u00b7 Kings @ Canadiens\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+44.3%\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n3.2\n\nBook: Pinnacle \u00b7 Over -135 / Under +100\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -135 \u00b7 25.8 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8481528",
+                "market": "shots_on_goal",
+                "text": "22\nDC\nDylan Cozens\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+5.3%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2\n\nBook: Pinnacle \u00b7 Over +115 / Under -160\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -160 \u00b7 17.1 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8484801",
+                "market": "shots_on_goal",
+                "text": "23\nMC\nMacklin Celebrini\nSJS \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+12.5%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.5\n\nBook: Pinnacle \u00b7 Over -115 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -115 \u00b7 23.2 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8477500",
+                "market": "shots_on_goal",
+                "text": "24\nBH\nBo Horvat\nNYI \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -151 / Under +114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 20.7 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              },
+              {
+                "playerId": "8480208",
+                "market": "shots_on_goal",
+                "text": "25\nDB\nDrake Batherson\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.1\n\nBook: Pinnacle \u00b7 Over -181 / Under +135\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 17.3 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a"
+              }
+            ],
+            "count": 25,
+            "notice": "Dylan Cozens\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n+5.3%\nShots on Goal\nO/U 2.5\nSach Prediction\nUNDER 2.5\nSach Projection\n2\n\nBook: Pinnacle \u00b7 Over +115 / Under -160\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -160 \u00b7 17.1 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n23\nMC\nMacklin Celebrini\nSJS \u00b7 Wild @ Sharks\nMon, Nov 23, 10:00 PM EST\nLineup pending\nEV\n+12.5%\nShots on Goal\nO/U 3.5\nSach Prediction\nUNDER 3.5\nSach Projection\n3.5\n\nBook: Pinnacle \u00b7 Over -115 / Under -115\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -115 \u00b7 23.2 expected minutes \u00b7 range 1\u20136.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n24\nBH\nBo Horvat\nNYI \u00b7 Maple Leafs @ Islanders\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 2.5\nSach Prediction\nOVER 2.5\nSach Projection\n2.9\n\nBook: Pinnacle \u00b7 Over -151 / Under +114\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 20.7 expected minutes \u00b7 range 1\u20135.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\n25\nDB\nDrake Batherson\nOTT \u00b7 Flames @ Senators\nMon, Nov 23, 7:30 PM EST\nLineup pending\nEV\n\u2014\nShots on Goal\nO/U 1.5\nSach Prediction\nOVER 1.5\nSach Projection\n2.1\n\nBook: Pinnacle \u00b7 Over -181 / Under +135\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 17.3 expected minutes \u00b7 range 0\u20134.\n\nView Intelligence\n\u203a\nExpand quick analysis\n\u203a\nShow Top 5 Only"
+          }
+        ],
+        "overflow": false
+      }
+    }
+  },
+  "pageErrors": [],
+  "hydrationErrors": [],
+  "requests": [
+    {
+      "path": "/api/top-plays",
+      "query": "sport=nba",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nba&league=eng.1",
+      "status": 200
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nba",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard-summary",
+      "query": "sport=nba&league=eng.1&scope=current",
+      "status": 200
+    },
+    {
+      "path": "/api/nba/rankings",
+      "query": "market=rebounds&calendar=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/nba/rankings",
+      "query": "market=points&calendar=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/nba/performance",
+      "query": "period=Week&market=points",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4351851/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4432847/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4683678/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4433137/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4277811/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910037",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910038",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910039",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910040",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910042",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910044",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3059318/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4433134/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/5081727/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/5124612/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4900671/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4431678/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4395724/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3907498/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3945274/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4278073/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/6606/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3133628/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4591725/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4592691/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4683778/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4684272/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4397688/history",
+      "query": "market=points&before=2026-11-24T01%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4432848/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4278580/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3995/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/top-plays",
+      "query": "sport=nfl",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nfl",
+      "status": 200
+    },
+    {
+      "path": "/api/nfl/rankings",
+      "query": "market=passing_tds&day=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/nfl/rankings",
+      "query": "market=passing_yards&day=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/football/live-player-stats",
+      "query": "sport=nfl&gameId=401873078",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nfl&league=eng.1",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard-summary",
+      "query": "sport=nfl&league=eng.1&scope=current",
+      "status": 200
+    },
+    {
+      "path": "/api/top-plays",
+      "query": "sport=nhl",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nhl",
+      "status": 200
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nhl&league=eng.1",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard-summary",
+      "query": "sport=nhl&league=eng.1&scope=current",
+      "status": 200
+    },
+    {
+      "path": "/api/nhl/rankings",
+      "query": "market=shots_on_goal&slate=today",
+      "status": 200
+    },
+    {
+      "path": "/api/nhl/rankings",
+      "query": "market=points&slate=today",
+      "status": 200
+    },
+    {
+      "path": "/api/nhl/player/8478873/history",
+      "query": "market=shots_on_goal&before=2026-11-24T02%3A40%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8478460/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8485366/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8483445/history",
+      "query": "market=shots_on_goal&before=2026-11-24T02%3A40%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8479407/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020378",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020379",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020380",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020381",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020382",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020383",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020384",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8479410/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481605/history",
+      "query": "market=shots_on_goal&before=2026-11-24T02%3A40%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8480014/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481540/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8483515/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8477960/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8480018/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8482720/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8475745/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481559/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481557/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8478398/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8477939/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8484227/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8478864/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8483457/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481528/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8484801/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8477500/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8480208/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/top-plays",
+      "query": "sport=nba",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nba",
+      "status": 200
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nba&league=eng.1",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard-summary",
+      "query": "sport=nba&league=eng.1&scope=current",
+      "status": 200
+    },
+    {
+      "path": "/api/nba/rankings",
+      "query": "market=rebounds&calendar=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/nba/rankings",
+      "query": "market=points&calendar=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/nba/performance",
+      "query": "period=Week&market=points",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4351851/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4432847/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4683678/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4433137/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4277811/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910036",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910037",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910038",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910039",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910040",
+      "status": 503
+    },
+    {
+      "path": "/api/basketball/live-player-stats",
+      "query": "sport=nba&gameId=401910044",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/2583632/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4602025/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4396971/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3059318/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4433134/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/5081727/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/5124612/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4900671/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4431678/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4395724/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3907498/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3945274/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4433287/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4278073/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4395651/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/6606/history",
+      "query": "market=points&before=2026-11-24T00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/3133628/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4591725/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4592691/history",
+      "query": "market=points&before=2026-11-24T03%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nba/player/4683778/history",
+      "query": "market=points&before=2026-11-24T00%3A30Z",
+      "status": 503
+    },
+    {
+      "path": "/api/top-plays",
+      "query": "sport=nfl",
+      "status": 503
+    },
+    {
+      "path": "/api/nfl/rankings",
+      "query": "market=passing_yards&day=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/football/live-player-stats",
+      "query": "sport=nfl&gameId=401873078",
+      "status": 503
+    },
+    {
+      "path": "/api/nfl/rankings",
+      "query": "market=passing_tds&day=2026-11-23",
+      "status": 200
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nfl",
+      "status": 200
+    },
+    {
+      "path": "/api/football/live-player-stats",
+      "query": "sport=nfl&gameId=401873078",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nfl&league=eng.1",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard-summary",
+      "query": "sport=nfl&league=eng.1&scope=current",
+      "status": 200
+    },
+    {
+      "path": "/api/top-plays",
+      "query": "sport=nhl",
+      "status": 503
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nhl",
+      "status": 200
+    },
+    {
+      "path": "/api/game-slate",
+      "query": "sport=nhl&league=eng.1",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard-summary",
+      "query": "sport=nhl&league=eng.1&scope=current",
+      "status": 200
+    },
+    {
+      "path": "/api/nhl/rankings",
+      "query": "market=shots_on_goal&slate=today",
+      "status": 200
+    },
+    {
+      "path": "/api/nhl/rankings",
+      "query": "market=points&slate=today",
+      "status": 200
+    },
+    {
+      "path": "/api/nhl/player/8478873/history",
+      "query": "market=shots_on_goal&before=2026-11-24T02%3A40%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8478460/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8485366/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8483445/history",
+      "query": "market=shots_on_goal&before=2026-11-24T02%3A40%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8479407/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020378",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020379",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020380",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020381",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020382",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020383",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/live-player-stats",
+      "query": "gameId=2026020384",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8479410/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481605/history",
+      "query": "market=shots_on_goal&before=2026-11-24T02%3A40%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8480014/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481540/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8483515/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8477960/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8480018/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8482720/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8475745/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481559/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481557/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8478398/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8477939/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8484227/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8478864/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8483457/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8481528/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8484801/history",
+      "query": "market=shots_on_goal&before=2026-11-24T03%3A00%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8477500/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    },
+    {
+      "path": "/api/nhl/player/8480208/history",
+      "query": "market=shots_on_goal&before=2026-11-24T00%3A30%3A00Z",
+      "status": 503
+    }
+  ],
+  "suppressed": [
+    "/api/top-plays",
+    "/api/nba/performance",
+    "/api/nba/player/4351851/history",
+    "/api/nba/player/4432847/history",
+    "/api/nba/player/4683678/history",
+    "/api/nba/player/4433137/history",
+    "/api/nba/player/4277811/history",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/nba/player/3059318/history",
+    "/api/nba/player/4433134/history",
+    "/api/nba/player/5081727/history",
+    "/api/nba/player/5124612/history",
+    "/api/nba/player/4900671/history",
+    "/api/nba/player/4431678/history",
+    "/api/nba/player/4395724/history",
+    "/api/nba/player/3907498/history",
+    "/api/nba/player/3945274/history",
+    "/api/nba/player/4278073/history",
+    "/api/nba/player/6606/history",
+    "/api/nba/player/3133628/history",
+    "/api/nba/player/4591725/history",
+    "/api/nba/player/4592691/history",
+    "/api/nba/player/4683778/history",
+    "/api/nba/player/4684272/history",
+    "/api/nba/player/4397688/history",
+    "/api/nba/player/4432848/history",
+    "/api/nba/player/4278580/history",
+    "/api/nba/player/3995/history",
+    "/api/top-plays",
+    "/api/football/live-player-stats",
+    "/api/top-plays",
+    "/api/nhl/player/8478873/history",
+    "/api/nhl/player/8478460/history",
+    "/api/nhl/player/8485366/history",
+    "/api/nhl/player/8483445/history",
+    "/api/nhl/player/8479407/history",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/player/8479410/history",
+    "/api/nhl/player/8481605/history",
+    "/api/nhl/player/8480014/history",
+    "/api/nhl/player/8481540/history",
+    "/api/nhl/player/8483515/history",
+    "/api/nhl/player/8477960/history",
+    "/api/nhl/player/8480018/history",
+    "/api/nhl/player/8482720/history",
+    "/api/nhl/player/8475745/history",
+    "/api/nhl/player/8481559/history",
+    "/api/nhl/player/8481557/history",
+    "/api/nhl/player/8478398/history",
+    "/api/nhl/player/8477939/history",
+    "/api/nhl/player/8484227/history",
+    "/api/nhl/player/8478864/history",
+    "/api/nhl/player/8483457/history",
+    "/api/nhl/player/8481528/history",
+    "/api/nhl/player/8484801/history",
+    "/api/nhl/player/8477500/history",
+    "/api/nhl/player/8480208/history",
+    "/api/top-plays",
+    "/api/nba/performance",
+    "/api/nba/player/4351851/history",
+    "/api/nba/player/4432847/history",
+    "/api/nba/player/4683678/history",
+    "/api/nba/player/4433137/history",
+    "/api/nba/player/4277811/history",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/basketball/live-player-stats",
+    "/api/nba/player/2583632/history",
+    "/api/nba/player/4602025/history",
+    "/api/nba/player/4396971/history",
+    "/api/nba/player/3059318/history",
+    "/api/nba/player/4433134/history",
+    "/api/nba/player/5081727/history",
+    "/api/nba/player/5124612/history",
+    "/api/nba/player/4900671/history",
+    "/api/nba/player/4431678/history",
+    "/api/nba/player/4395724/history",
+    "/api/nba/player/3907498/history",
+    "/api/nba/player/3945274/history",
+    "/api/nba/player/4433287/history",
+    "/api/nba/player/4278073/history",
+    "/api/nba/player/4395651/history",
+    "/api/nba/player/6606/history",
+    "/api/nba/player/3133628/history",
+    "/api/nba/player/4591725/history",
+    "/api/nba/player/4592691/history",
+    "/api/nba/player/4683778/history",
+    "/api/top-plays",
+    "/api/football/live-player-stats",
+    "/api/football/live-player-stats",
+    "/api/top-plays",
+    "/api/nhl/player/8478873/history",
+    "/api/nhl/player/8478460/history",
+    "/api/nhl/player/8485366/history",
+    "/api/nhl/player/8483445/history",
+    "/api/nhl/player/8479407/history",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/live-player-stats",
+    "/api/nhl/player/8479410/history",
+    "/api/nhl/player/8481605/history",
+    "/api/nhl/player/8480014/history",
+    "/api/nhl/player/8481540/history",
+    "/api/nhl/player/8483515/history",
+    "/api/nhl/player/8477960/history",
+    "/api/nhl/player/8480018/history",
+    "/api/nhl/player/8482720/history",
+    "/api/nhl/player/8475745/history",
+    "/api/nhl/player/8481559/history",
+    "/api/nhl/player/8481557/history",
+    "/api/nhl/player/8478398/history",
+    "/api/nhl/player/8477939/history",
+    "/api/nhl/player/8484227/history",
+    "/api/nhl/player/8478864/history",
+    "/api/nhl/player/8483457/history",
+    "/api/nhl/player/8481528/history",
+    "/api/nhl/player/8484801/history",
+    "/api/nhl/player/8477500/history",
+    "/api/nhl/player/8480208/history"
+  ]
+}

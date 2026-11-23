@@ -1,0 +1,12 @@
+{
+  "rawOffers": 8239,
+  "counts": {
+    "verified_official_player_fixture": 8189,
+    "outside_current_Toronto_day": 50
+  },
+  "unresolvedCurrentExecutableOffers": 0,
+  "unresolvedCurrentNames": [],
+  "everyPositionAccounted": true,
+  "officialIdsInvented": false,
+  "roleReasonsJoinedFromNativeModelCensus": true
+}

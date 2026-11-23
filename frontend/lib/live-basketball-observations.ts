@@ -11,10 +11,11 @@ import {assertNbaRankingActive} from '@/lib/nba-ranking-work';
 import {dashboardJobContext} from '@/lib/dashboard-job-context';
 type SourceReceipt={payload:any;observedAt:string;lastVerifiedAt?:string};
 type EvidenceReference={source:string;sha256:string;observedAt:string;lastVerifiedAt:string;recovered:boolean};
-type Refresh={observations:OpportunityGame[];unavailablePlayers:string[];checkedAt:string;sourceEvidence?:EvidenceReference[];sourceBudget?:{attempted:number;limit:number|null;exhausted:boolean};discoveryRecovery?:{deniedPlayers:number;storedDiscoveryPlayers:number;recoveredPlayers:number;scheduleFailures:number}};
-// At most two subrequests per foreground source (durable read + HTTP),
-// leaving94 of the Worker's350 for schedules, rosters, odds and history.
-const NBA_FOREGROUND_SOURCE_LIMIT=128;
+type Refresh={observations:OpportunityGame[];unavailablePlayers:string[];checkedAt:string;sourceEvidence?:EvidenceReference[];sourceBudget?:{attempted:number;distinctSources:number;limit:number|null;exhausted:boolean};discoveryRecovery?:{deniedPlayers:number;storedDiscoveryPlayers:number;recoveredPlayers:number;scheduleFailures:number}};
+// Meter durable reads and live source reads separately. A recovered FINAL costs
+// one operation, not two. Keep the same256-operation ceiling, reserving94 of
+// the Worker's350 for schedules, rosters, odds and history.
+const NBA_FOREGROUND_SOURCE_LIMIT=256;
 type JsonSource=(url:string)=>Promise<any>;
 const cache=boundedValueCache<Refresh>(4*1024*1024,4);
 const pending=new Map<string,Promise<Refresh>>();
@@ -53,23 +54,26 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
  if(get===officialJson&&!options.evidence&&!evidence?.write){const hit=cache.get(key);if(hit&&(!hit.sourceEvidence||hit.sourceEvidence.every(e=>e.source.includes('/summary?')||now-Date.parse(e.lastVerifiedAt)<15*60000)))return hit;if(pending.has(key))return pending.get(key)!}
  const task=(async()=>{
   const sourceEvidence:EvidenceReference[]=[];
-  const requestedSources=new Set<string>();let sourceBudgetExhausted=false;
+  const requestedSources=new Set<string>();let sourceBudgetExhausted=false,sourceOperations=0;
   const resumableNbaCapture=sport==='nba'&&Boolean(dashboardJobContext()?.writeNbaEvidence);
   const admit=(source:string)=>{
    if(sport==='nba')assertNbaRankingActive();
-   if(sport==='nba'&&!requestedSources.has(source)){
-    if(!resumableNbaCapture&&requestedSources.size>=NBA_FOREGROUND_SOURCE_LIMIT){sourceBudgetExhausted=true;throw Error('nba_history_source_budget');}
-    requestedSources.add(source);
-   }
+   if(sport==='nba')requestedSources.add(source);
   };
+  const spend=()=>{
+   if(sport!=='nba')return;
+   if(!resumableNbaCapture&&sourceOperations>=NBA_FOREGROUND_SOURCE_LIMIT){sourceBudgetExhausted=true;throw Error('nba_history_source_budget');}
+   sourceOperations++;
+  };
+  const live=(source:string)=>{spend();return get===officialJson?officialRead(source):get(source).then(payload=>({payload,observedAt:new Date(now).toISOString()}));};
   const evidenceReads=new Map<string,Promise<Awaited<ReturnType<NbaEvidenceAccess['read']>>>>();
   const access:NbaEvidenceAccess|undefined=evidence?{read:source=>{
-   admit(source);let pending=evidenceReads.get(source);if(!pending){pending=Promise.resolve().then(()=>evidence.read(source));evidenceReads.set(source,pending);}return pending;
+   admit(source);let pending=evidenceReads.get(source);if(!pending){spend();pending=Promise.resolve().then(()=>evidence.read(source));evidenceReads.set(source,pending);}return pending;
   },...(evidence.write?{write:async(value)=>{const result=await evidence.write!(value);evidenceReads.delete(value.source);return result;}}:{})}:undefined;
   const read=async(source:string):Promise<SourceReceipt>=>{
    admit(source);
-   if(!access)return get===officialJson?officialRead(source):{payload:await get(source),observedAt:new Date(now).toISOString()};
-   const loaded=await readNbaHistorySource(source,now,()=>get===officialJson?officialRead(source):get(source).then(payload=>({payload,observedAt:new Date(now).toISOString()})),access);
+   if(!access)return live(source);
+   const loaded=await readNbaHistorySource(source,now,()=>live(source),access);
    if(sport==='nba')assertNbaRankingActive();
    sourceEvidence.push({source,sha256:loaded.evidence.sha256,observedAt:loaded.evidence.observedAt,lastVerifiedAt:loaded.evidence.lastVerifiedAt,recovered:loaded.recovered});
    return {payload:loaded.evidence.payload,observedAt:loaded.evidence.observedAt,lastVerifiedAt:loaded.evidence.lastVerifiedAt};
@@ -148,7 +152,7 @@ export async function refreshBasketballObservations(sport:'nba'|'cbb',rows:any[]
    }catch(error){if(sport==='nba')rethrowNbaEvidenceCancellation(error);fixtureFailures++;for(const id of fixture.players)unavailable.add(id)}
   }));
   console.info('[basketball refresh audit]',JSON.stringify({sport,players:players.length,discoveredFixtures:jobs.length,omittedFixtures:jobs.length-fixtureLimit,gamelogFailures,scheduleFailures,calendarRecovered:deniedRows.filter(r=>!unavailable.has(String(r.playerId))).length,fixtureFailures,unavailablePlayers:unavailable.size,observations:observations.length,sourceBudgetExhausted}));
-  const value={observations,unavailablePlayers:[...unavailable].sort(),checkedAt:new Date(now).toISOString(),...(sport==='nba'?{sourceBudget:{attempted:requestedSources.size,limit:resumableNbaCapture?null:NBA_FOREGROUND_SOURCE_LIMIT,exhausted:sourceBudgetExhausted}}:{}),...(deniedRows.length?{discoveryRecovery:{deniedPlayers:deniedRows.length-storedDiscoveryPlayers,storedDiscoveryPlayers,recoveredPlayers:deniedRows.filter(r=>!unavailable.has(String(r.playerId))).length,scheduleFailures}}:{}),...(evidence?{sourceEvidence:sourceEvidence.sort((a,b)=>a.source.localeCompare(b.source))}:{})};
+  const value={observations,unavailablePlayers:[...unavailable].sort(),checkedAt:new Date(now).toISOString(),...(sport==='nba'?{sourceBudget:{attempted:sourceOperations,distinctSources:requestedSources.size,limit:resumableNbaCapture?null:NBA_FOREGROUND_SOURCE_LIMIT,exhausted:sourceBudgetExhausted}}:{}),...(deniedRows.length?{discoveryRecovery:{deniedPlayers:deniedRows.length-storedDiscoveryPlayers,storedDiscoveryPlayers,recoveredPlayers:deniedRows.filter(r=>!unavailable.has(String(r.playerId))).length,scheduleFailures}}:{}),...(evidence?{sourceEvidence:sourceEvidence.sort((a,b)=>a.source.localeCompare(b.source))}:{})};
   if(get===officialJson&&!options.evidence){cache.set(key,value,Math.max(0,Math.min(unavailable.size?30_000:15*60_000,calendarExpires-now)),now)}
   return value;
  })();

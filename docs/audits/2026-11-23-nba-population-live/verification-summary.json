@@ -1,0 +1,15 @@
+{
+  "officialRosterSlots": 353,
+  "rosterMarketRows": 2471,
+  "currentQuoteModelRows": 764,
+  "quotedWithModels": 736,
+  "quotedHeld": 28,
+  "uniqueQuotedPlayerFixtures": 121,
+  "noForecastsInvented": true,
+  "newSourceRequests": 142,
+  "collectionSeconds": 36.26,
+  "maxConcurrentSourceRequests": 1,
+  "retries": 0,
+  "sourceErrors": 0,
+  "statisticalModelChanged": false
+}

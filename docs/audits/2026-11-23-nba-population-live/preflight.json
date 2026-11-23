@@ -1,0 +1,156 @@
+{
+  "observedAt": "2026-11-23T19:12:43.610Z",
+  "dashboard": {
+    "id": "5f930400-3285-4177-b1d8-ed5307374566",
+    "source": "cf_cli",
+    "strategy": "percentage",
+    "annotations": {
+      "workers/message": "Approved diagnostic only; cae200070535; no R1 r...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "48e8858a-7326-41ea-9457-532c74ec3337",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-22T17:44:14.008529Z"
+  },
+  "CW08": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  },
+  "CW08Schedules": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  },
+  "schedules": {
+    "schedules": [
+      {
+        "cron": "0,30 * * * *",
+        "created_on": "2026-11-09T10:32:52.803607Z",
+        "modified_on": "2026-11-09T10:32:52.803607Z"
+      },
+      {
+        "cron": "10-17 9 * * *",
+        "created_on": "2026-11-09T05:43:58.936277Z",
+        "modified_on": "2026-11-09T05:43:58.936277Z"
+      },
+      {
+        "cron": "*/2 * * * *",
+        "created_on": "2026-11-09T10:32:52.803607Z",
+        "modified_on": "2026-11-09T10:32:52.803607Z"
+      }
+    ]
+  },
+  "settings": {
+    "compatibility_date": "2026-11-06",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "limits": {
+      "subrequests": 350
+    },
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "redact_query_string": true,
+      "logs": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "persist": true,
+        "invocation_logs": true
+      },
+      "traces": {
+        "enabled": true,
+        "persist": true,
+        "head_sampling_rate": 0.1
+      }
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "BACKUP_DRIVE_FOLDER_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "DASHBOARD_JOBS",
+        "type": "durable_object_namespace",
+        "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+        "class_name": "DashboardJobQueue"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_REFRESH_TOKEN",
+        "type": "secret_text"
+      },
+      {
+        "name": "OWLS_INSIGHT_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SPORTSGAMEODDS_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_SECRET_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_URL",
+        "type": "secret_text"
+      },
+      {
+        "name": "VINEXT_KV_CACHE",
+        "type": "kv_namespace",
+        "namespace_id": "644df6a469e84dba90c8f7dac410f895"
+      }
+    ]
+  },
+  "triggers": [
+    {
+      "trigger_uuid": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "branch_excludes": [],
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "root_directory": "/"
+    }
+  ],
+  "rollbackAvailable": "48e8858a-7326-41ea-9457-532c74ec3337",
+  "previousManual": {
+    "build_command": "test \"$(git rev-parse HEAD)\" = 85e3dbf3b8792d94610bffb58c342defbba1c8e8 && cd frontend && npm ci --ignore-scripts && node -e \"require('node:fs').rmSync('.cloudflare/output/v0',{recursive:true,force:true})\" && node scripts/prepare-nba-odds-diagnostic.mjs --prepare-frozen .cloudflare/output/v0",
+    "deploy_command": "cd frontend && node -e \"require('node:fs').rmSync('.cloudflare/output/v0',{recursive:true,force:true})\" && node scripts/prepare-nba-odds-diagnostic.mjs --prepare-frozen .cloudflare/output/v0 && node scripts/deploy-cloudflare.mjs --tag nba-odds-diagnostic --message 'Approved diagnostic only; cae200070535; no R1 release'",
+    "status": "stopped",
+    "outcome": "success"
+  }
+}
