@@ -1,0 +1,35 @@
+{
+  "decision": "GO_FOR_SEPARATE_CONTROLLED_RELEASE_APPROVAL",
+  "artifact": "R1-2026-11-23-78ed0d5-cf008e306082",
+  "newNodeTests": {
+    "compiledSmoke": 5,
+    "compiledRedirectDenialTimeout": 3,
+    "compiledRollback": 1,
+    "frozenPackage": 2,
+    "passed": 11,
+    "failed": 0
+  },
+  "additionalChecks": {
+    "allSevenNbaFullRoutes": true,
+    "actualShippingInitialStateWarmup": true,
+    "archiveAndPerFileChecksums": true,
+    "backupAndProtectedAggregate": true
+  },
+  "typeScriptDiagnostics": 0,
+  "productionBuildPassed": true,
+  "uploadFreeDryRunPassed": true,
+  "gzipUploadKiB": 7580.04,
+  "fullSuiteRepeated": false,
+  "productionUploaded": false,
+  "productionWrites": 0,
+  "productionAcceptancePassed": false,
+  "automaticBuildsPaused": true,
+  "cw08Changed": false,
+  "firstStartupHarnessCorrection": "The first local harness advanced only the coordinator clock while Date.now stayed frozen; cached receipt times therefore appeared in the future. Corrected the test clock to advance together. No application change; actual compiled startup then reaches originals in three phases. This was not a real provider failure or candidate deployment.",
+  "reusedEvidence": [
+    "2026-11-21-nba-seven-market-verification",
+    "2026-11-22-nba-diagnostic-live",
+    "2026-11-22-r1-readiness",
+    "2026-11-23-nba-population-live"
+  ]
+}

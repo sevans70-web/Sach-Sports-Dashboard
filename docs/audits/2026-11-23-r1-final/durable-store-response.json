@@ -1,0 +1,86 @@
+{
+  "result": {
+    "results": [
+      {
+        "columns": [
+          "versions",
+          "bytes"
+        ],
+        "rows": [
+          [
+            101,
+            764248
+          ]
+        ],
+        "meta": {
+          "rows_read": 101,
+          "rows_written": 0
+        }
+      },
+      {
+        "columns": [
+          "pointers",
+          "calendars",
+          "latest_verified"
+        ],
+        "rows": [
+          [
+            101,
+            0,
+            "2026-11-17T22:04:46.689002Z"
+          ]
+        ],
+        "meta": {
+          "rows_read": 101,
+          "rows_written": 0
+        }
+      },
+      {
+        "columns": [
+          "id",
+          "kind",
+          "sport",
+          "state",
+          "touched"
+        ],
+        "rows": [
+          [
+            "capture:nba:threes_made:14957960",
+            "capture",
+            "nba",
+            "blocked",
+            1794955384461
+          ],
+          [
+            "capture:nba:assists:14957960",
+            "capture",
+            "nba",
+            "blocked",
+            1794955382860
+          ],
+          [
+            "capture:nba:steals:14957961",
+            "capture",
+            "nba",
+            "active",
+            1794955381225
+          ],
+          [
+            "capture:nba:blocks:14957961",
+            "capture",
+            "nba",
+            "active",
+            1794955379469
+          ]
+        ],
+        "meta": {
+          "rows_read": 128,
+          "rows_written": 0
+        }
+      }
+    ]
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}

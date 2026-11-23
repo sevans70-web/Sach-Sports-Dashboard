@@ -1,0 +1,60 @@
+{
+  "schema": "r1-dashboard-release/v1",
+  "artifact": "R1-2026-11-23-78ed0d5-cf008e306082",
+  "status": "rehearsal_passed_awaiting_approval",
+  "worker": "sach-sports-cloudflare-test",
+  "sourceCommit": "78ed0d5f43e6fa143124d3086792c218a6b6bc04",
+  "sourceFrontendTree": "276079ebef52c75fe0093543a6f786bddfe8cf70",
+  "applicationRepairCommit": "58829c2d391d1a95dd9da7ade0ded78e1d0937e2",
+  "includedVerifiedCommits": [
+    "58829c2",
+    "d605e1a",
+    "6d98710",
+    "600bd5d",
+    "1167c46",
+    "6f8980b"
+  ],
+  "bundleDigest": "cf008e306082cb3d487760408fed859eeb2076d4969946e34fc57bdee629447a",
+  "files": 427,
+  "allFileChecksums": "files.json",
+  "allFileChecksumsSha256": "ca3f4f99a30de602e7622142407680c6148ab64d1de90ecafca4312908fc7d1d",
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 10370428,
+    "sha256": "66bc09b81d087ebb5b6faf19ce6b54c6124b3cb1ddb7690e32fb5898ed463531"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "immediatePriorVersion": "9b38d251-9f0a-4d95-b07c-fc7feb6eab93",
+  "immediatePriorDeployment": "907bf0e9-e512-48d6-8629-ab9b33a68710",
+  "productionDeployed": false,
+  "approvalRequired": true,
+  "createdAt": "2026-11-23T21:40:31.372Z",
+  "execution": "Local preparation, exact prebuilt artifact only; no upload or production-data initialization authorized in preparation",
+  "startup": "Bounded native capture alarm refreshes current official inputs into existing operational evidence tables. No historical import/restamp. Original101 evidence pointers preserved in rehearsal. Stop on failed acceptance.",
+  "runtime": {
+    "compatibilityDate": "2026-11-06",
+    "compatibilityFlags": [
+      "nodejs_compat"
+    ],
+    "subrequests": 350,
+    "foregroundNbaSourceOperations": 256,
+    "jobSubrequests": 220,
+    "jobSourceConcurrency": 4,
+    "jobDeadlineMs": 25000,
+    "jobSourceTimeoutMs": 10000,
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "kv": "644df6a469e84dba90c8f7dac410f895",
+    "newNamespaces": 0,
+    "newMigrations": 0
+  },
+  "scope": [
+    "NBA redirect/cache/EV/PR memory repairs; stored-input durable cold recovery and exact ID/team quote matching",
+    "NFL selected-day schedule,17-tab visibility and bounded checkpoint/capture recovery",
+    "NHL loading/rankings/evidence recovery; unchanged frozen model safeguards",
+    "Independent bounded capture/grading and compatible held rollback"
+  ],
+  "protectedBackupRecords": 20468,
+  "cw08Changes": false,
+  "automaticBuildsRemainPaused": true,
+  "fullR1LiveAcceptancePassed": false
+}

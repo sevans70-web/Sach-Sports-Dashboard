@@ -1,0 +1,259 @@
+{
+  "scope": "Exact new compiled shipping entry, captured November23 current slate/odds/context,152validated original-timestamp durable inputs, entire Worker restart, optional statistics403, all history HTTP forbidden. Other requested schedule dates intentionally empty contract fixtures; not live candidate acceptance.",
+  "clock": "2026-11-23T19:22:04.930Z",
+  "sourceCommit": "78ed0d5",
+  "markets": [
+    {
+      "market": "points",
+      "status": 200,
+      "rows": 25,
+      "ms": 6957,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "price_threshold_not_met": 51,
+        "selected": 66,
+        "prior_basketball_role_uncertain": 2,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 120,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 120,
+          "recoveredPlayers": 120,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    },
+    {
+      "market": "rebounds",
+      "status": 200,
+      "rows": 25,
+      "ms": 7897,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "selected": 53,
+        "prior_basketball_role_uncertain": 2,
+        "price_threshold_not_met": 62,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 118,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 118,
+          "recoveredPlayers": 118,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    },
+    {
+      "market": "assists",
+      "status": 200,
+      "rows": 25,
+      "ms": 892,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "prior_basketball_role_uncertain": 2,
+        "price_threshold_not_met": 50,
+        "selected": 49,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 102,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 102,
+          "recoveredPlayers": 102,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    },
+    {
+      "market": "threes_made",
+      "status": 200,
+      "rows": 25,
+      "ms": 796,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "selected": 61,
+        "prior_basketball_role_uncertain": 2,
+        "price_threshold_not_met": 38,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 102,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 102,
+          "recoveredPlayers": 102,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    },
+    {
+      "market": "pts_rebs_asts",
+      "status": 200,
+      "rows": 25,
+      "ms": 1004,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "prior_basketball_role_uncertain": 2,
+        "price_threshold_not_met": 30,
+        "selected": 70,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 103,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 103,
+          "recoveredPlayers": 103,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    },
+    {
+      "market": "pts_rebs",
+      "status": 200,
+      "rows": 25,
+      "ms": 948,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "selected": 78,
+        "prior_basketball_role_uncertain": 2,
+        "price_threshold_not_met": 33,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 114,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 114,
+          "recoveredPlayers": 114,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    },
+    {
+      "market": "pts_asts",
+      "status": 200,
+      "rows": 25,
+      "ms": 835,
+      "ev": {
+        "available": 25,
+        "unavailable": 0,
+        "reasons": {}
+      },
+      "forecastBlockers": {
+        "selected": 65,
+        "price_threshold_not_met": 30,
+        "prior_basketball_role_uncertain": 2,
+        "player_team_history_unavailable": 1
+      },
+      "history": {
+        "requested": 98,
+        "unavailable": 0,
+        "checkedAt": "2026-11-23T19:22:04.930Z",
+        "sourceBudget": {
+          "attempted": 152,
+          "distinctSources": 152,
+          "limit": 256,
+          "exhausted": false
+        },
+        "discoveryRecovery": {
+          "deniedPlayers": 0,
+          "storedDiscoveryPlayers": 98,
+          "recoveredPlayers": 98,
+          "scheduleFailures": 0
+        },
+        "sourceReferences": 152
+      }
+    }
+  ],
+  "requests": 71,
+  "peakOutbound": 1,
+  "protectedWrites": 0,
+  "unrecordedSources": [],
+  "historyProviderCalls": 0,
+  "durableUnchanged": true,
+  "CloudflareSubrequestLimit": 350
+}

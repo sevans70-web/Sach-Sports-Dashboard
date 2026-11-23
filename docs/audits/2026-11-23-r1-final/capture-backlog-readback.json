@@ -1,0 +1,163 @@
+{
+  "observedAt": "2026-11-23T21:41:48.884Z",
+  "result": [
+    {
+      "sport": "nba",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "state",
+              "jobs",
+              "first_due",
+              "first_touch",
+              "last_touch"
+            ],
+            "rows": [
+              [
+                "active",
+                2,
+                1794955439469,
+                1794955379469,
+                1794955381225
+              ],
+              [
+                "blocked",
+                2,
+                1794957182860,
+                1794955382860,
+                1794955384461
+              ],
+              [
+                "done",
+                60,
+                1794716351767,
+                1794716350813,
+                1794773525503
+              ]
+            ],
+            "meta": {
+              "rows_read": 128,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "key",
+              "value"
+            ],
+            "rows": [
+              [
+                "lease",
+                "null"
+              ]
+            ],
+            "meta": {
+              "rows_read": 3,
+              "rows_written": 0
+            }
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": []
+    },
+    {
+      "sport": "nfl",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "state",
+              "jobs",
+              "first_due",
+              "first_touch",
+              "last_touch"
+            ],
+            "rows": [
+              [
+                "done",
+                47,
+                1794716590083,
+                1794716589415,
+                1794849193503
+              ]
+            ],
+            "meta": {
+              "rows_read": 94,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "key",
+              "value"
+            ],
+            "rows": [
+              [
+                "lease",
+                "null"
+              ]
+            ],
+            "meta": {
+              "rows_read": 3,
+              "rows_written": 0
+            }
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": []
+    },
+    {
+      "sport": "nhl",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "state",
+              "jobs",
+              "first_due",
+              "first_touch",
+              "last_touch"
+            ],
+            "rows": [
+              [
+                "done",
+                25,
+                1794765429630,
+                1794765429006,
+                1794803520261
+              ]
+            ],
+            "meta": {
+              "rows_read": 50,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "key",
+              "value"
+            ],
+            "rows": [
+              [
+                "lease",
+                "null"
+              ]
+            ],
+            "meta": {
+              "rows_read": 3,
+              "rows_written": 0
+            }
+          }
+        ]
+      },
+      "success": true,
+      "errors": [],
+      "messages": []
+    }
+  ]
+}

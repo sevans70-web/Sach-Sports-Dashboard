@@ -1,0 +1,722 @@
+{
+  "scope": "Exact shipping full NBA Points capture route, isolated SQLite from101originalFINALs/zero calendars; original capture source bodies and simulated previously recorded athlete403, no production access; stops before protected-record persistence phase.",
+  "phases": [
+    {
+      "phase": 1,
+      "state": "active",
+      "phaseName": "rank",
+      "reason": "job_subrequest_budget",
+      "usage": {
+        "used": 216,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 108,
+          "history_http": 1,
+          "official_http": 105,
+          "odds_or_other_http": 2
+        },
+        "cacheHits": 10,
+        "cacheWrites": 30,
+        "checkpointBytes": 2027863,
+        "completedRequests": 108,
+        "maxActive": 4,
+        "maxReserved": 12,
+        "coalesced": 0,
+        "queuedCancelled": 0,
+        "aborted": 0,
+        "sourceDenials": [
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?region=us&lang=en&contentorigin=espn&isqualified=false&limit=500&sort=offensive.avgPoints%3Adesc&season=2026&seasontype=2&page=1",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/1966/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3059318/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4351851/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5105565/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4431736/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4683021/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5081727/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/6606/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4683678/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4431678/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3995/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3917376/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5124612/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4873138/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5041955/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4397014/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433627/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4592691/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278580/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433136/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433137/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4277811/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3945274/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3907498/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4277919/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3992/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5041951/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4871145/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432822/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5023693/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4066328/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4576087/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4711294/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4397189/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3908809/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4591725/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5082206/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4684272/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395724/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3134908/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432848/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433134/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5093267/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3134907/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5149115/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395725/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3133628/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395712/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4017837/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3149673/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3133603/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4900671/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278073/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4222252/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4683778/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/2991230/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4711272/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3202/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4684740/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4066648/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432639/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4065778/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4396907/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5254165/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3936099/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4871144/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465325931.0515
+          }
+        ],
+        "denialHits": 0
+      },
+      "progress": {
+        "sourceCheckpoints": 30,
+        "checkpointBytes": 2027863,
+        "lastCheckpointAt": 1795461725931.0515,
+        "stalledAttempts": 0,
+        "needsAttention": false
+      },
+      "pointers": 101
+    },
+    {
+      "phase": 2,
+      "state": "active",
+      "phaseName": "rank",
+      "reason": "job_subrequest_budget",
+      "usage": {
+        "used": 218,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 109,
+          "history_http": 1,
+          "official_http": 106,
+          "odds_or_other_http": 2
+        },
+        "cacheHits": 107,
+        "cacheWrites": 87,
+        "checkpointBytes": 20930563,
+        "completedRequests": 109,
+        "maxActive": 4,
+        "maxReserved": 12,
+        "coalesced": 0,
+        "queuedCancelled": 0,
+        "aborted": 0,
+        "sourceDenials": [
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3448/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3913176/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/2990992/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3150844/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3032976/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432816/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5101761/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3064514/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4397002/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432194/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432847/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4431671/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433247/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278104/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5175643/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5107173/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4845367/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5104157/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395630/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4594327/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5142620/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3064440/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4065732/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4066259/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4592479/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3155942/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4903027/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4600663/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5112087/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433287/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4684806/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433249/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395651/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4576060/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4396971/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4602025/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/2583632/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4065733/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4433083/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4432810/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4397136/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4066383/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4395628/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278402/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5144091/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4397688/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4437244/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3136193/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4278585/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/5061589/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/3155526/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4277813/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4601023/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          },
+          {
+            "endpoint": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/4869780/gamelog?season=2027",
+            "status": 403,
+            "retryAt": 1795465326932.0515
+          }
+        ],
+        "denialHits": 67
+      },
+      "progress": {
+        "sourceCheckpoints": 117,
+        "checkpointBytes": 22958426,
+        "lastCheckpointAt": 1795461726932.0515,
+        "stalledAttempts": 0,
+        "needsAttention": false
+      },
+      "pointers": 144
+    },
+    {
+      "phase": 3,
+      "state": "active",
+      "phaseName": "originals",
+      "reason": null,
+      "usage": {
+        "used": 156,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 78,
+          "history_http": 2,
+          "official_http": 74,
+          "odds_or_other_http": 2
+        },
+        "cacheHits": 42,
+        "cacheWrites": 133,
+        "checkpointBytes": 5031210,
+        "completedRequests": 78,
+        "maxActive": 4,
+        "maxReserved": 12,
+        "coalesced": 0,
+        "queuedCancelled": 0,
+        "aborted": 0,
+        "sourceDenials": [],
+        "denialHits": 1
+      },
+      "progress": {
+        "sourceCheckpoints": 250,
+        "checkpointBytes": 27989636,
+        "lastCheckpointAt": 1795461727933.0515,
+        "stalledAttempts": 0,
+        "needsAttention": false
+      },
+      "pointers": 211
+    }
+  ],
+  "eligible": 25,
+  "protectedWrites": 0,
+  "existing101PointersUnchanged": true,
+  "requests": 295,
+  "unexpected": []
+}
