@@ -37,6 +37,10 @@ test('compiled workerd: six-team cold recovery is bounded to two source requests
 });
 test('compiled workerd: a stalled response cancels, preserves earlier checkpoints and recovers without detached requests',{timeout:60000},async()=>{
  let calls=0,finals=0,stall=true;const r=await setup(req=>{calls++;if(req.url.includes('/summary?')&&++finals===2&&stall)return new Response(new ReadableStream({}));return recorded(req);});try{
+  // Establish the earlier completed FINAL before timing the deliberately
+  // stalled second response. A 50ms timer on a cold isolate can otherwise
+  // expire during fixture transfer and never reach the intended fault.
+  const primed=await r.call({limit:6});assert.equal(primed.ok,false);assert.equal(primed.error,'job_subrequest_budget');assert.equal((await r.call({inspect:true})).find(s=>s.key==='nfl-final-history:v1:8:2026').value.games.length,1);
   const failed=await r.call({requestTimeoutMs:50,deadlineMs:2000});assert.equal(failed.ok,false);assert.match(failed.error,/job_source_timeout/);assert.equal((await r.call({inspect:true})).find(s=>s.key==='nfl-final-history:v1:8:2026').value.games.length,1);const count=calls;await new Promise(resolve=>setTimeout(resolve,70));assert.equal(calls,count,'No source fetching continues after cancellation');stall=false;
   const recovered=await r.call({advance:31000});assert.equal(recovered.ok,true);assert.equal(recovered.games[0].completeFinals,eligibleFinals);
  }finally{await r.close();}

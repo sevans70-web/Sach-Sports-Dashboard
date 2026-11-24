@@ -1,0 +1,212 @@
+{
+  "scope": "Exact compiled Worker with real read-only isolated-restore records, locally constructed verified Drive wrappers (20,904-record backup; existing archive adapter, no interactive archive reads). No production/provider calls. Controlled Nov24 clock, explicit alarm delivery disabled only in local wrapper; elapsed timings real.",
+  "checks": [
+    {
+      "sport": "nba",
+      "stage": "cold-six-concurrent-main-featured",
+      "ms": [
+        1020,
+        985,
+        1012,
+        985,
+        1002,
+        985
+      ],
+      "records": 1212,
+      "sourceRequests": 13,
+      "archiveRequests": 0
+    },
+    {
+      "sport": "nba",
+      "stage": "repeated",
+      "ms": 48,
+      "records": 1212
+    },
+    {
+      "sport": "nfl",
+      "stage": "cold-six-concurrent-main-featured",
+      "ms": [
+        148,
+        145,
+        148,
+        145,
+        149,
+        146
+      ],
+      "records": 149,
+      "sourceRequests": 2,
+      "archiveRequests": 0
+    },
+    {
+      "sport": "nfl",
+      "stage": "repeated",
+      "ms": 8,
+      "records": 149
+    },
+    {
+      "sport": "nhl",
+      "stage": "cold-six-concurrent-main-featured",
+      "ms": [
+        223,
+        220,
+        224,
+        220,
+        226,
+        220
+      ],
+      "records": 254,
+      "sourceRequests": 4,
+      "archiveRequests": 0
+    },
+    {
+      "sport": "nhl",
+      "stage": "repeated",
+      "ms": 9,
+      "records": 254
+    },
+    {
+      "stage": "cold-isolate-durable-view",
+      "ms": 129,
+      "simulatorBootMs": 1524,
+      "totalMs": 1653,
+      "sourceRequests": 0
+    },
+    {
+      "sport": "nba",
+      "period": "Today",
+      "stage": "five-period-cached",
+      "ms": 19,
+      "records": 134,
+      "partial": true
+    },
+    {
+      "sport": "nba",
+      "period": "Yesterday",
+      "stage": "five-period-cached",
+      "ms": 12,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nba",
+      "period": "Week",
+      "stage": "five-period-cached",
+      "ms": 22,
+      "records": 134,
+      "partial": true
+    },
+    {
+      "sport": "nba",
+      "period": "Month",
+      "stage": "five-period-cached",
+      "ms": 32,
+      "records": 1212,
+      "partial": true
+    },
+    {
+      "sport": "nba",
+      "period": "Season",
+      "stage": "five-period-cached",
+      "ms": 85,
+      "records": 1212,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Today",
+      "stage": "five-period-cached",
+      "ms": 9,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Yesterday",
+      "stage": "five-period-cached",
+      "ms": 6,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Week",
+      "stage": "five-period-cached",
+      "ms": 7,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Month",
+      "stage": "five-period-cached",
+      "ms": 14,
+      "records": 149,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Season",
+      "stage": "five-period-cached",
+      "ms": 17,
+      "records": 149,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Today",
+      "stage": "five-period-cached",
+      "ms": 9,
+      "records": 4,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Yesterday",
+      "stage": "five-period-cached",
+      "ms": 7,
+      "records": 5,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Week",
+      "stage": "five-period-cached",
+      "ms": 7,
+      "records": 9,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Month",
+      "stage": "five-period-cached",
+      "ms": 25,
+      "records": 254,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Season",
+      "stage": "five-period-cached",
+      "ms": 25,
+      "records": 254,
+      "partial": true
+    }
+  ],
+  "sourceWrites": 0,
+  "localSimulatorBootMs": 5458,
+  "success": true,
+  "transport": {
+    "calls": 19,
+    "sourceWrites": 0,
+    "media": 0,
+    "lists": 0,
+    "protectedReads": 19,
+    "legacy": 0,
+    "maxActive": 2,
+    "archiveFiles": {
+      "nba": 96,
+      "nfl": 96,
+      "nhl": 96
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "status": "local_release_gates_passed_awaiting_separate_approval",
+  "newDistinctTargetedTests": 34,
+  "passed": 34,
+  "failedRemaining": 0,
+  "testGroups": {
+    "crossSportCardsFeaturedResources": 14,
+    "shippingNbaCacheAndColdConcurrentSummary": 3,
+    "shippingNbaSupportingHistoryTopAndBottomSevenMarkets": 1,
+    "shippingCaptureGradingForeground17TabsAndCompatibleRollback": 9,
+    "compiledNflCheckpointsDenialsCooldownConcurrencyTimeout": 5,
+    "frozenPackageRestoreUploadRejectionTamper": 2
+  },
+  "diagnosticSkip": "Only obsolete withdrawn-baseline opt-in is skipped in capture suite; no release acceptance check skipped. Name-filtered summary tests not rerun reuse previous compatibility evidence.",
+  "typescriptDiagnostics": 0,
+  "productionBuildPassed": true,
+  "dryRunPassed": true,
+  "newPerformanceRehearsalChecks": 22,
+  "performance": {
+    "scope": "Local full shipping bundle plus read-only authentic20904backup; source/Drive calls intercepted; test wrapper disables automatic alarms to isolate interactive work. Not actual Cloudflare performance.",
+    "nbaColdMs": 1020,
+    "nbaColdPlusLocalSimulatorBootMs": 6478,
+    "repeatMs": {
+      "nba": 48,
+      "nfl": 8,
+      "nhl": 9
+    },
+    "durableRestartMs": 129,
+    "restartIncludingSimulatorBootMs": 1653,
+    "maxCachedPeriodMs": 85,
+    "records": {
+      "nba": 1212,
+      "nfl": 149,
+      "nhl": 254
+    },
+    "sourceWrites": 0,
+    "interactiveArchiveRequests": 0,
+    "checks": 22
+  },
+  "nflCheckpointProgress": [
+    3,
+    7,
+    9
+  ],
+  "sixTeamRecovery": {
+    "sourceRequests": 58,
+    "chargedOperations": 116,
+    "budget": 220,
+    "maxConcurrentSources": 2
+  },
+  "shippingGrading": {
+    "nba": 4,
+    "nfl": 6,
+    "nhl": 6,
+    "unit": "maximum charged operations per phase, not full production rotation"
+  },
+  "fallback": {
+    "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+    "archiveSha256": "25aab16c46cf967700333b9ff4d9781c5d11575cadbc55f7a3ba1866e481d764",
+    "originalVerifierDigest": "86cb44524b36382a75fb7c2cf10d5909237c4292c0ede5d847b117b83d93289f",
+    "verifiedBy": "existing scripts/deploy-dashboard-release.mjs verifyOutput(fallback); its bundle-then-assets ordering differs from newer globally sorted fingerprint",
+    "lostAckRestartCompatible": true
+  },
+  "initialRehearsalFailures": {
+    "legacyNflFixture": "Old adapter omitted repaired team schedule/final endpoints, causing synthetic HTTP500. Explicit recorded-denial contract now covers both; same recovery assertions pass. No runtime relaxation.",
+    "timeoutFixture": "Cold50ms timer could expire before intended second response. First FINAL now established under6operation budget before injecting stalled body. Resume/no detached source assertions pass.",
+    "performanceHarness": "Automatic local alarms interleaved background work with interactive-only counters; isolate simulator boot from cached route time and disable automatic alarms only in test wrapper. Same15s cold/5s warm-concurrent limits retained."
+  },
+  "applicationRuntimeChangesThisTask": 0,
+  "protectedBackupBaseline": 20904,
+  "backupReuseOnly": true,
+  "freshProductionInventoryThisTask": false,
+  "productionDeployments": 0,
+  "productionWrites": 0,
+  "modelPromotion": false,
+  "CW08Modified": false,
+  "automaticBuildsPaused": true,
+  "liveAcceptanceClaimed": false,
+  "fullSuiteRepeated": false
+}

@@ -1,0 +1,4062 @@
+[
+  {
+    "path": ".gitignore",
+    "bytes": 29,
+    "sha256": "26d1df6f4c7e2ff37c89c7df747e0154a6e23783c77209c4c686e76e3598fc2f"
+  },
+  {
+    "path": "ADMIN.md",
+    "bytes": 5664,
+    "sha256": "324926f4d8cf68dcb795503e817e8869fdc0759253c9e65fd58cc1b3cfe0fd22"
+  },
+  {
+    "path": "DEVELOPMENT-STATE-2026-10-24.md",
+    "bytes": 4237,
+    "sha256": "f9a44b206908619abd4837e246e1e6115f6f06dab97f3ce0095dbab21ed75226"
+  },
+  {
+    "path": "GRADE-AUDIT.md",
+    "bytes": 3430,
+    "sha256": "afbcdc5964aeac547ebe8c6303f7d21b35ea148ca3648aec0a85eaa24abc94fc"
+  },
+  {
+    "path": "HANDOFF-STATUS-2026-10-24.md",
+    "bytes": 11308,
+    "sha256": "377b18038c265edd25d8919dd862e930bc3de639060774408940def1bb0f3d88"
+  },
+  {
+    "path": "PROP-INTEGRITY.md",
+    "bytes": 28421,
+    "sha256": "783f88b985b59600c8d7d616165b47dfaaa66cb20cbd55087ab4dde62e0b5860"
+  },
+  {
+    "path": "RECORD-NOTES.md",
+    "bytes": 2308,
+    "sha256": "035fd80657cc54926a5c287b2170725e11209f886fc88d3fa77a34268c798d04"
+  },
+  {
+    "path": "app/[sport]/page.tsx",
+    "bytes": 965,
+    "sha256": "65d2f3f590691c274b6f5fae8ec2409bc2161af91bfdb85598210b1fe10014ed"
+  },
+  {
+    "path": "app/admin/(private)/layout.tsx",
+    "bytes": 397,
+    "sha256": "5aa5ee2e288db08631ffab0d9884966a56af0d8f8fba1b1b3b3f46a3ecca574c"
+  },
+  {
+    "path": "app/admin/(private)/page.tsx",
+    "bytes": 130,
+    "sha256": "9e8bcb1b46f50f2f4bad0dd8af936b204536d828de43921811430bc2feb50a8d"
+  },
+  {
+    "path": "app/admin/(private)/viewers/page.tsx",
+    "bytes": 2009,
+    "sha256": "917ecb8d4ec616a77e839a2f5c68067cf62b8c73c4828cd3735cc10cfce03dcd"
+  },
+  {
+    "path": "app/admin/login/page.tsx",
+    "bytes": 225,
+    "sha256": "701e8f93fe13e12f4a0a3bde7601f25db028e2441a492cd1bd014d7e2e3764b9"
+  },
+  {
+    "path": "app/api/admin/auth/route.ts",
+    "bytes": 6688,
+    "sha256": "3214d4ce3ecdf8a42cef5fffcbdf6661100c072d0fdc378afe73ad6b1abcae8c"
+  },
+  {
+    "path": "app/api/admin/overview/route.ts",
+    "bytes": 3667,
+    "sha256": "6e386461ea8be94ae505088194cb998e1828b5294509af2fe75c7bba303ef05c"
+  },
+  {
+    "path": "app/api/admin/password/route.ts",
+    "bytes": 1479,
+    "sha256": "65a84c753c50af293f0cb6d84a3387cf9d28acaf13bedddfb5e19f73212912d3"
+  },
+  {
+    "path": "app/api/admin/records/route.ts",
+    "bytes": 1774,
+    "sha256": "6342d9db9379522952d3e4736e704186c0600504864992366fab4d301c69feb1"
+  },
+  {
+    "path": "app/api/admin/viewers/route.ts",
+    "bytes": 2359,
+    "sha256": "3361ae02016d87aedd8abc6a6bdcb100d0e1d8871737d342127a5c9d1e9b9f1a"
+  },
+  {
+    "path": "app/api/basketball/live-player-stats/route.ts",
+    "bytes": 1979,
+    "sha256": "507634fbac402799b3bc7386943cb0ed588fe887feb423170992850218551495"
+  },
+  {
+    "path": "app/api/cbb/capture/route.ts",
+    "bytes": 613,
+    "sha256": "cbfeb2d6628384e3ff950e7769f63e88bda3292d16e8e890c9e9f3690bddec70"
+  },
+  {
+    "path": "app/api/cbb/performance/route.ts",
+    "bytes": 10212,
+    "sha256": "b17bc3ffa3f6f5323c200d0ea64078a74ee299c6b668e44830c9617a0c5f9bbb"
+  },
+  {
+    "path": "app/api/cbb/player/[id]/history/route.ts",
+    "bytes": 4143,
+    "sha256": "4ca0edf2488ab61a387863f65294b15ecadbcba787629e2fd3beb64ffd04b096"
+  },
+  {
+    "path": "app/api/cbb/rankings/route.ts",
+    "bytes": 2703,
+    "sha256": "c0a44e6cb0f87f423acdf9e9391b7e5ad4806eba2491ea7d8f0109720304db14"
+  },
+  {
+    "path": "app/api/cfb/game/[id]/route.ts",
+    "bytes": 780,
+    "sha256": "33f6439ca0640b27a5c25a0ce7d7a454645eced9d11b17595e436287bc88106c"
+  },
+  {
+    "path": "app/api/cfb/live/route.ts",
+    "bytes": 5730,
+    "sha256": "1ebc004e0e2325aedb68bbe55367dbea7ba097abfc1a077a6d10bb7f0561157c"
+  },
+  {
+    "path": "app/api/cfb/performance/route.ts",
+    "bytes": 13875,
+    "sha256": "0613b6fc70091b0ea2e67f27882e31637ff1e8f13fb6113073a9db7136add180"
+  },
+  {
+    "path": "app/api/cfb/player/[id]/history/route.ts",
+    "bytes": 6066,
+    "sha256": "45d993d67de83c556ced2871fa28dc32c47876e045b03805ffcf91042f1a9f6c"
+  },
+  {
+    "path": "app/api/cfb/rankings-board/route.ts",
+    "bytes": 39153,
+    "sha256": "a56e79ccf3d3993d77fa46222bd16ed3f5e9c538f0a9cf4b3e265b7239f53ad4"
+  },
+  {
+    "path": "app/api/cfb/rankings/route.ts",
+    "bytes": 24226,
+    "sha256": "209f211ed3fb0caac644beeaac3f7ea87d697303661f0a19e6197c543cba5a5a"
+  },
+  {
+    "path": "app/api/cfb/schedule/route.ts",
+    "bytes": 3726,
+    "sha256": "eecf6479b6fb7aed06a39c960b487ae113b3066ec6fa505dfe5d1e459e2873ae"
+  },
+  {
+    "path": "app/api/dashboard-summary/route.ts",
+    "bytes": 9808,
+    "sha256": "59b96deeda7a1ce0f80ec69317afca454de822f98929555c66c75f899dae515e"
+  },
+  {
+    "path": "app/api/diagnostics/owls-cfb/route.ts",
+    "bytes": 1137,
+    "sha256": "340c044feaf2af85a2e99afcb4a2cdd790ca283f82b87d1a411be192603ba784"
+  },
+  {
+    "path": "app/api/diagnostics/owls-soccer/route.ts",
+    "bytes": 1744,
+    "sha256": "dded17c15d2bd05ea3fc9f3479e819531120981d157c9ac6db0f109d3cfd1926"
+  },
+  {
+    "path": "app/api/diagnostics/soccer-history/route.ts",
+    "bytes": 822,
+    "sha256": "0ecb5a18c207000d0d1e7abcbba99b1922d92f1ebf425c5992e5a29a37d4b520"
+  },
+  {
+    "path": "app/api/estimated-ev/route.ts",
+    "bytes": 3748,
+    "sha256": "559f9530e4733557b747df74819479cfd6dc92fecf94830b727d34aa0bebadfb"
+  },
+  {
+    "path": "app/api/featured-performance/route.ts",
+    "bytes": 5881,
+    "sha256": "ca29726123cedfe02ad062df7110b737defc3923566a9fae1a606636aa6621fe"
+  },
+  {
+    "path": "app/api/football/live-player-stats/route.ts",
+    "bytes": 1993,
+    "sha256": "5c2361cb4f94b0fa68314b061d5d8476397a4cd1f183bc341c527c2dd8e05149"
+  },
+  {
+    "path": "app/api/game-slate-detail/route.ts",
+    "bytes": 24161,
+    "sha256": "98e8f989d894515fd634ad43a18c48b7af2b63cd778b204c4ea799df718a1ee9"
+  },
+  {
+    "path": "app/api/game-slate/route.ts",
+    "bytes": 19035,
+    "sha256": "1f99df65b49215be41f7fdd2412cb6a77ba88fcc8c76621ab9693cebeb44b943"
+  },
+  {
+    "path": "app/api/games-preview/route.ts",
+    "bytes": 724,
+    "sha256": "6f9ebacbe706682de96caf80e1f45085125f11cffb6b03b11ad5412cabcd8beb"
+  },
+  {
+    "path": "app/api/health/route.ts",
+    "bytes": 509,
+    "sha256": "e005603fabe2625e98cf47033cede86de210f1a2ec366c1473f5944b46b50b1a"
+  },
+  {
+    "path": "app/api/history/capture/route.ts",
+    "bytes": 11321,
+    "sha256": "f852bca348993fbbc428538e8eda82d8058a70687ac7c54545889518639db375"
+  },
+  {
+    "path": "app/api/history/performance/route.ts",
+    "bytes": 3643,
+    "sha256": "bca21d5a29f7ac3ad82fefc2099bac72ff48800ddaf3b87ed38106606084f4bc"
+  },
+  {
+    "path": "app/api/history/recover/route.ts",
+    "bytes": 996,
+    "sha256": "df75bd2205dc43edfb89fa320b0bfcbaac32f648be4fde69b0e673a217dd4862"
+  },
+  {
+    "path": "app/api/history/safeguards/route.ts",
+    "bytes": 8013,
+    "sha256": "1f26ce520611740d4ea89f27cddd8702a9a9e709f08d1d808d7e98f1c040fcae"
+  },
+  {
+    "path": "app/api/history/status/route.ts",
+    "bytes": 1408,
+    "sha256": "659f899a9ddf215c8f89a2fecfbbcde1927b8b455f4ba8570cf6e19cf321e027"
+  },
+  {
+    "path": "app/api/market-coverage/route.ts",
+    "bytes": 11278,
+    "sha256": "04ce9d9a19ae205f2f63caa5caea24749cb750e60674726db60cd22c2b9ad076"
+  },
+  {
+    "path": "app/api/mlb/game/[gamePk]/route.ts",
+    "bytes": 509,
+    "sha256": "9c522bf999c6df304d9319621892d3cba890913dfea0bc2db6c37bb1df6e3d3e"
+  },
+  {
+    "path": "app/api/mlb/health/route.ts",
+    "bytes": 743,
+    "sha256": "2dbf4e4127fc318cf3c7c6a53b104259647fe0a5b0673d7f214f7441a3e677a3"
+  },
+  {
+    "path": "app/api/mlb/performance/route.ts",
+    "bytes": 2464,
+    "sha256": "908d93854a427ad4122c62eda6f72f61e9cb0d772cb6a219f9a818a44ed1ec51"
+  },
+  {
+    "path": "app/api/mlb/player/[playerId]/route.ts",
+    "bytes": 507,
+    "sha256": "fbf977f4f48887be2dda4768fc65243ef2c7dcd1fd76cacd9dc2acb55fdb93e1"
+  },
+  {
+    "path": "app/api/mlb/rankings/route.ts",
+    "bytes": 2851,
+    "sha256": "714af1a0ff7db594f33574891868347f620fb7bcf05c2040a37fb46eb6431802"
+  },
+  {
+    "path": "app/api/mlb/schedule/route.ts",
+    "bytes": 411,
+    "sha256": "dd81e969fd3800caf6ee68a69388190593684262046a7eec27a6bfa28c879e55"
+  },
+  {
+    "path": "app/api/nba/capture/route.ts",
+    "bytes": 613,
+    "sha256": "9d9767e117980a3a9ea65c8899653b4f88e55d453530de598e4c188093f6a11d"
+  },
+  {
+    "path": "app/api/nba/performance/route.ts",
+    "bytes": 11413,
+    "sha256": "2dea2e014b54857d2e825eae3c83236907d3156482106a204892c46afeb5ef06"
+  },
+  {
+    "path": "app/api/nba/player/[id]/history/route.ts",
+    "bytes": 7480,
+    "sha256": "7986bd8d66a3e84d530d644d63794eee591f5b1d8b253bf0a35b0797266953a9"
+  },
+  {
+    "path": "app/api/nba/rankings/route.ts",
+    "bytes": 8303,
+    "sha256": "0afdd9c71ee57a5ebda8b04ec6db457f792f1e1dee169ca10ae3b530afd98fa0"
+  },
+  {
+    "path": "app/api/nfl/game/[id]/route.ts",
+    "bytes": 780,
+    "sha256": "4f38d34d65d306621f871c6e2094ad8a073d4b0ff4e4c0d50ede889635c698e4"
+  },
+  {
+    "path": "app/api/nfl/performance/route.ts",
+    "bytes": 15254,
+    "sha256": "fbf34f7b84a50810e2cdd0254e133ad4befa47f723e8645ecb4ab1cad7ffe635"
+  },
+  {
+    "path": "app/api/nfl/player/[id]/history/route.ts",
+    "bytes": 8837,
+    "sha256": "e2cafb76dcb7eec77e2ebb4ba1311329ecf08dd74a7749f098fe62625012e7e0"
+  },
+  {
+    "path": "app/api/nfl/rankings/route.ts",
+    "bytes": 42250,
+    "sha256": "7cb93007ce78f5057a23723b4c6559b5f264c9e8c9f0040832b9321ee06ff247"
+  },
+  {
+    "path": "app/api/nfl/schedule/route.ts",
+    "bytes": 2886,
+    "sha256": "7430594e79058da7954343244ed55bba7516c40b5164e658170817e1b9eae89d"
+  },
+  {
+    "path": "app/api/nhl/capture/route.ts",
+    "bytes": 560,
+    "sha256": "4fad6718828731ae7ca6184814bacde52ac6f8aa4f090a1f6804052e09d2f563"
+  },
+  {
+    "path": "app/api/nhl/live-player-stats/route.ts",
+    "bytes": 2098,
+    "sha256": "6772dc9da89e0c325eacc5fe16654c7e4a2b26025e56eb60d219102c68ac5e00"
+  },
+  {
+    "path": "app/api/nhl/performance/route.ts",
+    "bytes": 6889,
+    "sha256": "5fbf61341d9804a573655be648308b422fbb74e0a8b8f678012318eb7f7018d5"
+  },
+  {
+    "path": "app/api/nhl/player/[id]/history/route.ts",
+    "bytes": 2133,
+    "sha256": "cb9b56a15540ab0573229b609ed62fa09ccdf9e54cc783c2625ccd6ca712943c"
+  },
+  {
+    "path": "app/api/nhl/rankings/route.ts",
+    "bytes": 928,
+    "sha256": "34a796b5a7a6713335fbb2c424fe6e0092fc79ba3314f54d16c0c4d48908600a"
+  },
+  {
+    "path": "app/api/nhl/schedule/route.ts",
+    "bytes": 398,
+    "sha256": "c918ee9d781c13d307d55d6919ec58e1071a1d4a2ded0d3e81163c2648a43f36"
+  },
+  {
+    "path": "app/api/platform-performance/route.ts",
+    "bytes": 4646,
+    "sha256": "c81c0a24eb18bfdcd482a6fd9a4aa3a97c219026fed26e619bca5e36e4e781e9"
+  },
+  {
+    "path": "app/api/player-card-context/route.ts",
+    "bytes": 4986,
+    "sha256": "f8b001749de57c6c00beb5a042cc724757a5e196bd4295f29ff8102b9eab3648"
+  },
+  {
+    "path": "app/api/player-history/route.ts",
+    "bytes": 8187,
+    "sha256": "f9100da328dfcdc12db5891fed841c83e0817f753288554434e3f8480994dc7d"
+  },
+  {
+    "path": "app/api/player-search/history/route.ts",
+    "bytes": 1388,
+    "sha256": "07076315e4fc4f0b782b74b592d518a033846a4332fec8ccfad60df0715826ff"
+  },
+  {
+    "path": "app/api/player-search/open/route.ts",
+    "bytes": 2827,
+    "sha256": "967e82cfbee512cadb4ce714e064a635e2afd3e9fab623f6fc03b1b197cfb772"
+  },
+  {
+    "path": "app/api/player-search/route.ts",
+    "bytes": 731,
+    "sha256": "eb3a9db5689f4999e093cbaf9fc828d69de38796e5b14224c564b7e127a47289"
+  },
+  {
+    "path": "app/api/research-source/route.ts",
+    "bytes": 1014,
+    "sha256": "3d2413c76fe265c66a10106d52da5fa2ba31d00373ed33d44fb130d732319dc4"
+  },
+  {
+    "path": "app/api/slate/active/route.ts",
+    "bytes": 1838,
+    "sha256": "675276b1f1f4bfab684b2cc525649d2027de79cac99b0a908f6c67d0eba29d20"
+  },
+  {
+    "path": "app/api/soccer/capture/route.ts",
+    "bytes": 1590,
+    "sha256": "786d788ddb2e011261bab0ded4ad1e7061b6fe700f47330c965e184f65f82040"
+  },
+  {
+    "path": "app/api/soccer/dashboard/route.ts",
+    "bytes": 28508,
+    "sha256": "96d15dce6c3cd2c3636b824d1031391511c48ca2980832356f87d3cf8f589a16"
+  },
+  {
+    "path": "app/api/soccer/performance/route.ts",
+    "bytes": 3448,
+    "sha256": "c1f0b29ee36b0117ca77f8264db38a626efba9c2b2876f985e4d0471b515ad01"
+  },
+  {
+    "path": "app/api/soccer/roster/route.ts",
+    "bytes": 2875,
+    "sha256": "b0ecfd23f3a3fd4e49b6a80b053d62bf7fa031c1e7ba2ebd720e3e90f253aaeb"
+  },
+  {
+    "path": "app/api/top-plays/route.ts",
+    "bytes": 8260,
+    "sha256": "86f400348a8526dee791474bf2078f9a73cd2e2dd55c0fa1bf40bf50f2829a03"
+  },
+  {
+    "path": "app/api/viewer/auth/route.ts",
+    "bytes": 2606,
+    "sha256": "e1253fc90c06f8e238c788ac8f0e6814b95f8a1616dc1b45cfd2f3f032d51687"
+  },
+  {
+    "path": "app/api/wnba/capture/route.ts",
+    "bytes": 616,
+    "sha256": "302fa1b7c3c7e62b301c1cff5b794ac46f36609a760f177a0f07adc952d63029"
+  },
+  {
+    "path": "app/api/wnba/performance/route.ts",
+    "bytes": 9442,
+    "sha256": "8daddb0b7fe5715ba9a067226cc26f978ed6147efdd45df44f32231454317294"
+  },
+  {
+    "path": "app/api/wnba/player/[id]/history/route.ts",
+    "bytes": 3931,
+    "sha256": "fdb7abcad1e6d345d3dedaac4bd06def55fd5332e7ec2e472767bdc5241ca554"
+  },
+  {
+    "path": "app/api/wnba/rankings/route.ts",
+    "bytes": 6216,
+    "sha256": "dbefa3004498211adc95e6ce863d816e49112c0e835979f55e6346bfe540d94c"
+  },
+  {
+    "path": "app/backup/page.tsx",
+    "bytes": 934,
+    "sha256": "06a87799440db7b573730a64997d0fbae3bfbfc8b77af31427eb34d24807c334"
+  },
+  {
+    "path": "app/backup/privacy/page.tsx",
+    "bytes": 2514,
+    "sha256": "3dc7cd4149ed630ffb6e3252c621f7e86d8ba03566ebdfba0d7df62f64a0491e"
+  },
+  {
+    "path": "app/backup/terms/page.tsx",
+    "bytes": 1090,
+    "sha256": "eeba0cc650f84e88050789ae10af5e7c5eadccc660975466a9005f655a513530"
+  },
+  {
+    "path": "app/cbb/games/[id]/page.tsx",
+    "bytes": 260,
+    "sha256": "3e9f615b0e9cfc76d90ea1b464f9841899f4e97c43405be1c8deb94b0ffc11a5"
+  },
+  {
+    "path": "app/cbb/games/page.tsx",
+    "bytes": 134,
+    "sha256": "a501d690a28a89fe0a07e7431bfcd082e5175803cb3301aeddcfca1220703c00"
+  },
+  {
+    "path": "app/cbb/page.tsx",
+    "bytes": 133,
+    "sha256": "8efa32704b46249721b0583c4d5ae65c23e42aa0fe7860914bb44cabbf3a4c0a"
+  },
+  {
+    "path": "app/cbb/player/[id]/page.tsx",
+    "bytes": 610,
+    "sha256": "25da583ebcbf1502118f5f894c9c2f78b4880b58bc6f73c9b0457f87f7025410"
+  },
+  {
+    "path": "app/cfb/games/page.tsx",
+    "bytes": 134,
+    "sha256": "f25431e26d6c8b1de39f502d690b1acabba4163b2dbc1b0eefd4fbe827e75114"
+  },
+  {
+    "path": "app/cfb/page.tsx",
+    "bytes": 133,
+    "sha256": "0c8f457bf5e70f6e31787b4a7f9511eab9851579a073be361c720f5aed1beec6"
+  },
+  {
+    "path": "app/cfb/player/[id]/page.tsx",
+    "bytes": 610,
+    "sha256": "dabd4e497cb45c63bd95a474939b34820aa0b6aab9997f3d70f0d8a821621109"
+  },
+  {
+    "path": "app/cfb/results/page.tsx",
+    "bytes": 3793,
+    "sha256": "0a0012b215d43581ddec8df52375f9f8b3ff8bd74a4fa5bf9878f0edbd8a4044"
+  },
+  {
+    "path": "app/cfb/team/[id]/page.tsx",
+    "bytes": 5136,
+    "sha256": "e7aaf266ed5a6f89040f175928b8902730751efd69588df6779423cdae94010d"
+  },
+  {
+    "path": "app/dashboard-shell.css",
+    "bytes": 8242,
+    "sha256": "39b76c308bff12e0f1eb53ddbd5a4f613e57c114e07cb72be3ffbe944a0529a1"
+  },
+  {
+    "path": "app/globals.css",
+    "bytes": 70247,
+    "sha256": "3cf3fa40bbdfccfa2739e3f8dd8daa0c14c211c86779044bea182da6a61bab5f"
+  },
+  {
+    "path": "app/history-ui-fixes.css",
+    "bytes": 766,
+    "sha256": "47763860bb83f93bc8ad6cadf33a5f066d196c0d81c189067f4010f42611cd72"
+  },
+  {
+    "path": "app/home-showcase.css",
+    "bytes": 20502,
+    "sha256": "c915e2bb7669efa5a3abe8310df1e12ca71766aa65d62be988a75831bffcb5ab"
+  },
+  {
+    "path": "app/home-showcase.tsx",
+    "bytes": 12986,
+    "sha256": "fa1658d58e54e543249a213c54feedfa13c37bdcf83e36861d9aa2d8b8aa927f"
+  },
+  {
+    "path": "app/layout.tsx",
+    "bytes": 1123,
+    "sha256": "b5bde78bf7033488d5ecdf47695471dc2cd380b7d1edaa10cdf5f097f7362b46"
+  },
+  {
+    "path": "app/loading.tsx",
+    "bytes": 151,
+    "sha256": "0a630937e23541b2f21ba17aba42f4d2efe7a2f19963388da403051b539275c5"
+  },
+  {
+    "path": "app/manifest.ts",
+    "bytes": 569,
+    "sha256": "f2462af605212b224b9da2d37f4e56e749d98826d4e1fd0382bb128a575321a4"
+  },
+  {
+    "path": "app/mlb/games/[gamePk]/page.tsx",
+    "bytes": 268,
+    "sha256": "debd9502089ce20a5c1a09db02803f473f0c18008b1bc1752e048e7e869cac8a"
+  },
+  {
+    "path": "app/mlb/games/page.tsx",
+    "bytes": 134,
+    "sha256": "9f54577556ba6c205369d529b535bdd39599e775ef09d67221480295aa98001e"
+  },
+  {
+    "path": "app/mlb/layout.tsx",
+    "bytes": 131,
+    "sha256": "a3fdc34f11e796efbb4725f948a2a3f109380ed252f5b39f8e438f24c70eb5c6"
+  },
+  {
+    "path": "app/mlb/page.tsx",
+    "bytes": 99,
+    "sha256": "890d68f8f7a77113f0bb306164ca0fb6848e042b9cf6cb6a943cfc5f8cee0001"
+  },
+  {
+    "path": "app/mlb/player/[playerId]/page.tsx",
+    "bytes": 616,
+    "sha256": "4d66df29271bf354773c9fab96454b3f1d65335da8a2a8f3a385b305edc1d2c1"
+  },
+  {
+    "path": "app/nba/games/[id]/page.tsx",
+    "bytes": 260,
+    "sha256": "05be96a3b3887a192e75e5c650ee7e8a2ec5e95583bc4ab5c4db19ccc4b01a70"
+  },
+  {
+    "path": "app/nba/games/page.tsx",
+    "bytes": 134,
+    "sha256": "0aad326bfedaf1d4ddc74d646ff6701b0e9dd58d5f7da20c1c663c97c4acc6a3"
+  },
+  {
+    "path": "app/nba/page.tsx",
+    "bytes": 133,
+    "sha256": "7cc9f1302cef93bb25bb0927b1b19a3d53bf8fed5f3ce3540a264147dd533d5e"
+  },
+  {
+    "path": "app/nba/player/[id]/page.tsx",
+    "bytes": 610,
+    "sha256": "be6062fcdb1d48e2281b5917e145235c14d7f281b412335b705b542db6f5ffa3"
+  },
+  {
+    "path": "app/ncaab/games/page.tsx",
+    "bytes": 46,
+    "sha256": "217cc099b4b164e40812a3881771c29b529aca70c896701db1d13ff972c281ef"
+  },
+  {
+    "path": "app/ncaab/page.tsx",
+    "bytes": 91,
+    "sha256": "1fcc6b02949f68d745c590deb4dc1a87f620567e3308ef61f265f3591c5b196b"
+  },
+  {
+    "path": "app/nfl/games/page.tsx",
+    "bytes": 134,
+    "sha256": "f7153425b4c33a1215228a66ed8336c5aed6f7dad20f5d129ae3293a6bc24e38"
+  },
+  {
+    "path": "app/nfl/page.tsx",
+    "bytes": 133,
+    "sha256": "ddc2914ce3a905fc5a9a62dc54e4f7ae78a044fa6fe9b4ca1e1fbb1b335db79d"
+  },
+  {
+    "path": "app/nfl/player/[id]/page.tsx",
+    "bytes": 610,
+    "sha256": "d8827ea0e607499e6f27a6d3a34c4b02d3670a3514c4fe8b950abc1ba70a2b44"
+  },
+  {
+    "path": "app/nfl/team/[id]/page.tsx",
+    "bytes": 4326,
+    "sha256": "2e186ae8c2ca828a86120bf6d9ed28b4d8bee182cbfb4ca5e08961d2f3b6205e"
+  },
+  {
+    "path": "app/nhl/games/page.tsx",
+    "bytes": 134,
+    "sha256": "2ca427bfb1e74ebd68e27b378046e72a17ad9fc8dd399410d947a7f51c9377d0"
+  },
+  {
+    "path": "app/nhl/page.tsx",
+    "bytes": 133,
+    "sha256": "29894711bac3bcf76663d2738dc347dbb2615cb97c855b9fdda8efb70ca6f6cf"
+  },
+  {
+    "path": "app/nhl/player/[id]/page.tsx",
+    "bytes": 610,
+    "sha256": "3dee1a67a0a6655f6f50f3ddc87f2932787043694d74617c57b2d1dec8aec204"
+  },
+  {
+    "path": "app/page.tsx",
+    "bytes": 111,
+    "sha256": "f1ca3df305531744bca0a656bb44b0e7ea334643100e32af430d701e5e89b343"
+  },
+  {
+    "path": "app/performance/page.tsx",
+    "bytes": 928,
+    "sha256": "4825b0dc0d284e1abfe200183d81dc5b2a98b12bc4c0f8a4d7e3275758297b48"
+  },
+  {
+    "path": "app/portal-no-flash.css",
+    "bytes": 1516,
+    "sha256": "393ed0ca1538370887e4097bf5dd1945d65b4ba6474a8d221f420fcbca2aa26c"
+  },
+  {
+    "path": "app/soccer/games/[gameId]/page.tsx",
+    "bytes": 481,
+    "sha256": "de79ea155db907fc521879c5069b23aa4fdc092fcad643c81973267a88694969"
+  },
+  {
+    "path": "app/soccer/games/page.tsx",
+    "bytes": 258,
+    "sha256": "5d1978c58f935e150bd1bd872f6179446771f23e6077405ce56c398d545f2577"
+  },
+  {
+    "path": "app/soccer/layout.tsx",
+    "bytes": 131,
+    "sha256": "a3fdc34f11e796efbb4725f948a2a3f109380ed252f5b39f8e438f24c70eb5c6"
+  },
+  {
+    "path": "app/soccer/page.tsx",
+    "bytes": 99,
+    "sha256": "890d68f8f7a77113f0bb306164ca0fb6848e042b9cf6cb6a943cfc5f8cee0001"
+  },
+  {
+    "path": "app/soccer/player/[id]/page.tsx",
+    "bytes": 616,
+    "sha256": "cedf9d1569b086d2b261786e7817c4216922b247981555056386816c6ef4bb40"
+  },
+  {
+    "path": "app/soccer/soccer.css",
+    "bytes": 9112,
+    "sha256": "99842a2235924f2451e2a1e624d4a5c7f1dec3523be353bbd806a8f7ecc036c4"
+  },
+  {
+    "path": "app/template.tsx",
+    "bytes": 136,
+    "sha256": "5eac31f450a659c2b229c0cf49ae8e899fca854a83842f85815ada3f36ed74db"
+  },
+  {
+    "path": "app/theme.css",
+    "bytes": 1361,
+    "sha256": "ed7d122e45c8fddaf275547cebeaefd7261a36d93ae5299e776cf2374f862861"
+  },
+  {
+    "path": "app/viewer/login/page.tsx",
+    "bytes": 2302,
+    "sha256": "7ddb71d1dcc467fdc34c382577201e62136c2bc7e791190b2d56ba3d7258a7f9"
+  },
+  {
+    "path": "app/wnba/games/[id]/page.tsx",
+    "bytes": 261,
+    "sha256": "be56b461ef065312aeb838febaa1b11885f0880832932b9a423cf88cf2ea48dc"
+  },
+  {
+    "path": "app/wnba/games/page.tsx",
+    "bytes": 135,
+    "sha256": "e7e28ad7e3a795bd47f3ad15fd5f6f83ef3460da6d213bceee0d456e6a29d9b5"
+  },
+  {
+    "path": "app/wnba/layout.tsx",
+    "bytes": 131,
+    "sha256": "a3fdc34f11e796efbb4725f948a2a3f109380ed252f5b39f8e438f24c70eb5c6"
+  },
+  {
+    "path": "app/wnba/page.tsx",
+    "bytes": 99,
+    "sha256": "890d68f8f7a77113f0bb306164ca0fb6848e042b9cf6cb6a943cfc5f8cee0001"
+  },
+  {
+    "path": "app/wnba/player/[id]/page.tsx",
+    "bytes": 612,
+    "sha256": "476331ab225d7ffb540741ffde99804da931f8ffc2a4edd2e5cd2810eeeaccd2"
+  },
+  {
+    "path": "app/wnba/wnba.css",
+    "bytes": 5481,
+    "sha256": "af5ea29a46fa46d253a2a047d9ebb83c62c7c926519a1009662823fefff40b22"
+  },
+  {
+    "path": "build/worker-model-runtime.d.mts",
+    "bytes": 181,
+    "sha256": "e99e46e634a79411e689ec7ae3e7b866cc5466a1df5d29efaaffe857b6b19cff"
+  },
+  {
+    "path": "build/worker-model-runtime.mjs",
+    "bytes": 6201,
+    "sha256": "42e1548fc71a9a5907cff170c93cda7f44f5e54ad2709c9b28868b5d589872b4"
+  },
+  {
+    "path": "cloudflare.config.ts",
+    "bytes": 1702,
+    "sha256": "ef41bf8f51f3ef9d62ecc5002f9dedb7bf78fac1f7249eb2a150d0a895bee7a3"
+  },
+  {
+    "path": "components/admin-auth-return.tsx",
+    "bytes": 758,
+    "sha256": "43b6cb4c6e973c1757f5602dd7a436d713207927707648f56c92567c73b57b84"
+  },
+  {
+    "path": "components/admin-dashboard.tsx",
+    "bytes": 12015,
+    "sha256": "8daedccc504bad7ec8f8c799ccc483a5a6e731e889ab29bcf5158582ebe47b22"
+  },
+  {
+    "path": "components/admin-login.tsx",
+    "bytes": 5124,
+    "sha256": "3757988bc1a98ce105730f7ef13e1c575d0069069824ff8fcb1ec624570d792f"
+  },
+  {
+    "path": "components/admin.module.css",
+    "bytes": 2993,
+    "sha256": "1acb05cb9f50ae577a4df31672d3d4f26b07b0ac97791d6dd388779a7554be03"
+  },
+  {
+    "path": "components/cbb-dashboard.tsx",
+    "bytes": 20779,
+    "sha256": "32d8d4e4f5b934a870b7e6015baf5ec89b7d47664e2f7f1b407d771027085028"
+  },
+  {
+    "path": "components/cbb-player-history.tsx",
+    "bytes": 5468,
+    "sha256": "5a3e8d00816ac90152d210051bde39a9a78f7df92dbdcb1d22cd74e0c087d068"
+  },
+  {
+    "path": "components/cfb-dashboard.tsx",
+    "bytes": 26895,
+    "sha256": "b2996b80c1f246682793addcbfd30b8e51283907bf67a0251ffde4cbcfbc35eb"
+  },
+  {
+    "path": "components/cfb-player-history.tsx",
+    "bytes": 4443,
+    "sha256": "01f5b458ece151d7e10614c1cc33d0afbbce4175ef264f2e991527256e2ea5f7"
+  },
+  {
+    "path": "components/dashboard-chrome.tsx",
+    "bytes": 14225,
+    "sha256": "6e73f47e5a51d9193ae00118af6daa201a82b6d5c623564b6bdfe26a7a2684e1"
+  },
+  {
+    "path": "components/game-slate-page.tsx",
+    "bytes": 56777,
+    "sha256": "f97416610c359006b72fe668f9e630a42bac081113dbfba007d929d192a809d8"
+  },
+  {
+    "path": "components/game-slate.module.css",
+    "bytes": 29808,
+    "sha256": "95597d7dc8acbcd3915eba7826bca4632d349612ea4aad1535d639e5bd710ef3"
+  },
+  {
+    "path": "components/head-to-head-chart.tsx",
+    "bytes": 3570,
+    "sha256": "d79733d4a3e0a785aae72f5886079e2cfc7fb183c59afdb6445e9ad35d4861a3"
+  },
+  {
+    "path": "components/intelligence-hero.module.css",
+    "bytes": 964,
+    "sha256": "ed7333ee1fdccb201b4feffcf18d3398dde25848e24cd14476497d464678a120"
+  },
+  {
+    "path": "components/mlb-dashboard.tsx",
+    "bytes": 29985,
+    "sha256": "7b566b4097abf5604b566d3e8b4b59e984546090c37e41e7d25c26482de4f52a"
+  },
+  {
+    "path": "components/mlb-game.tsx",
+    "bytes": 2188,
+    "sha256": "c1c0bd347f54cdf94ff36bc774998181a595b619c00db0dc173c761467dd8ec3"
+  },
+  {
+    "path": "components/mlb-games.tsx",
+    "bytes": 1409,
+    "sha256": "79ca32de76eee39705b2a66ef7bc5a7aa67d0c86c4c142f737156779bdc347dc"
+  },
+  {
+    "path": "components/mlb-player.tsx",
+    "bytes": 6778,
+    "sha256": "3408342535855d13e8c326efa9bc4abe7e8b6189901f02e0f8558c63bc51d22e"
+  },
+  {
+    "path": "components/nba-dashboard.tsx",
+    "bytes": 20721,
+    "sha256": "1ffe5d615bd5ebd177701e8196a3ebdd0c20761cd8ff813c39d19074eb7612df"
+  },
+  {
+    "path": "components/nba-ev-metric.tsx",
+    "bytes": 574,
+    "sha256": "b6b4e0125a886c2a414652c23d79bcb485767b8fee7fa062622ad8aee410e0b8"
+  },
+  {
+    "path": "components/nba-player-history.tsx",
+    "bytes": 5468,
+    "sha256": "cc82b96a034dae58c42a82d573147b4ff10efad75bd7580312db83b374d936c8"
+  },
+  {
+    "path": "components/nfl-dashboard.tsx",
+    "bytes": 29553,
+    "sha256": "78da8ab5771c4f3cb40142d13d43bbd2cb792a25cd8c615d056cefcb24d36441"
+  },
+  {
+    "path": "components/nfl-player-history.tsx",
+    "bytes": 5468,
+    "sha256": "19e15ca448b6df963f244e8910359c7bacee497a4379fe83a523e5a1d665edf6"
+  },
+  {
+    "path": "components/nhl-dashboard.tsx",
+    "bytes": 20729,
+    "sha256": "43f08f5ebe5565277b3c5e12454a0c4ddca38859db13441c4111c3f8ae4a5a59"
+  },
+  {
+    "path": "components/platform-header.tsx",
+    "bytes": 467,
+    "sha256": "959eef8e4f2f3b41a9cf3b4a8832ae6dfe00d4b4a1da37057db700da8a112588"
+  },
+  {
+    "path": "components/player-rankings-panel.tsx",
+    "bytes": 116556,
+    "sha256": "47e5da36737e32a6412c5a9232062ebee6586c92f6c089d67e86123e1d9408db"
+  },
+  {
+    "path": "components/player-rankings-portal.tsx",
+    "bytes": 2564,
+    "sha256": "8199a1d2038f014a6bd15546139a910f4ffe4acc48dad7b89ddb7fb333b7d30e"
+  },
+  {
+    "path": "components/player-rankings.module.css",
+    "bytes": 20931,
+    "sha256": "4b3e5f3f9b22c083f73782d47b31e54d6d8948c0453ee090bbed1f2b2b794e94"
+  },
+  {
+    "path": "components/prediction-performance-panel.tsx",
+    "bytes": 29631,
+    "sha256": "cb97d5f6befcd5a8a77506ca34e41362614f2095d1dbb85af4ec464c94c23014"
+  },
+  {
+    "path": "components/prediction-performance-portal.tsx",
+    "bytes": 2209,
+    "sha256": "10a1af9d62b60c2881226ccd308853c5e2ad7eb3e876f12076b3ac745c99fc1f"
+  },
+  {
+    "path": "components/prediction-performance.module.css",
+    "bytes": 12644,
+    "sha256": "6fc5aae40675a3cd785eebbcbc3ef973e492006967488e6344a02c926c71f04e"
+  },
+  {
+    "path": "components/recent-player-chart.module.css",
+    "bytes": 1684,
+    "sha256": "503d5f9ac81b100caf077abb81de589c0bd716555fe49356e52a44fa2c559686"
+  },
+  {
+    "path": "components/recent-player-chart.tsx",
+    "bytes": 4068,
+    "sha256": "4dc0cd7e02d84c4caaeaf135500236c742441d0fd7193c296ddbad5451f1ca1c"
+  },
+  {
+    "path": "components/route-preloader.tsx",
+    "bytes": 872,
+    "sha256": "bfecb1140acc8fe1f1a37493fa683b9db796af74895641a9799c92df6cd3ddbb"
+  },
+  {
+    "path": "components/saved-estimated-ev.tsx",
+    "bytes": 2412,
+    "sha256": "6fedc6e39c0f56eb7027c0d1807993c77e087c7ef1a013e1763469f03021670b"
+  },
+  {
+    "path": "components/site-header.tsx",
+    "bytes": 4973,
+    "sha256": "aaf72f7e3c96052c8a8807566404d2ce8a4403f55dbb1801b5e3538e7f9390e3"
+  },
+  {
+    "path": "components/snapshot-panel.module.css",
+    "bytes": 8539,
+    "sha256": "3d4f852cac8236304d33b263bbf3734c16c0fc11a87a5f4aaa6c6126114f4af5"
+  },
+  {
+    "path": "components/snapshot-panel.tsx",
+    "bytes": 5267,
+    "sha256": "d6ffc9ca81a6ef0cb49966e71ea577e1f0e1802fe4b6b90999e3f4d704cabf3e"
+  },
+  {
+    "path": "components/soccer-dashboard.tsx",
+    "bytes": 13262,
+    "sha256": "a10d535f60670991d80302b2423b5db0b87655456c1b370685063aa15316c8ca"
+  },
+  {
+    "path": "components/soccer-game.tsx",
+    "bytes": 7308,
+    "sha256": "5c2ff37999607bb112efbfd9868a33fa3bbde31df930737b08544266c595a029"
+  },
+  {
+    "path": "components/soccer-games.tsx",
+    "bytes": 4352,
+    "sha256": "09f7fefba8b073a64fd65858747f716b16fb30cc11dd386bb373edc2b08f6547"
+  },
+  {
+    "path": "components/sport-card.tsx",
+    "bytes": 493,
+    "sha256": "b9605d66d6e687f08148a3d6d13e29e451da2d762cb1cd9e65383053d8746f15"
+  },
+  {
+    "path": "components/sport-link.tsx",
+    "bytes": 1611,
+    "sha256": "4ef383cd1871bd519215e86ac1e42d58187c7d472894393723888bf197cd4b82"
+  },
+  {
+    "path": "components/sports-dashboard.tsx",
+    "bytes": 4737,
+    "sha256": "6ff4b4bcce5ec9e98b6077d597eeb7fdaadb262c110d4d21ae07fa7e00eca3db"
+  },
+  {
+    "path": "components/today-top-plays.module.css",
+    "bytes": 1441,
+    "sha256": "5d0fa819b4907c0a2ff9621eace5d03b90f21b53d280b0e3994ec37b3210d46d"
+  },
+  {
+    "path": "components/today-top-plays.tsx",
+    "bytes": 4491,
+    "sha256": "18391e707d01a362c1dfbc30ad76b74a22b1a378580fc77a2b3d9d593edded7c"
+  },
+  {
+    "path": "components/unified-player-card.module.css",
+    "bytes": 3171,
+    "sha256": "de38bf1de3e6cba062b3a1a109a43820824e6eb8e8d9b3751effe756ceb516af"
+  },
+  {
+    "path": "components/unified-player-card.tsx",
+    "bytes": 16567,
+    "sha256": "bc2b7b0cbda3639416a683f2b75a54cf3049e8ae47a54056455b93cb13c5c1ac"
+  },
+  {
+    "path": "components/use-dashboard-summary.ts",
+    "bytes": 3948,
+    "sha256": "7aefafff7941864e70c13e2aba4445a0bfda6714fa436b1112e60d083978502d"
+  },
+  {
+    "path": "components/use-player-chart-context.ts",
+    "bytes": 911,
+    "sha256": "0bf650b57ae5c6e295174cf718569985d3e4e48f5963b633699564d85308890f"
+  },
+  {
+    "path": "components/use-player-fixture-result.ts",
+    "bytes": 1871,
+    "sha256": "598733f0f5aab8e77ec1d66a3e275cd395f23ecb3f6d35071b6b97419ae9be97"
+  },
+  {
+    "path": "components/wnba-dashboard.tsx",
+    "bytes": 19724,
+    "sha256": "44b4404e092695a0670a61f87f2413021f87f982c8658f4f0024d4a2eadebcda"
+  },
+  {
+    "path": "components/wnba-player-history.tsx",
+    "bytes": 5473,
+    "sha256": "6f98960f70eea1030e4ebbb89930f69545b4d7720d4ca86c7b0a42200bc9fc96"
+  },
+  {
+    "path": "data/mlb_performance_history.json",
+    "bytes": 3493307,
+    "sha256": "91f58adb71b131ee0a04ce8f6879291dab97de9b80eae91479c954b1c5c9f03a"
+  },
+  {
+    "path": "data/mlb_pitcher_performance_history.json",
+    "bytes": 1084608,
+    "sha256": "ebbeab2e3e7af6e2ed36514a29f456fa1dfc8d5230466c69b2681b7642736329"
+  },
+  {
+    "path": "eslint.config.mjs",
+    "bytes": 288,
+    "sha256": "cde10ac2d22bc2ce678606382716509073d5a104ef65c2e775f2eea93dd87dd0"
+  },
+  {
+    "path": "instrumentation.ts",
+    "bytes": 6623,
+    "sha256": "a7257902d5be52b571d105bf7df8cf837abf3fb925a74125fe377d52cccc48ae"
+  },
+  {
+    "path": "jobs/budget.mjs",
+    "bytes": 20159,
+    "sha256": "3b900d0020032a03a1a77d9509261f3efb12a0cdb1da9d8b502d6c8237b00e11"
+  },
+  {
+    "path": "jobs/coordinator.mjs",
+    "bytes": 11862,
+    "sha256": "773b7b8573e6dbac85f916bc8405e21790f4c1ef4b186d35adf1057ce0557b0b"
+  },
+  {
+    "path": "jobs/nba-evidence-store.mjs",
+    "bytes": 2557,
+    "sha256": "a62a505459903d3d7ffd76317a336185de760d2dc36d683bf8f00510dcba02c7"
+  },
+  {
+    "path": "jobs/performance-cache.mjs",
+    "bytes": 10526,
+    "sha256": "f0e4b10ed5b5eea97a02d0fb068477d0facedc95b2408fa55ab7379818829812"
+  },
+  {
+    "path": "jobs/tasks.mjs",
+    "bytes": 9315,
+    "sha256": "2319599f98eee3b908cf8ee3a25b8e3a1d7c32dcb85a937ae522214c6f810ee6"
+  },
+  {
+    "path": "lib/active-ranking-slate.ts",
+    "bytes": 877,
+    "sha256": "dce95e8496709c82fdacc4f3ebb39d94124e5ff014252165afe3ca17a2958856"
+  },
+  {
+    "path": "lib/active-slate.ts",
+    "bytes": 2034,
+    "sha256": "99b072d2e3bfd8d1db895089e72eee7b7de0eacb24526f032e80b37b6267729b"
+  },
+  {
+    "path": "lib/admin-auth-return.ts",
+    "bytes": 2147,
+    "sha256": "369ff18e601557c3dd55d98db10fd8998135bb331fe4b0170c534de165ea4e6c"
+  },
+  {
+    "path": "lib/admin-auth.ts",
+    "bytes": 3467,
+    "sha256": "484acb642db94e4d75a2a605c5f1c975e4f0e0a567abf52b183682d170995177"
+  },
+  {
+    "path": "lib/admin-policy.ts",
+    "bytes": 2808,
+    "sha256": "25bd24a112636c2250e310978be0f67e2111d21cdbad2194a675693521f95c22"
+  },
+  {
+    "path": "lib/basketball-event-observations.ts",
+    "bytes": 2279,
+    "sha256": "f361372f4a2b6f3141b95f6402244068cc986cefb447baef603b19af40c497e3"
+  },
+  {
+    "path": "lib/basketball-history-window.ts",
+    "bytes": 1326,
+    "sha256": "f59a9a34acc3abd375f20ce6cb310da87c1a6c285c8c16913840bd2e6e3e5918"
+  },
+  {
+    "path": "lib/basketball-market-coverage.ts",
+    "bytes": 1196,
+    "sha256": "bf79e2da5077547996df82ad4a8256c3001fcdab5384df8794510c710a62281d"
+  },
+  {
+    "path": "lib/basketball-markets.ts",
+    "bytes": 1807,
+    "sha256": "08a47ca4369b2331f58e4746cc3310bcba5455f537f6e5f5275e20de6839faea"
+  },
+  {
+    "path": "lib/basketball-model-inputs.ts",
+    "bytes": 4772,
+    "sha256": "da430c80ab64993b7f19f2f737d635daf5336c3da9a32241383386bc5de0f08b"
+  },
+  {
+    "path": "lib/basketball-model-observations.ts",
+    "bytes": 4955,
+    "sha256": "11e9c68797617e93c31ef535a337092b37304bf76fa50111768ca95a7479b69e"
+  },
+  {
+    "path": "lib/basketball-period-settlement.ts",
+    "bytes": 4081,
+    "sha256": "afe22f5a773bfedc592c071ef07eedbf070e7fc0bd5b128654b19fce10f64498"
+  },
+  {
+    "path": "lib/basketball-pregame-context.ts",
+    "bytes": 8189,
+    "sha256": "297441f9bbb8adabc35e392683d454741238f6b97b523786a60b9040020912bb"
+  },
+  {
+    "path": "lib/basketball-quarter-observations.ts",
+    "bytes": 4642,
+    "sha256": "b315d3585a392d368922b1fafc9217f3cf171c27895e89545dbe9ec64c27d0d2"
+  },
+  {
+    "path": "lib/basketball-settlement.ts",
+    "bytes": 3240,
+    "sha256": "aa37708cd44c61e98162d90a786d1d5bf35e100741e850b9fa0160b2b800256d"
+  },
+  {
+    "path": "lib/bounded-value-cache.ts",
+    "bytes": 958,
+    "sha256": "d1d873043885cfc54877c836c14a00328b05c331abf09ca8e18a3282a8ddf205"
+  },
+  {
+    "path": "lib/bounded-work.ts",
+    "bytes": 941,
+    "sha256": "9a82935d4ee3878a610da50d22d3f5d74ad8cd835ff872b6a2b6db1dbbf9c0e4"
+  },
+  {
+    "path": "lib/candidate-pool.ts",
+    "bytes": 786,
+    "sha256": "24a5dad32355650b1047a0adda9db0ec7c569f77c01ee5a482f0704abac50457"
+  },
+  {
+    "path": "lib/card-intelligence.ts",
+    "bytes": 11912,
+    "sha256": "2b91d679decae77d16f9a6acae4c959f0cc3d05275b1c5eaf42af935b0fab3cc"
+  },
+  {
+    "path": "lib/card-observation-games.ts",
+    "bytes": 884,
+    "sha256": "c912fcbcf78eec23e6ca936d0028f3af5fa73a033afbaba5136a490056145bf9"
+  },
+  {
+    "path": "lib/card-results.ts",
+    "bytes": 5461,
+    "sha256": "71811adef09113184c4950fb88c5200ef1efac0ecd528b84ac4125b2c3a65770"
+  },
+  {
+    "path": "lib/cbb-fixture-identity.ts",
+    "bytes": 1249,
+    "sha256": "6182e22ea89ba91f4bb4fb702f209565a97573f81e50a486d181151b0fe8365d"
+  },
+  {
+    "path": "lib/cbb-history.ts",
+    "bytes": 5621,
+    "sha256": "acc7809eb03cadd901b853e8fcba0e58b9c14b131726b3ec1394deeb7417c8bb"
+  },
+  {
+    "path": "lib/cbb-rankings-server.ts",
+    "bytes": 13814,
+    "sha256": "d6397573b41a2f95af62f871622703f201b10d83c536c0938458908b6f642b50"
+  },
+  {
+    "path": "lib/cbb.ts",
+    "bytes": 14065,
+    "sha256": "986319b17fb9d8d57158771b049633f9b297cbee087f309e020074a5b4dd1078"
+  },
+  {
+    "path": "lib/cfb-history.ts",
+    "bytes": 13375,
+    "sha256": "5528c4f4e3e966764ed189367a2774ea5ca0151c8dd47523f5f20e7cfde2b500"
+  },
+  {
+    "path": "lib/cfb-owls.ts",
+    "bytes": 2791,
+    "sha256": "3c2700bec89cdfbc1448be479a089b2c98765645ba34f9ed3653f3fe29c2d3cc"
+  },
+  {
+    "path": "lib/cfb-prediction.ts",
+    "bytes": 1893,
+    "sha256": "8f1bbe70227d758fab423a71787f289a044ed9be49244ada068402f22f3c518b"
+  },
+  {
+    "path": "lib/cfb-retained-board.ts",
+    "bytes": 2910,
+    "sha256": "94faa24453aa9b58b487b2ea274dbe8b576df3474bbaffb96597d5ba83c4e119"
+  },
+  {
+    "path": "lib/cfb-saved-boards.ts",
+    "bytes": 2444,
+    "sha256": "4fa8615492954ffcd66cc957f55d1f499a741d7dc3197841216afbf2372bd7d4"
+  },
+  {
+    "path": "lib/cfb-server-prop-depth.patch",
+    "bytes": 5400,
+    "sha256": "e578142b8b54f7d81c4d463eb441d70d8634788ac300e07ae5ec0b21a971b93d"
+  },
+  {
+    "path": "lib/cfb-server.ts",
+    "bytes": 23071,
+    "sha256": "4f173dafea86fcfba515083a1a6a12f568f836ee454bad58c84f27f66afc0841"
+  },
+  {
+    "path": "lib/cfb.ts",
+    "bytes": 1725,
+    "sha256": "b1c1c44d5c474525a02d6fac97b882c946ca20984eab2b20e8a1f5714f0e8e30"
+  },
+  {
+    "path": "lib/cloud-history.ts",
+    "bytes": 1884,
+    "sha256": "e70a93750d90ebd51d42da33dcd7b40f7710f4b6f16af0b43c28818bf3784ae5"
+  },
+  {
+    "path": "lib/conditional-price-score.ts",
+    "bytes": 1040,
+    "sha256": "a41466f1beb6d858f184204012e0fd0c98089b05e11a911125a33ed538f051a0"
+  },
+  {
+    "path": "lib/current-roster.ts",
+    "bytes": 1718,
+    "sha256": "e60aaaf329470a78bee7c21915b1aa7024b9df35e532669e3d83b1369dea895e"
+  },
+  {
+    "path": "lib/dashboard-book-feed.ts",
+    "bytes": 4522,
+    "sha256": "c65ffb68a1ae28d63a397ea43e265f54df64011a93adf849742cad5d30c2eb38"
+  },
+  {
+    "path": "lib/dashboard-contract.ts",
+    "bytes": 4881,
+    "sha256": "bedf0764bd4ca13ca04a8ae72813ece826abd54413bb7339bb2f5d1ddc093e1d"
+  },
+  {
+    "path": "lib/dashboard-job-context.ts",
+    "bytes": 598,
+    "sha256": "0e9920d2701c31f120056ed83ace8b54136e475fd5f540e282c29d476e12022f"
+  },
+  {
+    "path": "lib/dashboard-response-state.ts",
+    "bytes": 1273,
+    "sha256": "878ffeac57ef435b8ba6ba684059383a90179ee8526182281f37b64ae8b85bcf"
+  },
+  {
+    "path": "lib/drive-history-reader.ts",
+    "bytes": 3024,
+    "sha256": "516d296ab0b72da9bbe3f3d6859d6101105e9e62d0d15ab62cfdcb800b60bf9d"
+  },
+  {
+    "path": "lib/durable-history.ts",
+    "bytes": 3164,
+    "sha256": "180fd965ae619c763eef0936c08ca8839644b80e22e521efc37c757ed9936b75"
+  },
+  {
+    "path": "lib/estimated-ev.ts",
+    "bytes": 7217,
+    "sha256": "7618f4ce0313594150b6b9014494ee5d77555693629db2665517f5b7866c88b8"
+  },
+  {
+    "path": "lib/featured-history-corrections.ts",
+    "bytes": 954,
+    "sha256": "f9f5d19f823e6d4f0864edc1a4473ff3cafac80029b0cc59a8ccc0b8dee33da8"
+  },
+  {
+    "path": "lib/featured-history-days.ts",
+    "bytes": 1308,
+    "sha256": "d3ee4c3b00567354bb286bd2680acef9205950253a4ba65bddfc6e9af55432a1"
+  },
+  {
+    "path": "lib/featured-official-result.ts",
+    "bytes": 1948,
+    "sha256": "201974dabc92f6c89958c38ad5d3b1abc3088d1889491337dd32235f88e313fb"
+  },
+  {
+    "path": "lib/featured-originals.ts",
+    "bytes": 1228,
+    "sha256": "0e29b242589effc1a06a9e21055749c7517b9b31adf00605d4e0e94950ece50c"
+  },
+  {
+    "path": "lib/featured-performance-match.ts",
+    "bytes": 1378,
+    "sha256": "185d0b627cde215cd14aae49fb0225a90a1b769de2b7ad7550f6ebcadf4fff78"
+  },
+  {
+    "path": "lib/featured-selection-capture.ts",
+    "bytes": 2838,
+    "sha256": "6e240cb3af450952e729aede29cd8079609a8cd425a1e9efb4a7ab62a1f2d526"
+  },
+  {
+    "path": "lib/final-card-observation.ts",
+    "bytes": 1893,
+    "sha256": "4c800bf952315a91231de12591c118061296d9eff7b3d12c5f24943842026caf"
+  },
+  {
+    "path": "lib/first-td-scoring-order.ts",
+    "bytes": 1649,
+    "sha256": "7b05de7159b4449f3f92137d9c86f466962874b00fe93797978f28c72384c3bc"
+  },
+  {
+    "path": "lib/football-book-quotes.ts",
+    "bytes": 9295,
+    "sha256": "0836368af144433916624b4062d5ba26e6cb7ac3a422663fcf38d6397486335f"
+  },
+  {
+    "path": "lib/football-forecast-display.ts",
+    "bytes": 1780,
+    "sha256": "9cceec8aa1a1fc27bf400fe59d0b6e16833b90a0a9124da23fc50ea300bcdcb1"
+  },
+  {
+    "path": "lib/football-history.ts",
+    "bytes": 6344,
+    "sha256": "0ba90fab3b4297fdf66e3c54d5613a72685b2482a6a1038b5c8a5c4239381bde"
+  },
+  {
+    "path": "lib/football-matchup-inputs.ts",
+    "bytes": 4263,
+    "sha256": "e1e1c25e304e5012839f1add8dd7887e6fac597fbf71e23e8456dbd31f924e33"
+  },
+  {
+    "path": "lib/football-model-observations.ts",
+    "bytes": 2517,
+    "sha256": "7a9adee1d5b2a8cebba82aecf89662293f7ed9867634223988f99e6f526eded2"
+  },
+  {
+    "path": "lib/football-observed-stats.ts",
+    "bytes": 4616,
+    "sha256": "454cc04977a5017fb2d582156bdb759e76d658075ef8ac1af664ddbba4485a57"
+  },
+  {
+    "path": "lib/football-pregame-availability.ts",
+    "bytes": 2626,
+    "sha256": "b11207d99114f1332c70ab756fa613a3ba3cabcf707e2291bfed8f366eac6921"
+  },
+  {
+    "path": "lib/football-quarter-stats.ts",
+    "bytes": 6892,
+    "sha256": "dc51ff0fcc9b3b67bd27cbd25c624923af211dc398767e1dd4457772133ba55f"
+  },
+  {
+    "path": "lib/football-slate-rankings.ts",
+    "bytes": 3608,
+    "sha256": "341c6e9a4ee7ec7432ad28c3085f1165a225563472ba516a3cc2c5c1cc3c8e80"
+  },
+  {
+    "path": "lib/forecast-input-receipt.ts",
+    "bytes": 802,
+    "sha256": "500bac5e946f5187f64139af04f70367a5dea6d376dcc057466d7fa446b89967"
+  },
+  {
+    "path": "lib/full-card-forecast.ts",
+    "bytes": 1169,
+    "sha256": "5c52243d3767e4de9321a9317d88ba96137e739903de458ff4e237bda5fcac40"
+  },
+  {
+    "path": "lib/full-card-selection.ts",
+    "bytes": 1179,
+    "sha256": "80e5108fab53bdf58936418a0836c642cdf5d5f2a0d2d064acbd721fbdf2847a"
+  },
+  {
+    "path": "lib/game-overview-matchup.ts",
+    "bytes": 5176,
+    "sha256": "c50782110a4b0d688f24e54e446a587f95b32cf0b4328f4b76506fb77a379b84"
+  },
+  {
+    "path": "lib/game-roster.ts",
+    "bytes": 949,
+    "sha256": "82690597c5219b4d7c0af8c1095520b6b96830fc6d63f268da3fa28892e0c63f"
+  },
+  {
+    "path": "lib/grade-reconciliation.ts",
+    "bytes": 3758,
+    "sha256": "64c79a3c9e1dd6f4543ef3d1619718727174ebb7662f49b67dcc842194d2e275"
+  },
+  {
+    "path": "lib/hidden-admin-history.ts",
+    "bytes": 4193,
+    "sha256": "473c303ed43af0953cfa8dc6d2f758b972c9b3fe065dd1efea4370a31906e2fb"
+  },
+  {
+    "path": "lib/hidden-game-observations.ts",
+    "bytes": 2670,
+    "sha256": "631b4e8cf63871f3533bbcc90e70dc2c14b2739d528e51e0b41d93f1e6f4cfab"
+  },
+  {
+    "path": "lib/hidden-sport-game-capture.ts",
+    "bytes": 3018,
+    "sha256": "604eed55012010e6291551a9d0420a30a58f700947961ee6aa2b251e7a75e141"
+  },
+  {
+    "path": "lib/history-archive.ts",
+    "bytes": 4693,
+    "sha256": "fbd24b599bb935400b3ad2913732690a6e357fddffe22737eea549f6e6134b05"
+  },
+  {
+    "path": "lib/history-days.ts",
+    "bytes": 475,
+    "sha256": "4a82cd6878b48db2604db3a7aa71e8fd561baf1f5d6bb543b298df80e935d454"
+  },
+  {
+    "path": "lib/history-fetch.ts",
+    "bytes": 392,
+    "sha256": "a4a6e63040bdfd4d11f0213b29504d4a942688818f2577fd76621656cd4a1082"
+  },
+  {
+    "path": "lib/history-lock.ts",
+    "bytes": 316,
+    "sha256": "c4389d1b8ef5ec42320150233f5d096840453c3af66c7253c04eebd82e16f365"
+  },
+  {
+    "path": "lib/history-recovery.ts",
+    "bytes": 9141,
+    "sha256": "213217c60f7c97b104fadc69340d9ae13f3b3a052da97c61d2b329922cd526dc"
+  },
+  {
+    "path": "lib/history-save-policy.ts",
+    "bytes": 2067,
+    "sha256": "0b3fa061b0105995bf0c29fc8c337674ee1efab229a8f3ccd23c627ec1a95713"
+  },
+  {
+    "path": "lib/independent-football-blocks.ts",
+    "bytes": 1205,
+    "sha256": "803e50ea97f02fd468689ed10d7cf0c45ea8f9c5db858e6a171f4130d7d771de"
+  },
+  {
+    "path": "lib/internal-app-origin.ts",
+    "bytes": 386,
+    "sha256": "3476baae2e33a56e331f27a93c9eb0d7dd97776349d93bb0eb3cea807aaf8139"
+  },
+  {
+    "path": "lib/live-basketball-observations.ts",
+    "bytes": 15382,
+    "sha256": "24a3aa9f7eb6868a37fd12ad47caee4105acc8fccebef3b01d50c5bf17adb702"
+  },
+  {
+    "path": "lib/live-model-forecast.ts",
+    "bytes": 25844,
+    "sha256": "0be60338abe067017b039765f3276596577d344e4c58b26f1158fe94a7051cd7"
+  },
+  {
+    "path": "lib/live-nhl-observations.ts",
+    "bytes": 1741,
+    "sha256": "bd914db351256e8bc097846941e91836dd492c4eb207109ee1d8e00224f4a4a7"
+  },
+  {
+    "path": "lib/live-quarter-forecast.ts",
+    "bytes": 9303,
+    "sha256": "da8fc545a9caa042f9c6f22373ea65b4cd24b8e30527cd20da67dc04620945dd"
+  },
+  {
+    "path": "lib/live-quarter-observations.ts",
+    "bytes": 5058,
+    "sha256": "5dc874a064f92e3611065e0a6217b525a51c938305e810e9f211fad2e20b1c88"
+  },
+  {
+    "path": "lib/main-market-quotes.ts",
+    "bytes": 3706,
+    "sha256": "0eaf4f50f183a6ae4f35e3505e8810e656af39be4c122a8591b266b0ca96449a"
+  },
+  {
+    "path": "lib/mlb-history-recovery.ts",
+    "bytes": 15408,
+    "sha256": "0542fdd7e8898b124695bb6c2b86f15df6347b22a03174b4f23b75e660a098cf"
+  },
+  {
+    "path": "lib/mlb-next-rankings.ts",
+    "bytes": 13438,
+    "sha256": "c50d5dffd54264cbf2862b5507572474ef50b1b48d72b60db793c8cef70b1941"
+  },
+  {
+    "path": "lib/mlb-server.ts",
+    "bytes": 50260,
+    "sha256": "df70779a1c899cdcd80cb1a8c431ca918071e0463a570df2ffa129a9f359dd7b"
+  },
+  {
+    "path": "lib/mlb.ts",
+    "bytes": 2671,
+    "sha256": "919ed19ef349d59c561f035268684469e84e5c2487c1960f276a85445de853b8"
+  },
+  {
+    "path": "lib/native-basketball-coverage.ts",
+    "bytes": 2193,
+    "sha256": "055e7e66e115a096186d0ccdee5d2aa2a0b20e6aec8d906f0497ec5386928915"
+  },
+  {
+    "path": "lib/native-first-basket.ts",
+    "bytes": 2424,
+    "sha256": "50c7703eb57fd497698e80f1a1551efe96a5a54579ce1b583eb8329f83f5770b"
+  },
+  {
+    "path": "lib/native-nba-quarter.ts",
+    "bytes": 4977,
+    "sha256": "aa9b3f147c6d700557ae955c60a932a295bb4a0b52412ae5779d6d102b24995a"
+  },
+  {
+    "path": "lib/nba-archive-quotes.ts",
+    "bytes": 3427,
+    "sha256": "24fe9b3cbc7a708ff1c501dc8de1ebdcacf84dfe90e6859f2dd54441e1fab831"
+  },
+  {
+    "path": "lib/nba-board-window.ts",
+    "bytes": 630,
+    "sha256": "7d42e6e9889c53a886cf93446b6e6efeb550428c739c0d27e8c010ced65008ed"
+  },
+  {
+    "path": "lib/nba-cached-recovery.ts",
+    "bytes": 1674,
+    "sha256": "da09a859f846d99d393120b33785acb7aa544b9f17c4e387d363dda4babd5aaa"
+  },
+  {
+    "path": "lib/nba-combination-history.ts",
+    "bytes": 1606,
+    "sha256": "e56addfaf6b308ea4ff9bc15666257caf1b59f936332a8bc836cd6c739a200bc"
+  },
+  {
+    "path": "lib/nba-durable-history.ts",
+    "bytes": 1497,
+    "sha256": "7f15eb99d1c1a231b45830ae559ad1f59226154aa1cfbe11ff3b37b80f5daa4d"
+  },
+  {
+    "path": "lib/nba-empty-market.ts",
+    "bytes": 665,
+    "sha256": "d07f57f24eda2e52c69709eea07344b917e7feb3a60acf1d493dc353cae38ff8"
+  },
+  {
+    "path": "lib/nba-ev-ranking.ts",
+    "bytes": 1367,
+    "sha256": "e3a1ebeafda121b49b340b0ed4c2e71bc9f14fc1d9a2222b2ce8ef75922f61c8"
+  },
+  {
+    "path": "lib/nba-feed-sample.ts",
+    "bytes": 5486,
+    "sha256": "47657393003b96d1013cff7153e1e246b220956ff1689db696e1e5b579c3f7b6"
+  },
+  {
+    "path": "lib/nba-fixture-identity.ts",
+    "bytes": 2610,
+    "sha256": "d1e3460e76e746eec51595c1f0a4df8278ea857bcd509c3adaf37084602f36e4"
+  },
+  {
+    "path": "lib/nba-game-match.ts",
+    "bytes": 2563,
+    "sha256": "ce907f3e795b41309f4cc1465ab88845103f1ddf88ee67b5e338372c24cc56ed"
+  },
+  {
+    "path": "lib/nba-history-availability.ts",
+    "bytes": 527,
+    "sha256": "f7f9c2fe677581ecd62728cdb503b493652cbe92056deba0e17ef125a1c5dcc8"
+  },
+  {
+    "path": "lib/nba-history-evidence.ts",
+    "bytes": 8500,
+    "sha256": "c1ee6dfb0608c4be2994162529253cf558aea770bfd6abae22c3620ea96b9af7"
+  },
+  {
+    "path": "lib/nba-history.ts",
+    "bytes": 5641,
+    "sha256": "a0501fccca5c652a428b973991d878a2c7641474d970c7cee93dc53d8715b30f"
+  },
+  {
+    "path": "lib/nba-pick-performance.ts",
+    "bytes": 3728,
+    "sha256": "30b97f94ccd4d9b36065e308acb7900ea04cdc3fe6ac2a952ce85ba0c4ebfc17"
+  },
+  {
+    "path": "lib/nba-population-diagnostic.ts",
+    "bytes": 11902,
+    "sha256": "f1e34b09c1cacecea4041e459b077e85cd917793dd292600acd657646216e903"
+  },
+  {
+    "path": "lib/nba-ranking-candidates.ts",
+    "bytes": 2372,
+    "sha256": "6ec8cf9ebc01944c8e287fffd5f24ca43f57c027725d33050fed6e9e7ef74579"
+  },
+  {
+    "path": "lib/nba-ranking-ev.ts",
+    "bytes": 5814,
+    "sha256": "dd16374b7451e02ee966b5c1d199d82a7a6a204ae71ba4f79093ca492dbbdb38"
+  },
+  {
+    "path": "lib/nba-ranking-work.ts",
+    "bytes": 1221,
+    "sha256": "35eda5721e86fbd0bfaefa404c7631b75e997d0e1db1c4dddc2365f0e81645f6"
+  },
+  {
+    "path": "lib/nba-rankings-server.ts",
+    "bytes": 28273,
+    "sha256": "6b7bae4bd2c23a2368d725f49089f74450ac7dfa3bba28d49b02a09a682f3120"
+  },
+  {
+    "path": "lib/nba-slate-board.ts",
+    "bytes": 6702,
+    "sha256": "afda5a3f4cc341ce2d21283dbb59c79f1f4c0a8e5f94819fd9b9694dc7988e30"
+  },
+  {
+    "path": "lib/nba-slate-scope.ts",
+    "bytes": 5315,
+    "sha256": "52be16b18ac7959f2ac3b34745d8a4e3e9ec05a80c553f1fd3ca4f145f1ecf9f"
+  },
+  {
+    "path": "lib/nba-source-fetch.ts",
+    "bytes": 576,
+    "sha256": "1c390505c9f9b49a9ce1d7cedc24ccbea2c4e9a213b145f2d88bc2a911f69e86"
+  },
+  {
+    "path": "lib/nba-supporting-history.ts",
+    "bytes": 5365,
+    "sha256": "65e2ec1e9e9b7825ada851362e7779d9ced7d976d2ad60029a2f3ed804fb9db9"
+  },
+  {
+    "path": "lib/nba-team-schedule.ts",
+    "bytes": 3181,
+    "sha256": "13866cfa54f6e3ab4b30a8f54296482e14159dd6745f332aa99a44490ac56896"
+  },
+  {
+    "path": "lib/nba.ts",
+    "bytes": 14014,
+    "sha256": "bdf02a02d9f0554d3c28edd92ef9ff33705367cc14e6348fa894b4373a5c5823"
+  },
+  {
+    "path": "lib/nfl-book-rows.ts",
+    "bytes": 1259,
+    "sha256": "9a3adfd4b7182da8e7b574f4b129520261d13c31365be484b153604d7db742bd"
+  },
+  {
+    "path": "lib/nfl-final-history.ts",
+    "bytes": 9360,
+    "sha256": "db19cb58a9768b4e9d1582228859a4dbd801f2c4a3156ed4a366664602400179"
+  },
+  {
+    "path": "lib/nfl-history.ts",
+    "bytes": 11362,
+    "sha256": "df984155b67750657ac91c1ad80fbb8e00c8e92cc5bbce66e67a643e34f84ae5"
+  },
+  {
+    "path": "lib/nfl-locked-board.ts",
+    "bytes": 4332,
+    "sha256": "57a6bb28d81be323bff399323ce759cab4cc42359ac4bccaa5009524360a7f6f"
+  },
+  {
+    "path": "lib/nfl-prediction.ts",
+    "bytes": 2237,
+    "sha256": "898b7ae18262c3fee9cdbe09453c96175de4ecea33877dec94b08fcbc0bdbc83"
+  },
+  {
+    "path": "lib/nfl-ranking-display.ts",
+    "bytes": 3409,
+    "sha256": "999d1cc6206904dc2e3944c5f65f1c550d4c2225403aec1d34deb438414ed79e"
+  },
+  {
+    "path": "lib/nfl-ranking-ev.ts",
+    "bytes": 4262,
+    "sha256": "f6ba1b388f4c81b29b281dbfb1dd0ca5ff8b900558ac3da9f1932c8167e62404"
+  },
+  {
+    "path": "lib/nfl-server.ts",
+    "bytes": 30694,
+    "sha256": "14f1df740edbd1bf5ee2c63bfacc3055015ff146a728e5ae975a76e6070fb168"
+  },
+  {
+    "path": "lib/nfl.ts",
+    "bytes": 2945,
+    "sha256": "6245c1e3fe7053c452d359189ccbb3218de19ece88b1a16fdef9b3ece953b440"
+  },
+  {
+    "path": "lib/nhl-count-model.ts",
+    "bytes": 2011,
+    "sha256": "72aea5f536d3089f712f0a105e384b5912bf9c8d9f6f04131e22b1af1bc02e92"
+  },
+  {
+    "path": "lib/nhl-history-points.ts",
+    "bytes": 1340,
+    "sha256": "32706fa6f2f8ff0c22ad570a05ebd6fc511eb6748c88831ba98ba642fe24779f"
+  },
+  {
+    "path": "lib/nhl-history.ts",
+    "bytes": 5738,
+    "sha256": "9ad68b1884b5fa0b57004ceb8bea245eadc814195bebe89e0ce19d6b8bff54d3"
+  },
+  {
+    "path": "lib/nhl-rankings-server.ts",
+    "bytes": 16168,
+    "sha256": "f6f95f37bb58b47faf701eb1b9a13232f21abfc0a0fe13a799a16b6756a021c0"
+  },
+  {
+    "path": "lib/nhl-shadow-model.ts",
+    "bytes": 4970,
+    "sha256": "423936cece9f2161440d507ecbd0c77a62d2f771a16848ccf073de4ae9a47a19"
+  },
+  {
+    "path": "lib/nhl-team-aliases.ts",
+    "bytes": 855,
+    "sha256": "a4ced2637884598d07927671271fdb4115f4bc42562a572170c4e20409b4cd05"
+  },
+  {
+    "path": "lib/nhl.ts",
+    "bytes": 8368,
+    "sha256": "fd6a9993d7e96ad4075304157a8ccbb821aebe964f4c4202403ba62e6a59b5c3"
+  },
+  {
+    "path": "lib/observed-player-stats.ts",
+    "bytes": 2859,
+    "sha256": "17439c147556ab5b1ff644ea23c497cb15a2f5c7a9ff5480dd22c3a57f2a1ff7"
+  },
+  {
+    "path": "lib/official-history-source.ts",
+    "bytes": 5182,
+    "sha256": "8bfa5d54f1a78903123ab33f4f040eba1e017589df570c973a035d4f54e4e4d3"
+  },
+  {
+    "path": "lib/official-result-cache.ts",
+    "bytes": 1678,
+    "sha256": "0bc15fe0d323b949b723e579a70f6f4b198f33972f90d96471e707d8654d351f"
+  },
+  {
+    "path": "lib/opportunity-backtest.ts",
+    "bytes": 10892,
+    "sha256": "33a1345acdedff7509db61c5ddfd9cb23bab68f2d10921fa86fd90c5f64688c4"
+  },
+  {
+    "path": "lib/opportunity-strength.ts",
+    "bytes": 7596,
+    "sha256": "fd8a1d06a87aa09afc642210027ad574dff7e4f185566d5407247180fb94b6ad"
+  },
+  {
+    "path": "lib/owls-feed-summary.ts",
+    "bytes": 766,
+    "sha256": "695c5064695e6f7e1e3b80567b65b953e9d7529072128b886079ea9c5c9eb4f4"
+  },
+  {
+    "path": "lib/owls-provider.ts",
+    "bytes": 12291,
+    "sha256": "6aa5b08948edb26129ccc505f5fe3f46d0c051f2f967983f8dd1ec668f744732"
+  },
+  {
+    "path": "lib/owls-research-source.ts",
+    "bytes": 7720,
+    "sha256": "8ef8ddf093bd3b7dcca18cfa75977c284fee4aa0b641e9bfe7e632c963558841"
+  },
+  {
+    "path": "lib/owls-result-evidence.ts",
+    "bytes": 2479,
+    "sha256": "b4171efa00355d4f63d84ea9040677e78b2e62422b1d317f1ece4ea488564e6f"
+  },
+  {
+    "path": "lib/owls-soccer.ts",
+    "bytes": 8365,
+    "sha256": "72241510356d6eb8b9c4adb2e06dbbf8308c79768bbb862350ce6a156b6116b2"
+  },
+  {
+    "path": "lib/performance-breakdowns.ts",
+    "bytes": 1277,
+    "sha256": "09f536bbed86d7228b1a308adc43280451a56fc68dbd124369b02761e4b8fe4d"
+  },
+  {
+    "path": "lib/performance-document.ts",
+    "bytes": 3761,
+    "sha256": "96362bde0ce740bc33bf1861648d24b0ba2324c2cd396b2d030d3fe5922db275"
+  },
+  {
+    "path": "lib/performance-grade-review.ts",
+    "bytes": 828,
+    "sha256": "a7e236111d705ac961b7995486f826fe7e4db1693cea14e3e49d617077b5656f"
+  },
+  {
+    "path": "lib/performance-public-response.ts",
+    "bytes": 2730,
+    "sha256": "ec4ef6267eb4df81cd52a402e09002dd5c14e3cd2b0ebde5db00d161ee9e187a"
+  },
+  {
+    "path": "lib/performance-reconciliation.ts",
+    "bytes": 2175,
+    "sha256": "5d382cb20f162d1e2160ed989f3204767b6fe78d21ef9e6be51a2d7931478213"
+  },
+  {
+    "path": "lib/performance-record-view.ts",
+    "bytes": 2395,
+    "sha256": "76654b152dd56b208f489efc3dc3ab1a43f5ba1643c6a7602f985c34ce181c1c"
+  },
+  {
+    "path": "lib/performance-recovery-scheduler.ts",
+    "bytes": 382,
+    "sha256": "7c87e63fbff15d3534d385fee22791f5a45a971b4a51fcad0ed1933e0d97560f"
+  },
+  {
+    "path": "lib/performance-response-scope.ts",
+    "bytes": 831,
+    "sha256": "3ec1993f7900cad792b537c8b845bad26b8b6dbac2b0a65cbd8beda92ab8aab6"
+  },
+  {
+    "path": "lib/performance-result-filter.ts",
+    "bytes": 431,
+    "sha256": "23869b6785ef5fd90516a58e9fc05d1affdd9d235c7615741c8df472cb6c785a"
+  },
+  {
+    "path": "lib/performance-view.ts",
+    "bytes": 3517,
+    "sha256": "4ef07ffb6cfd8617dd136a51990226bf85b3506e9d41d6ad38ce1b44d17da622"
+  },
+  {
+    "path": "lib/player-card-analysis.ts",
+    "bytes": 5914,
+    "sha256": "afa19636eb7d5b089ca4316972ef5f22fcaea1ea7cb9b97c98905fb9ea6bb12f"
+  },
+  {
+    "path": "lib/player-card-history.ts",
+    "bytes": 2464,
+    "sha256": "2c18b9ec0fba0a07d2078010ab77aaaac15dbd77dadb7fa279a1c600522f0661"
+  },
+  {
+    "path": "lib/player-fixture-result.ts",
+    "bytes": 913,
+    "sha256": "00f238fbb6361ca9853e80e4d9c87d40c7df3cb417f082a3feabbfedc0a48621"
+  },
+  {
+    "path": "lib/player-game-observations.ts",
+    "bytes": 566,
+    "sha256": "24b9b7175ecaff657bea9f4d5da015876b638e45270132e9c3ef506cdcdb94bd"
+  },
+  {
+    "path": "lib/player-history-cloud.ts",
+    "bytes": 2060,
+    "sha256": "47f74850718250fb2ecb2fe884ddbdbacbcb546e8f075aafb752d5434a0a19a8"
+  },
+  {
+    "path": "lib/player-participation.ts",
+    "bytes": 6540,
+    "sha256": "e4447d37f0625001b190499a063e9e4f8c9428bfb1a9d40b5d9ce9d7c1967181"
+  },
+  {
+    "path": "lib/player-search.ts",
+    "bytes": 4760,
+    "sha256": "03966e0e5359987f9bcf7e2dbc9bff6d2695fba10c699d37802ff071613e5112"
+  },
+  {
+    "path": "lib/prediction-history-write.ts",
+    "bytes": 1685,
+    "sha256": "6c12597904f6c884231997105ca7063975476988ea1cc141713900b3e3f6b309"
+  },
+  {
+    "path": "lib/prediction-probability.ts",
+    "bytes": 2720,
+    "sha256": "169e9158eb374e48237708c63f2d60167b74f7c8411f05ad03fd1e4b0f81c47b"
+  },
+  {
+    "path": "lib/prediction-results.ts",
+    "bytes": 1701,
+    "sha256": "48e608192e8d182af4a6fc4d6c8e251f803237a1b65bc71a6f2ad505a252b499"
+  },
+  {
+    "path": "lib/prediction-storage.ts",
+    "bytes": 2884,
+    "sha256": "3fa811d58f9651c790ade53523f11dffa30d1fec5b115aca3d32e3ab02ba697d"
+  },
+  {
+    "path": "lib/probability-forecast.ts",
+    "bytes": 30830,
+    "sha256": "dc722d1b88aae5436768d9dc360b11d31b01c14fb41731bfb133b1ab09e2df2b"
+  },
+  {
+    "path": "lib/prop-integrity.ts",
+    "bytes": 7253,
+    "sha256": "d5eef5d8d03eee9badaae9820346f8094921debcc0460292c8f9f2b082b2cc7d"
+  },
+  {
+    "path": "lib/prop-line-format.ts",
+    "bytes": 279,
+    "sha256": "8a69033ed29e57aba761bcbfe81f27476990ad7e123b2c4be7345248fd9b09f6"
+  },
+  {
+    "path": "lib/protected-history.ts",
+    "bytes": 2704,
+    "sha256": "9418ff18a8c1f9e9480d6dcbaa3018d8c5bef21ef13e0a633c399a7f72caea3a"
+  },
+  {
+    "path": "lib/provider-batch.ts",
+    "bytes": 396,
+    "sha256": "321b129a1c8dac9a4cb165066ea76b4e8f75c2a661daa3ab928e3b496800a167"
+  },
+  {
+    "path": "lib/provider-fetch.ts",
+    "bytes": 5432,
+    "sha256": "ae8182b3579a3393e8d59ca7d99a6b344c5b7fb6e77c1ba63fe98843a34825a0"
+  },
+  {
+    "path": "lib/public-card-metrics.ts",
+    "bytes": 4272,
+    "sha256": "1d2576308b015bbc6720c21456459a3bbf7858af2f48077334259b7b190ef995"
+  },
+  {
+    "path": "lib/public-prop-context.ts",
+    "bytes": 4692,
+    "sha256": "47cd4b816749c9368d17d50fd30bf98efd37008a3e8cebd4d51d441f51276dcb"
+  },
+  {
+    "path": "lib/quarter-forecast.ts",
+    "bytes": 4803,
+    "sha256": "1e3738103471dd1beb73e0feed43371e01e18e5b4b3dc51beeaafbf4ff092b2b"
+  },
+  {
+    "path": "lib/quarter-target-display.ts",
+    "bytes": 1822,
+    "sha256": "aab69b1d9e9ccab5e08e8dc1c5946add962e729924ebfa25c5e1906852143533"
+  },
+  {
+    "path": "lib/rank-movement.ts",
+    "bytes": 2734,
+    "sha256": "d9ca951218851676cb9b244d2dea8fd975b077da9a503e0ce8e40b3ac8aaf2f5"
+  },
+  {
+    "path": "lib/ranking-availability.ts",
+    "bytes": 3350,
+    "sha256": "0c8d9deed0b34124506e9c2a3d0ee88b12c884f47863ac49a99e16fd784699f5"
+  },
+  {
+    "path": "lib/ranking-board-cache.ts",
+    "bytes": 1806,
+    "sha256": "53ed39ec391ac40d0533fc88d70a74303910071c067fb998a5a2abdb18bf6485"
+  },
+  {
+    "path": "lib/ranking-card-state.ts",
+    "bytes": 4125,
+    "sha256": "1d30b91104f278397c03eb3e0556105fc0faa98a69dbd7b71b0957dcfcc2dcef"
+  },
+  {
+    "path": "lib/ranking-display-evidence.ts",
+    "bytes": 2961,
+    "sha256": "95f50c535c8c12d90d947c45f544ba1563b1331481a2fa5fee5f81fa5535cecc"
+  },
+  {
+    "path": "lib/ranking-images.ts",
+    "bytes": 1781,
+    "sha256": "40c42f4306e1d82339caa76891d1d33f6e59dafe74e6a71b3946e56fa7795a5e"
+  },
+  {
+    "path": "lib/ranking-market-coverage.ts",
+    "bytes": 5246,
+    "sha256": "d80f73ff395c85ff1ffdb61071b2bee09d1bf6ed81dc221236a3103e8430fece"
+  },
+  {
+    "path": "lib/ranking-model-confidence.ts",
+    "bytes": 1784,
+    "sha256": "53cda206dcf550ef9772394d4481e2247570989e33bf9f1181b566df3ac74949"
+  },
+  {
+    "path": "lib/ranking-pick-count.ts",
+    "bytes": 546,
+    "sha256": "35742ca189510e464999954311c28563d7721330ca8cbcc0341daffacba9404b"
+  },
+  {
+    "path": "lib/ranking-request.ts",
+    "bytes": 770,
+    "sha256": "fd62cd300fdf2b5d8244f4fd5015e910bcd09b1ee48465a0a33abb41d8e09db0"
+  },
+  {
+    "path": "lib/ranking-response-cache.ts",
+    "bytes": 2796,
+    "sha256": "416af42a71835aeaf3febc0cbaf82dbea48ef49fc53c97998141fcf3e0ac7ddc"
+  },
+  {
+    "path": "lib/ranking-scope-summary.ts",
+    "bytes": 2549,
+    "sha256": "12616f2a1217169fc21600e841ad18c7930dc77cb628d4a834a166bedf7aadc5"
+  },
+  {
+    "path": "lib/ranking-source-state.ts",
+    "bytes": 346,
+    "sha256": "086169118cb183aa6a1c8ee5778a88b24be3566bd592d7dd1dcd273e15f06ad9"
+  },
+  {
+    "path": "lib/ranking-time-blocks.ts",
+    "bytes": 524,
+    "sha256": "e6876df93f4eafb22097a079f9304f4d57c8b4424130aa432db3ca76d0236c50"
+  },
+  {
+    "path": "lib/raw-final-performance.ts",
+    "bytes": 2517,
+    "sha256": "b41cef6f912350e43edccbffb5efbcd4908b71741e2c6d3a71d8a88700cda023"
+  },
+  {
+    "path": "lib/record-notes-server.ts",
+    "bytes": 1276,
+    "sha256": "b1519337ef0a88eccf6b2d5e6d16fe9efc0c3f42a1d0998a8b7f2938161202df"
+  },
+  {
+    "path": "lib/record-notes.ts",
+    "bytes": 5799,
+    "sha256": "012239e4e1e891ebbffccb61a0b439363c128fa5e90951e9b64f03aaee43dfd0"
+  },
+  {
+    "path": "lib/recorded-progress.ts",
+    "bytes": 10774,
+    "sha256": "d33599dbbc3b3ad87159ea92d20581215f8bc7a92d8feb148378f05a97f03697"
+  },
+  {
+    "path": "lib/research-basketball-outcome.ts",
+    "bytes": 1102,
+    "sha256": "7569ddedb46ebc2c360597d95f05431f086dec9be1255a95f9110a3f3ceabf15"
+  },
+  {
+    "path": "lib/research-capture.ts",
+    "bytes": 3159,
+    "sha256": "4048184c2c143f900d9783ea4ffa6a759700f5c7466cb3bf800422228c15a221"
+  },
+  {
+    "path": "lib/research-football-outcome.ts",
+    "bytes": 1438,
+    "sha256": "774683f86835aef966a34aa69942e8fbd0d9e0244cd0b25c82710b0888255ec4"
+  },
+  {
+    "path": "lib/research-probability-calibration.ts",
+    "bytes": 1336,
+    "sha256": "fe63dabcb6b309528f51e1573f60bb7b9d27976ad9a6ae11a7abb5d879dcb475"
+  },
+  {
+    "path": "lib/retained-nfl-response.ts",
+    "bytes": 1415,
+    "sha256": "67e092da492425fdd19ce4d85bddcc63de10657fc242957840994dfd392b2df6"
+  },
+  {
+    "path": "lib/retained-top-plays.ts",
+    "bytes": 1200,
+    "sha256": "b0d1638392be7d236b88eb0db852d2e857d8cf26935097e503401be456cd4d95"
+  },
+  {
+    "path": "lib/runtime-cpu.ts",
+    "bytes": 1992,
+    "sha256": "f68301be99396e81f3512841138b858c353154ab4a14a74ffdd4792e799913fe"
+  },
+  {
+    "path": "lib/runtime-monitor.ts",
+    "bytes": 1245,
+    "sha256": "6a68f1ff89ab1ddf07470ae75442ac9878521f25e6d1e546705c9cbfccc558cb"
+  },
+  {
+    "path": "lib/saved-cfb-results.ts",
+    "bytes": 662,
+    "sha256": "7fd7ac9e027075e5ade29a1b38b5353c43aebcc6a0b4d1cf8e60843bfc5e4634"
+  },
+  {
+    "path": "lib/saved-model-pick.ts",
+    "bytes": 4960,
+    "sha256": "10e20f448bda319ca38cf3c4866068af04f489fabd063ff5949abf613bf163fa"
+  },
+  {
+    "path": "lib/saved-performance.ts",
+    "bytes": 13758,
+    "sha256": "4935117f9351fc5fe041fcd748bd0ad450d6e77dfa08ef4da60d54e46ad19f18"
+  },
+  {
+    "path": "lib/saved-projection.ts",
+    "bytes": 1964,
+    "sha256": "d5fbec2084648fefa81521218c8a8bdc576b583725e01be36153b3a4de5047e2"
+  },
+  {
+    "path": "lib/saved-quote-evidence.ts",
+    "bytes": 1697,
+    "sha256": "9cc07749982f1d40d0451d8d0ac23e2859572bfd2d4783cb957e191437ec61cb"
+  },
+  {
+    "path": "lib/saved-research-performance.ts",
+    "bytes": 4503,
+    "sha256": "5277d723a093b5262f9d2f78e1f04f261b17e5c553ddffd0a683b7a6f16b2996"
+  },
+  {
+    "path": "lib/schedule-payloads.ts",
+    "bytes": 673,
+    "sha256": "ff62b39d8e970f3cfb340ab4f8454eb7a988ec55e4bb3ffb2b6603495ac1346b"
+  },
+  {
+    "path": "lib/search-player-history.ts",
+    "bytes": 1262,
+    "sha256": "222df7ca273e4af117bd5cb1dbcdec00c3c86ffd014bd629ffab2d9fbeb306f9"
+  },
+  {
+    "path": "lib/sgo-supplement.ts",
+    "bytes": 5812,
+    "sha256": "470c37e040b3964786b94a716d586584e878552802363bb467c13908db80df66"
+  },
+  {
+    "path": "lib/shared-json-request.ts",
+    "bytes": 459,
+    "sha256": "4bb37ec71ec8f7f18d9f985d189f2318acd132f195f700c3f16579087b7bf869"
+  },
+  {
+    "path": "lib/soccer-history.ts",
+    "bytes": 21281,
+    "sha256": "ca1ff7335da6d24fc04fea707ba664c2cf5c94c9859f03162bc396174003b701"
+  },
+  {
+    "path": "lib/soccer-predictions.ts",
+    "bytes": 3529,
+    "sha256": "d6989bea5736408d282e2c57eec64e359ba0bef9ed95fd58c1e4c8d3d45e456e"
+  },
+  {
+    "path": "lib/soccer-settlement.ts",
+    "bytes": 2861,
+    "sha256": "fa6888bda538d46454aca1f6283ae26819ec7e81f116c62dc6162f274e8c6a4c"
+  },
+  {
+    "path": "lib/soccer.ts",
+    "bytes": 2781,
+    "sha256": "991c7115115905d24cbbbc78d50fefae55bb4ef9c702fd410f800547478483cc"
+  },
+  {
+    "path": "lib/sports.ts",
+    "bytes": 1080,
+    "sha256": "188619487cc25ab1b6607d8a21fffee296fdd7a9035fe08c8343fd7e6f8e26ed"
+  },
+  {
+    "path": "lib/top-plays-store.ts",
+    "bytes": 1919,
+    "sha256": "18f11cbcf5fdba4bef0839a5c34449a5a4d48a1d50391d7c41addf8f1f55865b"
+  },
+  {
+    "path": "lib/top-plays.ts",
+    "bytes": 5186,
+    "sha256": "0e573cd8a51f144abdce63596d5f5a238ded990c5ff82735e47df07aa0457d20"
+  },
+  {
+    "path": "lib/unique-ranking-rows.ts",
+    "bytes": 667,
+    "sha256": "71a338d26cc31ac6bd5ae35f7128a2d4472c0db15c2a6eaa4352f60986ddc2dc"
+  },
+  {
+    "path": "lib/viewer-auth.ts",
+    "bytes": 1261,
+    "sha256": "793764cbbac19217cce0101ffabc7fce3f02592ba60dcaa78947c2e110f4624e"
+  },
+  {
+    "path": "lib/visible-polling.ts",
+    "bytes": 440,
+    "sha256": "a054d2a3dfcdabfbc344a46120adf59c6f28efd6ec4800db9c648e2c31053ead"
+  },
+  {
+    "path": "lib/wnba-history.ts",
+    "bytes": 5603,
+    "sha256": "3f5bd746a3d71b64bcff88266d956bf56faef888eba9bbc36645ac81d1af6214"
+  },
+  {
+    "path": "lib/wnba-rankings-server.ts",
+    "bytes": 11140,
+    "sha256": "5e9a244c5ad1eff10046e498bba4f2da14f3ccea1bfe29bef269db0b456c1b27"
+  },
+  {
+    "path": "lib/wnba.ts",
+    "bytes": 9672,
+    "sha256": "470e84ad0bfcbef8ea19dbcb03e3b3c832d576a901502ae6fce2935868a3c54a"
+  },
+  {
+    "path": "lib/worker-final-observations.ts",
+    "bytes": 1471,
+    "sha256": "04b8841bb1a2edc1365a12237b6cc4ec96d9455221c5da563ffa9bfbb588648e"
+  },
+  {
+    "path": "lib/worker-grading-replay.ts",
+    "bytes": 5151,
+    "sha256": "36f5f7ee803627848152af307888b8a9bf852f6f0efd37fb9483557d0b8d2266"
+  },
+  {
+    "path": "lib/worker-model-runtime.ts",
+    "bytes": 246,
+    "sha256": "490eb58b2745530920aa86a2c830492e56432dedfd47761fb3aeb871679ead3a"
+  },
+  {
+    "path": "lib/worker-performance-build.ts",
+    "bytes": 6582,
+    "sha256": "937b6622ca1808a781451b7b30fadd138f85d43acd8b8ef3dc9466064b462c2d"
+  },
+  {
+    "path": "lib/worker-performance.ts",
+    "bytes": 1085,
+    "sha256": "e8ba3f5b801378e0ee8291367c0b8ebc1d3f732da9537c52be446aedd897c30d"
+  },
+  {
+    "path": "lib/worker-runtime-secret.ts",
+    "bytes": 723,
+    "sha256": "e9032c00b228d2bfc93d8b15e44a89adfc9419ae8d7c9f807585a6aacf477a6e"
+  },
+  {
+    "path": "lib/workload-forecast.ts",
+    "bytes": 7708,
+    "sha256": "71b3b2681a58685f8dac1e17e6e3acae5f0ab927e5a7e7bcb53c23a5d840e766"
+  },
+  {
+    "path": "migrations/history-cloud-schema.sql",
+    "bytes": 1046,
+    "sha256": "b8fe57dfd1095b320ae637770f1be40aeb6941a035a523e04127db613884127b"
+  },
+  {
+    "path": "migrations/history-document-version-order.sql",
+    "bytes": 1146,
+    "sha256": "7d63e7e6fd88919816541c21863961493012de21e27c7a837ede65a732319f02"
+  },
+  {
+    "path": "migrations/history-player-games.sql",
+    "bytes": 654,
+    "sha256": "ba3bc23a0ace1458e845e4ab468c260539b4f07e51ba1db777aec962d7e6156c"
+  },
+  {
+    "path": "model-research/2026-10-18/README.md",
+    "bytes": 4801,
+    "sha256": "200483347c462d1a66fd9585f817fe52b85cb2502c24a10794c431e7995f1b21"
+  },
+  {
+    "path": "model-research/2026-10-18/opportunity-backtest.json",
+    "bytes": 16982,
+    "sha256": "8c5b19f1daf59c0eec17f458339f56453830fc7f1722fc7d5837df49f2d8a42a"
+  },
+  {
+    "path": "model-research/2026-10-18/opportunity-observations.json.gz",
+    "bytes": 662950,
+    "sha256": "bd800eb0ef4bf94011d03d49e75973b58a9e0836f6d87e19c5109d2a539c475b"
+  },
+  {
+    "path": "model-research/2026-10-18/source-manifest.json",
+    "bytes": 181541,
+    "sha256": "a057ba67d696fe62599e01d3fcf4d31f0be84c99b7d1fa44279fcf9af438b28a"
+  },
+  {
+    "path": "model-research/2026-10-19/README.md",
+    "bytes": 7174,
+    "sha256": "4cfff74a730ebcd804963e2a661622d21c501d02ef20269ad642bcf51392f0c1"
+  },
+  {
+    "path": "model-research/2026-10-19/distribution-models.json.gz",
+    "bytes": 64537,
+    "sha256": "a7c95370bbf9791ae8236b5c10d3a9631c0a00539b92b0a59f3cfd2a24f0e45d"
+  },
+  {
+    "path": "model-research/2026-10-19/gi-opportunity-model/opportunity-strength-evaluation.json",
+    "bytes": 1119,
+    "sha256": "56aa98a6fabaea4f8eb936a1417e61b960811247c6cacda2ab47d77831ff0454"
+  },
+  {
+    "path": "model-research/2026-10-19/gi-opportunity-model/provider-access-evidence.json",
+    "bytes": 578,
+    "sha256": "9677d0d23ad6c3fde03c91aea567801a6ed64f0ba2efd4ca2f45db661faeb457"
+  },
+  {
+    "path": "model-research/2026-10-19/nba-context-model/README.md",
+    "bytes": 6402,
+    "sha256": "74ad5863e27eb350001c57fe1297a3904945a9bbd7339b438b0aa9ebe68a35cc"
+  },
+  {
+    "path": "model-research/2026-10-19/nba-context-model/distribution-models.json.gz",
+    "bytes": 68491,
+    "sha256": "e53069f1ff535e978bf41dd5b8cfd7d74a4faddc31cd031db4d1921fe9e5f2c2"
+  },
+  {
+    "path": "model-research/2026-10-19/nba-context-model/probability-evaluation.json",
+    "bytes": 19825,
+    "sha256": "79055ec4148e24fba5bb449e3cb7c31043cf49b249a79ca2ae75661f98836850"
+  },
+  {
+    "path": "model-research/2026-10-19/nba-context-population/.gitignore",
+    "bytes": 79,
+    "sha256": "3a6a6c58a4df040a603d23ce41d44c385fbabe2b7e54d1340255395411b14707"
+  },
+  {
+    "path": "model-research/2026-10-19/nba-context-population/README.md",
+    "bytes": 919,
+    "sha256": "a003e097cb3d28fd1f775c92dd70f028d3d4d596807a0519d8efce5dbe9207b9"
+  },
+  {
+    "path": "model-research/2026-10-19/nba-context-population/source-manifest.json.gz",
+    "bytes": 36987,
+    "sha256": "7e20a66db4e2c0d04e785b858345d1d83b280d4323733ac13af9fd1ecfae9ba5"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-population/distribution-models.json.gz",
+    "bytes": 27725,
+    "sha256": "8a458cd723bffc09a491aad32ec4b7676a1db2494b4347e3130886a3b88f6948"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-population/opportunity-observations.json.gz",
+    "bytes": 307016,
+    "sha256": "06fe3fa7723eb608a3c4a8867a8fb54e006980f57de45dc28fbc8843b63fbf21"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-population/probability-evaluation.json",
+    "bytes": 11613,
+    "sha256": "f5734842ff1577a63087011abd4e5485768e5fedf30153e161b0e898cb4bbff5"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-population/source-manifest.json",
+    "bytes": 104655,
+    "sha256": "3da2a5f70c75dad6c5c32e7e8351aee3d107d2f13b1da074c319702c87acc402"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-quarter-population/README.md",
+    "bytes": 3619,
+    "sha256": "0dfbb17bbd9ceb7d82a34874be60853bdcfb38a225f617c707895a5606714acc"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-quarter-population/distribution-models.json.gz",
+    "bytes": 15586,
+    "sha256": "e4993f00212c0ff6bfc4181c8449b045826383019f5fd8a249bd4953d23f68fa"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-quarter-population/opportunity-observations.json.gz",
+    "bytes": 304412,
+    "sha256": "1898049c5fbc83381974fd468f10cdb18792e8f2ac720da92b2ddae9a10319a4"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-quarter-population/probability-evaluation.json",
+    "bytes": 8909,
+    "sha256": "cb57291802e11d9ca6c1028a748d5831d430d47f5f1763834dce1408c99f0933"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-quarter-population/source-manifest.json",
+    "bytes": 182419,
+    "sha256": "c22944b9f06c9b71b6101e9b5f8fb630538e94da9e39b6c11b2fd28eb80f8232"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-saved-quotes/README.md",
+    "bytes": 3754,
+    "sha256": "d59bd36abe6dfea254ea414ca9a3cfa686b89fa7e47c1bc0f9bf7f05742e03a8"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-saved-quotes/distribution-models.json.gz",
+    "bytes": 27725,
+    "sha256": "8a458cd723bffc09a491aad32ec4b7676a1db2494b4347e3130886a3b88f6948"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-saved-quotes/opportunity-observations.json.gz",
+    "bytes": 318323,
+    "sha256": "13d0abead3b27e87797c8e5deb81a59c83cd8c5b1cc265c87de44a8691084086"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-saved-quotes/probability-evaluation.json",
+    "bytes": 13053,
+    "sha256": "a138b882da8b54455db3db22f78423e1dc774fa34dcb6fb2ee8d1582e520504f"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-saved-quotes/selected-quotes.json",
+    "bytes": 37945,
+    "sha256": "9e5813173af654465f54bf5df2b1a3c75ad6ce72ed48e176ec3fe4a9ff3412a7"
+  },
+  {
+    "path": "model-research/2026-10-19/nfl-saved-quotes/source-manifest.json",
+    "bytes": 4183,
+    "sha256": "e1851dd8b1294d11611c79507e7acbbb3320e23459ab01c21f2681836ffe27fe"
+  },
+  {
+    "path": "model-research/2026-10-19/pregame-context.md",
+    "bytes": 2397,
+    "sha256": "aacd367c371d7cdaa2aeb24eaac2fb662e489170deb08e7058eb590be70eca8b"
+  },
+  {
+    "path": "model-research/2026-10-19/probability-evaluation.json",
+    "bytes": 68643,
+    "sha256": "26f3a04f25cd28414b1d504482f6861273cdc1e745aa0d347d0d33eb697535f4"
+  },
+  {
+    "path": "model-research/2026-10-19/provider-coverage.json",
+    "bytes": 820,
+    "sha256": "f744c589424e726e7342a459656acd4a14b617fe111ebc3e3abe6059abfb026b"
+  },
+  {
+    "path": "model-research/2026-10-19/workload-calibration-nfl/distribution-models.json.gz",
+    "bytes": 75112,
+    "sha256": "75881858c4ffc7e01533cf0748413bb0b3499ce0cd789f961c4e6cbae292a785"
+  },
+  {
+    "path": "model-research/2026-10-19/workload-calibration-nfl/probability-evaluation.json",
+    "bytes": 11738,
+    "sha256": "bd3ac7e29fde5b32ea62e8cfd03a2c9001cf19f3087c7b6181a1ff8403346ba2"
+  },
+  {
+    "path": "model-research/2026-10-19/workload-calibration-six-sport/distribution-models.json.gz",
+    "bytes": 90607,
+    "sha256": "0ba87401444c468bf5fb20264fec7ccac3443969aaa7b58e36bc81bfb668f1ff"
+  },
+  {
+    "path": "model-research/2026-10-19/workload-calibration-six-sport/probability-evaluation.json",
+    "bytes": 36449,
+    "sha256": "af2e348231383d37a25bb68709489eee9c3a965fbb1fe36cf4d1894585e775a0"
+  },
+  {
+    "path": "model-research/2026-10-19/workload-calibration.md",
+    "bytes": 4558,
+    "sha256": "b0c12948d0c61d2f50016fc3ba7994f254bff24286644792d2b2309c7b70490f"
+  },
+  {
+    "path": "model-research/2026-10-20/nba-source-status.md",
+    "bytes": 4419,
+    "sha256": "f48f375f841e974cd5351545cb1d4da8acbfdff3ab311b06c9c6a243d91f30b1"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/README.md",
+    "bytes": 2104,
+    "sha256": "7ea3b6c066386bc3b6955fef1bd83043b73a962ee26edbe63477f6c4fb1be0ce"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/forecast-decisions.json.gz",
+    "bytes": 11689,
+    "sha256": "a9748dd8a23900fbcdbc15312814ea6eb5bf88e2dbe10e4b669abb446fc224ea"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/opportunity-observations.json.gz",
+    "bytes": 318323,
+    "sha256": "13d0abead3b27e87797c8e5deb81a59c83cd8c5b1cc265c87de44a8691084086"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/opportunity-strength-evaluation.json",
+    "bytes": 8001,
+    "sha256": "f6bab1bd2508a5cfa9692c353286200da7eb8d996869ccf4f1f33483b169c6b2"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/selected-quotes.json.gz",
+    "bytes": 47377,
+    "sha256": "49de6a25b6698b026bdc737080c67da59f81e9e4235dd6f8cbbf6360eba078f9"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/source-manifest.json.gz",
+    "bytes": 46079,
+    "sha256": "2892a1b581ffe6ee3b543ab05eda4f0b205f68ab6947629b1c4cdbac5382374a"
+  },
+  {
+    "path": "model-research/2026-10-20/rookie-nfl/source-responses.tar.gz",
+    "bytes": 303860,
+    "sha256": "ccc379583a201eaf5e69c8b745f22db94789f26e31f1d30c983d8980137dadb9"
+  },
+  {
+    "path": "model-research/2026-10-24-events/README.md",
+    "bytes": 3287,
+    "sha256": "7a78e9af7b78745665fdc016640f73d37ad81ff4b109a88ddb1e4400d015eabc"
+  },
+  {
+    "path": "model-research/2026-10-24-events/q1-evaluation.json",
+    "bytes": 2476,
+    "sha256": "6ea7705d4f5c06b1d4ce8f8128bffe59182b787eb000434528b593b66365e08c"
+  },
+  {
+    "path": "model-research/2026-10-24-football/README.md",
+    "bytes": 3251,
+    "sha256": "96b090e0422d28790b4dbf9a03ebb461107d9c3c55b7ef087eb0ea07e12e4e6b"
+  },
+  {
+    "path": "model-research/2026-10-24-football/cfb-candidate-manifest.json",
+    "bytes": 343,
+    "sha256": "9316abdecb9eb354b88c8059c80474d72faba8a613dba3515e13e43aa5d7bff6"
+  },
+  {
+    "path": "model-research/2026-10-24-football/cfb-candidate.json.gz.base64",
+    "bytes": 498673,
+    "sha256": "c80815766c0e74ba230f3a13f83f3576d838ba7e8c807921660cf7bb7688de15"
+  },
+  {
+    "path": "model-research/2026-10-24-football/cfb-expanded-models/probability-evaluation.json",
+    "bytes": 4370,
+    "sha256": "552ae31006a1f66a9e37b7d616fd8afb209626d5546fd561d02b99e478aabbe2"
+  },
+  {
+    "path": "model-research/2026-10-24-football/cfb-pooled-models/probability-evaluation.json",
+    "bytes": 6327,
+    "sha256": "7788b3b2e263544ecc37f0569f339b82f37f335c2343e7132dfed971a409aef0"
+  },
+  {
+    "path": "model-research/2026-10-24-football/source-manifest.json",
+    "bytes": 265738,
+    "sha256": "b523913b62e590171d800499de66950cf0c8ab9c65bdac87b212e8dfc3c69c74"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-direct-candidate/distribution-models.json.gz",
+    "bytes": 28189,
+    "sha256": "62e6741aa5650c8886b8331c79f497448360f2555e48fa767fd171b2068bbb9b"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-direct-candidate/probability-evaluation.json",
+    "bytes": 12881,
+    "sha256": "a26281ed37210d04938e39e2383813da0e1d6d7f521d3198879703d639c433be"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-direct-candidate/protocol.json",
+    "bytes": 566,
+    "sha256": "e0488f4b4f50d6f21f2398c3e3f05177bce6fbaa68ce275e1110c7b2c594a5ca"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-direct-candidate/side-audit.json",
+    "bytes": 48252,
+    "sha256": "3af5fd3b05db7b7cbdcd590199ac79dac65c27e7cce7cafe4479778049098253"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-football-matchup/README.md",
+    "bytes": 5041,
+    "sha256": "10a972d583ebdbb0caa65a0767b7f7e52809068bc7fb14eae4481f0c3c21ff94"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-football-matchup/evaluation.json",
+    "bytes": 59659,
+    "sha256": "98c9181e98de20ed5f326a1b40e4213ad52c68bcc7daa5ed55cf336af8d41dcc"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-football-matchup/models.json.gz",
+    "bytes": 29438,
+    "sha256": "79303f4e40be17a05187444c61aa308f87cde97d79cf516f588b4ca52404dfc2"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-football-matchup/protocol.json",
+    "bytes": 1338,
+    "sha256": "665da083a9b417bc2fa5275dc1d3494f93e31a785309b3fb75c9804da0164bee"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-matchup-saved-replay/evaluation.json",
+    "bytes": 21166,
+    "sha256": "79b0ccf5f438d1d113e83742ff6c719e79a78690e90f022695696fb4eb3d2b20"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-matchup-saved-replay/official-responses.json.gz",
+    "bytes": 656671,
+    "sha256": "972819efcca59cc4a9c7943206f80e130841c9aee0eafb8153f74102ef332f59"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-matchup-saved-replay/protocol.json",
+    "bytes": 1239,
+    "sha256": "99499cf134575973807901dc6a0f4f429e3d2d95a58a1a91c7e11fab5702c7c5"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-matchup-saved-replay/receipt-manifest.json",
+    "bytes": 265,
+    "sha256": "475cf42f13fcdcbac81916a4ddbe44c8555b99478f51f79345fbd8d4dce510d4"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-saved-passing-audit/accuracy-audit.json",
+    "bytes": 18552,
+    "sha256": "0a97f0a3e9986adb768e2e10f23e89938ff31d6b7dff4d28410ac6d05349211d"
+  },
+  {
+    "path": "model-research/2026-10-27/p01-saved-passing-audit/selection-protocol.json",
+    "bytes": 11851,
+    "sha256": "e56f257b33ef6bc9ca9fe5d962290b11abdb22cc0ebdfad168adfd3a1cad6f48"
+  },
+  {
+    "path": "model-research/2026-10-28-p01-prospective-verified-pending/report.json",
+    "bytes": 11314,
+    "sha256": "b482689ba05f4dce5bde00aa81e30edd02ffbfb7a48eb369d86f3d216ad4c5e9"
+  },
+  {
+    "path": "model-research/2026-10-28-p01-prospective-verified/README.md",
+    "bytes": 2831,
+    "sha256": "7e26a98780e7b0388bcfbf91a41174975799c4dce80d9852f9fa990bac0dba8a"
+  },
+  {
+    "path": "model-research/2026-10-28-p01-prospective-verified/cohort.json",
+    "bytes": 67560,
+    "sha256": "51fb917b20802cc7fc6fb840e43a91e074d8782f0aef8f763f737e22cb20b757"
+  },
+  {
+    "path": "model-research/2026-10-28-p01-prospective-verified/protocol.json",
+    "bytes": 1681,
+    "sha256": "fd3dc023469011e7ed65a7c236b2dde50511163444f353e90512a320d739d07a"
+  },
+  {
+    "path": "model-research/2026-10-28-p01-prospective-verified/receipt.json",
+    "bytes": 127,
+    "sha256": "741aed2a36d516dbfc1989271b623c31091285eaebd2bd13377ca4c03e518fda"
+  },
+  {
+    "path": "model-research/2026-10-28-p01-prospective-verified/verification.json",
+    "bytes": 196,
+    "sha256": "a85a6d61788a4b21b15b71ba0fd81c895e9570add2d6b4802fcc12112b8aadec"
+  },
+  {
+    "path": "model-research/2026-10-28/README.md",
+    "bytes": 5136,
+    "sha256": "3ec6ff4bb80b9a27b36dd22159a90cff4fd7f4edab3618f2e4355d9020382a15"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-calibration/candidate-models.json",
+    "bytes": 2097,
+    "sha256": "fe951920f4bc272390a3fbbfa43928ecd077f63643032c2c5edd53f3b18d04b7"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-calibration/development-report.json",
+    "bytes": 253669,
+    "sha256": "05d5d3ee901ea94185c26b188a263c3a6b7fd084584ac8710a2e84cd9cdcc39d"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-calibration/direction-diagnostic.json",
+    "bytes": 1320,
+    "sha256": "c1c2e37a6de2345eb4b5e0e9bcd6a8a4c8817ec0953df1737505fc88d152469d"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-calibration/protocol.json",
+    "bytes": 1058,
+    "sha256": "5e065017b2ec49063282fb75231dda02d4ac280bf7aa031783ef3515eb9ff375"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-calibration/receipt.json",
+    "bytes": 221,
+    "sha256": "a1c8e3b4a6fe9f328d1812c27ff098618b089f7cb05b6655741795fd2250ecde"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-original-audit/accuracy-audit.json",
+    "bytes": 496129,
+    "sha256": "583a3193d54d14e4560c9910fe63f9079ff0e2e45b13c2198e1b3c8cc87e8d64"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-original-audit/official-responses.json.gz",
+    "bytes": 2600635,
+    "sha256": "d0dabf5ab64468e6aa0ab8975c9ac8b536c24c48e66408417d2cda3869367609"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-original-audit/receipt.json",
+    "bytes": 554,
+    "sha256": "5dda87dbb4c5864bfba0b6eb43fd8fa73e79782c2f21c27f1da077608d36b76c"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-original-audit/saved-source.json.gz",
+    "bytes": 68793,
+    "sha256": "1e472aa49257b9ad5f62652017c8c28bd7f1599d25fb3264c8e2813d5febb4e9"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-original-audit/selected-originals.json",
+    "bytes": 363209,
+    "sha256": "c7c30b059acc3cab1f908ecbd10febb4d2a9dd847d6017e2def0da8ac39235d5"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-original-audit/selection-protocol.json",
+    "bytes": 711,
+    "sha256": "0fbc48ab8ad710d08529213d72c68bb5724d80de599199bd50a35ab70d8a9f98"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective-pending/official-results.json.gz",
+    "bytes": 23,
+    "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective-pending/report.json",
+    "bytes": 152809,
+    "sha256": "7f9a7b28339af660a5827a6f83495d8277df861724fb27e8986ed7481bd6ea3a"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective/candidate-models.json",
+    "bytes": 2097,
+    "sha256": "fe951920f4bc272390a3fbbfa43928ecd077f63643032c2c5edd53f3b18d04b7"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective/cohort.json",
+    "bytes": 141272,
+    "sha256": "a9e2c79b5bfac2f3747d6ff3483fbe6841e04b5ed3bd7e6285d3afbc773dede3"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective/official-fixtures.json.gz",
+    "bytes": 210621,
+    "sha256": "e2d6c229c3c5c057496633efd3063c9bc18239920acb455be508c39e5fc07b32"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective/protocol.json",
+    "bytes": 1415,
+    "sha256": "5026ec17acc914c2c378eee1df86fbef0117efbcb2c255f8828ad03b82b3142a"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective/receipt.json",
+    "bytes": 612,
+    "sha256": "41b2ca7ea5378858696f0fbadf9969ae4952006b338f86fefc57afbcd3edd412"
+  },
+  {
+    "path": "model-research/2026-10-28/p01-nba-prospective/source.json.gz",
+    "bytes": 68795,
+    "sha256": "a44f565ad7849777210014daeab812820c2813b47e32f5bcdf34dc0363dbd3f8"
+  },
+  {
+    "path": "model-research/2026-10-28/verification.json",
+    "bytes": 219,
+    "sha256": "da6747094a03246672896571defa5443ba0de3c63ffac592df070133412bc192"
+  },
+  {
+    "path": "model-research/2026-10-29-n05-direct-quarter/README.md",
+    "bytes": 2493,
+    "sha256": "f0b8a2599d8901e05848f06502c03663a6286d795fecbfa22947d8862bbbc874"
+  },
+  {
+    "path": "model-research/2026-10-29-n05-direct-quarter/evaluation.json",
+    "bytes": 284624,
+    "sha256": "d423ff7284032fb3dcbc24498f34f41e9420af9f1d34f9f365e97a847e3915b3"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-direct/README.md",
+    "bytes": 2142,
+    "sha256": "a21dcc4c6566c158111749b60c93ea11b1d33ca40362689a7caf801ae6591250"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-direct/candidate-models.json.gz",
+    "bytes": 67657,
+    "sha256": "7d21696947c9f0fb7a519058053e8afa9786a9c215029e901a326536727c7bf2"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-direct/development-report.json",
+    "bytes": 40919,
+    "sha256": "f38dd258da7aeb30c22604e71c967361e01d2951cf01bf91de0d79404d9d41f5"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-direct/protocol.json",
+    "bytes": 1142,
+    "sha256": "78712e661219b329097c878f2806622e0519fc1dfb4236b25a43ff12812fbc3e"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-direct/receipt.json",
+    "bytes": 496,
+    "sha256": "ac0552f51b4269b46a1e52b5e5540730be0aedf6cfcbd66c4e3dafa21a486008"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-direct/saved-line-diagnostic.json",
+    "bytes": 746933,
+    "sha256": "883a549074153b83eb9e7baf60b3f3a8320ec313fde2d886c967867255864481"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-confidence-check/README.md",
+    "bytes": 1144,
+    "sha256": "cfc2a5442a94f38bfc34721b0237892861c339c72929465126718d9c874971ab"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-confidence-check/report.json",
+    "bytes": 19381,
+    "sha256": "45f5432ab948c6ae0ce71dfe3e0411758bbbd973531e9d88bd56ff841c3b3bdb"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-initial/report.json",
+    "bytes": 8800,
+    "sha256": "abde7d52e89f2b49fcc3a46d658c162a6ac76ddb88e15f4ab8e73a231c03ab5c"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-prospective/README.md",
+    "bytes": 2292,
+    "sha256": "e81a80773b06ba27719f7d4a09df3381e6c7f27fa54bcad62f3e316f62cc40b1"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-prospective/candidate-models.json.gz",
+    "bytes": 66258,
+    "sha256": "d76b7e6b2b1706ed335c5161167e9833d0162860900639138569787c341a09ee"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-prospective/cohort.json",
+    "bytes": 1227797,
+    "sha256": "54688fdd6117fcc9c99ca7becd03c273a141c06f49271a429e698b1fdfdd58a4"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-prospective/protocol.json",
+    "bytes": 1572,
+    "sha256": "84f3f1ceb5c0c7d707ef34e80264b5a263eec05b0f0699579c15ecedbab76f77"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-prospective/receipt.json",
+    "bytes": 127,
+    "sha256": "b350894f487b5ddb90b900e30eff4c4b83717193d4a7c984dab663039c3b584c"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-points-prospective/runtime-snapshot.json.gz",
+    "bytes": 3523867,
+    "sha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-scored/README.md",
+    "bytes": 1640,
+    "sha256": "eeda941f99b315f65e81d76c57fec5ff740498a26c1ebdc42f9e35bc0dd8a206"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-scored/official-results.json.gz",
+    "bytes": 563471,
+    "sha256": "7b23069a9e316e141ea9f58821ed9fab51595ae899f072ccdf93728dc838e6da"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-scored/receipt.json",
+    "bytes": 378,
+    "sha256": "e081612efdf5a934113192e0c1fc3b0d0e8f213f57cbc92f511c10f35607fdd6"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-scored/report.json",
+    "bytes": 187174,
+    "sha256": "1e0d544e9fb836aa843e86048a4105aa81e0a2393f2afc6ed4d286796e0c78e7"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/README.md",
+    "bytes": 1852,
+    "sha256": "412aaab936b3b8a853bed31585884703d80bc8f20420ae4217359ec56af8c26f"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/candidate-models.json.gz",
+    "bytes": 66258,
+    "sha256": "d76b7e6b2b1706ed335c5161167e9833d0162860900639138569787c341a09ee"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/development-report.json",
+    "bytes": 40941,
+    "sha256": "2ef2dbb9441d13445d9cf36ef7b554d56ccaeaa541fee310d37e1d087f33963f"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/protocol.json",
+    "bytes": 1183,
+    "sha256": "29736eb5f4fec385f0de3a7abe9060d70769c1867df2bda8e5568fa8c35b22d9"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/receipt.json",
+    "bytes": 675,
+    "sha256": "b293cc0f62fac1a86429ecf66d09ac1707f4686c738d3e245e8b1150b1804cd3"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/saved-line-diagnostic.json",
+    "bytes": 746881,
+    "sha256": "39209bc21085dcfe9bf5c235e82c6114e8c78ff230069fd1264c03b36c4347a9"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nba-under-conditioning/side-analysis.json",
+    "bytes": 7716,
+    "sha256": "520ad7568e75dc7cee1c093c3e6149f92984adaa34f34e528d107d4321c62803"
+  },
+  {
+    "path": "model-research/2026-10-29-p01-nfl-status/report.json",
+    "bytes": 11594,
+    "sha256": "5826784ab5c6efc15782da24d7e7d070f2c0c74768eb79af50e3400062f2d4f1"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-cfb-initial/official-results.json.gz",
+    "bytes": 23,
+    "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-cfb-initial/receipt.json",
+    "bytes": 293,
+    "sha256": "7fe819caafe986d0c2b46432c23e629e4a58a1ad15a9e0946336ddb19482b3a6"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-cfb-initial/report.json",
+    "bytes": 20904,
+    "sha256": "027e3b330726803a04c1bd82d458d4da60dd338cbb804a7b550a13eb23543e5a"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-cfb-prospective/cohort.json.gz",
+    "bytes": 647185,
+    "sha256": "5171055b96e8a8bea6606c04abb170f49f5f100408fc0756d1d6686ed769bd33"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-cfb-prospective/protocol.json",
+    "bytes": 1523,
+    "sha256": "0b77726e3192ccc4444d4180314c4f30628ed549af129a13f9f2e163f9097715"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-cfb-prospective/receipt.json",
+    "bytes": 128,
+    "sha256": "364ed0ec4de1fdd23726b10b631cb70fd34c0e4947fe00cae5a24e2a839b50ff"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-initial/official-results.json.gz",
+    "bytes": 23,
+    "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-initial/receipt.json",
+    "bytes": 293,
+    "sha256": "d7142fb5bbb250f09bc72f4ebb059e7f2ae31d771a6b860e0324c68952a06a74"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-initial/report.json",
+    "bytes": 21052,
+    "sha256": "ac5e511b4def8ebb00d1b9854399b0078d536ee2c5b9bd9bdf17e6ceb00d10b4"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-prospective/candidate-models.json.gz",
+    "bytes": 66258,
+    "sha256": "d76b7e6b2b1706ed335c5161167e9833d0162860900639138569787c341a09ee"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-prospective/cohort.json.gz",
+    "bytes": 212151,
+    "sha256": "f1f86758c80d443eea58f00371f9c3b307bca8bdc31a79644195829a7ff45db3"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-prospective/protocol.json",
+    "bytes": 1572,
+    "sha256": "e4363837689663b72835e8f7092a6f2fb7e2e5b830b35f18a26f40699aa83afc"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-prospective/receipt.json",
+    "bytes": 127,
+    "sha256": "7c80c1d9fbf0b6b60c3f789bbb95bfada49a7702f2b498de704adc8efeaba977"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-prospective/runtime-snapshot.json.gz",
+    "bytes": 3523867,
+    "sha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-scored/official-results.json.gz",
+    "bytes": 133797,
+    "sha256": "7874b136eb1494bdda9f2131651bdeda7b72d7fa3607749deb1e0c9a76556879"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-scored/receipt.json",
+    "bytes": 293,
+    "sha256": "b7b08be254889639662fca2025d4f6e6ec01c4934c2a5c4796d240250ed34f29"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nba-points-scored/report.json",
+    "bytes": 37427,
+    "sha256": "42c83afcc0a2f075a80581b3991f92e498c90f3f7e4db196a224de709d7c29c1"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-initial/official-results.json.gz",
+    "bytes": 23,
+    "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-initial/receipt.json",
+    "bytes": 293,
+    "sha256": "134445f8d908ddc429d97bde175398522b75539327d0dc62b89b85a56aeddf43"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-initial/report.json",
+    "bytes": 102748,
+    "sha256": "09848881fc1fb7a87acf4a1221bc257fe0b1ee731543768cc0815d2b55381298"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-prospective/cohort.json.gz",
+    "bytes": 54257,
+    "sha256": "cd013706e83975dfc69f027fac36f0641adfd39ecd8b1336a40295e552656076"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-prospective/protocol.json",
+    "bytes": 1681,
+    "sha256": "ee4e296687fb1df58cd1892d10f69fd6461b76fd4052fb106a41dbc4ca1db68b"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-prospective/receipt.json",
+    "bytes": 129,
+    "sha256": "b0f49cf08aef3f1406bad0584b3fdac1aad4b730b9606c5ea18d1f52526d04a0"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-scored/official-results.json.gz",
+    "bytes": 54895,
+    "sha256": "49402c5744a7fdbf993dcd39b1950d16bc9c1517845d010c00b280aac1b10f5e"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-scored/receipt.json",
+    "bytes": 293,
+    "sha256": "71a666e8cb19eb0cc84d1fda8c5c5826702cb9940c40a4230f9a7217b6e6c666"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-nfl-scored/report.json",
+    "bytes": 77770,
+    "sha256": "b2ff7d871e09b649b08322c8edca0f4af9dfb325f479d480f5da0e1c47e3c851"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-review/README.md",
+    "bytes": 7337,
+    "sha256": "73d58f9af76e72f4a162f7bb979e959132cd91da1cebdf9484ecebfd406ed048"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-review/live-source-audit.json.gz",
+    "bytes": 13304,
+    "sha256": "09e14fff03748b8e2de8e6da814645afa20291061b5db3c4974f7b5fdffb50d6"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-review/nba-direction-changes.json",
+    "bytes": 949,
+    "sha256": "616cd4b2d373a5572d3d20a3bb947571499739b0acef7602ea90e02b1953a7ac"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-review/nfl-direction-changes.json",
+    "bytes": 2092,
+    "sha256": "662eda07604470b3eeb1eba9bf408d3c9e7ddae069e9c9f29abeed46f5b2faac"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-review/receipt.json",
+    "bytes": 209,
+    "sha256": "57fefd411e7a01cbef45167650626ed2e392ac240ce12aba28488b61c40ce87b"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-review/summary.json",
+    "bytes": 1986,
+    "sha256": "663338c5dc6b6ca945b78e44bc345b2069c4852c81ef65d5bf92212bb5d6b6bf"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-source-repairs/README.md",
+    "bytes": 4179,
+    "sha256": "b508d701f1cf8cc2839faf07a0cf29af59e924850d3eb2c20329faad0b9cf263"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-source-repairs/cbb-quote-field-audit.json",
+    "bytes": 4772,
+    "sha256": "c6d90b549cdc60431e9a54a988f8f112088215ef06e9fb0c18b651038e227571"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-source-repairs/nhl-priced-board-receipt.json",
+    "bytes": 596,
+    "sha256": "7251813bb455b92f86f4a977ad5e57b413fd8c9f1741ad351641538e572c553f"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-source-repairs/nhl-priced-board.json.gz",
+    "bytes": 6154,
+    "sha256": "d45250b3b37a035ecd8de2d82c5c4932c76dad145a54e19bd0119e0e65bfc5f5"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-source-repairs/official-identity-excerpts.json",
+    "bytes": 42563,
+    "sha256": "f1134baad5bb87802838dbc4b2095e5af92cab0ce4e60b72c576429501e75ca1"
+  },
+  {
+    "path": "model-research/2026-10-30-p01-source-repairs/quote-source-audit.json",
+    "bytes": 2942,
+    "sha256": "c170ceac304dc75d799962cbd1e07e8a694d3ee57fa6cbb83ef3fe437c9b9bcc"
+  },
+  {
+    "path": "model-research/cw06-nba-ev/deployment.json",
+    "bytes": 12987,
+    "sha256": "c6d3a9ee520fb74d6928a1aebbb7ef7f7000c1986ffd4e23e280f4328acffa2c"
+  },
+  {
+    "path": "model-research/cw06-nba-ev/verification.json",
+    "bytes": 10101,
+    "sha256": "4fbb2cd584dac053b6445a683acda2ce0903cef8ef00c112c645d13553473093"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/candidate-models.json",
+    "bytes": 4059,
+    "sha256": "6e34c919e586a2d26ad32cee0c6cf86efce571e4a5cdbcc3aac6332e71cb712c"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/comparison-report.json",
+    "bytes": 228921,
+    "sha256": "b06015c58f9d1d9fdcc4b38f09f146e34306298e6182a7e4265bbc6137505f52"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/feature-receipt.json",
+    "bytes": 2368,
+    "sha256": "f65a3a7bacc70ee8c93445bbfab209500501214b5aadb3bb0d9fd4a9cb773af9"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/gamelog-crosschecks.json.gz",
+    "bytes": 9871,
+    "sha256": "91dd707e6e687314498104a5a29c883a95264716eb135b76362d172509f9a842"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/player-games.json.gz",
+    "bytes": 3111558,
+    "sha256": "02e9c65fd2104e473a006ef2b82e08e972803229b55c0f3977da4e41675d160f"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/protocol.json",
+    "bytes": 2266,
+    "sha256": "89e5971019777d196f786a6ea211dfa1c3b73d75da6e31d4e8caeac501f7d3f6"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/safeguard-regression.json",
+    "bytes": 440,
+    "sha256": "8b3a09d910cb09a6b37214c58cd2da5f80176f7b3f1b43ffb6bf308fe049788d"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/source-crosscheck.json",
+    "bytes": 2335,
+    "sha256": "153b2de0d9a07d5810310c3561faf917e393e8a9de19251e511abfd80b098edf"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/source-manifest.json",
+    "bytes": 14674,
+    "sha256": "e96d3f53bda7f6a18a7d70b9b8e5787e1c7f65744e5022ffa23eb097e24f6f1f"
+  },
+  {
+    "path": "model-research/cw08-nhl-expanded/verification.json",
+    "bytes": 316,
+    "sha256": "3f3d774925bbde37347afba5ab3c90f0c2944748ec72a31bdb963dd0a6566110"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/archived-quotes.json",
+    "bytes": 468892,
+    "sha256": "48b10bd5ea057eada8cb0f3e4936aea897b1299305a70a457f0272d7911429e4"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/cloudflare-shadow-manifests.json",
+    "bytes": 50141,
+    "sha256": "fe8da4410ed875675287799d670f9266bc67e95958ecbc32adb4b619af12c62c"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/cloudflare-status-receipt.json",
+    "bytes": 2879,
+    "sha256": "22d82f5c5c8d4697440d9665edd0782f55d2dc1858995416154e3d884caa1d08"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/evaluation-input-receipt.json",
+    "bytes": 49798,
+    "sha256": "41a8ed57b476d6c3919a907b95f2ae22e78564bc7938c533c82f94bbf58968a1"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/evaluation-source.json",
+    "bytes": 453,
+    "sha256": "0cdb0870c12fadae1169fef1d12eae464f2cec71b59abc14dfe45d080b6761a1"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/fit-receipt.json",
+    "bytes": 794,
+    "sha256": "57b0dfa1e374f917b0e0ed9816527af72de73f68196ac08deea093a92e1a73c1"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/models.json",
+    "bytes": 4495,
+    "sha256": "636fa9dc04ce7b3e734a7b8bc8c4582628989124b293f9e0e2f81545e02f5194"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/november-records.json.gz",
+    "bytes": 109318,
+    "sha256": "2ec565c9870d495225bf5a1914206397f48ce80b56a40c2140a34aa313836601"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/official-finals.json.gz",
+    "bytes": 80520,
+    "sha256": "c9a156c1703b7ecea9173f228b883ca179008018b28c73000e4660e67230f0b1"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/protocol.json",
+    "bytes": 2293,
+    "sha256": "9f651da684f20ba8ab2fd6fdbddc29c333943facbe0a0dbf7b53a93b2545d1e0"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/shadow-evidence/2026-11-14T025901Z.br",
+    "bytes": 1576349,
+    "sha256": "1f6ef2385261a920bb87db79a418a238456818175e69cd9f3c0abf366500f669"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/shadow-evidence/2026-11-14T054815Z.json.gz",
+    "bytes": 275412,
+    "sha256": "25823ad35e1c0256cc43cfbddf009b202b36e3c18bfd10815b44857a32db0d53"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/shadow-protocol.json",
+    "bytes": 2131,
+    "sha256": "c4e30799f23a01d8b429296fc919e831a8343726b621b9ce02f7fa5f3884d138"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/test-and-readiness-receipt.json",
+    "bytes": 1413,
+    "sha256": "991a57c90e6675e37630da92017d24952445d23495415af81a81b21e68b86085"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/validation-report.json",
+    "bytes": 296478,
+    "sha256": "faa09d8df1bd48e85d7473decb696d66e136404776df8b080b889835584ad7d3"
+  },
+  {
+    "path": "model-research/cw08-nhl-v3/verification.json",
+    "bytes": 268,
+    "sha256": "813499b815894fe928d939630822a20e8885352593b02e490abe73855cfb6dc7"
+  },
+  {
+    "path": "model-research/cw08-nhl/regression-report.json",
+    "bytes": 3510,
+    "sha256": "15e6aff929b08efc8eb918303a176eff6010a4ccd7325ceb7309938920021fa7"
+  },
+  {
+    "path": "model-research/cw08-nhl/saved-picks-audit.json",
+    "bytes": 85501,
+    "sha256": "16c815c3e38a9e7c09507fd245f75eacd1b9d33d9f66355d6df2fb867ee379eb"
+  },
+  {
+    "path": "model-research/cw08-nhl/verification.json",
+    "bytes": 1788,
+    "sha256": "2541710e6add5d385991f41690696cc4ca8291611902bec99f3e0a53405e7d7c"
+  },
+  {
+    "path": "model-runtime/gi-calibration.json",
+    "bytes": 5066,
+    "sha256": "b17accb81e7f2308622a2a89c41e6f2f363dd5b23f0209432a0897afbb03ae69"
+  },
+  {
+    "path": "model-runtime/gi-status.json",
+    "bytes": 1081,
+    "sha256": "71ed0bab29fb983dd228a49b8b263355ad148dfb7831d2acb7c4a5cc27369acd"
+  },
+  {
+    "path": "model-runtime/manifest.json",
+    "bytes": 850,
+    "sha256": "6faad7ad988a2bb1da93a1a9576ffbd198d929455cff762b077a1290ae076e11"
+  },
+  {
+    "path": "model-runtime/nba-combination-models.json",
+    "bytes": 119561,
+    "sha256": "9bb0fa1ad02cb04f60292d5a47b04389cf010ff7004e6f0e32b8e0b28a1c5923"
+  },
+  {
+    "path": "model-runtime/nba-quarter-calibration.json",
+    "bytes": 49515,
+    "sha256": "e44b2083eb7beee8d46f6f0e034440f66db9ba8e841f0adc23b7e0679e09b706"
+  },
+  {
+    "path": "model-runtime/nfl-passing-tds.json.gz",
+    "bytes": 9915,
+    "sha256": "5f2c7e8d1c57f54b26b9b487f8a6666b42022f807e1db2d84b586f93140cf83d"
+  },
+  {
+    "path": "model-runtime/nfl-sacks.json.gz",
+    "bytes": 147610,
+    "sha256": "694e195108c46c8a30e03d68fdfcbc1414d3a2df15dde2b54280f02f86d6f6d8"
+  },
+  {
+    "path": "model-runtime/nhl-goalie-saves.json.gz",
+    "bytes": 37355,
+    "sha256": "624896a1556d64349998e97536c82990ef3e2f71eda3a6a1985f7c567fe4fd97"
+  },
+  {
+    "path": "model-runtime/quarter-manifest.json",
+    "bytes": 794,
+    "sha256": "95de9a0b6d1409d16000924b25b46a1e2710fb9dd1a2305c420f0101bdf54b45"
+  },
+  {
+    "path": "model-runtime/quarter-snapshot.json.gz",
+    "bytes": 616678,
+    "sha256": "7265f41b180e27e34c4713e72a6f26e47e4a268df82dc9858e1ab8513e1ca11e"
+  },
+  {
+    "path": "model-runtime/snapshot.json.gz",
+    "bytes": 3523867,
+    "sha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080"
+  },
+  {
+    "path": "next-env.d.ts",
+    "bytes": 284,
+    "sha256": "217ce9348b523c3e6954fb50bb93364b58781d86742c995f3a5b03ba88b9ba72"
+  },
+  {
+    "path": "next.config.ts",
+    "bytes": 261,
+    "sha256": "ed31e74e7ad9ecc5027398ebb6098e04d747a177c4d31ea760b3236e4553fda0"
+  },
+  {
+    "path": "package-lock.json",
+    "bytes": 311929,
+    "sha256": "2a08bfa7fe5b2bc209fc2709df499a860b0a5c7ac1767f4395f2fd9a3a2e3aff"
+  },
+  {
+    "path": "package.json",
+    "bytes": 1139,
+    "sha256": "0bf72a61bac9722a29ba0bbd2fd2702d65279eeeec58cb389433d1f5f4fe68d5"
+  },
+  {
+    "path": "proxy.ts",
+    "bytes": 1555,
+    "sha256": "f00c4d37c4b32f3b963a2c2bd793aaffbec14810d5d303ec15e78033289a6d22"
+  },
+  {
+    "path": "public/brand/sach-sports-crown-logo.png",
+    "bytes": 430385,
+    "sha256": "0f5764f2cdfd3d0b5be51c79ea0248f696c004b71f82b225610c84d8c43f26cb"
+  },
+  {
+    "path": "public/hero/cbb.svg",
+    "bytes": 1963,
+    "sha256": "f2f5beca4df9f7a7f9e8df277a0881689f09920551c0c1e4d0e67db02cc1a13f"
+  },
+  {
+    "path": "public/hero/cbb.webp",
+    "bytes": 153778,
+    "sha256": "08e5edd77adc88a60eecafcf8c5c87e101dff7b23a9c5083c42eab53495c04c4"
+  },
+  {
+    "path": "public/hero/cfb.svg",
+    "bytes": 2415,
+    "sha256": "eb96b356ac1bc40bb1de73d27e580c3bbdd3ce1854c148371c4483ec3794ec67"
+  },
+  {
+    "path": "public/hero/cfb.webp",
+    "bytes": 158422,
+    "sha256": "a3c693dd3da2466b0b6e78b65782efc531286865f9a50ec425b3bfef04dd8f55"
+  },
+  {
+    "path": "public/hero/home-arena.webp",
+    "bytes": 64594,
+    "sha256": "1693716ad0b840e89d74278a6aced7964a0b05f7a24cab7c458834c6ac3ff05d"
+  },
+  {
+    "path": "public/hero/mlb.svg",
+    "bytes": 1998,
+    "sha256": "506075c5777d2a8180203dff5db0a3002b540867ece0c17cfa8db7df820bdf37"
+  },
+  {
+    "path": "public/hero/mlb.webp",
+    "bytes": 153204,
+    "sha256": "6f6d3f4136ab3a98a0f38447e66d22ee455341d628d41b82286b4cfcaec08997"
+  },
+  {
+    "path": "public/hero/nba-intelligence.webp",
+    "bytes": 156466,
+    "sha256": "a0a64470c8875465053bfac39d675aa41b49705cfc44c1fbea25d0725c21913b"
+  },
+  {
+    "path": "public/hero/nba.svg",
+    "bytes": 2077,
+    "sha256": "64b3dee7519f25a127ee3d83961686c5383801f0a5cd8b0f7cdc6672f972b17f"
+  },
+  {
+    "path": "public/hero/nba.webp",
+    "bytes": 161480,
+    "sha256": "c1cac2b28eabe2881b1e933b6af07da22bcbed98d366691a5d714b16c177cdeb"
+  },
+  {
+    "path": "public/hero/nfl-intelligence.webp",
+    "bytes": 141004,
+    "sha256": "53a6d7a3ec6e94b0a009630faad6c67b2913d41c1f6e89a3e1b783729451fbef"
+  },
+  {
+    "path": "public/hero/nfl.svg",
+    "bytes": 2956,
+    "sha256": "297856b6f039b9da37eda4bc70e5cac9befb86cec50bedb5809639a31b5ba4de"
+  },
+  {
+    "path": "public/hero/nfl.webp",
+    "bytes": 157336,
+    "sha256": "db7b7998ba839fe5464683231839ee35c7b058924dcb364eede20e8a10c7eec0"
+  },
+  {
+    "path": "public/hero/nhl-intelligence.webp",
+    "bytes": 170656,
+    "sha256": "589eb19fef79180676387569079520e3a1731fcac7cf975080826a4604c20359"
+  },
+  {
+    "path": "public/hero/nhl.svg",
+    "bytes": 1881,
+    "sha256": "7a4abab9df6c0356f622aeed4eaa9be32f7fa93188f19d188c4ee5e3d39929c0"
+  },
+  {
+    "path": "public/hero/nhl.webp",
+    "bytes": 163022,
+    "sha256": "87936741c98b73b3ff278b6a56163b8fc7606e61e07cf78a48cb081dd17f8789"
+  },
+  {
+    "path": "public/hero/soccer.svg",
+    "bytes": 1777,
+    "sha256": "1d399e536a89b5e4609bd44b494b78a1988bafbfedeeb446a8d184ae5924b771"
+  },
+  {
+    "path": "public/hero/soccer.webp",
+    "bytes": 160450,
+    "sha256": "047d81f7f54ffbe83559de5ca4363d13fc9a4a72aee374595b31bf0d6740caa2"
+  },
+  {
+    "path": "public/hero/wnba.svg",
+    "bytes": 2180,
+    "sha256": "3fa4f2382a737b0e65d152d89a3ccb80caebb260e9e3d35304f3c181a5d0367e"
+  },
+  {
+    "path": "public/hero/wnba.webp",
+    "bytes": 150738,
+    "sha256": "fb730ef32bbaad2915e2041fec797cbcb6847c86260c971b8d6de2195993ee72"
+  },
+  {
+    "path": "scripts/audit-current-nba-population.mjs",
+    "bytes": 10533,
+    "sha256": "04c8278caf353af53e123d86a7ed3296de4e86ed44881e047cd4fb847ee107b1"
+  },
+  {
+    "path": "scripts/audit-cw08-nhl.mjs",
+    "bytes": 5287,
+    "sha256": "90c36778148301efc193d78c18ec35dbcbced3a049831f4b8657c9519106dd5e"
+  },
+  {
+    "path": "scripts/audit-live-grades.mjs",
+    "bytes": 1696,
+    "sha256": "8dd8b7de1977fa1063d6112b459a57ec6c60cb609bf6a96a82fb9d570bd3357d"
+  },
+  {
+    "path": "scripts/audit-matchup-saved-passing.mjs",
+    "bytes": 7534,
+    "sha256": "aadcd4b01aad790a21ded657addba0e73c6d8ffac93b2890a1811fc777dd3e42"
+  },
+  {
+    "path": "scripts/audit-n05-quarter-coverage.mjs",
+    "bytes": 2976,
+    "sha256": "98d0b9c3a8307c9c16c90cdbe09e7cd61c5f08b60432c8a42ce4ce671f01f1a7"
+  },
+  {
+    "path": "scripts/audit-nba-raw-offer-identities.mjs",
+    "bytes": 4718,
+    "sha256": "b860080d0aae385f4c0f855a6b59ce40db827a61eb110d7de591cc3b208e9ba3"
+  },
+  {
+    "path": "scripts/audit-nfl-n01-n03.mjs",
+    "bytes": 4402,
+    "sha256": "95042ff146a735a2c1e3e81cd1dbbbcde2de7abc98c2db44e916857e0af49902"
+  },
+  {
+    "path": "scripts/audit-p03-p04.mjs",
+    "bytes": 3379,
+    "sha256": "b000fc57ac810b6d387b084b18a76f155845299a617a3ef3fb542b1536bbaa12"
+  },
+  {
+    "path": "scripts/audit-saved-basketball-accuracy.mjs",
+    "bytes": 6945,
+    "sha256": "29bcc09108a5c764c7d054efac231cde63da5d682656a58d92101bb20d1c98f2"
+  },
+  {
+    "path": "scripts/audit-saved-nfl-accuracy.mjs",
+    "bytes": 3670,
+    "sha256": "e7b7d0c40b7d250607b57006688b837790171a923a058e545dd7a7f74ad36f2a"
+  },
+  {
+    "path": "scripts/audit-sport-grades.mjs",
+    "bytes": 5931,
+    "sha256": "90c45a88b97a48f70f046eb46a871b5fda327c74cf0b75a035cd4dad988e3695"
+  },
+  {
+    "path": "scripts/backtest-workload.mjs",
+    "bytes": 697,
+    "sha256": "243ab87e2dc7c1bbf3c48af7aef8a5f98f5efedcb7fec2a2fdad4f46a59355dd"
+  },
+  {
+    "path": "scripts/backup-to-drive.mjs",
+    "bytes": 15316,
+    "sha256": "d51b189d1b07b07d363d466a7fe8dff1e8f5ca6332d897d6b3b6baccb2eca42d"
+  },
+  {
+    "path": "scripts/build-nba-board-calibration.mjs",
+    "bytes": 3427,
+    "sha256": "4843caa477ba2c6a6bc48112a75ec55e083b77e8b8f1407c5fd9bc41cf87f4ac"
+  },
+  {
+    "path": "scripts/build-nfl-prop-model.mjs",
+    "bytes": 1883,
+    "sha256": "058f1ed1ced80c16f38c58bc3a8958c7b498a4fcb2ec3d506b37d9e816ea7822"
+  },
+  {
+    "path": "scripts/build-nhl-goalie-saves-model.mjs",
+    "bytes": 2096,
+    "sha256": "539576f5b4162c413a92b2f9c102dc58a9402d65b559b9ae4f943530400414c4"
+  },
+  {
+    "path": "scripts/build-with-backup.sh",
+    "bytes": 1110,
+    "sha256": "3d2ad1c66394f4461c62d49cf7441dde7149c1823ddb45ddb465f6318fa5b6a5"
+  },
+  {
+    "path": "scripts/capture-cw08-nhl-shadow.mjs",
+    "bytes": 3440,
+    "sha256": "f60906d1c51998889a623030259b35606410dc1f7ca60f68aa5ee009573d1d5f"
+  },
+  {
+    "path": "scripts/capture-p01-cfb.mjs",
+    "bytes": 6610,
+    "sha256": "52e88af8d81c81e1da22f83bffda4d00ca2555d3ce77609c4434916dc06cc245"
+  },
+  {
+    "path": "scripts/capture-p01-nba-calibration.mjs",
+    "bytes": 6311,
+    "sha256": "fac7a255f3e7b6fad4ea66ea533d75ffcbfdcd89ce7c9faf15bc26957d83df6e"
+  },
+  {
+    "path": "scripts/capture-p01-nba-participation.mjs",
+    "bytes": 7935,
+    "sha256": "43e9135880b4136165bea3ec8898ce4c3b5a94952b3f72186363cb46279e033c"
+  },
+  {
+    "path": "scripts/capture-p01-prospective.mjs",
+    "bytes": 8334,
+    "sha256": "d5f9bd3c84e7ac92e8603e83f1d09a94ca6733b61854075293a220d56d41c5c7"
+  },
+  {
+    "path": "scripts/check-chromium-trust.py",
+    "bytes": 2499,
+    "sha256": "50f7150d8920a5e0c6cf005891d397d969f27bcf62ee1000c67d0108d1fad6f1"
+  },
+  {
+    "path": "scripts/check-r1-current-nba.mjs",
+    "bytes": 4933,
+    "sha256": "0c1b2cc4878b39b61f06b6fe48919dee0748954d0ab022b799f441fa7bffd3a5"
+  },
+  {
+    "path": "scripts/collect-basketball-events.mjs",
+    "bytes": 2889,
+    "sha256": "8e8e61e129a2bd8909af6a3fabc16318382898346707b5773384f27b3aac6b0e"
+  },
+  {
+    "path": "scripts/collect-basketball-population.mjs",
+    "bytes": 4271,
+    "sha256": "609db07e106d2f56537c899196afac4ad5b87dbf3a1f92320db74fe6a09453ae"
+  },
+  {
+    "path": "scripts/collect-cw08-nhl-v3-finals.py",
+    "bytes": 710,
+    "sha256": "fdff6e25396a108a20935ee79fe58967082c3c9254d36e822a64e5f974e6634e"
+  },
+  {
+    "path": "scripts/collect-cw08-nhl.py",
+    "bytes": 3992,
+    "sha256": "ac9f85cbf284a7fdbdff20103d91e2b4da979cebe7537b88955e2528c95ecc6a"
+  },
+  {
+    "path": "scripts/collect-football-population.mjs",
+    "bytes": 5084,
+    "sha256": "91110be8b5329a6c334cc4ece34fb37cd5ef2375e433b7a5dafb6b1fa60435f6"
+  },
+  {
+    "path": "scripts/collect-nba-archive.mjs",
+    "bytes": 3896,
+    "sha256": "0a569e412ad6452c298ce872c7f026f8a52111c84bf759c2914d99bfcfeb7321"
+  },
+  {
+    "path": "scripts/collect-opportunity-backtest.mjs",
+    "bytes": 4780,
+    "sha256": "a03add9583e095e331539c8d4ece74ef637ce8ecf2d17606bbc4f6e5f0efb134"
+  },
+  {
+    "path": "scripts/collect-rookie-quotes.mjs",
+    "bytes": 8008,
+    "sha256": "b5a9c764f74c222e5ec310d46124798d3c30e44b3ff5094db60a9cacb6d7278e"
+  },
+  {
+    "path": "scripts/compare-grade-audit.mjs",
+    "bytes": 2492,
+    "sha256": "388c709b2308b1c86ada48a613de73716aa5e27842874a849dd76a3e7fcfd532"
+  },
+  {
+    "path": "scripts/crosscheck-cw08-nhl.py",
+    "bytes": 2010,
+    "sha256": "422570d3f7902b60636c2cf9891bd89affd608db6661ca0a49d082e199445846"
+  },
+  {
+    "path": "scripts/current-recovery-backup.mjs",
+    "bytes": 5727,
+    "sha256": "7c520e670484cd9a88f24419cd3263d2fd4d0d6ebb634336e12a0c9f895e79d8"
+  },
+  {
+    "path": "scripts/cw08-cloudflare-artifacts.mjs",
+    "bytes": 3169,
+    "sha256": "50426e8bd3cf4ce95716551aa711c228795b4e5549ff6131549a668ab7c3fafc"
+  },
+  {
+    "path": "scripts/cw08-shadow-enrollment.mjs",
+    "bytes": 1034,
+    "sha256": "dc6388a71a220b33f9b2aee4d2ea5d62ad3a56aa12acee23e7f47b6bca639266"
+  },
+  {
+    "path": "scripts/dashboard-live-access.mjs",
+    "bytes": 2623,
+    "sha256": "e2da415e0ce9f5d1b97865ca2df694a29fc534511b3482b69c205c437186ad35"
+  },
+  {
+    "path": "scripts/deploy-cloudflare.mjs",
+    "bytes": 2147,
+    "sha256": "aa88e48a32ee732ee353f8debcfc9000007db57d3e0a3805b3cdc8aed1024557"
+  },
+  {
+    "path": "scripts/deploy-dashboard-release.mjs",
+    "bytes": 4856,
+    "sha256": "c272b8383e2d969bac1402c29eb1cd0eaa5702cde397ce6d0250260453606667"
+  },
+  {
+    "path": "scripts/develop-n05-quarter-models.mjs",
+    "bytes": 5184,
+    "sha256": "2235be1ba658173959a883ef0db651e335758e29747702ac504bfd2821fdc7d3"
+  },
+  {
+    "path": "scripts/develop-p01-nba-calibration.mjs",
+    "bytes": 3977,
+    "sha256": "52601d135be667f433bc6a07aab4f6b68d4d2bd1c96f4e0da577993d3405b063"
+  },
+  {
+    "path": "scripts/drive-auth.mjs",
+    "bytes": 1374,
+    "sha256": "fb833c48a9ce331ff178fed772a6f0ef1b2f87ed2aa3671954d5b74e285625b7"
+  },
+  {
+    "path": "scripts/drive-performance.d.mts",
+    "bytes": 317,
+    "sha256": "22b14ceca9e9093766bc95325bf5465f73eaf7be1b21287b66b5a64da4a1dbac"
+  },
+  {
+    "path": "scripts/drive-performance.mjs",
+    "bytes": 12604,
+    "sha256": "0722cc2d059e411fe29da7b7d7242adeece14b92c6c2fbe9b94422bfa6d97f5c"
+  },
+  {
+    "path": "scripts/evaluate-basketball-events.mjs",
+    "bytes": 5107,
+    "sha256": "e327a6c0a1c51a3896ca0c1b8b7576c3ce7f0901fbfef6a525de82369407508e"
+  },
+  {
+    "path": "scripts/evaluate-cw08-nhl-v3.py",
+    "bytes": 5648,
+    "sha256": "f1f51b478ddddd970e8588763a1dffcd2ea8a4119485d5ac548ec1765ff0bc81"
+  },
+  {
+    "path": "scripts/evaluate-cw08-nhl.py",
+    "bytes": 8755,
+    "sha256": "4b84f73a6700712742785a2572afb986ee2dd6ef3bbb40913dbaae842d3508ae"
+  },
+  {
+    "path": "scripts/evaluate-direct-forecast.mjs",
+    "bytes": 3952,
+    "sha256": "187c06a9b1a2d0a6d50e28ab16eeb92fea57a544b6974691b71867ad38c0c53b"
+  },
+  {
+    "path": "scripts/evaluate-football-matchup.mjs",
+    "bytes": 8153,
+    "sha256": "4174c08bab58664d83dca1e7189ad1b13b2583c8da968aa681feb2e98db54ff7"
+  },
+  {
+    "path": "scripts/evaluate-opportunity-strength.mjs",
+    "bytes": 3041,
+    "sha256": "5fc0d14e1099dde66e64e0067b22da8ada55b780a451c52f99fcc295e51d7e09"
+  },
+  {
+    "path": "scripts/evaluate-p01-nba-direct.mjs",
+    "bytes": 2870,
+    "sha256": "1b62c27cbd8cb0ffcd7db4057cf831d9a20232f99461b2f15f0be139be343b51"
+  },
+  {
+    "path": "scripts/evaluate-p01-nba-participation.mjs",
+    "bytes": 2921,
+    "sha256": "21a742b3fff054727b3b769d525d1bbc5064977d717be876ad86b4e19b192093"
+  },
+  {
+    "path": "scripts/evaluate-probability-models.mjs",
+    "bytes": 3573,
+    "sha256": "a088ee9a60bfa3d118f63454d0e3cd1cfa7aaa9e575d87e2450b2cc5cd245b2f"
+  },
+  {
+    "path": "scripts/evaluate-rookie-models.mjs",
+    "bytes": 5933,
+    "sha256": "c9bf2912233c9e7994367fe01a68f7f226725fc250b213a5f7f712649f89f3d9"
+  },
+  {
+    "path": "scripts/evaluate-saved-football-quotes.mjs",
+    "bytes": 5386,
+    "sha256": "aaf0a777ca455c88148403518a9b535c381692b992cd15beb529fe7f44bf4813"
+  },
+  {
+    "path": "scripts/extract-cw08-cloudflare-shadow.mjs",
+    "bytes": 3870,
+    "sha256": "8617b64d3a1e726e31d980cfc8cd2496a2ad7cb9e0011e90ded18952d1781cba"
+  },
+  {
+    "path": "scripts/fit-cw08-nhl-v3.py",
+    "bytes": 4597,
+    "sha256": "ce0022e6ac0e09a62f3b2faabbb50efd716c074777d77ccae7171a8866fc7e67"
+  },
+  {
+    "path": "scripts/grade-cw08-nhl-shadow.mjs",
+    "bytes": 803,
+    "sha256": "f7ff85075319c53fb8751ea67ddaef9da38975782e1164038202a42ee6962227"
+  },
+  {
+    "path": "scripts/history-cloud.d.mts",
+    "bytes": 1580,
+    "sha256": "d365c93502f34756802628304ff1003652b3180bd2fb574238ae90fbdb416daa"
+  },
+  {
+    "path": "scripts/history-cloud.mjs",
+    "bytes": 16674,
+    "sha256": "d07725e1b679d433a3792ba9466f01dd39eeba6e78e8814d00845e51b7dc6b19"
+  },
+  {
+    "path": "scripts/launch-backup-safe.sh",
+    "bytes": 262,
+    "sha256": "cb66acc5394844c26a975292cff918dd031a5793a4cb1a8255fd3bd6a1f40dfd"
+  },
+  {
+    "path": "scripts/make-cw08-nhl-shadow-bundle.mjs",
+    "bytes": 6077,
+    "sha256": "bca365cdc7a8ef1162b7e61ae31aec02d872e41b7814ab947640731cef3afe3b"
+  },
+  {
+    "path": "scripts/nba-bootstrap-import-cli.mjs",
+    "bytes": 5273,
+    "sha256": "720ef0599b8e2e192b7f91e401e3dab9e61fe0d6c97072f0221afbac93776e6c"
+  },
+  {
+    "path": "scripts/nba-bootstrap-import.ts",
+    "bytes": 18218,
+    "sha256": "f375008cffe21ff23496abb4491a18d70e1cf3e0b4c531ced3c91717e5619e92"
+  },
+  {
+    "path": "scripts/nba-bootstrap-plan.ts",
+    "bytes": 8328,
+    "sha256": "be506a5daea3b90fa97a06f295ed57f904d9b668f67cfe6d3ce77a57c3e024bc"
+  },
+  {
+    "path": "scripts/nba-odds-diagnostic-entry.mjs",
+    "bytes": 1517,
+    "sha256": "de9a524ce9ec4b6c3431d3f56062852d4ad93078bd828d535512d1ef50d42a97"
+  },
+  {
+    "path": "scripts/nba-probe-manual-capabilities.mjs",
+    "bytes": 1730,
+    "sha256": "82f43d7b995cbe38231465095ee003d67dc99140f916ca2dbb3de05e8d8d54fe"
+  },
+  {
+    "path": "scripts/nba-readonly-connection-probe.mjs",
+    "bytes": 2972,
+    "sha256": "21a22cb14905afeaae27b66991b871eb3b7ff7a9b11a170a85512e47fbbebb4f"
+  },
+  {
+    "path": "scripts/nflverse-history-validation.mjs",
+    "bytes": 3648,
+    "sha256": "0dbddbec8a8ed095ffc6e3427d6c04bd789f3f63291404dec9198a31ee42f203"
+  },
+  {
+    "path": "scripts/nhl-readonly-probe.mjs",
+    "bytes": 4461,
+    "sha256": "84bf395b22c455ad2fcd7ddbe6a61a350647f3e41a1fd767a7fbec300df6de62"
+  },
+  {
+    "path": "scripts/nhl-shadow-evidence-core.mjs",
+    "bytes": 5727,
+    "sha256": "995c5715885043574933062eee3dfb381cedd9daacd0cf60cae00d347101cdfa"
+  },
+  {
+    "path": "scripts/nhl-shadow-evidence.mjs",
+    "bytes": 1193,
+    "sha256": "6c5eb799e6b3bb27d1e1a60a2d270ce577f5bac575c4b9134fcb0663c653797f"
+  },
+  {
+    "path": "scripts/nhl-shadow-score-core.mjs",
+    "bytes": 2024,
+    "sha256": "5b37cd84b886bfc47a2a1c3b803c9dd09b8ceed602077222f9e81783608bb79f"
+  },
+  {
+    "path": "scripts/p01-confidence-summary.mjs",
+    "bytes": 1035,
+    "sha256": "98fc38e56b0bb75ff17699e90864acc23aa01d6db6aa038a7776cd7b9d956578"
+  },
+  {
+    "path": "scripts/p01-direction-changes.mjs",
+    "bytes": 2383,
+    "sha256": "35134d661227a1253f03078439d54d5227e6a8395d917562d915adcabf40c469"
+  },
+  {
+    "path": "scripts/p01-official-results.mjs",
+    "bytes": 2493,
+    "sha256": "8617dea8798caf239db5e7ceabcc2f83bb59bc6e37d66b75d0df55b7120e314d"
+  },
+  {
+    "path": "scripts/pack-n05-quarter-models.cjs",
+    "bytes": 2173,
+    "sha256": "8e4edc3533bee6ff9a4cfec134dcc3d800ec208bff153c1127f8fac6385f29fc"
+  },
+  {
+    "path": "scripts/plan-nba-bootstrap.mjs",
+    "bytes": 8650,
+    "sha256": "f7d3be27d19321cc270a87551d11d9cf50aa2a39072d1246de61418f58bfef39"
+  },
+  {
+    "path": "scripts/prepare-cw08-nhl-v3.mjs",
+    "bytes": 6129,
+    "sha256": "443cd3c9521b71ac0b8f74f6de5a2247dc6f3264788761c59c84e387d7cff44f"
+  },
+  {
+    "path": "scripts/prepare-cw08-nhl.mjs",
+    "bytes": 3285,
+    "sha256": "aadd80c6706fe3d267eedadc702f47e0257b7b7e85a8fa3c49372503bf62f4cd"
+  },
+  {
+    "path": "scripts/prepare-dashboard-fallback.mjs",
+    "bytes": 3656,
+    "sha256": "05cd2b4dc63a170d88c0c95f116b25ad6c972c46b2887dc1ca62a86e1b0b1b62"
+  },
+  {
+    "path": "scripts/prepare-dashboard-retry-release.mjs",
+    "bytes": 4038,
+    "sha256": "7790786f27714b80de301e483b0459fe85ee6d405459695ce1d3a4fac86da2aa"
+  },
+  {
+    "path": "scripts/prepare-nba-odds-diagnostic.mjs",
+    "bytes": 5729,
+    "sha256": "009acd582d359e44eb5295fd175312c4371be35e1f1033f997ba9ed619ef4f33"
+  },
+  {
+    "path": "scripts/prepare-nba-population-diagnostic.mjs",
+    "bytes": 4597,
+    "sha256": "1f5d624bb56ea3cace97fd7b5bd86bc3da57194c69ff492dd9dc426e2e6cac94"
+  },
+  {
+    "path": "scripts/prepare-r1-corrected-release.mjs",
+    "bytes": 963,
+    "sha256": "719ac67517bca83b9b6f2ff61c17e15936ea9e314bdcbc81292a6a4bfd685beb"
+  },
+  {
+    "path": "scripts/prepare-r1-durable-release.mjs",
+    "bytes": 969,
+    "sha256": "58ca5400fced44ac7cf587338b64e0b4a8941817a5241f6e43d99cd791cf45de"
+  },
+  {
+    "path": "scripts/prepare-r1-final-release.mjs",
+    "bytes": 962,
+    "sha256": "77df354a2e27491cfb861ddb369d771c74858c9ba2972543962e5c4245f322ed"
+  },
+  {
+    "path": "scripts/prepare-r1-performance-release.mjs",
+    "bytes": 1038,
+    "sha256": "0eef4fea0834a5972ad1b6a7ddadc02cfce550060e104866376b4d01c209a13d"
+  },
+  {
+    "path": "scripts/prepare-r1-release.mjs",
+    "bytes": 2376,
+    "sha256": "368dab0d23322fe1cabac704b1e870d779115b1277e773c4092b34b7f4e670e5"
+  },
+  {
+    "path": "scripts/prepare-r1-statistics-release.mjs",
+    "bytes": 1010,
+    "sha256": "9d1aeb4360a2379ba0f9f3c65183264c1fada495b7c40679a32c686226633aa7"
+  },
+  {
+    "path": "scripts/r1-browser-markets.py",
+    "bytes": 5409,
+    "sha256": "7756777f6572d9beba360e447b62d72c16837f0108ca1932f618df4df4ab5d5f"
+  },
+  {
+    "path": "scripts/r1-browser-nfl.py",
+    "bytes": 3682,
+    "sha256": "46fc5109c5046301b28c06554eb804889b081695933aa2ba4743ae4b9907a3c5"
+  },
+  {
+    "path": "scripts/r1-browser-server.mjs",
+    "bytes": 2444,
+    "sha256": "7ed9cd17e397fb8a1801eea7cbe94e95e184504b9979aec67a4e6ef1d25eca83"
+  },
+  {
+    "path": "scripts/recover-and-start.mjs",
+    "bytes": 3591,
+    "sha256": "bfcb62891fa649ffc748afaab659d9fb9c6434a9ec6564f40c843fa1a986c836"
+  },
+  {
+    "path": "scripts/replay-opportunity-backtest.mjs",
+    "bytes": 1308,
+    "sha256": "e3f722fc970274987b34804d8eea0ffbbd65a72dd011f8384d2a63a3ecf07665"
+  },
+  {
+    "path": "scripts/replay-p01-nba-direct.mjs",
+    "bytes": 4831,
+    "sha256": "b5832aa81aa5e3769729322e4b87aad804c192789ffa21b0ec440e1ec76374f8"
+  },
+  {
+    "path": "scripts/retention-cleanup.mjs",
+    "bytes": 1866,
+    "sha256": "e814eb1bb4aa2c5522673ca6134a750c2baeafef20004b6108ac58d24d4b53b9"
+  },
+  {
+    "path": "scripts/retention-policy.d.mts",
+    "bytes": 363,
+    "sha256": "8d1209823f784a2d0197b12b06255791efc827764d32ac8f374cb91ff7b10b77"
+  },
+  {
+    "path": "scripts/retention-policy.mjs",
+    "bytes": 1509,
+    "sha256": "205ee95c2eff2afa75bc4e7220d177a3a72cf2bace9158fbec4bbadee6162b8c"
+  },
+  {
+    "path": "scripts/retention-preview.mjs",
+    "bytes": 2545,
+    "sha256": "c340d8a1db2841b7c7c322f3b0d00b477b4e7f9d475c8d1222a927a9d9255792"
+  },
+  {
+    "path": "scripts/run-cw08-cloudflare-shadow.mjs",
+    "bytes": 4875,
+    "sha256": "bccbf1310ca812e4ea60d71ff23d9268a504e801b1f097c0f861efe9e595a145"
+  },
+  {
+    "path": "scripts/score-cw08-nhl-shadow.mjs",
+    "bytes": 2015,
+    "sha256": "4d78a9cb8a5d859ec9579133a394e31d3f97f683406159ce56048a501e4dd428"
+  },
+  {
+    "path": "scripts/score-p01-cfb.mjs",
+    "bytes": 4246,
+    "sha256": "b1cf1b7b2171da2db12d475862c34a14295f9de180839b05661d5b2dc938d0b0"
+  },
+  {
+    "path": "scripts/score-p01-nba-calibration.mjs",
+    "bytes": 5625,
+    "sha256": "197e6b37ed2dcf3d342ddee89e1e50267dccc92b2168b26ae6b0a1e92e88e2e5"
+  },
+  {
+    "path": "scripts/score-p01-nba-participation.mjs",
+    "bytes": 6697,
+    "sha256": "6231b3d386c41233ee11218c03d6c2efe4747b91f4fbfff66a684735460ef9f5"
+  },
+  {
+    "path": "scripts/score-p01-prospective.mjs",
+    "bytes": 6277,
+    "sha256": "2614642868783f5e785ec2eaf15916d7ddc95a85e5c382c9316a02a460601717"
+  },
+  {
+    "path": "scripts/start-with-backup.sh",
+    "bytes": 196,
+    "sha256": "a52ce6cb005e8b222652d98bc01834ac268a8453923aa1a4d2547e9d5087ea75"
+  },
+  {
+    "path": "scripts/storage-inventory.mjs",
+    "bytes": 1559,
+    "sha256": "3618bff326efee514f3b3d51f25b5ca49a16ac5a1d81e9cfd799a34ebfe0b124"
+  },
+  {
+    "path": "scripts/stream-history-json.mjs",
+    "bytes": 1948,
+    "sha256": "33732a2990c558023639f30b354e8a0b5c63084aafb8a23ba43c77cb342c53df"
+  },
+  {
+    "path": "scripts/verify-current-nba-cold.mjs",
+    "bytes": 4898,
+    "sha256": "e08bae6af2bee04d5e2c310c611041a75d48d2741f72c0cc8cd551dcd09adfeb"
+  },
+  {
+    "path": "scripts/verify-cw08-nhl-v3.mjs",
+    "bytes": 3807,
+    "sha256": "7ad77dc461e281700671d316866d4d5260774d6ef8eb59ed44a81de33841d43f"
+  },
+  {
+    "path": "scripts/verify-cw08-nhl.mjs",
+    "bytes": 5748,
+    "sha256": "6b43bbf2e3845c100628259eea99d4a12595dd7a3bb737abce755884647acd9f"
+  },
+  {
+    "path": "scripts/verify-live-dashboard.mjs",
+    "bytes": 5486,
+    "sha256": "c1b97e3c0dc44b2d9dfb030bb239135bb4f744c650ad07e2f2c932dde5cdc4a6"
+  },
+  {
+    "path": "scripts/verify-local-backup-restore.mjs",
+    "bytes": 5581,
+    "sha256": "6b9e5a353be59a19d178a9add4bb6fcc89f04a91b92728aed0a7bc54f59b72a1"
+  },
+  {
+    "path": "scripts/verify-n05-live.mjs",
+    "bytes": 3015,
+    "sha256": "cb528c516f7bf7abbb293baa453dfa3972a4f5786d087c9e71dce5bdc985ce6b"
+  },
+  {
+    "path": "scripts/verify-nba-population-stream.mjs",
+    "bytes": 2199,
+    "sha256": "a2955fc05f7748458eb04d0864db8873e7a73731c217ad7a9409d406e3ba5573"
+  },
+  {
+    "path": "scripts/verify-official-schedules.mjs",
+    "bytes": 2545,
+    "sha256": "261c7a7b5581de3604caa9f3512642b708157a75e083324ae60b7486b472477b"
+  },
+  {
+    "path": "scripts/verify-p01-cfb.mjs",
+    "bytes": 3165,
+    "sha256": "82934012ed6df3089695605b46124fa8d7a3af179f91a40b410f515d36387429"
+  },
+  {
+    "path": "scripts/verify-p01-football.mjs",
+    "bytes": 4776,
+    "sha256": "cfad2b3f852c62f8b4fd5b3f2375901dc3f6e180da95ecdbbf73688b6fd24baa"
+  },
+  {
+    "path": "scripts/verify-p01-nba-participation.mjs",
+    "bytes": 3059,
+    "sha256": "65488a3dedab74199d64f295caeabf03820a7ee94b4caa10c2da8b13c5bf7401"
+  },
+  {
+    "path": "scripts/verify-p01-nba-study.mjs",
+    "bytes": 4023,
+    "sha256": "7ad03accec55c2c9f9cfaa2608eb69ce9760d74dfe90d5d381ab1f5e822e05b8"
+  },
+  {
+    "path": "scripts/worker-history-backup.mjs",
+    "bytes": 10805,
+    "sha256": "3b2af2bf90cb131720a5aa37c4d5806cb2cf9b42e7229110039b244f800155e0"
+  },
+  {
+    "path": "scripts/worker-pregame-backup.mjs",
+    "bytes": 4780,
+    "sha256": "4a820bce82bcf87fefc94b3053ec816386d6de72c85f6f3ca38cd87f83af1559"
+  },
+  {
+    "path": "scripts/worker-pregame-capture.mjs",
+    "bytes": 11799,
+    "sha256": "304cb9c0301ba7e0f5a9584dac2a5a64b546ea2cb2f642c05730784046467457"
+  },
+  {
+    "path": "scripts/worker-pregame-grade.mjs",
+    "bytes": 6588,
+    "sha256": "b6a5fee485a2568c2c8f0795f665b9e2a69cc58500603492cba6e1e5688755c3"
+  },
+  {
+    "path": "scripts/worker-pregame-history.d.mts",
+    "bytes": 613,
+    "sha256": "84174f3d36c3be883363a83dfc98f41d11b0d69ffb9c042f68005e97737753bf"
+  },
+  {
+    "path": "scripts/worker-pregame-history.mjs",
+    "bytes": 8198,
+    "sha256": "86f1476aa41e5ed4492254d7613ddfbf37e49176d9e96249cb3e74f8245336e3"
+  },
+  {
+    "path": "shadow/cw08/activate.mjs",
+    "bytes": 8289,
+    "sha256": "7d2359df464402fe598e99738722e20e67b6ca978aaa54afb2191f9db9ec7b9c"
+  },
+  {
+    "path": "shadow/cw08/build.mjs",
+    "bytes": 2249,
+    "sha256": "0ee2469224bf88f19565463f415a4f75f5dbadcffbcd5021643e6b64a0da0713"
+  },
+  {
+    "path": "shadow/cw08/coordinator.mjs",
+    "bytes": 21754,
+    "sha256": "54aa91baa301d58dede970c8bc5173878ebc021f3c8b7b7c5eb5176f591f254a"
+  },
+  {
+    "path": "shadow/cw08/deployment-plan.json",
+    "bytes": 720,
+    "sha256": "0809ded8390a0f6b79d3bb686ef127f987b6e723761683ee269ab5196ff901d3"
+  },
+  {
+    "path": "shadow/cw08/domain.mjs",
+    "bytes": 3942,
+    "sha256": "f8e9bb0100fb63f250f33d143c5f1f99d50d2e1b7d8ab5eb769e04065a1348db"
+  },
+  {
+    "path": "shadow/cw08/entry.mjs",
+    "bytes": 1305,
+    "sha256": "b643971dca727757a215e58a3354167b503c5a8fc359bc47daef38e7349be47c"
+  },
+  {
+    "path": "shadow/cw08/frozen-baselines.json",
+    "bytes": 11715,
+    "sha256": "f460582f4da7c5a9d3949b70e1069d508d9596bfa93e8609bb0f7cedabeaa068"
+  },
+  {
+    "path": "shadow/cw08/frozen-history.mjs",
+    "bytes": 1175,
+    "sha256": "e628bde3171420d06e7947f99586c3a31a30e83164d232ee1902460dc47f14f9"
+  },
+  {
+    "path": "shadow/cw08/live-activation.json",
+    "bytes": 3853,
+    "sha256": "00f0085419fcf27db1b4a11a79b89d5803fc054b1ca9c523168625651a7c4c9a"
+  },
+  {
+    "path": "shadow/cw08/rate-limit-deployment-plan.json",
+    "bytes": 3400,
+    "sha256": "0cee2be31883ba38bf2956c4a3947b287efdc073f0e1aefaaecb29a13f78f23a"
+  },
+  {
+    "path": "shadow/cw08/request-policy.mjs",
+    "bytes": 3070,
+    "sha256": "faca54aca61aa571bf51205d39ff1020319b7bfe224e2784645983f83c643e92"
+  },
+  {
+    "path": "shadow/cw08/sources.mjs",
+    "bytes": 6422,
+    "sha256": "3f07a427cb7136afd4653aea8315c7259c75e6d03891c4e1e872cd9c18fdd160"
+  },
+  {
+    "path": "shadow/cw08/transport-activation.json",
+    "bytes": 4625,
+    "sha256": "dede4543b7b01e3f07a595074f1ed39ecfa78ea487e7d0fa5901ac4a0f47613a"
+  },
+  {
+    "path": "shadow/cw08/update-transport.mjs",
+    "bytes": 7163,
+    "sha256": "ad41ac2cff8d290025bfe2cd8cb8660d550bdb747d316bf753879367473fe41a"
+  },
+  {
+    "path": "shadow/cw08/verification.json",
+    "bytes": 2625,
+    "sha256": "843b667653ab7ca595ca0be6548bd8b629d2b05f14cd22d114784db942c2a203"
+  },
+  {
+    "path": "tsconfig.json",
+    "bytes": 699,
+    "sha256": "9fe2e4a0352b37c3b291fccd18e3fa462aaa018f20e286432dd5697a4fb12450"
+  },
+  {
+    "path": "types/cloudflare-workers.d.ts",
+    "bytes": 329,
+    "sha256": "47120ba9ded2c6cc4edec1ea17fbef9a6a070243f44aebada19b1c40b2f581f4"
+  },
+  {
+    "path": "vite.config.ts",
+    "bytes": 1038,
+    "sha256": "2bfc33c8d837eec8db2435e6f5d59b713ab0976f331adcd8f55c95da10c47ff9"
+  },
+  {
+    "path": "worker-entry.mjs",
+    "bytes": 5164,
+    "sha256": "8d55fd597a54182e4b43e341c4a6cc8f409d60bdc0c78410a4402d853c3f2b0d"
+  }
+]

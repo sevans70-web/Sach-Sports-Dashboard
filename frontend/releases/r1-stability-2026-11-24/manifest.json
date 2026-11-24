@@ -1,0 +1,117 @@
+{
+  "schema": "r1-dashboard-release/v1",
+  "artifact": "R1-STABILITY-2026-11-24-e35c9d7-84829ff137af",
+  "status": "rehearsal_passed_awaiting_approval",
+  "worker": "sach-sports-cloudflare-test",
+  "sourceCommit": "e35c9d7f02c9f63354aa74dfbc3dc933dc0f67e9",
+  "sourceFrontendTree": "2e3d0480dba1330ce5b77983cda15a11919753ef",
+  "applicationRepairCommit": "31911ba",
+  "includedVerifiedCommits": [
+    "e35c9d7f02c9f63354aa74dfbc3dc933dc0f67e9",
+    "16a9844",
+    "31911ba",
+    "af5f712",
+    "b8d05e3",
+    "eb7bcf7",
+    "58829c2",
+    "6d98710",
+    "600bd5d",
+    "1167c46",
+    "6f8980b"
+  ],
+  "bundleDigest": "84829ff137affe1e09736ed901f853da3805259d184cc7ecb0cc2b6ed976aa99",
+  "files": 431,
+  "allFileChecksums": "files.json",
+  "allFileChecksumsSha256": "cca0943710acbb00aaf02dba5e1515e73f39eadab0995e9f1f614e10b6b7bfd0",
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 13175634,
+    "sha256": "6898b846076b44675d6e4bea271c473c2641d1f9944bc78b4061981f21911d00"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "immediatePriorVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "immediatePriorDeployment": "72ab06fe-229a-4ece-a5d8-96eb1da50f6e",
+  "productionDeployed": false,
+  "approvalRequired": true,
+  "createdAt": "2026-11-24T21:42:36.301Z",
+  "execution": "Local freeze/preparation only. Separate exact approval required for one manual upload and temporary command changes. No production writes/imports, namespace changes or CW08 changes.",
+  "startup": "Bounded native capture alarm refreshes current official inputs into existing operational evidence tables. No historical import/restamp. Original101 evidence pointers preserved in rehearsal. Stop on failed acceptance.",
+  "runtime": {
+    "compatibilityDate": "2026-11-06",
+    "compatibilityFlags": [
+      "nodejs_compat"
+    ],
+    "subrequests": 350,
+    "foregroundNbaSourceOperations": 256,
+    "jobSubrequests": 220,
+    "jobSourceConcurrency": 4,
+    "jobDeadlineMs": 25000,
+    "jobSourceTimeoutMs": 10000,
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "kv": "644df6a469e84dba90c8f7dac410f895",
+    "newNamespaces": 0,
+    "newMigrations": 0,
+    "performanceSourceConcurrency": 2,
+    "performanceDeadlineMs": 20000,
+    "performanceSourceTimeoutMs": 5000,
+    "performanceJobRequestLimit": 220,
+    "performanceViewDecodedBytes": 16777216,
+    "performanceSourceDecodedBytes": 1048576,
+    "performanceCacheStoredBytes": 33554432,
+    "performanceSerializedMemoBytes": 16777216,
+    "performanceSerializedMemoEntries": 8
+  },
+  "scope": [
+    "NBA redirect/cache/EV/PR memory repairs; stored-input durable cold recovery and exact ID/team quote matching",
+    "NFL selected-day schedule,17-tab visibility and bounded checkpoint/capture recovery",
+    "NHL loading/rankings/evidence recovery; unchanged frozen model safeguards",
+    "Independent bounded capture/grading and compatible held rollback",
+    "Receipt-bound NBA supporting history throughout seven markets",
+    "Official FINAL NFL calendar recovery with bounded persistent checkpoints; exact quote/period/price validation; retain probability holds",
+    "Bounded Prediction Dashboard statistics with five periods, original records and honest partial archives"
+  ],
+  "protectedBackupRecords": 20904,
+  "cw08Changes": false,
+  "automaticBuildsRemainPaused": true,
+  "fullR1LiveAcceptancePassed": false,
+  "supersedesArtifact": "R1-2026-11-23-b8d05e3-c8428f1ae381",
+  "previousAuthorizationApplies": false,
+  "additionalScope": [
+    "NBA/NFL source/history fixes and price diagnostics already verified in af5f712/31911ba; no new prediction math or evidence schema"
+  ],
+  "rehearsalNote": "Current local compiled artifact and authentic recorded-data checks only. Existing 73 recovery/36 pricing/3 research checks and prior live performance evidence reused; no fresh production pass claimed.",
+  "implementationCommits": [
+    "31911ba",
+    "af5f712",
+    "b8d05e3"
+  ],
+  "protectedProductionRecords": 20904,
+  "outstandingAcceptance": [
+    "Actual desktop/mobile NBA7 NFL17 NHL6 including top/lower history, signed available EV, featured picks, original started-game evidence",
+    "Actual Prediction Dashboard all five periods, authentic totals/grade reconciliation and automatic refresh; partial archive disclosure",
+    "Current operational initialization without overwriting original records",
+    "All 38 capture markets and all three grading rotations within 90 minutes; measurable checkpoints or explicit genuine blocked state",
+    "173 older pending grades only where authentic official evidence permits; retain missing evidence rather than fabricate",
+    "Protected 20904 baseline plus later genuine additions; software fallback with no database restore",
+    "Cloudflare resources/errors; paused automatic builds; unchanged CW08"
+  ],
+  "sourceInputsSha256": "ee29f8840f7b5791ac11d9b5c20e86a9a8fd35b6f4c98846793f40a6f78cc64f",
+  "sourceInputFiles": 812,
+  "protectedProductionRecordsMeaning": "Last verified baseline only; fresh read-only inventory and later-delta recovery are mandatory immediately before an approved upload.",
+  "recoveryManifest": {
+    "driveId": "1UPEAyr4x9mWoFF0jzso80ilYDG_BvOeY",
+    "sha256": "1fd9aab55319ce90ce85daa3365a0592def16eb41fbdf4b9224ac08dbf41ccc5",
+    "deltaSha256": "c47fd9dbccd608394b3de0877a9d8e8b5987c3f5674ab8c4fb44e3bb32f330f1",
+    "remoteReadbackPreviouslyVerified": true,
+    "exportRepeated": false
+  },
+  "probabilityModelPromotion": false,
+  "probabilityHolds": [
+    "nfl|passing_yards",
+    "nfl|rushing_yards",
+    "nfl|receiving_yards",
+    "nfl|receptions",
+    "nhl|goals",
+    "nhl|assists"
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "evidence": "backup",
+    "path": "../2026-11-24-r1-supporting-history/backup-proof.json",
+    "sha256": "abfff50d50cf0a00f4bc266cca2e490bcfbcc86fe2441d0028dcf9b660aa23df"
+  },
+  {
+    "evidence": "73 recovery checks",
+    "path": "../2026-11-24-r1-supporting-history/test-summary.json",
+    "sha256": "557dccf0cb23524849e27f4845b05eb1e381d99e47baaeafbfa715790b180de7"
+  },
+  {
+    "evidence": "36 pricing checks",
+    "path": "../2026-11-24-nfl-price-validation/test-summary.json",
+    "sha256": "510fc81fb5bca272ac1414b9e424dd40fb81ae864bfffb1f77b65e8e9f6d6e50"
+  },
+  {
+    "evidence": "3 research checks",
+    "path": "../2026-11-24-nfl-independent-validation/verification.json",
+    "sha256": "bf596732430f0082c73119fb8d24fbf3a75067af08c5416a6780e911debc9387"
+  },
+  {
+    "evidence": "prior live performance",
+    "path": "../2026-11-24-r1-depth2-live/statistics-api-proof.json",
+    "sha256": "3b574cd09be8f673a2e0e709e4c3efc1b97ba2c89abf6ebb5cf269a355c61954"
+  },
+  {
+    "evidence": "prior live protected data",
+    "path": "../2026-11-24-r1-depth2-live/protected-records-after.json",
+    "sha256": "be907053d9f5e56c58f19f0f38542184c7824afb859223db5e3cfb2c040b4ab8"
+  }
+]

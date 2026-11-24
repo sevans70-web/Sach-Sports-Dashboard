@@ -31,7 +31,10 @@ async function runtime(dir,state){const calls=[];const tables=state.tables??={wo
    if(u.pathname.endsWith('/scoreboard'))return Response.json(actual['nfl-score']);
    if(u.pathname.endsWith('/roster'))return Response.json(actual['nfl-roster-'+u.pathname.split('/').at(-2)]||{athletes:[]});
    if(u.pathname.endsWith('/gamelog')||u.pathname.includes('/apis/search/')){state.espnDenied=(state.espnDenied||0)+1;return new Response('{}',{status:403});}
-   if(u.pathname.endsWith('/summary'))return new Response('{}',{status:404});
+   // The repaired NFL path uses official team calendars/finals before the
+   // legacy athlete endpoint. Exercise the same explicit access denial there;
+   // an unhandled fixture URL becomes a synthetic HTTP500, not an ESPN403.
+   if(u.pathname.endsWith('/summary')||u.pathname.endsWith('/schedule')){state.espnDenied=(state.espnDenied||0)+1;return new Response('{}',{status:403});}
   }
   if(u.hostname==='api-web.nhle.com'){
    if(u.pathname.includes('/score/'))return Response.json(actual['nhl-score']);
