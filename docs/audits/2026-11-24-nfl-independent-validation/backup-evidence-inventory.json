@@ -1,0 +1,22 @@
+{
+  "historyDocumentsInspected": 1328,
+  "candidateCounts": {
+    "candidateRows": 11333,
+    "normalizedProbabilityRows": 6019,
+    "quoteMatchedTimelyProbabilityRows": 2685,
+    "sourceStoredBeforeKickoffRows": 1365
+  },
+  "uniquePregameProbabilityDecisions": 619,
+  "distinctGames": 40,
+  "byMarket": {
+    "passing_yards": 69,
+    "receiving_yards": 221,
+    "receptions": 197,
+    "rushing_yards": 132
+  },
+  "withInputReceipt": 619,
+  "officialFinalGamesAvailable": 43,
+  "productionReads": 0,
+  "productionWrites": 0,
+  "backupOpenedReadOnly": true
+}

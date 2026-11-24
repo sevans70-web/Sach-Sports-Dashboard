@@ -1,0 +1,47 @@
+{
+  "missingCompletedFinals": {
+    "401873055": [
+      "2026-11-15T18:00:00Z"
+    ],
+    "401873056": [
+      "2026-11-15T18:00:00Z"
+    ],
+    "401873057": [
+      "2026-11-15T18:00:00Z"
+    ],
+    "401873059": [
+      "2026-11-15T18:00:00Z"
+    ],
+    "401873060": [
+      "2026-11-15T18:00:00Z"
+    ],
+    "401873061": [
+      "2026-11-15T21:05:00Z"
+    ],
+    "401873062": [
+      "2026-11-15T21:05:00Z"
+    ],
+    "401873064": [
+      "2026-11-16T01:20:00Z"
+    ]
+  },
+  "decisionsAwaitingThoseFinals": 120,
+  "decisionsNeedingPlayerStatParticipationOrVoidEvidence": 30,
+  "newGamesNeededToExplainCurrentHolds": false,
+  "futurePromotionNeedsFrozenProtocolAndIndependentOutcomes": true,
+  "existingGiCalibrationMinimum": {
+    "decisions": 200,
+    "fixtures": 30,
+    "notProbabilityPromotionApproval": true
+  },
+  "marketSpecificProspectivePromotionRuleAlreadyDefined": false,
+  "nativeReceiptCensus": {
+    "NFLoriginals": 1211,
+    "NFLpicks": 149,
+    "NFLgrades": 35,
+    "NFLoriginalsWithProbabilityVectorOrInputReceipt": 0,
+    "companionProtectedSnapshotDecisionsWithVerifiedInputReceipts": 619
+  },
+  "receiptFormatChanged": false,
+  "productionDataWrites": 0
+}

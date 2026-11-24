@@ -1,0 +1,11 @@
+✔ integer-line binary Brier conditions out push mass, while a push is excluded from binary scoring (2.124863ms)
+✔ half-line scores are unchanged; malformed distributions and impossible settlement mass fail instead of silently dropping losses (0.532037ms)
+✔ actual compressed639-quote archive replays all110decisions with unchanged failed-market Brier and no overwritten historical evidence (2112.251063ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2855.194726

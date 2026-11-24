@@ -1,0 +1,13 @@
+import test from'node:test';import assert from'node:assert/strict';import{readFile,mkdtemp,rm}from'node:fs/promises';import{gunzipSync}from'node:zlib';import{createHash}from'node:crypto';import{join,resolve}from'node:path';import{tmpdir}from'node:os';import{execFile}from'node:child_process';import{promisify}from'node:util';
+const exec=promisify(execFile),hash=b=>createHash('sha256').update(b).digest('hex');
+test('actual compressed639-quote archive replays all110decisions with unchanged failed-market Brier and no overwritten historical evidence',{timeout:60000},async()=>{
+ const source=resolve('model-research/2026-10-20/rookie-nfl'),script=resolve('scripts/evaluate-rookie-models.mjs'),dir=await mkdtemp(join(tmpdir(),'rookie-price-replay-')),output=join(dir,'new-audit');
+ const files=['source-manifest.json.gz','selected-quotes.json.gz','opportunity-observations.json.gz','forecast-decisions.json.gz','opportunity-strength-evaluation.json'],before=await Promise.all(files.map(async f=>hash(await readFile(join(source,f)))));
+ try{
+  await exec(process.execPath,[script,source,output],{maxBuffer:4*1024*1024});const report=JSON.parse(await readFile(join(output,'opportunity-strength-evaluation.json'))),old=JSON.parse(await readFile(join(source,'opportunity-strength-evaluation.json')));
+  assert.equal(report.quotes,639);assert.equal(report.laterForecasts,110);assert.equal(report.calibrationRows,271);assert.equal(report.publicPicksEnabled,false);assert.equal(report.giEnabled,false);assert.equal(report.scoringPolicy,'conditional_binary_brier_excluding_pushes/v1');
+  for(const r of report.groups){const original=old.groups.find(g=>g.market===r.market);assert.equal(r.forecasts,original.forecasts);assert.ok(Math.abs(r.modelBrier-original.modelBrier)<1e-12);assert.ok(Math.abs(r.bookBrier-original.bookBrier)<1e-12);assert.ok(r.pairedBrierImprovement.clusters>=10);}
+  const rows=JSON.parse(await readFile(join(output,'forecast-decisions.json'))),originalRows=JSON.parse(gunzipSync(await readFile(join(source,'forecast-decisions.json.gz')))),originals=new Map(originalRows.map(r=>[r.observationId,r]));for(const r of rows){assert.equal(r.modelOver,originals.get(r.observationId).modelOver);assert.equal(r.modelPush,0);assert.equal(r.conditionalModelOver,r.modelOver);}
+  const saved=hash(await readFile(join(output,'opportunity-strength-evaluation.json')));await assert.rejects(exec(process.execPath,[script,source,output]),/EEXIST/);assert.equal(hash(await readFile(join(output,'opportunity-strength-evaluation.json'))),saved);assert.deepEqual(await Promise.all(files.map(async f=>hash(await readFile(join(source,f))))),before);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});

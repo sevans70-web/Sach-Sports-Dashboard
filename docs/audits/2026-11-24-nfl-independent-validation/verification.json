@@ -1,0 +1,70 @@
+{
+  "newTargetedTests": 3,
+  "passed": 3,
+  "failed": 0,
+  "typeScriptExitCode": 0,
+  "typeScriptDiagnostics": 0,
+  "previous73RecoveryAnd36PricingChecksReused": true,
+  "originalArchive110ScoresUnchanged": true,
+  "privateBackupAuditReproducedExactly": true,
+  "cohort": {
+    "enrolled": 619,
+    "scored": 469,
+    "independentScoredGames": 32,
+    "freshQuotesAtDocumentReceipt": 469
+  },
+  "protectedSourceFiles": [
+    {
+      "path": "frontend/model-runtime/gi-status.json",
+      "sha256": "71ed0bab29fb983dd228a49b8b263355ad148dfb7831d2acb7c4a5cc27369acd",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/model-runtime/snapshot.json.gz",
+      "sha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/model-runtime/nfl-passing-tds.json.gz",
+      "sha256": "5f2c7e8d1c57f54b26b9b487f8a6666b42022f807e1db2d84b586f93140cf83d",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/lib/nhl-count-model.ts",
+      "sha256": "72aea5f536d3089f712f0a105e384b5912bf9c8d9f6f04131e22b1af1bc02e92",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/lib/nba-supporting-history.ts",
+      "sha256": "65e2ec1e9e9b7825ada851362e7779d9ced7d976d2ad60029a2f3ed804fb9db9",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/jobs/performance-cache.mjs",
+      "sha256": "f0e4b10ed5b5eea97a02d0fb068477d0facedc95b2408fa55ab7379818829812",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/scripts/worker-pregame-capture.mjs",
+      "sha256": "304cb9c0301ba7e0f5a9584dac2a5a64b546ea2cb2f642c05730784046467457",
+      "unchangedSince31911ba": true
+    },
+    {
+      "path": "frontend/scripts/worker-pregame-history.mjs",
+      "sha256": "86f1476aa41e5ed4492254d7613ddfbf37e49176d9e96249cb3e74f8245336e3",
+      "unchangedSince31911ba": true
+    }
+  ],
+  "backupRecords": 20904,
+  "backupOpenedReadOnly": true,
+  "productionDataQueries": 0,
+  "productionDataWrites": 0,
+  "backupExportsOrImports": 0,
+  "providerRequests": 0,
+  "deployments": 0,
+  "modelPromotion": false,
+  "CW08Modified": false,
+  "automaticBuildsPaused": true,
+  "releasePrepared": false,
+  "recommendedNextReleaseScope": "Stability with existing model holds retained"
+}

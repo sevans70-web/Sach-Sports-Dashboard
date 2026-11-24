@@ -1,0 +1,135 @@
+{
+  "scope": "Read-only verified20904record local backup plus already-collected official-final fixture. Earliest quote-matched probability whose document source receipt predates kickoff; original input-receipt hashes verified; normalized official finals. Diagnostic time-separated from model fitting, NOT a preregistered untouched test or promotion.",
+  "enrolled": 619,
+  "frozenProbabilitiesReproducedFromOriginalInputVectors": 619,
+  "scored": 469,
+  "settled": 469,
+  "pushes": 0,
+  "independentScoredGames": 32,
+  "freshQuotesAtDocumentReceipt": 469,
+  "missing": {
+    "official_player_stat_missing": 30,
+    "official_final_absent_from_existing_evidence": 120
+  },
+  "missingGames": [
+    "401873055",
+    "401873056",
+    "401873057",
+    "401873059",
+    "401873060",
+    "401873061",
+    "401873062",
+    "401873064"
+  ],
+  "groups": [
+    {
+      "market": "passing_yards",
+      "enrolled": 69,
+      "settled": 56,
+      "pushes": 0,
+      "independentGames": 30,
+      "modelBrier": 0.25251486325802613,
+      "bookBrier": 0.24817989450441358,
+      "modelOverMean": 0.468472906403941,
+      "actualOverFrequency": 0.5178571428571429,
+      "pairedBrierImprovement": {
+        "clusters": 30,
+        "replicates": 1000,
+        "lower95": -0.03860414839532186,
+        "upper95": 0.027287753551418922
+      },
+      "dates": [
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-06",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-13",
+        "2026-11-15"
+      ]
+    },
+    {
+      "market": "receiving_yards",
+      "enrolled": 221,
+      "settled": 167,
+      "pushes": 0,
+      "independentGames": 30,
+      "modelBrier": 0.286405017729144,
+      "bookBrier": 0.250286856652794,
+      "modelOverMean": 0.49021252485752037,
+      "actualOverFrequency": 0.47904191616766467,
+      "pairedBrierImprovement": {
+        "clusters": 30,
+        "replicates": 1000,
+        "lower95": -0.06129319059830275,
+        "upper95": -0.014011501546829251
+      },
+      "dates": [
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-06",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-13",
+        "2026-11-15"
+      ]
+    },
+    {
+      "market": "receptions",
+      "enrolled": 197,
+      "settled": 150,
+      "pushes": 0,
+      "independentGames": 27,
+      "modelBrier": 0.25730812345177567,
+      "bookBrier": 0.247634150330531,
+      "modelOverMean": 0.4602102659245517,
+      "actualOverFrequency": 0.5066666666666667,
+      "pairedBrierImprovement": {
+        "clusters": 27,
+        "replicates": 1000,
+        "lower95": -0.036040241909318455,
+        "upper95": 0.01637866253822779
+      },
+      "dates": [
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-06",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-13",
+        "2026-11-15"
+      ]
+    },
+    {
+      "market": "rushing_yards",
+      "enrolled": 132,
+      "settled": 96,
+      "pushes": 0,
+      "independentGames": 31,
+      "modelBrier": 0.2906898799787648,
+      "bookBrier": 0.252692016540774,
+      "modelOverMean": 0.5019728535353535,
+      "actualOverFrequency": 0.5,
+      "pairedBrierImprovement": {
+        "clusters": 31,
+        "replicates": 1000,
+        "lower95": -0.08121280862264915,
+        "upper95": 0.0056360579996304035
+      },
+      "dates": [
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-06",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-13",
+        "2026-11-15"
+      ]
+    }
+  ],
+  "privateCaseInventorySha256": "29532d3a2ca453e62282145b1f3c4cf0717e0028491b7d95c01830ca56120ea9",
+  "productionReads": 0,
+  "productionWrites": 0,
+  "originalRecordsModified": 0
+}
