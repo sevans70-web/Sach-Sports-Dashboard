@@ -1,0 +1,23 @@
+{
+  "schema": "r1-nov24-tracker-issue-receipt/v1",
+  "evidenceCommit": "1add511",
+  "manualBuild": "34abd6a4-861e-495a-99c1-87a211d838e6",
+  "workerUploaded": false,
+  "artifactChanged": false,
+  "commandsRestoredAndReadBack": true,
+  "automaticBuildsPaused": true,
+  "productionRecords": 20478,
+  "CW08Changed": false,
+  "issueCommentId": 7133822800,
+  "issueUrl": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7133822800",
+  "tracker": {
+    "verifiedCells": 20,
+    "neighborCW10Unchanged": true,
+    "statusCW09": "Blocked",
+    "statusCW11": "Blocked",
+    "completedRowsMoved": 0,
+    "visualReview": "Content and formatting metadata checked; native Sheet render unavailable",
+    "at": "2026-11-24T14:04:55.790Z"
+  },
+  "nextDecision": "Approve one revised exact build command with bounded depth2 Git fetch and one new manual run of the same frozen artifact."
+}
