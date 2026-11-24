@@ -1,0 +1,32 @@
+{
+  "commit": "16a9844",
+  "branch": "cloudflare-compatibility-test",
+  "issue129CommentId": 7144808149,
+  "issue129CommentUrl": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7144808149",
+  "tracker": {
+    "readbackCells": 24,
+    "P01Status": "In progress; later model release",
+    "CW09CW11Status": "Blocked",
+    "V62Open": true,
+    "CW10Unchanged": true,
+    "completedMoves": 0,
+    "linkVerified": true,
+    "nativeVisualNotClaimed": true,
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8"
+  },
+  "frozenInputProbabilityReproductions": 619,
+  "scoredExistingDecisions": 469,
+  "independentScoredGames": 32,
+  "newTargetedTestsPassed": 3,
+  "typeScriptDiagnostics": 0,
+  "existingProtectedRecords": 20904,
+  "productionQueries": 0,
+  "productionWrites": 0,
+  "providerRequests": 0,
+  "backupExportsOrImports": 0,
+  "CW08Modified": false,
+  "automaticBuildsPaused": true,
+  "modelPromotion": false,
+  "releaseRecommendation": "Prepare NBA/Prediction Dashboard stability independently, retaining NFL/NHL model holds; no deployment now",
+  "releasePrepared": false
+}
