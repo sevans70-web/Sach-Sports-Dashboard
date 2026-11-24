@@ -81,12 +81,13 @@ export function appendMissingImmutableModelPicks(existing,protectedRows){
  }
  return {records:output,added,alreadyPresent};
 }
-async function boundedRead(table,sport,firstDay,limit){
+async function boundedRead(table,sport,firstDay,limit,signal,requestTimeoutMs=12000){
  const result=[];
  for(let offset=0;offset<limit;offset+=200){
   const query=new URLSearchParams({select:'*',sport:'eq.'+sport,game_date:'gte.'+firstDay,
    order:'game_date.desc,market.asc,game_id.asc,player_id.asc',limit:'200',offset:String(offset)});
-  const rows=await cloudRequest(table+'?'+query.toString(),{signal:AbortSignal.timeout(12000)});
+  const timeout=AbortSignal.timeout(requestTimeoutMs);
+  const rows=await cloudRequest(table+'?'+query.toString(),{signal:signal?AbortSignal.any([signal,timeout]):timeout});
   if(!Array.isArray(rows))throw Error('Invalid protected original history');
   result.push(...rows);
   if(rows.length<200)return result;
@@ -96,11 +97,18 @@ async function boundedRead(table,sport,firstDay,limit){
 /** Bounded period receipts, separate from the legacy document reader.
  * A failed supplemental read must be surfaced, not reported as complete.
  */
-export async function readImmutableModelHistory(sport,firstDay){
+export async function readImmutableModelHistory(sport,firstDay,options={}){
  if(!SPORTS.has(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid protected history scope');
- const picks=await boundedRead('worker_pregame_picks',sport,firstDay,5000);
- if(!picks.length)return {rows:[],invalid:0};
- const grades=await boundedRead('worker_pregame_grades',sport,firstDay,5000);
+ const deadline=options.deadlineMs?AbortSignal.timeout(options.deadlineMs):undefined;
+ let picks,grades;
+ if(options.parallel){[picks,grades]=await Promise.all([
+  boundedRead('worker_pregame_picks',sport,firstDay,5000,deadline,options.requestTimeoutMs),
+  boundedRead('worker_pregame_grades',sport,firstDay,5000,deadline,options.requestTimeoutMs),
+ ]);}else{
+  picks=await boundedRead('worker_pregame_picks',sport,firstDay,5000,deadline,options.requestTimeoutMs);
+  if(!picks.length)return {rows:[],invalid:0};
+  grades=await boundedRead('worker_pregame_grades',sport,firstDay,5000,deadline,options.requestTimeoutMs);
+ }
  const map=new Map(grades.map(r=>[id(r),r])),rows=[];let invalid=0;
  for(const pick of picks){
   const row=immutableModelHistoryRow(pick,map.get(id(pick)));

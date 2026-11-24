@@ -1,3 +1,4 @@
+import {performanceDocumentConsumer} from '@/lib/performance-document';
 import {historyDays} from '@/lib/history-days';
 import {performanceRecordAccumulator} from '@/lib/performance-record-view';
 import {readWorkerFinals} from '@/lib/worker-final-observations';
@@ -52,7 +53,7 @@ async function sourceDocument(file:string){
  return work;
 }
 /** Original saved calls only. Provider reconciliation may run after the response. */
-export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean;cloud?:boolean;storage?:'cloud';archiveRange?:{from:string;to:string}}={}){
+export async function readSavedPerformance(sport:string,period:string,now=new Date(),root=historyRoot(),options:{observe?:boolean;cloud?:boolean;storage?:'cloud';archiveRange?:{from:string;to:string};protectedOnly?:boolean;sourceCache?:any;sourceBudget?:any;protectedHistory?:any}={}){
  if(!(HISTORY_SPORTS as readonly string[]).includes(sport))throw new Error('Unsupported sport');
  const startedAt=Date.now();
  if(process.env.NODE_ENV==='production')console.info('[performance-start]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false}));
@@ -60,7 +61,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  // from Drive, then apply the requested period to each record's fixture time.
  const cloudOnly=options.storage==='cloud';
  const recent=period==='Today'||period==='Yesterday'||period==='Week';
- const drive=(!cloudOnly||!recent||!cloudConfigured())&&drivePerformanceConfigured();
+ const drive=!options.protectedOnly&&(!cloudOnly||!recent||!cloudConfigured())&&drivePerformanceConfigured();
  if(options.archiveRange&&!drive)throw Error('Drive archive storage is unavailable');
  if(cloudOnly&&!drive&&!cloudConfigured())throw Error('Cloud history storage is unavailable');
  const fullSeason=cloudOnly&&period==='Season'&&!options.archiveRange&&(sport==='mlb'||sport==='wnba');
@@ -73,25 +74,15 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const availableDates=new Set<string>(),observationTimes=new Map<string,number>();
  if(sport==='mlb'&&root===historyRoot()){const legacy=await readBundledMlbHistory(days);rows.push(...legacy.rows);legacy.dates.forEach(day=>availableDates.add(day));errors.push(...legacy.errors);}
  const remember=(payload:any,observedAt?:string)=>{const key=String(payload.gameId),at=Date.parse(observedAt||payload.updatedAt||'')||0;if(!observations.has(key)||at>(observationTimes.get(key)||0)){observations.set(key,payload);observationTimes.set(key,at);}};
- const consume=(payload:any,stream:string,date:string,verifiedDocument=false)=>{
-  if(stream.startsWith('archive_records_')){if(!Array.isArray(payload))throw Error('Invalid recovered archive');for(const row of payload){const item=row?.archiveFinal;if(item){if(['mlb','soccer'].includes(sport))item.boxscore=rawFinalPerformance(sport,String(item.gameId),item.boxscore,item.observedAt)||item.boxscore;if(item.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt);}else addRows([row]);}return;}
-  if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item&&['mlb','soccer'].includes(sport))item.boxscore=rawFinalPerformance(sport,String(item.gameId),item.boxscore,item.observedAt)||item.boxscore;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}
-  if(stream.startsWith('protected_pregame_')){if(!Array.isArray(payload))throw Error('Invalid pregame receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='pregame_checkpoint')addRows(savedResearchDecisions([{...item,capturedAt:item.checkpointAt}]).map(r=>({...r,performanceSource:'checkpoint'})));}return;}
-  if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload,verifiedDocument);if(!p)throw Error('Invalid official result cache');remember(p,payload.savedAt);return;}
-  if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(stream)){
-   addRows(savedResearchDecisions(Array.isArray(payload)?payload:[]).map(r=>({...r,performanceSource:/^(slate_locked_|locked_research_)/.test(stream)?'locked':'board'})));return;
-  }
-  if(sport==='mlb')rows.push(...mlbAdminSnapshot(payload,date));
-  else {if(!Array.isArray(payload))throw Error('Invalid history array');addRows(payload.filter((r:any)=>r&&typeof r.market==='string'&&typeof r.status==='string'));}
- };
+ const consume=performanceDocumentConsumer(sport,addRows,remember);
  // A backup is historical evidence, not the live picks/grade database. Keep
  // current professional-sport documents alongside older archive records.
- const cloudBatch=cloudOnly&&options.cloud!==false&&(!drive||['nba','nfl','nhl'].includes(sport));
- const remoteWork=cloudBatch&&!drive?Promise.resolve({rows:[] as any[],errors:[] as string[]}):drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows,options.archiveRange?.to,fullSeason):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
+ const cloudBatch=!options.protectedOnly&&cloudOnly&&options.cloud!==false&&(!drive||['nba','nfl','nhl'].includes(sport));
+ const remoteWork=options.protectedOnly?Promise.resolve({rows:[] as any[],errors:[] as string[]}):cloudBatch&&!drive?Promise.resolve({rows:[] as any[],errors:[] as string[]}):drive||cloudConfigured()?(options.cloud===false?Promise.resolve({rows:[] as any[],errors:['checking']}):(drive?listDrivePerformanceDocuments(sport,firstDay,archivedPerformanceRows,options.archiveRange?.to,fullSeason,{cache:options.sourceCache,budget:options.sourceBudget}):listCloudPerformanceDocuments(sport,firstDay)).catch(()=>({rows:[] as any[],errors:['unavailable']}))):Promise.resolve({rows:[] as any[],errors:[] as string[]});
  const protectedWork=cloudOnly&&['nba','nfl','nhl','cfb','cbb'].includes(sport)
-  ?readImmutableModelHistory(sport,[...days].sort()[0]).then(value=>({...value,failed:false})).catch(()=>({rows:[],invalid:0,failed:true}))
+  ?(options.protectedHistory?Promise.resolve(options.protectedHistory):readImmutableModelHistory(sport,[...days].sort()[0],options.protectedOnly?{parallel:true,deadlineMs:10000,requestTimeoutMs:2500}:{})).then(value=>({...value,failed:false})).catch(()=>({rows:[],invalid:0,failed:true}))
   :null;
- const cloudWork=cloudBatch?visitCloudPerformanceDocuments(sport,firstDay,doc=>consume(doc.payload,doc.stream,doc.game_date,true)):null;
+ const cloudWork=cloudBatch?visitCloudPerformanceDocuments(sport,firstDay,doc=>consume(doc.payload,doc.stream,doc.game_date,true),{cache:options.sourceCache,requestLimit:options.sourceBudget?.cloudRequests,budgetMs:options.sourceBudget?.budgetMs}):null;
  // MLB performance snapshots live in a child directory; protected receipts and
  // newly captured boards use the shared sport root like every other sport.
  if(sport==='mlb'&&!cloudOnly){
@@ -140,6 +131,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
    errors.push('cloud:protected_original_history_unavailable');
   }
  }
+ if(options.protectedOnly)errors.push('archive:background_loading');
  const records=await observeSavedResearch(restored.filter(r=>days.has(Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):String(r.gameDate||''))),sport,{root,observations,cachedOnly:options.observe===false});
  if(process.env.NODE_ENV==='production')console.info('[performance-read]',JSON.stringify({sport,period,observe:options.observe!==false,cloud:options.cloud!==false,files,records:records.length,localMs:localFinishedAt-startedAt,cloudWaitMs:cloudFinishedAt-localFinishedAt,cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',cloudErrors:remote.errors.length,cloudErrorTypes:[...new Set(remote.errors.map((e:string)=>e.split(':')[0]))].slice(0,8),reconcileMs:Date.now()-cloudFinishedAt,totalMs:Date.now()-startedAt}));
  return {records,coverage:{files,availableDates:[...new Set([...availableDates,...remote.rows.map(d=>d.game_date),...records.map(r=>Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate).filter(Boolean)])].sort(),cloudDocuments,driveDocuments:drive?remote.rows.length:0,historySource:drive?'Google Drive':'Supabase',protectedOriginals:protectedEvidence,errors,complete:errors.length===0,duplicatesReconciled:reconciled.duplicates,conflictingCopies:reconciled.conflicts},summary:savedHistorySummary(records)};

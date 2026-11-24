@@ -10,7 +10,7 @@ export function listCloudDocuments(sport:string):Promise<any[]>;
 
 export function readCloudDocumentsForDay(sport:string,streams:string[],day:string):Promise<any[]>;
 export function listCloudPerformanceDocuments(sport:string,firstDay?:string):Promise<{rows:any[];errors:string[]}>;
-export function visitCloudPerformanceDocuments(sport:string,firstDay:string,visit:(doc:{stream:string;game_date:string;payload:any;checksum:string})=>void):Promise<{documents:number;dates:string[];errors:string[]}>;
-export function readCloudDocumentRange(sport:string,stream:string,first:string,last:string):Promise<any[]>;
+export function visitCloudPerformanceDocuments(sport:string,firstDay:string,visit:(doc:{stream:string;game_date:string;payload:any;checksum:string})=>void,options?:{cache?:any;requestLimit?:number;budgetMs?:number}):Promise<{documents:number;dates:string[];errors:string[]}>;
+export function readCloudDocumentRange(sport:string,stream:string,first:string,last:string,options?:{pageSize?:number;project?:(doc:any)=>any}):Promise<any[]>;
 
 export function cloudWriteStatus():{configured:boolean;readOnly:boolean;pendingDocuments:number;activeSaves:number;queuedSaves:number;sports:Record<string,{attempted:number;verified:number;failed:number;coalesced:number;retried:number}>};

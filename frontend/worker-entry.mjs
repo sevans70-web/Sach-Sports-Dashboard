@@ -1,3 +1,4 @@
+import {workerPerformanceServices} from './lib/worker-performance-build';
 import {ensureFetchPatch} from 'vinext/shims/fetch-cache';
 import {recoverNbaCachedBoard} from './lib/nba-cached-recovery';
 import {nbaEvMarket} from './lib/nba-ranking-ev';
@@ -16,7 +17,7 @@ import {archiveWorkerPregameDay} from './scripts/worker-pregame-backup.mjs';
 // Lazy installation during the first ranking request would replace the guard.
 ensureFetchPatch();
 
-export const DashboardJobQueue=dashboardJobClass({dashboard,createReplay:createWorkerGradingReplay,saveCorrections:saveWorkerFinalCorrections,
+export const DashboardJobQueue=dashboardJobClass({dashboard,performance:workerPerformanceServices,createReplay:createWorkerGradingReplay,saveCorrections:saveWorkerFinalCorrections,
  publish:(env,sport,market,body)=>Promise.all([cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body)]),
 });
 

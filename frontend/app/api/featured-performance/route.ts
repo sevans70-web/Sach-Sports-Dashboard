@@ -1,3 +1,4 @@
+import {workerPerformanceView,workerPerformanceSport} from '@/lib/worker-performance';
 import {estimatedEv,estimatedEvText} from '@/lib/estimated-ev';
 import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {performanceView} from '@/lib/performance-view';
@@ -15,6 +16,10 @@ const CATEGORIES=['play','value','first','long'] as const;
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'nfl',period=req.nextUrl.searchParams.get('period')||'Today';
  if(!DASHBOARD_SPORTS.includes(sport as any)||!['Today','Yesterday','Week','Month','Season'].includes(period))return NextResponse.json({success:false,error:'Invalid scope'},{status:400});
+ if(workerPerformanceSport(sport)){
+  try{const view=await workerPerformanceView(sport,period);return NextResponse.json({...view.featured,cache:view.cache,refreshing:view.refreshing},{headers:{'Cache-Control':'no-store'}});}
+  catch{return NextResponse.json({success:false,error:'Featured history unavailable; no results inferred'},{status:503,headers:{'Cache-Control':'no-store'}});}
+ }
  const days=[...historyDays(period)].sort();
  try{
   const [featuredDays,history]=await Promise.all([

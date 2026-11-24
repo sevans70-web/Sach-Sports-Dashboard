@@ -342,7 +342,9 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [breakdowns,setBreakdowns]=useState<any>(null);
   const [recordFreshness,setRecordFreshness]=useState<any>(null);
   const [lastChecked,setLastChecked]=useState<string|null>(null);
+  const [viewCache,setViewCache]=useState<any>(null);
   useEffect(()=>{
+    if(['nba','nfl','nhl'].includes(sport))return;
     const controller=new AbortController();
     setFeatured(null);setFeaturedError(false);
     let timer:number|undefined;
@@ -377,7 +379,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
   useEffect(() => {
     if (!activeCategory) return;
-    setOverall(ZERO);setCategoryStat(ZERO);setSavedRecords([]);setProbabilityAudit(null);setPartialHistory(false);setHistoryRefreshing(false);setHistoryError(false);setBreakdowns(null);setRecordFreshness(null);setLastChecked(null);
+    setOverall(ZERO);setCategoryStat(ZERO);setSavedRecords([]);setProbabilityAudit(null);setPartialHistory(false);setHistoryRefreshing(false);setHistoryError(false);setBreakdowns(null);setRecordFreshness(null);setLastChecked(null);setViewCache(null);
 
     const controller = new AbortController();
     let alive = true;
@@ -395,7 +397,7 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         const leagueScope=sport==='soccer'?`&league=${encodeURIComponent(league)}`:'';
         const payload=await fetchHistoryJson(`/api/history/performance?sport=${sport}&period=${period}${scope}${leagueScope}`,controller.signal,historyTimeout);
         if(!alive)return;
-        const cloudUnavailable=payload.coverage?.errors?.some((error:string)=>/^(cloud|drive):unavailable/.test(error));
+        const cloudUnavailable=Boolean(payload.cache?.lastError)||payload.coverage?.errors?.some((error:string)=>/^(cloud|drive):unavailable/.test(error));
         retryDelay=payload.refreshing&&!cloudUnavailable?5000:60000;
         setPartialHistory(payload.partial===true);setHistoryRefreshing(payload.refreshing===true&&!cloudUnavailable);
         if(payload?.success===false||payload?.connected===false)throw new Error("History unavailable");
@@ -408,10 +410,15 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         setSavedRecords(payload.records||[]);
         setProbabilityAudit(payload.probabilityAccuracy||null);
         setBreakdowns(payload.breakdowns||null);setRecordFreshness(payload.recordFreshness||null);
-        setLastChecked(payload.updatedAt||null);setHistoryError(false);
+        setLastChecked(payload.updatedAt||null);setViewCache(payload.cache||null);setHistoryError(false);
+        if(['nba','nfl','nhl'].includes(sport)){
+          if(payload.featured){setFeatured(payload.featured);setFeaturedError(payload.featured.success===false);}
+          else void fetchHistoryJson('/api/featured-performance?sport='+sport+'&period='+period,controller.signal,45000).then(data=>{if(alive){setFeatured(data);setFeaturedError(false)}}).catch(()=>{if(alive)setFeaturedError(true)});
+        }
       } catch {
         if (!alive) return;
         setHistoryRefreshing(false);setHistoryError(true);
+        if(['nba','nfl','nhl'].includes(sport))setFeaturedError(true);
       } finally {
         running=false;
         if (alive) {setLoading(false);if(!archiveLoaded)refresh=window.setTimeout(run,retryDelay);}
@@ -497,6 +504,8 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         {researchView ? <p>Original saved forecasts and recorded results · some forecasts do not include a sportsbook price.</p> : null}
       {partialHistory?<p>Some archived results could not be loaded. Totals cover the verified records currently available.</p>:null}
       {historyRefreshing?<p>Showing saved records while final results and archive coverage are checked.</p>:null}
+      {viewCache?.status==='stale'?<p role="status">Showing the last verified statistics while newer saved records are checked.</p>:null}
+      {viewCache?.lastError?<p role="status">The latest history refresh could not complete. Previously verified records are retained.</p>:null}
       {historyError?<p role="status">Statistics could not be refreshed. Any previously loaded results remain visible until a successful refresh.</p>:null}
       {recordFreshness?.latestSavedAt?<p>Latest saved forecast: {new Date(recordFreshness.latestSavedAt).toLocaleString('en-CA',{timeZone:'America/Toronto'})} Toronto.</p>:null}
       {recordFreshness?.latestGradedAt?<p>Latest recorded grade: {new Date(recordFreshness.latestGradedAt).toLocaleString('en-CA',{timeZone:'America/Toronto'})} Toronto.</p>:null}

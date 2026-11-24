@@ -4,6 +4,6 @@ export function immutableModelHistoryRow(pick: any, grade?: any): Record<string,
 export function appendMissingImmutableModelPicks<T>(existing: T[], protectedRows: T[]): {
   records: T[]; added: number; alreadyPresent: number;
 };
-export function readImmutableModelHistory(sport: string, firstDay: string): Promise<{
+export function readImmutableModelHistory(sport: string, firstDay: string, options?:{parallel?:boolean;deadlineMs?:number;requestTimeoutMs?:number}): Promise<{
   rows: Record<string, any>[]; invalid: number;
 }>;

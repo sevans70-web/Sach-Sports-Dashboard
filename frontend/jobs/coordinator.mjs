@@ -1,3 +1,4 @@
+import {performanceCache} from './performance-cache.mjs';
 import {DurableObject,withEnv} from 'cloudflare:workers';
 import {encode,decode,runJobBudget,JobDeferred} from './budget.mjs';
 import {runPhase} from './tasks.mjs';
@@ -22,6 +23,10 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   this.sql.exec('CREATE TABLE IF NOT EXISTS phase_events(id INTEGER PRIMARY KEY AUTOINCREMENT,job TEXT,at INTEGER,phase TEXT,outcome TEXT,detail TEXT)');
   this.sql.exec('CREATE TABLE IF NOT EXISTS documents(job TEXT,stream TEXT,body TEXT,PRIMARY KEY(job,stream))');
  }
+ performanceController(){return this.performanceControllerInstance??(this.performanceControllerInstance=performanceCache(this,services.performance,withEnv,runJobBudget));}
+ performanceResponse(sport,period,market,group){return this.performanceController().response(sport,period,market,group);}
+ performanceView(sport,period){return this.performanceController().read(sport,period);}
+ invalidatePerformance(sport){return services.performance?this.performanceController().invalidate(sport):Promise.resolve({queued:false});}
  now(){return Date.now();}
  rows(sql,...args){return [...this.sql.exec(sql,...args)];}
  meta(key){const row=this.rows('SELECT value FROM metadata WHERE key=?',key)[0];return row?JSON.parse(row.value):null;}
@@ -62,6 +67,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
  }
  status(){return {jobs:this.rows('SELECT data FROM jobs ORDER BY touched DESC,id LIMIT 100').map(r=>{const j=decode(r.data);const {board,quotes,picks,grades,...safe}=j;return safe;}),lease:this.meta('lease'),cooldown:this.meta('cooldown')};}
  async alarm(){
+  if(this.meta('performance-state')){await this.performanceController().alarm();return;}
   const lease=this.meta('lease');if(lease?.until>this.now()){await this.arm();return;}
   const row=this.rows('SELECT data FROM jobs WHERE state=? AND due<=? ORDER BY touched,id LIMIT 1','active',this.now())[0];
   if(!row){await this.arm();return;}
@@ -78,6 +84,9 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
     return value;
    },withEnv);
    next={...execution.result,attempts:0,lastError:null,usage:execution.usage};
+   if((job.kind==='capture'&&job.phase==='picks'&&next.picksStored>job.picksStored)||(job.kind==='grade'&&job.phase==='write'&&next.verified>(job.verified||0))){
+    try{await this.env.DASHBOARD_JOBS.getByName('performance:'+job.sport).invalidatePerformance(job.sport);}catch{console.warn('[performance-invalidation-pending]',job.sport);}
+   }
    next.progress=progress(job,execution.usage,['phase','state','cursor','gameCursor','gradeCursor','verified','stored','picksStored','checked'].some(key=>next[key]!==job[key]),this.now());
    if(job.kind==='capture'&&job.phase==='rank'){
     next.reservedAt=this.now();

@@ -11,7 +11,7 @@ export function drivePerformanceConfigured(){return ['BACKUP_DRIVE_FOLDER_ID','G
 
 /** Read backed-up daily documents, never restore files to the Railway volume.
  * Folder discovery is independent of the Supabase archive catalog. */
-export function createDrivePerformanceReader({request,makeRequest,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false,requestLimit=Infinity,recentFirst=false}){
+export function createDrivePerformanceReader({request,makeRequest,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false,requestLimit=Infinity,recentFirst=false,checkpoint}){
  const inventories=new Map(),pending=new Map(),results=new Map(),documents=new Map();
  const scheduled=new Set();
  let cacheBytes=0;
@@ -62,6 +62,8 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
    const index=next++,file=files[index];
    const key=sport+'|'+file.stream+'|'+file.game_date,cached=documents.get(key);
    if(cached&&cached.md5===file.md5Checksum){outcomes[index]={row:cached};continue;}
+   const durable=checkpoint?.read('drive:'+key,file.md5Checksum);
+   if(durable){outcomes[index]={row:{...durable,md5:file.md5Checksum,zip:gzipSync(JSON.stringify(durable.payload))}};continue;}
    if(now()-started>=readBudget||requests>=requestLimit){outcomes[index]={error:file.stream+'|'+file.game_date+':checking'};continue;}
    try{
     const streaming=file.stream.startsWith('snapshots_')||Number(file.size)>16*1024*1024;
@@ -81,6 +83,8 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
     }else{const chunks=[];for await(const raw of response.body){const chunk=Buffer.from(raw);size+=chunk.length;if(size>16*1024*1024)throw Error('Backup document exceeds limit');hash.update(chunk);chunks.push(chunk);}bytes=Buffer.concat(chunks);payload=JSON.parse(bytes.toString('utf8'));}
     // Staged records are accepted only after the entire original file verifies.
     if(size!==Number(file.size)||hash.digest('hex')!==file.md5Checksum.toLowerCase())throw Error('Backup checksum mismatch');
+    if(checkpoint){const projected=checkpoint.project(sport,{stream,game_date:file.game_date,payload});
+     checkpoint.write('drive:'+key,file.md5Checksum,projected);stream=projected.stream;payload=projected.payload;bytes=Buffer.from(JSON.stringify(payload));}
     const zip=gzipSync(bytes);return {stream,game_date:file.game_date,md5:file.md5Checksum,checksum:checksum(payload),zip};
     });
     const replacedBytes=documents.get(key)?.zip.length||0;
@@ -113,8 +117,14 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
  return read;
 }
 let reader;
-export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot,lastDay,fullSeason=false){
+export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapshot,lastDay,fullSeason=false,options={}){
  if(!drivePerformanceConfigured())return {rows:[],errors:['unavailable']};
+ if(options.cache){
+  // Alarm-local transport, durable validated projections: no request-owned
+  // OAuth/fetch promise is reused by another invocation or lost on eviction.
+  const makeRequest=()=>driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,settings)=>fetch(url,{...settings,signal:settings?.signal??AbortSignal.timeout(12000)})}).request;
+  return createDrivePerformanceReader({folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,makeRequest,parallelReads:true,recentFirst:true,requestLimit:options.budget?.driveRequests??24,budgetMs:options.budget?.budgetMs??8000,checkpoint:options.cache})(sport,firstDay,lastDay,fullSeason);
+ }
  if(!reader){
   const makeRequest=()=>driveAuth({clientId:process.env.GOOGLE_OAUTH_CLIENT_ID,clientSecret:process.env.GOOGLE_OAUTH_CLIENT_SECRET,refreshToken:process.env.GOOGLE_OAUTH_REFRESH_TOKEN,fetchImpl:(url,options)=>fetch(url,{...options,signal:options?.signal??AbortSignal.timeout(12000)})}).request;
   const worker=globalThis.navigator?.userAgent==='Cloudflare-Workers';
