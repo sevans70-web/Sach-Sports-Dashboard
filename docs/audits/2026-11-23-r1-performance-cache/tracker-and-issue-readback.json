@@ -1,0 +1,21 @@
+{
+  "schema": "r1-performance-tracker-issue-receipt/v1",
+  "codeCommit": "b8d05e3",
+  "packageCommit": "d6b249d",
+  "artifact": "R1-2026-11-23-b8d05e3-c8428f1ae381",
+  "tracker": {
+    "verifiedCells": 23,
+    "unchangedNeighborRow": "CW10 row23",
+    "statusCW09": "Blocked",
+    "statusCW11": "Blocked",
+    "completedRowsMoved": 0,
+    "evidenceLink": "https://github.com/sevans70-web/Sach-Sports-Dashboard/blob/d6b249d/docs/audits/2026-11-23-r1-performance-cache/README.md",
+    "at": "2026-11-24T03:51:15.923Z"
+  },
+  "issueCommentId": 7121490542,
+  "issueUrl": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7121490542",
+  "productionUploaded": false,
+  "productionDataWrites": 0,
+  "cw08Modified": false,
+  "automaticBuildsEnabled": false
+}
