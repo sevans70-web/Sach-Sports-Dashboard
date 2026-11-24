@@ -1,0 +1,40 @@
+{
+  "schema": "r1-approved-performance-release-preupload/v1",
+  "artifact": "R1-2026-11-23-b8d05e3-c8428f1ae381",
+  "recoveryReadiness": true,
+  "productionRecords": 20478,
+  "productionDataWrites": 0,
+  "manualBuildStarted": false,
+  "workerUploadOccurred": false,
+  "rollbackNeeded": false,
+  "activeDeployment": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+  "activeVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "commandsAfterRejectedAction": [
+    {
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "branch_excludes": []
+    }
+  ],
+  "automaticBuildsPaused": true,
+  "CW08Deployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "CW08Version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+  "CW08Changed": false,
+  "rejectedAction": "PATCH existing trigger build_command and deploy_command only",
+  "rejectionSource": "Automatic approval review",
+  "rejectionReason": "Separate persistent production pipeline mutation not covered by artifact deployment authorization; unintended deployment risk. No workaround or retry attempted.",
+  "issueComment": 7122453433,
+  "tracker": {
+    "readbackCells": 18,
+    "neighborCW10Unchanged": true,
+    "statusCW09": "Blocked",
+    "statusCW11": "Blocked",
+    "completedRowsMoved": 0,
+    "visualReview": "Content/style metadata checked; native rendered Sheet visual unavailable",
+    "at": "2026-11-24T04:54:28.313Z"
+  },
+  "nextStep": "Explicit temporary two-command manual-trigger authorization and restoration, retaining paused branch filters; no new artifact or repeat backup needed if recovery inventory unchanged."
+}
