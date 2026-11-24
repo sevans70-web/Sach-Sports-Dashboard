@@ -1,0 +1,42 @@
+{
+  "file": "sach-dashboard-recovery-delta-2026-11-23-ten-342419868b7f9b6009eba5113202cb91edd0b6074ab7a85bc70052e5ef111e5b.json",
+  "sha256": "342419868b7f9b6009eba5113202cb91edd0b6074ab7a85bc70052e5ef111e5b",
+  "bytes": 18969,
+  "baseRecords": 20468,
+  "deltaRecords": 10,
+  "restoredRecords": 20478,
+  "allOldRowsByteIdentical": true,
+  "allFourInventoriesMatch": true,
+  "duplicateRejected": true,
+  "sqliteIntegrity": "ok",
+  "productionWrites": 0,
+  "oldBackupModified": false,
+  "tables": [
+    {
+      "source": "history_documents",
+      "records": 11615,
+      "inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    {
+      "source": "worker_pregame_originals",
+      "records": 6116,
+      "inventory": "23e388533aa4a7d395a34890b603b2b2"
+    },
+    {
+      "source": "worker_pregame_picks",
+      "records": 1478,
+      "inventory": "56e9ef51bbfdbac767d6fcec9df5db19"
+    },
+    {
+      "source": "worker_pregame_grades",
+      "records": 1269,
+      "inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  ],
+  "deltaDriveId": "1N7LhqfOPaQCbMNVCPRVIBkuzMbHbnSI_",
+  "remoteExactByteReadback": true,
+  "manifestDriveId": "1hWmvl1AMif5DV6l7YDsc1kU-LPyMA1SU",
+  "manifestSha256": "ae675a230bc48231b8025c22623f0e53b039268f1ea494520c4a7173944e714b",
+  "manifestExactByteReadback": true,
+  "recoveryReady": true
+}
