@@ -338,14 +338,21 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const [partialHistory,setPartialHistory]=useState(false);
   const [historyRefreshing,setHistoryRefreshing]=useState(false);
   const [probabilityAudit,setProbabilityAudit]=useState<any>(null);
+  const [historyError,setHistoryError]=useState(false);
+  const [breakdowns,setBreakdowns]=useState<any>(null);
+  const [recordFreshness,setRecordFreshness]=useState<any>(null);
+  const [lastChecked,setLastChecked]=useState<string|null>(null);
   useEffect(()=>{
     const controller=new AbortController();
     setFeatured(null);setFeaturedError(false);
-    fetch("/api/featured-performance?sport="+sport+"&period="+period,{cache:"no-store",signal:controller.signal})
+    let timer:number|undefined;
+    const refresh=()=>{void fetch("/api/featured-performance?sport="+sport+"&period="+period,{cache:"no-store",signal:AbortSignal.any([controller.signal,AbortSignal.timeout(45000)])})
       .then(r=>{if(!r.ok)throw Error("History unavailable");return r.json()})
-      .then(data=>{if(!controller.signal.aborted)setFeatured(data)})
-      .catch(()=>{if(!controller.signal.aborted)setFeaturedError(true)});
-    return()=>controller.abort();
+      .then(data=>{if(!controller.signal.aborted){setFeatured(data);setFeaturedError(false)}})
+      .catch(()=>{if(!controller.signal.aborted)setFeaturedError(true)})
+      .finally(()=>{if(!controller.signal.aborted)timer=window.setTimeout(refresh,60000)});};
+    refresh();
+    return()=>{window.clearTimeout(timer);controller.abort()};
   },[sport,period]);
 
   const activeCategory =
@@ -370,13 +377,13 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
 
   useEffect(() => {
     if (!activeCategory) return;
-    setOverall(ZERO);setCategoryStat(ZERO);setSavedRecords([]);setProbabilityAudit(null);setPartialHistory(false);setHistoryRefreshing(false);
+    setOverall(ZERO);setCategoryStat(ZERO);setSavedRecords([]);setProbabilityAudit(null);setPartialHistory(false);setHistoryRefreshing(false);setHistoryError(false);setBreakdowns(null);setRecordFreshness(null);setLastChecked(null);
 
     const controller = new AbortController();
     let alive = true;
 
     const fullArchive=period==='Season'&&(sport==='mlb'||sport==='wnba');
-    const historyTimeout=fullArchive?115000:period==='Week'?45000:undefined;
+    const historyTimeout=fullArchive?115000:['Week','Month','Season'].includes(period)?60000:undefined;
     let running=false;let hasLoaded=false;let archiveLoaded=false;let refresh:number|undefined;let retryDelay=60000;
     const run = async () => {
       if(running)return;
@@ -400,9 +407,11 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         setCategoryStat(normalizeStat(payload));
         setSavedRecords(payload.records||[]);
         setProbabilityAudit(payload.probabilityAccuracy||null);
+        setBreakdowns(payload.breakdowns||null);setRecordFreshness(payload.recordFreshness||null);
+        setLastChecked(payload.updatedAt||null);setHistoryError(false);
       } catch {
         if (!alive) return;
-        setHistoryRefreshing(false);
+        setHistoryRefreshing(false);setHistoryError(true);
       } finally {
         running=false;
         if (alive) {setLoading(false);if(!archiveLoaded)refresh=window.setTimeout(run,retryDelay);}
@@ -421,12 +430,13 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
   const categoryNote = useMemo(() => {
     if (activeCategory?.note && !researchView) return activeCategory.note;
     if (loading) return "Loading prediction history…";
+    if(historyError&&!categoryStat.connected)return 'Saved history is temporarily unavailable. No counts or results have been assumed.';
     if(researchView&&categoryStat.connected){const r=categoryStat.research;return r?`${r.total} saved forecasts · ${r.void} void/withdrawn${r.unknown?` · ${r.unknown} without a verifiable grade`:""}${r.lateRecords?` · ${r.lateRecords} first saved after start`:""}`:"No saved forecasts for this period.";}
     if (!categoryStat.connected || categoryStat.total === 0) {
       return categoryStat.research?.total ? `${categoryStat.research.total} saved forecast records: ${categoryStat.research.awaitingResult} awaiting results. No verified ${activeCategory?.label||""} picks for this period.` : `No saved ${activeCategory?.label || ""} forecasts for this period yet.`;
     }
     return "";
-  }, [activeCategory, categoryStat, loading,researchView,sport]);
+  }, [activeCategory, categoryStat, loading,researchView,sport,historyError]);
 
   if (!activeCategory) return null;
 
@@ -487,6 +497,10 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
         {researchView ? <p>Original saved forecasts and recorded results · some forecasts do not include a sportsbook price.</p> : null}
       {partialHistory?<p>Some archived results could not be loaded. Totals cover the verified records currently available.</p>:null}
       {historyRefreshing?<p>Showing saved records while final results and archive coverage are checked.</p>:null}
+      {historyError?<p role="status">Statistics could not be refreshed. Any previously loaded results remain visible until a successful refresh.</p>:null}
+      {recordFreshness?.latestSavedAt?<p>Latest saved forecast: {new Date(recordFreshness.latestSavedAt).toLocaleString('en-CA',{timeZone:'America/Toronto'})} Toronto.</p>:null}
+      {recordFreshness?.latestGradedAt?<p>Latest recorded grade: {new Date(recordFreshness.latestGradedAt).toLocaleString('en-CA',{timeZone:'America/Toronto'})} Toronto.</p>:null}
+      {lastChecked?<p>Statistics last checked: {new Date(lastChecked).toLocaleString('en-CA',{timeZone:'America/Toronto'})} Toronto.</p>:null}
         {sport==='nba'||sport==='wnba' ? <p>Saved pregame Sach picks · model estimates</p> : null}
 
 
@@ -545,6 +559,11 @@ export function PredictionPerformancePanel({ sport }: { sport: PerformanceSport 
                 </p>)}
               </div>}
               <PerformanceCards stat={researchView?researchStat(categoryStat):categoryStat} research={researchView} compact />
+              {breakdowns?<details style={{marginTop:16}}><summary>OVER / UNDER and daily results</summary>
+                {['OVER','UNDER','OTHER'].filter(side=>breakdowns.directions?.[side]?.total>0).map(side=>{const s=breakdowns.directions[side];return <p key={side}>{side==='OTHER'?'Other saved calls':side}: {s.hits} wins · {s.misses} losses · {s.pushes} pushes · {s.awaitingResult} pending · {s.hitRate==null?'No settled decisions':s.hitRate+'% hit rate'}</p>})}
+                <div style={{maxHeight:320,overflow:'auto'}}>{(breakdowns.daily||[]).map((s:any)=><p key={s.day}>{s.day}: {s.hits} wins · {s.misses} losses · {s.pushes} pushes · {s.awaitingResult} pending</p>)}</div>
+                <p>Pushes and unavailable grades are excluded from hit rates. Saved calls are never reconstructed from later projections.</p>
+              </details>:null}
               <details style={{marginTop:16}}><summary>Probability accuracy for this category</summary>
                 <p>Compare saved pregame estimates with results. Small samples do not establish reliable accuracy. Pushes are excluded from these percentages.</p>
                 {loading?<p>Checking saved probabilities and results…</p>:probabilityAudit?.groups?.length?probabilityAudit.groups.map((g:any)=><article key={`${g.sport}|${g.market}|${g.side}`} style={{padding:"10px 0"}}>

@@ -1,4 +1,5 @@
 import {readCfbSavedBoards} from '@/lib/cfb-saved-boards';
+import {performanceBreakdowns,performanceRecordFreshness} from '@/lib/performance-breakdowns';
 import {performanceResponseScope} from '@/lib/performance-response-scope';
 import {recordedProjectionValue} from '@/lib/saved-projection';
 import {predictionAccuracy,predictionProbability} from '@/lib/prediction-probability';
@@ -40,6 +41,7 @@ export async function GET(req:NextRequest){
   const selected=scopedRecords.filter(r=>(!market||r.market===market)&&(!group||historyGroup(r,sport)===group));
   const categories=Object.fromEntries([...new Set(scopedRecords.map(r=>String(r.market)))].map(key=>[key,savedHistorySummary(scopedRecords.filter(r=>r.market===key))]));
   return NextResponse.json({success:data.records.length>0||data.coverage.complete,connected:data.records.length>0||data.coverage.complete,partial:!data.coverage.complete,sport,period,league,readOnly:true,researchSummary:savedHistorySummary(selected),probabilityAccuracy:predictionAccuracy(selected.map(r=>({...r,sport}))),overallSummary:savedHistorySummary(scopedRecords),categories,coverage:data.coverage,
+   breakdowns:performanceBreakdowns(selected),recordFreshness:performanceRecordFreshness(scopedRecords),
    // Preserve the saved call and grade. These are historical forecasts, not newly validated picks.
    records:selected.sort((a,b)=>String(b.gameTime||b.savedAt).localeCompare(String(a.gameTime||a.savedAt))).map(r=>({key:r.key,playerName:r.playerName,gameId:r.gameId,teamName:r.teamName,matchup:r.matchup,rank:r.rank,projectionBasis:r.projectionBasis,market:r.market,gameDate:Number.isFinite(Date.parse(r.gameTime))?dashboardDay(r.gameTime):r.gameDate,storedGameDate:r.gameDate,gameTime:r.gameTime,savedAt:r.savedAt,pick:r.pickSide||r.prediction||r.pick||null,line:r.sportsbookLine??r.line??null,projection:recordedProjectionValue(r),actual:r.actual??null,status:r.status,gradedAt:r.gradedAt,legacyResult:r.legacyResult||null,reviewReason:r.reviewReason||null,recordSource:r.performanceSource||null,originalLocked:r.performanceSource==='immutable_cloudflare_model_receipt',modelValidatedForBetting:r.modelValidatedForBetting===true,probability:predictionProbability(r)})),
    updatedAt:data.snapshotAt||new Date().toISOString(),refreshing:data.refreshing===true},{headers:{'Cache-Control':'no-store'}});

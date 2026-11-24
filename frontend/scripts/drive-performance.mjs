@@ -11,7 +11,7 @@ export function drivePerformanceConfigured(){return ['BACKUP_DRIVE_FOLDER_ID','G
 
 /** Read backed-up daily documents, never restore files to the Railway volume.
  * Folder discovery is independent of the Supabase archive catalog. */
-export function createDrivePerformanceReader({request,makeRequest,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false}){
+export function createDrivePerformanceReader({request,makeRequest,folderId,now=Date.now,budgetMs=45000,projectSnapshot=()=>[],schedule,parallelReads=false,requestLimit=Infinity,recentFirst=false}){
  const inventories=new Map(),pending=new Map(),results=new Map(),documents=new Map();
  const scheduled=new Set();
  let cacheBytes=0;
@@ -52,15 +52,17 @@ export function createDrivePerformanceReader({request,makeRequest,folderId,now=D
   // wider fetch pool and time budget specific to these infrequent reads.
   const concurrency=fullSeason?4:parallelReads?2:1;
   const readBudget=fullSeason?95000:budgetMs;
-  const send=shared??transport(makeRequest(),concurrency);
+  const transportState=shared??transport(makeRequest(),concurrency);let requests=0;
+  const send={...transportState,request:(...args)=>{if(requests>=requestLimit)throw Error('Backup request budget reached');requests++;return transportState.request(...args);}};
   try{files=(await inventory(sport,send)).filter(f=>(!firstDay||f.game_date>=firstDay)&&(!lastDay||f.game_date<=lastDay));}catch{return {rows:results.get(key)?.value.rows||[],errors:['unavailable']};}
+  if(recentFirst&&['nba','nfl','nhl'].includes(sport))files.sort((a,b)=>b.game_date.localeCompare(a.game_date)||a.stream.localeCompare(b.stream));
   const outcomes=new Array(files.length);
   let next=0;
   const collect=async()=>{while(next<files.length){
    const index=next++,file=files[index];
    const key=sport+'|'+file.stream+'|'+file.game_date,cached=documents.get(key);
    if(cached&&cached.md5===file.md5Checksum){outcomes[index]={row:cached};continue;}
-   if(now()-started>=readBudget){outcomes[index]={error:file.stream+'|'+file.game_date+':checking'};continue;}
+   if(now()-started>=readBudget||requests>=requestLimit){outcomes[index]={error:file.stream+'|'+file.game_date+':checking'};continue;}
    try{
     const streaming=file.stream.startsWith('snapshots_')||Number(file.size)>16*1024*1024;
     if(!/^[a-f0-9]{32}$/i.test(file.md5Checksum||'')||!Number.isFinite(Number(file.size))||Number(file.size)>4*1024*1024*1024)throw Error('Unverified or oversized backup document');
@@ -118,7 +120,9 @@ export async function listDrivePerformanceDocuments(sport,firstDay,projectSnapsh
   const worker=globalThis.navigator?.userAgent==='Cloudflare-Workers';
   // Workers can share verified bytes, but fetches and their queues belong to
   // the request that created them, including the OAuth refresh promise.
-  reader=createDrivePerformanceReader({folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,...(worker?{makeRequest}:{request:makeRequest(),schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}})});
+  // Reserve room for the170-request cloud document reader, at most50 protected
+  // receipt pages and other route reads under the existing350 Worker limit.
+  reader=createDrivePerformanceReader({folderId:process.env.BACKUP_DRIVE_FOLDER_ID,projectSnapshot,parallelReads:worker,...(worker?{makeRequest,requestLimit:90,recentFirst:true}:{request:makeRequest(),schedule:work=>{const timer=setTimeout(work,5000);timer.unref();}})});
  }
  return reader(sport,firstDay,lastDay,fullSeason);
 }

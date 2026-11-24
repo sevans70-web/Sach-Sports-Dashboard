@@ -49,6 +49,7 @@ export function immutableModelHistoryRow(pick,grade){
   quoteVerified:true,marketBacked:true,
   status:validGrade?grade.result_status:'pending',actual:validGrade?grade.actual:null,
   gradedAt:validGrade?grade.graded_at:null,
+  reviewReason:validGrade?null:grade?'The recorded grade does not match this original selection and is held for review.':'No matching verified official-final grade has been recorded. The original forecast is preserved.',
   resultSource:validGrade?'official_final_boxscore':null,verifiedResult:Boolean(validGrade),
   originalSelectionChecksum:pick.checksum,modelValidatedForBetting:pick.payload.modelValidation===true,
   performanceSource:'immutable_cloudflare_model_receipt',historyBasis:'original_saved_research_forecast',
@@ -62,7 +63,18 @@ export function appendMissingImmutableModelPicks(existing,protectedRows){
  const output=[...existing];let added=0,alreadyPresent=0;
  for(const row of protectedRows){
   const key=[dayOf(row.gameTime),keyOf(row)].join('|');
-  if(seen.has(key)){alreadyPresent++;continue;}
+  if(seen.has(key)){
+   alreadyPresent++;
+   // Settle an exact original call in the derived view only. A pending
+   // legacy copy must not hide its authenticated official-final grade.
+   const index=output.findIndex(r=>[dayOf(r.gameTime),keyOf(r)].join('|')===key),prior=output[index];
+   if(prior?.status==='pending'&&row.verifiedResult===true&&row.resultSource==='official_final_boxscore'&&
+      prior.sportsbookLine===row.sportsbookLine&&
+      String(prior.pickSide||prior.prediction||prior.pick||'').toUpperCase()===row.pickSide)
+    output[index]={...prior,status:row.status,actual:row.actual,gradedAt:row.gradedAt,
+     verifiedResult:true,resultSource:row.resultSource};
+   continue;
+  }
   seen.add(key);output.push(row);added++;
  }
  return {records:output,added,alreadyPresent};
@@ -79,14 +91,14 @@ async function boundedRead(table,sport,firstDay,limit){
  }
  throw Error('Protected original history requires paginated recovery');
 }
-/** Bounded seven-day receipts, separate from the legacy document reader.
+/** Bounded period receipts, separate from the legacy document reader.
  * A failed supplemental read must be surfaced, not reported as complete.
  */
 export async function readImmutableModelHistory(sport,firstDay){
  if(!SPORTS.has(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid protected history scope');
- const picks=await boundedRead('worker_pregame_picks',sport,firstDay,1000);
+ const picks=await boundedRead('worker_pregame_picks',sport,firstDay,5000);
  if(!picks.length)return {rows:[],invalid:0};
- const grades=await boundedRead('worker_pregame_grades',sport,firstDay,1000);
+ const grades=await boundedRead('worker_pregame_grades',sport,firstDay,5000);
  const map=new Map(grades.map(r=>[id(r),r])),rows=[];let invalid=0;
  for(const pick of picks){
   const row=immutableModelHistoryRow(pick,map.get(id(pick)));

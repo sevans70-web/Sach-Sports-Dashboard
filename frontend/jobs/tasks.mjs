@@ -50,17 +50,29 @@ export async function gradePhase(job,{env,route,now,store}){
  if(job.phase==='scan'){
   // Fixed creation cutoff + immutable picks make pagination stable while new captures arrive.
   const params=new URLSearchParams({select:'sport,market,game_id,player_id,game_date,game_time,captured_at,prediction_side,sportsbook_line,checksum,payload',
-   sport:'eq.'+job.sport,game_time:'gte.'+new Date(job.created-7*86400000).toISOString(),
+   sport:'eq.'+job.sport,
    and:'(game_time.lt.'+new Date(job.created-3600000).toISOString()+',captured_at.lte.'+new Date(job.created).toISOString()+')',
    order:'game_time.asc,game_id.asc,market.asc,player_id.asc',limit:'50',offset:String(job.cursor||0)});
   const picks=await readDb(env,'worker_pregame_picks?'+params,fetch);
   if(!Array.isArray(picks))throw Error('invalid_grade_source');
   if(!picks.length)return {...job,state:'done',phase:'done'};
-  return {...job,phase:'game',picks,games:[...new Set(picks.map(p=>String(p.game_id)))],gameCursor:0};
+  // Recovery must include older ungraded originals after a prolonged pause.
+  // Skip already authenticated grades before any official-source requests.
+  const terms=picks.map(p=>'and(market.eq.'+p.market+',game_id.eq.'+p.game_id+',player_id.eq.'+p.player_id+')');
+  const grades=await readDb(env,'worker_pregame_grades?'+new URLSearchParams({
+   select:'market,game_id,player_id,source_pick_checksum',sport:'eq.'+job.sport,
+   or:'('+terms.join(',')+')',limit:'50'}),fetch);
+  if(!Array.isArray(grades))throw Error('invalid_existing_grades');
+  const settled=new Map(grades.map(g=>[key(g),g]));
+  const pending=picks.filter(p=>settled.get(key(p))?.source_pick_checksum!==p.checksum);
+  const skipped=(job.alreadyGraded||0)+picks.length-pending.length;
+  if(!pending.length)return {...job,cursor:(job.cursor||0)+picks.length,alreadyGraded:skipped,
+   ...(picks.length<50?{state:'done',phase:'done'}:{phase:'scan'})};
+  return {...job,phase:'game',scanCount:picks.length,alreadyGraded:skipped,picks:pending,games:[...new Set(pending.map(p=>String(p.game_id)))],gameCursor:0};
  }
  if(job.phase==='game'){
   const gameId=job.games[job.gameCursor];
-  if(!gameId){const {picks,games,grades,...next}=job;return {...next,phase:job.picks.length<50?'done':'scan',state:job.picks.length<50?'done':'active',cursor:job.cursor+job.picks.length};}
+  if(!gameId){const {picks,games,grades,scanCount,...next}=job,count=scanCount??picks.length;return {...next,phase:count<50?'done':'scan',state:count<50?'done':'active',cursor:job.cursor+count};}
   const response=await route(ROUTES[job.sport]+encodeURIComponent(gameId));
   const official=response.ok?await response.json():null;
   if(!official?.success){store.document(job.id,'grade_unavailable_'+gameId,{gameId,status:response.status,at:now()});return {...job,gameCursor:job.gameCursor+1,unavailable:(job.unavailable||0)+1};}

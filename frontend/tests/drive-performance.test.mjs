@@ -86,3 +86,12 @@ test('server continuation finishes bounded recovery without another browser requ
  const first=await read('nfl');assert.equal(first.rows.length,2);assert.equal(jobs.length,1);clock+=5001;await jobs.shift()();assert.equal(downloads,3);assert.equal(jobs.length,0);assert.equal((await read('nfl')).rows.length,3);
  const corrupt=createDrivePerformanceReader({folderId:'root',request:async url=>String(url).includes('alt=media')?new Response('bad'):request(url),schedule:job=>jobs.push(job)});const failed=await corrupt('nfl');assert.equal(failed.rows.length,0);assert.equal(jobs.length,0);
 });
+
+test('Worker archive request budget prioritizes current records and resumes older verified history',async()=>{
+ let clock=1000,calls=0;const downloads=[];
+ const docs=Array.from({length:8},(_,i)=>document('recent'+i,'points_2026-11-'+String(10+i).padStart(2,'0')+'.json',[{key:'saved-'+i,actual:i}]));
+ const request=async url=>{calls++;const u=new URL(url);if(u.searchParams.get('alt')==='media'){const file=docs.find(d=>d.id===u.pathname.split('/').at(-1));downloads.push(file.name);return new Response(file.bytes);}const p=u.searchParams.get('q').match(/^'([^']+)'/)[1];return Response.json({files:p==='root'?[folder('backup','railway-2026-11-17')]:p==='backup'?[folder('history','sach-history')]:p==='history'?[folder('nba','nba')]:docs});};
+ const read=createDrivePerformanceReader({folderId:'root',request,now:()=>clock,requestLimit:6,recentFirst:true});
+ const first=await read('nba');assert.equal(calls,6);assert.equal(first.rows.length,2);assert.equal(first.rows[0].game_date,'2026-11-17');assert.equal(first.errors.length,6);assert.ok(first.errors.every(e=>e.endsWith(':checking')));
+ clock+=5001;const second=await read('nba');assert.equal(calls,12);assert.equal(second.rows.length,8);assert.equal(second.errors.length,0);assert.equal(new Set(downloads).size,8);assert.equal(downloads.length,8);
+});
