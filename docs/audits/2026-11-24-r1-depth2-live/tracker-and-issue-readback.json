@@ -1,0 +1,29 @@
+{
+  "schema": "r1-depth2-live-tracker-issue-receipt/v1",
+  "evidenceCommit": "a650106",
+  "candidateDeployment": "9831ba89-9c17-48e8-a6b7-4eed4e44e7bc",
+  "rollbackDeployment": "72ab06fe-229a-4ece-a5d8-96eb1da50f6e",
+  "activeVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "commandsRestoredAndReadBack": true,
+  "automaticBuildsPaused": true,
+  "CW08Changed": false,
+  "oldProtectedRecords": 20478,
+  "currentProductionRecords": 20904,
+  "allOldFullRowInventoriesMatch": true,
+  "newRecordsRetained": 426,
+  "original204Graded": 31,
+  "original204Remaining": 173,
+  "issueCommentId": 7136763310,
+  "issueUrl": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7136763310",
+  "tracker": {
+    "readbackCells": 25,
+    "neighborCW10Unchanged": true,
+    "statusCW09": "Blocked",
+    "statusCW11": "Blocked",
+    "completedRowsMoved": 0,
+    "visualReview": "Content/style metadata checked; native Sheet rendering unavailable",
+    "at": "2026-11-24T15:51:42.505Z"
+  },
+  "fullR1Complete": false,
+  "nextAction": "Repair/verify NBA display-history recovery and complete authorized NFL model inputs before another release; retain remaining acceptance/recovery requirements."
+}
