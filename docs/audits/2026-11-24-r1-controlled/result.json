@@ -1,0 +1,42 @@
+{
+  "schema": "r1-controlled-manual-release/v1",
+  "artifact": "R1-2026-11-23-b8d05e3-c8428f1ae381",
+  "pinnedCommit": "d6b249decdb4b19049efb20c42c9ec0b70d604dc",
+  "manualBuild": "34abd6a4-861e-495a-99c1-87a211d838e6",
+  "authorizationAccepted": true,
+  "temporaryCommandsApplied": true,
+  "automaticBuildFiltersPausedThroughout": true,
+  "manualRunsStarted": 1,
+  "workerUploads": 0,
+  "buildOutcome": "fail",
+  "buildStopped": "2026-11-24T13:59:52.065Z",
+  "exactFailure": "fatal: Not a valid commit name b8d05e3b6335233f7a9bd4ce4fc456db492dd552",
+  "failedGuard": "git merge-base --is-ancestor b8d05e3b6335233f7a9bd4ce4fc456db492dd552 HEAD",
+  "guardRemovedOrWeakened": false,
+  "originalCommandsRestoredAt": "2026-11-24T14:00:32.415Z",
+  "restorationReadback": [
+    {
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "branch_excludes": []
+    }
+  ],
+  "activeDeployment": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+  "activeVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "rollbackNeeded": false,
+  "protectedRecords": 20478,
+  "protectedRecordsBeforeAfterCountsMatch": true,
+  "baselineAllFourInventoryHashesMatchVerifiedRecovery": true,
+  "recoveryBackupReExported": false,
+  "productionDataWrites": 0,
+  "liveCandidateAcceptanceAttempted": false,
+  "CW08DeploymentBefore": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "CW08DeploymentAfter": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "CW08Changed": false,
+  "bindingsAndSchedulesChanged": false,
+  "sourceCodeAndFrozenArtifactChanged": false,
+  "nextDecision": "Approve one new manual run with a bounded two-commit Git fetch added before the same package preparation; keep same artifact/pin/paused filters/restoration/fallback."
+}

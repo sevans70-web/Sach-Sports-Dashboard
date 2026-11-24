@@ -1,0 +1,278 @@
+{
+  "build": {
+    "status": "stopped",
+    "outcome": "fail",
+    "stopped": "2026-11-24T13:59:52.065Z"
+  },
+  "logs": {
+    "cursor": "WzEsNjcyXQ",
+    "truncated": false,
+    "lines": [
+      [
+        1795528790019,
+        ""
+      ],
+      [
+        1795528790019,
+        "added 517 packages, and audited 518 packages in 57s"
+      ],
+      [
+        1795528790019,
+        ""
+      ],
+      [
+        1795528790019,
+        "170 packages are looking for funding"
+      ],
+      [
+        1795528790019,
+        "  run `npm fund` for details"
+      ],
+      [
+        1795528790296,
+        ""
+      ],
+      [
+        1795528790296,
+        "15 vulnerabilities (12 moderate, 2 high, 1 critical)"
+      ],
+      [
+        1795528790296,
+        ""
+      ],
+      [
+        1795528790296,
+        "To address issues that do not require attention, run:"
+      ],
+      [
+        1795528790296,
+        "  npm audit fix"
+      ],
+      [
+        1795528790296,
+        ""
+      ],
+      [
+        1795528790296,
+        "To address all issues (including breaking changes), run:"
+      ],
+      [
+        1795528790296,
+        "  npm audit fix --force"
+      ],
+      [
+        1795528790296,
+        ""
+      ],
+      [
+        1795528790296,
+        "Run `npm audit` for details."
+      ],
+      [
+        1795528790550,
+        "fatal: Not a valid commit name b8d05e3b6335233f7a9bd4ce4fc456db492dd552"
+      ],
+      [
+        1795528790551,
+        "node:internal/errors:986"
+      ],
+      [
+        1795528790551,
+        "  const err = new Error(message);"
+      ],
+      [
+        1795528790551,
+        "              ^"
+      ],
+      [
+        1795528790551,
+        ""
+      ],
+      [
+        1795528790551,
+        "Error: Command failed: git merge-base --is-ancestor b8d05e3b6335233f7a9bd4ce4fc456db492dd552 HEAD"
+      ],
+      [
+        1795528790551,
+        "fatal: Not a valid commit name b8d05e3b6335233f7a9bd4ce4fc456db492dd552"
+      ],
+      [
+        1795528790551,
+        ""
+      ],
+      [
+        1795528790551,
+        "    at genericNodeError (node:internal/errors:986:15)"
+      ],
+      [
+        1795528790551,
+        "    at wrappedFn (node:internal/errors:540:14)"
+      ],
+      [
+        1795528790551,
+        "    at checkExecSyncError (node:child_process:943:11)"
+      ],
+      [
+        1795528790551,
+        "    at execFileSync (node:child_process:979:15)"
+      ],
+      [
+        1795528790551,
+        "    at prepareR1 (file:///opt/buildhome/repo/frontend/scripts/prepare-r1-release.mjs:9:2)"
+      ],
+      [
+        1795528790551,
+        "    at preparePerformanceRelease (file:///opt/buildhome/repo/frontend/scripts/prepare-r1-performance-release.mjs:8:48)"
+      ],
+      [
+        1795528790551,
+        "    at file:///opt/buildhome/repo/frontend/scripts/prepare-r1-performance-release.mjs:12:65"
+      ],
+      [
+        1795528790551,
+        "    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)"
+      ],
+      [
+        1795528790551,
+        "    at async node:internal/modules/esm/loader:647:26"
+      ],
+      [
+        1795528790552,
+        "    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {"
+      ],
+      [
+        1795528790552,
+        "  status: 128,"
+      ],
+      [
+        1795528790552,
+        "  signal: null,"
+      ],
+      [
+        1795528790552,
+        "  output: ["
+      ],
+      [
+        1795528790552,
+        "    null,"
+      ],
+      [
+        1795528790552,
+        "    Buffer(0) [Uint8Array] [],"
+      ],
+      [
+        1795528790552,
+        "    Buffer(72) [Uint8Array] ["
+      ],
+      [
+        1795528790552,
+        "      102,  97, 116,  97, 108,  58,  32,  78, 111, 116,  32,  97,"
+      ],
+      [
+        1795528790552,
+        "       32, 118,  97, 108, 105, 100,  32,  99, 111, 109, 109, 105,"
+      ],
+      [
+        1795528790552,
+        "      116,  32, 110,  97, 109, 101,  32,  98,  56, 100,  48,  53,"
+      ],
+      [
+        1795528790552,
+        "      101,  51,  98,  54,  51,  51,  53,  50,  51,  51, 102,  55,"
+      ],
+      [
+        1795528790552,
+        "       97,  57,  98, 100,  52,  99, 101,  52, 102,  99,  52,  53,"
+      ],
+      [
+        1795528790552,
+        "       54, 100,  98,  52,  57,  50, 100, 100,  53,  53,  50,  10"
+      ],
+      [
+        1795528790552,
+        "    ]"
+      ],
+      [
+        1795528790552,
+        "  ],"
+      ],
+      [
+        1795528790552,
+        "  pid: 1426,"
+      ],
+      [
+        1795528790552,
+        "  stdout: Buffer(0) [Uint8Array] [],"
+      ],
+      [
+        1795528790552,
+        "  stderr: Buffer(72) [Uint8Array] ["
+      ],
+      [
+        1795528790552,
+        "    102,  97, 116,  97, 108,  58,  32,  78, 111, 116,  32,  97,"
+      ],
+      [
+        1795528790552,
+        "     32, 118,  97, 108, 105, 100,  32,  99, 111, 109, 109, 105,"
+      ],
+      [
+        1795528790552,
+        "    116,  32, 110,  97, 109, 101,  32,  98,  56, 100,  48,  53,"
+      ],
+      [
+        1795528790552,
+        "    101,  51,  98,  54,  51,  51,  53,  50,  51,  51, 102,  55,"
+      ],
+      [
+        1795528790552,
+        "     97,  57,  98, 100,  52,  99, 101,  52, 102,  99,  52,  53,"
+      ],
+      [
+        1795528790553,
+        "     54, 100,  98,  52,  57,  50, 100, 100,  53,  53,  50,  10"
+      ],
+      [
+        1795528790553,
+        "  ]"
+      ],
+      [
+        1795528790553,
+        "}"
+      ],
+      [
+        1795528790553,
+        ""
+      ],
+      [
+        1795528790553,
+        "Node.js v24.22.1"
+      ],
+      [
+        1795528790558,
+        "Failed: error occurred while running build command"
+      ]
+    ],
+    "events": [
+      {
+        "type": "initializing",
+        "started_on": "2026-11-24T13:58:07.558Z",
+        "ended_on": "2026-11-24T13:58:14.195Z"
+      },
+      {
+        "type": "cloning",
+        "started_on": "2026-11-24T13:58:14.195Z",
+        "ended_on": "2026-11-24T13:58:24.098Z"
+      },
+      {
+        "type": "installing_tools_and_deps",
+        "started_on": "2026-11-24T13:58:24.098Z",
+        "ended_on": "2026-11-24T13:58:52.312Z"
+      },
+      {
+        "type": "building",
+        "started_on": "2026-11-24T13:58:52.312Z"
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "scope": "Local isolated Git metadata rehearsal only; no production change, no second manual run",
+  "pinnedCommit": "d6b249decdb4b19049efb20c42c9ec0b70d604dc",
+  "sourceCommit": "b8d05e3b6335233f7a9bd4ce4fc456db492dd552",
+  "singleCommitCheckoutReproducesFailure": true,
+  "failureExit": 128,
+  "failure": "fatal: Not a valid commit name b8d05e3b6335233f7a9bd4ce4fc456db492dd552",
+  "twoCommitFetchRestoresOriginalAncestryGuard": true,
+  "guardNotRemovedOrWeakened": true,
+  "artifactChanged": false,
+  "productionUploads": 0
+}
